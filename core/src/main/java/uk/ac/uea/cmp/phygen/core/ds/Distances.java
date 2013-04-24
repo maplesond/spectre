@@ -1,0 +1,334 @@
+package uk.ac.uea.cmp.phygen.core.ds;
+
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+
+/**
+ * Immutable class representing the distances between each taxa provided
+ */
+public class Distances {
+
+    private final String[] taxa;
+    private final double[][] matrix;
+    private final int NB_TAXA;
+
+
+    /**
+     * Creates a new Distance object of the specified size.  Taxa elements will contain
+     * empty strings and distances will all be 0.0.
+     *
+     * @param size Number of taxa.
+     */
+    public Distances(final int size) {
+        this(createDefaultTaxaSet(size));
+    }
+
+    /**
+     * Creates a new Distances object using a taxa set.  Will validate the taxa set
+     * to ensure there's data to work with, and that there are no duplicated elements.
+     * The distances matrix is initialised so that all elements are 0.0.
+     *
+     * @param taxa The taxa set.
+     */
+    public Distances(final String[] taxa) {
+        validateTaxa(taxa);
+
+        this.taxa = taxa;
+        this.NB_TAXA = taxa.length;
+        this.matrix = new double[this.NB_TAXA][this.NB_TAXA];
+
+        reset();
+    }
+
+    /**
+     * Creates a deep copy of the provided Distances object.  Ensures this object
+     * is in a valid state.
+     *
+     * @param copy The copy to duplicate in this object.
+     */
+    public Distances(final Distances copy) {
+        this.taxa = copyTaxa(copy.taxa);
+        this.matrix = copyDistances(copy.matrix);
+        this.NB_TAXA = copy.NB_TAXA;
+
+        validate();
+    }
+
+    /**
+     * Creates a new Distances object by making a deep copy of the provided taxa
+     * set and distances matrix. Ensures this object is in a valid state.
+     *
+     * @param distances
+     */
+    public Distances(final String[] taxa, double[][] distances) {
+        this.taxa = copyTaxa(taxa);
+        this.matrix = copyDistances(distances);
+        this.NB_TAXA = taxa.length;
+
+        validate();
+    }
+
+    /**
+     * Creates a default taxa set, which starts at 1 and goes up to the specified
+     * size.
+     *
+     * @param size The size of the taxa set to create.
+     * @return A default taxa set of specified size, with incrementing integer values
+     *         starting at 1 and going up to the specified size.
+     */
+    protected static String[] createDefaultTaxaSet(final int size) {
+        String[] nt = new String[size];
+
+        for (int i = 1; i <= size; i++) {
+            nt[i - 1] = Integer.toString(i);
+        }
+
+        return nt;
+    }
+
+    /**
+     * Creates a deep copy of a taxa set.
+     *
+     * @param copy The taxa set to copy.
+     * @return A copy of the provided taxa set.
+     */
+    protected final String[] copyTaxa(final String[] copy) {
+        String[] newTaxa = new String[copy.length];
+        System.arraycopy(copy, 0, newTaxa, 0, copy.length);
+        return newTaxa;
+    }
+
+    /**
+     * Creates a deep copy of a distance matrix.
+     *
+     * @param copy The distance matrix to copy.
+     * @return A new copy of the provided distance matrix.
+     */
+    protected final double[][] copyDistances(final double[][] copy) {
+        double[][] newMatrix = new double[copy.length][copy.length];
+        for (int i = 0; i < copy.length; i++) {
+            System.arraycopy(copy[i], 0, newMatrix[i], 0, copy.length);
+        }
+        return newMatrix;
+    }
+
+    /**
+     * Ensure the provided taxa set is valid.  This means that it is non-null and
+     * contains at least one element.  Also there must be no duplicated elements.
+     *
+     * @param taxa The taxa set to validate.
+     */
+    protected final void validateTaxa(final String[] taxa) {
+        // Ensure we have some taxa to work with.
+        if (taxa == null || taxa.length == 0) {
+            throw new NullPointerException("Must specify taxa");
+        }
+
+        // Ensure no duplicated elements in the taxa set.
+        LinkedHashSet tCheck = new LinkedHashSet(Arrays.asList(taxa));
+        if (tCheck.size() != taxa.length) {
+            throw new IllegalArgumentException("Provided taxa set contains duplicated elements.");
+        }
+    }
+
+    /**
+     * Ensure the provided taxa set is valid.  This means that it is non-null and
+     * contains at least one element.  Also there must be no duplicated elements.
+     *
+     * @param distances The 2D array of distances to validate.
+     */
+    protected final void validateDistances(final double[][] distances) {
+        // Ensure we have some taxa to work with.
+        if (distances == null || distances.length == 0 || distances[0] == null || distances[0].length == 0) {
+            throw new NullPointerException("Must specify distances");
+        }
+
+        if (distances.length != distances[0].length) {
+            throw new IllegalArgumentException("Distance matrix is not square");
+        }
+
+        for (double[] row : distances) {
+            for (double d : row) {
+                if (d < 0.0)
+                    throw new IllegalArgumentException("Distance matrix contains negative numbers");
+            }
+        }
+    }
+
+    /**
+     * Ensures this class is in a valid state.
+     */
+    protected final void validate() {
+        validateTaxa(this.taxa);
+        validateDistances(this.matrix);
+
+        if (this.taxa.length != this.matrix.length && this.taxa.length == this.NB_TAXA)
+            throw new IllegalArgumentException("Distance matrix is not the same size as the taxa set.");
+    }
+
+    @Override
+    public boolean equals(Object d) {
+        if (d instanceof Distances) {
+            Distances dd = (Distances) d;
+
+            if (!Arrays.equals(taxa, dd.taxa))
+                return false;
+
+            for (int i = 0; i < NB_TAXA; i++) {
+                if (!Arrays.equals(matrix[i], dd.matrix[i]))
+                    return false;
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 79 * hash + Arrays.deepHashCode(this.taxa);
+        hash = 79 * hash + Arrays.deepHashCode(this.matrix);
+        return hash;
+    }
+
+    protected void reset() {
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix.length; j++) {
+                matrix[i][j] = 0.0;
+            }
+        }
+    }
+
+    /**
+     * Retrieves the entire taxa set.
+     *
+     * @return The set of taxa.
+     */
+    public String[] getTaxaSet() {
+        return this.taxa;
+    }
+
+    /**
+     * Retrieves the taxa at the given position.
+     *
+     * @param i The index of the taxa to return.
+     * @return The taxa
+     */
+    public String getTaxa(final int i) {
+        return this.taxa[i];
+    }
+
+    /**
+     * Sets the taxa at the given position
+     *
+     * @param i    The index of the taxa to set
+     * @param taxa The String representation of the taxa to set.
+     */
+    public void setTaxa(final int i, String taxa) {
+        this.taxa[i] = taxa;
+    }
+
+    /**
+     * Sets the distance between two taxa.
+     *
+     * @param row
+     * @param col
+     * @param value
+     */
+    public void setDistance(final int row, final int col, final double value) {
+        matrix[row][col] = value;
+    }
+
+    /**
+     * Retrieves the distance between two taxa
+     *
+     * @param row
+     * @param col
+     * @return
+     */
+    public double getDistance(final int row, final int col) {
+        return matrix[row][col];
+    }
+
+    /**
+     * Retrieves a single row of the distance matrix
+     *
+     * @param row The index of the row to return.
+     * @return The actual selected row of the distance matrix
+     */
+    public double[] getRow(final int row) {
+        return matrix[row];
+    }
+
+    /**
+     * Returns the size (number of rows or number of columns) of the square matrix
+     *
+     * @return The size of the matrix
+     */
+    public int size() {
+        return NB_TAXA;
+    }
+
+    /**
+     * Returns the total number of elements in the 2D square distance matrix
+     *
+     * @return The total number of elements in the matrix
+     */
+    public int elements() {
+        return NB_TAXA * NB_TAXA;
+    }
+
+    /**
+     * Sums up all the distances in the row, which is equivalent to the summed up
+     * distances from this element to all the others.
+     *
+     * @param row The row to sum
+     * @return The sum of distances from this element (row index == one taxon) to
+     *         all the others.
+     */
+    public double sumRow(final int row) {
+        double sum = 0.0;
+        for (double d : matrix[row]) {
+            sum += d;
+        }
+        return sum;
+    }
+
+    /**
+     * Represents the distance matrix with each row on a new line surrounded with
+     * square brackets, with columns delimited with commas.
+     *
+     * @return String representation of the Distance matrix.
+     */
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("[");
+        for (int i = 0; i < NB_TAXA; i++) {
+            sb.append("\"");
+            sb.append(taxa[i]);
+            sb.append("\"");
+
+            if (i != NB_TAXA - 1)
+                sb.append(",");
+        }
+        sb.append("]\n");
+        for (int i = 0; i < NB_TAXA; i++) {
+            sb.append("[");
+            for (int j = 0; j < NB_TAXA; j++) {
+                sb.append(matrix[i][j]);
+
+                if (j != NB_TAXA - 1)
+                    sb.append(",");
+            }
+            sb.append("]");
+            sb.append("\n");
+        }
+
+        return sb.toString();
+    }
+
+}
