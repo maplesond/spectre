@@ -16,13 +16,31 @@ public enum PhygenWriterFactory {
         public PhygenWriter create() {
             return new NexusWriter();
         }
-    },
-    PHYLIP {
+
         @Override
-        public PhygenWriter create() {
-            throw new UnsupportedOperationException("PhylipWriter not implemented yet");
+        public String[] getValidExtensions() {
+            return new String[]{"nex", "nexus"};
         }
     };
 
     public abstract PhygenWriter create();
+    public abstract String[] getValidExtensions();
+
+    public static PhygenWriter create(String fileExtension) {
+
+        for(PhygenWriterFactory pwf : PhygenWriterFactory.values()) {
+
+            for(String ext : pwf.getValidExtensions()) {
+                if (ext.equalsIgnoreCase(fileExtension)) {
+                    return pwf.create();
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public String getPrimaryExtension() {
+        return this.getValidExtensions()[0];
+    }
 }

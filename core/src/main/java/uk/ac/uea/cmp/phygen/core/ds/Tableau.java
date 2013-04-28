@@ -1,10 +1,12 @@
-package uk.ac.uea.cmp.phygen.netmake.edge;
+package uk.ac.uea.cmp.phygen.core.ds;
 
-import uk.ac.uea.cmp.phygen.core.ds.Split;
-import uk.ac.uea.cmp.phygen.core.ds.SplitBlock;
-import uk.ac.uea.cmp.phygen.core.ds.SplitSystem;
+import uk.ac.uea.cmp.phygen.core.ds.split.CircularSplitSystem;
+import uk.ac.uea.cmp.phygen.core.ds.split.Split;
+import uk.ac.uea.cmp.phygen.core.ds.split.SplitBlock;
+import uk.ac.uea.cmp.phygen.core.ds.split.SplitSystem;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -29,7 +31,7 @@ public class Tableau<E> {
      * Creates a new copy of a Tableau using the instance provided.
      * @param copy
      */
-    public Tableau( Tableau<E> copy )
+    public Tableau(Tableau<E> copy)
     {
         this();
 
@@ -50,7 +52,7 @@ public class Tableau<E> {
         //this.components.addAll(copy.components);
     }
 
-    public SplitSystem convertToSplitSystem(int nbTaxa) {
+    public CircularSplitSystem convertToSplitSystem(String[] taxa, int[] circularOrdering) {
 
         List<Split> splits = new ArrayList<>();
 
@@ -58,18 +60,22 @@ public class Tableau<E> {
 
         for(int i = 0; i < rows; i++) {
 
-            int[] data = new int[rows];
+            List<E> row = this.getRow(i);
 
-            for(int j = 0; j < rows; j++) {
+            int cols = row.size();
+
+            int[] copyRow = new int[cols];
+
+            for(int j = 0; j < cols; j++) {
 
                 E e = this.get(i, j);
-                data[j] = Integer.parseInt(e.toString());
+                copyRow[j] = Integer.parseInt(e.toString());
             }
 
-            splits.add(new Split(new SplitBlock(data), nbTaxa));
+            splits.add(new Split(new SplitBlock(copyRow), taxa.length));
         }
 
-        return new SplitSystem(splits, null, null);
+        return new CircularSplitSystem(splits, circularOrdering);
     }
 
     /**

@@ -1,5 +1,7 @@
 package uk.ac.uea.cmp.phygen.core.ds;
 
+import uk.ac.uea.cmp.phygen.core.math.Statistics;
+
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 
@@ -263,9 +265,10 @@ public class Distances {
     }
 
     /**
-     * Returns the size (number of rows or number of columns) of the square matrix
+     * Returns the size (number of rows or number of columns) of the square matrix.  This is also equivalent to the
+     * number of taxa in the system
      *
-     * @return The size of the matrix
+     * @return The size of the matrix along one dimension, or the number of taxa in the system.
      */
     public int size() {
         return NB_TAXA;
@@ -289,11 +292,8 @@ public class Distances {
      *         all the others.
      */
     public double sumRow(final int row) {
-        double sum = 0.0;
-        for (double d : matrix[row]) {
-            sum += d;
-        }
-        return sum;
+
+        return Statistics.sumDoubles(matrix[row]);
     }
 
     /**

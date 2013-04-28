@@ -3,6 +3,7 @@ package uk.ac.uea.cmp.phygen.netmake.edge;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.ds.SummedDistanceList;
+import uk.ac.uea.cmp.phygen.core.ds.Tableau;
 
 /**
  * Describes the adjacent elements of an edge.

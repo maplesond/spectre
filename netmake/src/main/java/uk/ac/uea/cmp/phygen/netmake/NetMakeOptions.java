@@ -61,13 +61,6 @@ public class NetMakeOptions {
                     throw new ParseException(OPT_INPUT + " argument not specified.");
                 }
 
-                if (cmdLine.hasOption(OPT_INPUT_TYPE)) {
-                    inputType = cmdLine.getOptionValue(OPT_INPUT_TYPE);
-                }
-                else {
-                    throw new ParseException(OPT_INPUT_TYPE + " argument not specified.");
-                }
-
                 if (cmdLine.hasOption(OPT_WEIGHTINGS_1)) {
                     weightings1 = cmdLine.getOptionValue(OPT_WEIGHTINGS_1);
                 }
@@ -77,10 +70,11 @@ public class NetMakeOptions {
 
                 // Optional arguments
 
+                inputType = cmdLine.hasOption(OPT_INPUT_TYPE) ? cmdLine.getOptionValue(OPT_INPUT_TYPE) : null;
                 outputDir = cmdLine.hasOption(OPT_OUTPUT_DIR) ? new File(cmdLine.getOptionValue(OPT_OUTPUT_DIR)) : new File(".");
                 treeParam = cmdLine.hasOption(OPT_TREE_PARAM) ? Double.parseDouble(cmdLine.getOptionValue(OPT_TREE_PARAM)) : 0.5;
 
-                DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd-HH:mm:ss");
+                DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd-HHmmss");
                 Date date = new Date();
                 String timeStamp = dateFormat.format(date);
 

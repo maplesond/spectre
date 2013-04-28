@@ -5,10 +5,11 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.ds.Distances;
-import uk.ac.uea.cmp.phygen.core.ds.SplitSystem;
+import uk.ac.uea.cmp.phygen.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.phygen.core.ds.SummedDistanceList;
+import uk.ac.uea.cmp.phygen.core.ds.Tableau;
+import uk.ac.uea.cmp.phygen.core.math.Statistics;
 import uk.ac.uea.cmp.phygen.netmake.edge.EdgeAdjacents;
-import uk.ac.uea.cmp.phygen.netmake.edge.Tableau;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,14 +69,9 @@ public class GreedyMEWeighting extends Weighting {
 
     private double calculateTreeLength(Tableau<Integer> splits) {
 
-        double treeLength = 0.0;
-
         List<Double> edgeWeights = this.getEdgeWeights(splits);
 
-        for(Double i : edgeWeights) {
-            treeLength += i.doubleValue();
-        }
-        return treeLength;
+        return Statistics.sumDoubles(edgeWeights);
     }
 
     /*
@@ -261,7 +257,7 @@ public class GreedyMEWeighting extends Weighting {
 
         ArrayList<Double> edgeWeights = new ArrayList<Double>();
 
-        SplitSystem splitSystem = tableau.convertToSplitSystem(this.distances.size());
+        SplitSystem splitSystem = tableau.convertToSplitSystem(this.distances.getTaxaSet());
 
         SummedDistanceList P = splitSystem.calculateP(this.distances);
 

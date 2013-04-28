@@ -6,10 +6,12 @@ package uk.ac.uea.cmp.phygen.core.io.nexus;
 
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
-import uk.ac.uea.cmp.phygen.core.ds.Split;
-import uk.ac.uea.cmp.phygen.core.ds.SplitBlock;
-import uk.ac.uea.cmp.phygen.core.ds.SplitSystem;
+import uk.ac.uea.cmp.phygen.core.ds.Distances;
+import uk.ac.uea.cmp.phygen.core.ds.split.CircularSplitSystem;
+import uk.ac.uea.cmp.phygen.core.ds.split.Split;
+import uk.ac.uea.cmp.phygen.core.ds.split.SplitBlock;
+import uk.ac.uea.cmp.phygen.core.ds.split.SplitSystem;
+import uk.ac.uea.cmp.phygen.core.ds.TreeWeights;
 import uk.ac.uea.cmp.phygen.core.io.PhygenWriter;
 
 import java.io.File;
@@ -27,11 +29,6 @@ import java.util.List;
  */
 public class NexusWriter implements PhygenWriter {
 
-    @Override
-    public String getExtension() {
-        return "nex";
-    }
-
     /**
      * Creates a network representation of the split system that was provided in
      * the constructor and saves the data to disk.
@@ -40,7 +37,7 @@ public class NexusWriter implements PhygenWriter {
      * data to the file.
      */
     @Override
-    public void writeNetwork(File file, SplitSystem ss) throws IOException {
+    public void writeNetwork(File file, SplitSystem ss, Distances distances) throws IOException {
 
         if (file == null) {
             throw new NullPointerException("Must specify a nexus file to write.");
@@ -56,7 +53,7 @@ public class NexusWriter implements PhygenWriter {
 
         //For network, we consider a full split system and determine its splits by its weight (non-zero ones)
         //this is not dependent on ss, what ever ss is?
-        int n = ss.nbTaxa();
+        int n = ss.getNbTaxa();
 
         int numberOfSplits = ss.getSplits().size();
         int currentSplitIndex = 1;
@@ -72,14 +69,14 @@ public class NexusWriter implements PhygenWriter {
         outputString.append("#nexus\n\n\nBEGIN Taxa;\nDIMENSIONS ntax=").append(n).append(";\nTAXLABELS\n");
 
         int idx = 1;
-        for (String taxa : ss.getNames()) {
+        for (String taxa : distances.getTaxaSet()) {
             outputString.append("[").append(idx++).append("] '").append(taxa).append("'\n");
         }
 
         outputString.append(";\nEND; [Taxa]\n\nBEGIN Splits;\nDIMENSIONS ntax=").append(n).append(" nsplits=").append(numberOfSplits).append(";\nFORMAT ").append("labels=no weights=yes confidences=no intervals").append("=no;\nPROPERTIES fit=-1.0 cyclic;\nCYCLE");
 
         for (int i = 0; i < n; i++) {
-            outputString.append(" ").append(ss.getCircularOrdering()[i]);
+            outputString.append(" ").append(ss.getTaxaIndexAt(i));
         }
 
         outputString.append(";\nMATRIX\n");
@@ -87,12 +84,12 @@ public class NexusWriter implements PhygenWriter {
         for (int i = 0; i < ss.getSplits().size(); i++) {
 
             Split s = ss.getSplits().get(i);
-            double weighting = ss.getWeightings().get(i);
+            double weighting = s.getWeight();
+            SplitBlock sb = s.getASide();
 
             if (weighting != 0.0) {
-                int size = n - s.getASide().size();
-                outputString.append("[").append(currentSplitIndex).append(", size=").append(size).append("]\t").append(ss.getWeightings().get(i)).append("\t");
-                outputString.append(" ").append(StringUtils.join(s, " "));
+                outputString.append("[").append(currentSplitIndex).append(", size=").append(sb.size()).append("]\t").append(weighting).append("\t");
+                outputString.append(" ").append(sb.toString());
 
                 currentSplitIndex++;
                 outputString.append(",\n");
@@ -109,28 +106,24 @@ public class NexusWriter implements PhygenWriter {
      * @param treeWeights matrix that maps a weighting value to an edge of the tree
      */
     @Override
-    public void writeTree(File file, SplitSystem ss, double[][] treeWeights) throws IOException {
+    public void writeTree(File file, SplitSystem ss, Distances distances, TreeWeights treeWeights) throws IOException {
 
         List<Split> splits = ss.getSplits();
-        int nbTaxa = ss.nbTaxa();
+        int nbTaxa = ss.getNbTaxa();
 
-        int[] permutationInvert = new int[nbTaxa];
+        int[] permutationInvert = ss.invertOrdering();
         StringBuilder outputString = new StringBuilder("");
 
-        for (int i = 0; i < nbTaxa; i++) {
-            permutationInvert[ss.getCircularOrderingAt(i)] = i;
-        }
-
-        outputString.append("#nexus\n\n\nBEGIN Taxa;\nDIMENSIONS ntax=").append(nbTaxa).append(";\nTAXLABELS\n");
+         outputString.append("#nexus\n\n\nBEGIN Taxa;\nDIMENSIONS ntax=").append(nbTaxa).append(";\nTAXLABELS\n");
 
         for (int i = 0; i < nbTaxa; i++) {
-            outputString.append("[").append(i + 1).append("] '").append(ss.getNames().get(i)).append("'\n");
+            outputString.append("[").append(i + 1).append("] '").append(distances.getTaxa(i)).append("'\n");
         }
 
         outputString.append(";\nEND; [Taxa]\n\nBEGIN Splits;\nDIMENSIONS ntax=").append(nbTaxa).append(" nsplits=").append(splits.size()).append(";\nFORMAT ").append("labels=no weights=yes confidences=no intervals").append("=no;\nPROPERTIES fit=-1.0 cyclic;\nCYCLE");
 
         for (int i = 0; i < nbTaxa; i++) {
-            outputString.append(" ").append(ss.getCircularOrderingAt(i + 1));
+            outputString.append(" ").append(ss.getTaxaIndexAt(i));
         }
 
         outputString.append(";\nMATRIX\n");
@@ -144,20 +137,17 @@ public class NexusWriter implements PhygenWriter {
 
             if (k == 0) {
                 k = nbTaxa - 1;
-                outputString.append("[").append(i + 1).append(", size=").append(k - l).append("]\t").append(treeWeights[k][l]).append("\t");
+                outputString.append("[").append(i + 1).append(", size=").append(k - l).append("]\t").append(treeWeights.getAt(k,l)).append("\t");
             } else {
                 k--;
                 if ((l < nbTaxa - 1) && (k >= l)) {
-                    outputString.append("[").append(i + 1).append(", size=").append(k - l).append("]\t").append(treeWeights[k][l]).append("\t");
+                    outputString.append("[").append(i + 1).append(", size=").append(k - l).append("]\t").append(treeWeights.getAt(k,l)).append("\t");
                 } else {
-                    outputString.append("[").append(i + 1).append(", size=").append(l - k).append("]\t").append(treeWeights[l][k]).append("\t");
+                    outputString.append("[").append(i + 1).append(", size=").append(l - k).append("]\t").append(treeWeights.getAt(l,k)).append("\t");
                 }
             }
 
-            for (int j = 0; j < splits.get(i).getASide().size(); j++) {
-                outputString.append(" ").append(splits.get(i).getASide().get(j) + 1);
-            }
-
+            outputString.append(splits.get(i).getASide().toString());
             outputString.append(",\n");
         }
 

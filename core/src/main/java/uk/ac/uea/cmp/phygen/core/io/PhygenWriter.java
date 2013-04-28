@@ -1,6 +1,8 @@
 package uk.ac.uea.cmp.phygen.core.io;
 
-import uk.ac.uea.cmp.phygen.core.ds.SplitSystem;
+import uk.ac.uea.cmp.phygen.core.ds.Distances;
+import uk.ac.uea.cmp.phygen.core.ds.split.SplitSystem;
+import uk.ac.uea.cmp.phygen.core.ds.TreeWeights;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,7 +16,6 @@ import java.io.IOException;
  */
 public interface PhygenWriter {
 
-    String getExtension();
-    void writeNetwork(File outFile, SplitSystem splitSystem) throws IOException;
-    void writeTree(File outFile, SplitSystem splitSystem, double[][] treeWeights) throws IOException;
+    void writeNetwork(File outFile, SplitSystem splitSystem, Distances distances) throws IOException;
+    void writeTree(File outFile, SplitSystem splitSystem, Distances distances, TreeWeights treeWeights) throws IOException;
 }

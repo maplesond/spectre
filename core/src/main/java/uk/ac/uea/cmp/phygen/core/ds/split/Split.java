@@ -1,4 +1,6 @@
-package uk.ac.uea.cmp.phygen.core.ds;
+package uk.ac.uea.cmp.phygen.core.ds.split;
+
+import uk.ac.uea.cmp.phygen.core.ds.Distances;
 
 /**
  * Created with IntelliJ IDEA.
@@ -12,12 +14,19 @@ public class Split {
     private SplitBlock aSide;
     private SplitBlock bSide;
     private int nbTaxa;
+    private double weight;
 
     public Split(SplitBlock aSide, int nbTaxa) {
+        this(aSide, nbTaxa, 1.0);
+    }
+
+    public Split(SplitBlock aSide, int nbTaxa, double weight) {
         this.aSide = aSide;
         this.nbTaxa = nbTaxa;
         this.bSide = aSide.makeComplement(nbTaxa);
+        this.weight = weight;
     }
+
 
     public Split(Split split) {
         this(split.aSide.copy(), split.nbTaxa);
@@ -33,6 +42,14 @@ public class Split {
 
     public int getNbTaxa() {
         return nbTaxa;
+    }
+
+    public double getWeight() {
+        return weight;
+    }
+
+    public void setWeight(double weight) {
+        this.weight = weight;
     }
 
     public void sort() {

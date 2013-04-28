@@ -3,11 +3,11 @@ package uk.ac.uea.cmp.phygen.netmake;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import uk.ac.uea.cmp.phygen.core.ds.Distances;
-import uk.ac.uea.cmp.phygen.core.ds.Split;
-import uk.ac.uea.cmp.phygen.core.ds.SplitSystem;
+import uk.ac.uea.cmp.phygen.core.ds.split.CircularSplitSystem;
+import uk.ac.uea.cmp.phygen.core.ds.split.SplitSystem;
+import uk.ac.uea.cmp.phygen.core.ds.Tableau;
 import uk.ac.uea.cmp.phygen.core.io.PhygenWriter;
 import uk.ac.uea.cmp.phygen.core.io.PhygenWriterFactory;
-import uk.ac.uea.cmp.phygen.netmake.edge.Tableau;
 import uk.ac.uea.cmp.phygen.netmake.weighting.GreedyMEWeighting;
 import uk.ac.uea.cmp.phygen.netmake.weighting.TreeWeighting;
 import uk.ac.uea.cmp.phygen.netmake.weighting.Weighting;
@@ -15,7 +15,7 @@ import uk.ac.uea.cmp.phygen.netmake.weighting.Weighting;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 
 /**
  * Performs the NeighborNet algorithm to retrieve a split system and a circular
@@ -82,12 +82,13 @@ public class NetMake {
 
 
         PhygenWriter phygenWriter = PhygenWriterFactory.NEXUS.create();
+        String extension = PhygenWriterFactory.NEXUS.getPrimaryExtension();
 
-        File networkOutputFile = new File(outputDir, prefix + ".network." + phygenWriter.getExtension());
-        File treeOutputFile = new File(outputDir, prefix + ".tree." + phygenWriter.getExtension());
+        File networkOutputFile = new File(outputDir, prefix + ".network." + extension);
+        File treeOutputFile = new File(outputDir, prefix + ".tree." + extension);
 
-        phygenWriter.writeNetwork(networkOutputFile, this.getNetwork());
-        phygenWriter.writeTree(treeOutputFile, this.getTree(), this.getTree().calculateTreeWeighting(this.distances));
+        phygenWriter.writeNetwork(networkOutputFile, this.getNetwork(), this.distances);
+        phygenWriter.writeTree(treeOutputFile, this.getTree(), this.distances, this.getTree().calculateTreeWeighting(this.distances));
     }
 
     private enum RunMode {
@@ -259,11 +260,8 @@ public class NetMake {
         organiseSplits(treeSplits, permutation);
 
         // Set tree split system
-        this.tree = treeSplits.convertToSplitSystem(this.distances.size());
-        this.tree.setCircularOrdering(permutation);
-        this.network = new SplitSystem((List<Split>)null);
-        this.network.setCircularOrdering(permutation);
-
+        this.tree = treeSplits.convertToSplitSystem(this.distances.getTaxaSet(), permutation);
+        this.network = new CircularSplitSystem(permutation);
 
         return treeSplits;
     }

@@ -1,5 +1,7 @@
 package uk.ac.uea.cmp.phygen.netmake.edge;
 
+import uk.ac.uea.cmp.phygen.core.ds.Tableau;
+
 import java.util.ArrayList;
 import java.util.Collections;
 

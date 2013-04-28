@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package uk.ac.uea.cmp.phygen.core.ds;
+package uk.ac.uea.cmp.phygen.core.ds.split;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -96,7 +96,7 @@ public class SplitBlock implements Comparable<SplitBlock> {
 
         sb.append("[");
         for (Integer i : this.elements) {
-            sb.append(i);
+            sb.append(i + 1);
             sb.append(" ");
         }
 

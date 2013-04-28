@@ -5,7 +5,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import uk.ac.uea.cmp.phygen.core.ds.Distances;
-import uk.ac.uea.cmp.phygen.core.ds.SplitSystem;
+import uk.ac.uea.cmp.phygen.core.ds.split.CircularSplitSystem;
+import uk.ac.uea.cmp.phygen.core.ds.split.SplitSystem;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,9 +34,11 @@ public class NexusWriterTest {
 
         File outputFile = new File(outputDir, "network.nex");
 
-        SplitSystem ss = new SplitSystem(new int[]{1,2,3,4,5});
+        SplitSystem ss = new CircularSplitSystem(new int[]{1,2,3,4,5});
 
-        new NexusWriter().writeNetwork(outputFile, ss);
+        Distances distances = new Distances(5);
+
+        new NexusWriter().writeNetwork(outputFile, ss, distances);
 
         // Check output file was created
         assertTrue(outputFile.exists());
@@ -53,7 +56,7 @@ public class NexusWriterTest {
 
         File outputFile = new File(outputDir, "tree.nex");
 
-        SplitSystem ss = new SplitSystem(new int[]{1,2,3,4,5});
+        SplitSystem ss = new CircularSplitSystem(new int[]{1,2,3,4,5});
 
         Distances distances = new Distances(5);
 

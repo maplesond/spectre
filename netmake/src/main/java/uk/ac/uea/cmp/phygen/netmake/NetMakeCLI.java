@@ -1,7 +1,9 @@
 package uk.ac.uea.cmp.phygen.netmake;
 
 import org.apache.commons.cli.*;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.ds.Distances;
@@ -53,8 +55,14 @@ public class NetMakeCLI {
             // Otherwise run NetMake proper
             else {
 
+                // Configure logging
+                BasicConfigurator.configure();
+
                 // Load distances from input file based on file type
-                PhygenReader phygenReader = PhygenReaderFactory.valueOf(netMakeOptions.getInputType()).create();
+                PhygenReader phygenReader = netMakeOptions.getInputType() != null ?
+                        PhygenReaderFactory.valueOf(netMakeOptions.getInputType()).create() :
+                        PhygenReaderFactory.create(FilenameUtils.getExtension(netMakeOptions.getInput().getName()));
+
                 Distances distances = phygenReader.read(netMakeOptions.getInput());
 
                 // Create weighting objects
