@@ -1,6 +1,6 @@
 package uk.ac.uea.cmp.phygen.core.io;
 
-import uk.ac.uea.cmp.phygen.core.ds.Distances;
+import uk.ac.uea.cmp.phygen.core.ds.DistanceMatrix;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,5 +14,5 @@ import java.io.IOException;
  */
 public interface PhygenReader {
 
-    Distances read(File input) throws IOException;
+    DistanceMatrix read(File input) throws IOException;
 }

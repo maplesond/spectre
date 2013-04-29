@@ -20,27 +20,38 @@ import static org.junit.Assert.assertTrue;
  */
 public class NetMakeCLIIntegrationTest {
 
-
-    private final File testFile = FileUtils.toFile(NetMakeCLIIntegrationTest.class.getResource("/test.nex"));
-
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
-
-
     @Test
-    public void test1() throws IOException {
+    public void testTree1() throws IOException {
 
         File outputDir = temporaryFolder.getRoot();
 
+        File testFile1 = FileUtils.toFile(NetMakeCLIIntegrationTest.class.getResource("/test.nex"));
+
         NetMakeCLI.main(new String[]{
-                "--input", testFile.getAbsolutePath(),
+                "--input", testFile1.getAbsolutePath(),
                 "--output", outputDir.getAbsolutePath(),
                 "--weightings_1", "TREE"
         });
 
-        assertTrue(true);
+        assertTrue(outputDir.listFiles().length == 2);
     }
 
+    @Test
+    public void testTreeBees() throws IOException {
 
+        File outputDir = temporaryFolder.getRoot();
+
+        File testFile2 = FileUtils.toFile(NetMakeCLIIntegrationTest.class.getResource("/bees.nex"));
+
+        NetMakeCLI.main(new String[]{
+                "--input", testFile2.getAbsolutePath(),
+                "--output", outputDir.getAbsolutePath(),
+                "--weightings_1", "TREE"
+        });
+
+        assertTrue(outputDir.listFiles().length == 2);
+    }
 }

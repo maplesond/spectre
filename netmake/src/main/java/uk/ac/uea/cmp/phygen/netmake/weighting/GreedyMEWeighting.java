@@ -4,8 +4,8 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.uea.cmp.phygen.core.ds.Distances;
-import uk.ac.uea.cmp.phygen.core.ds.split.SplitSystem;
+import uk.ac.uea.cmp.phygen.core.ds.DistanceMatrix;
+import uk.ac.uea.cmp.phygen.core.ds.split.CircularSplitSystem;
 import uk.ac.uea.cmp.phygen.core.ds.SummedDistanceList;
 import uk.ac.uea.cmp.phygen.core.ds.Tableau;
 import uk.ac.uea.cmp.phygen.core.math.Statistics;
@@ -24,20 +24,20 @@ public class GreedyMEWeighting extends Weighting {
     private final static Logger log = LoggerFactory.getLogger(GreedyMEWeighting.class);
 
     // Input class variables.
-    private Distances distances;
+    private DistanceMatrix distanceMatrix;
 
     // Output class variables
     private Pair<Integer, Integer> bestSplits;
 
     /**
      * Initialises a GreedyMEWeighting with a SplitSystem
-     * @param distances
+     * @param distanceMatrix
      */
-    public GreedyMEWeighting(Distances distances) {
+    public GreedyMEWeighting(DistanceMatrix distanceMatrix) {
 
         super();
 
-        this.distances = distances;
+        this.distanceMatrix = distanceMatrix;
 
         this.bestSplits = null;
     }
@@ -77,12 +77,12 @@ public class GreedyMEWeighting extends Weighting {
     /*
      * method to calculate a split weight
      * input is an arrayList of splits representing the tree topology,
-     * the relevant distances d and the number of the split, the weight is calculated for
+     * the relevant distanceMatrix d and the number of the split, the weight is calculated for
      */
     private double calculateEdges(double P_0, EdgeAdjacents aEdgeAdjacents, boolean external) {
 
         double edgeWeight = 0;
-        int nb_taxa = this.distances.size();
+        int nb_taxa = this.distanceMatrix.size();
 
 //        boolean external = false;
         log.debug("P_0: {0}", P_0);
@@ -257,9 +257,9 @@ public class GreedyMEWeighting extends Weighting {
 
         ArrayList<Double> edgeWeights = new ArrayList<Double>();
 
-        SplitSystem splitSystem = tableau.convertToSplitSystem(this.distances.getTaxaSet());
+        CircularSplitSystem splitSystem = tableau.convertToSplitSystem(this.distanceMatrix);
 
-        SummedDistanceList P = splitSystem.calculateP(this.distances);
+        SummedDistanceList P = splitSystem.calculateP(this.distanceMatrix);
 
         for (int i = 0; i < splitSystem.getNbSplits(); i++) {
 
@@ -267,7 +267,7 @@ public class GreedyMEWeighting extends Weighting {
 
             boolean external = splitSystem.getSplitAt(i).onExternalEdge();
 
-            EdgeAdjacents aEdgeAdjacents = EdgeAdjacents.retrieveAdjacents(splitsCopy, i, P, this.distances.size());
+            EdgeAdjacents aEdgeAdjacents = EdgeAdjacents.retrieveAdjacents(splitsCopy, i, P, this.distanceMatrix.size());
 
             //determine if edge external or internal
 

@@ -1,11 +1,7 @@
 package uk.ac.uea.cmp.phygen.core.io;
 
-import uk.ac.uea.cmp.phygen.core.ds.Distances;
 import uk.ac.uea.cmp.phygen.core.io.nexus.NexusReader;
 import uk.ac.uea.cmp.phygen.core.io.phylip.PhylipReader;
-
-import java.io.File;
-import java.io.IOException;
 
 /**
  * Created with IntelliJ IDEA.

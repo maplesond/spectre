@@ -1,0 +1,44 @@
+#nexus
+
+
+BEGIN Taxa;
+DIMENSIONS ntax=10;
+TAXLABELS
+[1] 'red-purple'
+[2] 'red'
+[3] 'yellow'
+[4] 'yellowish'
+[5] 'greenish'
+[6] 'green'
+[7] 'blue'
+[8] 'purple-blue'
+[9] 'purple'
+[10] 'purple-reddish'
+;
+END; [Taxa]
+
+BEGIN Splits;
+DIMENSIONS ntax=10 nsplits=17;
+FORMAT labels=no weights=yes confidences=no intervals=no;
+PROPERTIES fit=-1.0 cyclic;
+CYCLE 1 2 3 4 5 6 7 8 9 10;
+MATRIX
+[1, size=1]	12.879560634256666	 1 2 3 4 5 6 7 8 9,
+[2, size=9]	18.03511733192563	 1,
+[3, size=8]	7.207815288341631	 2 3 4 5 6 7 8 9,
+[4, size=7]	16.94130954166372	 2 3 4 5 6 7 8,
+[5, size=1]	18.617841827476255	 9,
+[6, size=6]	18.700120111098087	 2 3 4 5 6 7,
+[7, size=1]	25.466913796653376	 8,
+[8, size=2]	24.627417156109534	 2 3,
+[9, size=4]	20.95330137391676	 4 5 6 7,
+[10, size=1]	27.237181075919434	 2,
+[11, size=1]	27.865907502464413	 3,
+[12, size=2]	16.232891477838994	 4 5,
+[13, size=2]	6.866786576586496	 6 7,
+[14, size=1]	16.91765008715807	 4,
+[15, size=1]	16.037433089995083	 5,
+[16, size=1]	20.449709825508155	 6,
+[17, size=1]	20.575455110817153	 7,
+;
+END; [Splits]

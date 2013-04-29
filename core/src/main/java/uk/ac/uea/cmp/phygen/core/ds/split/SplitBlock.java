@@ -94,13 +94,12 @@ public class SplitBlock implements Comparable<SplitBlock> {
     public String toString() {
         StringBuilder sb = new StringBuilder();
 
-        sb.append("[");
         for (Integer i : this.elements) {
             sb.append(i + 1);
             sb.append(" ");
         }
 
-        return sb.toString().trim() + "]";
+        return sb.toString().trim();
     }
 
     public int getFirst() {

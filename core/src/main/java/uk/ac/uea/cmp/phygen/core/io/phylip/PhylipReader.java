@@ -1,7 +1,7 @@
 package uk.ac.uea.cmp.phygen.core.io.phylip;
 
 import org.apache.commons.io.FileUtils;
-import uk.ac.uea.cmp.phygen.core.ds.Distances;
+import uk.ac.uea.cmp.phygen.core.ds.DistanceMatrix;
 import uk.ac.uea.cmp.phygen.core.io.PhygenReader;
 
 import java.io.File;
@@ -23,7 +23,7 @@ public class PhylipReader implements PhygenReader {
      * @return The distance matrix, with associated taxa set.
      * @throws IOException Thrown if there were any problems accessing the file.
      */
-    public Distances read(File file) throws IOException {
+    public DistanceMatrix read(File file) throws IOException {
 
         // Validation before reading
         if (file == null) {
@@ -44,7 +44,7 @@ public class PhylipReader implements PhygenReader {
         // Assume first line contains number of taxa
         String n = inLines.get(0).trim();
         int taxanumber = Integer.parseInt(n);
-        Distances distances = new Distances(taxanumber);
+        DistanceMatrix distanceMatrix = new DistanceMatrix(taxanumber);
         //permutation = new int[taxanumber];
         int runidx2 = 0;
         int runidx = 0;
@@ -62,7 +62,7 @@ public class PhylipReader implements PhygenReader {
             if (aLine.substring(0, taxaendIdx + 1).equals(" ") == false) {
                 runidx2 = 0;
                 System.out.println(runidx + " " + taxaendIdx);
-                distances.setTaxa(runidx, aLine.substring(0, taxaendIdx));
+                distanceMatrix.setTaxa(runidx, aLine.substring(0, taxaendIdx));
 
                 runidx++;
                 aLine = aLine.substring(taxaendIdx + 1);
@@ -85,12 +85,12 @@ public class PhylipReader implements PhygenReader {
                 }
 
 
-                distances.setDistance(runidx - 1, runidx2, Double.parseDouble(distance));
+                distanceMatrix.setDistance(runidx - 1, runidx2, Double.parseDouble(distance));
 
                 runidx2++;
             }
         }
 
-        return distances;
+        return distanceMatrix;
     }
 }

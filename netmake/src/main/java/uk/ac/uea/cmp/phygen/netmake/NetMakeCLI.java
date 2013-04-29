@@ -6,7 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.uea.cmp.phygen.core.ds.Distances;
+import uk.ac.uea.cmp.phygen.core.ds.DistanceMatrix;
 import uk.ac.uea.cmp.phygen.core.io.PhygenReader;
 import uk.ac.uea.cmp.phygen.core.io.PhygenReaderFactory;
 import uk.ac.uea.cmp.phygen.netmake.weighting.Weighting;
@@ -58,22 +58,22 @@ public class NetMakeCLI {
                 // Configure logging
                 BasicConfigurator.configure();
 
-                // Load distances from input file based on file type
+                // Load distanceMatrix from input file based on file type
                 PhygenReader phygenReader = netMakeOptions.getInputType() != null ?
                         PhygenReaderFactory.valueOf(netMakeOptions.getInputType()).create() :
                         PhygenReaderFactory.create(FilenameUtils.getExtension(netMakeOptions.getInput().getName()));
 
-                Distances distances = phygenReader.read(netMakeOptions.getInput());
+                DistanceMatrix distanceMatrix = phygenReader.read(netMakeOptions.getInput());
 
                 // Create weighting objects
-                Weighting weighting1 = Weightings.createWeighting(netMakeOptions.getWeightings1(), distances, netMakeOptions.getTreeParam(), true);
+                Weighting weighting1 = Weightings.createWeighting(netMakeOptions.getWeightings1(), distanceMatrix, netMakeOptions.getTreeParam(), true);
                 Weighting weighting2 = netMakeOptions.getWeightings2() != null ?
-                        Weightings.createWeighting(netMakeOptions.getWeightings2(), distances, netMakeOptions.getTreeParam(), false) :
+                        Weightings.createWeighting(netMakeOptions.getWeightings2(), distanceMatrix, netMakeOptions.getTreeParam(), false) :
                         null;
 
                 // Create the configured NetMake object to process
                 NetMake netMake = new NetMake(
-                        distances,
+                        distanceMatrix,
                         weighting1,
                         weighting2);
 

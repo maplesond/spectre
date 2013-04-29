@@ -1,12 +1,8 @@
 package uk.ac.uea.cmp.phygen.core.ds;
 
-import uk.ac.uea.cmp.phygen.core.ds.split.CircularSplitSystem;
-import uk.ac.uea.cmp.phygen.core.ds.split.Split;
-import uk.ac.uea.cmp.phygen.core.ds.split.SplitBlock;
-import uk.ac.uea.cmp.phygen.core.ds.split.SplitSystem;
+import uk.ac.uea.cmp.phygen.core.ds.split.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -52,7 +48,18 @@ public class Tableau<E> {
         //this.components.addAll(copy.components);
     }
 
-    public CircularSplitSystem convertToSplitSystem(String[] taxa, int[] circularOrdering) {
+    public CircularSplitSystem convertToSplitSystem(DistanceMatrix distanceMatrix) {
+
+        int[] circularOrdering = new int[distanceMatrix.size()];
+
+        for(int i = 0; i < circularOrdering.length; i++) {
+            circularOrdering[i] = i;
+        }
+
+        return convertToSplitSystem(distanceMatrix, circularOrdering);
+    }
+
+    public CompatibleSplitSystem convertToSplitSystem(DistanceMatrix distanceMatrix, int[] circularOrdering) {
 
         List<Split> splits = new ArrayList<>();
 
@@ -72,10 +79,10 @@ public class Tableau<E> {
                 copyRow[j] = Integer.parseInt(e.toString());
             }
 
-            splits.add(new Split(new SplitBlock(copyRow), taxa.length));
+            splits.add(new Split(new SplitBlock(copyRow), distanceMatrix.size()));
         }
 
-        return new CircularSplitSystem(splits, circularOrdering);
+        return new CompatibleSplitSystem(splits, distanceMatrix, circularOrdering);
     }
 
     /**

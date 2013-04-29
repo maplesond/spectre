@@ -17,12 +17,8 @@
  */
 package uk.ac.uea.cmp.phygen.core.ds.split;
 
-import uk.ac.uea.cmp.phygen.core.alg.CircularNNLS;
-import uk.ac.uea.cmp.phygen.core.ds.Distances;
+import uk.ac.uea.cmp.phygen.core.ds.DistanceMatrix;
 import uk.ac.uea.cmp.phygen.core.ds.SummedDistanceList;
-import uk.ac.uea.cmp.phygen.core.ds.TreeWeights;
-import uk.ac.uea.cmp.phygen.core.ds.split.Split;
-import uk.ac.uea.cmp.phygen.core.ds.split.SplitBlock;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +26,7 @@ import java.util.List;
 public class SplitSystem {
 
     private List<Split> splits;
-    private int nbTaxa;
+    private String[] taxa;
 
     public SplitSystem(int nbTaxa) {
         this(nbTaxa, new ArrayList<Split>());
@@ -38,25 +34,64 @@ public class SplitSystem {
 
     public SplitSystem(int nbTaxa, List<Split> splits) {
 
-        this.nbTaxa = nbTaxa;
+        this(createGenericTaxa(nbTaxa), splits);
+    }
+
+    public SplitSystem(String[] taxa, List<Split> splits) {
+
+        this.taxa = taxa;
         this.splits = splits;
+    }
+
+    protected static String[] createGenericTaxa(int nbTaxa) {
+
+        String[] taxa = new String[nbTaxa];
+
+        // Assumes we don't have more than 26 taxa, otherwise this is going to get weird.
+        for(int i = 0; i < nbTaxa; i++) {
+            taxa[i] = Character.toString ((char) (i+65));
+        }
+
+        return taxa;
     }
 
     public List<Split> getSplits() {
         return splits;
     }
 
-
-    public int getNbTaxa() {
-        return this.nbTaxa;
+    protected void setSplits(List<Split> splits) {
+        this.splits = splits;
     }
 
+    public String[] getTaxa() {
+        return this.taxa;
+    }
+
+    protected void setTaxa(String[] taxa) {
+        this.taxa = taxa;
+    }
+
+    public int getNbTaxa() {
+        return this.taxa.length;
+    }
+
+    public String getTaxaAt(int i) {
+        return this.taxa[i];
+    }
+
+    /**
+     * This returns the index of the taxa in a 1-based system
+     * @param i
+     * @return
+     */
     public int getTaxaIndexAt(int i) {
         return i + 1;
     }
 
 
     public int[] invertOrdering() {
+
+        int nbTaxa = this.getNbTaxa();
         int[] permutationInvert = new int[nbTaxa];
 
         for (int i = 0; i < nbTaxa; i++) {
@@ -68,19 +103,19 @@ public class SplitSystem {
 
 
     /**
-     * Calculate the summed distances between elements on the A side and B side for every split
+     * Calculate the summed distanceMatrix between elements on the A side and B side for every split
      * @return Array of P
      */
-    public SummedDistanceList calculateP(Distances distances) {
+    public SummedDistanceList calculateP(DistanceMatrix distanceMatrix) {
 
-        if (this.nbTaxa != distances.size())
-            throw new IllegalArgumentException("The number of taxa in Distances is not that same as in this splis system");
+        if (this.getNbTaxa() != distanceMatrix.size())
+            throw new IllegalArgumentException("The number of taxa in DistanceMatrix is not that same as in this splis system");
 
         double P[] = new double[this.splits.size()];
 
         // For each split, determine how many elements are on each side of the split
         for (int i = 0; i < this.splits.size(); i++) {
-            P[i] = this.splits.get(i).calculateP(distances);
+            P[i] = this.splits.get(i).calculateP(distanceMatrix);
         }
 
         return new SummedDistanceList(P);
@@ -125,6 +160,17 @@ public class SplitSystem {
         split1.merge(split2);
 
         this.splits.remove(index2);
+    }
+
+    public List<Split> copySplits() {
+
+        List<Split> ss = new ArrayList<>();
+
+        for(Split s : this.splits) {
+            ss.add(s.copy());
+        }
+
+        return ss;
     }
 
     /*public void addTrivialSplits() {

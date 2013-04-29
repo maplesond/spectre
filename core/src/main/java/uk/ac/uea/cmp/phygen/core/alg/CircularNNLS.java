@@ -784,14 +784,14 @@ public class CircularNNLS
     //ntax...number of taxa, taxa are numbered 0,1,2,...,(ntax-1)
     //x   ...2-dimensional array that contains the split weights
     //       computed by the NNLS-fitting algorithm.
-    public void circular_least_squares(double[][] dist,int ntax,double[][] x)
+    public void circularLeastSquares(double[][] dist, int ntax, double[][] x)
     {
         double[][] W = new double[ntax][ntax];
         fillW(ntax,W,dist,1);
         runActiveConjugate(ntax,dist,W,x);
     }
 
-    public void tree_in_cycle_least_squares(double[][] dist, boolean[][] flag,int ntax,double[][] x)
+    public void treeInCycleLeastSquares(double[][] dist, boolean[][] flag, int ntax, double[][] x)
     {
         double[][] W = new double[ntax][ntax];
         fillW(ntax,W,dist,1);

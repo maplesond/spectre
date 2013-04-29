@@ -65,6 +65,8 @@
 
     <dependencies>
 
+        <!-- PhyGen -->
+
         <dependency>
             <groupId>uk.ac.uea.cmp.phygen</groupId>
             <artifactId>core</artifactId>
@@ -89,6 +91,10 @@
             <artifactId>commons-lang3</artifactId>
             <version>3.0</version>
         </dependency>
+
+
+        <!-- Logging -->
+
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>

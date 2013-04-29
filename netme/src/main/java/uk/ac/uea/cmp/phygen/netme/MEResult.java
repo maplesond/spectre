@@ -1,6 +1,8 @@
 package uk.ac.uea.cmp.phygen.netme;
 
-import uk.ac.uea.cmp.phygen.core.ds.split.SplitSystem;
+import uk.ac.uea.cmp.phygen.core.ds.split.CompatibleSplitSystem;
+import uk.ac.uea.cmp.phygen.core.ds.split.TreeWeights;
+import uk.ac.uea.cmp.phygen.core.ds.split.CircularSplitSystem;
 
 /**
  * Created with IntelliJ IDEA.
@@ -11,6 +13,19 @@ import uk.ac.uea.cmp.phygen.core.ds.split.SplitSystem;
  */
 public class MEResult {
 
-    private double treeLength;
-    private SplitSystem meTree;
+    private CompatibleSplitSystem originalMETree;
+    private CompatibleSplitSystem meTree;
+
+    public MEResult(CompatibleSplitSystem originalMETree, CompatibleSplitSystem meTree) {
+        this.originalMETree = originalMETree;
+        this.meTree = meTree;
+    }
+
+    public CompatibleSplitSystem getMeTree() {
+        return meTree;
+    }
+
+    public CompatibleSplitSystem getOriginalMETree() {
+        return originalMETree;
+    }
 }

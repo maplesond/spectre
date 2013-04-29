@@ -6,7 +6,7 @@ package uk.ac.uea.cmp.phygen.core.io.nexus;
  */
 
 import org.apache.commons.io.FileUtils;
-import uk.ac.uea.cmp.phygen.core.ds.Distances;
+import uk.ac.uea.cmp.phygen.core.ds.DistanceMatrix;
 import uk.ac.uea.cmp.phygen.core.io.PhygenReader;
 
 import java.io.File;
@@ -31,7 +31,7 @@ public class NexusReader implements PhygenReader {
      * @throws ParseException Thrown if there were any syntax issues when
      * parsing the file.
      */
-    public Distances read(File file) throws IOException {
+    public DistanceMatrix read(File file) throws IOException {
 
         if (file == null) {
             throw new NullPointerException("Must specify a nexus file to read");
@@ -47,7 +47,7 @@ public class NexusReader implements PhygenReader {
 
         List<String> inLines = FileUtils.readLines(file);
 
-        Distances distances = null;
+        DistanceMatrix distanceMatrix = null;
         boolean isTriangle = false; //true if triangular formatted dist matrix
         String taxaNumberString = "";
         int taxaIndex = 1;
@@ -69,7 +69,7 @@ public class NexusReader implements PhygenReader {
             p++;
         }
 
-        //If no taxa bloc, read distances & tax labels from distance bloc
+        //If no taxa bloc, read distanceMatrix & tax labels from distance bloc
         if (distanceBloc == true) {
 
             int s = 0;
@@ -81,7 +81,7 @@ public class NexusReader implements PhygenReader {
                     int endIdx = aLine.indexOf(";");
                     String dimString = aLine.substring(beginIdx, endIdx).trim();
                     int n = Integer.parseInt(dimString);
-                    distances = new Distances(n);
+                    distanceMatrix = new DistanceMatrix(n);
                 }
 
                 if (aLine.trim().toUpperCase().startsWith("MATRIX")) {
@@ -112,13 +112,13 @@ public class NexusReader implements PhygenReader {
                         identifier = identifier.substring(0, endIdx - 2);
                     }
 
-                    distances.setTaxa(s, identifier);
-                    for (int i = distances.size() - 1; i >= 0; i--) {
+                    distanceMatrix.setTaxa(s, identifier);
+                    for (int i = distanceMatrix.size() - 1; i >= 0; i--) {
                         int lastIdx = aLine.length();
                         int firstIdx = aLine.lastIndexOf(" ");
                         String distance = aLine.substring(firstIdx + 1, lastIdx - 1);
                         try {
-                            distances.setDistance(s, i, Double.parseDouble(distance));
+                            distanceMatrix.setDistance(s, i, Double.parseDouble(distance));
                             aLine = aLine.substring(0, firstIdx).trim();
                         } catch (Exception e) {
                             i = -1;
@@ -147,7 +147,7 @@ public class NexusReader implements PhygenReader {
 
                     int n = Integer.parseInt(dimString);
                     System.out.println(n);
-                    distances = new Distances(n);
+                    distanceMatrix = new DistanceMatrix(n);
 
                 }
                 p++;
@@ -170,7 +170,7 @@ public class NexusReader implements PhygenReader {
                         System.out.println(help);
                         help = help.replace(' ', '_');
 
-                        distances.setTaxa(taxaIndex - 1, help);
+                        distanceMatrix.setTaxa(taxaIndex - 1, help);
                         taxaIndex++;
                     } catch (StringIndexOutOfBoundsException e) {
                         throw new IOException("Error at offset " + offset + " in " + file.getPath());
@@ -189,8 +189,8 @@ public class NexusReader implements PhygenReader {
                 if (distanceBloc == true && matrix == true) {
                     System.out.println("IF2");
                     if (aLine.isEmpty() == false || aLine.equals(";") == false) {
-                        System.out.println("DistIF" + distances.size());
-                        for (int i = distances.size() - 1; i >= 0; i--) {
+                        System.out.println("DistIF" + distanceMatrix.size());
+                        for (int i = distanceMatrix.size() - 1; i >= 0; i--) {
                             int lastIdx = aLine.length();
                             int firstIdx = aLine.lastIndexOf(" ");
                             String distance = aLine.substring(firstIdx + 1, lastIdx - 1);
@@ -201,14 +201,14 @@ public class NexusReader implements PhygenReader {
                             System.out.println("Dist: " + distance);
                             System.out.println("S & i " + s + " " + i);
                             try {
-                                distances.setDistance(s, i, Double.parseDouble(distance));
+                                distanceMatrix.setDistance(s, i, Double.parseDouble(distance));
                             } catch (Exception e) {
                                 i = -1;
                                 isTriangle = true;
                             } /*
                              * assuming triangular matrix
                              */
-//                      System.out.println("Dist: "+ distances[s][i]);
+//                      System.out.println("Dist: "+ distanceMatrix[s][i]);
                             aLine = aLine.substring(0, firstIdx).trim();
 
                         }
@@ -232,25 +232,25 @@ public class NexusReader implements PhygenReader {
          * filling the missing entries in a triangular matrix
          */
 //        if (isTriangle) {
-//            for (int i = 0; i < distances.length; i++) {
+//            for (int i = 0; i < distanceMatrix.length; i++) {
 //                for (int j = 0; j < (i + 1); j++) {
-//                    Double distValue = distances[i][distances.length
+//                    Double distValue = distanceMatrix[i][distanceMatrix.length
 //                                                    - (i + 1) + j];
 //
-//                    distances[i][j] = distValue;
+//                    distanceMatrix[i][j] = distValue;
 //                }
 //            }
 //
-//            for (int i = 0; i < distances.length; i++) {
-//                for (int j = i + 1; j < distances.length; j++) {
-//                    Double distValue = distances[j][i];
+//            for (int i = 0; i < distanceMatrix.length; i++) {
+//                for (int j = i + 1; j < distanceMatrix.length; j++) {
+//                    Double distValue = distanceMatrix[j][i];
 //
-//                    distances[i][j] = distValue;
+//                    distanceMatrix[i][j] = distValue;
 //                }
 //            }
 //        }
 
-        return distances;
+        return distanceMatrix;
     }
 
     public int[] extractCircOrdering(File file) throws IOException, ParseException {

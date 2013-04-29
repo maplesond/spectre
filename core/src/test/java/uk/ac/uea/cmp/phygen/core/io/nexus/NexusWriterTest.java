@@ -4,7 +4,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import uk.ac.uea.cmp.phygen.core.ds.Distances;
+import uk.ac.uea.cmp.phygen.core.ds.DistanceMatrix;
 import uk.ac.uea.cmp.phygen.core.ds.split.CircularSplitSystem;
 import uk.ac.uea.cmp.phygen.core.ds.split.SplitSystem;
 
@@ -34,11 +34,11 @@ public class NexusWriterTest {
 
         File outputFile = new File(outputDir, "network.nex");
 
-        SplitSystem ss = new CircularSplitSystem(new int[]{1,2,3,4,5});
+        DistanceMatrix distanceMatrix = new DistanceMatrix(5);
 
-        Distances distances = new Distances(5);
+        SplitSystem ss = new CircularSplitSystem(distanceMatrix, new int[]{0,1,2,3,4});
 
-        new NexusWriter().writeNetwork(outputFile, ss, distances);
+        new NexusWriter().writeSplitSystem(outputFile, ss);
 
         // Check output file was created
         assertTrue(outputFile.exists());
@@ -46,7 +46,7 @@ public class NexusWriterTest {
         List<String> lines = FileUtils.readLines(outputFile);
 
         // Check we have the number of lines we were expecting
-        assertTrue(lines.size() == 32);
+        assertTrue(lines.size() == 22);
     }
 
     @Test
@@ -56,11 +56,12 @@ public class NexusWriterTest {
 
         File outputFile = new File(outputDir, "tree.nex");
 
-        SplitSystem ss = new CircularSplitSystem(new int[]{1,2,3,4,5});
+        DistanceMatrix distanceMatrix = new DistanceMatrix(5);
 
-        Distances distances = new Distances(5);
+        SplitSystem ss = new CircularSplitSystem(distanceMatrix, new int[]{0,1,2,3,4});
 
-        /*new NexusWriter().writeTree(outputFile, ss, ss.calculateTreeWeighting(distances));
+
+        /*new NexusWriter().writeTree(outputFile, ss, ss.calculateTreeWeighting(distanceMatrix));
 
         // Check output file was created
         assertTrue(outputFile.exists());

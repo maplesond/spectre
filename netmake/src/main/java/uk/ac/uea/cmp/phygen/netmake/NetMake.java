@@ -2,9 +2,8 @@ package uk.ac.uea.cmp.phygen.netmake;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import uk.ac.uea.cmp.phygen.core.ds.Distances;
+import uk.ac.uea.cmp.phygen.core.ds.DistanceMatrix;
 import uk.ac.uea.cmp.phygen.core.ds.split.CircularSplitSystem;
-import uk.ac.uea.cmp.phygen.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.phygen.core.ds.Tableau;
 import uk.ac.uea.cmp.phygen.core.io.PhygenWriter;
 import uk.ac.uea.cmp.phygen.core.io.PhygenWriterFactory;
@@ -15,7 +14,6 @@ import uk.ac.uea.cmp.phygen.netmake.weighting.Weighting;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * Performs the NeighborNet algorithm to retrieve a split system and a circular
@@ -28,7 +26,7 @@ import java.util.Arrays;
 public class NetMake {
 
     // Input class variables
-    private final Distances distances;
+    private final DistanceMatrix distanceMatrix;
     private Weighting weighting1;
     private Weighting weighting2;
     private final RunMode mode;
@@ -38,27 +36,27 @@ public class NetMake {
     private Tableau<Integer> components;
 
     // Output class variables
-    private SplitSystem tree;
-    private SplitSystem network;
+    private CircularSplitSystem tree;
+    private CircularSplitSystem network;
 
     /**
      * Creates a new NetMake object with a distance matrix and a single weighting.
-     * @param distances Distance matrix, which defines distances between taxa
+     * @param distanceMatrix Distance matrix, which defines distanceMatrix between taxa
      * @param weighting Weighting system to be applied
      */
-    public NetMake(final Distances distances, Weighting weighting) {
-        this(distances, weighting, null);
+    public NetMake(final DistanceMatrix distanceMatrix, Weighting weighting) {
+        this(distanceMatrix, weighting, null);
     }
 
     /**
      * Creates a new NetMake object with a distance matrix and two weightings, for use
      * in a "hybrid" mode.
-     * @param  distances Distance matrix, which defines distances between taxa
+     * @param  distanceMatrix Distance matrix, which defines distanceMatrix between taxa
      * @param weighting1 First weighting system to be applied
      * @param weighting2 Second weighting system to be applied
      */
-    public NetMake(final Distances distances, Weighting weighting1, Weighting weighting2) {
-        if (distances == null) {
+    public NetMake(final DistanceMatrix distanceMatrix, Weighting weighting1, Weighting weighting2) {
+        if (distanceMatrix == null) {
             throw new NullPointerException("Must specify a Distance matrix to work with.");
         }
 
@@ -68,11 +66,11 @@ public class NetMake {
             throw new IllegalArgumentException("Unknown run mode configuration.  Please ensure the weighting configuration is valid.");
 
         // Set input variables
-        this.distances = distances;
+        this.distanceMatrix = distanceMatrix;
         this.weighting1 = weighting1;
         this.weighting2 = weighting2;
 
-        this.NB_TAXA = this.distances.size();
+        this.NB_TAXA = this.distanceMatrix.size();
 
         // Initialise state and output variables.
         reset();
@@ -80,15 +78,15 @@ public class NetMake {
 
     public void save(File outputDir, String prefix) throws IOException {
 
-
         PhygenWriter phygenWriter = PhygenWriterFactory.NEXUS.create();
         String extension = PhygenWriterFactory.NEXUS.getPrimaryExtension();
 
         File networkOutputFile = new File(outputDir, prefix + ".network." + extension);
         File treeOutputFile = new File(outputDir, prefix + ".tree." + extension);
 
-        phygenWriter.writeNetwork(networkOutputFile, this.getNetwork(), this.distances);
-        phygenWriter.writeTree(treeOutputFile, this.getTree(), this.distances, this.getTree().calculateTreeWeighting(this.distances));
+        phygenWriter.writeSplitSystem(networkOutputFile, this.getNetwork());
+        phygenWriter.writeSplitSystem(treeOutputFile, this.getTree());
+        //phygenWriter.writeTree(treeOutputFile, this.getTree(), this.distanceMatrix, this.getTree().calculateTreeWeighting(this.distanceMatrix));
     }
 
     private enum RunMode {
@@ -132,7 +130,7 @@ public class NetMake {
      * Retrieves the network constructed by NeighborNet
      * @return The network.
      */
-    public SplitSystem getNetwork() {
+    public CircularSplitSystem getNetwork() {
         return network;
     }
 
@@ -140,7 +138,7 @@ public class NetMake {
      * Retrieves the tree constructed by NeighborNet
      * @return The tree.
      */
-    public SplitSystem getTree() {
+    public CircularSplitSystem getTree() {
         return tree;
     }
 
@@ -202,14 +200,14 @@ public class NetMake {
         Tableau<Integer> treeSplits = new Tableau<Integer>();
         addTrivialSplits(treeSplits);
 
-        // Distances between components (make deep copy from initial distance matrix)
-        Distances c2c = new Distances(this.distances);
+        // DistanceMatrix between components (make deep copy from initial distance matrix)
+        DistanceMatrix c2c = new DistanceMatrix(this.distanceMatrix);
 
-        //Distances between components and vertices (make deep copy from initial distance matrix)
-        Distances c2v = new Distances(this.distances);
+        //DistanceMatrix between components and vertices (make deep copy from initial distance matrix)
+        DistanceMatrix c2v = new DistanceMatrix(this.distanceMatrix);
 
         // If required create a new GreedyME instance.
-        GreedyMEWeighting gme = this.mode == RunMode.HYBRID_GREEDYME ? new GreedyMEWeighting(this.distances) : null;
+        GreedyMEWeighting gme = this.mode == RunMode.HYBRID_GREEDYME ? new GreedyMEWeighting(this.distanceMatrix) : null;
 
         // Loop until components has only one entry left.
         while (components.rows() > 1) {
@@ -242,11 +240,11 @@ public class NetMake {
             //add new component/split to Split list
             treeSplits.addRow((ArrayList<Integer>) components.getRow(sc1).clone());
 
-            // Update component to component distances (assuming not in GreedyME mode)
+            // Update component to component distanceMatrix (assuming not in GreedyME mode)
             if (this.mode != RunMode.HYBRID_GREEDYME)
                 updateC2C(c2c, weighting1);
 
-            // Update component to vertex distances (also updates weighting1 params)
+            // Update component to vertex distanceMatrix (also updates weighting1 params)
             updateC2V(c2v, this.mode.isHybrid() ? weighting2 : weighting1, selectedComponents);
         }
 
@@ -260,13 +258,13 @@ public class NetMake {
         organiseSplits(treeSplits, permutation);
 
         // Set tree split system
-        this.tree = treeSplits.convertToSplitSystem(this.distances.getTaxaSet(), permutation);
-        this.network = new CircularSplitSystem(permutation);
+        this.tree = treeSplits.convertToSplitSystem(this.distanceMatrix, permutation);
+        this.network = new CircularSplitSystem(this.distanceMatrix, permutation);
 
         return treeSplits;
     }
 
-    protected Pair<Integer, Integer> selectionStep1(Distances c2c) {
+    protected Pair<Integer, Integer> selectionStep1(DistanceMatrix c2c) {
         double min1 = Double.POSITIVE_INFINITY;
         double[] sum_1 = new double[this.NB_TAXA];
         double[] sum_2 = new double[this.NB_TAXA];
@@ -303,7 +301,7 @@ public class NetMake {
         return new ImmutablePair<Integer, Integer>(sc1, sc2);
     }
 
-    protected Pair<Integer, Integer> selectionStep2(Distances c2v, Pair<Integer, Integer> selectedComponents) {
+    protected Pair<Integer, Integer> selectionStep2(DistanceMatrix c2v, Pair<Integer, Integer> selectedComponents) {
         double min2 = Double.POSITIVE_INFINITY;
         int selectedVertex1 = -1;
         int selectedVertex2 = -1;
@@ -342,7 +340,7 @@ public class NetMake {
 
                 for (int k = 0; k < components.rowSize(sc2);
                      k++) {
-                    sum3 += distances.getDistance(
+                    sum3 += distanceMatrix.getDistance(
                             components.get(sc1, i),
                             components.get(sc2, k));
 
@@ -361,8 +359,8 @@ public class NetMake {
                     }
                 }
 
-                sum3 += distances.getDistance(components.get(sc2, j), vertex_last1);
-                sum4 += distances.getDistance(components.get(sc1, i), vertex_last2);
+                sum3 += distanceMatrix.getDistance(components.get(sc2, j), vertex_last1);
+                sum4 += distanceMatrix.getDistance(components.get(sc1, i), vertex_last2);
 
                 int outerVertices1 = 0;
                 if (components.rowSize(sc1) == 1) {
@@ -379,7 +377,7 @@ public class NetMake {
                 }
 
                 double qDist = (components.rows() - 4 + outerVertices1
-                        + outerVertices2) * distances.getDistance(components.get(sc1, i),
+                        + outerVertices2) * distanceMatrix.getDistance(components.get(sc1, i),
                         components.get(sc2, j))
                         - sum1 - sum2 - sum3 - sum4;
 
@@ -398,7 +396,7 @@ public class NetMake {
         return new ImmutablePair<Integer, Integer>(selectedVertex1, selectedVertex2);
     }
 
-    protected void updateC2C(Distances c2c, Weighting w) {
+    protected void updateC2C(DistanceMatrix c2c, Weighting w) {
         for (int i = 0; i < components.rows(); i++) {
             for (int j = 0; j < components.rows(); j++) {
                 if (i == j) {
@@ -412,7 +410,7 @@ public class NetMake {
                             int vertex2 = components.get(j, m);
                             double vertexDistance = w.getWeightingParam(vertex1)
                                     * w.getWeightingParam(vertex2)
-                                    * distances.getDistance(vertex1, vertex2);
+                                    * distanceMatrix.getDistance(vertex1, vertex2);
 
                             aComponentDistance += vertexDistance;
                         }
@@ -423,13 +421,13 @@ public class NetMake {
         }
     }
 
-    protected void updateC2V(Distances c2v, Weighting w, Pair<Integer, Integer> selectedComponents) {
+    protected void updateC2V(DistanceMatrix c2v, Weighting w, Pair<Integer, Integer> selectedComponents) {
 
         int position = -1;
         int sc1 = selectedComponents.getKey();
         int componentSplitPosition = components.rowSize(sc1);
 
-        for (int i = 0; i < distances.size(); i++) {
+        for (int i = 0; i < distanceMatrix.size(); i++) {
             for (int j = 0; j < components.rowSize(sc1);
                  j++) {
                 if (i == components.get(sc1, j)) {
@@ -456,7 +454,7 @@ public class NetMake {
                         int vertex1 = i;
                         int vertex2 = components.get(j, k);
                         double vertexDistance = w.getWeightingParam(vertex2)
-                                * distances.getDistance(vertex1, vertex2);
+                                * distanceMatrix.getDistance(vertex1, vertex2);
 
                         aComponentVertexDistance += vertexDistance;
                         k++;
@@ -494,7 +492,7 @@ public class NetMake {
     }
 
     protected int[] createCircularOrdering() {
-        int[] permutation = new int[distances.size()];
+        int[] permutation = new int[distanceMatrix.size()];
         for (int i = 0; i < components.rowSize(0); i++) {
             permutation[i] = components.get(0, i);
         }

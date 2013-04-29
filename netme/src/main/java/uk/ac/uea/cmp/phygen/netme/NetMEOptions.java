@@ -69,7 +69,7 @@ public class NetMEOptions {
                 distancesFileType = cmdLine.hasOption(OPT_DISTANCES_FILE_TYPE) ? cmdLine.getOptionValue(OPT_DISTANCES_FILE_TYPE) : null;
                 outputDir = cmdLine.hasOption(OPT_OUTPUT_DIR) ? new File(cmdLine.getOptionValue(OPT_OUTPUT_DIR)) : new File(".");
 
-                DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd-HH:mm:ss");
+                DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd-HHmmss");
                 Date date = new Date();
                 String timeStamp = dateFormat.format(date);
 

@@ -1,8 +1,7 @@
 package uk.ac.uea.cmp.phygen.core.ds.split;
 
 import uk.ac.uea.cmp.phygen.core.alg.CircularNNLS;
-import uk.ac.uea.cmp.phygen.core.ds.Distances;
-import uk.ac.uea.cmp.phygen.core.ds.TreeWeights;
+import uk.ac.uea.cmp.phygen.core.ds.DistanceMatrix;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,23 +22,33 @@ public class CircularSplitSystem extends SplitSystem {
         this.circularOrdering = circularOrdering;
     }
 
-    public CircularSplitSystem(int[] circularOrdering) {
+    public CircularSplitSystem(DistanceMatrix distanceMatrix, int[] circularOrdering) {
 
-        super(circularOrdering.length);
+        super(distanceMatrix.getTaxaSet(), new ArrayList<Split>());
 
-        this.circularOrdering = circularOrdering;
+        if (circularOrdering.length != distanceMatrix.size()) {
+            throw new IllegalArgumentException("Distance matrix and circular ordering are not the same size");
+        }
 
-        for(int i = 0; i < circularOrdering.length - 1; i++) {
-            for(int j = i; j < circularOrdering.length - 1; j++) {
+        double[][] splitWeights = this.calculateSplitWeighting(distanceMatrix, circularOrdering);
 
-                ArrayList<Integer> s = new ArrayList<>();
-                for(int k = i; k <= j; k++) {
-                    s.add(circularOrdering[k]);
+        int n = circularOrdering.length;
+
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                if (splitWeights[j][i] != 0.0) {
+
+                    ArrayList<Integer> sb = new ArrayList<>();
+                    for(int k = i + 1; k < j + 1; k++) {
+                        sb.add(circularOrdering[k]);
+                    }
+
+                    this.addSplit(new Split(new SplitBlock(sb), circularOrdering.length, splitWeights[j][i]));
                 }
-
-                this.addSplit(new Split(new SplitBlock(s), circularOrdering.length));
             }
         }
+
+        this.circularOrdering = circularOrdering;
     }
 
     public void setCircularOrdering(int[] circularOrdering) {
@@ -77,16 +86,16 @@ public class CircularSplitSystem extends SplitSystem {
      * which splits will be returned.
      * @return Split weights matrix
      */
-    public double[][] calculateSplitWeighting(Distances distances)
+    protected double[][] calculateSplitWeighting(DistanceMatrix distanceMatrix, int[] circularOrdering)
     {
-        int n = distances.size();
+        int n = distanceMatrix.size();
         double[][] permutedDistances = new double[n][n];
         double[][] splitWeights = new double[n][n];
         CircularNNLS cnnls = new CircularNNLS();
 
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                permutedDistances[i][j] = distances.getDistance(this.circularOrdering[i], this.circularOrdering[j]);
+                permutedDistances[i][j] = distanceMatrix.getDistance(circularOrdering[i], circularOrdering[j]);
             }
         }
 
@@ -96,68 +105,10 @@ public class CircularSplitSystem extends SplitSystem {
             }
         }
 
-        cnnls.circular_least_squares(permutedDistances, n, splitWeights);
+        cnnls.circularLeastSquares(permutedDistances, n, splitWeights);
 
         return splitWeights;
     }
 
-    /**
-     * Returns weightings for the edges of a specified tree.
-     *
-     * @return tree edge weightings
-     */
-    public TreeWeights calculateTreeWeighting(Distances distances) {
-
-        int n = distances.size();
-        double[][] treeWeights = new double[n][n];
-        double[][] permutedDistances = new double[n][n];
-        boolean[][] flag = new boolean[n][n];
-        int[] permutationInvert = new int[n];
-
-        for(int i = 0; i < n; i++) {
-            permutationInvert[circularOrdering[i]] = i;
-        }
-
-        for (int i = 0; i < n; i++) {
-            for(int j = 0; j < n; j++) {
-                flag[i][j] = false;
-            }
-        }
-
-        for (int i = 0; i < n; i++) {
-            for(int j = 0; j < n; j++) {
-                treeWeights[i][j] = 0.;
-            }
-        }
-
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                permutedDistances[i][j] = distances.getDistance(circularOrdering[i], circularOrdering[j]);
-            }
-        }
-
-        for (int i = 0; i < this.getSplits().size(); i++) {
-
-            SplitBlock sb = this.getSplitAt(i).getASide();
-
-            int k = permutationInvert[sb.get(0)];
-            int l = permutationInvert[sb.get(sb.size() - 1)];
-
-            if (k == 0) {
-                flag[n - 1][l] = true;
-            } else {
-                if ((l < n - 1) && (k > l)) {
-                    flag[k - 1][l] = true;
-                } else {
-                    flag[l][k - 1] = true;
-                }
-            }
-        }
-
-        new CircularNNLS().tree_in_cycle_least_squares(permutedDistances, flag,
-                n, treeWeights);
-
-        return new TreeWeights(treeWeights);
-    }
 
 }

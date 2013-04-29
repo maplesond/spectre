@@ -1,6 +1,6 @@
 package uk.ac.uea.cmp.phygen.core.ds.split;
 
-import uk.ac.uea.cmp.phygen.core.ds.Distances;
+import uk.ac.uea.cmp.phygen.core.ds.DistanceMatrix;
 
 /**
  * Created with IntelliJ IDEA.
@@ -91,10 +91,10 @@ public class Split {
     }
 
     /**
-     * Summed up distances from all elements on the A side to all elements on the B side.
+     * Summed up distanceMatrix from all elements on the A side to all elements on the B side.
      * @return P
      */
-    public double calculateP(Distances distances) {
+    public double calculateP(DistanceMatrix distanceMatrix) {
 
         boolean splited[] = new boolean[this.nbTaxa];
         for (int h = 0; h < splited.length; h++) {
@@ -110,13 +110,13 @@ public class Split {
             }
         }
 
-        // Sums up all distances from the elements on the one side of the edge to the other side
+        // Sums up all distanceMatrix from the elements on the one side of the edge to the other side
         double p = 0.0;
 
         for (int j = 0; j < this.aSide.size(); j++) {
             for (int k = 0; k < this.nbTaxa; k++) {
                 if (splited[k] == false) {
-                    p += distances.getDistance(this.aSide.get(j), k);
+                    p += distanceMatrix.getDistance(this.aSide.get(j), k);
                 }
             }
         }

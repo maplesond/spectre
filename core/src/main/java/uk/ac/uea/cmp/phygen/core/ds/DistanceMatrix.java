@@ -8,7 +8,7 @@ import java.util.LinkedHashSet;
 /**
  * Immutable class representing the distances between each taxa provided
  */
-public class Distances {
+public class DistanceMatrix {
 
     private final String[] taxa;
     private final double[][] matrix;
@@ -21,18 +21,18 @@ public class Distances {
      *
      * @param size Number of taxa.
      */
-    public Distances(final int size) {
+    public DistanceMatrix(final int size) {
         this(createDefaultTaxaSet(size));
     }
 
     /**
-     * Creates a new Distances object using a taxa set.  Will validate the taxa set
+     * Creates a new DistanceMatrix object using a taxa set.  Will validate the taxa set
      * to ensure there's data to work with, and that there are no duplicated elements.
      * The distances matrix is initialised so that all elements are 0.0.
      *
      * @param taxa The taxa set.
      */
-    public Distances(final String[] taxa) {
+    public DistanceMatrix(final String[] taxa) {
         validateTaxa(taxa);
 
         this.taxa = taxa;
@@ -43,12 +43,12 @@ public class Distances {
     }
 
     /**
-     * Creates a deep copy of the provided Distances object.  Ensures this object
+     * Creates a deep copy of the provided DistanceMatrix object.  Ensures this object
      * is in a valid state.
      *
      * @param copy The copy to duplicate in this object.
      */
-    public Distances(final Distances copy) {
+    public DistanceMatrix(final DistanceMatrix copy) {
         this.taxa = copyTaxa(copy.taxa);
         this.matrix = copyDistances(copy.matrix);
         this.NB_TAXA = copy.NB_TAXA;
@@ -57,12 +57,12 @@ public class Distances {
     }
 
     /**
-     * Creates a new Distances object by making a deep copy of the provided taxa
+     * Creates a new DistanceMatrix object by making a deep copy of the provided taxa
      * set and distances matrix. Ensures this object is in a valid state.
      *
      * @param distances
      */
-    public Distances(final String[] taxa, double[][] distances) {
+    public DistanceMatrix(final String[] taxa, double[][] distances) {
         this.taxa = copyTaxa(taxa);
         this.matrix = copyDistances(distances);
         this.NB_TAXA = taxa.length;
@@ -170,8 +170,8 @@ public class Distances {
 
     @Override
     public boolean equals(Object d) {
-        if (d instanceof Distances) {
-            Distances dd = (Distances) d;
+        if (d instanceof DistanceMatrix) {
+            DistanceMatrix dd = (DistanceMatrix) d;
 
             if (!Arrays.equals(taxa, dd.taxa))
                 return false;
