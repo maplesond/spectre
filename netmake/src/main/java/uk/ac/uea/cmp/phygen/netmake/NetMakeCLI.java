@@ -6,7 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.uea.cmp.phygen.core.ds.DistanceMatrix;
+import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phygen.core.io.PhygenReader;
 import uk.ac.uea.cmp.phygen.core.io.PhygenReaderFactory;
 import uk.ac.uea.cmp.phygen.netmake.weighting.Weighting;

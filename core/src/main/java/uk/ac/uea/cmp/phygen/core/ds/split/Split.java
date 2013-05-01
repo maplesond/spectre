@@ -1,6 +1,6 @@
 package uk.ac.uea.cmp.phygen.core.ds.split;
 
-import uk.ac.uea.cmp.phygen.core.ds.DistanceMatrix;
+import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 
 /**
  * Created with IntelliJ IDEA.

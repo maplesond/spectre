@@ -1,5 +1,6 @@
 package uk.ac.uea.cmp.phygen.core.ds;
 
+import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phygen.core.ds.split.*;
 
 import java.util.ArrayList;
@@ -50,16 +51,10 @@ public class Tableau<E> {
 
     public CircularSplitSystem convertToSplitSystem(DistanceMatrix distanceMatrix) {
 
-        int[] circularOrdering = new int[distanceMatrix.size()];
-
-        for(int i = 0; i < circularOrdering.length; i++) {
-            circularOrdering[i] = i;
-        }
-
-        return convertToSplitSystem(distanceMatrix, circularOrdering);
+        return convertToSplitSystem(distanceMatrix, CircularOrdering.createTrivialOrdering(distanceMatrix.size()));
     }
 
-    public CompatibleSplitSystem convertToSplitSystem(DistanceMatrix distanceMatrix, int[] circularOrdering) {
+    public CompatibleSplitSystem convertToSplitSystem(DistanceMatrix distanceMatrix, CircularOrdering circularOrdering) {
 
         List<Split> splits = new ArrayList<>();
 

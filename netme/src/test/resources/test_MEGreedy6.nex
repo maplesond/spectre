@@ -1,0 +1,17 @@
+#nexus
+
+BEGIN Distances;
+DIMENSIONS ntax=6;
+FORMAT labels=left diagonal triangle=both;
+MATRIX
+[1] 'A'    0.0 2.0 4.0 4.0 4.0 4.0
+[2] 'B'    2.0 0.0 4.0 4.0 4.0 4.0
+[3] 'C'    4.0 4.0 0.0 2.0 4.0 4.0
+[4] 'D'    4.0 4.0 2.0 0.0 4.0 4.0
+[5] 'E'    4.0 4.0 4.0 4.0 0.0 2.0
+[6] 'F'    4.0 4.0 4.0 4.0 2.0 0.0
+;
+END; [Distances]
+
+
+ 

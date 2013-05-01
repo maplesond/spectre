@@ -2,9 +2,11 @@ package uk.ac.uea.cmp.phygen.netmake;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import uk.ac.uea.cmp.phygen.core.ds.DistanceMatrix;
+import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
+import uk.ac.uea.cmp.phygen.core.ds.split.CircularOrdering;
 import uk.ac.uea.cmp.phygen.core.ds.split.CircularSplitSystem;
 import uk.ac.uea.cmp.phygen.core.ds.Tableau;
+import uk.ac.uea.cmp.phygen.core.ds.split.CompatibleSplitSystem;
 import uk.ac.uea.cmp.phygen.core.io.PhygenWriter;
 import uk.ac.uea.cmp.phygen.core.io.PhygenWriterFactory;
 import uk.ac.uea.cmp.phygen.netmake.weighting.GreedyMEWeighting;
@@ -36,7 +38,7 @@ public class NetMake {
     private Tableau<Integer> components;
 
     // Output class variables
-    private CircularSplitSystem tree;
+    private CompatibleSplitSystem tree;
     private CircularSplitSystem network;
 
     /**
@@ -138,7 +140,7 @@ public class NetMake {
      * Retrieves the tree constructed by NeighborNet
      * @return The tree.
      */
-    public CircularSplitSystem getTree() {
+    public CompatibleSplitSystem getTree() {
         return tree;
     }
 
@@ -254,7 +256,7 @@ public class NetMake {
         treeSplits.removeRow(treeSplits.rows() - 1);
 
         // Create ordering
-        int[] permutation = createCircularOrdering();
+        CircularOrdering permutation = createCircularOrdering();
         organiseSplits(treeSplits, permutation);
 
         // Set tree split system
@@ -465,15 +467,13 @@ public class NetMake {
         }
     }
 
-    protected void organiseSplits(Tableau<Integer> splits, int[] permutation) {
-        int[] permutationInvert = new int[this.NB_TAXA];
-        for (int i = 0; i < this.NB_TAXA; i++) {
-            permutationInvert[permutation[i]] = i;
-//            System.out.println("permutation: "+permutation[i]+ " permutationInvert: "+permutationInvert[permutation[i]]);
-        }
+    protected void organiseSplits(Tableau<Integer> splits, CircularOrdering permutation) {
+
+        CircularOrdering permutationInvert = permutation.invertOrdering();
+
         for (int i = 0; i < splits.rows(); i++) {
-            int k = permutationInvert[splits.get(i, 0)];
-            int l = permutationInvert[splits.get(i, splits.rowSize(i) - 1)];
+            int k = permutationInvert.getAt(splits.get(i, 0));
+            int l = permutationInvert.getAt(splits.get(i, splits.rowSize(i) - 1));
 
             if (l < k) {
                 splits.reverseRow(i);
@@ -491,13 +491,13 @@ public class NetMake {
         return c;
     }
 
-    protected int[] createCircularOrdering() {
+    protected CircularOrdering createCircularOrdering() {
         int[] permutation = new int[distanceMatrix.size()];
         for (int i = 0; i < components.rowSize(0); i++) {
             permutation[i] = components.get(0, i);
         }
 
-        return permutation;
+        return new CircularOrdering(permutation);
     }
 
     protected void addTrivialSplits(Tableau<Integer> splits) {

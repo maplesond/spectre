@@ -1,4 +1,4 @@
-package uk.ac.uea.cmp.phygen.core.ds;
+package uk.ac.uea.cmp.phygen.core.ds.distance;
 
 import uk.ac.uea.cmp.phygen.core.math.Statistics;
 
@@ -16,10 +16,9 @@ public class DistanceMatrix {
 
 
     /**
-     * Creates a new Distance object of the specified size.  Taxa elements will contain
-     * empty strings and distances will all be 0.0.
+     * Creates a new DistanceMatrix the specified size with the default taxa values and all distances set to 0.0.
      *
-     * @param size Number of taxa.
+     * @param size The size of the distance matrix (number of taxa)
      */
     public DistanceMatrix(final int size) {
         this(createDefaultTaxaSet(size));
@@ -33,13 +32,36 @@ public class DistanceMatrix {
      * @param taxa The taxa set.
      */
     public DistanceMatrix(final String[] taxa) {
+        this(taxa, 0.0);
+    }
+
+
+    /**
+     * Creates a new DistanceMatrix object of specified size with the default taxa values and all distances set to
+     * the specified value
+     * @param size The size of the distance matrix (number of taxa)
+     * @param val The value to initialise each element to
+     */
+    public DistanceMatrix(final int size, final double val) {
+        this(createDefaultTaxaSet(size), val);
+    }
+
+    /**
+     * Creates a new DistanceMatrix object using a taxa set.  Will validate the taxa set
+     * to ensure there's data to work with, and that there are no duplicated elements.
+     * The distances matrix is initialised so that all elements are set to val.
+     *
+     * @param taxa The taxa set.
+     * @param val The value to initalise all elements of the distance matrix with.
+     */
+    public DistanceMatrix(final String[] taxa, final double val) {
         validateTaxa(taxa);
 
         this.taxa = taxa;
         this.NB_TAXA = taxa.length;
         this.matrix = new double[this.NB_TAXA][this.NB_TAXA];
 
-        reset();
+        this.fill(val);
     }
 
     /**
@@ -195,14 +217,6 @@ public class DistanceMatrix {
         return hash;
     }
 
-    protected void reset() {
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix.length; j++) {
-                matrix[i][j] = 0.0;
-            }
-        }
-    }
-
     /**
      * Retrieves the entire taxa set.
      *
@@ -255,6 +269,18 @@ public class DistanceMatrix {
     }
 
     /**
+     * Increments the distance at [row][col] by incValue.  Returns the new value at [row][col]
+     * @param row
+     * @param col
+     * @param incValue
+     * @return
+     */
+    public double incrementDistance(final int row, final int col, final double incValue) {
+        matrix[row][col] += incValue;
+        return matrix[row][col];
+    }
+
+    /**
      * Retrieves a single row of the distance matrix
      *
      * @param row The index of the row to return.
@@ -294,6 +320,22 @@ public class DistanceMatrix {
     public double sumRow(final int row) {
 
         return Statistics.sumDoubles(matrix[row]);
+    }
+
+
+    /**
+     * Fills the distance matrix with the specified value
+     * @param val The value to be set in all elements of the distance matrix
+     */
+    public void fill(double val) {
+
+        final int n = this.size();
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                this.matrix[i][j] = val;
+            }
+        }
     }
 
     /**

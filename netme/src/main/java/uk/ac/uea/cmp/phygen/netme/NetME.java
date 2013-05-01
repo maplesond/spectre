@@ -2,11 +2,11 @@ package uk.ac.uea.cmp.phygen.netme;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.uea.cmp.phygen.core.ds.DistanceMatrix;
-import uk.ac.uea.cmp.phygen.core.ds.split.CircularSplitSystem;
+import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phygen.core.ds.Tableau;
+import uk.ac.uea.cmp.phygen.core.ds.split.CircularOrdering;
 import uk.ac.uea.cmp.phygen.core.ds.split.CompatibleSplitSystem;
-import uk.ac.uea.cmp.phygen.core.ds.split.TreeWeights;
+import uk.ac.uea.cmp.phygen.core.ds.split.TreeSplitWeights;
 import uk.ac.uea.cmp.phygen.core.math.Statistics;
 
 import java.util.ArrayList;
@@ -18,23 +18,23 @@ import java.util.ArrayList;
  * See D Bryant, 1997: <I>Building Trees, Hunting for Trees and
  * Comparing Trees - Theories and Methods in Phylogenetic Analysis</I>
  */
-public class MinimumEvolution {
+public class NetME {
 
-    private final static Logger log = LoggerFactory.getLogger(MinimumEvolution.class);
+    private final static Logger log = LoggerFactory.getLogger(NetME.class);
 
 
-    public MinimumEvolution() {
+    public NetME() {
     }
 
-    public MEResult calcMinEvoTree(DistanceMatrix distanceMatrix, int[] circularOrdering) {
+    public NetMEResult calcMinEvoTree(DistanceMatrix distanceMatrix, CircularOrdering circularOrdering) {
 
         if (distanceMatrix == null)
             throw new NullPointerException("Must have a distance matrix to work with.");
 
-        if (circularOrdering == null || circularOrdering.length == 0)
+        if (circularOrdering == null || circularOrdering.size() == 0)
             throw new NullPointerException("Must have some elements in circular ordering to work with.");
 
-        if (circularOrdering.length != distanceMatrix.size())
+        if (circularOrdering.size() != distanceMatrix.size())
             throw new IllegalArgumentException("CircularOrdering and distanceMatrix have differing sizes");
 
         TreeAndWeights treeAndWeights = this.calculateME(distanceMatrix, circularOrdering);
@@ -42,7 +42,7 @@ public class MinimumEvolution {
         CompatibleSplitSystem meTree = treeAndWeights.getTree().convertToSplitSystem(distanceMatrix, circularOrdering);
         CompatibleSplitSystem originalMETree = new CompatibleSplitSystem(meTree, treeAndWeights.getTreeWeights());
 
-        return new MEResult(originalMETree, meTree);
+        return new NetMEResult(originalMETree, meTree);
     }
 
 
@@ -68,7 +68,7 @@ public class MinimumEvolution {
         return interval;
     }
 
-    protected double[][] fillTableP(DistanceMatrix dist, int[] circularOrdering, Tableau<Integer> interval) {
+    protected double[][] fillTableP(DistanceMatrix dist, CircularOrdering circularOrdering, Tableau<Integer> interval) {
 
         final int NB_TAXA = dist.size();
         final int K = NB_TAXA * (NB_TAXA - 1);
@@ -81,7 +81,7 @@ public class MinimumEvolution {
                 ArrayList<Double> distances = new ArrayList<Double>();
 
                 for (int j = 0; j < NB_TAXA; j++) {
-                    distances.add(dist.getDistance(circularOrdering[interval.get(i, 0)], circularOrdering[j]));
+                    distances.add(dist.getDistance(circularOrdering.getAt(interval.get(i, 0)), circularOrdering.getAt(j)));
                 }
 
                 tableP[0][interval.get(i, 0)] = Statistics.sumDoubles(distances);
@@ -90,8 +90,8 @@ public class MinimumEvolution {
                 ArrayList<Double> distances = new ArrayList<Double>();
 
                 for (int m = 1; m < interval.rowSize(i); m++) {
-                    distances.add(dist.getDistance(circularOrdering[interval.get(i, 0)],
-                            circularOrdering[interval.get(i, m)]));
+                    distances.add(dist.getDistance(circularOrdering.getAt(interval.get(i, 0)),
+                            circularOrdering.getAt(interval.get(i, m))));
                 }
                 tableP[interval.rowSize(i) - 1][interval.get(i, 0)] = Statistics.sumDoubles(distances);
 
@@ -108,7 +108,7 @@ public class MinimumEvolution {
         return tableP;
     }
 
-    protected Tableau<Double> fillVal(DistanceMatrix dist, int[] circularOrdering, Tableau<Integer> interval, double[][] tableP) {
+    protected Tableau<Double> fillVal(DistanceMatrix dist, CircularOrdering circularOrdering, Tableau<Integer> interval, double[][] tableP) {
 
         final int NB_TAXA = dist.size();
         final int K = NB_TAXA * (NB_TAXA - 1);
@@ -121,7 +121,7 @@ public class MinimumEvolution {
 
         //Fill the 2 element interval values with distances
         for (int i = NB_TAXA; i < 2*NB_TAXA; i++) {
-            val.appendToRow(i, dist.getDistance(circularOrdering[interval.get(i,0)],circularOrdering[interval.get(i, 1)]));
+            val.appendToRow(i, dist.getDistance(circularOrdering.getAt(interval.get(i,0)), circularOrdering.getAt(interval.get(i, 1))));
 //            System.out.print("vals for 2-elements done");
         }
         /* Fill val */
@@ -200,9 +200,9 @@ public class MinimumEvolution {
     private class TreeAndWeights {
 
         private Tableau<Integer> tree;
-        private TreeWeights treeWeights;
+        private TreeSplitWeights treeWeights;
 
-        public TreeAndWeights(Tableau<Integer> tree, TreeWeights treeWeights) {
+        public TreeAndWeights(Tableau<Integer> tree, TreeSplitWeights treeWeights) {
             this.tree = tree;
             this.treeWeights = treeWeights;
         }
@@ -211,12 +211,12 @@ public class MinimumEvolution {
             return tree;
         }
 
-        public TreeWeights getTreeWeights() {
+        public TreeSplitWeights getTreeWeights() {
             return treeWeights;
         }
     }
 
-    protected TreeAndWeights createTree(final int nbTaxa, int[] circularOrdering, Tableau<Integer> interval, double[][] tableP, Tableau<Double> val) {
+    protected TreeAndWeights createTree(final int nbTaxa, CircularOrdering circularOrdering, Tableau<Integer> interval, double[][] tableP, Tableau<Double> val) {
 
         double usedBranchlength = 0.;
         int split = -1;
@@ -245,7 +245,7 @@ public class MinimumEvolution {
         }
 
         Tableau<Integer> tree = new Tableau<Integer>();
-        TreeWeights treeWeights = new TreeWeights(nbTaxa);
+        TreeSplitWeights treeWeights = new TreeSplitWeights(nbTaxa);
 
         tree.addRow(interval.getRow(usedInterval));
         int m = interval.get(usedInterval, 0);
@@ -257,7 +257,7 @@ public class MinimumEvolution {
         for (int i = 0; i < tree.rows(); i++) {
             for (int j = 0; j < tree.rowSize(i); j++) {
                 int currentVal = tree.get(i, j);
-                tree.set(i, j, circularOrdering[currentVal]);
+                tree.set(i, j, circularOrdering.getAt(currentVal));
             }
         }
 
@@ -271,7 +271,7 @@ public class MinimumEvolution {
      * See D Bryant, 1997: <I>Building Trees, Hunting for Trees and
      * Comparing Trees - Theories and Methods in Phylogenetic Analysis</I>
      */
-    protected TreeAndWeights calculateME(DistanceMatrix dist, int[] circularOrdering) {
+    protected TreeAndWeights calculateME(DistanceMatrix dist, CircularOrdering circularOrdering) {
 
         final int NB_TAXA = dist.size();
 
@@ -292,7 +292,7 @@ public class MinimumEvolution {
      * @return
      */
     private Tableau<Integer> treeExtration(final int nbTaxa, int usedInterval, int split, Tableau<Integer> interval, double[][] tableP,
-                                           Tableau<Double> val, Tableau<Integer> tree, TreeWeights treeWeights) {
+                                           Tableau<Double> val, Tableau<Integer> tree, TreeSplitWeights treeWeights) {
 
         int length1 = split + 1;
         int firstVal = interval.get(usedInterval, 0);

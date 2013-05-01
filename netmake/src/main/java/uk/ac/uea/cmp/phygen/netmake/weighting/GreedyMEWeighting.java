@@ -4,7 +4,7 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.uea.cmp.phygen.core.ds.DistanceMatrix;
+import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phygen.core.ds.split.CircularSplitSystem;
 import uk.ac.uea.cmp.phygen.core.ds.SummedDistanceList;
 import uk.ac.uea.cmp.phygen.core.ds.Tableau;

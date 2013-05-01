@@ -10,17 +10,17 @@ import org.slf4j.LoggerFactory;
  * Time: 16:31
  * To change this template use File | Settings | File Templates.
  */
-public class Weights {
+public class SplitWeights {
 
-    private final static Logger log = LoggerFactory.getLogger(Weights.class);
+    private final static Logger log = LoggerFactory.getLogger(SplitWeights.class);
 
     private double[][] weights;
 
-    public Weights(int nbTaxa) {
+    public SplitWeights(int nbTaxa) {
         this.weights = new double[nbTaxa][nbTaxa];
     }
 
-    public Weights(double[][] weights) {
+    public SplitWeights(double[][] weights) {
 
         if (weights == null) {
             this.weights = null;
@@ -44,11 +44,15 @@ public class Weights {
         return this.weights[i][j];
     }
 
-    public void setValAt(double val, int i, int j) {
+    public void setValAt(double val, final int i, final int j) {
         this.weights[i][j] = val;
     }
 
     public int size() {
         return this.weights.length;
+    }
+
+    public boolean hasWeightAt(final int i, final int j) {
+        return this.weights[i][j] != 0.0;
     }
 }

@@ -17,7 +17,7 @@
  */
 package uk.ac.uea.cmp.phygen.core.ds.split;
 
-import uk.ac.uea.cmp.phygen.core.ds.DistanceMatrix;
+import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phygen.core.ds.SummedDistanceList;
 
 import java.util.ArrayList;
@@ -172,6 +172,10 @@ public class SplitSystem {
 
         return ss;
     }
+
+
+
+
 
     /*public void addTrivialSplits() {
         for (String taxa : names) {

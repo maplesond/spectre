@@ -6,7 +6,8 @@ package uk.ac.uea.cmp.phygen.core.io.nexus;
  */
 
 import org.apache.commons.io.FileUtils;
-import uk.ac.uea.cmp.phygen.core.ds.DistanceMatrix;
+import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
+import uk.ac.uea.cmp.phygen.core.ds.split.CircularOrdering;
 import uk.ac.uea.cmp.phygen.core.io.PhygenReader;
 
 import java.io.File;
@@ -253,7 +254,7 @@ public class NexusReader implements PhygenReader {
         return distanceMatrix;
     }
 
-    public int[] extractCircOrdering(File file) throws IOException, ParseException {
+    public CircularOrdering extractCircOrdering(File file) throws IOException {
 
         List<String> inLines = FileUtils.readLines(file);
 
@@ -295,7 +296,6 @@ public class NexusReader implements PhygenReader {
         }
 
 
-        return circOrdering;
-
+        return new CircularOrdering(circOrdering);
     }
 }

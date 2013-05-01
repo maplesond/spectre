@@ -6,7 +6,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.uea.cmp.phygen.core.ds.DistanceMatrix;
+import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
+import uk.ac.uea.cmp.phygen.core.ds.split.CircularOrdering;
 import uk.ac.uea.cmp.phygen.core.io.PhygenReader;
 import uk.ac.uea.cmp.phygen.core.io.PhygenReaderFactory;
 import uk.ac.uea.cmp.phygen.core.io.nexus.NexusReader;
@@ -67,12 +68,12 @@ public class NetMECLI {
                 DistanceMatrix distanceMatrix = phygenReader.read(netMEOptions.getDistancesFile());
 
                 // Load circular ordering from nexus file
-                int[] circularOrdering = new NexusReader().extractCircOrdering(netMEOptions.getCircularOrderingFile());
+                CircularOrdering circularOrdering = new NexusReader().extractCircOrdering(netMEOptions.getCircularOrderingFile());
 
                 log.info("NetME: Data Loaded");
                 log.info("NetME: Started");
 
-                MEResult meResult = new MinimumEvolution().calcMinEvoTree(distanceMatrix, circularOrdering);
+                NetMEResult netMeResult = new NetME().calcMinEvoTree(distanceMatrix, circularOrdering);
 
                 log.info("NetME: Finished");
 
@@ -82,8 +83,8 @@ public class NetMECLI {
                 File minEvoFile = new File(netMEOptions.getOutputDir(), netMEOptions.getPrefix() + ".min-evo.nex");
                 File origMinEvoFile = new File(netMEOptions.getOutputDir(), netMEOptions.getPrefix() + ".original-min-evo.nex");
 
-                nexusWriter.writeSplitSystem(minEvoFile, meResult.getMeTree());
-                nexusWriter.writeSplitSystem(origMinEvoFile, meResult.getOriginalMETree());
+                nexusWriter.writeSplitSystem(minEvoFile, netMeResult.getMeTree());
+                nexusWriter.writeSplitSystem(origMinEvoFile, netMeResult.getOriginalMETree());
 
                 log.info("NetME: Results saved");
             }

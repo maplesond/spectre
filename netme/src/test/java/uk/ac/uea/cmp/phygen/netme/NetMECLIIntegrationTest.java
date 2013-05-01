@@ -55,4 +55,20 @@ public class NetMECLIIntegrationTest {
 
         assertTrue(outputDir.listFiles().length == 2);
     }
+    @Test
+    public void test6taxa() throws IOException {
+
+        File outputDir = temporaryFolder.getRoot();
+
+        File distancesFile = FileUtils.toFile(NetMECLIIntegrationTest.class.getResource("/test_MEGreedy6.nex"));
+        File coFile = FileUtils.toFile(NetMECLIIntegrationTest.class.getResource("/test_MEGreedy6_Splits.nex"));
+
+        NetMECLI.main(new String[]{
+                "--distances_file", distancesFile.getAbsolutePath(),
+                "--circular_ordering_file", coFile.getAbsolutePath(),
+                "--output", outputDir.getAbsolutePath()
+        });
+
+        assertTrue(outputDir.listFiles().length == 2);
+    }
 }

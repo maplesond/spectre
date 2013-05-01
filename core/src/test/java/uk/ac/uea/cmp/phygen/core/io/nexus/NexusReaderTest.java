@@ -2,8 +2,7 @@ package uk.ac.uea.cmp.phygen.core.io.nexus;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
-import uk.ac.uea.cmp.phygen.core.ds.DistanceMatrix;
-import uk.ac.uea.cmp.phygen.core.io.phylip.PhylipReader;
+import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 
 import java.io.File;
 import java.io.IOException;

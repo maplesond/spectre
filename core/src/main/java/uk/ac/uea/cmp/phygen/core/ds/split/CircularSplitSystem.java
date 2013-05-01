@@ -1,7 +1,7 @@
 package uk.ac.uea.cmp.phygen.core.ds.split;
 
 import uk.ac.uea.cmp.phygen.core.alg.CircularNNLS;
-import uk.ac.uea.cmp.phygen.core.ds.DistanceMatrix;
+import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,35 +15,37 @@ import java.util.List;
  */
 public class CircularSplitSystem extends SplitSystem {
 
-    private int[] circularOrdering;
+    private CircularOrdering circularOrdering;
+    private SplitWeights splitWeights;
 
-    public CircularSplitSystem(List<Split> splits, int[] circularOrdering) {
-        super(circularOrdering.length, splits);
+    public CircularSplitSystem(List<Split> splits, CircularOrdering circularOrdering) {
+        super(circularOrdering.size(), splits);
         this.circularOrdering = circularOrdering;
+        this.splitWeights = null;
     }
 
-    public CircularSplitSystem(DistanceMatrix distanceMatrix, int[] circularOrdering) {
+    public CircularSplitSystem(DistanceMatrix distanceMatrix, CircularOrdering circularOrdering) {
 
         super(distanceMatrix.getTaxaSet(), new ArrayList<Split>());
 
-        if (circularOrdering.length != distanceMatrix.size()) {
+        int n = circularOrdering.size();
+
+        if (n != distanceMatrix.size()) {
             throw new IllegalArgumentException("Distance matrix and circular ordering are not the same size");
         }
 
-        double[][] splitWeights = this.calculateSplitWeighting(distanceMatrix, circularOrdering);
-
-        int n = circularOrdering.length;
+        this.splitWeights = this.calculateSplitWeighting(distanceMatrix, circularOrdering);
 
         for (int i = 0; i < n; i++) {
             for (int j = i + 1; j < n; j++) {
-                if (splitWeights[j][i] != 0.0) {
+                if (splitWeights.hasWeightAt(j, i)) {
 
                     ArrayList<Integer> sb = new ArrayList<>();
                     for(int k = i + 1; k < j + 1; k++) {
-                        sb.add(circularOrdering[k]);
+                        sb.add(circularOrdering.getAt(k));
                     }
 
-                    this.addSplit(new Split(new SplitBlock(sb), circularOrdering.length, splitWeights[j][i]));
+                    this.addSplit(new Split(new SplitBlock(sb), n, splitWeights.getAt(j, i)));
                 }
             }
         }
@@ -51,12 +53,20 @@ public class CircularSplitSystem extends SplitSystem {
         this.circularOrdering = circularOrdering;
     }
 
-    public void setCircularOrdering(int[] circularOrdering) {
+    public void setCircularOrdering(CircularOrdering circularOrdering) {
         this.circularOrdering = circularOrdering;
     }
 
-    public int[] getCircularOrdering() {
+    public CircularOrdering getCircularOrdering() {
         return circularOrdering;
+    }
+
+    protected void setSplitWeights(SplitWeights splitWeights) {
+        this.splitWeights = splitWeights;
+    }
+
+    public SplitWeights getSplitWeights() {
+        return this.splitWeights;
     }
 
     /**
@@ -67,26 +77,47 @@ public class CircularSplitSystem extends SplitSystem {
      */
     @Override
     public int getTaxaIndexAt(final int i) {
-        return this.circularOrdering[i] + 1;
+        return this.circularOrdering.getAt(i) + 1;
     }
 
-    @Override
-    public int[] invertOrdering() {
-        int[] permutationInvert = new int[this.getNbTaxa()];
 
-        for (int i = 0; i < this.getNbTaxa(); i++) {
-            permutationInvert[this.circularOrdering[i]] = i;
+
+
+    /**
+     * Generates a distance matrix based on the weights within this splitsystem.
+     * @return
+     */
+    public DistanceMatrix generateDistanceMatrix() {
+
+        final int t = this.getNbTaxa();
+
+        DistanceMatrix distanceMatrix = new DistanceMatrix(t);
+
+        for (int i = 0; i < t; i++) {
+            for (int j = i + 1; j < t; j++) {
+                for (int k = j; k < t; k++) {
+                    for(int s = i; s < j; s++){
+                        distanceMatrix.incrementDistance(i, j, this.splitWeights.getAt(k, s));
+                    }
+                }
+                for (int k = i; k < j; k++){
+                    for (int s = 0; s < i; s++) {
+                        distanceMatrix.incrementDistance(i, j, this.splitWeights.getAt(k, s));
+                    }
+                }
+            }
         }
 
-        return permutationInvert;
+        return distanceMatrix;
     }
+
 
     /**
      * Calculates the weights of this full circular split system.  The weight determines
      * which splits will be returned.
      * @return Split weights matrix
      */
-    protected double[][] calculateSplitWeighting(DistanceMatrix distanceMatrix, int[] circularOrdering)
+    protected SplitWeights calculateSplitWeighting(DistanceMatrix distanceMatrix, CircularOrdering circularOrdering)
     {
         int n = distanceMatrix.size();
         double[][] permutedDistances = new double[n][n];
@@ -95,7 +126,7 @@ public class CircularSplitSystem extends SplitSystem {
 
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                permutedDistances[i][j] = distanceMatrix.getDistance(circularOrdering[i], circularOrdering[j]);
+                permutedDistances[i][j] = distanceMatrix.getDistance(circularOrdering.getAt(i), circularOrdering.getAt(j));
             }
         }
 
@@ -107,7 +138,7 @@ public class CircularSplitSystem extends SplitSystem {
 
         cnnls.circularLeastSquares(permutedDistances, n, splitWeights);
 
-        return splitWeights;
+        return new SplitWeights(splitWeights);
     }
 
 

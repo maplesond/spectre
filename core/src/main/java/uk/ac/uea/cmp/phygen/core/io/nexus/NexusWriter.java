@@ -6,6 +6,7 @@ package uk.ac.uea.cmp.phygen.core.io.nexus;
 
 
 import org.apache.commons.io.FileUtils;
+import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phygen.core.ds.split.Split;
 import uk.ac.uea.cmp.phygen.core.ds.split.SplitBlock;
 import uk.ac.uea.cmp.phygen.core.ds.split.SplitSystem;
@@ -13,7 +14,6 @@ import uk.ac.uea.cmp.phygen.core.io.PhygenWriter;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 /**
  * Used to handle streaming data to Nexus format file from SplitSystem objects
@@ -95,6 +95,41 @@ public class NexusWriter implements PhygenWriter {
 
         outputString.append(";\nEND; [Splits]");
         FileUtils.writeStringToFile(file, outputString.toString());
+    }
+
+    @Override
+    public void writeDistanceMatrix(File file, DistanceMatrix distanceMatrix) throws IOException {
+
+        final int n = distanceMatrix.size();
+
+        StringBuilder fileContent = new StringBuilder(7 * n * n);
+
+        fileContent.append("#nexus\n\nBEGIN Distances;\nDIMENSIONS ntax=");
+        fileContent.append(n);
+        fileContent.append(";\nFORMAT labels=left diagonal triangle=both;\n"
+                + "MATRIX\n");
+
+        for (int i = 1; i <= n; i++) {
+            fileContent.append("[");
+            fileContent.append(i);
+            fileContent.append("] '");
+            fileContent.append(i);
+            fileContent.append("'                     ");
+
+            for (int j = 1; j < i; j++) {
+                double dist = distanceMatrix.getDistance(i - 1, j - 1);
+
+                fileContent.append(" ");
+                fileContent.append(dist);
+            }
+
+            fileContent.append(" 0.0");
+            fileContent.append("\n");
+        }
+
+        fileContent.append(";\nEND; [DISTANCES]\n");
+
+        FileUtils.writeStringToFile(file, fileContent.toString());
     }
 
 }

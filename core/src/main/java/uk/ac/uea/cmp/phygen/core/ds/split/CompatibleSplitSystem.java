@@ -1,7 +1,7 @@
 package uk.ac.uea.cmp.phygen.core.ds.split;
 
 import uk.ac.uea.cmp.phygen.core.alg.CircularNNLS;
-import uk.ac.uea.cmp.phygen.core.ds.DistanceMatrix;
+import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,31 +15,36 @@ import java.util.List;
  */
 public class CompatibleSplitSystem extends CircularSplitSystem {
 
-    public CompatibleSplitSystem(List<Split> splits, DistanceMatrix distanceMatrix, int[] circularOrdering) {
+    public CompatibleSplitSystem(List<Split> splits, DistanceMatrix distanceMatrix, CircularOrdering circularOrdering) {
 
         super(splits, circularOrdering);
 
-        if (circularOrdering.length != distanceMatrix.size()) {
+        if (circularOrdering.size() != distanceMatrix.size()) {
             throw new IllegalArgumentException("Distance matrix and circular ordering are not the same size");
         }
 
         this.setTaxa(distanceMatrix.getTaxaSet());
 
-        double[][] treeWeights = this.calculateSplitWeighting(distanceMatrix, circularOrdering);
+        this.setSplitWeights(this.calculateSplitWeighting(distanceMatrix, circularOrdering));
 
-        reweight(new TreeWeights(treeWeights));
+        reweight(this.getSplitWeights());
     }
 
-    public CompatibleSplitSystem(CompatibleSplitSystem unweightedSplitSystem, TreeWeights treeWeights) {
+    public CompatibleSplitSystem(CompatibleSplitSystem unweightedSplitSystem, TreeSplitWeights treeWeights) {
 
-        super(unweightedSplitSystem.copySplits(), unweightedSplitSystem.getCircularOrdering().clone());
+        super(unweightedSplitSystem.copySplits(), unweightedSplitSystem.getCircularOrdering().copy());
 
         this.setTaxa(unweightedSplitSystem.getTaxa().clone());
 
         reweight(treeWeights);
     }
 
-    protected void reweight(TreeWeights treeWeights) {
+    public TreeSplitWeights getTreeSplitWeights() {
+        return (TreeSplitWeights)this.getSplitWeights();
+    }
+
+
+    protected void reweight(SplitWeights treeWeights) {
 
         int n = this.getNbTaxa();
         this.getSplits().clear();
@@ -50,7 +55,7 @@ public class CompatibleSplitSystem extends CircularSplitSystem {
 
                     ArrayList<Integer> sb = new ArrayList<>();
                     for(int k = i + 1; k < j + 1; k++) {
-                        sb.add(this.getCircularOrdering()[k]);
+                        sb.add(this.getCircularOrdering().getAt(k));
                     }
 
                     this.addSplit(new Split(new SplitBlock(sb), n, treeWeights.getAt(j,i)));
@@ -65,7 +70,7 @@ public class CompatibleSplitSystem extends CircularSplitSystem {
      * @return tree edge weightings
      */
     @Override
-    protected double[][] calculateSplitWeighting(DistanceMatrix distanceMatrix, int[] circularOrdering) {
+    public SplitWeights calculateSplitWeighting(DistanceMatrix distanceMatrix, CircularOrdering circularOrdering) {
 
         int n = distanceMatrix.size();
         double[][] treeWeights = new double[n][n];
@@ -74,7 +79,7 @@ public class CompatibleSplitSystem extends CircularSplitSystem {
         int[] permutationInvert = new int[n];
 
         for(int i = 0; i < n; i++) {
-            permutationInvert[circularOrdering[i]] = i;
+            permutationInvert[circularOrdering.getAt(i)] = i;
         }
 
         for (int i = 0; i < n; i++) {
@@ -91,7 +96,7 @@ public class CompatibleSplitSystem extends CircularSplitSystem {
 
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                permutedDistances[i][j] = distanceMatrix.getDistance(circularOrdering[i], circularOrdering[j]);
+                permutedDistances[i][j] = distanceMatrix.getDistance(circularOrdering.getAt(i), circularOrdering.getAt(j));
             }
         }
 
@@ -113,15 +118,15 @@ public class CompatibleSplitSystem extends CircularSplitSystem {
             }
         }
 
-        assert(checkFlags(flag) == 17);
+//        assert(checkFlags(flag) == 17);
 
 
         new CircularNNLS().treeInCycleLeastSquares(permutedDistances, flag,
                 n, treeWeights);
 
-        assert(checkWeights(treeWeights) == 17);
+  //      assert(checkWeights(treeWeights) == 17);
 
-        return treeWeights;
+        return new TreeSplitWeights(treeWeights);
     }
 
     private int checkFlags(boolean[][] flag) {
@@ -151,5 +156,6 @@ public class CompatibleSplitSystem extends CircularSplitSystem {
 
         return count;
     }
+
 
 }

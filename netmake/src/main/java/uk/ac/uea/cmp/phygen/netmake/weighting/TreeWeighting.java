@@ -12,6 +12,11 @@ package uk.ac.uea.cmp.phygen.netmake.weighting;
 public class TreeWeighting extends Weighting {
     private double alpha;
 
+    public TreeWeighting(int size) {
+        this(size, 0.5);
+    }
+
+
     /**
      * Creates a TreeWeighting object with a weighting list of a specified size
      * and a specified constant alpha.

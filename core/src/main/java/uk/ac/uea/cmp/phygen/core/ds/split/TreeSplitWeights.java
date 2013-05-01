@@ -10,16 +10,16 @@ import org.slf4j.LoggerFactory;
  * Time: 16:59
  * To change this template use File | Settings | File Templates.
  */
-public class TreeWeights extends Weights {
+public class TreeSplitWeights extends SplitWeights {
 
-    private final static Logger log = LoggerFactory.getLogger(TreeWeights.class);
+    private final static Logger log = LoggerFactory.getLogger(TreeSplitWeights.class);
 
 
-    public TreeWeights(int nbTaxa) {
+    public TreeSplitWeights(int nbTaxa) {
         super(nbTaxa);
     }
 
-    public TreeWeights(double[][] weights) {
+    public TreeSplitWeights(double[][] weights) {
         super(weights);
     }
 
