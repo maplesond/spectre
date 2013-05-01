@@ -1,3 +1,18 @@
+/*
+ * Phylogenetics Tool suite
+ * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ *
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
 package uk.ac.uea.cmp.phygen.core.alg;
 
 import java.util.Comparator;
@@ -30,21 +45,11 @@ I haven't found how this may be done.
  * Given a circular ordering and a distance matrix,
  * computes the unconstrained or constrained least square weighted splits
  */
-public class CircularNNLS
-{
+public class CircularNNLS {
     /* Epsilon constant for the conjugate gradient algorithm */
     static final double logPiPlus2 = Math.log(Math.PI) + 2.0;
     static final double CG_EPSILON = 0.0001;
     private boolean minimizeAIC = false;
-
-
-    public boolean getMinimizeAIC() {
-        return minimizeAIC;
-    }
-
-    public void setMinimizeAIC(boolean val) {
-        minimizeAIC = val;
-    }
 
     /**
      * Compute the branch lengths for unconstrained least squares using
@@ -97,6 +102,191 @@ public class CircularNNLS
                 }
             }
         }
+    }
+
+    /**
+     * Computes p = A^Td, where A is the topological matrix for the
+     * splits with circular ordering 0,1,2,....,ntax-1
+     *
+     * @param ntax number of taxa
+     * @param d    distance matrix
+     * @param p    the result
+     */
+    static void calculateAtx(int ntax, double[][] d, double[][] p) {
+        double p_ij = 0;
+
+        for (int i = 0; i <= ntax - 2; i++) {
+            p_ij = 0.0;
+            for (int k = 0; k <= i; k++)
+                p_ij += d[i + 1][k];
+            for (int k = i + 2; k <= ntax - 1; k++)
+                p_ij += d[k][i + 1];
+            p[i + 1][i] = p_ij;
+        }
+        for (int i = 0; i <= ntax - 3; i++) {
+            p[i + 2][i] = p[i + 1][i] + p[i + 2][i + 1] - 2 * d[i + 2][i + 1];
+        }
+        for (int k = 3; k <= ntax - 1; k++) {
+            for (int i = 0; i <= ntax - k - 1; i++) {
+                int j = i + k;
+                p[j][i] = p[j - 1][i] + p[j][i + 1] - p[j - 1][i + 1] - 2.0 * d[j][i + 1];
+            }
+        }
+    }
+
+    /**
+     * Computes d = Ab, where A is the topological matrix for the
+     * splits with circular ordering 0,1,2,....,ntax-1
+     *
+     * @param ntax number of taxa
+     * @param b    split weights
+     * @param d    pairwise distances from split weights
+     */
+    static void calculateAb(int ntax, double[][] b, double[][] d) {
+
+        double d_ij;
+
+        for (int i = 0; i <= ntax - 2; i++) {
+            d_ij = 0.0;
+            for (int k = 0; k <= i - 1; k++)
+                d_ij += b[i][k];
+            for (int k = i + 1; k <= ntax - 1; k++)
+                d_ij += b[k][i];
+            d[i + 1][i] = d_ij;
+        }
+        for (int i = 0; i <= ntax - 3; i++) {
+            d[i + 2][i] = d[i + 1][i] + d[i + 2][i + 1] - 2 * b[i + 1][i];
+        }
+        for (int k = 3; k <= ntax - 1; k++) {
+            for (int i = 0; i <= ntax - k - 1; i++) {
+                int j = i + k;
+                d[j][i] = d[j - 1][i] + d[j][i + 1] - d[j - 1][i + 1] - 2.0 * b[j - 1][i];
+            }
+        }
+    }
+
+    /**
+     * Conjugate gradient algorithm solving A^tWA x = b (where b = AtWd)
+     * such that all x[i][j] for which active[i][j] = true are set to zero.
+     * We assume that x[i][j] is zero for all active i,j, and use the given
+     * values for x as our starting vector.
+     *
+     * @param ntax   the number of taxa
+     * @param r      stratch matrix
+     * @param w      stratch matrix
+     * @param p      stratch matrix
+     * @param y      stratch matrix
+     * @param W      the W matrix
+     * @param b      the b matrix
+     * @param active the active constraints
+     * @param x      the x matrix
+     */
+    static void runConjugateGrads(int ntax,
+                                  double[][] r, double[][] w, double[][] p, double[][] y,
+                                  double[][] W, double[][] b,
+                                  boolean[][] active, double[][] x) {
+        int kmax = ntax * (ntax - 1) / 2;
+        /* Maximum number of iterations of the cg algorithm (probably too many) */
+        calculateAb(ntax, x, y);
+        //for (int i = 0; i < ntax; i++)
+        //    for (int j = 0; j < i; j++)
+        //        y[i][j] = W[i][j] * y[i][j];
+        calculateAtx(ntax, y, r); /*r = AtWAx */
+        for (int i = 0; i < ntax; i++)
+            for (int j = 0; j < i; j++)
+                if (!active[i][j])
+                    r[i][j] = b[i][j] - r[i][j];
+                else
+                    r[i][j] = 0.0;
+
+        double rho = norm(ntax, r);
+        double rho_old = 0;
+
+        double e_0 = CG_EPSILON * Math.sqrt(norm(ntax, b));
+        int k = 0;
+
+        while ((rho > e_0 * e_0) && (k < kmax)) {
+
+            k = k + 1;
+
+            if (k == 1) {
+
+                for (int i = 0; i < ntax; i++)
+                    for (int j = 0; j < i; j++)
+                        p[i][j] = r[i][j];
+
+            } else {
+                double beta = rho / rho_old;
+                for (int i = 0; i < ntax; i++)
+                    for (int j = 0; j < i; j++)
+                        p[i][j] = r[i][j] + beta * p[i][j];
+
+            }
+
+            calculateAb(ntax, p, y);
+            //for (int i = 0; i < ntax; i++)
+            //    for (int j = 0; j < i; j++)
+            //        y[i][j] = W[i][j] * y[i][j];
+            calculateAtx(ntax, y, w); /*w = AtWAp */
+            zeroActive(ntax, w, active);
+
+            double alpha = 0.0;
+            for (int i = 0; i < ntax; i++)
+                for (int j = 0; j < i; j++)
+                    alpha += p[i][j] * w[i][j];
+            alpha = rho / alpha;
+
+            /* Update x and the residual, r */
+            for (int i = 0; i < ntax; i++) {
+                for (int j = 0; j < i; j++) {
+                    x[i][j] = x[i][j] + alpha * p[i][j];
+                    r[i][j] = r[i][j] - alpha * w[i][j];
+                }
+            }
+
+            rho_old = rho;
+            rho = norm(ntax, r);
+
+        }
+    }
+
+    /**
+     * Computes sum of squares of the lower triangle of the matrix x
+     *
+     * @param x the matrix
+     * @return sum of squares of the lower triangle
+     */
+    static double norm(int ntax, double[][] x) {
+        double ss = 0.0;
+
+        for (int i = 0; i < ntax; i++) {
+            for (int j = 0; j < i; j++) {
+                ss += x[i][j] * x[i][j];
+            }
+        }
+        return ss;
+    }
+
+    /**
+     * Active is a boolean array.
+     * This routine sets x[i][j] to zero for all i,j such that active[i][j] != 0
+     *
+     * @param ntax   the number of taxa
+     * @param x      the x matrix
+     * @param active the active constraints
+     */
+    static void zeroActive(int ntax, double[][] x, boolean[][] active) {
+        for (int i = 0; i < ntax; i++)
+            for (int j = 0; j < i; j++)
+                if (active[i][j]) x[i][j] = 0.0;
+    }
+
+    public boolean getMinimizeAIC() {
+        return minimizeAIC;
+    }
+
+    public void setMinimizeAIC(boolean val) {
+        minimizeAIC = val;
     }
 
     /**
@@ -192,7 +382,7 @@ public class CircularNNLS
                 //System.err.println("Inner");
 
                 if (collapse_many_negs) { /* Typically, a large number of edges are negative, so on the first
-                								pass of the algorithm we add the worst 60% to the active set */
+                                                pass of the algorithm we add the worst 60% to the active set */
                     neg_indices.clear();
                     for (int i = 0; i < ntax; i++) {
                         for (int j = 0; j < i; j++) {
@@ -249,7 +439,7 @@ public class CircularNNLS
                     break;
                 }
                 if (min_i != -1) {/* There are still negative edges. We move to the feasible point that is closest to
-                							x on the line from x to old_x */
+                                            x on the line from x to old_x */
 
                     for (int i = 0; i < ntax; i++) /* Move to the last feasible solution on the path from old_x to x */
                         for (int j = 0; j < i; j++)
@@ -347,7 +537,6 @@ public class CircularNNLS
         }
     }
 
-
     //This method is a hack used to compute non-negative least
     //squares weights for a tree inside a circular split system.
     //Actually, it can be any subset of the circular split system.
@@ -368,7 +557,7 @@ public class CircularNNLS
 
         //set all weights to 0
         for (int i = 0; i < ntax; i++) {
-            for (int j = i+1; j < ntax; j++) {
+            for (int j = i + 1; j < ntax; j++) {
                 x[j][i] = 0.0;
             }
         }
@@ -567,183 +756,25 @@ public class CircularNNLS
         }
     }
 
-
-
-    /**
-     * Computes p = A^Td, where A is the topological matrix for the
-     * splits with circular ordering 0,1,2,....,ntax-1
-     *
-     * @param ntax number of taxa
-     * @param d    distance matrix
-     * @param p    the result
-     */
-    static void calculateAtx(int ntax, double[][] d, double[][] p) {
-        double p_ij = 0;
-
-        for (int i = 0; i <= ntax - 2; i++) {
-            p_ij = 0.0;
-            for (int k = 0; k <= i; k++)
-                p_ij += d[i + 1][k];
-            for (int k = i + 2; k <= ntax - 1; k++)
-                p_ij += d[k][i + 1];
-            p[i + 1][i] = p_ij;
-        }
-        for (int i = 0; i <= ntax - 3; i++) {
-            p[i + 2][i] = p[i + 1][i] + p[i + 2][i + 1] - 2 * d[i + 2][i + 1];
-        }
-        for (int k = 3; k <= ntax - 1; k++) {
-            for (int i = 0; i <= ntax - k - 1; i++) {
-                int j = i + k;
-                p[j][i] = p[j - 1][i] + p[j][i + 1] - p[j - 1][i + 1] - 2.0 * d[j][i + 1];
-            }
-        }
+    //This method computes the least squares weights for the splits.
+    //Parameters:
+    //dist...distance matrix, the entries are permuted such that
+    //       the ordering 0,1,2,...,(ntax-1) is the circular ordering
+    //       for the full circular split system we want to compute
+    //       weights for.
+    //ntax...number of taxa, taxa are numbered 0,1,2,...,(ntax-1)
+    //x   ...2-dimensional array that contains the split weights
+    //       computed by the NNLS-fitting algorithm.
+    public void circularLeastSquares(double[][] dist, int ntax, double[][] x) {
+        double[][] W = new double[ntax][ntax];
+        fillW(ntax, W, dist, 1);
+        runActiveConjugate(ntax, dist, W, x);
     }
 
-    /**
-     * Computes d = Ab, where A is the topological matrix for the
-     * splits with circular ordering 0,1,2,....,ntax-1
-     *
-     * @param ntax number of taxa
-     * @param b    split weights
-     * @param d    pairwise distances from split weights
-     */
-    static void calculateAb(int ntax, double[][] b, double[][] d) {
-
-        double d_ij;
-
-        for (int i = 0; i <= ntax - 2; i++) {
-            d_ij = 0.0;
-            for (int k = 0; k <= i - 1; k++)
-                d_ij += b[i][k];
-            for (int k = i + 1; k <= ntax - 1; k++)
-                d_ij += b[k][i];
-            d[i + 1][i] = d_ij;
-        }
-        for (int i = 0; i <= ntax - 3; i++) {
-            d[i + 2][i] = d[i + 1][i] + d[i + 2][i + 1] - 2 * b[i + 1][i];
-        }
-        for (int k = 3; k <= ntax - 1; k++) {
-            for (int i = 0; i <= ntax - k - 1; i++) {
-                int j = i + k;
-                d[j][i] = d[j - 1][i] + d[j][i + 1] - d[j - 1][i + 1] - 2.0 * b[j - 1][i];
-            }
-        }
-    }
-
-    /**
-     * Conjugate gradient algorithm solving A^tWA x = b (where b = AtWd)
-     * such that all x[i][j] for which active[i][j] = true are set to zero.
-     * We assume that x[i][j] is zero for all active i,j, and use the given
-     * values for x as our starting vector.
-     *
-     * @param ntax   the number of taxa
-     * @param r      stratch matrix
-     * @param w      stratch matrix
-     * @param p      stratch matrix
-     * @param y      stratch matrix
-     * @param W      the W matrix
-     * @param b      the b matrix
-     * @param active the active constraints
-     * @param x      the x matrix
-     */
-    static void runConjugateGrads(int ntax,
-                                  double[][] r, double[][] w, double[][] p, double[][] y,
-                                  double[][] W, double[][] b,
-                                  boolean[][] active, double[][] x) {
-        int kmax = ntax * (ntax - 1) / 2;
-        /* Maximum number of iterations of the cg algorithm (probably too many) */
-        calculateAb(ntax, x, y);
-        //for (int i = 0; i < ntax; i++)
-        //    for (int j = 0; j < i; j++)
-        //        y[i][j] = W[i][j] * y[i][j];
-        calculateAtx(ntax, y, r); /*r = AtWAx */
-        for (int i = 0; i < ntax; i++)
-            for (int j = 0; j < i; j++)
-                if (!active[i][j])
-                    r[i][j] = b[i][j] - r[i][j];
-                else
-                    r[i][j] = 0.0;
-
-        double rho = norm(ntax, r);
-        double rho_old = 0;
-
-        double e_0 = CG_EPSILON * Math.sqrt(norm(ntax, b));
-        int k = 0;
-
-        while ((rho > e_0 * e_0) && (k < kmax)) {
-
-            k = k + 1;
-
-            if (k == 1) {
-
-                for (int i = 0; i < ntax; i++)
-                    for (int j = 0; j < i; j++)
-                        p[i][j] = r[i][j];
-
-            } else {
-                double beta = rho / rho_old;
-                for (int i = 0; i < ntax; i++)
-                    for (int j = 0; j < i; j++)
-                        p[i][j] = r[i][j] + beta * p[i][j];
-
-            }
-
-            calculateAb(ntax, p, y);
-            //for (int i = 0; i < ntax; i++)
-            //    for (int j = 0; j < i; j++)
-            //        y[i][j] = W[i][j] * y[i][j];
-            calculateAtx(ntax, y, w); /*w = AtWAp */
-            zeroActive(ntax, w, active);
-
-            double alpha = 0.0;
-            for (int i = 0; i < ntax; i++)
-                for (int j = 0; j < i; j++)
-                    alpha += p[i][j] * w[i][j];
-            alpha = rho / alpha;
-
-            /* Update x and the residual, r */
-            for (int i = 0; i < ntax; i++) {
-                for (int j = 0; j < i; j++) {
-                    x[i][j] = x[i][j] + alpha * p[i][j];
-                    r[i][j] = r[i][j] - alpha * w[i][j];
-                }
-            }
-
-            rho_old = rho;
-            rho = norm(ntax, r);
-
-        }
-    }
-
-    /**
-     * Computes sum of squares of the lower triangle of the matrix x
-     *
-     * @param x the matrix
-     * @return sum of squares of the lower triangle
-     */
-    static double norm(int ntax, double[][] x) {
-        double ss = 0.0;
-
-        for (int i = 0; i < ntax; i++) {
-            for (int j = 0; j < i; j++) {
-                ss += x[i][j] * x[i][j];
-            }
-        }
-        return ss;
-    }
-
-    /**
-     * Active is a boolean array.
-     * This routine sets x[i][j] to zero for all i,j such that active[i][j] != 0
-     *
-     * @param ntax   the number of taxa
-     * @param x      the x matrix
-     * @param active the active constraints
-     */
-    static void zeroActive(int ntax, double[][] x, boolean[][] active) {
-        for (int i = 0; i < ntax; i++)
-            for (int j = 0; j < i; j++)
-                if (active[i][j]) x[i][j] = 0.0;
+    public void treeInCycleLeastSquares(double[][] dist, boolean[][] flag, int ntax, double[][] x) {
+        double[][] W = new double[ntax][ntax];
+        fillW(ntax, W, dist, 1);
+        runActiveConjugate(ntax, dist, W, flag, x);
     }
 
     class DoubleIntInt implements Comparator {
@@ -773,28 +804,5 @@ public class CircularNNLS
         public boolean equals(Object obj1) {
             return compare(this, obj1) == 0;
         }
-    }
-
-    //This method computes the least squares weights for the splits.
-    //Parameters:
-    //dist...distance matrix, the entries are permuted such that
-    //       the ordering 0,1,2,...,(ntax-1) is the circular ordering
-    //       for the full circular split system we want to compute
-    //       weights for.
-    //ntax...number of taxa, taxa are numbered 0,1,2,...,(ntax-1)
-    //x   ...2-dimensional array that contains the split weights
-    //       computed by the NNLS-fitting algorithm.
-    public void circularLeastSquares(double[][] dist, int ntax, double[][] x)
-    {
-        double[][] W = new double[ntax][ntax];
-        fillW(ntax,W,dist,1);
-        runActiveConjugate(ntax,dist,W,x);
-    }
-
-    public void treeInCycleLeastSquares(double[][] dist, boolean[][] flag, int ntax, double[][] x)
-    {
-        double[][] W = new double[ntax][ntax];
-        fillW(ntax,W,dist,1);
-        runActiveConjugate(ntax,dist,W,flag,x);
     }
 }

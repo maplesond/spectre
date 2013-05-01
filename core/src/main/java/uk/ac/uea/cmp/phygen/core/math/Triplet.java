@@ -1,42 +1,34 @@
-/**
- * Super Q - Computing super networks from partial trees. Copyright (C) 2012 UEA
- * CMP Phylogenetics Group.
+/*
+ * Phylogenetics Tool suite
+ * Copyright (C) 2013  UEA CMP Phylogenetics Group
  *
- * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License, or (at your option) any later
- * version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with
- * this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/>.
  */
 package uk.ac.uea.cmp.phygen.core.math;
 
 /**
- *
  * Triplet of values class
- *
+ * <p/>
  * Derives from the VisRD Triplet class
- *
  */
 public class Triplet {
 
     /**
-     *
      * Data
-     *
      */
     double a, b, c;
 
     /**
-     *
      * Constructor
-     *
      */
     public Triplet() {
 
@@ -47,9 +39,7 @@ public class Triplet {
     }
 
     /**
-     *
      * Constructor
-     *
      */
     public Triplet(double newA, double newB, double newC) {
 
@@ -60,9 +50,7 @@ public class Triplet {
     }
 
     /**
-     *
      * a accessor
-     *
      */
     public double getA() {
 
@@ -71,9 +59,7 @@ public class Triplet {
     }
 
     /**
-     *
      * b accessor
-     *
      */
     public double getB() {
 
@@ -82,9 +68,7 @@ public class Triplet {
     }
 
     /**
-     *
      * c accessor
-     *
      */
     public double getC() {
 
@@ -93,9 +77,7 @@ public class Triplet {
     }
 
     /**
-     *
      * a mutator
-     *
      */
     public void setA(double newA) {
 
@@ -104,9 +86,7 @@ public class Triplet {
     }
 
     /**
-     *
      * b mutator
-     *
      */
     public void setB(double newB) {
 
@@ -115,9 +95,7 @@ public class Triplet {
     }
 
     /**
-     *
      * c mutator
-     *
      */
     public void setC(double newC) {
 

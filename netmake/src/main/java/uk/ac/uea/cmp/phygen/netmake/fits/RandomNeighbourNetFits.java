@@ -1,3 +1,19 @@
+/*
+ * Phylogenetics Tool suite
+ * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ *
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
+
 package uk.ac.uea.cmp.phygen.netmake.fits;
 
 import org.apache.commons.io.FileUtils;
@@ -5,13 +21,10 @@ import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
-import uk.ac.uea.cmp.phygen.core.ds.split.CircularSplitSystem;
 import uk.ac.uea.cmp.phygen.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.phygen.core.io.PhygenReader;
 import uk.ac.uea.cmp.phygen.core.io.PhygenReaderFactory;
-import uk.ac.uea.cmp.phygen.core.io.nexus.NexusReader;
 import uk.ac.uea.cmp.phygen.core.io.nexus.NexusWriter;
-import uk.ac.uea.cmp.phygen.netmake.NetMake;
 import uk.ac.uea.cmp.phygen.netmake.weighting.Weightings;
 
 import java.io.File;
@@ -22,28 +35,21 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created with IntelliJ IDEA.
- * User: Dan
- * Date: 30/04/13
- * Time: 20:20
- * To change this template use File | Settings | File Templates.
+ * Created with IntelliJ IDEA. User: Dan Date: 30/04/13 Time: 20:20 To change this template use File | Settings | File
+ * Templates.
  */
 public class RandomNeighbourNetFits {
 
     private final static Logger log = LoggerFactory.getLogger(RandomNeighbourNetFits.class);
-
-
     private File inputFile;
     private File outputDir;
     private RandomNeighbourNetFitsConfig config;
-
 
     public RandomNeighbourNetFits(File inputFile, File outputDir, RandomNeighbourNetFitsConfig config) {
         this.inputFile = inputFile;
         this.outputDir = outputDir;
         this.config = config;
     }
-
 
     public void process() throws IOException {
 
@@ -63,9 +69,7 @@ public class RandomNeighbourNetFits {
         writeSummary(new File(this.outputDir, "Summary.txt"), fitList); // writes summary to file
     }
 
-
     /**
-     *
      * @return
      */
     protected List<File> generateInputFiles() throws IOException {
@@ -97,10 +101,7 @@ public class RandomNeighbourNetFits {
         return generatedFiles;
     }
 
-
-
     /**
-     *
      * @param distanceMatrix
      * @param aNetwork
      * @return
@@ -169,7 +170,68 @@ public class RandomNeighbourNetFits {
         log.info("Calculated fits for \"{0}\" ...", file.getAbsolutePath());
     } */
 
+    /**
+     * @param fitsList
+     */
+    protected void writeSummary(File summaryFile, List<Fits> fitsList) throws IOException {
 
+        int numberOfFiles = fitsList.size();
+
+        Map<String, StringBuilder> weightingStatsMap = new LinkedHashMap<>();
+
+        for (Weightings weighting : Weightings.getValuesExceptGreedyME()) {
+            weightingStatsMap.put(weighting.toString(), new StringBuilder());
+        }
+
+        StringBuilder fileContent = new StringBuilder("Fit Statistics\n-----------\n\n");
+
+        fileContent.append("Randomized input satisfies metric constraints: ").append(config.getDistanceGenerator().getClass().getSimpleName()).append("\n\n");
+
+        // Appending weighting summary
+        int index = 0;
+        for (int currentN = config.getMinN(); currentN <= config.getMaxN(); currentN += config.getStepping()) {
+            int offset = (currentN - config.getMinN()) / config.getStepping() * config.getSamplesPerStep();
+
+            for (Map.Entry<String, Double> fit : fitsList.get(index++).getFits().entrySet()) {
+                double mean = 0.;
+
+                for (int i = offset; i < offset + config.getSamplesPerStep(); i++) {
+                    mean += fit.getValue();
+                }
+
+                mean /= (double) config.getSamplesPerStep();
+
+                String meanInfo = "\t" + currentN + " Taxa: " + mean + "\n";
+
+                weightingStatsMap.get(fit.getKey()).append(meanInfo);
+            }
+        }
+
+        fileContent.append("Weighting Summary\n-----------------\n");
+
+        for (Map.Entry<String, StringBuilder> weightingEntry : weightingStatsMap.entrySet()) {
+            fileContent.append("Mean Fits (").append(config.getSamplesPerStep()).append(" sample(s)) for ").append(weightingEntry.getKey()).append(" Weighting:\n");
+            fileContent.append(weightingEntry.getValue().toString());
+        }
+        fileContent.append("\n");
+
+        /* Appending detailed summary */
+        fileContent.append("Detailed Summary (").append(numberOfFiles).append(" sample(s))\n----------------\n");
+        for (Fits fits : fitsList) {
+            fileContent.append(fits.getFile().getAbsolutePath()).append("\t");
+
+            for (Map.Entry<String, Double> fit : fits.getFits().entrySet()) {
+                fileContent.append(fit.getKey()).append(": ").append(fit.getValue()).append("\t");
+            }
+
+            fileContent.append("\n");
+        }
+
+        /* Write summary to file */
+        FileUtils.writeStringToFile(summaryFile, fileContent.toString());
+
+        log.info("Summary written to \"Summary.txt\" ...");
+    }
 
     private class Fits {
 
@@ -193,69 +255,5 @@ public class RandomNeighbourNetFits {
             return fits;
         }
 
-    }
-
-    /**
-     *
-     * @param fitsList
-     */
-    protected void writeSummary(File summaryFile, List<Fits> fitsList) throws IOException {
-
-        int numberOfFiles = fitsList.size();
-
-        Map<String, StringBuilder> weightingStatsMap = new LinkedHashMap<>();
-
-        for(Weightings weighting : Weightings.getValuesExceptGreedyME()) {
-            weightingStatsMap.put(weighting.toString(), new StringBuilder());
-        }
-
-        StringBuilder fileContent = new StringBuilder("Fit Statistics\n-----------\n\n");
-
-        fileContent.append("Randomized input satisfies metric constraints: ").append(config.getDistanceGenerator().getClass().getSimpleName()).append("\n\n");
-
-        // Appending weighting summary
-        int index = 0;
-        for (int currentN = config.getMinN(); currentN <= config.getMaxN(); currentN += config.getStepping()) {
-            int offset = (currentN - config.getMinN()) / config.getStepping() * config.getSamplesPerStep();
-
-            for(Map.Entry<String, Double> fit : fitsList.get(index++).getFits().entrySet()) {
-                double mean = 0.;
-
-                for (int i = offset; i < offset + config.getSamplesPerStep(); i++) {
-                    mean += fit.getValue();
-                }
-
-                mean /= (double) config.getSamplesPerStep();
-
-                String meanInfo = "\t" + currentN + " Taxa: " + mean + "\n";
-
-                weightingStatsMap.get(fit.getKey()).append(meanInfo);
-            }
-        }
-
-        fileContent.append("Weighting Summary\n-----------------\n");
-
-        for(Map.Entry<String, StringBuilder> weightingEntry : weightingStatsMap.entrySet()) {
-            fileContent.append("Mean Fits (").append(config.getSamplesPerStep()).append(" sample(s)) for ").append(weightingEntry.getKey()).append(" Weighting:\n");
-            fileContent.append(weightingEntry.getValue().toString());
-        }
-        fileContent.append("\n");
-
-        /* Appending detailed summary */
-        fileContent.append("Detailed Summary (").append(numberOfFiles).append(" sample(s))\n----------------\n");
-        for (Fits fits : fitsList) {
-            fileContent.append(fits.getFile().getAbsolutePath()).append("\t");
-
-            for(Map.Entry<String, Double> fit : fits.getFits().entrySet()) {
-                fileContent.append(fit.getKey()).append(": ").append(fit.getValue()).append("\t");
-            }
-
-            fileContent.append("\n");
-        }
-
-        /* Write summary to file */
-        FileUtils.writeStringToFile(summaryFile, fileContent.toString());
-
-        log.info("Summary written to \"Summary.txt\" ...");
     }
 }

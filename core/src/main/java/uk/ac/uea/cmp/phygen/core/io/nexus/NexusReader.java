@@ -1,3 +1,18 @@
+/*
+ * Phylogenetics Tool suite
+ * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ *
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
 package uk.ac.uea.cmp.phygen.core.io.nexus;
 
 /*
@@ -28,9 +43,9 @@ public class NexusReader implements PhygenReader {
      * of taxa and the distances between taxa.
      *
      * @return The distance matrix, with associated taxa set.
-     * @throws IOException Thrown if there were any problems accessing the file.
+     * @throws IOException    Thrown if there were any problems accessing the file.
      * @throws ParseException Thrown if there were any syntax issues when
-     * parsing the file.
+     *                        parsing the file.
      */
     public DistanceMatrix read(File file) throws IOException {
 
@@ -197,8 +212,6 @@ public class NexusReader implements PhygenReader {
                             String distance = aLine.substring(firstIdx + 1, lastIdx - 1);
 
 
-
-
                             System.out.println("Dist: " + distance);
                             System.out.println("S & i " + s + " " + i);
                             try {
@@ -265,7 +278,7 @@ public class NexusReader implements PhygenReader {
         String aLine = inLines.get(0);
 
         //Find circular ordering in document
-        for (int i = 1; i < inLines.size(); i++){
+        for (int i = 1; i < inLines.size(); i++) {
             aLine = inLines.get(i);
             if (aLine.trim().toUpperCase().startsWith("DIMENSIONS") && taxaFound == false) {
                 int startIdx = aLine.toUpperCase().indexOf("NTAX=") + 5;
@@ -281,7 +294,6 @@ public class NexusReader implements PhygenReader {
                 int endidx = aLine.indexOf(";");
                 circOrd = aLine.substring(startidx, endidx).trim();
             }
-
 
 
         }

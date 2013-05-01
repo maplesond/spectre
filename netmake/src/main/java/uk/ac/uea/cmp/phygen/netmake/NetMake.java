@@ -1,11 +1,27 @@
+/*
+ * Phylogenetics Tool suite
+ * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ *
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
+
 package uk.ac.uea.cmp.phygen.netmake;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import uk.ac.uea.cmp.phygen.core.ds.Tableau;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phygen.core.ds.split.CircularOrdering;
 import uk.ac.uea.cmp.phygen.core.ds.split.CircularSplitSystem;
-import uk.ac.uea.cmp.phygen.core.ds.Tableau;
 import uk.ac.uea.cmp.phygen.core.ds.split.CompatibleSplitSystem;
 import uk.ac.uea.cmp.phygen.core.io.PhygenWriter;
 import uk.ac.uea.cmp.phygen.core.io.PhygenWriterFactory;
@@ -22,8 +38,8 @@ import java.util.ArrayList;
  * order.
  *
  * @author Sarah Bastkowski
- * See Sarah Bastkowski, 2010:
- * <I>Algorithmen zum Finden von Bäumen in Neighbor Net Netzwerken</I>
+ *         See Sarah Bastkowski, 2010:
+ *         <I>Algorithmen zum Finden von Bäumen in Neighbor Net Netzwerken</I>
  */
 public class NetMake {
 
@@ -43,8 +59,9 @@ public class NetMake {
 
     /**
      * Creates a new NetMake object with a distance matrix and a single weighting.
+     *
      * @param distanceMatrix Distance matrix, which defines distanceMatrix between taxa
-     * @param weighting Weighting system to be applied
+     * @param weighting      Weighting system to be applied
      */
     public NetMake(final DistanceMatrix distanceMatrix, Weighting weighting) {
         this(distanceMatrix, weighting, null);
@@ -53,9 +70,10 @@ public class NetMake {
     /**
      * Creates a new NetMake object with a distance matrix and two weightings, for use
      * in a "hybrid" mode.
-     * @param  distanceMatrix Distance matrix, which defines distanceMatrix between taxa
-     * @param weighting1 First weighting system to be applied
-     * @param weighting2 Second weighting system to be applied
+     *
+     * @param distanceMatrix Distance matrix, which defines distanceMatrix between taxa
+     * @param weighting1     First weighting system to be applied
+     * @param weighting2     Second weighting system to be applied
      */
     public NetMake(final DistanceMatrix distanceMatrix, Weighting weighting1, Weighting weighting2) {
         if (distanceMatrix == null) {
@@ -94,42 +112,39 @@ public class NetMake {
     private enum RunMode {
 
         UNKNOWN {
-
             public void run(NetMake nn) {
                 throw new UnsupportedOperationException("Run Mode was not known");
             }
         },
         NORMAL {
-
             public void run(NetMake nn) {
                 nn.runNN();
             }
         },
         HYBRID {
-
             public void run(NetMake nn) {
                 nn.runNN();
             }
         },
         HYBRID_GREEDYME {
-
             public void run(NetMake nn) {
                 nn.runNN();
             }
         };
 
-        public boolean isHybrid()
-        {
+        public boolean isHybrid() {
             return (this == HYBRID || this == HYBRID_GREEDYME);
         }
 
         public abstract void run(NetMake nn);
-    };
+    }
 
+    ;
 
 
     /**
      * Retrieves the network constructed by NeighborNet
+     *
      * @return The network.
      */
     public CircularSplitSystem getNetwork() {
@@ -138,6 +153,7 @@ public class NetMake {
 
     /**
      * Retrieves the tree constructed by NeighborNet
+     *
      * @return The tree.
      */
     public CompatibleSplitSystem getTree() {
@@ -147,30 +163,26 @@ public class NetMake {
     /**
      * Helper method that returns the type of run mode configuration the client
      * has requested.  If unknown, configuration then RunMode.UNKNOWN is returned.
+     *
      * @param w1 First weighting to be applied.
      * @param w2 Second weighting system to be applied.
      * @return The RunMode determined by the supplied weighting systems.
      */
-    private RunMode determineRunMode(Weighting w1, Weighting w2)
-    {
+    private RunMode determineRunMode(Weighting w1, Weighting w2) {
         if (w1 == null) {
             return RunMode.UNKNOWN;
-        }
-        else if (w2 == null && !isGreedyMEWeighting(w1)) {
+        } else if (w2 == null && !isGreedyMEWeighting(w1)) {
             return RunMode.NORMAL;
-        }
-        else if (isGreedyMEWeighting(w1) && !isGreedyMEWeighting(w2)) {
+        } else if (isGreedyMEWeighting(w1) && !isGreedyMEWeighting(w2)) {
             return RunMode.HYBRID_GREEDYME;
-        }
-        else if (!isGreedyMEWeighting(w1) && w2 != null) {
+        } else if (!isGreedyMEWeighting(w1) && w2 != null) {
             return RunMode.HYBRID;
         }
 
         return RunMode.UNKNOWN;
     }
 
-    protected boolean isGreedyMEWeighting(Weighting w)
-    {
+    protected boolean isGreedyMEWeighting(Weighting w) {
         if (w == null)
             return false;
 

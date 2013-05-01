@@ -1,24 +1,22 @@
-/**
- * Super Q - Computing super networks from partial trees. Copyright (C) 2012 UEA
- * CMP Phylogenetics Group.
+/*
+ * Phylogenetics Tool suite
+ * Copyright (C) 2013  UEA CMP Phylogenetics Group
  *
- * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License, or (at your option) any later
- * version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with
- * this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/>.
  */
 package uk.ac.uea.cmp.phygen.core.ds.split;
 
-import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phygen.core.ds.SummedDistanceList;
+import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,8 +46,8 @@ public class SplitSystem {
         String[] taxa = new String[nbTaxa];
 
         // Assumes we don't have more than 26 taxa, otherwise this is going to get weird.
-        for(int i = 0; i < nbTaxa; i++) {
-            taxa[i] = Character.toString ((char) (i+65));
+        for (int i = 0; i < nbTaxa; i++) {
+            taxa[i] = Character.toString((char) (i + 65));
         }
 
         return taxa;
@@ -81,6 +79,7 @@ public class SplitSystem {
 
     /**
      * This returns the index of the taxa in a 1-based system
+     *
      * @param i
      * @return
      */
@@ -104,6 +103,7 @@ public class SplitSystem {
 
     /**
      * Calculate the summed distanceMatrix between elements on the A side and B side for every split
+     *
      * @return Array of P
      */
     public SummedDistanceList calculateP(DistanceMatrix distanceMatrix) {
@@ -166,7 +166,7 @@ public class SplitSystem {
 
         List<Split> ss = new ArrayList<>();
 
-        for(Split s : this.splits) {
+        for (Split s : this.splits) {
             ss.add(s.copy());
         }
 
@@ -220,7 +220,6 @@ public class SplitSystem {
             splits.set(i, sb.toString().trim());
         }
     }*/
-
 
 
 }

@@ -1,6 +1,17 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Phylogenetics Tool suite
+ * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ *
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/>.
  */
 package uk.ac.uea.cmp.phygen.core.ds.split;
 
@@ -31,7 +42,7 @@ public class SplitBlock implements Comparable<SplitBlock> {
 
         this.elements = new ArrayList<>();
 
-        for(int i : splitBlock) {
+        for (int i : splitBlock) {
             this.elements.add(i);
         }
     }
@@ -125,7 +136,7 @@ public class SplitBlock implements Comparable<SplitBlock> {
     public SplitBlock copy() {
         List<Integer> copy = new ArrayList<>();
 
-        for(Integer i : this.elements) {
+        for (Integer i : this.elements) {
             copy.add(i);
         }
 

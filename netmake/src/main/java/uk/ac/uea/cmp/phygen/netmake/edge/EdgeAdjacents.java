@@ -1,3 +1,19 @@
+/*
+ * Phylogenetics Tool suite
+ * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ *
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
+
 package uk.ac.uea.cmp.phygen.netmake.edge;
 
 import org.slf4j.Logger;
@@ -7,6 +23,7 @@ import uk.ac.uea.cmp.phygen.core.ds.Tableau;
 
 /**
  * Describes the adjacent elements of an edge.
+ *
  * @author Sarah Bastkowski
  */
 public class EdgeAdjacents {
@@ -52,11 +69,11 @@ public class EdgeAdjacents {
      * Creates an object EdgeAdjacents, so C, pTemp and C_alpha will be determined
      *
      * @param splitsCopy The split list
-     * @param k The index of particular split we are dealing with
+     * @param k          The index of particular split we are dealing with
      * @param P
      * @return A new EdgeAdjacents object containing C, pTemp and C_alpha values.
      */
-    public static EdgeAdjacents retrieveAdjacents(Tableau<Integer> splitsASide, int k, SummedDistanceList sdl, int nbTaxa){
+    public static EdgeAdjacents retrieveAdjacents(Tableau<Integer> splitsASide, int k, SummedDistanceList sdl, int nbTaxa) {
 
         SummedDistanceList sdlCopy = new SummedDistanceList(sdl);
         sdl.addAll(sdlCopy);

@@ -1,3 +1,18 @@
+/*
+ * Phylogenetics Tool suite
+ * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ *
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
 package uk.ac.uea.cmp.phygen.core.ds.split;
 
 import org.slf4j.Logger;
@@ -24,7 +39,6 @@ public class TreeSplitWeights extends SplitWeights {
     }
 
 
-
     /**
      * Returns the length of the minimum evolution tree.
      *
@@ -33,12 +47,12 @@ public class TreeSplitWeights extends SplitWeights {
     public final double calcTreeLength() {
         double sum = 0;
 
-        for(int i = 0; i < this.size(); i++){
-            for(int j = 0; j < this.size(); j++){
-                if (this.getAt(j,i) == Double.POSITIVE_INFINITY) {
+        for (int i = 0; i < this.size(); i++) {
+            for (int j = 0; j < this.size(); j++) {
+                if (this.getAt(j, i) == Double.POSITIVE_INFINITY) {
                     log.warn("TreeWeight [" + j + "," + i + "] is infinity");
                 }
-                sum += this.getAt(j,i);
+                sum += this.getAt(j, i);
             }
         }
 
@@ -49,8 +63,8 @@ public class TreeSplitWeights extends SplitWeights {
      * Updates the tree weights matrix.
      *
      * @param branchLength length of a vertex
-     * @param i specifies the split
-     * @param j specifies the split
+     * @param i            specifies the split
+     * @param j            specifies the split
      */
     public void setBranchLengthAt(double branchLength, int i, int j) {
 

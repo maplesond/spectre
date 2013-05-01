@@ -1,3 +1,18 @@
+/*
+ * Phylogenetics Tool suite
+ * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ *
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
 package uk.ac.uea.cmp.phygen.core.ds.split;
 
 import uk.ac.uea.cmp.phygen.core.alg.CircularNNLS;
@@ -40,7 +55,7 @@ public class CompatibleSplitSystem extends CircularSplitSystem {
     }
 
     public TreeSplitWeights getTreeSplitWeights() {
-        return (TreeSplitWeights)this.getSplitWeights();
+        return (TreeSplitWeights) this.getSplitWeights();
     }
 
 
@@ -51,14 +66,14 @@ public class CompatibleSplitSystem extends CircularSplitSystem {
 
         for (int i = 0; i < n; i++) {
             for (int j = i + 1; j < n; j++) {
-                if (treeWeights.getAt(j,i) != 0.0) {
+                if (treeWeights.getAt(j, i) != 0.0) {
 
                     ArrayList<Integer> sb = new ArrayList<>();
-                    for(int k = i + 1; k < j + 1; k++) {
+                    for (int k = i + 1; k < j + 1; k++) {
                         sb.add(this.getCircularOrdering().getAt(k));
                     }
 
-                    this.addSplit(new Split(new SplitBlock(sb), n, treeWeights.getAt(j,i)));
+                    this.addSplit(new Split(new SplitBlock(sb), n, treeWeights.getAt(j, i)));
                 }
             }
         }
@@ -78,18 +93,18 @@ public class CompatibleSplitSystem extends CircularSplitSystem {
         boolean[][] flag = new boolean[n][n];
         int[] permutationInvert = new int[n];
 
-        for(int i = 0; i < n; i++) {
+        for (int i = 0; i < n; i++) {
             permutationInvert[circularOrdering.getAt(i)] = i;
         }
 
         for (int i = 0; i < n; i++) {
-            for(int j = 0; j < n; j++) {
+            for (int j = 0; j < n; j++) {
                 flag[i][j] = false;
             }
         }
 
         for (int i = 0; i < n; i++) {
-            for(int j = 0; j < n; j++) {
+            for (int j = 0; j < n; j++) {
                 treeWeights[i][j] = 0.;
             }
         }
@@ -124,7 +139,7 @@ public class CompatibleSplitSystem extends CircularSplitSystem {
         new CircularNNLS().treeInCycleLeastSquares(permutedDistances, flag,
                 n, treeWeights);
 
-  //      assert(checkWeights(treeWeights) == 17);
+        //      assert(checkWeights(treeWeights) == 17);
 
         return new TreeSplitWeights(treeWeights);
     }
@@ -132,8 +147,8 @@ public class CompatibleSplitSystem extends CircularSplitSystem {
     private int checkFlags(boolean[][] flag) {
 
         int count = 0;
-        for(int i = 0; i < flag.length; i++) {
-            for(int j = 0; j < flag[i].length; j++) {
+        for (int i = 0; i < flag.length; i++) {
+            for (int j = 0; j < flag[i].length; j++) {
                 if (flag[i][j] == true) {
                     count++;
                 }
@@ -146,8 +161,8 @@ public class CompatibleSplitSystem extends CircularSplitSystem {
     private int checkWeights(double[][] weights) {
 
         int count = 0;
-        for(int i = 0; i < weights.length; i++) {
-            for(int j = 0; j < weights[i].length; j++) {
+        for (int i = 0; i < weights.length; i++) {
+            for (int j = 0; j < weights[i].length; j++) {
                 if (weights[i][j] != 0.0) {
                     count++;
                 }

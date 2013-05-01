@@ -1,3 +1,18 @@
+/*
+ * Phylogenetics Tool suite
+ * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ *
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
 package uk.ac.uea.cmp.phygen.core.ds.split;
 
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
@@ -75,13 +90,11 @@ public class Split {
     public enum SplitSide {
 
         A_SIDE {
-
             public int getSplitElement(Split split, int index) {
                 return split.aSide.get(index);
             }
         },
-        B_SIDE{
-
+        B_SIDE {
             public int getSplitElement(Split split, int index) {
                 return split.bSide.get(index);
             }
@@ -92,6 +105,7 @@ public class Split {
 
     /**
      * Summed up distanceMatrix from all elements on the A side to all elements on the B side.
+     *
      * @return P
      */
     public double calculateP(DistanceMatrix distanceMatrix) {

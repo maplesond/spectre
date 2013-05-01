@@ -1,13 +1,29 @@
+/*
+ * Phylogenetics Tool suite
+ * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ *
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
+
 package uk.ac.uea.cmp.phygen.netmake.weighting;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
-import uk.ac.uea.cmp.phygen.core.ds.split.CircularSplitSystem;
 import uk.ac.uea.cmp.phygen.core.ds.SummedDistanceList;
 import uk.ac.uea.cmp.phygen.core.ds.Tableau;
+import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
+import uk.ac.uea.cmp.phygen.core.ds.split.CircularSplitSystem;
 import uk.ac.uea.cmp.phygen.core.math.Statistics;
 import uk.ac.uea.cmp.phygen.netmake.edge.EdgeAdjacents;
 
@@ -17,6 +33,7 @@ import java.util.List;
 /**
  * GreedyMEWeighting extends weighting, although it doesn't actually update a Weighting param.
  * Explanation....
+ *
  * @author Sarah Bastkowski
  */
 public class GreedyMEWeighting extends Weighting {
@@ -31,6 +48,7 @@ public class GreedyMEWeighting extends Weighting {
 
     /**
      * Initialises a GreedyMEWeighting with a SplitSystem
+     *
      * @param distanceMatrix
      */
     public GreedyMEWeighting(DistanceMatrix distanceMatrix) {
@@ -112,7 +130,6 @@ public class GreedyMEWeighting extends Weighting {
         }
 
 
-
         if (external == true) {
             for (int i = 0; i < C.length; i++) {
                 v[i] = 1;
@@ -184,7 +201,7 @@ public class GreedyMEWeighting extends Weighting {
 //there is no zero in the matrix "D" (notation refers to D.Bryant thesis algorithm 15
         if (zero == -1) {
             for (int i = 0; i < C.length; i++) {
-                w[i] = (- 1 / ((double) nb_taxa / (double) C[i] - 2.0)) * (gamma / k - (double) v[i]);
+                w[i] = (-1 / ((double) nb_taxa / (double) C[i] - 2.0)) * (gamma / k - (double) v[i]);
             }
             //there is a zero at position zero
         } else {
@@ -230,7 +247,6 @@ public class GreedyMEWeighting extends Weighting {
 //            if (n_alpha == 0.0 || part2 == 0.0) {
 //                log.log(Level.FINE, "Oh noes");
 //            }
-
 
 
             edgeWeight = edgeWeight / (n_alpha * n_beta - part2);
@@ -282,6 +298,7 @@ public class GreedyMEWeighting extends Weighting {
      * Will always throw an UnsupportedOperationException because this GreedyMEWeighting class
      * is not technically a Weighting but is sometimes used in a Weighting object's
      * place in NeighborNet
+     *
      * @param i
      * @param position
      * @param customParameter

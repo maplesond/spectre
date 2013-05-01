@@ -1,3 +1,19 @@
+/*
+ * Phylogenetics Tool suite
+ * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ *
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
+
 package uk.ac.uea.cmp.phygen.netme.eval;
 
 import org.apache.commons.io.FileUtils;
@@ -6,9 +22,6 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phygen.core.ds.split.CircularOrdering;
-import uk.ac.uea.cmp.phygen.core.ds.split.CircularSplitSystem;
-import uk.ac.uea.cmp.phygen.core.ds.split.CompatibleSplitSystem;
-import uk.ac.uea.cmp.phygen.core.ds.split.TreeSplitWeights;
 import uk.ac.uea.cmp.phygen.core.io.nexus.NexusReader;
 import uk.ac.uea.cmp.phygen.core.io.phylip.PhylipReader;
 import uk.ac.uea.cmp.phygen.netmake.NetMake;
@@ -18,10 +31,6 @@ import uk.ac.uea.cmp.phygen.netme.NetMEResult;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -38,7 +47,6 @@ public class MinEvoFitCalculation {
     private File beesFile = FileUtils.toFile(MinEvoFitCalculation.class.getResource("/eval/bees.nex"));
 
 
-
     protected void runMinEvoFitCalc(File inFile, File outFile, File nnFile) throws IOException {
 
         DistanceMatrix inputData = new PhylipReader().read(inFile);
@@ -46,7 +54,7 @@ public class MinEvoFitCalculation {
         StringBuilder fitInfo = new StringBuilder();
 
         // Run through all weighting types and append tree length produced using input distance matrix to output string
-        for(Weightings weightings : Weightings.values()) {
+        for (Weightings weightings : Weightings.values()) {
 
             // Run netmake with the distance matrix and this specific weighting and retrieve the network
             NetMake netMake = new NetMake(inputData, weightings.create(inputData.size()));
@@ -92,6 +100,7 @@ public class MinEvoFitCalculation {
     /**
      * Run netME with the distance matrix and the generated network's circular ordering to get the minumum evolution
      * tree length, weights calculated by OLS method.
+     *
      * @param type
      * @param distanceMatrix
      * @param circularOrdering
@@ -110,8 +119,6 @@ public class MinEvoFitCalculation {
     }
 
 
-
-
     @Test
     public void testBees() throws IOException {
 
@@ -120,7 +127,6 @@ public class MinEvoFitCalculation {
         this.runMinEvoFitCalc(beesFile, outDir, null);
 
     }
-
 
 
 }

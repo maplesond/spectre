@@ -1,3 +1,18 @@
+/*
+ * Phylogenetics Tool suite
+ * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ *
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
 package uk.ac.uea.cmp.phygen.core.ds;
 
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
@@ -7,11 +22,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
- *
  * @author Sarah Bastkowski
- * See Sarah Bastkowski, 2010:
- * <I>Algorithmen zum Finden von Bäumen in Neighbor Net Netzwerken</I>
+ *         See Sarah Bastkowski, 2010:
+ *         <I>Algorithmen zum Finden von Bäumen in Neighbor Net Netzwerken</I>
  */
 public class Tableau<E> {
 
@@ -26,18 +39,16 @@ public class Tableau<E> {
 
     /**
      * Creates a new copy of a Tableau using the instance provided.
+     *
      * @param copy
      */
-    public Tableau(Tableau<E> copy)
-    {
+    public Tableau(Tableau<E> copy) {
         this();
 
-        for(ArrayList<E> row : copy.components)
-        {
+        for (ArrayList<E> row : copy.components) {
             ArrayList<E> newRow = new ArrayList<E>();
 
-            for(E e : row)
-            {
+            for (E e : row) {
 //                not good enough!...
                 newRow.add(e);
             }
@@ -60,7 +71,7 @@ public class Tableau<E> {
 
         int rows = this.rows();
 
-        for(int i = 0; i < rows; i++) {
+        for (int i = 0; i < rows; i++) {
 
             List<E> row = this.getRow(i);
 
@@ -68,7 +79,7 @@ public class Tableau<E> {
 
             int[] copyRow = new int[cols];
 
-            for(int j = 0; j < cols; j++) {
+            for (int j = 0; j < cols; j++) {
 
                 E e = this.get(i, j);
                 copyRow[j] = Integer.parseInt(e.toString());
@@ -181,11 +192,9 @@ public class Tableau<E> {
     }
 
 
-    public void addAllRows(Tableau t)
-    {
-        for(int i = 0; i < t.rows(); i++)
-        {
-            components.add( t.copyRow(i) );
+    public void addAllRows(Tableau t) {
+        for (int i = 0; i < t.rows(); i++) {
+            components.add(t.copyRow(i));
         }
     }
 
@@ -194,7 +203,7 @@ public class Tableau<E> {
      * specified row is not existent it will be created. Any necessary new
      * preceding rows will be added as empty rows.
      *
-     * @param row index of the row
+     * @param row     index of the row
      * @param element
      * @throws IndexOutOfBoundsException if the row index is out of range
      */
@@ -208,13 +217,14 @@ public class Tableau<E> {
 
     /**
      * Creates a new copy of a row in this Tableau
+     *
      * @param row The index of the row to duplicate
      * @return The duplicated row
      */
     public ArrayList<E> copyRow(int row) {
-        ArrayList<E> oldrow = components.get( row );
+        ArrayList<E> oldrow = components.get(row);
         ArrayList<E> newrow = new ArrayList<E>();
-        newrow.addAll((ArrayList<E>)oldrow.clone());
+        newrow.addAll((ArrayList<E>) oldrow.clone());
         return newrow;
     }
 
@@ -222,8 +232,8 @@ public class Tableau<E> {
      * Replaces the element at the specified position in this tableau
      * with the specified element.
      *
-     * @param row row of the element to replace
-     * @param col column of the element to replace
+     * @param row     row of the element to replace
+     * @param col     column of the element to replace
      * @param element element to be stored at the specified position
      * @return the element previously at the specified position
      * @throws IndexOutOfBoundsException if the position is out of range

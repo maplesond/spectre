@@ -1,3 +1,19 @@
+/*
+ * Phylogenetics Tool suite
+ * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ *
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
+
 package uk.ac.uea.cmp.phygen.netmake.weighting;
 
 /**
@@ -7,7 +23,7 @@ package uk.ac.uea.cmp.phygen.netmake.weighting;
  *
  * @author Sarah Bastkowski
  * @see S. Bastkowski, 2010:
- * <I>Algorithmen zum Finden von Bäumen in Neighbor Net Netzwerken</I>
+ *      <I>Algorithmen zum Finden von Bäumen in Neighbor Net Netzwerken</I>
  */
 public class TreeWeighting extends Weighting {
     private double alpha;
@@ -21,7 +37,7 @@ public class TreeWeighting extends Weighting {
      * Creates a TreeWeighting object with a weighting list of a specified size
      * and a specified constant alpha.
      *
-     * @param size the number of weighting parameters to be stored
+     * @param size  the number of weighting parameters to be stored
      * @param alpha 0.5 for balanced tree weighting leads to NJ tree
      */
     public TreeWeighting(int size, double alpha) {
@@ -31,9 +47,8 @@ public class TreeWeighting extends Weighting {
     }
 
     /**
-     *
-     * @param i index of weighting parameter to be updated
-     * @param position position of i in component
+     * @param i                      index of weighting parameter to be updated
+     * @param position               position of i in component
      * @param componentSplitposition position where second component begins after merging step
      * @throws ArrayIndexOutOfBoundsException
      */

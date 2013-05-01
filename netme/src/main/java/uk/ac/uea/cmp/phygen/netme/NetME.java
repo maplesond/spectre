@@ -1,9 +1,25 @@
+/*
+ * Phylogenetics Tool suite
+ * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ *
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
+
 package uk.ac.uea.cmp.phygen.netme;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phygen.core.ds.Tableau;
+import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phygen.core.ds.split.CircularOrdering;
 import uk.ac.uea.cmp.phygen.core.ds.split.CompatibleSplitSystem;
 import uk.ac.uea.cmp.phygen.core.ds.split.TreeSplitWeights;
@@ -14,7 +30,7 @@ import java.util.ArrayList;
 /**
  * Constructs a minimum evolution tree from the specified network with its
  * implied circular order.
- *
+ * <p/>
  * See D Bryant, 1997: <I>Building Trees, Hunting for Trees and
  * Comparing Trees - Theories and Methods in Phylogenetic Analysis</I>
  */
@@ -85,8 +101,7 @@ public class NetME {
                 }
 
                 tableP[0][interval.get(i, 0)] = Statistics.sumDoubles(distances);
-            }
-            else {
+            } else {
                 ArrayList<Double> distances = new ArrayList<Double>();
 
                 for (int m = 1; m < interval.rowSize(i); m++) {
@@ -120,12 +135,12 @@ public class NetME {
         }
 
         //Fill the 2 element interval values with distances
-        for (int i = NB_TAXA; i < 2*NB_TAXA; i++) {
-            val.appendToRow(i, dist.getDistance(circularOrdering.getAt(interval.get(i,0)), circularOrdering.getAt(interval.get(i, 1))));
+        for (int i = NB_TAXA; i < 2 * NB_TAXA; i++) {
+            val.appendToRow(i, dist.getDistance(circularOrdering.getAt(interval.get(i, 0)), circularOrdering.getAt(interval.get(i, 1))));
 //            System.out.print("vals for 2-elements done");
         }
         /* Fill val */
-        for (int i = 2*NB_TAXA; i < K; i++) {
+        for (int i = 2 * NB_TAXA; i < K; i++) {
             for (int j = 0; j < interval.rowSize(i) - 1; j++) {
 
 //                System.out.println("IntervalSize: "+interval.rowSize(i));
@@ -249,7 +264,7 @@ public class NetME {
 
         tree.addRow(interval.getRow(usedInterval));
         int m = interval.get(usedInterval, 0);
-        int f = interval.get(usedInterval, interval.rowSize(usedInterval)-1);
+        int f = interval.get(usedInterval, interval.rowSize(usedInterval) - 1);
 
         treeWeights.setBranchLengthAt(usedBranchlength, m, f);
         treeExtration(nbTaxa, usedInterval, split, interval, tableP, val, tree, treeWeights);
@@ -267,7 +282,7 @@ public class NetME {
     /**
      * Calculates the optimal values for treelengths under the
      * minimum evolution criterion and extracts a minimum evolution tree.
-     *
+     * <p/>
      * See D Bryant, 1997: <I>Building Trees, Hunting for Trees and
      * Comparing Trees - Theories and Methods in Phylogenetic Analysis</I>
      */
@@ -299,7 +314,6 @@ public class NetME {
         int length2 = interval.rowSize(usedInterval) - (split + 1);
         int secondVal = interval.get(usedInterval, split + 1);
         double usedBranchlength = 0;
-
 
 
         //Attention intervals are just indices for circ.Ordering, has to be translated!
@@ -370,7 +384,7 @@ public class NetME {
             int newUsedInterval = -1;
 
             for (int j = length1; j < interval.rowSize(usedInterval) - 1; j++) {
-                double ni = (j + 1) - length1  ;
+                double ni = (j + 1) - length1;
                 double nj = interval.rowSize(usedInterval) - (j + 1);
                 double nk = length1;
                 double nl = nbTaxa - interval.rowSize(usedInterval);
@@ -380,11 +394,11 @@ public class NetME {
                 double pk = tableP[length1 - 1][interval.get(usedInterval, 0)];
                 double pl = tableP[interval.rowSize(usedInterval) - 1][firstVal];
                 double branchlength = ((nbTaxa / nl + nbTaxa / nk + nbTaxa / nj + nbTaxa / ni - 4.) *
-                        pm + ((ni + nj) / (ni * nj)) * ((2. * nj - nbTaxa)*
+                        pm + ((ni + nj) / (ni * nj)) * ((2. * nj - nbTaxa) *
                         pi + (2. * ni - nbTaxa) *
                         pj) + (nk + nl) / (nk * nl) * ((2. * nl - nbTaxa) *
-                        pk + (2. * nk - nbTaxa)*
-                        pl)) * (1. / ( 4. * (ni + nj) * (nk + nl)));
+                        pk + (2. * nk - nbTaxa) *
+                        pl)) * (1. / (4. * (ni + nj) * (nk + nl)));
                 double qhelp = val.get((length2 - 1) * nbTaxa + secondVal, j - length1) + branchlength;
 
                 if (qhelp < result) {
@@ -395,7 +409,7 @@ public class NetME {
                 }
             }
             int k = interval.get(usedInterval, length1);
-            int l = interval.get(usedInterval, interval.rowSize(usedInterval)-1);
+            int l = interval.get(usedInterval, interval.rowSize(usedInterval) - 1);
 
             treeWeights.setBranchLengthAt(usedBranchlength, k, l);
 
@@ -404,7 +418,7 @@ public class NetME {
             double nj = interval.rowSize(usedInterval) - 1;
             double nk = nbTaxa - interval.rowSize(usedInterval);
             double pi = tableP[0][interval.get(usedInterval, length1)];
-            double pj= tableP[interval.rowSize(usedInterval) - 2]
+            double pj = tableP[interval.rowSize(usedInterval) - 2]
                     [interval.get(usedInterval, 0)];
             double pk = tableP[interval.rowSize(usedInterval) - 1]
                     [interval.get(usedInterval, 0)];
@@ -413,7 +427,7 @@ public class NetME {
                     * ((1. + nj + nk) * pi - (1. + nj - nk) * pj
                     - (1. + nk - nj) * pk);
 
-            int k = interval.get(usedInterval, interval.rowSize(usedInterval)-1);
+            int k = interval.get(usedInterval, interval.rowSize(usedInterval) - 1);
             int l = interval.get(usedInterval, length1);
 
             treeWeights.setBranchLengthAt(usedBranchlength, k, l);

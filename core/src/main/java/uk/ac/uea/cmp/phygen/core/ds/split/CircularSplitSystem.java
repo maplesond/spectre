@@ -1,3 +1,18 @@
+/*
+ * Phylogenetics Tool suite
+ * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ *
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
 package uk.ac.uea.cmp.phygen.core.ds.split;
 
 import uk.ac.uea.cmp.phygen.core.alg.CircularNNLS;
@@ -41,7 +56,7 @@ public class CircularSplitSystem extends SplitSystem {
                 if (splitWeights.hasWeightAt(j, i)) {
 
                     ArrayList<Integer> sb = new ArrayList<>();
-                    for(int k = i + 1; k < j + 1; k++) {
+                    for (int k = i + 1; k < j + 1; k++) {
                         sb.add(circularOrdering.getAt(k));
                     }
 
@@ -81,10 +96,9 @@ public class CircularSplitSystem extends SplitSystem {
     }
 
 
-
-
     /**
      * Generates a distance matrix based on the weights within this splitsystem.
+     *
      * @return
      */
     public DistanceMatrix generateDistanceMatrix() {
@@ -96,11 +110,11 @@ public class CircularSplitSystem extends SplitSystem {
         for (int i = 0; i < t; i++) {
             for (int j = i + 1; j < t; j++) {
                 for (int k = j; k < t; k++) {
-                    for(int s = i; s < j; s++){
+                    for (int s = i; s < j; s++) {
                         distanceMatrix.incrementDistance(i, j, this.splitWeights.getAt(k, s));
                     }
                 }
-                for (int k = i; k < j; k++){
+                for (int k = i; k < j; k++) {
                     for (int s = 0; s < i; s++) {
                         distanceMatrix.incrementDistance(i, j, this.splitWeights.getAt(k, s));
                     }
@@ -115,10 +129,10 @@ public class CircularSplitSystem extends SplitSystem {
     /**
      * Calculates the weights of this full circular split system.  The weight determines
      * which splits will be returned.
+     *
      * @return Split weights matrix
      */
-    protected SplitWeights calculateSplitWeighting(DistanceMatrix distanceMatrix, CircularOrdering circularOrdering)
-    {
+    protected SplitWeights calculateSplitWeighting(DistanceMatrix distanceMatrix, CircularOrdering circularOrdering) {
         int n = distanceMatrix.size();
         double[][] permutedDistances = new double[n][n];
         double[][] splitWeights = new double[n][n];
@@ -131,7 +145,7 @@ public class CircularSplitSystem extends SplitSystem {
         }
 
         for (int i = 0; i < n; i++) {
-            for(int j = 0; j < n; j++) {
+            for (int j = 0; j < n; j++) {
                 splitWeights[i][j] = 0.;
             }
         }

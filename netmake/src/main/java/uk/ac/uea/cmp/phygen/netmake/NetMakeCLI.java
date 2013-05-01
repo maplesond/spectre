@@ -1,3 +1,19 @@
+/*
+ * Phylogenetics Tool suite
+ * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ *
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
+
 package uk.ac.uea.cmp.phygen.netmake;
 
 import org.apache.commons.cli.*;
@@ -16,10 +32,9 @@ import java.io.IOException;
 
 
 /**
- *
  * @author Sarah Bastkowski
- * See S. Bastkowski, 2010:
- * <I>Algorithmen zum Finden von Bäumen in Neighbor Net Netzwerken</I>
+ *         See S. Bastkowski, 2010:
+ *         <I>Algorithmen zum Finden von Bäumen in Neighbor Net Netzwerken</I>
  */
 public class NetMakeCLI {
 
@@ -86,17 +101,14 @@ public class NetMakeCLI {
 
                 log.info("NetMake: Finished");
             }
-        }
-        catch (IOException ioe) {
+        } catch (IOException ioe) {
             log.error(ioe.getMessage(), ioe);
             System.exit(2);
-        }
-        catch (ParseException exp) {
+        } catch (ParseException exp) {
             System.err.println(exp.getMessage());
             System.err.println(StringUtils.join(exp.getStackTrace(), "\n"));
             System.exit(3);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.error(e.getMessage(), e);
             System.exit(6);
         }
