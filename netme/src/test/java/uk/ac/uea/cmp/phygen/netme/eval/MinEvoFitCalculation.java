@@ -17,20 +17,29 @@
 package uk.ac.uea.cmp.phygen.netme.eval;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phygen.core.ds.split.CircularOrdering;
+import uk.ac.uea.cmp.phygen.core.io.PhygenReaderFactory;
 import uk.ac.uea.cmp.phygen.core.io.nexus.NexusReader;
 import uk.ac.uea.cmp.phygen.core.io.phylip.PhylipReader;
 import uk.ac.uea.cmp.phygen.netmake.NetMake;
+import uk.ac.uea.cmp.phygen.netmake.NetMakeResult;
+import uk.ac.uea.cmp.phygen.netmake.weighting.GreedyMEWeighting;
+import uk.ac.uea.cmp.phygen.netmake.weighting.TSPWeighting;
 import uk.ac.uea.cmp.phygen.netmake.weighting.Weightings;
 import uk.ac.uea.cmp.phygen.netme.NetME;
 import uk.ac.uea.cmp.phygen.netme.NetMEResult;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created with IntelliJ IDEA.
@@ -44,56 +53,52 @@ public class MinEvoFitCalculation {
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
-    private File beesFile = FileUtils.toFile(MinEvoFitCalculation.class.getResource("/eval/bees.nex"));
+    private File beesFile = FileUtils.toFile(MinEvoFitCalculation.class.getResource("/bees.nex"));
 
 
     protected void runMinEvoFitCalc(File inFile, File outFile, File nnFile) throws IOException {
 
-        DistanceMatrix inputData = new PhylipReader().read(inFile);
+        DistanceMatrix inputData = PhygenReaderFactory.create(FilenameUtils.getExtension(inFile.getName())).read(inFile);
 
         StringBuilder fitInfo = new StringBuilder();
 
-        // Run through all weighting types and append tree length produced using input distance matrix to output string
-        for (Weightings weightings : Weightings.values()) {
+        // Loop through all the circular orderings we have available and calculate tree length with net me before
+        // appending output.
+        for(Map.Entry<String, CircularOrdering> entry : createCircularOrderings(inputData, nnFile).entrySet()) {
 
-            // Run netmake with the distance matrix and this specific weighting and retrieve the network
-            NetMake netMake = new NetMake(inputData, weightings.create(inputData.size()));
-            netMake.process();
-            CircularOrdering circOrdering = netMake.getNetwork().getCircularOrdering();
-
-            // Calculate tree length and generate output string
-            String output = calcTreeLengthUsingNetME(weightings.toString(), inputData, circOrdering);
-
-            // Add to output
-            fitInfo.append(output);
+            fitInfo.append(calcTreeLengthUsingNetME(entry.getKey(), inputData, entry.getValue()));
         }
-
-
-        //OutFile from NNet to provide circular ordering
-        if (nnFile != null) {
-
-            // Get circular ordering from neighbor net file
-            CircularOrdering circOrdering = new NexusReader().extractCircOrdering(nnFile);
-
-            // Calculate tree length and generate output string
-            String output = calcTreeLengthUsingNetME("NNET", inputData, circOrdering);
-
-            // Add to output
-            fitInfo.append(output);
-        }
-
-
-        // Create random circular ordering
-        CircularOrdering circOrdering = CircularOrdering.createRandomCircularOrdering(inputData.size());
-
-        // Calculate tree length and generate output string
-        String output = calcTreeLengthUsingNetME("RANDOM_NET", inputData, circOrdering);
-
-        // Add to output
-        fitInfo.append(output);
 
         // Write output file to disk
         FileUtils.writeStringToFile(outFile, fitInfo.toString());
+    }
+
+    protected Map<String, CircularOrdering> createCircularOrderings(DistanceMatrix distanceMatrix, File nnFile) throws IOException {
+
+        Map<String, CircularOrdering> coMap = new LinkedHashMap<>();
+
+        // Run through all weighting types and create circular ordering using input distance matrix to output string via
+        // NetMake
+        for (Weightings weightings : Weightings.getValuesExceptGreedyME()) {
+
+            // Run netmake with the distance matrix and this specific weighting and retrieve the network
+            NetMakeResult netMakeResult = new NetMake(distanceMatrix, weightings.create(distanceMatrix.size())).process();
+            coMap.put(weightings.toString(), netMakeResult.getNetwork().getCircularOrdering());
+
+            // Create circular ordering for GreedyME
+            NetMakeResult greedyNetMake = new NetMake(distanceMatrix, new GreedyMEWeighting(distanceMatrix), weightings.create(distanceMatrix.size())).process();
+            coMap.put("GREEDY_ME_" + weightings.toString(), greedyNetMake.getNetwork().getCircularOrdering());
+        }
+
+        // Create circular ordering from neighbour net file if available
+        if (nnFile != null) {
+            coMap.put("NNET", new NexusReader().extractCircOrdering(nnFile));
+        }
+
+        // Create random circular ordering
+        coMap.put("RANDOM", CircularOrdering.createRandomCircularOrdering(distanceMatrix.size()));
+
+        return coMap;
     }
 
 
@@ -126,6 +131,7 @@ public class MinEvoFitCalculation {
 
         this.runMinEvoFitCalc(beesFile, outDir, null);
 
+        assertTrue(true);
     }
 
 

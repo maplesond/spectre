@@ -68,7 +68,7 @@ public class EdgeAdjacents {
     /**
      * Creates an object EdgeAdjacents, so C, pTemp and C_alpha will be determined
      *
-     * @param splitsCopy The split list
+     * @param splitsASide The split list
      * @param k          The index of particular split we are dealing with
      * @param P
      * @return A new EdgeAdjacents object containing C, pTemp and C_alpha values.
@@ -80,13 +80,14 @@ public class EdgeAdjacents {
 
         TableauSplits splits = new TableauSplits(splitsASide, nbTaxa);
 
-        // Get the current split and sort it
-        Edge edge = new Edge();
-        edge.addAll(splits.getRow(TableauSplits.SplitSide.A_SIDE, k));
-        edge.sort();
-        log.debug("Edge_a: {0}", edge);
-        Edge edge_b = new Edge(splits.getBSide().getRow(k));
-        edge_b.sort();
+        // Get the edges on either side of the current split and sort them
+        Edge edgeA = new Edge(splits.getASide().getRow(k));
+        edgeA.sort();
+        log.debug("Edge A: {0}", edgeA);
+
+        Edge edgeB = new Edge(splits.getBSide().getRow(k));
+        edgeB.sort();
+        log.debug("Edge B: {0}", edgeB);
 
 
         Tableau<Integer> combinedSplitList = splits.combineSides();
@@ -98,9 +99,9 @@ public class EdgeAdjacents {
 //            splits.print();
 
         EdgeSubsetFinder.SubsetList a_side = null;
-        boolean internalEdge = edge.getType() == Edge.EdgeType.INTERNAL;
+        boolean internalEdge = edgeA.getType() == Edge.EdgeType.INTERNAL;
         if (internalEdge) {
-            Edge edge_a = new Edge(edge);
+            Edge edge_a = new Edge(edgeA);
 
             EdgeSubsetFinder esf = new EdgeSubsetFinder(combinedSplitList, sdl, edge_a);
             a_side = esf.process();
@@ -113,7 +114,7 @@ public class EdgeAdjacents {
         //these are stores in edge_b
 
 
-        EdgeSubsetFinder esf_b = new EdgeSubsetFinder(combinedSplitList, sdl, edge_b);
+        EdgeSubsetFinder esf_b = new EdgeSubsetFinder(combinedSplitList, sdl, edgeB);
         EdgeSubsetFinder.SubsetList b_side = esf_b.process();
 
 
@@ -125,7 +126,7 @@ public class EdgeAdjacents {
 
 //        System.out.println("A_side: " + A_side.rows() + " B_side: " + B_side.rows());
 
-        int offset = (edge.getType() == Edge.EdgeType.EXTERNAL) ? 0 : a_side.size();
+        int offset = (edgeA.getType() == Edge.EdgeType.EXTERNAL) ? 0 : a_side.size();
         int C[] = new int[offset + b_side.size()];
 //        System.out.println("A_side Row size: "+A_side.rows());
         if (internalEdge) {

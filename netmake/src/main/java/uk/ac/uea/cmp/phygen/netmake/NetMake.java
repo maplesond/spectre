@@ -53,10 +53,6 @@ public class NetMake {
     // Temporary state variables.
     private Tableau<Integer> components;
 
-    // Output class variables
-    private CompatibleSplitSystem tree;
-    private CircularSplitSystem network;
-
     /**
      * Creates a new NetMake object with a distance matrix and a single weighting.
      *
@@ -96,39 +92,26 @@ public class NetMake {
         reset();
     }
 
-    public void save(File outputDir, String prefix) throws IOException {
-
-        PhygenWriter phygenWriter = PhygenWriterFactory.NEXUS.create();
-        String extension = PhygenWriterFactory.NEXUS.getPrimaryExtension();
-
-        File networkOutputFile = new File(outputDir, prefix + ".network." + extension);
-        File treeOutputFile = new File(outputDir, prefix + ".tree." + extension);
-
-        phygenWriter.writeSplitSystem(networkOutputFile, this.getNetwork());
-        phygenWriter.writeSplitSystem(treeOutputFile, this.getTree());
-        //phygenWriter.writeTree(treeOutputFile, this.getTree(), this.distanceMatrix, this.getTree().calculateTreeWeighting(this.distanceMatrix));
-    }
-
-    private enum RunMode {
+    protected enum RunMode {
 
         UNKNOWN {
-            public void run(NetMake nn) {
+            public NetMakeResult run(NetMake nn) {
                 throw new UnsupportedOperationException("Run Mode was not known");
             }
         },
         NORMAL {
-            public void run(NetMake nn) {
-                nn.runNN();
+            public NetMakeResult run(NetMake nn) {
+                return nn.runNN();
             }
         },
         HYBRID {
-            public void run(NetMake nn) {
-                nn.runNN();
+            public NetMakeResult run(NetMake nn) {
+                return nn.runNN();
             }
         },
         HYBRID_GREEDYME {
-            public void run(NetMake nn) {
-                nn.runNN();
+            public NetMakeResult run(NetMake nn) {
+                return nn.runNN();
             }
         };
 
@@ -136,29 +119,13 @@ public class NetMake {
             return (this == HYBRID || this == HYBRID_GREEDYME);
         }
 
-        public abstract void run(NetMake nn);
+        public abstract NetMakeResult run(NetMake nn);
     }
 
-    ;
-
-
-    /**
-     * Retrieves the network constructed by NeighborNet
-     *
-     * @return The network.
-     */
-    public CircularSplitSystem getNetwork() {
-        return network;
+    public String getRunMode() {
+        return this.mode.toString();
     }
 
-    /**
-     * Retrieves the tree constructed by NeighborNet
-     *
-     * @return The tree.
-     */
-    public CompatibleSplitSystem getTree() {
-        return tree;
-    }
 
     /**
      * Helper method that returns the type of run mode configuration the client
@@ -193,8 +160,6 @@ public class NetMake {
      * Resets the output class variables, so the user can re-run NeighbourNet.
      */
     public final void reset() {
-        this.network = null;
-        this.tree = null;
         this.components = initialiseComponents(this.NB_TAXA);
     }
 
@@ -204,12 +169,12 @@ public class NetMake {
      *
      * @return A tree split system
      */
-    public void process() {
+    public NetMakeResult process() {
 
-        this.mode.run(this);
+        return this.mode.run(this);
     }
 
-    protected Tableau<Integer> runNN() {
+    protected NetMakeResult runNN() {
         // Contains the result of the neighbornet process.
         Tableau<Integer> treeSplits = new Tableau<Integer>();
         addTrivialSplits(treeSplits);
@@ -272,10 +237,10 @@ public class NetMake {
         organiseSplits(treeSplits, permutation);
 
         // Set tree split system
-        this.tree = treeSplits.convertToSplitSystem(this.distanceMatrix, permutation);
-        this.network = new CircularSplitSystem(this.distanceMatrix, permutation);
+        CompatibleSplitSystem tree = treeSplits.convertToSplitSystem(this.distanceMatrix, permutation);
+        CircularSplitSystem network = new CircularSplitSystem(this.distanceMatrix, permutation);
 
-        return treeSplits;
+        return new NetMakeResult(tree, network);
     }
 
     protected Pair<Integer, Integer> selectionStep1(DistanceMatrix c2c) {

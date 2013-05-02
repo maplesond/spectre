@@ -23,7 +23,6 @@ import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.ds.SummedDistanceList;
 import uk.ac.uea.cmp.phygen.core.ds.Tableau;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
-import uk.ac.uea.cmp.phygen.core.ds.split.CircularSplitSystem;
 import uk.ac.uea.cmp.phygen.core.math.Statistics;
 import uk.ac.uea.cmp.phygen.netmake.edge.EdgeAdjacents;
 
@@ -40,11 +39,8 @@ public class GreedyMEWeighting extends Weighting {
 
     private final static Logger log = LoggerFactory.getLogger(GreedyMEWeighting.class);
 
-    // Input class variables.
     private DistanceMatrix distanceMatrix;
 
-    // Output class variables
-    private Pair<Integer, Integer> bestSplits;
 
     /**
      * Initialises a GreedyMEWeighting with a SplitSystem
@@ -56,13 +52,15 @@ public class GreedyMEWeighting extends Weighting {
         super();
 
         this.distanceMatrix = distanceMatrix;
-
-        this.bestSplits = null;
     }
 
 
     public Pair<Integer, Integer> makeMECherry(Tableau<Integer> splits, final Tableau<Integer> splitsCreation) {
+
         double oldTreeLength = Double.POSITIVE_INFINITY;
+
+        Pair<Integer, Integer> bestSplits = null;
+
         for (int i = 0; i < splitsCreation.rows() - 1; i++) {
             for (int j = i + 1; j < splitsCreation.rows(); j++) {
 
@@ -75,7 +73,7 @@ public class GreedyMEWeighting extends Weighting {
 
                 if (treeLength < oldTreeLength) {
                     oldTreeLength = treeLength;
-                    this.bestSplits = new ImmutablePair<Integer, Integer>(i, j);
+                    bestSplits = new ImmutablePair<Integer, Integer>(i, j);
                 }
 
                 splits.removeRow(splits.rows() - 1);
@@ -87,9 +85,7 @@ public class GreedyMEWeighting extends Weighting {
 
     private double calculateTreeLength(Tableau<Integer> splits) {
 
-        List<Double> edgeWeights = this.getEdgeWeights(splits);
-
-        return Statistics.sumDoubles(edgeWeights);
+        return Statistics.sumDoubles(this.getEdgeWeights(splits));
     }
 
     /*
@@ -99,109 +95,259 @@ public class GreedyMEWeighting extends Weighting {
      */
     private double calculateEdges(double P_0, EdgeAdjacents aEdgeAdjacents, boolean external) {
 
-        double edgeWeight = 0;
-        int nb_taxa = this.distanceMatrix.size();
-
-//        boolean external = false;
-        log.debug("P_0: {0}", P_0);
+        int nbTaxa = this.distanceMatrix.size();
 
         int C[] = aEdgeAdjacents.getNumberOfLeavesInAdjacents();
 
-        SummedDistanceList P = aEdgeAdjacents.getTempSDL();
+        double d[] = calcD(C, nbTaxa);
 
-        log.debug("P: {0}", P.toString());
+        InitialVars initialVars = external ?
+                InitialVars.createExternalVars(C.length, nbTaxa) :
+                InitialVars.createInternalVars(C, aEdgeAdjacents.getSplitPoint());
 
-        int C_alpha = aEdgeAdjacents.getSplitPoint();
-
-        int v[] = new int[C.length];
-        double s[] = new double[C.length];
-        double w[] = new double[C.length];
-
-        int n_alpha = 0, n_beta = 0;
-        double k = 1;
-        double gamma = 0;
-        int zero = -1;
-
-        double d[] = new double[C.length];
-
-        for (int i = 0; i < C.length; i++) {
-//            System.out.println("C : " + C[i]);
-            d[i] = (double) nb_taxa / (double) C[i] - 2.0;
-        }
-
-
-        if (external == true) {
-            for (int i = 0; i < C.length; i++) {
-                v[i] = 1;
-            }
-            n_alpha = (nb_taxa - 1);
-            n_beta = 1;
-            C_alpha = C.length;
-//            System.out.println("external edge");
-        } else {
-            //Check if C_alpha is right index
-            for (int i = 0; i < C_alpha; i++) {
-                n_alpha += C[i];
-            }
-
-            for (int i = C_alpha; i < C.length; i++) {
-                n_beta += C[i];
-            }
-
-            for (int i = 0; i < C_alpha; i++) {
-                v[i] = n_beta;
-            }
-
-            for (int i = C_alpha; i < C.length; i++) {
-                v[i] = n_alpha;
-            }
-        }
-
-
-//        for (int i = 0; i < C.length; i++) {
-//            System.out.println("Vector v: " + v[i]);
-//        }
-        //Determine if edge is external or internal
-
-//        if(C_alpha == 1 || C_alpha == C.length){
-//           external = true;
-//        }
 
         //Matrix inversion for X^-1 (see D.Bryant thesis page 153)
+        InversionResult inversionResult = matrixInversion(C, nbTaxa);
+
+        double gamma = calcGamma(initialVars, inversionResult.getS());
+
+        // There is no zero in the matrix "D" (notation refers to D.Bryant thesis algorithm 15)
+        double[] w = calcW(inversionResult.getZero(), nbTaxa, inversionResult.calcK(), C, gamma, d, initialVars.getV());
+
+        Sums sums = Sums.createSums(initialVars, w, C, aEdgeAdjacents.getTempSDL());
+
+        //edge length calculation
+        double edgeWeight = calcEdgeWeight(sums, initialVars.getnAlpha(), initialVars.getnBeta(), P_0);
+
+        // Check for dodgy results... sometimes can happen due to div by 0
+        if (Double.isInfinite(edgeWeight)) {
+            throw new IllegalArgumentException("Edge Weight was infinite!");
+        }
+        if (Double.isNaN(edgeWeight)) {
+            throw new IllegalArgumentException("Edge Weight was not a number");
+        }
+
+        return edgeWeight;
+    }
+
+    private double calcEdgeWeight(Sums sums, int n_alpha, int n_beta, double P_0) {
+        //edge length calculation
+        double edgeWeight = (P_0 - sums.getSum1());
+
+        if (edgeWeight != 0.0) {
+            edgeWeight = edgeWeight / (n_alpha * n_beta - (sums.getSum2() + sums.getSum3()));
+        }
+
+        return edgeWeight;
+    }
+
+
+    private static class InitialVars {
+
+        private int v[];
+        private int nAlpha;
+        private int nBeta;
+        private int cAlpha;
+
+        public InitialVars(int[] v, int nAlpha, int nBeta, int cAlpha) {
+            this.v = v;
+            this.nAlpha = nAlpha;
+            this.nBeta = nBeta;
+            this.cAlpha = cAlpha;
+        }
+
+        public int[] getV() {
+            return v;
+        }
+
+        public int getnAlpha() {
+            return nAlpha;
+        }
+
+        public int getnBeta() {
+            return nBeta;
+        }
+
+        public int getcAlpha() {
+            return cAlpha;
+        }
+
+        public static InitialVars createExternalVars(int cLen, int nbTaxa) {
+
+            int[] v = new int[cLen];
+            for (int i = 0; i < cLen; i++) {
+                v[i] = 1;
+            }
+            int nAlpha = (nbTaxa - 1);
+            int nBeta = 1;
+            int cAlpha = cLen;
+
+            return new InitialVars(v, nAlpha, nBeta, cAlpha);
+        }
+
+        public static InitialVars createInternalVars(int[] C, int cAlpha) {
+
+            int nAlpha = 0;
+            int nBeta = 0;
+            int v[] = new int[C.length];
+
+            //Check if C_alpha is right index
+            for (int i = 0; i < cAlpha; i++) {
+                nAlpha += C[i];
+            }
+
+            for (int i = cAlpha; i < C.length; i++) {
+                nBeta += C[i];
+            }
+
+            for (int i = 0; i < cAlpha; i++) {
+                v[i] = nBeta;
+            }
+
+            for (int i = cAlpha; i < C.length; i++) {
+                v[i] = nAlpha;
+            }
+
+            return new InitialVars(v, nAlpha, nBeta, cAlpha);
+        }
+    }
+
+
+    private double[] calcD(int[] C, int nbTaxa) {
+        double[] d = new double[C.length];
+
         for (int i = 0; i < C.length; i++) {
-            if (C[i] == (double) nb_taxa / 2.0) {
+            d[i] = (double) nbTaxa / (double) C[i] - 2.0;
+        }
+
+        return d;
+    }
+
+    private static class Sums {
+        private double sum1;
+        private double sum2;
+        private double sum3;
+
+        private Sums(double sum1, double sum2, double sum3) {
+            this.sum1 = sum1;
+            this.sum2 = sum2;
+            this.sum3 = sum3;
+        }
+
+        public double getSum1() {
+            return sum1;
+        }
+
+        public double getSum2() {
+            return sum2;
+        }
+
+        public double getSum3() {
+            return sum3;
+        }
+
+        public static Sums createSums(InitialVars initialVars, double[] w, int[] C, SummedDistanceList P) {
+            double sum1 = 0.0;
+            double sum2 = 0.0;
+            double sum3 = 0.0;
+
+            for (int i = 0; i < C.length; i++) {
+                sum1 += ((w[i] * P.get(i)) / (double) C[i]);
+            }
+            log.debug("sum1: {0}", sum1);
+
+            for (int i = 0; i < initialVars.getcAlpha(); i++) {
+                sum2 += (initialVars.getnBeta() * w[i]);
+            }
+            log.debug("sum2: {0}", sum2);
+
+            for (int i = initialVars.getcAlpha(); i < C.length; i++) {
+                sum3 += (initialVars.getnAlpha() * w[i]);
+            }
+            log.debug("sum3: {0}", sum3);
+
+            return new Sums(sum1, sum2, sum3);
+        }
+    }
+
+
+    private double calcGamma(InitialVars initialVars, final double[] s) {
+
+        double gamma = 0.0;
+
+        for (int i = 0; i < initialVars.getcAlpha(); i++) {
+            gamma += initialVars.getnBeta() * s[i];
+        }
+        for (int i = initialVars.getcAlpha(); i < initialVars.getV().length; i++) {
+            gamma += initialVars.getnAlpha() * s[i];
+        }
+
+        return gamma;
+    }
+
+
+    private class InversionResult {
+        private double[] s;
+        private int zero;
+
+        private InversionResult(double[] s, int zero) {
+            this.s = s;
+            this.zero = zero;
+        }
+
+        public double[] getS() {
+            return s;
+        }
+
+        public int getZero() {
+            return zero;
+        }
+
+        public double calcK() {
+            return Statistics.sumDoubles(s) + 1.0;
+        }
+    }
+    /**
+     * Matrix inversion for X^-1 (see D.Bryant thesis page 153)
+     * @param C
+     * @param nbTaxa
+     * @return
+     */
+    private InversionResult matrixInversion(final int[] C, final int nbTaxa) {
+
+        double[] s = new double[C.length];
+        int zero = -1;
+        for (int i = 0; i < C.length; i++) {
+            if (C[i] == (double) nbTaxa / 2.0) {
                 s[i] = 0;
                 zero = i;
-
             } else {
-                log.debug("this.nb_taxa: {0} Ci: {1}", new Object[]{nb_taxa, C[i]});
-                s[i] = (double) C[i] / ((double) nb_taxa - 2.0 * (double) C[i]);
+                log.debug("this.nb_taxa: {0} Ci: {1}", new Object[]{nbTaxa, C[i]});
+                s[i] = (double) C[i] / ((double) nbTaxa - 2.0 * (double) C[i]);
             }
         }
 
-//        for (int i = 0; i < C.length; i++) {
-//            System.out.println("s: " + s[i]);
-//        }
+        return new InversionResult(s, zero);
+    }
 
-        for (int i = 0; i < C.length; i++) {
-            k += s[i];
-        }
-        log.debug("c-alpha: {0}", C_alpha);
-        for (int i = 0; i < C_alpha; i++) {
-            gamma += n_beta * s[i];
-        }
-        for (int i = C_alpha; i < C.length; i++) {
+    /**
+     * There is no zero in the matrix "D" (notation refers to D.Bryant thesis algorithm 15)
+     * @param zero
+     * @param nbTaxa
+     * @param k
+     * @param C
+     * @param gamma
+     * @param d
+     * @param v
+     * @return
+     */
+    private double[] calcW(final int zero, final int nbTaxa, final double k, final int[] C, final double gamma, final double[] d, final int[] v) {
 
-            gamma += n_alpha * s[i];
-        }
+        double[] w = new double[C.length];
 
-
-//        System.out.println("nbeta: " + n_beta + " nalpha: " + n_alpha);
-//        System.out.println("k: " + k + " gamma: " + gamma);
-//there is no zero in the matrix "D" (notation refers to D.Bryant thesis algorithm 15
         if (zero == -1) {
             for (int i = 0; i < C.length; i++) {
-                w[i] = (-1 / ((double) nb_taxa / (double) C[i] - 2.0)) * (gamma / k - (double) v[i]);
+                w[i] = (-1 / ((double) nbTaxa / (double) C[i] - 2.0)) * (gamma / k - (double) v[i]);
             }
             //there is a zero at position zero
         } else {
@@ -216,56 +362,7 @@ public class GreedyMEWeighting extends Weighting {
 
         }
 
-        double sum_1 = 0, sum_2 = 0, sum_3 = 0;
-
-        for (int i = 0; i < C.length; i++) {
-            //System.out.println("P " + i + ": " + P.get(i) + " C " + i + ": " + C[i] + " w " + i + ": " + w[i]);
-
-            sum_1 += (w[i] * P.get(i)) / (double) C[i];
-        }
-        log.debug("sum1: {0}", sum_1);
-
-        for (int i = 0; i < C_alpha; i++) {
-            sum_2 += n_beta * w[i];
-        }
-        log.debug("n_alpha: {0}", n_alpha);
-        log.debug("n_beta: {0}", n_beta);
-
-        log.debug("sum2: {0}", sum_2);
-        for (int i = C_alpha; i < C.length; i++) {
-            sum_3 += n_alpha * w[i];
-        }
-        log.debug("sum3: {0}", sum_3);
-        //edge length calculation
-        edgeWeight = (P_0 - sum_1);
-
-
-        if (edgeWeight != 0) {
-
-            double part2 = sum_2 + sum_3;
-
-//            if (n_alpha == 0.0 || part2 == 0.0) {
-//                log.log(Level.FINE, "Oh noes");
-//            }
-
-
-            edgeWeight = edgeWeight / (n_alpha * n_beta - part2);
-
-            if (Double.isInfinite(edgeWeight) || Double.isInfinite(part2)) {
-                log.warn("Oh noes");
-            }
-        }
-
-        if (Double.isInfinite(edgeWeight)) {
-            throw new IllegalArgumentException("Edge Weight was infinite!");
-        }
-        if (Double.isNaN(edgeWeight)) {
-            throw new IllegalArgumentException("Edge Weight was not a number");
-        }
-
-        //Gives INF cus denominator GIVES ZERO SOMETIMES :(
-//        System.out.println("edge: " + edgeWeight);
-        return edgeWeight;
+        return w;
     }
 
 
@@ -273,15 +370,13 @@ public class GreedyMEWeighting extends Weighting {
 
         ArrayList<Double> edgeWeights = new ArrayList<Double>();
 
-        CircularSplitSystem splitSystem = tableau.convertToSplitSystem(this.distanceMatrix);
+        SummedDistanceList P = new SummedDistanceList(this.calculateP(tableau, this.distanceMatrix));
 
-        SummedDistanceList P = splitSystem.calculateP(this.distanceMatrix);
-
-        for (int i = 0; i < splitSystem.getNbSplits(); i++) {
+        for (int i = 0; i < tableau.rows(); i++) {
 
             Tableau<Integer> splitsCopy = new Tableau<Integer>(tableau);
 
-            boolean external = splitSystem.getSplitAt(i).onExternalEdge();
+            boolean external = tableau.rowSize(i) == 1;
 
             EdgeAdjacents aEdgeAdjacents = EdgeAdjacents.retrieveAdjacents(splitsCopy, i, P, this.distanceMatrix.size());
 
@@ -292,6 +387,44 @@ public class GreedyMEWeighting extends Weighting {
         }
 
         return edgeWeights;
+    }
+
+
+    private double[] calculateP(Tableau<Integer> splits, DistanceMatrix distanceMatrix) {
+
+        int nb_taxa = this.distanceMatrix.size();
+
+        double P[] = new double[splits.rows()];
+
+        //for each split, determine how many elements are on each side of the split
+        for (int i = 0; i < splits.rows(); i++) {
+
+            boolean splited[] = new boolean[nb_taxa];
+            for (int h = 0; h < splited.length; h++) {
+                splited[h] = false;
+            }
+
+            //Array stores the info which elements are on one side
+            //each element of the split
+            for (int j = 0; j < splits.rowSize(i); j++) {
+                for (int k = 0; k < nb_taxa; k++) {
+                    if (splits.get(i, j) == k) {
+                        splited[k] = true;
+                    }
+                }
+            }
+
+            //sums up all distances from the elements on the one side of the edge
+            //to the other side
+            for (int j = 0; j < splits.rowSize(i); j++) {
+                for (int k = 0; k < nb_taxa; k++) {
+                    if (splited[k] == false) {
+                        P[i] += this.distanceMatrix.getDistance(splits.get(i, j), k);
+                    }
+                }
+            }
+        }
+        return P;
     }
 
     /**

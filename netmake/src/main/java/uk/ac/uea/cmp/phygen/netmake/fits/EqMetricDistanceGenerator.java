@@ -21,6 +21,7 @@ import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phygen.core.ds.distance.RandomDistanceGenerator;
 import uk.ac.uea.cmp.phygen.core.ds.split.CompatibleSplitSystem;
 import uk.ac.uea.cmp.phygen.netmake.NetMake;
+import uk.ac.uea.cmp.phygen.netmake.NetMakeResult;
 import uk.ac.uea.cmp.phygen.netmake.weighting.TSPWeighting;
 
 /**
@@ -40,8 +41,8 @@ public class EqMetricDistanceGenerator implements DistanceGenerator {
         DistanceMatrix inputData = new RandomDistanceGenerator().generateDistances(n);
 
         NetMake netMake = new NetMake(inputData, new TSPWeighting(n));
-        netMake.process();
-        CompatibleSplitSystem splits = netMake.getTree();
+        NetMakeResult netMakeResult = netMake.process();
+        CompatibleSplitSystem splits = netMakeResult.getTree();
         /*double[][] treeWeights = splits.calculateSplitWeighting();
 
         for (int i = 0; i < n; i++) {

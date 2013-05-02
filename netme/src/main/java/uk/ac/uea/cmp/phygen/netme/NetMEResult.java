@@ -17,6 +17,10 @@
 package uk.ac.uea.cmp.phygen.netme;
 
 import uk.ac.uea.cmp.phygen.core.ds.split.CompatibleSplitSystem;
+import uk.ac.uea.cmp.phygen.core.io.nexus.NexusWriter;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Created with IntelliJ IDEA.
@@ -41,5 +45,13 @@ public class NetMEResult {
 
     public CompatibleSplitSystem getOriginalMETree() {
         return originalMETree;
+    }
+
+    public void save(File minEvoFile, File origMinEvoFile) throws IOException {
+
+        NexusWriter nexusWriter = new NexusWriter();
+
+        nexusWriter.writeSplitSystem(minEvoFile, this.getMeTree());
+        nexusWriter.writeSplitSystem(origMinEvoFile, this.getOriginalMETree());
     }
 }

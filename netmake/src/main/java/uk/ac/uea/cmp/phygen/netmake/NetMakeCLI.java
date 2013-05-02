@@ -92,14 +92,19 @@ public class NetMakeCLI {
                         weighting1,
                         weighting2);
 
-                log.info("NetMake: System configured");
+                log.info("NetMake: System configured.  Netmake runmode: " + netMake.getRunMode());
 
-                // Run NetMake and save results.
-                log.info("NetMake: Started");
-                netMake.process();
-                netMake.save(netMakeOptions.getOutputDir(), netMakeOptions.getPrefix());
+                log.info("NetMake: Processing Started");
 
-                log.info("NetMake: Finished");
+                // Run NetMake
+                NetMakeResult netMakeResult = netMake.process();
+
+                log.info("NetMake: Processing Finished");
+
+                // Save results.
+                netMakeResult.save(netMakeOptions.getOutputDir(), netMakeOptions.getPrefix());
+
+                log.info("NetMake: Saved results to disk");
             }
         } catch (IOException ioe) {
             log.error(ioe.getMessage(), ioe);

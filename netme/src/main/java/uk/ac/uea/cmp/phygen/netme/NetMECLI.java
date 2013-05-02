@@ -93,14 +93,11 @@ public class NetMECLI {
 
                 log.info("NetME: Finished");
 
-                // Write out
-                NexusWriter nexusWriter = new NexusWriter();
-
-                File minEvoFile = new File(netMEOptions.getOutputDir(), netMEOptions.getPrefix() + ".min-evo.nex");
-                File origMinEvoFile = new File(netMEOptions.getOutputDir(), netMEOptions.getPrefix() + ".original-min-evo.nex");
-
-                nexusWriter.writeSplitSystem(minEvoFile, netMeResult.getMeTree());
-                nexusWriter.writeSplitSystem(origMinEvoFile, netMeResult.getOriginalMETree());
+                // Save result to disk
+                netMeResult.save(
+                        new File(netMEOptions.getOutputDir(), netMEOptions.getPrefix() + ".min-evo.nex"),
+                        new File(netMEOptions.getOutputDir(), netMEOptions.getPrefix() + ".original-min-evo.nex")
+                );
 
                 log.info("NetME: Results saved");
             }
