@@ -13,13 +13,13 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package uk.ac.uea.cmp.phygen.core.ds;
+package uk.ac.uea.cmp.phygen.core.ds.quartet;
 
 import java.util.Arrays;
 
 /**
- * Objects of this class are used as keys in the hashmap that associates sorts
- * 4-tuples of taxa with the corresponding weights of the three quartets
+ * Objects of this class are used as keys in the hashmap that associates sorts 4-tuples of taxa with the corresponding
+ * weights of the three quartets
  */
 public class Quartet implements Comparable {
     //indices of the four taxa

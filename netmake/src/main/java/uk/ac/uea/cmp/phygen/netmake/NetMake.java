@@ -23,14 +23,10 @@ import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phygen.core.ds.split.CircularOrdering;
 import uk.ac.uea.cmp.phygen.core.ds.split.CircularSplitSystem;
 import uk.ac.uea.cmp.phygen.core.ds.split.CompatibleSplitSystem;
-import uk.ac.uea.cmp.phygen.core.io.PhygenWriter;
-import uk.ac.uea.cmp.phygen.core.io.PhygenWriterFactory;
 import uk.ac.uea.cmp.phygen.netmake.weighting.GreedyMEWeighting;
 import uk.ac.uea.cmp.phygen.netmake.weighting.TreeWeighting;
 import uk.ac.uea.cmp.phygen.netmake.weighting.Weighting;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 
 /**

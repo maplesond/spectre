@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package uk.ac.uea.cmp.phygen.core.math;
+package uk.ac.uea.cmp.phygen.core.math.matrix;
 
 import java.util.LinkedList;
 
@@ -23,8 +23,8 @@ import java.util.LinkedList;
  */
 public class BitMatrix {
 
-    boolean[][] data;
-    int rows, columns;
+    private boolean[][] data;
+    private int rows, columns;
 
     public BitMatrix(int rows, int columns) {
 

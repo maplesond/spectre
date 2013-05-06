@@ -117,7 +117,7 @@
         <module>core</module>
         <module>netmake</module>
         <module>superq</module>
-        <module>qnet</module>
+        <module>uk.ac.uea.cmp.phygen.superq.qnet</module>
         <module>netme</module>
     </modules>
 

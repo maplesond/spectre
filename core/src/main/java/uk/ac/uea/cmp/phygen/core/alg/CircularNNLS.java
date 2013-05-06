@@ -410,7 +410,7 @@ public class CircularNNLS {
                             active[this_index.first][this_index.second] = true;
                             //  cout<<"Fixing "<<this_index.first<<","<<this_index.second<<endl;
                         }
-                        runConjugateGrads(ntax, r, w, p, y, W, AtWd, active, x); /* Re-optimise, so that the current x is always optimal */
+                        runConjugateGrads(ntax, r, w, p, y, W, AtWd, active, x); /* Re-uk.ac.uea.cmp.phygen.superq.optimise, so that the current x is always optimal */
                     }
                 }
 
@@ -510,7 +510,7 @@ public class CircularNNLS {
                     active[min_i][min_j] = false;
             } else {
                 /* We check to see whether adding any edges back in gives a redued AIC. We use a heuristic calculation.
-                 * If we add b_i back in, and just optimise that single variable, then the AIC decreases when
+                 * If we add b_i back in, and just uk.ac.uea.cmp.phygen.superq.optimise that single variable, then the AIC decreases when
                  * 		A'WA_ii * logPiPlus2 - grad^2 < 0.
                  */
                 double mininfo = 0.0;
@@ -629,7 +629,7 @@ public class CircularNNLS {
                             active[this_index.first][this_index.second] = true;
                             //  cout<<"Fixing "<<this_index.first<<","<<this_index.second<<endl;
                         }
-                        runConjugateGrads(ntax, r, w, p, y, W, AtWd, active, x); /* Re-optimise, so that the current x is always optimal */
+                        runConjugateGrads(ntax, r, w, p, y, W, AtWd, active, x); /* Re-uk.ac.uea.cmp.phygen.superq.optimise, so that the current x is always optimal */
                     }
                 }
 
@@ -729,7 +729,7 @@ public class CircularNNLS {
                     active[min_i][min_j] = false;
             } else {
                 /* We check to see whether adding any edges back in gives a redued AIC. We use a heuristic calculation.
-                 * If we add b_i back in, and just optimise that single variable, then the AIC decreases when
+                 * If we add b_i back in, and just uk.ac.uea.cmp.phygen.superq.optimise that single variable, then the AIC decreases when
                  * 		A'WA_ii * logPiPlus2 - grad^2 < 0.
                  */
                 double mininfo = 0.0;

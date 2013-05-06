@@ -27,7 +27,6 @@ import uk.ac.uea.cmp.phygen.core.ds.split.CircularOrdering;
 import uk.ac.uea.cmp.phygen.core.io.PhygenReader;
 import uk.ac.uea.cmp.phygen.core.io.PhygenReaderFactory;
 import uk.ac.uea.cmp.phygen.core.io.nexus.NexusReader;
-import uk.ac.uea.cmp.phygen.core.io.nexus.NexusWriter;
 
 import java.io.File;
 import java.io.IOException;

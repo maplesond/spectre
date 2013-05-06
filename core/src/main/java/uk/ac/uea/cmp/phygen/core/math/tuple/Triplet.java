@@ -13,138 +13,108 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package uk.ac.uea.cmp.phygen.core.math;
+package uk.ac.uea.cmp.phygen.core.math.tuple;
 
 /**
  * Triplet of values class
  * <p/>
  * Derives from the VisRD Triplet class
  */
-public class Triplet {
+public class Triplet<T extends Number> {
 
     /**
      * Data
      */
-    double a, b, c;
+    private T a, b, c;
 
-    /**
-     * Constructor
-     */
+
     public Triplet() {
-
-        a = 0;
-        b = 0;
-        c = 0;
-
+        this.a = null;
+        this.b = null;
+        this.c = null;
     }
 
     /**
      * Constructor
      */
-    public Triplet(double newA, double newB, double newC) {
+    public Triplet(T newA, T newB, T newC) {
 
         a = newA;
         b = newB;
         c = newC;
-
     }
 
     /**
      * a accessor
      */
-    public double getA() {
-
+    public T getA() {
         return a;
-
     }
 
     /**
      * b accessor
      */
-    public double getB() {
-
+    public T getB() {
         return b;
-
     }
 
     /**
      * c accessor
      */
-    public double getC() {
-
+    public T getC() {
         return c;
-
     }
 
     /**
      * a mutator
      */
-    public void setA(double newA) {
-
+    public void setA(T newA) {
         a = newA;
-
     }
 
     /**
      * b mutator
      */
-    public void setB(double newB) {
-
+    public void setB(T newB) {
         b = newB;
-
     }
 
     /**
      * c mutator
      */
-    public void setC(double newC) {
-
+    public void setC(T newC) {
         c = newC;
-
     }
 
-    public double get(int position) {
+    public T get(int position) {
 
         if (position == 1) {
-
             return a;
-
         }
 
         if (position == 2) {
-
             return b;
-
         }
 
         if (position == 3) {
-
             return c;
-
         }
 
-        return 0;
-
+        return null;
     }
 
-    public void set(int position, double newN) {
+    public void set(int position, T newN) {
 
         if (position == 1) {
-
             a = newN;
-
         }
 
         if (position == 2) {
-
             b = newN;
-
         }
 
         if (position == 3) {
-
             c = newN;
-
         }
 
     }

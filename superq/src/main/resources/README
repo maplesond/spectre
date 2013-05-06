@@ -1,0 +1,25 @@
+
+Maven and 3rd Party Dependencies
+
+Before you can develop SuperQ you must install 3rd Party non-maven dependencies 
+into your local maven repository.  Currently SuperQ contains two such dependencies:
+Gurobi and PAL.  To install those dependencies into your local maven repo, first 
+ensure that you have maven installed and the JAVA_HOME environment variable
+specified.  Then run these commands:
+
+mvn install:install-file -Dfile=<path-to->gurobi.jar -DgroupId=gurobi -DartifactId=gurobi -Dversion=5.0.2-64 -Dpackaging=jar
+
+mvn install:install-file -Dfile=<path-to->pal-1.5.1.jar -DgroupId=pal -DartifactId=pal -Dversion=1.5.1 -Dpackaging=jar
+
+
+
+GLPK
+
+The instructions below are for installing the windows 64-bit libraries to your local 
+maven repo.  For 32-bit run the same commands except change the file path and version 
+to represent the 32-bit files.  The same applied for linux.
+
+mvn install:install-file -Dfile=P:\Apps\glpk-4.47\w64\glpk-java.jar -DgroupId=org.gnu.glpk -DartifactId=glpk-java -Dversion=4.47-64 -Dpackaging=jar
+mvn install:install-file -Dfile=P:\Apps\glpk-4.47\w64\glpk-java-sources.jar -DgroupId=org.gnu.glpk -DartifactId=glpk-java -Dversion=4.47-64 -Dpackaging=jar -Dclassifier=sources
+mvn install:install-file -Dfile=P:\Apps\glpk-4.47\w64\glpk-java-javadoc.jar -DgroupId=org.gnu.glpk -DartifactId=glpk-java -Dversion=4.47-64 -Dpackaging=jar -Dclassifier=javadoc
+

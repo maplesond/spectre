@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Built-By: Sarah Bastkowski
+Build-Jdk: 1.7.0_05
+Class-Path: lib/commons-io-2.4.jar lib/commons-lang3-3.0.jar lib/commons-cli-1.2.jar lib/log4j-1.2.17.jar lib/pal-1.5.1.jar lib/commons-math3-3.0.jar lib/glpk-java-4.47-linux64.jar lib/gurobi.jar
+Created-By: Apache Maven 3.0.4
+Main-Class: uk.ac.uea.cmp.superq.ui.Main
+Archiver-Version: Plexus Archiver
