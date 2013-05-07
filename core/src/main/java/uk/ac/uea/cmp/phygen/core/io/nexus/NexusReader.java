@@ -23,12 +23,17 @@ package uk.ac.uea.cmp.phygen.core.io.nexus;
 import org.apache.commons.io.FileUtils;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phygen.core.ds.split.CircularOrdering;
+import uk.ac.uea.cmp.phygen.core.ds.split.SplitBlock;
 import uk.ac.uea.cmp.phygen.core.io.PhygenReader;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.StringTokenizer;
 
 /**
  * Used to handle streaming of Nexus format files into memory, and convertion of
@@ -309,5 +314,183 @@ public class NexusReader implements PhygenReader {
 
 
         return new CircularOrdering(circOrdering);
+    }
+
+    public NexusData readNexusData(File inFile) throws IOException {
+
+        List<String> taxonNames = new LinkedList<>();
+        List<SplitBlock> splits = new LinkedList<>();
+        List<Double> weights = new LinkedList<>();
+        List<Integer> cycle = new LinkedList<>();
+
+        int N = 0;
+
+        BufferedReader fileInput = new BufferedReader(new FileReader(inFile));
+
+        /**
+         * Keep on reading and tokenizing until... a token is found
+         * beginning with "ntax=" parse its remainder for the number of
+         * taxa.
+         *
+         * Keep on reading until a token is found "TAXLABELS". Then read N
+         * lines which will be the taxon names. We assume there are n choose
+         * 4 quartets.
+         *
+         * Keep on reading and tokenizing until "st_splits;" is found. Then
+         * proceed to "MATRIX". Then read the quartet lines until a line
+         * starts with ";".
+         */
+        boolean readingState = true;
+
+        while (readingState) {
+
+            String aLine = fileInput.readLine();
+            StringTokenizer sT = new StringTokenizer(aLine);
+
+            while (sT.hasMoreTokens()) {
+
+                String tT = sT.nextToken();
+
+                if (tT.startsWith("ntax=")) {
+
+                    N = Integer.parseInt(tT.substring(5, tT.length() - 1));
+
+                    for (int n = 0; n < N; n++) {
+                        taxonNames.add(new String(""));
+                    }
+
+                    readingState = false;
+                }
+            }
+        }
+
+        readingState = true;
+
+        while (readingState) {
+
+            String aLine = fileInput.readLine();
+            StringTokenizer sT = new StringTokenizer(aLine);
+
+            while (sT.hasMoreTokens()) {
+
+                String tT = sT.nextToken();
+
+                if (tT.startsWith("TAXLABELS")) {
+
+                    for (int n = 0; n < N; n++) {
+
+                        String aS = fileInput.readLine();
+                        taxonNames.set(n, aS);
+                    }
+
+                    readingState = false;
+                }
+            }
+        }
+
+        readingState = true;
+
+        while (readingState) {
+
+            String aLine = fileInput.readLine();
+            StringTokenizer sT = new StringTokenizer(aLine);
+
+            while (sT.hasMoreTokens()) {
+
+                String tT = sT.nextToken();
+
+                if (tT.startsWith("st_splits;")) {
+
+                    readingState = false;
+                }
+            }
+        }
+
+        readingState = true;
+
+        while (readingState) {
+
+            String aLine = fileInput.readLine();
+            StringTokenizer sT = new StringTokenizer(aLine);
+
+            while (sT.hasMoreTokens()) {
+
+                String tT = sT.nextToken();
+
+                if (tT.startsWith("CYCLE")) {
+
+                    String[] cycleParts = aLine.split(" ");
+
+                    for(String cyclePart : cycleParts) {
+
+                        String trimmed = cyclePart.trim();
+
+                        if (!trimmed.isEmpty()) {
+                            cycle.add(Integer.parseInt(trimmed));
+                        }
+                    }
+                    readingState = false;
+                }
+            }
+        }
+
+        readingState = true;
+
+        while (readingState) {
+
+            String aLine = fileInput.readLine();
+            StringTokenizer sT = new StringTokenizer(aLine);
+
+            while (sT.hasMoreTokens()) {
+
+                String tT = sT.nextToken();
+
+                if (tT.startsWith("MATRIX")) {
+
+                    boolean splitState = true;
+
+                    while (splitState) {
+
+                        String bLine = fileInput.readLine().trim();
+
+                        if (bLine.startsWith(";")) {
+
+                            splitState = false;
+
+                        } else {
+
+                            // BEGIN reading a split line
+
+                            if (bLine.endsWith(",")) {
+
+                                bLine = bLine.substring(0, bLine.length() - 1);
+
+                            }
+
+                            StringTokenizer bT = new StringTokenizer(bLine);
+
+                            int id = Integer.parseInt(bT.nextToken());
+
+                            double w = Double.parseDouble(bT.nextToken());
+
+                            List<Integer> setA = new LinkedList<>();
+
+                            while (bT.hasMoreTokens()) {
+                                setA.add(new Integer(Integer.parseInt(bT.nextToken())));
+                            }
+
+                            splits.add(new SplitBlock(setA));
+                            weights.add(new Double(w));
+
+                            // END reading a split line
+                        }
+                    }
+
+                    readingState = false;
+                }
+            }
+        }
+
+        return new NexusData(taxonNames, cycle, splits, weights);
     }
 }

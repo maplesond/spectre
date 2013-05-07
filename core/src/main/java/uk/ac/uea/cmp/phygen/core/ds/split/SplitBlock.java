@@ -158,4 +158,8 @@ public class SplitBlock implements Comparable<SplitBlock> {
             return diff == 0 ? this.size() - o.size() : diff;
         }
     }
+
+    public boolean retainAll(SplitBlock o) {
+        return this.elements.retainAll(o.elements);
+    }
 }

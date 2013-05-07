@@ -18,9 +18,11 @@ package uk.ac.uea.cmp.phygen.superq.ui;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.commons.math3.optimization.linear.UnboundedSolutionException;
 import org.apache.log4j.Logger;
+import uk.ac.uea.cmp.phygen.core.io.nexus.NexusData;
+import uk.ac.uea.cmp.phygen.core.io.nexus.NexusReader;
+import uk.ac.uea.cmp.phygen.core.io.nexus.NexusWriter;
 import uk.ac.uea.cmp.phygen.core.ui.RunnableTool;
 import uk.ac.uea.cmp.phygen.core.ui.StatusTracker;
-import uk.ac.uea.cmp.phygen.qnet.Filterer;
 import uk.ac.uea.cmp.phygen.qnet.QNet;
 import uk.ac.uea.cmp.phygen.qnet.WeightsComputeNNLSInformative;
 import uk.ac.uea.cmp.phygen.qnet.WriteWeightsToNexus;
@@ -191,11 +193,7 @@ public class SuperQ extends RunnableTool {
             if (this.options.getFilter() != null) {
                 notifyUser("FILTER - filtering splits");
 
-                Filterer.main(new String[]{
-                        filterTempFile,
-                        this.options.getOutputFile().getPath(),
-                        Double.toString(this.options.getFilter())
-                });
+                this.filter(new File(filterTempFile), this.options.getOutputFile(), this.options.getFilter());
             }
 
             notifyUser("CLEANUP - Removing temporary files in " + tmpdir.toString());
@@ -219,6 +217,18 @@ public class SuperQ extends RunnableTool {
         } finally {
             this.notifyListener();
         }
+    }
+
+    protected void filter(File inFile, File outFile, double threshold) throws IOException {
+
+        // Load
+        NexusData raw = new NexusReader().readNexusData(inFile);
+
+        // Filter
+        NexusData filtered = raw.filter(threshold);
+
+        // Save
+        new NexusWriter().writeNexusData(outFile, filtered);
     }
 
     private void notifyUser(String message) {

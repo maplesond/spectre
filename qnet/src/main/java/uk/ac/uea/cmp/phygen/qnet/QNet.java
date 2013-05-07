@@ -180,30 +180,6 @@ public class QNet {
 
     /**
      *
-     * Ugly help function
-     *
-     * Joins two ArrayLists
-     *
-     */
-    static ArrayList join(ArrayList aL, ArrayList bL) {
-
-        ArrayList result = new ArrayList();
-
-        for (int a = 0; a < aL.size(); a++) {
-
-            result.add(aL.get(a));
-        }
-
-        for (int b = 0; b < bL.size(); b++) {
-
-            result.add(bL.get(b));
-        }
-
-        return result;
-
-    }
-    /**
-     *
      * Structure for quartet weights.
      *
      * In this object, quartet weights are held by quartet + tree.

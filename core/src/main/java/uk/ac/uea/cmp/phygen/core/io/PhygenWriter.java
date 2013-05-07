@@ -32,5 +32,5 @@ public interface PhygenWriter {
 
     void writeSplitSystem(File outFile, SplitSystem splitSystem) throws IOException;
 
-    void writeDistanceMatrix(File file, DistanceMatrix distanceMatrix) throws IOException;
+    void writeDistanceMatrix(File outFile, DistanceMatrix distanceMatrix) throws IOException;
 }

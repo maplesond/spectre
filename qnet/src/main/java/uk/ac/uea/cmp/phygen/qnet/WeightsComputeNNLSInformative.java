@@ -15,6 +15,8 @@
  */
 package uk.ac.uea.cmp.phygen.qnet;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetIndex;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 import uk.ac.uea.cmp.phygen.core.math.matrix.BitMatrix;
@@ -76,7 +78,7 @@ public class WeightsComputeNNLSInformative {
         // there are n choose 2 - n splits
         // i.e. n(n-1)/2 - n
 
-        SplitIndex[] splitIndices = new SplitIndex[N * (N - 1) / 2 - N];
+        Pair<Integer, Integer>[] splitIndices = new ImmutablePair[N * (N - 1) / 2 - N];
 
         int n = 0;
 
@@ -90,7 +92,7 @@ public class WeightsComputeNNLSInformative {
 
 //                    System.out.println (i + " " + j + " ");
 
-                    splitIndices[n] = new SplitIndex(i, j);
+                    splitIndices[n] = new ImmutablePair<Integer, Integer>(i, j);
 
                     n++;
 
@@ -155,8 +157,8 @@ public class WeightsComputeNNLSInformative {
 
                     // we have
 
-                    int p = splitIndices[b].getN1();
-                    int q = splitIndices[b].getN2();
+                    int p = splitIndices[b].getLeft();
+                    int q = splitIndices[b].getRight();
                     int i = quartetIndices[a].getI();
                     int j = quartetIndices[a].getJ();
                     int k = quartetIndices[a].getK();
@@ -649,10 +651,10 @@ public class WeightsComputeNNLSInformative {
 
             for (int j = 0; j < i + 1; j++) {
 
-                int p1 = splitIndices[i].getN1();
-                int q1 = splitIndices[i].getN2();
-                int p2 = splitIndices[j].getN1();
-                int q2 = splitIndices[j].getN2();
+                int p1 = splitIndices[i].getLeft();
+                int q1 = splitIndices[i].getRight();
+                int p2 = splitIndices[j].getLeft();
+                int q2 = splitIndices[j].getRight();
 
                 /*
                  * // what happens here if the end-problematic // cases are
@@ -952,8 +954,8 @@ public class WeightsComputeNNLSInformative {
 
         for (int a = 0; a < N * (N - 1) / 2 - N; a++) {
 
-            int p = splitIndices[a].getN1();
-            int q = splitIndices[a].getN2();
+            int p = splitIndices[a].getLeft();
+            int q = splitIndices[a].getRight();
 
             double sum = 0.0;
 
@@ -1069,8 +1071,8 @@ public class WeightsComputeNNLSInformative {
 
                     for (int j = 0; j < N * (N - 1) / 2 - N; j++) {
 
-                        int p = splitIndices[j].getN1();
-                        int q = splitIndices[j].getN2();
+                        int p = splitIndices[j].getLeft();
+                        int q = splitIndices[j].getRight();
 
                         int a1, a2, b1, b2;
 
@@ -1311,7 +1313,7 @@ public class WeightsComputeNNLSInformative {
 
                     if (verbose || stepMessages) {
 
-                        SplitIndex sI = splitIndices[t];
+                        Pair<Integer, Integer> sI = splitIndices[t];
 
                         //   System.out.print("Adding split " + t + " :");
 
@@ -1742,7 +1744,7 @@ public class WeightsComputeNNLSInformative {
 
                             if (verbose || stepMessages) {
 
-                                SplitIndex sI = splitIndices[t];
+                                Pair<Integer, Integer> sI = splitIndices[t];
 
                                 //  System.out.print("Removing directly split " + t + " :");
 
@@ -1880,7 +1882,7 @@ public class WeightsComputeNNLSInformative {
 
                             if (verbose || stepMessages) {
 
-                                SplitIndex sI = splitIndices[i];
+                                Pair<Integer, Integer> sI = splitIndices[i];
 
                                 //                            System.out.print("Removing split " + i + " :");
                                 //

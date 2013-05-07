@@ -15,6 +15,8 @@
  */
 package uk.ac.uea.cmp.phygen.qnet;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetIndex;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 
@@ -37,7 +39,7 @@ public class WriteWeightsToNexus {
 
         TaxonList c = (TaxonList) theLists.get(0);
 
-        SplitIndex[] splitIndices = new SplitIndex[N * (N - 1) / 2 - N];
+        Pair<Integer, Integer>[] splitIndices = new Pair[N * (N - 1) / 2 - N];
 
         int n = 0;
         int m;
@@ -49,7 +51,7 @@ public class WriteWeightsToNexus {
                 if (m != 1 || j != N) {
 
                     // valid split
-                    splitIndices[n] = new SplitIndex(m, j);
+                    splitIndices[n] = new ImmutablePair<Integer, Integer>(m, j);
                     n++;
                 }
             }
@@ -160,9 +162,9 @@ public class WriteWeightsToNexus {
                 wn++;
                 ws += y[i];
 
-                SplitIndex sI = splitIndices[i];
+                Pair<Integer, Integer> sI = splitIndices[i];
 
-                for (int p = sI.getN1() + 1; p < sI.getN2() + 1; p++) {
+                for (int p = sI.getLeft() + 1; p < sI.getRight() + 1; p++) {
 
                     nexusString += " " + ((Integer) c.get(p - 1)).intValue();
 

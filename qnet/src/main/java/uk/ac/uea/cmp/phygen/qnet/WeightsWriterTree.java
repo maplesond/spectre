@@ -203,7 +203,8 @@ class WeightsWriterTree {
          */
         if (aT.hasChildren()) {
 
-            ArrayList previous = QNet.join(left, right);
+            ArrayList previous = new ArrayList(left);
+            previous.addAll(right);
             ArrayList rightSibling = new ArrayList();
             ArrayList leftSibling = new ArrayList();
             ((InnerNode) aT).getLeft().fillList(leftSibling);

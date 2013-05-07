@@ -105,6 +105,8 @@ public class NexusWriter implements PhygenWriter {
         }
 
         outputString.append(";\nEND; [Splits]");
+
+        // Save
         FileUtils.writeStringToFile(file, outputString.toString());
     }
 
@@ -140,7 +142,53 @@ public class NexusWriter implements PhygenWriter {
 
         fileContent.append(";\nEND; [DISTANCES]\n");
 
+        // Save
         FileUtils.writeStringToFile(file, fileContent.toString());
+    }
+
+    public void writeNexusData(File outFile, NexusData nexusData) throws IOException {
+
+
+        StringBuilder nexusString = new StringBuilder();
+
+        final int N = nexusData.getNbTaxa();
+
+        nexusString.append("#NEXUS\nBEGIN taxa;\nDIMENSIONS ntax=").append(N).append(";\nTAXLABELS\n");
+
+        for (String taxon : nexusData.getTaxa()) {
+            nexusString.append(taxon).append("\n");
+        }
+
+        nexusString.append(";\nEND;\n\nBEGIN st_splits;\nDIMENSIONS ntax=" + N + " nsplits=").append(nexusData.getNbSplits()).append(";\n");
+        nexusString.append("FORMAT\nlabels\nweights\n;\nPROPERTIES\nFIT=100\nweakly compatible\ncyclic\n;\nCYCLE");
+
+        for (int n = 0; n < N; n++) {
+            nexusString.append(" ").append(nexusData.getCycleAt(n));
+        }
+
+        nexusString.append(";\nMATRIX\n");
+
+        for (int n = 0; n < nexusData.getNbSplits(); n++) {
+
+             // Add one for splitstree...
+            nexusString.append(n + 1).append("   ").append(nexusData.getWeightAt(n)).append("  ");
+
+            SplitBlock aSplit = nexusData.getSplitAt(n);
+
+            for (int p = 0; p < aSplit.size(); p++) {
+
+                // Add one for splitstree...
+                nexusString.append(" ").append(aSplit.get(p));
+            }
+
+            nexusString.append(",\n");
+        }
+
+        nexusString.append(";\nEND;");
+
+
+        // Save
+        FileUtils.writeStringToFile(outFile, nexusString.toString());
     }
 
 }

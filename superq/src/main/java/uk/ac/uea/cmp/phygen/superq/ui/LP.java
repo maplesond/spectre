@@ -232,7 +232,7 @@ public class LP {
         //    args[0] = outfile;
         //    args[1] = "filtered_" + outfile;
         //    args[2] = "0.001";
-        //    uk.ac.uea.cmp.phygen.qnet.Filterer.main(args);
+        //    uk.ac.uea.cmp.phygen.superq.ui.Filterer.main(args);
         //}
     }
 
