@@ -15,6 +15,8 @@
  */
 package uk.ac.uea.cmp.phygen.core.ds.quartet;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.math.tuple.Triplet;
 
 import java.util.LinkedList;
@@ -24,12 +26,23 @@ import java.util.LinkedList;
  */
 public class QuartetWeights {
 
+    private static Logger log = LoggerFactory.getLogger(QuartetWeights.class);
+
     /**
      * ArrayList of ArrayLists of etc. of triplets
      * <p/>
      * and a get and set method
      */
     public static QuartetWeights qW;
+
+    /**
+     * The heart of the data structure
+     */
+    private Triplet[] data;
+    /**
+     * Number of actual quartets
+     */
+    private int theSize;
 
     public QuartetWeights() {
 
@@ -454,7 +467,7 @@ public class QuartetWeights {
          * Create size-ordered quadruple x, y, u, v from a, b, c, d
          *
          */
-        //System.out.println("set weight of quartet: " + a + " " + b + " " + c + " " + d + " : " + data.length);
+        log.debug("set weight of quartet: " + a + " " + b + " " + c + " " + d + " : " + data.length);
         int x = a;
         int y = b;
         int u = c;
@@ -627,7 +640,7 @@ public class QuartetWeights {
 
                 if (q1 < 0.0) {
 
-                    System.out.println("Error: Quartet file contains negative weight!");
+                    log.error("Error: Quartet file contains negative weight!");
 
                     System.exit(1);
 
@@ -643,7 +656,7 @@ public class QuartetWeights {
 
                 if (q2 < 0.0) {
 
-                    System.out.println("Error: Quartet file contains negative weight!");
+                    log.error("Error: Quartet file contains negative weight!");
 
                     System.exit(1);
 
@@ -659,7 +672,7 @@ public class QuartetWeights {
 
                 if (q3 < 0.0) {
 
-                    System.out.println("Error: Quartet file contains negative weight!");
+                    log.error("Error: Quartet file contains negative weight!");
 
                     System.exit(1);
 
@@ -695,7 +708,7 @@ public class QuartetWeights {
 
                 if (q1 < 0.0) {
 
-                    System.out.println("Error: Quartet file contains negative weight!");
+                    log.error("Error: Quartet file contains negative weight!");
 
                     System.exit(1);
 
@@ -711,7 +724,7 @@ public class QuartetWeights {
 
                 if (q2 < 0.0) {
 
-                    System.out.println("Error: Quartet file contains negative weight!");
+                    log.error("Error: Quartet file contains negative weight!");
 
                     System.exit(1);
 
@@ -727,7 +740,7 @@ public class QuartetWeights {
 
                 if (q3 < 0.0) {
 
-                    System.out.println("Error: Quartet file contains negative weight!");
+                    log.error("Error: Quartet file contains negative weight!");
 
                     System.exit(1);
 
@@ -810,12 +823,5 @@ public class QuartetWeights {
 
     }
 
-    /**
-     * The heart of the data structure
-     */
-    Triplet[] data;
-    /**
-     * Number of actual quartets
-     */
-    int theSize;
+
 }

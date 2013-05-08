@@ -15,6 +15,8 @@
  */
 package uk.ac.uea.cmp.phygen.qnet;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 import uk.ac.uea.cmp.phygen.qnet.holders.*;
 
@@ -23,14 +25,14 @@ import java.util.ListIterator;
 
 class NewCyclicOrderer {
 
+    private static Logger log = LoggerFactory.getLogger(NewCyclicOrderer.class);
+
     /**
      *
      * Run method
      *
      */
     public static String order(QNet parent) {
-
-        boolean verbose = false;
 
         double c = 0.5;
 
@@ -74,11 +76,7 @@ class NewCyclicOrderer {
 
         // DEBUG: output t
 
-        if (verbose) {
-
-            System.out.println("After initiation step:");
-
-        }
+        log.debug("After initiation step:");
 
         if (X.size() > 2) {
 
@@ -89,13 +87,11 @@ class NewCyclicOrderer {
                     int i = ((Integer) X.get(xI)).intValue();
                     int j = ((Integer) X.get(xJ)).intValue();
 
-                    if (verbose && snH.getS(i, j) != 0.0) {
+                    if (snH.getS(i, j) != 0.0) {
 
-                        System.out.println("n (" + i + ", " + j + "): " + snH.getN(i, j));
-                        System.out.println("s (" + i + ", " + j + "): " + snH.getS(i, j));
-
+                        log.debug("n (" + i + ", " + j + "): " + snH.getN(i, j));
+                        log.debug("s (" + i + ", " + j + "): " + snH.getS(i, j));
                     }
-
                 }
 
                 for (int xJ = 0; xJ < X.size(); xJ++) {
@@ -106,18 +102,13 @@ class NewCyclicOrderer {
                         int j = ((Integer) X.get(xJ)).intValue();
                         int k = ((Integer) X.get(xK)).intValue();
 
-                        if (tH.getT(i, j, k) != 0.0 && verbose && tH.getT(i, j, k) != 0.0) {
+                        if (tH.getT(i, j, k) != 0.0 && tH.getT(i, j, k) != 0.0) {
 
-                            System.out.println("t (" + i + ", " + j + ", " + k + "): " + tH.getT(i, j, k));
-
+                            log.debug("t (" + i + ", " + j + ", " + k + "): " + tH.getT(i, j, k));
                         }
-
                     }
-
                 }
-
             }
-
         }
 
         while (p > 3) {
@@ -197,46 +188,38 @@ class NewCyclicOrderer {
                         + (zH.getZ(b) - 1) * (zH.getZ(a) - 1) * c
                           * (N - zH.getZ(a) - zH.getZ(b)) * u0H.getU(a, b);
 
-            if (verbose) {
-
-                System.out.println("Deciding on direction to join by:\nsum t (a, b, k): " + tABK + "\nsum t (a, k, b): " + tAKB
+            log.debug("Deciding on direction to join by:\nsum t (a, b, k): " + tABK + "\nsum t (a, k, b): " + tAKB
                                    + "\nsum t (b, a, k):" + tBAK + "\nsum t (b, k, a): " + tBKA + "\nu (a, b, 0): "
                                    + u0H.getU(a, b) + "\nu (a, b, 1): " + u1H.getU(a, b) + "\ny1: " + y1 + " y2: " + y2 + " y3: " + y3 + " y4: " + y4);
 
-            }
 
             if (y1 > yMax) {
 
                 y = 1;
                 yMax = y1;
-
             }
 
             if (y2 > yMax) {
 
                 y = 2;
                 yMax = y2;
-
             }
 
             if (y3 > yMax) {
 
                 y = 3;
                 yMax = y3;
-
             }
 
             if (y4 > yMax) {
 
                 y = 4;
                 yMax = y4;
-
             }
 
             if (y < 0) {
 
-                System.out.println("QNet: Error: y < 0 while ordering; please report this!");
-
+                log.error("QNet: Error: y < 0 while ordering; please report this!");
             }
 
             // we now know which joining to perform
@@ -244,25 +227,21 @@ class NewCyclicOrderer {
             if (y == 1) {
 
                 join(theLists, a, 1, b, 0, taxonNames);
-
             }
 
             if (y == 2) {
 
                 join(theLists, a, 1, b, 1, taxonNames);
-
             }
 
             if (y == 3) {
 
                 join(theLists, a, 0, b, 0, taxonNames);
-
             }
 
             if (y == 4) {
 
                 join(theLists, a, 0, b, 1, taxonNames);
-
             }
 
             // remove b from X
@@ -276,9 +255,7 @@ class NewCyclicOrderer {
                 if (i == b) {
 
                     lI.remove();
-
                 }
-
             }
 
             // loop over all elements k in X that are not a, b
@@ -303,9 +280,7 @@ class NewCyclicOrderer {
                         if (l != a && l != b && l != k) {
 
                             wSum += wH.getW(a, k, b, l) + wH.getW(b, k, a, l);
-
                         }
-
                     }
 
                     snH.setS(a, k, sAK + sBK - wSum);
@@ -368,8 +343,7 @@ class NewCyclicOrderer {
 
                             } else {
 
-                                System.out.println("QNet: No y - weird; please report this!");
-
+                                log.error("QNet: No y - weird; please report this!");
                             }
 
                             double m1 = tH.getT(k, a, l) + tH.getT(k, b, l);
@@ -397,11 +371,8 @@ class NewCyclicOrderer {
                                     wH.setW(a, m, l, k, m3);
 
                                 }
-
                             }
-
                         }
-
                     }
 
                     if (y == 1) {
@@ -411,7 +382,6 @@ class NewCyclicOrderer {
 
                         u0H.setU(a, k, m1);
                         u1H.setU(a, k, m2);
-
                     }
 
                     if (y == 2) {
@@ -421,7 +391,6 @@ class NewCyclicOrderer {
 
                         u0H.setU(a, k, m1);
                         u1H.setU(a, k, m2);
-
                     }
 
                     if (y == 3) {
@@ -431,7 +400,6 @@ class NewCyclicOrderer {
 
                         u0H.setU(a, k, m1);
                         u1H.setU(a, k, m2);
-
                     }
 
                     if (y == 4) {
@@ -441,7 +409,6 @@ class NewCyclicOrderer {
 
                         u0H.setU(a, k, m1);
                         u1H.setU(a, k, m2);
-
                     }
 
                 }
@@ -459,11 +426,7 @@ class NewCyclicOrderer {
 
             if (X.size() > 2) {
 
-                if (verbose) {
-
-                    System.out.println("An iteration just took place. " + X.size() + " paths remaining. Non-zero parameters:");
-
-                }
+                log.debug("An iteration just took place. " + X.size() + " paths remaining. Non-zero parameters:");
 
                 for (int xI = 0; xI < X.size() - 1; xI++) {
 
@@ -472,23 +435,20 @@ class NewCyclicOrderer {
                         int i = ((Integer) X.get(xI)).intValue();
                         int j = ((Integer) X.get(xJ)).intValue();
 
-                        if (verbose && snH.getS(i, j) != 0.0) {
+                        if (snH.getS(i, j) != 0.0) {
 
-                            System.out.println("n (" + i + ", " + j + "): " + snH.getN(i, j));
-                            System.out.println("s (" + i + ", " + j + "): " + snH.getS(i, j));
-
+                            log.debug("n (" + i + ", " + j + "): " + snH.getN(i, j));
+                            log.debug("s (" + i + ", " + j + "): " + snH.getS(i, j));
                         }
 
-                        if (verbose && u0H.getU(i, j) != 0.0) {
+                        if (u0H.getU(i, j) != 0.0) {
 
-                            System.out.println("u (" + i + ", " + j + ", 0): " + u0H.getU(i, j));
-
+                            log.debug("u (" + i + ", " + j + ", 0): " + u0H.getU(i, j));
                         }
 
-                        if (verbose && u1H.getU(i, j) != 0.0) {
+                        if (u1H.getU(i, j) != 0.0) {
 
-                            System.out.println("u (" + i + ", " + j + ", 1): " + u1H.getU(i, j));
-
+                            log.debug("u (" + i + ", " + j + ", 1): " + u1H.getU(i, j));
                         }
 
                     }
@@ -501,20 +461,14 @@ class NewCyclicOrderer {
                             int j = ((Integer) X.get(xJ)).intValue();
                             int k = ((Integer) X.get(xK)).intValue();
 
-                            if (tH.getT(i, j, k) != 0.0 && verbose) {
+                            if (tH.getT(i, j, k) != 0.0) {
 
-                                System.out.println("t (" + i + ", " + j + ", " + k + "): " + tH.getT(i, j, k));
-
+                                log.debug("t (" + i + ", " + j + ", " + k + "): " + tH.getT(i, j, k));
                             }
-
                         }
-
                     }
-
                 }
-
             }
-
         }
 
         //System.out.print ("commencing termination step... ");

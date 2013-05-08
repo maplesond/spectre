@@ -19,6 +19,8 @@ package uk.ac.uea.cmp.phygen.qnet;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetIndex;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 import uk.ac.uea.cmp.phygen.core.math.matrix.BitMatrix;
@@ -32,7 +34,9 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
-class WeightsWriterNNLS {
+public class WeightsWriterNNLS {
+
+    private static Logger log = LoggerFactory.getLogger(WeightsWriterNNLS.class);
 
     /**
      *
@@ -41,9 +45,8 @@ class WeightsWriterNNLS {
      * Calculates split weights and prints them to a nexus file.
      *
      */
-    public static void writeWeights(QNet parent, ArrayList cN, String outputName, double tolerance) {
+    public static void writeWeights(QNet parent, ArrayList cN, String outputName, double tolerance) throws QNetException {
 
-        boolean verbose = false;
         boolean stepMessages = true;
         boolean cycleWarnings = false;
         boolean extract = false;
@@ -550,11 +553,7 @@ class WeightsWriterNNLS {
 
         // step 1:
 
-        if (verbose) {
-
-            System.out.println("Step 1");
-
-        }
+        log.debug("Step 1");
 
         // initially, all variables are classed as zero variables
 
@@ -646,21 +645,14 @@ class WeightsWriterNNLS {
 
             if (iterations > maxIterations) {
 
-                System.out.println(maxIterations + " iterations have been performed to no avail. Please increase the tolerance.");
-
-                System.exit(0);
-
+                throw new QNetException(maxIterations + " iterations have been performed to no avail. Please increase the tolerance.");
             }
 
             iterations++;
 
             // step 2:
 
-            if (verbose) {
-
-                System.out.println("Step 2");
-
-            }
+            log.debug("Step 2");
 
             // we are now in loop
 
@@ -690,11 +682,7 @@ class WeightsWriterNNLS {
 
             // step 3:
 
-            if (verbose) {
-
-                System.out.println("Step 3");
-
-            }
+            log.debug("Step 3");
 
             // check for stopping conditions
             // if so, break
@@ -730,11 +718,7 @@ class WeightsWriterNNLS {
 
             // step 4, 5:
 
-            if (verbose) {
-
-                System.out.println("Step 4");
-
-            }
+            log.debug("Step 4");
 
             // find index t and move to nonzero set
 
@@ -828,7 +812,7 @@ class WeightsWriterNNLS {
 
             } else {
 
-                if (verbose || stepMessages) {
+                if (stepMessages) {
 
                     Pair<Integer, Integer> sI = splitIndices[t];
 
@@ -846,11 +830,7 @@ class WeightsWriterNNLS {
 
             }
 
-            if (verbose) {
-
-                System.out.println("Step 5");
-
-            }
+            log.debug("Step 5");
 
             Z.remove(new Integer(t));
             P.add(new Integer(t));
@@ -863,39 +843,34 @@ class WeightsWriterNNLS {
 
             while (true) {
 
-                if (verbose) {
+                if (log.isDebugEnabled()) {
 
                     if (from5) {
 
-                        System.out.print("From outer loop: ");
+                        log.debug("From outer loop: ");
+
+                    }
+                    else {
+
+                        log.debug("From inner loop: ");
 
                     }
 
-                    if (!from5) {
-
-                        System.out.print("From inner loop: ");
-
-                    }
-
-                    System.out.print("P: ");
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("P: ");
 
                     for (int i = 0; i < P.size(); i++) {
 
-                        System.out.print(" x[" + ((Integer) P.get(i)).intValue() + "]: " + x[((Integer) P.get(i)).intValue()]);
-
+                        sb.append(" x[" + ((Integer) P.get(i)).intValue() + "]: " + x[((Integer) P.get(i)).intValue()]);
                     }
 
-                    System.out.println();
+                    log.debug(sb.toString());
 
                 }
 
                 // step 6:
 
-                if (verbose) {
-
-                    System.out.println("Step 6");
-
-                }
+                log.debug("Step 6");
 
                 // LS subproblem!
 
@@ -1249,7 +1224,7 @@ class WeightsWriterNNLS {
 
                     if (z[t] <= tolerance) {
 
-                        if (verbose || stepMessages) {
+                        if (stepMessages) {
 
                             Pair<Integer, Integer> sI = splitIndices[t];
 
@@ -1275,11 +1250,7 @@ class WeightsWriterNNLS {
 
                 }
 
-                if (verbose) {
-
-                    System.out.println("Step 7");
-
-                }
+                log.debug("Step 7");
 
                 // step 7:
 
@@ -1317,11 +1288,7 @@ class WeightsWriterNNLS {
 
                 // step 8:
 
-                if (verbose) {
-
-                    System.out.println("Step 8");
-
-                }
+                log.debug("Step 8");
 
                 lI = P.listIterator();
 
@@ -1347,23 +1314,16 @@ class WeightsWriterNNLS {
 
                 // step 9:
 
-                if (verbose) {
-
-                    System.out.println("Step 9");
-
-                }
+                log.debug("Step 9");
 
                 double alpha = x[q] / (x[q] - z[q]);
 
                 // step 10:
 
-                if (verbose) {
+                log.debug("Step 10");
 
-                    System.out.println("Step 10");
+                log.debug("q " + q + " x " + x[q] + " z " + z[q] + " alpha " + alpha);
 
-                    System.out.println("q " + q + " x " + x[q] + " z " + z[q] + " alpha " + alpha);
-
-                }
 
                 for (int i = 0; i < N * (N - 1) / 2 - N; i++) {
 
@@ -1373,11 +1333,7 @@ class WeightsWriterNNLS {
 
                 // step 11:
 
-                if (verbose) {
-
-                    System.out.println("Step 11");
-
-                }
+                log.debug("Step 11");
 
                 lI = P.listIterator();
 
@@ -1387,7 +1343,7 @@ class WeightsWriterNNLS {
 
                     if (x[i] <= tolerance) {
 
-                        if (verbose || stepMessages) {
+                        if (stepMessages) {
 
                             Pair<Integer, Integer> sI = splitIndices[i];
 
@@ -1420,11 +1376,7 @@ class WeightsWriterNNLS {
 
         }
 
-        if (verbose) {
-
-            System.out.println("Step 12");
-
-        }
+        log.debug("Step 12");
 
         // we do, then our split weights are done
 

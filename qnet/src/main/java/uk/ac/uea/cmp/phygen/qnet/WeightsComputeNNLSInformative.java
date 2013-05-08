@@ -15,13 +15,17 @@
  */
 package uk.ac.uea.cmp.phygen.qnet;
 
+import org.apache.commons.lang3.time.StopWatch;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetIndex;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 import uk.ac.uea.cmp.phygen.core.math.matrix.BitMatrix;
 import uk.ac.uea.cmp.phygen.core.math.matrix.SymmetricMatrix;
 import uk.ac.uea.cmp.phygen.core.math.matrix.UpperTriangularMatrix;
+import uk.ac.uea.cmp.phygen.core.math.optimise.gurobi.GurobiOptimiserNNLS;
 import uk.ac.uea.cmp.phygen.qnet.holders.PHolder;
 
 import java.io.BufferedReader;
@@ -33,6 +37,8 @@ import java.util.*;
 
 public class WeightsComputeNNLSInformative {
 
+    private static Logger log = LoggerFactory.getLogger(WeightsComputeNNLSInformative.class);
+
     /**
      *
      * Write weights for the presented tree.
@@ -43,13 +49,15 @@ public class WeightsComputeNNLSInformative {
     private static SymmetricMatrix EtE;
     private static double[] x;
 
-    public static void computeWeights(QNet parent, String infoName, ArrayList cN, String outputName, double tolerance, String nnls) {
+    public static void computeWeights(QNet parent, String infoName, ArrayList cN, String outputName, double tolerance, String nnls) throws QNetException, IOException {
 
-        boolean verbose = false;
         boolean stepMessages = true;
         boolean cycleWarnings = false;
         boolean extract = false;
         boolean startGuess = false;
+
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
 
         ArrayList theLists = parent.getTheLists();
         QuartetWeights theQuartetWeights = parent.getWeights();
@@ -1013,7 +1021,7 @@ public class WeightsComputeNNLSInformative {
         if (nnls.equals("gurobi")) {
         //if(true) {
             //System.out.println("Using Gurobi to solve NNLS problem");
-            GurobiNNLS.solveNNLS(Etf, EtE, x);
+            GurobiOptimiserNNLS.solveNNLS(Etf, EtE, x);
         } else {
             //System.out.println("Using DIY method to solve NNLS problem");
             int maxIterations = N * N;
@@ -1033,11 +1041,7 @@ public class WeightsComputeNNLSInformative {
 
             // step 1:
 
-            if (verbose) {
-
-                System.out.println("Step 1");
-
-            }
+            log.debug("Step 1");
 
             // initially, all variables are classed as zero variables
 
@@ -1129,21 +1133,14 @@ public class WeightsComputeNNLSInformative {
 
                 if (iterations > maxIterations) {
 
-                    System.out.println(maxIterations + " iterations have been performed to no avail. Please increase the tolerance.");
-
-                    System.exit(0);
-
+                    throw new QNetException(maxIterations + " iterations have been performed to no avail. Please increase the tolerance.");
                 }
 
                 iterations++;
 
                 // step 2:
 
-                if (verbose) {
-
-                    System.out.println("Step 2");
-
-                }
+                log.debug("Step 2");
 
                 // we are now in loop
 
@@ -1173,11 +1170,7 @@ public class WeightsComputeNNLSInformative {
 
                 // step 3:
 
-                if (verbose) {
-
-                    System.out.println("Step 3");
-
-                }
+                log.debug("Step 3");
 
                 // check for stopping conditions
                 // if so, break
@@ -1213,11 +1206,7 @@ public class WeightsComputeNNLSInformative {
 
                 // step 4, 5:
 
-                if (verbose) {
-
-                    System.out.println("Step 4");
-
-                }
+                log.debug("Step 4");
 
                 // find index t and move to nonzero set
 
@@ -1309,31 +1298,9 @@ public class WeightsComputeNNLSInformative {
 
                     break;
 
-                } else {
-
-                    if (verbose || stepMessages) {
-
-                        Pair<Integer, Integer> sI = splitIndices[t];
-
-                        //   System.out.print("Adding split " + t + " :");
-
-                        //                    for (int p = sI.getN1() + 1; p < sI.getN2() + 1; p++) {
-                        //
-                        //                        System.out.print(" " + ((Integer) c.get(p - 1)).intValue());
-                        //
-                        //                    }
-                        //
-                        //                    System.out.println();
-
-                    }
-
                 }
 
-                if (verbose) {
-
-                    System.out.println("Step 5");
-
-                }
+                log.debug("Step 5");
 
                 Z.remove(new Integer(t));
                 P.add(new Integer(t));
@@ -1346,39 +1313,23 @@ public class WeightsComputeNNLSInformative {
 
                 while (true) {
 
-                    if (verbose) {
+                    if (from5) {
+                        log.debug("From outer loop: ");
+                    }
+                    else {
+                        log.debug("From inner loop: ");
+                    }
 
-                        if (from5) {
+                    log.debug("P: ");
 
-                            System.out.print("From outer loop: ");
+                    for (int i = 0; i < P.size(); i++) {
 
-                        }
-
-                        if (!from5) {
-
-                            System.out.print("From inner loop: ");
-
-                        }
-
-                        System.out.print("P: ");
-
-                        for (int i = 0; i < P.size(); i++) {
-
-                            System.out.print(" x[" + ((Integer) P.get(i)).intValue() + "]: " + x[((Integer) P.get(i)).intValue()]);
-
-                        }
-
-                        System.out.println();
-
+                        log.debug(" x[" + ((Integer) P.get(i)).intValue() + "]: " + x[((Integer) P.get(i)).intValue()]);
                     }
 
                     // step 6:
 
-                    if (verbose) {
-
-                        System.out.println("Step 6");
-
-                    }
+                    log.debug("Step 6");
 
                     // LS subproblem!
 
@@ -1577,8 +1528,7 @@ public class WeightsComputeNNLSInformative {
 
                     if (R.getElementAt(noSplits - 1, noSplits - 1) == 0) {
 
-                        System.out.println("Warning: Subproblem is underdetermined, results may not be unique!");
-
+                        log.warn("Subproblem is underdetermined, results may not be unique!");
                     }
 
                     // done
@@ -1589,18 +1539,18 @@ public class WeightsComputeNNLSInformative {
                         nF.setMaximumFractionDigits(3);
                         nF.setMinimumFractionDigits(3);
 
-                        System.out.println("Q:");
+
+                        StringBuilder sbq = new StringBuilder();
+                        sbq.append("Q:");
 
                         for (int i = 0; i < noSplits; i++) {
 
                             for (int j = 0; j < noSplits; j++) {
 
-                                System.out.print(" " + nF.format(Q[i][j]));
-
+                                sbq.append(" " + nF.format(Q[i][j]));
                             }
 
-                            System.out.println();
-
+                            log.info(sbq.toString());
                         }
 
                         System.out.println("R:");
@@ -1742,7 +1692,7 @@ public class WeightsComputeNNLSInformative {
 
                         if (z[t] <= tolerance) {
 
-                            if (verbose || stepMessages) {
+                            if (stepMessages) {
 
                                 Pair<Integer, Integer> sI = splitIndices[t];
 
@@ -1768,11 +1718,7 @@ public class WeightsComputeNNLSInformative {
 
                     }
 
-                    if (verbose) {
-
-                        System.out.println("Step 7");
-
-                    }
+                    log.debug("Step 7");
 
                     // step 7:
 
@@ -1810,11 +1756,7 @@ public class WeightsComputeNNLSInformative {
 
                     // step 8:
 
-                    if (verbose) {
-
-                        System.out.println("Step 8");
-
-                    }
+                    log.debug("Step 8");
 
                     lI = P.listIterator();
 
@@ -1840,23 +1782,15 @@ public class WeightsComputeNNLSInformative {
 
                     // step 9:
 
-                    if (verbose) {
-
-                        System.out.println("Step 9");
-
-                    }
+                    log.debug("Step 9");
 
                     double alpha = x[q] / (x[q] - z[q]);
 
                     // step 10:
 
-                    if (verbose) {
+                    log.debug("Step 10");
 
-                        System.out.println("Step 10");
-
-                        System.out.println("q " + q + " x " + x[q] + " z " + z[q] + " alpha " + alpha);
-
-                    }
+                    log.debug("q " + q + " x " + x[q] + " z " + z[q] + " alpha " + alpha);
 
                     for (int i = 0; i < N * (N - 1) / 2 - N; i++) {
 
@@ -1866,11 +1800,7 @@ public class WeightsComputeNNLSInformative {
 
                     // step 11:
 
-                    if (verbose) {
-
-                        System.out.println("Step 11");
-
-                    }
+                    log.debug("Step 11");
 
                     lI = P.listIterator();
 
@@ -1880,7 +1810,7 @@ public class WeightsComputeNNLSInformative {
 
                         if (x[i] <= tolerance) {
 
-                            if (verbose || stepMessages) {
+                            if (stepMessages) {
 
                                 Pair<Integer, Integer> sI = splitIndices[i];
 
@@ -1913,294 +1843,244 @@ public class WeightsComputeNNLSInformative {
 
             }
 
-            if (verbose) {
+            log.debug("Step 12");
 
-                System.out.println("Step 12");
+            stopWatch.stop();
 
-            }
+            log.info("Time taken to compute weights: " + stopWatch.toSplitString());
 
-            //time = System.currentTimeMillis()- time;
-
-            //System.out.println(time);
             //computation of split weights in array x[] finished
             // we do, then our split weights are done
 
             // and we print them to file
         }
-
-
-//***********************************************************************************************************
-//            Begin added stuff
-//***********************************************************************************************************
-
-
-        /*
-         * try {
-         *
-         * FileWriter fileOutput = new FileWriter ("vector.dat");
-         *
-         * for (int a = 0; a < N * (N - 1) / 2 - N; a++) {
-         *
-         * fileOutput.write (x [a] + " ");
-         *
-         * fileOutput.write ("\n");
-         *
-         * }
-         *
-         * fileOutput.close ();
-         *
-         * }
-         * catch (IOException e) {System.out.println("Error while writing vector.dat.");}
-         */
-
-
-
-
-
     }
 
-//***********************************************************************************************************
-//           End added stuff
-//***********************************************************************************************************
-    public static void load(PHolder pHolder, String fileName) {
+
+
+   public static void load(PHolder pHolder, String fileName) throws IOException {
 
         int N = 0;
 
-        try {
+        /**
+         *
+         * Error-handling
+         *
+         */
+        /**
+         *
+         * Have the number of quartets been specified?
+         *
+         */
+        boolean numberKnown = false;
+
+        /**
+         *
+         * Have the sense been specified?
+         *
+         */
+        boolean senseKnown = false;
+
+        /**
+         *
+         * File reader
+         *
+         */
+        BufferedReader fileInput = new BufferedReader(new FileReader(fileName));
+
+        /**
+         *
+         * Lines are read one at a time, added together, parsed by
+         * semicolons, then parsed by space and colon
+         *
+         */
+        /**
+         *
+         * Input one-liner
+         *
+         */
+        String input = new String("");
+
+        /**
+         *
+         * Read while there�s reading to be done
+         *
+         */
+        while ((input = fileInput.readLine()) != null) {
 
             /**
              *
-             * Error-handling
+             * Parse
+             *
+             * Note now that it requires lower-case
+             *
+             * Process each command
              *
              */
-            /**
-             *
-             * Have the number of quartets been specified?
-             *
-             */
-            boolean numberKnown = false;
-
-            /**
-             *
-             * Have the sense been specified?
-             *
-             */
-            boolean senseKnown = false;
+            String theLine = input;
 
             /**
              *
-             * File reader
+             * If this is a description line, we just read, we don�t bother
+             * to save the data read
              *
              */
-            BufferedReader fileInput = new BufferedReader(new FileReader(fileName));
+            if (theLine.trim().startsWith("description:")) {
 
-            /**
-             *
-             * Lines are read one at a time, added together, parsed by
-             * semicolons, then parsed by space and colon
-             *
-             */
-            /**
-             *
-             * Input one-liner
-             *
-             */
-            String input = new String("");
+                while (!theLine.endsWith(";") && !theLine.trim().endsWith(";")) {
 
-            /**
-             *
-             * Read while there�s reading to be done
-             *
-             */
-            while ((input = fileInput.readLine()) != null) {
-
-                /**
-                 *
-                 * Parse
-                 *
-                 * Note now that it requires lower-case
-                 *
-                 * Process each command
-                 *
-                 */
-                String theLine = input;
-
-                /**
-                 *
-                 * If this is a description line, we just read, we don�t bother
-                 * to save the data read
-                 *
-                 */
-                if (theLine.trim().startsWith("description:")) {
-
-                    while (!theLine.endsWith(";") && !theLine.trim().endsWith(";")) {
-
-                        theLine = "description: " + fileInput.readLine();
-
-                    }
-
-                } /**
-                 *
-                 * Otherwise, it is significant...
-                 *
-                 */
-                else {
-
-                    while (!theLine.endsWith(";") && !theLine.trim().endsWith(";")) {
-
-                        theLine += fileInput.readLine();
-
-                    }
+                    theLine = "description: " + fileInput.readLine();
 
                 }
 
-                theLine = theLine.trim();
+            } /**
+             *
+             * Otherwise, it is significant...
+             *
+             */
+            else {
 
-                theLine = theLine.substring(0, theLine.length() - 1);
+                while (!theLine.endsWith(";") && !theLine.trim().endsWith(";")) {
 
-                /**
-                 *
-                 * Tokenize each line by space and colon
-                 *
-                 */
-                StringTokenizer lineTokenizer = new StringTokenizer(theLine, ": ");
-
-                /**
-                 *
-                 * Initial word
-                 *
-                 */
-                String theFirst = lineTokenizer.nextToken();
-
-                /**
-                 *
-                 * The actual switch
-                 *
-                 */
-                if (theFirst.equalsIgnoreCase("quartet")) {
-
-                    /**
-                     *
-                     * Having read a quartet line, read in the weights
-                     *
-                     * The coordinates, in the order written
-                     *
-                     */
-                    int a = (new Integer(lineTokenizer.nextToken())).intValue();
-
-                    int b = (new Integer(lineTokenizer.nextToken())).intValue();
-
-                    int c = (new Integer(lineTokenizer.nextToken())).intValue();
-
-                    int d = (new Integer(lineTokenizer.nextToken())).intValue();
-
-                    /**
-                     *
-                     * Skip "name" token
-                     *
-                     */
-                    lineTokenizer.nextToken();
-
-                    /**
-                     *
-                     * The weights, in the order written
-                     *
-                     */
-                    int w1 = (new Integer(lineTokenizer.nextToken())).intValue();
-
-                    int w2 = (new Integer(lineTokenizer.nextToken())).intValue();
-
-                    int w3 = (new Integer(lineTokenizer.nextToken())).intValue();
-
-                    /**
-                     *
-                     * Set it, just as it is written
-                     *
-                     */
-                    if (w1 == 1) {
-
-                        pHolder.setR(a, b, c, d, true);
-
-                    } else {
-
-                        pHolder.setR(a, b, c, d, false);
-
-                    }
-
-                } else if (theFirst.equalsIgnoreCase("taxon")) {
-
-                    /**
-                     *
-                     * Having read a taxon line, add the taxon
-                     *
-                     */
-                    int theNumber = (new Integer(lineTokenizer.nextToken())).intValue();
-
-                    /**
-                     *
-                     * Step forward
-                     *
-                     */
-                    lineTokenizer.nextToken();
-
-                    /**
-                     *
-                     * Take name
-                     *
-                     */
-                } else if (theFirst.equalsIgnoreCase("description")) {
-                    /**
-                     *
-                     * Having read a comment, do nothing
-                     *
-                     */
-                } else if (theFirst.equalsIgnoreCase("sense")) {
-
-                    /**
-                     *
-                     * Having read a sense line, set the sense accordingly
-                     *
-                     */
-                    String theSecond = lineTokenizer.nextToken();
-
-                    if (theSecond.equalsIgnoreCase("max")) {
-
-                        senseKnown = true;
-
-                    } else if (theSecond.equalsIgnoreCase("min")) {
-
-                        senseKnown = true;
-
-                    }
-
-                } else if (theFirst.equalsIgnoreCase("taxanumber")) {
-
-                    /**
-                     *
-                     * Having read the number of taxa, set it accordingly
-                     *
-                     */
-                    String theSecond = lineTokenizer.nextToken();
-
-                    N = (new Integer(theSecond)).intValue();
-
-                    numberKnown = true;
+                    theLine += fileInput.readLine();
 
                 }
 
             }
 
-        } catch (IOException e) {
+            theLine = theLine.trim();
 
-            System.out.println("QNet: Cannot read from info file.");
+            theLine = theLine.substring(0, theLine.length() - 1);
 
-            System.exit(1);
+            /**
+             *
+             * Tokenize each line by space and colon
+             *
+             */
+            StringTokenizer lineTokenizer = new StringTokenizer(theLine, ": ");
 
-        } catch (NoSuchElementException e) {
+            /**
+             *
+             * Initial word
+             *
+             */
+            String theFirst = lineTokenizer.nextToken();
 
-            System.out.println("QNet: Error in info file format.");
+            /**
+             *
+             * The actual switch
+             *
+             */
+            if (theFirst.equalsIgnoreCase("quartet")) {
 
-            System.exit(1);
+                /**
+                 *
+                 * Having read a quartet line, read in the weights
+                 *
+                 * The coordinates, in the order written
+                 *
+                 */
+                int a = (new Integer(lineTokenizer.nextToken())).intValue();
+
+                int b = (new Integer(lineTokenizer.nextToken())).intValue();
+
+                int c = (new Integer(lineTokenizer.nextToken())).intValue();
+
+                int d = (new Integer(lineTokenizer.nextToken())).intValue();
+
+                /**
+                 *
+                 * Skip "name" token
+                 *
+                 */
+                lineTokenizer.nextToken();
+
+                /**
+                 *
+                 * The weights, in the order written
+                 *
+                 */
+                int w1 = (new Integer(lineTokenizer.nextToken())).intValue();
+
+                int w2 = (new Integer(lineTokenizer.nextToken())).intValue();
+
+                int w3 = (new Integer(lineTokenizer.nextToken())).intValue();
+
+                /**
+                 *
+                 * Set it, just as it is written
+                 *
+                 */
+                if (w1 == 1) {
+
+                    pHolder.setR(a, b, c, d, true);
+
+                } else {
+
+                    pHolder.setR(a, b, c, d, false);
+
+                }
+
+            } else if (theFirst.equalsIgnoreCase("taxon")) {
+
+                /**
+                 *
+                 * Having read a taxon line, add the taxon
+                 *
+                 */
+                int theNumber = (new Integer(lineTokenizer.nextToken())).intValue();
+
+                /**
+                 *
+                 * Step forward
+                 *
+                 */
+                lineTokenizer.nextToken();
+
+                /**
+                 *
+                 * Take name
+                 *
+                 */
+            } else if (theFirst.equalsIgnoreCase("description")) {
+                /**
+                 *
+                 * Having read a comment, do nothing
+                 *
+                 */
+            } else if (theFirst.equalsIgnoreCase("sense")) {
+
+                /**
+                 *
+                 * Having read a sense line, set the sense accordingly
+                 *
+                 */
+                String theSecond = lineTokenizer.nextToken();
+
+                if (theSecond.equalsIgnoreCase("max")) {
+
+                    senseKnown = true;
+
+                } else if (theSecond.equalsIgnoreCase("min")) {
+
+                    senseKnown = true;
+
+                }
+
+            } else if (theFirst.equalsIgnoreCase("taxanumber")) {
+
+                /**
+                 *
+                 * Having read the number of taxa, set it accordingly
+                 *
+                 */
+                String theSecond = lineTokenizer.nextToken();
+
+                N = (new Integer(theSecond)).intValue();
+
+                numberKnown = true;
+
+            }
 
         }
 

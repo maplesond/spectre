@@ -180,24 +180,6 @@
 
     <dependencies>
 
-
-
-        <!-- Note this is just to fool the compiler into compiling this project
-                gurobi and glpk wont be available at runtime -->
-
-        <dependency>
-            <groupId>org.gnu.glpk</groupId>
-            <artifactId>glpk-java</artifactId>
-            <version>4.47-64</version>
-        </dependency>
-        <dependency>
-            <groupId>gurobi</groupId>
-            <artifactId>gurobi</artifactId>
-            <version>5.0.2-64</version>
-        </dependency>
-
-
-
         <!-- PhyGen -->
 
         <dependency>
@@ -239,11 +221,7 @@
             <artifactId>commons-lang3</artifactId>
             <version>3.0</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-math3</artifactId>
-            <version>3.0</version>
-        </dependency>
+
 
     </dependencies>
 

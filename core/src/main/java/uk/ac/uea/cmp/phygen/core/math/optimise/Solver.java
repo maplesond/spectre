@@ -13,12 +13,12 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package uk.ac.uea.cmp.phygen.superq.optimise;
+package uk.ac.uea.cmp.phygen.core.math.optimise;
 
-import uk.ac.uea.cmp.phygen.superq.optimise.apache.ApacheOptimiserSystem;
-import uk.ac.uea.cmp.phygen.superq.optimise.glpk.GLPKOptimiserSystem;
-import uk.ac.uea.cmp.phygen.superq.optimise.gurobi.GurobiOptimiserSystem;
-import uk.ac.uea.cmp.phygen.superq.optimise.nnls.NNLSOptimiserSystem;
+import uk.ac.uea.cmp.phygen.core.math.optimise.apache.ApacheOptimiserSystem;
+import uk.ac.uea.cmp.phygen.core.math.optimise.glpk.GLPKOptimiserSystem;
+import uk.ac.uea.cmp.phygen.core.math.optimise.gurobi.GurobiOptimiserSystem;
+import uk.ac.uea.cmp.phygen.core.math.optimise.phygen.PhygenOptimiserSystem;
 
 
 public enum Solver {
@@ -50,7 +50,7 @@ public enum Solver {
     NNLS {
         @Override
         public OptimiserSystem getOptimiserSystem() {
-            return new NNLSOptimiserSystem();
+            return new PhygenOptimiserSystem();
         }
     },
     NONE {

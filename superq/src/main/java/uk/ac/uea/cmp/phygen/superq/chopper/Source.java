@@ -17,6 +17,7 @@ package uk.ac.uea.cmp.phygen.superq.chopper;
 
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 
+import java.io.IOException;
 import java.util.LinkedList;
 
 /**
@@ -25,7 +26,7 @@ import java.util.LinkedList;
  */
 public interface Source {
 
-    public void load(String fileName, double weight);
+    public void load(String fileName, double weight) throws IOException;
 
     // make sure qWs exist
     public void process();

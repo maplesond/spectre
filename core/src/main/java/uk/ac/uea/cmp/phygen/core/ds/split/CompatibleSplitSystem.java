@@ -15,7 +15,7 @@
  */
 package uk.ac.uea.cmp.phygen.core.ds.split;
 
-import uk.ac.uea.cmp.phygen.core.alg.CircularNNLS;
+import uk.ac.uea.cmp.phygen.core.math.optimise.phygen.PhygenOptimiserCircularNNLS;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 
 import java.util.ArrayList;
@@ -136,7 +136,7 @@ public class CompatibleSplitSystem extends CircularSplitSystem {
 //        assert(checkFlags(flag) == 17);
 
 
-        new CircularNNLS().treeInCycleLeastSquares(permutedDistances, flag,
+        new PhygenOptimiserCircularNNLS().treeInCycleLeastSquares(permutedDistances, flag,
                 n, treeWeights);
 
         //      assert(checkWeights(treeWeights) == 17);

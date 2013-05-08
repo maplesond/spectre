@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package uk.ac.uea.cmp.phygen.core.alg;
+package uk.ac.uea.cmp.phygen.core.math.optimise.phygen;
 
 import java.util.Comparator;
 import java.util.Iterator;
@@ -45,7 +45,7 @@ I haven't found how this may be done.
  * Given a circular ordering and a distance matrix,
  * computes the unconstrained or constrained least square weighted splits
  */
-public class CircularNNLS {
+public class PhygenOptimiserCircularNNLS {
     /* Epsilon constant for the conjugate gradient algorithm */
     static final double logPiPlus2 = Math.log(Math.PI) + 2.0;
     static final double CG_EPSILON = 0.0001;
@@ -314,7 +314,6 @@ public class CircularNNLS {
         /* First evaluate the unconstrained optima. If this is feasible then we don't have to do anything more! */
         runUnconstrainedLS(ntax, d, x);
 
-        //System.err.println("Run unconstrained");
         for (int i = 0; i < ntax; i++) {
             for (int j = 0; j < i; j++) {
                 if (x[i][j] < 0.0) {
@@ -344,8 +343,6 @@ public class CircularNNLS {
                 return;
         }
         /* Allocate memory for the "utility" vectors */
-
-        //System.err.println("Allocating memory");
 
         //ToDo: Put a memory overflow catch around this.
         double[][] r = new double[ntax][ntax];
@@ -379,7 +376,6 @@ public class CircularNNLS {
                 if (!first_pass) { /* The first time through we use the unconstrained branch lengths */
                     runConjugateGrads(ntax, r, w, p, y, W, AtWd, active, x);
                 }
-                //System.err.println("Inner");
 
                 if (collapse_many_negs) { /* Typically, a large number of edges are negative, so on the first
                                                 pass of the algorithm we add the worst 60% to the active set */
@@ -410,7 +406,7 @@ public class CircularNNLS {
                             active[this_index.first][this_index.second] = true;
                             //  cout<<"Fixing "<<this_index.first<<","<<this_index.second<<endl;
                         }
-                        runConjugateGrads(ntax, r, w, p, y, W, AtWd, active, x); /* Re-uk.ac.uea.cmp.phygen.superq.optimise, so that the current x is always optimal */
+                        runConjugateGrads(ntax, r, w, p, y, W, AtWd, active, x); /* Re-uk.ac.uea.cmp.phygen.core.math.optimise, so that the current x is always optimal */
                     }
                 }
 
@@ -476,7 +472,6 @@ public class CircularNNLS {
                 }
             }
 
-            //System.err.println("Outer");
 
             /* Find i,j that minimizes the gradient over all i,j in the active set. Note that grad = 2(AtWAb-AtWd) */
             min_i = -1;
@@ -510,7 +505,7 @@ public class CircularNNLS {
                     active[min_i][min_j] = false;
             } else {
                 /* We check to see whether adding any edges back in gives a redued AIC. We use a heuristic calculation.
-                 * If we add b_i back in, and just uk.ac.uea.cmp.phygen.superq.optimise that single variable, then the AIC decreases when
+                 * If we add b_i back in, and just uk.ac.uea.cmp.phygen.core.math.optimise that single variable, then the AIC decreases when
                  * 		A'WA_ii * logPiPlus2 - grad^2 < 0.
                  */
                 double mininfo = 0.0;
@@ -564,8 +559,6 @@ public class CircularNNLS {
 
         /* Allocate memory for the "utility" vectors */
 
-        //System.err.println("Allocating memory");
-
         //ToDo: Put a memory overflow catch around this.
         double[][] r = new double[ntax][ntax];
         double[][] w = new double[ntax][ntax];
@@ -598,8 +591,6 @@ public class CircularNNLS {
             while (true) /* Inner loop: find the next feasible optimum */ {
                 runConjugateGrads(ntax, r, w, p, y, W, AtWd, active, x);
 
-                //System.err.println("Inner");
-
                 if (collapse_many_negs) { /* Typically, a large number of edges are negative, so on the first
                 								pass of the algorithm we add the worst 60% to the active set */
                     neg_indices.clear();
@@ -629,7 +620,7 @@ public class CircularNNLS {
                             active[this_index.first][this_index.second] = true;
                             //  cout<<"Fixing "<<this_index.first<<","<<this_index.second<<endl;
                         }
-                        runConjugateGrads(ntax, r, w, p, y, W, AtWd, active, x); /* Re-uk.ac.uea.cmp.phygen.superq.optimise, so that the current x is always optimal */
+                        runConjugateGrads(ntax, r, w, p, y, W, AtWd, active, x); /* Re-uk.ac.uea.cmp.phygen.core.math.optimise, so that the current x is always optimal */
                     }
                 }
 
@@ -695,8 +686,6 @@ public class CircularNNLS {
                 }
             }
 
-            //System.err.println("Outer");
-
             /* Find i,j that minimizes the gradient over all i,j in the active set. Note that grad = 2(AtWAb-AtWd) */
             min_i = -1;
             calculateAb(ntax, x, y);
@@ -729,7 +718,7 @@ public class CircularNNLS {
                     active[min_i][min_j] = false;
             } else {
                 /* We check to see whether adding any edges back in gives a redued AIC. We use a heuristic calculation.
-                 * If we add b_i back in, and just uk.ac.uea.cmp.phygen.superq.optimise that single variable, then the AIC decreases when
+                 * If we add b_i back in, and just uk.ac.uea.cmp.phygen.core.math.optimise that single variable, then the AIC decreases when
                  * 		A'WA_ii * logPiPlus2 - grad^2 < 0.
                  */
                 double mininfo = 0.0;

@@ -13,9 +13,10 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package uk.ac.uea.cmp.phygen.superq.optimise;
+package uk.ac.uea.cmp.phygen.core.math.optimise;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 
@@ -131,7 +132,7 @@ public enum Objective {
     };
     private int nbTaxa;
     
-    static Logger logger = Logger.getLogger(Objective.class);
+    private static Logger logger = LoggerFactory.getLogger(Objective.class);
     
 
     protected abstract double[] optimise(Problem problem, OptimiserSystem optimiser) throws OptimiserException;

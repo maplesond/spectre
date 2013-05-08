@@ -13,17 +13,18 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package uk.ac.uea.cmp.phygen.superq.optimise.glpk;
+package uk.ac.uea.cmp.phygen.core.math.optimise.glpk;
 
-import org.apache.log4j.Logger;
 import org.gnu.glpk.*;
-import uk.ac.uea.cmp.phygen.superq.optimise.Optimiser;
-import uk.ac.uea.cmp.phygen.superq.optimise.Problem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser;
+import uk.ac.uea.cmp.phygen.core.math.optimise.Problem;
 
 
 public class GLPKOptimiser implements Optimiser {
 
-    static Logger logger = Logger.getLogger(GLPKOptimiser.class);
+    private static Logger logger = LoggerFactory.getLogger(GLPKOptimiser.class);
 
     @Override
     public double[] optimise(Problem problem) {

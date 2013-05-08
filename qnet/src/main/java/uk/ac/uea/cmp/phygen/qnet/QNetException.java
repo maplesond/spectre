@@ -13,14 +13,19 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
+
 package uk.ac.uea.cmp.phygen.qnet;
 
 /**
- * ScoreKeeper interface
+ * Created with IntelliJ IDEA.
+ * User: Sarah_2
+ * Date: 08/05/13
+ * Time: 22:01
+ * To change this template use File | Settings | File Templates.
  */
-interface ScoreKeeper {
+public class QNetException extends Exception {
 
-    double getScore();
-
-    void add(double s);
+    public QNetException(String message) {
+        super(message);
+    }
 }

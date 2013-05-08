@@ -15,16 +15,17 @@
  */
 package uk.ac.uea.cmp.phygen.superq.ui;
 
-import org.apache.log4j.Logger;
-import uk.ac.uea.cmp.phygen.superq.optimise.Objective;
-import uk.ac.uea.cmp.phygen.superq.optimise.Solver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import uk.ac.uea.cmp.phygen.core.math.optimise.Objective;
+import uk.ac.uea.cmp.phygen.core.math.optimise.Solver;
 
 import java.io.File;
 
 
 public class SuperQOptions {
     
-    static Logger logger = Logger.getLogger(SuperQOptions.class);
+    private static Logger logger = LoggerFactory.getLogger(SuperQOptions.class);
 
     private File inputFile;
     private InputFormat inputFileFormat;

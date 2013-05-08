@@ -18,10 +18,11 @@ package uk.ac.uea.cmp.phygen.superq.ui;
 import org.apache.commons.cli.*;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
-import uk.ac.uea.cmp.phygen.superq.optimise.Objective;
-import uk.ac.uea.cmp.phygen.superq.optimise.Solver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import uk.ac.uea.cmp.phygen.core.math.optimise.Objective;
+import uk.ac.uea.cmp.phygen.core.math.optimise.Solver;
 
 import java.io.File;
 import java.io.OutputStream;
@@ -29,7 +30,7 @@ import java.io.PrintWriter;
 
 public class Main {
 
-    static Logger logger = Logger.getLogger(Main.class);
+    private static Logger log = LoggerFactory.getLogger(Main.class);
     
     private static String JAR_NAME = "SuperQ.jar";
 
@@ -51,7 +52,6 @@ public class Main {
         
         if (!propsFile.exists()) {
             BasicConfigurator.configure();
-            Logger.getRootLogger().setLevel(Level.INFO);
         }
         else {
             PropertyConfigurator.configure(propsFile.getPath());
@@ -67,7 +67,7 @@ public class Main {
         try {
             if (args.length == 0) {
                 
-                logger.info("Running in GUI mode");
+                log.info("Running in GUI mode");
                 
                 java.awt.EventQueue.invokeLater(new Runnable() {
 
@@ -80,7 +80,7 @@ public class Main {
             }
         }
         catch(Exception e) {
-            logger.fatal(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             System.exit(1);
         }
         
@@ -91,7 +91,7 @@ public class Main {
             sqOpts = processArgs(args, cmdLineOptions);
         }
         catch(ParseException pe) {
-            logger.fatal("OPTION PARSING ERROR: " + pe.getMessage(), pe);
+            log.error("OPTION PARSING ERROR: " + pe.getMessage(), pe);
             printUsage(cmdLineOptions, System.err);
             System.exit(2);
         }
@@ -101,15 +101,15 @@ public class Main {
             SuperQ superQ = new SuperQ(sqOpts);
             superQ.run();
             if (superQ.failed()) {
-                logger.error(superQ.getErrorMessage());
+                log.error(superQ.getErrorMessage());
             }
         }
         catch(Exception e) {
-            logger.fatal(e.getMessage(), e);
-            System.exit(2);
+            log.error(e.getMessage(), e);
+            System.exit(3);
         }
         
-        logger.info("Completed successfully");
+        log.info("Completed successfully");
     }
 
     private static Options createOptions() {

@@ -13,10 +13,19 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package uk.ac.uea.cmp.phygen.superq.optimise;
+package uk.ac.uea.cmp.phygen.core.math.optimise;
 
 
-public interface Optimiser {
+public class OptimiserException extends Exception {
     
-    double[] optimise(Problem problem) throws OptimiserException;
+    private int errorCode;
+    
+    public OptimiserException(Throwable throwable, int errorCode) {
+        super(throwable);        
+        this.errorCode = errorCode;
+    }
+    
+    public int getErrorCode() {
+        return this.errorCode;
+    }
 }

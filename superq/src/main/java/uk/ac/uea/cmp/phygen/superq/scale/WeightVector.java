@@ -38,13 +38,6 @@ public class WeightVector {
         this.w3 = w3;
     }
 
-    public void printWeights() {
-        System.out.println("weight vector");
-        System.out.println("w1: " + w1);
-        System.out.println("w2: " + w2);
-        System.out.println("w3: " + w3);
-    }
-
     public double scalarProduct(WeightVector wv) {
         return ((this.w1) * (wv.w1)) + ((this.w2) * (wv.w2)) + ((this.w3) * (wv.w3));
     }

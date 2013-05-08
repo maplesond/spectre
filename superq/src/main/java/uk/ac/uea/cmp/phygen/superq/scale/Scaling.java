@@ -16,6 +16,8 @@
 package uk.ac.uea.cmp.phygen.superq.scale;
 
 import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.math.tuple.Key;
 import uk.ac.uea.cmp.phygen.superq.chopper.Chopper;
 
@@ -27,6 +29,8 @@ import java.util.HashMap;
 import java.util.List;
 
 public class Scaling {
+
+    private static Logger log = LoggerFactory.getLogger(Scaling.class);
 
     /**
      * ********************************************
@@ -178,7 +182,7 @@ public class Scaling {
                         try {
                             line = lnr.readLine();
                         } catch (IOException exception) {
-                            System.out.println("Error while reading from file");
+                            log.error("Error while reading from file");
                         }
                         quart.put(new Key(t1, t2, t3, t4), extractWeights(line));
                     }
@@ -219,33 +223,6 @@ public class Scaling {
         return trans;
     }
 
-    //print array of strings on the screen
-    //exists for testing purposes
-    //parameter:
-    //sa --> array of strings
-    private static void printStringArray(String[] sa) {
-        //loop variable
-        int i = 0;
-
-        System.out.println("list of taxa:");
-        for (i = 0; i < sa.length; i++) {
-            System.out.println(sa[i]);
-        }
-    }
-
-    //print array of integers on the screen
-    //exists for testing purposes
-    //parameter:
-    //ia --> array of integers
-    private static void printIntArray(int[] ia) {
-        //loop variable
-        int i = 0;
-
-        System.out.println("list of integers:");
-        for (i = 0; i < ia.length; i++) {
-            System.out.println(ia[i]);
-        }
-    }
 
     //read the list of taxa from a quartet file
     //Recall that the taxa are written in separate
@@ -265,7 +242,7 @@ public class Scaling {
             line = lnr.readLine();
             line = lnr.readLine();
         } catch (IOException exception) {
-            System.out.println("Error while reading from file");
+            log.error("Error while reading from file");
         }
 
         //loop variable
@@ -276,7 +253,7 @@ public class Scaling {
             try {
                 line = lnr.readLine();
             } catch (IOException exception) {
-                System.out.println("Error while reading from file");
+                log.error("Error while reading from file");
             }
             int indx = line.indexOf(';');
             taxalist[i] = line.substring(21, indx);
@@ -294,7 +271,7 @@ public class Scaling {
         try {
             line = lnr.readLine();
         } catch (IOException exception) {
-            System.out.println("Error while reading from file");
+            log.error("Error while reading from file");
         }
 
         int indx = line.indexOf(';');
@@ -360,7 +337,7 @@ public class Scaling {
                         try {
                             line = lnrj.readLine();
                         } catch (IOException exception) {
-                            System.out.println("Error while reading from file");
+                            log.error("Error while reading from file");
                         }
                         //System.out.println("quartets on: " + (t1+1) + " " + (t2+1) + " " + (t3+1) + " " + (t4+1));
                         wvj = extractWeights(line);
@@ -501,7 +478,7 @@ public class Scaling {
                         try {
                             line = lnrj.readLine();
                         } catch (IOException exception) {
-                            System.out.println("Error while reading from file");
+                            log.error("Error while reading from file");
                         }
                         //System.out.println("quartets on: " + (t1+1) + " " + (t2+1) + " " + (t3+1) + " " + (t4+1));
                         wvj = extractWeights(line);

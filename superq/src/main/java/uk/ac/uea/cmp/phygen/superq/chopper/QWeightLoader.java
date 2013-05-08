@@ -15,6 +15,8 @@
  */
 package uk.ac.uea.cmp.phygen.superq.chopper;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 
 import java.io.BufferedReader;
@@ -31,7 +33,9 @@ import java.util.StringTokenizer;
  */
 public class QWeightLoader implements Source {
 
-    public void load(String fileName, double weight) {
+    private static Logger log = LoggerFactory.getLogger(QWeightLoader.class);
+
+    public void load(String fileName, double weight) throws IOException {
 
         index = 0;
 
@@ -50,266 +54,248 @@ public class QWeightLoader implements Source {
 
         int N = 0;
 
-        try {
+        /**
+         *
+         * Error-handling
+         *
+         */
+        /**
+         *
+         * Have the number of quartets been specified?
+         *
+         */
+        boolean numberKnown = false;
+
+        /**
+         *
+         * Have the sense been specified?
+         *
+         */
+        boolean senseKnown = false;
+
+        /**
+         *
+         * File reader
+         *
+         */
+        BufferedReader fileInput = new BufferedReader(new FileReader(fileName));
+
+        /**
+         *
+         * Lines are read one at a time, added together, parsed by
+         * semicolons, then parsed by space and colon
+         *
+         */
+        /**
+         *
+         * Input one-liner
+         *
+         */
+        String input = new String("");
+        String taxonname = null;
+
+        /**
+         *
+         * Read while there�s reading to be done
+         *
+         */
+        while ((input = fileInput.readLine()) != null) {
 
             /**
              *
-             * Error-handling
+             * Parse
+             *
+             * Note now that it requires lower-case
+             *
+             * Process each command
              *
              */
-            /**
-             *
-             * Have the number of quartets been specified?
-             *
-             */
-            boolean numberKnown = false;
-
-            /**
-             *
-             * Have the sense been specified?
-             *
-             */
-            boolean senseKnown = false;
+            String theLine = input;
 
             /**
              *
-             * File reader
+             * If this is a description line, we just read, we don�t bother
+             * to save the data read
              *
              */
-            BufferedReader fileInput = new BufferedReader(new FileReader(fileName));
+            if (theLine.toLowerCase().trim().startsWith("description:")) {
 
-            /**
-             *
-             * Lines are read one at a time, added together, parsed by
-             * semicolons, then parsed by space and colon
-             *
-             */
-            /**
-             *
-             * Input one-liner
-             *
-             */
-            String input = new String("");
-            String taxonname = null;
+                while (!theLine.toLowerCase().endsWith(";") && !theLine.trim().endsWith(";")) {
 
-            /**
-             *
-             * Read while there�s reading to be done
-             *
-             */
-            while ((input = fileInput.readLine()) != null) {
-
-                /**
-                 *
-                 * Parse
-                 *
-                 * Note now that it requires lower-case
-                 *
-                 * Process each command
-                 *
-                 */
-                String theLine = input;
-
-                /**
-                 *
-                 * If this is a description line, we just read, we don�t bother
-                 * to save the data read
-                 *
-                 */
-                if (theLine.toLowerCase().trim().startsWith("description:")) {
-
-                    while (!theLine.toLowerCase().endsWith(";") && !theLine.trim().endsWith(";")) {
-
-                        theLine = "description: " + fileInput.readLine();
-
-                    }
-
-                } /**
-                 *
-                 * Otherwise, it is significant...
-                 *
-                 */
-                else {
-
-                    while (!theLine.endsWith(";") && !theLine.trim().endsWith(";")) {
-
-                        theLine += fileInput.readLine();
-
-                    }
+                    theLine = "description: " + fileInput.readLine();
 
                 }
 
-                theLine = theLine.trim();
+            } /**
+             *
+             * Otherwise, it is significant...
+             *
+             */
+            else {
 
-                theLine = theLine.substring(0, theLine.length() - 1);
+                while (!theLine.endsWith(";") && !theLine.trim().endsWith(";")) {
 
-                /**
-                 *
-                 * Tokenize each line by space and colon
-                 *
-                 */
-                StringTokenizer lineTokenizer = new StringTokenizer(theLine, ": ");
-
-                /**
-                 *
-                 * Initial word
-                 *
-                 */
-                String theFirst = lineTokenizer.nextToken();
-
-                /**
-                 *
-                 * The actual switch
-                 *
-                 */
-                if (theFirst.equalsIgnoreCase("quartet")) {
-
-                    /**
-                     *
-                     * Having read a quartet line, read in the weights
-                     *
-                     * The coordinates, in the order written
-                     *
-                     */
-                    int a = (new Integer(lineTokenizer.nextToken())).intValue();
-
-                    int b = (new Integer(lineTokenizer.nextToken())).intValue();
-
-                    int c = (new Integer(lineTokenizer.nextToken())).intValue();
-
-                    int d = (new Integer(lineTokenizer.nextToken())).intValue();
-
-                    /**
-                     *
-                     * Skip "name" token
-                     *
-                     */
-                    lineTokenizer.nextToken();
-
-                    /**
-                     *
-                     * The weights, in the order written
-                     *
-                     */
-                    double w1 = (new Double(lineTokenizer.nextToken())).doubleValue();
-
-                    double w2 = (new Double(lineTokenizer.nextToken())).doubleValue();
-
-                    double w3 = (new Double(lineTokenizer.nextToken())).doubleValue();
-
-                    /**
-                     *
-                     * Set it, just as it is written
-                     *
-                     */
-                    qW.setWeight(a, b, c, d, w1, w2, w3);
-
-                } else if (theFirst.equalsIgnoreCase("taxon")) {
-
-                    /**
-                     *
-                     * Having read a taxon line, add the taxon
-                     *
-                     */
-                    int theNumber = (new Integer(lineTokenizer.nextToken())).intValue();
-
-                    /**
-                     *
-                     * Step forward
-                     *
-                     */
-                    lineTokenizer.nextToken();
-
-                    /**
-                     *
-                     * Take name and take care of names that contain blanks
-                     *
-                     */
-                    taxonname = "";
-                    while (lineTokenizer.hasMoreTokens()) {
-                        if (taxonname.length() > 0) {
-                            taxonname = taxonname + " ";
-                        }
-                        taxonname = taxonname + lineTokenizer.nextToken();
-                    }
-
-                    taxonNames.set(theNumber - 1, taxonname);
-
-                } else if (theFirst.equalsIgnoreCase("description")) {
-                    /**
-                     *
-                     * Having read a comment, do nothing
-                     *
-                     */
-                } else if (theFirst.equalsIgnoreCase("sense")) {
-
-                    /**
-                     *
-                     * Having read a sense line, set the sense accordingly
-                     *
-                     */
-                    String theSecond = lineTokenizer.nextToken();
-
-                    if (theSecond.equalsIgnoreCase("max")) {
-
-                        useMax = true;
-
-                        senseKnown = true;
-
-                    } else if (theSecond.equalsIgnoreCase("min")) {
-
-                        useMax = false;
-
-                        senseKnown = true;
-
-                    }
-
-                } else if (theFirst.equalsIgnoreCase("taxanumber")) {
-
-                    /**
-                     *
-                     * Having read the number of taxa, set it accordingly
-                     *
-                     */
-                    String theSecond = lineTokenizer.nextToken();
-
-                    N = (new Integer(theSecond)).intValue();
-
-                    numberKnown = true;
-
-                    for (int n = 0; n < N; n++) {
-
-                        taxonNames.add(new String(""));
-
-                    }
-
-                    qW.ensureCapacity(N);
-                    qW.initialize();
+                    theLine += fileInput.readLine();
 
                 }
 
             }
 
-        } catch (IOException e) {
+            theLine = theLine.trim();
 
-            System.out.println("Cannot read from input file.");
+            theLine = theLine.substring(0, theLine.length() - 1);
 
-            System.exit(1);
+            /**
+             *
+             * Tokenize each line by space and colon
+             *
+             */
+            StringTokenizer lineTokenizer = new StringTokenizer(theLine, ": ");
 
-        } catch (NoSuchElementException e) {
+            /**
+             *
+             * Initial word
+             *
+             */
+            String theFirst = lineTokenizer.nextToken();
 
-            System.out.println("Error in file format.");
+            /**
+             *
+             * The actual switch
+             *
+             */
+            if (theFirst.equalsIgnoreCase("quartet")) {
 
-            System.exit(1);
+                /**
+                 *
+                 * Having read a quartet line, read in the weights
+                 *
+                 * The coordinates, in the order written
+                 *
+                 */
+                int a = (new Integer(lineTokenizer.nextToken())).intValue();
+
+                int b = (new Integer(lineTokenizer.nextToken())).intValue();
+
+                int c = (new Integer(lineTokenizer.nextToken())).intValue();
+
+                int d = (new Integer(lineTokenizer.nextToken())).intValue();
+
+                /**
+                 *
+                 * Skip "name" token
+                 *
+                 */
+                lineTokenizer.nextToken();
+
+                /**
+                 *
+                 * The weights, in the order written
+                 *
+                 */
+                double w1 = (new Double(lineTokenizer.nextToken())).doubleValue();
+
+                double w2 = (new Double(lineTokenizer.nextToken())).doubleValue();
+
+                double w3 = (new Double(lineTokenizer.nextToken())).doubleValue();
+
+                /**
+                 *
+                 * Set it, just as it is written
+                 *
+                 */
+                qW.setWeight(a, b, c, d, w1, w2, w3);
+
+            } else if (theFirst.equalsIgnoreCase("taxon")) {
+
+                /**
+                 *
+                 * Having read a taxon line, add the taxon
+                 *
+                 */
+                int theNumber = (new Integer(lineTokenizer.nextToken())).intValue();
+
+                /**
+                 *
+                 * Step forward
+                 *
+                 */
+                lineTokenizer.nextToken();
+
+                /**
+                 *
+                 * Take name and take care of names that contain blanks
+                 *
+                 */
+                taxonname = "";
+                while (lineTokenizer.hasMoreTokens()) {
+                    if (taxonname.length() > 0) {
+                        taxonname = taxonname + " ";
+                    }
+                    taxonname = taxonname + lineTokenizer.nextToken();
+                }
+
+                taxonNames.set(theNumber - 1, taxonname);
+
+            } else if (theFirst.equalsIgnoreCase("description")) {
+                /**
+                 *
+                 * Having read a comment, do nothing
+                 *
+                 */
+            } else if (theFirst.equalsIgnoreCase("sense")) {
+
+                /**
+                 *
+                 * Having read a sense line, set the sense accordingly
+                 *
+                 */
+                String theSecond = lineTokenizer.nextToken();
+
+                if (theSecond.equalsIgnoreCase("max")) {
+
+                    useMax = true;
+
+                    senseKnown = true;
+
+                } else if (theSecond.equalsIgnoreCase("min")) {
+
+                    useMax = false;
+
+                    senseKnown = true;
+
+                }
+
+            } else if (theFirst.equalsIgnoreCase("taxanumber")) {
+
+                /**
+                 *
+                 * Having read the number of taxa, set it accordingly
+                 *
+                 */
+                String theSecond = lineTokenizer.nextToken();
+
+                N = (new Integer(theSecond)).intValue();
+
+                numberKnown = true;
+
+                for (int n = 0; n < N; n++) {
+
+                    taxonNames.add(new String(""));
+
+                }
+
+                qW.ensureCapacity(N);
+                qW.initialize();
+
+            }
 
         }
 
+
         if (qW.getSize() != qW.over4(N)) {
 
-            System.out.println("Wrong number of quartets in file!");
-
-            System.exit(1);
-
+            throw new IOException("Wrong number of quartets in file!");
         }
 
         qW.normalize(useMax);

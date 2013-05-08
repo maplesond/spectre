@@ -13,10 +13,10 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package uk.ac.uea.cmp.phygen.superq.optimise.gurobi;
+package uk.ac.uea.cmp.phygen.core.math.optimise.gurobi;
 
 import gurobi.*;
-import uk.ac.uea.cmp.phygen.superq.optimise.OptimiserException;
+import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
 
 
 public class GurobiOptimiserLinear extends GurobiOptimiser {

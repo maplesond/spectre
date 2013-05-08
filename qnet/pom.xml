@@ -16,15 +16,6 @@
 
     <dependencies>
 
-        <!-- Note this is just to fool the compiler into compiling this project
-                gurobi and glpk wont be available at runtime -->
-
-        <dependency>
-            <groupId>gurobi</groupId>
-            <artifactId>gurobi</artifactId>
-            <version>5.0.2-64</version>
-        </dependency>
-
         <!-- PhyGen -->
 
         <dependency>

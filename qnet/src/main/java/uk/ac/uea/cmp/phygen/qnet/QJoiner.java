@@ -15,6 +15,8 @@
  */
 package uk.ac.uea.cmp.phygen.qnet;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 import uk.ac.uea.cmp.phygen.core.ds.tree.BinaryTree;
 import uk.ac.uea.cmp.phygen.core.ds.tree.InnerNode;
@@ -23,6 +25,8 @@ import uk.ac.uea.cmp.phygen.core.ds.tree.Leaf;
 import java.util.ArrayList;
 
 class QJoiner {
+
+    private static Logger log = LoggerFactory.getLogger(QJoiner.class);
 
     /**
      *
@@ -213,7 +217,7 @@ class QJoiner {
 
             }
 
-            System.out.println("Iteration step " + (N - n + 1) + ": joining" + aS + " and" + bS + ", average weight: " + quote);
+            log.debug("Iteration step " + (N - n + 1) + ": joining" + aS + " and" + bS + ", average weight: " + quote);
 
             /**
              *

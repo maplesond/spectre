@@ -27,8 +27,8 @@ import uk.ac.uea.cmp.phygen.qnet.QNet;
 import uk.ac.uea.cmp.phygen.qnet.WeightsComputeNNLSInformative;
 import uk.ac.uea.cmp.phygen.qnet.WriteWeightsToNexus;
 import uk.ac.uea.cmp.phygen.superq.chopper.Chopper;
-import uk.ac.uea.cmp.phygen.superq.optimise.Objective;
-import uk.ac.uea.cmp.phygen.superq.optimise.Solver;
+import uk.ac.uea.cmp.phygen.core.math.optimise.Objective;
+import uk.ac.uea.cmp.phygen.core.math.optimise.Solver;
 import uk.ac.uea.cmp.phygen.superq.scale.Scaling;
 
 import java.io.File;
@@ -130,7 +130,7 @@ public class SuperQ extends RunnableTool {
             Chopper.main(new String[]{
                     type,
                     file,
-                    tmppath + "uk.ac.uea.cmp.phygen.superq.chopper.qw"
+                    tmppath + "qw"
             });
 
             rt.gc();
@@ -141,7 +141,7 @@ public class SuperQ extends RunnableTool {
             notifyUser("QNET - Calculating the circular ordering - Using " + this.options.getPrimarySolver().toString());
             QNet.main(new String[]{
                     "lin",
-                    tmppath + "uk.ac.uea.cmp.phygen.superq.chopper.qw",
+                    tmppath + "qw",
                     null,
                     "-1.0",
                     this.options.getPrimarySolver().toString().toLowerCase()

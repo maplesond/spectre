@@ -68,6 +68,11 @@ public class GreedyMEWeighting extends Weighting {
                 splits.addRow(splitsCreation.copyRow(j));
                 splits.mergeRows(splits.rows() - 2, splits.rows() - 1);
 
+                // If we've created a split which contains the entire taxa set then remove it
+                if (splits.getRow(splits.rows() -1).size() == this.distanceMatrix.size()) {
+                    splits.removeRow(splits.rows() - 1);
+                }
+
                 double treeLength = this.calculateTreeLength(splits);
                 log.debug("Treelength: {0}", treeLength);
 
@@ -132,7 +137,7 @@ public class GreedyMEWeighting extends Weighting {
 
     private double calcEdgeWeight(Sums sums, int n_alpha, int n_beta, double P_0) {
         //edge length calculation
-        double edgeWeight = (P_0 - sums.getSum1());
+        double edgeWeight = P_0 - sums.getSum1();
 
         if (edgeWeight != 0.0) {
             edgeWeight = edgeWeight / (n_alpha * n_beta - (sums.getSum2() + sums.getSum3()));
@@ -376,7 +381,7 @@ public class GreedyMEWeighting extends Weighting {
 
             Tableau<Integer> splitsCopy = new Tableau<Integer>(tableau);
 
-            boolean external = tableau.rowSize(i) == 1;
+            boolean external = tableau.rowSize(i) == 1 || tableau.rowSize(i) == this.distanceMatrix.size() - 1;
 
             EdgeAdjacents aEdgeAdjacents = EdgeAdjacents.retrieveAdjacents(splitsCopy, i, P, this.distanceMatrix.size());
 

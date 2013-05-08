@@ -13,25 +13,10 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package uk.ac.uea.cmp.phygen.superq.optimise.nnls;
-
-import uk.ac.uea.cmp.phygen.superq.optimise.Objective;
-import uk.ac.uea.cmp.phygen.superq.optimise.OptimiserException;
-import uk.ac.uea.cmp.phygen.superq.optimise.OptimiserSystem;
-import uk.ac.uea.cmp.phygen.superq.optimise.Problem;
+package uk.ac.uea.cmp.phygen.core.math.optimise;
 
 
-public class NNLSOptimiserSystem implements OptimiserSystem {
-
-    @Override
-    public boolean isOperational() {
-        // Not implemented at the moment... set to true when implemented.
-        return false;
-    }
-
-    @Override
-    public double[] optimise(Objective objective, Problem problem) throws OptimiserException {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
+public interface Optimiser {
     
+    double[] optimise(Problem problem) throws OptimiserException;
 }

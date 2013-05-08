@@ -15,8 +15,11 @@
  */
 package uk.ac.uea.cmp.phygen.superq.chopper;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
@@ -26,7 +29,9 @@ import java.util.ListIterator;
  */
 public class Tree implements Node {
 
-    public Tree(String source, boolean branchLengths) {
+    private static Logger log = LoggerFactory.getLogger(Tree.class);
+
+    public Tree(String source, boolean branchLengths) throws IOException {
 
         /*
          *
@@ -108,9 +113,7 @@ public class Tree implements Node {
 
                 } else {
 
-                    System.out.println("QNet.Chopper: Syntax error in Newick string: wrong number of brackets!");
-                    System.exit(1);
-
+                    throw new IOException("QNet.Chopper: Syntax error in Newick string: wrong number of brackets!");
                 }
 
             }
@@ -154,8 +157,7 @@ public class Tree implements Node {
 
         } else {
 
-            System.out.println("QNet.Chopper: Syntax error in Newick string: wrong number of brackets!");
-            System.exit(1);
+            throw new IOException("QNet.Chopper: Syntax error in Newick string: wrong number of brackets!");
 
         }
 

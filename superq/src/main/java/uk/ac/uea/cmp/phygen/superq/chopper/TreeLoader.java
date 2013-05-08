@@ -15,6 +15,8 @@
  */
 package uk.ac.uea.cmp.phygen.superq.chopper;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 
 import java.io.BufferedReader;
@@ -34,6 +36,8 @@ import java.util.ListIterator;
  */
 public class TreeLoader implements Source {
 
+    private static Logger log = LoggerFactory.getLogger(TreeLoader.class);
+
     int index;
     LinkedList qWs;
     boolean branchLengths, treeWeights;
@@ -42,81 +46,72 @@ public class TreeLoader implements Source {
     public TreeLoader() {
     }
 
-    public void load(String fileName, double weight) {
+    public void load(String fileName, double weight) throws IOException {
 
         index = 0;
 
         trees = new LinkedList();
         weights = new LinkedList();
 
-        try {
+        BufferedReader in = new BufferedReader(new FileReader(fileName));
 
-            BufferedReader in = new BufferedReader(new FileReader(fileName));
+        String aLine = in.readLine();
 
-            String aLine = in.readLine();
+        if (aLine != null && aLine.indexOf(':') != - 1) {
 
-            if (aLine != null && aLine.indexOf(':') != - 1) {
+            branchLengths = true;
 
-                branchLengths = true;
+        } else {
 
-            } else {
-
-                branchLengths = false;
-
-            }
-
-            if (aLine != null && !(aLine.trim().endsWith(";"))) {
-
-                treeWeights = true;
-
-            } else {
-
-                treeWeights = false;
-
-            }
-
-            while (aLine != null) {
-
-                //if there is a blank line, go to next line
-                if (aLine.length() > 0) {
-
-                    aLine = aLine.trim();
-                    int endColon = aLine.lastIndexOf(";");
-
-                    if (treeWeights) {
-
-                        String wS = aLine.substring(endColon + 1).trim();
-                        //System.out.println("WS:" + wS);
-                        weights.add(new Double(Double.parseDouble(wS) * weight));
-
-                    } else {
-                        //System.out.println("ELSE");
-                        weights.add(new Double(weight));
-                    }
-
-
-                    aLine = aLine.substring(0, aLine.lastIndexOf(')') + 1).trim();
-
-                    //quick hack to work around the problem that the weights
-                    //used for unweighted trees were not correct
-                    if (branchLengths) {
-                        trees.add(new Tree(aLine.substring(1, aLine.length() - 1), branchLengths));
-                    } else {
-                        trees.add(new Tree((aLine.substring(1, aLine.length() - 1)) + ":", branchLengths));
-                    }
-                }
-                aLine = in.readLine();
-
-            }
-
-            in.close();
-            //System.out.println("Done");
-        } catch (IOException E) {
-
-            System.out.println("QNet.Chopper: Error while reading from input file!");
-            System.exit(1);
+            branchLengths = false;
 
         }
+
+        if (aLine != null && !(aLine.trim().endsWith(";"))) {
+
+            treeWeights = true;
+
+        } else {
+
+            treeWeights = false;
+
+        }
+
+        while (aLine != null) {
+
+            //if there is a blank line, go to next line
+            if (aLine.length() > 0) {
+
+                aLine = aLine.trim();
+                int endColon = aLine.lastIndexOf(";");
+
+                if (treeWeights) {
+
+                    String wS = aLine.substring(endColon + 1).trim();
+                    //System.out.println("WS:" + wS);
+                    weights.add(new Double(Double.parseDouble(wS) * weight));
+
+                } else {
+                    //System.out.println("ELSE");
+                    weights.add(new Double(weight));
+                }
+
+
+                aLine = aLine.substring(0, aLine.lastIndexOf(')') + 1).trim();
+
+                //quick hack to work around the problem that the weights
+                //used for unweighted trees were not correct
+                if (branchLengths) {
+                    trees.add(new Tree(aLine.substring(1, aLine.length() - 1), branchLengths));
+                } else {
+                    trees.add(new Tree((aLine.substring(1, aLine.length() - 1)) + ":", branchLengths));
+                }
+            }
+            aLine = in.readLine();
+
+        }
+
+        in.close();
 
     }
 

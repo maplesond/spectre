@@ -52,6 +52,7 @@ public class MinEvoFitCalculation {
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     private File beesFile = FileUtils.toFile(MinEvoFitCalculation.class.getResource("/bees.nex"));
+    private File dist0File = FileUtils.toFile(MinEvoFitCalculation.class.getResource("/dist0.phy"));
 
 
     protected void runMinEvoFitCalc(File inFile, File outFile, File nnFile) throws IOException {
@@ -127,10 +128,19 @@ public class MinEvoFitCalculation {
 
         File outDir = temporaryFolder.newFolder("test1");
 
-        this.runMinEvoFitCalc(beesFile, outDir, null);
+        this.runMinEvoFitCalc(beesFile, new File(outDir, "test1.out"), null);
 
         assertTrue(true);
     }
 
+
+    @Test
+    public void testDist0() throws IOException {
+        File outDir = temporaryFolder.newFolder("test1");
+
+        this.runMinEvoFitCalc(dist0File, new File(outDir, "test1.out"), null);
+
+        assertTrue(true);
+    }
 
 }

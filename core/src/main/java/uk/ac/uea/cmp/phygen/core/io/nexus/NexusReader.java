@@ -21,6 +21,8 @@ package uk.ac.uea.cmp.phygen.core.io.nexus;
  */
 
 import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phygen.core.ds.split.CircularOrdering;
 import uk.ac.uea.cmp.phygen.core.ds.split.SplitBlock;
@@ -42,6 +44,8 @@ import java.util.StringTokenizer;
  * @author Dan
  */
 public class NexusReader implements PhygenReader {
+
+    private static Logger log = LoggerFactory.getLogger(NexusReader.class);
 
     /**
      * Reads the file specified by this reader and converts the data into a set
@@ -159,15 +163,15 @@ public class NexusReader implements PhygenReader {
         if (taxaBloc == true) {
             p--;
             do {
-                System.out.println("IF");
+                log.debug("IF");
                 if (aLine.trim().toUpperCase().startsWith("DIMENSIONS")) {
-                    System.out.println("IFIF");
+                    log.debug("IFIF");
                     int beginIdx = aLine.toUpperCase().indexOf("NTAX=") + 5;
                     int endIdx = aLine.indexOf(";");
                     String dimString = aLine.substring(beginIdx, endIdx).trim();
 
                     int n = Integer.parseInt(dimString);
-                    System.out.println(n);
+                    log.debug(String.valueOf(n));
                     distanceMatrix = new DistanceMatrix(n);
 
                 }
@@ -184,11 +188,11 @@ public class NexusReader implements PhygenReader {
                     int beginIdx = aLine.indexOf("'") + 1;
                     int endIdx = aLine.lastIndexOf("'");
 
-                    System.out.println(beginIdx + " " + endIdx);
+                    log.debug(beginIdx + " " + endIdx);
                     try {
-                        System.out.println("try");
+                        log.debug("try");
                         String help = aLine.substring(beginIdx, endIdx);
-                        System.out.println(help);
+                        log.debug(help);
                         help = help.replace(' ', '_');
 
                         distanceMatrix.setTaxa(taxaIndex - 1, help);
@@ -206,19 +210,19 @@ public class NexusReader implements PhygenReader {
 
             int s = 0;
             do {
-                System.out.println("DO");
+                log.debug("DO");
                 if (distanceBloc == true && matrix == true) {
-                    System.out.println("IF2");
+                    log.debug("IF2");
                     if (aLine.isEmpty() == false || aLine.equals(";") == false) {
-                        System.out.println("DistIF" + distanceMatrix.size());
+                        log.debug("DistIF" + distanceMatrix.size());
                         for (int i = distanceMatrix.size() - 1; i >= 0; i--) {
                             int lastIdx = aLine.length();
                             int firstIdx = aLine.lastIndexOf(" ");
                             String distance = aLine.substring(firstIdx + 1, lastIdx - 1);
 
 
-                            System.out.println("Dist: " + distance);
-                            System.out.println("S & i " + s + " " + i);
+                            log.debug("Dist: " + distance);
+                            log.debug("S & i " + s + " " + i);
                             try {
                                 distanceMatrix.setDistance(s, i, Double.parseDouble(distance));
                             } catch (Exception e) {

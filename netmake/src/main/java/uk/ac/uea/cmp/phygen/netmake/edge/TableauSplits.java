@@ -124,13 +124,6 @@ public class TableauSplits {
         public abstract ArrayList<Integer> getRow(TableauSplits s, int index);
     }
 
-    public void print() throws Exception {
-        for (int i = 0; i < rows(); i++) {
-            System.out.println("split-a_side: " + a_side.getRow(i));
-            System.out.println("split-b_side: " + b_side.getRow(i));
-        }
-    }
-
     public void removeSplit(int i) {
         a_side.removeRow(i);
         b_side.removeRow(i);

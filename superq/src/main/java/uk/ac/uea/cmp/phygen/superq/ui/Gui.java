@@ -15,16 +15,20 @@
  */
 package uk.ac.uea.cmp.phygen.superq.ui;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.ui.JobController;
 import uk.ac.uea.cmp.phygen.core.ui.StatusTracker;
 import uk.ac.uea.cmp.phygen.core.ui.ToolHost;
-import uk.ac.uea.cmp.phygen.superq.optimise.Objective;
-import uk.ac.uea.cmp.phygen.superq.optimise.Solver;
+import uk.ac.uea.cmp.phygen.core.math.optimise.Objective;
+import uk.ac.uea.cmp.phygen.core.math.optimise.Solver;
 
 import javax.swing.*;
 import java.io.File;
 
 public class Gui extends JFrame implements ToolHost {
+
+    private static Logger log = LoggerFactory.getLogger(Gui.class);
 
     JDialog dialog = new JDialog(this, "SUPERQ");
     JFrame gui = new JFrame("SUPERQ");
@@ -269,7 +273,7 @@ public class Gui extends JFrame implements ToolHost {
                 String z = file.getAbsolutePath();
                 txtSave.setText(z);
             } else {
-                System.out.println("Open command cancelled by user.");
+                log.debug("Open command cancelled by user.");
             }
         }
     }//GEN-LAST:event_cmdSaveActionPerformed
@@ -300,7 +304,7 @@ private void cmdInputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
             z = file.getAbsolutePath();
             txtInput.setText(z);
         } else {
-            System.out.println("Open command cancelled by user.");
+            log.debug("Open command cancelled by user.");
         }
     }
 }//GEN-LAST:event_cmdInputActionPerformed

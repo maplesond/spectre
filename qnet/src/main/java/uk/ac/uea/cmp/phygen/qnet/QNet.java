@@ -15,8 +15,11 @@
  */
 package uk.ac.uea.cmp.phygen.qnet;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -28,6 +31,8 @@ import java.util.ArrayList;
  *
  */
 public class QNet {
+
+    private static Logger log = LoggerFactory.getLogger(QNet.class);
 
     /**
      *
@@ -59,73 +64,80 @@ public class QNet {
          *
          */
         //QNet theQNet = new QNet ();
-        if (args.length > 2) {
 
-            /**
-             *
-             * Now, calculate split weights
-             *
-             */
-            boolean log = false;
+        try {
 
-            double tolerance = -1.0;
+            if (args.length > 2) {
 
-            if (args[0].equals("log")) {
+                /**
+                 *
+                 * Now, calculate split weights
+                 *
+                 */
+                boolean log = false;
 
-                log = true;
+                double tolerance = -1.0;
 
-            }
+                if (args[0].equals("log")) {
 
-            try {
-
-                if (args.length > 3) {
-
-                    tolerance = Double.parseDouble(args[3]);
+                    log = true;
 
                 }
 
-            } catch (NumberFormatException e) {
+                try {
+
+                    if (args.length > 3) {
+
+                        tolerance = Double.parseDouble(args[3]);
+
+                    }
+
+                } catch (NumberFormatException e) {
+                }
+
+                if (args[1].endsWith(".nex")) {
+
+                    QNetLoader.loadNexus(theQNet, args[1], log);
+
+                } else {
+
+                    QNetLoader.load(theQNet, args[1], log);
+
+                }
+
+                //Iterator it = theQNet.getTaxonNames().iterator();
+                //while(it.hasNext())
+                //{
+                //    System.out.println("Inside the QNet before joining: " + it.next());
+                //}
+
+                NewCyclicOrderer.order(theQNet);
+
+                //System.out.println ("QNet: Joining complete.");
+                if(args.length > 4) {
+                    WeightsComputeNNLSInformative.computeWeights(theQNet, args [1] + ".info", theQNet.getTheLists (), args[2], tolerance,args[4]);
+                }
+                else {
+                    WeightsComputeNNLSInformative.computeWeights(theQNet, args [1] + ".info", theQNet.getTheLists (), args[2], tolerance,"gurobi");
+                }
+                //WeightsWriterNNLSInformative.writeWeights (theQNet, args [1] + ".info", theQNet.getTheLists (), args[2], tolerance);
+                //WeightsWriterNNLS.writeWeights (theQNet, theQNet.getTheLists (), args[2], tolerance);
+
+                //System.out.println ("QNet: Splits written to file.");
+
             }
-
-            if (args[1].endsWith(".nex")) {
-
-                QNetLoader.loadNexus(theQNet, args[1], log);
-
-            } else {
-
-                QNetLoader.load(theQNet, args[1], log);
-
+            else {
+                log.error("QNet: Please specify choice of (lin/log) treatments for weights, input and output filenames!");
             }
-
-            //Iterator it = theQNet.getTaxonNames().iterator();
-            //while(it.hasNext())
-            //{
-            //    System.out.println("Inside the QNet before joining: " + it.next());
-            //}
-
-            NewCyclicOrderer.order(theQNet);
-
-            //System.out.println ("QNet: Joining complete.");
-            if(args.length > 4)
-            {
-                WeightsComputeNNLSInformative.computeWeights(theQNet, args [1] + ".info", theQNet.getTheLists (), args[2], tolerance,args[4]);
-            }
-            else
-            {
-                WeightsComputeNNLSInformative.computeWeights(theQNet, args [1] + ".info", theQNet.getTheLists (), args[2], tolerance,"gurobi");
-            }
-            //WeightsWriterNNLSInformative.writeWeights (theQNet, args [1] + ".info", theQNet.getTheLists (), args[2], tolerance);
-            //WeightsWriterNNLS.writeWeights (theQNet, theQNet.getTheLists (), args[2], tolerance);
-
-            //System.out.println ("QNet: Splits written to file.");
-
-        } else {
-
-            System.out.println("QNet: Please specify choice of (lin/log) treatments for weights, input and output filenames!");
-
         }
-
-
+        catch(IOException e) {
+            log.error(e.getMessage(), e);
+            System.exit(2);
+        }
+        catch(Exception e) {
+            log.error(e.getMessage(), e);
+            System.exit(3);
+        }
     }
 
     public int getN() {

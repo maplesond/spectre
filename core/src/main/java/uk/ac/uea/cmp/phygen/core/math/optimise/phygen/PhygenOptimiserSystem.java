@@ -13,42 +13,25 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package uk.ac.uea.cmp.phygen.qnet;
+package uk.ac.uea.cmp.phygen.core.math.optimise.phygen;
 
-/**
- *
- * Mean scorekeeper
- *
- */
-class MeanKeeper implements ScoreKeeper {
+import uk.ac.uea.cmp.phygen.core.math.optimise.Objective;
+import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
+import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserSystem;
+import uk.ac.uea.cmp.phygen.core.math.optimise.Problem;
 
-    public MeanKeeper() {
 
-        noEntries = 0;
+public class PhygenOptimiserSystem implements OptimiserSystem {
 
-        sum = 0;
-
+    @Override
+    public boolean isOperational() {
+        // Not implemented at the moment... set to true when implemented.
+        return false;
     }
 
-    public double getScore() {
-
-        return ((double) sum / noEntries);
-
+    @Override
+    public double[] optimise(Objective objective, Problem problem) throws OptimiserException {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
-
-    public long getNoEntries() {
-
-        return noEntries;
-
-    }
-
-    public void add(double s) {
-
-        noEntries++;
-
-        sum += s;
-
-    }
-    long noEntries;
-    double sum;
+    
 }

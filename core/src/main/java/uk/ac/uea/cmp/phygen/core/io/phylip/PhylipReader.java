@@ -77,7 +77,6 @@ public class PhylipReader implements PhygenReader {
 
             if (aLine.substring(0, taxaendIdx + 1).equals(" ") == false) {
                 runidx2 = 0;
-                //System.out.println(runidx + " " + taxaendIdx);
                 distanceMatrix.setTaxa(runidx, aLine.substring(0, taxaendIdx));
 
                 runidx++;

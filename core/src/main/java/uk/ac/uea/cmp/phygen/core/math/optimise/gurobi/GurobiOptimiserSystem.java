@@ -13,15 +13,15 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package uk.ac.uea.cmp.phygen.superq.optimise.gurobi;
+package uk.ac.uea.cmp.phygen.core.math.optimise.gurobi;
 
 import gurobi.GRBEnv;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.uea.cmp.phygen.superq.optimise.Objective;
-import uk.ac.uea.cmp.phygen.superq.optimise.OptimiserException;
-import uk.ac.uea.cmp.phygen.superq.optimise.OptimiserSystem;
-import uk.ac.uea.cmp.phygen.superq.optimise.Problem;
+import uk.ac.uea.cmp.phygen.core.math.optimise.Objective;
+import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
+import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserSystem;
+import uk.ac.uea.cmp.phygen.core.math.optimise.Problem;
 
 
 public class GurobiOptimiserSystem implements OptimiserSystem {

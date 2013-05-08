@@ -13,15 +13,19 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package uk.ac.uea.cmp.phygen.qnet;
+package uk.ac.uea.cmp.phygen.core.math.optimise.gurobi;
 
 import gurobi.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.math.matrix.SymmetricMatrix;
 
 /**
  *
  */
-public class GurobiNNLS {
+public class GurobiOptimiserNNLS {
+
+    private static Logger log = LoggerFactory.getLogger(GurobiOptimiserNNLS.class);
 
     public static void solveNNLS(double[] Etf, SymmetricMatrix EtE, double[] x) {
         try {
@@ -79,8 +83,8 @@ public class GurobiNNLS {
 
 
         } catch (GRBException e) {
-            System.out.println("Error code: " + e.getErrorCode() + ". "
-                               + e.getMessage());
+            log.error("Error code: " + e.getErrorCode() + ". "
+                    + e.getMessage());
         }
     }
 }

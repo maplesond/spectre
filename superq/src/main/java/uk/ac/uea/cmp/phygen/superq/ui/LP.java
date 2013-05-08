@@ -17,8 +17,10 @@
 package uk.ac.uea.cmp.phygen.superq.ui;
 
 import gurobi.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.math.matrix.SymmetricMatrix;
-import uk.ac.uea.cmp.phygen.superq.optimise.Objective;
+import uk.ac.uea.cmp.phygen.core.math.optimise.Objective;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -27,6 +29,8 @@ import java.io.IOException;
  * THIS CLASS NEEDS A COMPLETE REWRITE!!!
  */
 public class LP {
+
+    private static Logger log = LoggerFactory.getLogger(LP.class);
 
     static int arr;
     static int rows, cols; //number of colums & rows in topological Matrix
@@ -84,7 +88,7 @@ public class LP {
         }
         double[] help = new double[rows];
         for (int k = 0; k < rows; k++) {
-            System.out.printf("Split number %d\n", k + 1);
+            log.debug("Split number %d\n", k + 1);
             // double x = y[k];
             if (y[k] > 0.0) {
                 try {
@@ -312,7 +316,7 @@ public class LP {
 
             model = null;
         } catch (GRBException e) {
-            System.out.println("Error code: " + e.getErrorCode() + ". "
+            log.error("Error code: " + e.getErrorCode() + ". "
                     + e.getMessage());
         }
         System.gc();
@@ -376,7 +380,7 @@ public class LP {
 
             model = null;
         } catch (GRBException e) {
-            System.out.println("Error code: " + e.getErrorCode() + ". "
+            log.error("Error code: " + e.getErrorCode() + ". "
                     + e.getMessage());
         }
         System.gc();
