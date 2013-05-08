@@ -15,8 +15,8 @@
  */
 package uk.ac.uea.cmp.phygen.core.ds.split;
 
-import uk.ac.uea.cmp.phygen.core.math.optimise.phygen.PhygenOptimiserCircularNNLS;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
+import uk.ac.uea.cmp.phygen.core.math.optimise.phygen.PhygenOptimiserCircularNNLS;
 
 import java.util.ArrayList;
 import java.util.List;

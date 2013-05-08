@@ -28,7 +28,10 @@ import uk.ac.uea.cmp.phygen.qnet.holders.PHolder;
 
 import java.io.*;
 import java.text.NumberFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.ListIterator;
+import java.util.StringTokenizer;
 
 class WeightsWriterNNLSInformative {
 
