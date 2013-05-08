@@ -17,7 +17,8 @@ package uk.ac.uea.cmp.phygen.superq.ui;
 
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.commons.math3.optimization.linear.UnboundedSolutionException;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.io.nexus.NexusData;
 import uk.ac.uea.cmp.phygen.core.io.nexus.NexusReader;
 import uk.ac.uea.cmp.phygen.core.io.nexus.NexusWriter;
@@ -36,7 +37,7 @@ import java.io.IOException;
 
 public class SuperQ extends RunnableTool {
 
-    static Logger logger = Logger.getLogger(SuperQ.class);
+    private static Logger logger = LoggerFactory.getLogger(SuperQ.class);
     private SuperQOptions options;
 
     public SuperQ(SuperQOptions options) {
