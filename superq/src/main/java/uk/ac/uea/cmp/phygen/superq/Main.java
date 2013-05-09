@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package uk.ac.uea.cmp.phygen.superq.ui;
+package uk.ac.uea.cmp.phygen.superq;
 
 import org.apache.commons.cli.*;
 import org.apache.log4j.BasicConfigurator;
@@ -155,7 +155,7 @@ public class Main {
         }
 
         if (commandLine.hasOption(OPT_INPUT_FORMAT)) {
-            sqOpts.setInputFileFormat(InputFormat.valueOf(commandLine.getOptionValue(OPT_INPUT_FORMAT).toUpperCase()));
+            sqOpts.setInputFileFormat(SuperQOptions.InputFormat.valueOf(commandLine.getOptionValue(OPT_INPUT_FORMAT).toUpperCase()));
         } else {
             throw new ParseException("You must specify an input file format");
         }

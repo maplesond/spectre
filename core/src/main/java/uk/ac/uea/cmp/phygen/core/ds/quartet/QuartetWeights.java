@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.math.tuple.Triplet;
 
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * QuartetWeights class
@@ -824,4 +825,48 @@ public class QuartetWeights {
     }
 
 
+    public MeanSumResult meanSum(List<Integer> aL, List<Integer> bL, List<Integer> cL, List<Integer> dL) {
+
+        int count = 0;
+        double score = 0;
+
+        for (int a = 0; a < aL.size(); a++) {
+            for (int b = 0; b < bL.size(); b++) {
+                for (int c = 0; c < cL.size(); c++) {
+                    for (int d = 0; d < dL.size(); d++) {
+
+                        int x = aL.get(a);
+                        int y = bL.get(b);
+                        int u = cL.get(c);
+                        int v = dL.get(d);
+
+                        score += this.getWeight(x, y, u, v);
+
+                        count++;
+                    }
+                }
+            }
+        }
+
+        return new MeanSumResult(count, score);
+    }
+
+
+    public static class MeanSumResult {
+        private int count;
+        private double score;
+
+        public MeanSumResult(final int count, final double score) {
+            this.count = count;
+            this.score = score;
+        }
+
+        public int getCount() {
+            return count;
+        }
+
+        public double getScore() {
+            return score;
+        }
+    }
 }

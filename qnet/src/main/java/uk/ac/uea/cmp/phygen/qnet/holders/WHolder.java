@@ -17,13 +17,13 @@ package uk.ac.uea.cmp.phygen.qnet.holders;
 
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 import uk.ac.uea.cmp.phygen.core.math.tuple.Triplet;
-import uk.ac.uea.cmp.phygen.qnet.TaxonList;
+import uk.ac.uea.cmp.phygen.core.ds.TaxonList;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class WHolder {
 
-    public WHolder(ArrayList theLists, int N, QuartetWeights theQuartetWeights) {
+    public WHolder(List<TaxonList> theLists, int N, QuartetWeights theQuartetWeights) {
 
         counts = new Triplet[QuartetWeights.over4(N)];
         weights = new Triplet[QuartetWeights.over4(N)];
@@ -55,7 +55,7 @@ public class WHolder {
 
                         for (int m = 0; m < theLists.size(); m++) {
 
-                            TaxonList tL = (TaxonList) theLists.get(m);
+                            TaxonList tL = theLists.get(m);
 
                             if (tL.contains(i)) {
 
@@ -68,7 +68,7 @@ public class WHolder {
 
                         for (int m = 0; m < theLists.size(); m++) {
 
-                            TaxonList tL = (TaxonList) theLists.get(m);
+                            TaxonList tL = theLists.get(m);
 
                             if (tL.contains(j)) {
 
@@ -81,7 +81,7 @@ public class WHolder {
 
                         for (int m = 0; m < theLists.size(); m++) {
 
-                            TaxonList tL = (TaxonList) theLists.get(m);
+                            TaxonList tL = theLists.get(m);
 
                             if (tL.contains(k)) {
 
@@ -94,7 +94,7 @@ public class WHolder {
 
                         for (int m = 0; m < theLists.size(); m++) {
 
-                            TaxonList tL = (TaxonList) theLists.get(m);
+                            TaxonList tL = theLists.get(m);
 
                             if (tL.contains(l)) {
 
@@ -128,10 +128,10 @@ public class WHolder {
                         int count3 = 0;
                         double weight3 = 0.0;
 
-                        TaxonList A = (TaxonList) theLists.get(a);
-                        TaxonList B = (TaxonList) theLists.get(b);
-                        TaxonList C = (TaxonList) theLists.get(c);
-                        TaxonList D = (TaxonList) theLists.get(d);
+                        TaxonList A = theLists.get(a);
+                        TaxonList B = theLists.get(b);
+                        TaxonList C = theLists.get(c);
+                        TaxonList D = theLists.get(d);
 
                         // we now have four non-same lists
 
@@ -145,10 +145,10 @@ public class WHolder {
 
                                         // this is a unique, suitable quartet
 
-                                        int yA = ((Integer) A.get(xA)).intValue();
-                                        int yB = ((Integer) B.get(xB)).intValue();
-                                        int yC = ((Integer) C.get(xC)).intValue();
-                                        int yD = ((Integer) D.get(xD)).intValue();
+                                        int yA = A.get(xA);
+                                        int yB = B.get(xB);
+                                        int yC = C.get(xC);
+                                        int yD = D.get(xD);
 
                                         count1++;
                                         weight1 += theQuartetWeights.getWeight(yA, yB, yC, yD);

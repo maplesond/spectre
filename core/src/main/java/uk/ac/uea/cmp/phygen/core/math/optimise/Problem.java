@@ -26,8 +26,8 @@ public class Problem {
         this(new double[0], new double[0][0], new double[0]);
     }
 
-    public Problem(double[] data, double[][] matrix, double[] coefficients) {
-        this.restriction = data;
+    public Problem(double[] restriction, double[][] matrix, double[] coefficients) {
+        this.restriction = restriction;
         this.matrix = matrix;
         this.coefficients = coefficients;
     }

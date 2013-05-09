@@ -23,6 +23,7 @@ import uk.ac.uea.cmp.phygen.core.ds.tree.InnerNode;
 import uk.ac.uea.cmp.phygen.core.ds.tree.Leaf;
 
 import java.util.ArrayList;
+import java.util.List;
 
 class QJoiner {
 
@@ -33,13 +34,11 @@ class QJoiner {
      * QJoin method
      *
      */
-    public static ArrayList join(QNet parent) {
+    public static ArrayList join(QNet qnet) {
 
-        QuartetWeights theQuartetWeights = parent.getWeights();
-        int N = parent.getN();
-        boolean useMax = parent.getUseMax();
-        ArrayList theLists = parent.getTheLists();
-        ArrayList taxonNames = parent.getTaxonNames();
+        QuartetWeights theQuartetWeights = qnet.getWeights();
+        int N = qnet.getN();
+        boolean useMax = qnet.useMax();
 
         ArrayList cN = new ArrayList();
 
@@ -109,11 +108,10 @@ class QJoiner {
                                 ((BinaryTree) cN.get(c)).fillList(cL);
                                 ((BinaryTree) cN.get(d)).fillList(dL);
 
-                                MeanSummer aSummer = new MeanSummer(theQuartetWeights, aL, bL, cL, dL);
+                                QuartetWeights.MeanSumResult meanSumResult = theQuartetWeights.meanSum(aL, bL, cL, dL);
 
-                                quartets += aSummer.getCount();
-                                score += aSummer.getScore();
-
+                                quartets += meanSumResult.getCount();
+                                score += meanSumResult.getScore();
                             }
 
                         }
@@ -326,18 +324,13 @@ class QJoiner {
                                         ((BinaryTree) cN.get(c)).fillList(cL);
                                         ((BinaryTree) cN.get(d)).fillList(dL);
 
-                                        MeanSummer aSummer = new MeanSummer(theQuartetWeights, aL, bL, cL, dL);
+                                        QuartetWeights.MeanSumResult meanSumResult = theQuartetWeights.meanSum(aL, bL, cL, dL);
 
-                                        score += aSummer.getScore();
-
-                                        count += aSummer.getCount();
-
+                                        count += meanSumResult.getCount();
+                                        score += meanSumResult.getScore();
                                     }
-
                                 }
-
                             }
-
                         }
 
                         aSC[((Integer) convert.get(b)).intValue()][n - 2] += score;
@@ -375,12 +368,10 @@ class QJoiner {
                                         ((BinaryTree) cN.get(c)).fillList(cL);
                                         ((BinaryTree) cN.get(d)).fillList(dL);
 
-                                        MeanSummer aSummer = new MeanSummer(theQuartetWeights, aL, bL, cL, dL);
+                                        QuartetWeights.MeanSumResult meanSumResult = theQuartetWeights.meanSum(aL, bL, cL, dL);
 
-                                        score += aSummer.getScore();
-
-                                        count += aSummer.getCount();
-
+                                        count += meanSumResult.getCount();
+                                        score += meanSumResult.getScore();
                                     }
 
                                 }
@@ -414,16 +405,12 @@ class QJoiner {
                         ((BinaryTree) cN.get(bestA)).fillList(cL);
                         ((BinaryTree) cN.get(bestB)).fillList(dL);
 
-                        MeanSummer aSummer = new MeanSummer(theQuartetWeights, aL, bL, cL, dL);
+                        QuartetWeights.MeanSumResult meanSumResult = theQuartetWeights.meanSum(aL, bL, cL, dL);
 
-                        aSC[((Integer) convert.get(a)).intValue()][((Integer) convert.get(b)).intValue()] = sC[a][b] - aSummer.getScore();
-
-                        aQC[((Integer) convert.get(a)).intValue()][((Integer) convert.get(b)).intValue()] = qC[a][b] - aSummer.getCount();
-
+                        aSC[((Integer) convert.get(a)).intValue()][((Integer) convert.get(b)).intValue()] = sC[a][b] - meanSumResult.getScore();
+                        aQC[((Integer) convert.get(a)).intValue()][((Integer) convert.get(b)).intValue()] = qC[a][b] - meanSumResult.getCount();
                     }
-
                 }
-
             }
 
             /**

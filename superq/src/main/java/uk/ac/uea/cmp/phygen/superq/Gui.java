@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package uk.ac.uea.cmp.phygen.superq.ui;
+package uk.ac.uea.cmp.phygen.superq;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -337,7 +337,7 @@ private void cboSelectObjectiveActionPerformed(java.awt.event.ActionEvent evt) {
         SuperQOptions options = new SuperQOptions();
 
         String type = (String) cboInputFormat.getSelectedItem();
-        options.setInputFileFormat(InputFormat.valueOf(type.toUpperCase()));
+        options.setInputFileFormat(SuperQOptions.InputFormat.valueOf(type.toUpperCase()));
 
         File input_file = new File(this.txtInput.getText().replaceAll("(^\")|(\"$)", ""));
         options.setInputFile(input_file);

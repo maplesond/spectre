@@ -20,6 +20,7 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.ac.uea.cmp.phygen.core.ds.TaxonList;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetIndex;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 import uk.ac.uea.cmp.phygen.core.math.matrix.BitMatrix;
@@ -33,10 +34,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.ListIterator;
-import java.util.StringTokenizer;
+import java.util.*;
 
 public class WeightsComputeNNLSInformative {
 
@@ -52,7 +50,7 @@ public class WeightsComputeNNLSInformative {
     private static SymmetricMatrix EtE;
     private static double[] x;
 
-    public static void computeWeights(QNet parent, String infoName, ArrayList cN, String outputName, double tolerance, String nnls) throws QNetException, IOException {
+    public static void computeWeights(QNet parent, String infoName, double tolerance, String nnls) throws QNetException, IOException {
 
         boolean stepMessages = true;
         boolean cycleWarnings = false;
@@ -62,10 +60,8 @@ public class WeightsComputeNNLSInformative {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
 
-        ArrayList theLists = parent.getTheLists();
+        List<TaxonList> theLists = parent.getTheLists();
         QuartetWeights theQuartetWeights = parent.getWeights();
-        ArrayList taxonNames = parent.getTaxonNames();
-        boolean useMax = parent.getUseMax();
         int N = parent.getN();
 
         // we have N taxa
@@ -73,7 +69,7 @@ public class WeightsComputeNNLSInformative {
         // we have theQuartetWeighst weights
         // we have...
 
-        TaxonList c = (TaxonList) theLists.get(0);
+        TaxonList c = theLists.get(0);
 
         // ... the cyclic ordering
 
@@ -1128,7 +1124,7 @@ public class WeightsComputeNNLSInformative {
 
             // list of choices tested
 
-            LinkedList hypotheses = new LinkedList();
+            List<SolutionHypothesis> hypotheses = new LinkedList<SolutionHypothesis>();
 
             int it = 0;
 
@@ -1274,9 +1270,7 @@ public class WeightsComputeNNLSInformative {
 
                             isContained = true;
                             break;
-
                         }
-
                     }
 
                     if (isContained) {
@@ -2095,5 +2089,20 @@ public class WeightsComputeNNLSInformative {
 
     public static double[] getx() {
         return x;
+    }
+
+    protected static class SolutionHypothesis {
+
+        private LinkedList P;
+        private int n;
+
+        public SolutionHypothesis(LinkedList p, int n) {
+            this.P = p;
+            this.n = n;
+        }
+
+        public boolean equals(SolutionHypothesis other) {
+            return (other.n == this.n && other.P.size() == this.P.size() && other.P.containsAll(this.P));
+        }
     }
 }

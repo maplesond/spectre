@@ -18,6 +18,9 @@ package uk.ac.uea.cmp.phygen.superq.scale;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
+import uk.ac.uea.cmp.phygen.core.math.optimise.Problem;
+import uk.ac.uea.cmp.phygen.core.math.optimise.gurobi.GurobiOptimiserQ;
 import uk.ac.uea.cmp.phygen.core.math.tuple.Key;
 import uk.ac.uea.cmp.phygen.superq.chopper.Chopper;
 
@@ -539,7 +542,7 @@ public class Scaling {
         return h;
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, OptimiserException {
         //check mode of operation
         String mode = args[0];
         //name of input file
@@ -551,38 +554,31 @@ public class Scaling {
         int cutIdx1 = input.lastIndexOf(File.separator);
         int cutIdx2 = input.lastIndexOf(".");
         String prefix = "scaled" + input.substring(cutIdx1 + 1, cutIdx2);
+        int ntrees = -1;
 
         if (mode.equals("newick")) {
             //store input trees in separate files and
             //get number of input trees
-            int ntrees = separateTrees(input, path + prefix);
+            ntrees = separateTrees(input, path + prefix);
 
             //turn trees into collections of quartets
             computeQuartetFilesNewick(path + prefix, ntrees);
 
-            //call of method that computes the matrix
-            //of coefficients
-            double[][] h = getMatrix(path + prefix, ntrees);
-
-            //Updates quartet weights and writes them into a file
-            //for each input tree one quartet file is generated
-            Matrix.updateQuartetWeights(path, prefix, Matrix.gurobiQ(h));
         } else if (mode.equals("script")) {
             //turn trees into collections of quartets and
             //get number of input trees
-            //System.out.println("filename: " + filename);
-            //System.out.println("prefix: " + prefix);
-            //System.out.println("path: " + path);
-            int ntrees = computeQuartetFilesScript(input, prefix, path);
-
-            //call of method that computes the matrix
-            //of coefficients
-            double[][] h = getMatrix(path + prefix, ntrees);
-
-            //Updates quartet weights and writes them into a file
-            //for each input tree one quartet file is generated
-            Matrix.updateQuartetWeights(path, prefix, Matrix.gurobiQ(h));
+            ntrees = computeQuartetFilesScript(input, prefix, path);
         }
+
+        //call of method that computes the matrix
+        //of coefficients
+        double[][] h = getMatrix(path + prefix, ntrees);
+
+        Problem p = new Problem(new double[h.length], h, new double[h.length]);
+
+        //Updates quartet weights and writes them into a file
+        //for each input tree one quartet file is generated
+        Matrix.updateQuartetWeights(path, prefix, new GurobiOptimiserQ().optimise(p));
     }
 
     public static String getNewInput(String input) {

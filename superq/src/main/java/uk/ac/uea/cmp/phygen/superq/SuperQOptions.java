@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package uk.ac.uea.cmp.phygen.superq.ui;
+package uk.ac.uea.cmp.phygen.superq;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +26,12 @@ import java.io.File;
 public class SuperQOptions {
     
     private static Logger logger = LoggerFactory.getLogger(SuperQOptions.class);
+
+    public enum InputFormat {
+        SCRIPT,
+        NEWICK,
+        NEXUS;
+    }
 
     private File inputFile;
     private InputFormat inputFileFormat;
@@ -44,7 +50,7 @@ public class SuperQOptions {
                 false, null, false);
     }    
     
-    public SuperQOptions(File inputFile, InputFormat inputFileFormat, File outputFile, 
+    public SuperQOptions(File inputFile, InputFormat inputFileFormat, File outputFile,
             Solver primarySolver, Solver backupSolver, Objective backupObjective, 
             boolean scaleInputTree, Double filter, boolean verbose) {
         
@@ -70,7 +76,7 @@ public class SuperQOptions {
     public void createValidateConfig() {
         //check if scaling of input trees is required
         if (this.isScaleInputTree()) {
-            if (!(this.getInputFileFormat() == InputFormat.NEWICK || 
+            if (!(this.getInputFileFormat() == InputFormat.NEWICK ||
                     this.getInputFileFormat() == InputFormat.SCRIPT)) {
                 this.setScaleInputTree(false);
                 logger.warn("Scale function can only be applied if input format is newick or script.  Running without uk.ac.uea.cmp.phygen.superq.scale function.");

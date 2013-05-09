@@ -15,13 +15,14 @@
  */
 package uk.ac.uea.cmp.phygen.qnet.holders;
 
-import uk.ac.uea.cmp.phygen.qnet.TaxonList;
+import uk.ac.uea.cmp.phygen.core.ds.TaxonList;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ZHolder {
 
-    public ZHolder(ArrayList theLists, int N) {
+    public ZHolder(List<TaxonList> theLists, int N) {
 
         sizes = new ArrayList();
 
@@ -48,11 +49,11 @@ public class ZHolder {
 
     ArrayList sizes;
 
-    int z(ArrayList theLists, int i) {
+    int z(List<TaxonList> theLists, int i) {
 
         for (int n = 0; n < theLists.size(); n++) {
 
-            TaxonList tL = (TaxonList) theLists.get(n);
+            TaxonList tL = theLists.get(n);
 
             if (tL.contains(i)) {
 

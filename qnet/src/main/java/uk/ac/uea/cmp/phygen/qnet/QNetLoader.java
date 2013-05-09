@@ -17,12 +17,13 @@ package uk.ac.uea.cmp.phygen.qnet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.ac.uea.cmp.phygen.core.ds.TaxonList;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
 public class QNetLoader {
@@ -34,13 +35,13 @@ public class QNetLoader {
      * Load method
      *
      */
-    public static void load(QNet parent, String fileName, boolean logNormalize) throws IOException {
+    public static void load(QNet qnet, String fileName, boolean logNormalize) throws IOException {
 
-        QuartetWeights theQuartetWeights = parent.getWeights();
+        QuartetWeights theQuartetWeights = qnet.getWeights();
 
-        ArrayList taxonNames = parent.getTaxonNames();
+        List<String> taxonNames = qnet.getTaxonNames();
 
-        ArrayList theLists = parent.getTheLists();
+        List<TaxonList> theLists = qnet.getTheLists();
 
         /**
          *
@@ -297,7 +298,7 @@ public class QNetLoader {
             throw new IOException("QNet: Wrong number of quartets in file!");
         }
 
-        parent.setN(N);
+        qnet.setN(N);
 
         if (logNormalize) {
 
@@ -311,7 +312,7 @@ public class QNetLoader {
 
         // parameter is now obsolete
 
-        parent.setUseMax(true);
+        qnet.setUseMax(true);
 
         //System.out.println ("done.");
 
@@ -321,9 +322,9 @@ public class QNetLoader {
 
         QuartetWeights theQuartetWeights = parent.getWeights();
 
-        ArrayList taxonNames = parent.getTaxonNames();
+        List<String> taxonNames = parent.getTaxonNames();
 
-        ArrayList theLists = parent.getTheLists();
+        List<TaxonList> theLists = parent.getTheLists();
 
         /**
          *

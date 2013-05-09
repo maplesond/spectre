@@ -16,14 +16,14 @@
 package uk.ac.uea.cmp.phygen.qnet.holders;
 
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
-import uk.ac.uea.cmp.phygen.qnet.TaxonList;
+import uk.ac.uea.cmp.phygen.core.ds.TaxonList;
 
-import java.util.ArrayList;
+import java.util.List;
 
 
 public class NSHolder {
 
-    public NSHolder(ArrayList theLists, int N, QuartetWeights theQuartetWeights) {
+    public NSHolder(List<TaxonList> theLists, int N, QuartetWeights theQuartetWeights) {
 
         counts = new Integer[QuartetWeights.over2(N)];
         weights = new Double[QuartetWeights.over2(N)];

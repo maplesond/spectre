@@ -13,8 +13,9 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package uk.ac.uea.cmp.phygen.superq.ui;
+package uk.ac.uea.cmp.phygen.superq;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.commons.math3.optimization.linear.UnboundedSolutionException;
 import org.slf4j.Logger;
@@ -37,7 +38,7 @@ import java.io.IOException;
 
 public class SuperQ extends RunnableTool {
 
-    private static Logger logger = LoggerFactory.getLogger(SuperQ.class);
+    private static Logger log = LoggerFactory.getLogger(SuperQ.class);
     private SuperQOptions options;
 
     public SuperQ(SuperQOptions options) {
@@ -78,11 +79,11 @@ public class SuperQ extends RunnableTool {
             StopWatch stopWatch = new StopWatch();
             stopWatch.start();
 
-            logger.info("SUPERQ - Starting job: " + this.options.getInputFile().getPath());
+            log.info("SUPERQ - Starting job: " + this.options.getInputFile().getPath());
 
             Runtime rt = Runtime.getRuntime();
 
-            logger.debug("FREE MEM - at start: " + rt.freeMemory());
+            log.debug("FREE MEM - at start: " + rt.freeMemory());
 
             String type = this.options.getInputFileFormat().toString().toLowerCase();
             String file = this.options.getInputFile().getPath();
@@ -101,9 +102,9 @@ public class SuperQ extends RunnableTool {
                 //Optional scaling of input trees
                 //can just be applied to newick or script format
                 if (!Solver.GUROBI.getOptimiserSystem().isOperational()) {
-                    logger.warn("Can't apply scaling as Gurobi is not available.  Skipping step");
-                } else if (!(this.options.getInputFileFormat() == InputFormat.NEWICK
-                        || this.options.getInputFileFormat() == InputFormat.SCRIPT)) {
+                    log.warn("Can't apply scaling as Gurobi is not available.  Skipping step");
+                } else if (!(this.options.getInputFileFormat() == SuperQOptions.InputFormat.NEWICK
+                        || this.options.getInputFileFormat() == SuperQOptions.InputFormat.SCRIPT)) {
                     throw new Exception("Scale function can just be applied, if input format is newick or script!");
                 } else {
                     notifyUser("SCALING - Scaling input trees - Using GUROBI");
@@ -121,7 +122,7 @@ public class SuperQ extends RunnableTool {
                     file = tmppath + "scaled" + file.substring(cutIdx1 + 1, cutIdx2) + ".script";
 
                     rt.gc();
-                    logger.debug("FREE MEM - after scaling: " + rt.freeMemory());
+                    log.debug("FREE MEM - after scaling: " + rt.freeMemory());
 
                     this.continueRun();
                 }
@@ -135,21 +136,21 @@ public class SuperQ extends RunnableTool {
             });
 
             rt.gc();
-            logger.debug("FREE MEM - after running uk.ac.uea.cmp.phygen.superq.chopper: " + rt.freeMemory());
+            log.debug("FREE MEM - after running uk.ac.uea.cmp.phygen.superq.chopper: " + rt.freeMemory());
 
             this.continueRun();
 
             notifyUser("QNET - Calculating the circular ordering - Using " + this.options.getPrimarySolver().toString());
-            QNet.main(new String[]{
-                    "lin",
-                    tmppath + "qw",
-                    null,
-                    "-1.0",
+            QNet qnet = new QNet();
+            qnet.execute(
+                    new File(tmppath + "qw"),
+                    false,
+                    -1.0,
                     this.options.getPrimarySolver().toString().toLowerCase()
-            });
+            );
 
             rt.gc();
-            logger.debug("FREE MEM - after running uk.ac.uea.cmp.phygen.superq.qnet: " + rt.freeMemory());
+            log.debug("FREE MEM - after running uk.ac.uea.cmp.phygen.superq.qnet: " + rt.freeMemory());
 
             this.continueRun();
 
@@ -159,7 +160,7 @@ public class SuperQ extends RunnableTool {
             double[] solution = WeightsComputeNNLSInformative.getx();
 
             if (this.options.getBackupObjective() == Objective.NONE || this.options.getBackupSolver() == Solver.NONE) {
-                logger.info("SECONDARY OPTIMISATION - Not requested");
+                log.info("SECONDARY OPTIMISATION - Not requested");
             } else {
                 
                 Solver backupSolver = this.options.getBackupSolver();
@@ -180,16 +181,16 @@ public class SuperQ extends RunnableTool {
                         solution[i] = solution[i] + solution2[i];
                     }
                 } catch (UnboundedSolutionException use) {
-                    logger.warn("SECONDARY OPTIMISATION - Invalid solution.  Keeping original solution from first optimisation step.");
+                    log.warn("SECONDARY OPTIMISATION - Invalid solution.  Keeping original solution from first optimisation step.");
                 }
             }
 
             notifyUser("SUPERQ - Saving weights to file");
-            WriteWeightsToNexus.writeWeights(QNet.theQNet, QNet.theQNet.getTheLists(), weightsOutputPath, solution, null, 0);
+            WriteWeightsToNexus.writeWeights(qnet, weightsOutputPath, solution, null, 0);
 
 
             rt.gc();
-            logger.debug("FREE MEM - after computing weights: " + rt.freeMemory());
+            log.debug("FREE MEM - after computing weights: " + rt.freeMemory());
 
             if (this.options.getFilter() != null) {
                 notifyUser("FILTER - filtering splits");
@@ -199,20 +200,17 @@ public class SuperQ extends RunnableTool {
 
             notifyUser("CLEANUP - Removing temporary files in " + tmpdir.toString());
 
-            String[] tmpfiles = tmpdir.list();
-            for (int i = 0; i < tmpfiles.length; i++) {
-                (new File(tmpdir, tmpfiles[i])).delete();
-            }
-            tmpdir.delete();
+            // Clean up temp dir
+            FileUtils.deleteDirectory(tmpdir);
 
             this.trackerFinished(true);
 
             // Print run time on screen
             stopWatch.stop();
-            logger.info("SUPERQ - Completed Successfully - Total run time (H:M:S:MS): " + stopWatch.toString());
+            log.info("SUPERQ - Completed Successfully - Total run time (H:M:S:MS): " + stopWatch.toString());
 
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             this.setErrorMessage(e.getMessage());
             this.trackerFinished(false);
         } finally {
@@ -233,7 +231,7 @@ public class SuperQ extends RunnableTool {
     }
 
     private void notifyUser(String message) {
-        logger.info(message);
+        log.info(message);
         this.trackerInitUnknownRuntime(message);
     }
 }

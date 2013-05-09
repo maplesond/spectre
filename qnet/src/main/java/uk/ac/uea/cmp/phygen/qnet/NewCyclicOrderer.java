@@ -17,10 +17,12 @@ package uk.ac.uea.cmp.phygen.qnet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.ac.uea.cmp.phygen.core.ds.TaxonList;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 import uk.ac.uea.cmp.phygen.qnet.holders.*;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.ListIterator;
 
 class NewCyclicOrderer {
@@ -36,10 +38,9 @@ class NewCyclicOrderer {
 
         double c = 0.5;
 
-        ArrayList theLists = parent.getTheLists();
+        List<TaxonList> theLists = parent.getTheLists();
         QuartetWeights theQuartetWeights = parent.getWeights();
-        ArrayList taxonNames = parent.getTaxonNames();
-        boolean useMax = parent.getUseMax();
+        List<String> taxonNames = parent.getTaxonNames();
         int N = parent.getN();
 
         /**
@@ -59,7 +60,7 @@ class NewCyclicOrderer {
 
             // the taxa set X (prime)
 
-            X.add(((TaxonList) theLists.get(n)).get(0));
+            X.add((theLists.get(n)).get(0));
 
         }
 
@@ -226,22 +227,22 @@ class NewCyclicOrderer {
 
             if (y == 1) {
 
-                join(theLists, a, 1, b, 0, taxonNames);
+                join(theLists, a, 1, b, 0);
             }
 
             if (y == 2) {
 
-                join(theLists, a, 1, b, 1, taxonNames);
+                join(theLists, a, 1, b, 1);
             }
 
             if (y == 3) {
 
-                join(theLists, a, 0, b, 0, taxonNames);
+                join(theLists, a, 0, b, 0);
             }
 
             if (y == 4) {
 
-                join(theLists, a, 0, b, 1, taxonNames);
+                join(theLists, a, 0, b, 1);
             }
 
             // remove b from X
@@ -590,49 +591,49 @@ class NewCyclicOrderer {
 
         if (y == 1) {
 
-            join(theLists, i, 0, j, 0, k, 0, taxonNames);
+            join(theLists, i, 0, j, 0, k, 0);
 
         }
 
         if (y == 2) {
 
-            join(theLists, i, 0, j, 0, k, 1, taxonNames);
+            join(theLists, i, 0, j, 0, k, 1);
 
         }
 
         if (y == 3) {
 
-            join(theLists, i, 0, j, 1, k, 0, taxonNames);
+            join(theLists, i, 0, j, 1, k, 0);
 
         }
 
         if (y == 4) {
 
-            join(theLists, i, 0, j, 1, k, 1, taxonNames);
+            join(theLists, i, 0, j, 1, k, 1);
 
         }
 
         if (y == 5) {
 
-            join(theLists, i, 1, j, 0, k, 0, taxonNames);
+            join(theLists, i, 1, j, 0, k, 0);
 
         }
 
         if (y == 6) {
 
-            join(theLists, i, 1, j, 0, k, 1, taxonNames);
+            join(theLists, i, 1, j, 0, k, 1);
 
         }
 
         if (y == 7) {
 
-            join(theLists, i, 1, j, 1, k, 0, taxonNames);
+            join(theLists, i, 1, j, 1, k, 0);
 
         }
 
         if (y == 8) {
 
-            join(theLists, i, 1, j, 1, k, 1, taxonNames);
+            join(theLists, i, 1, j, 1, k, 1);
 
         }
 
@@ -658,27 +659,22 @@ class NewCyclicOrderer {
 
     }
 
-    static ArrayList join(ArrayList theLists, int taxon1, int reversed1,
-                          int taxon2, int reversed2, ArrayList taxonNames) {
+    static List<TaxonList> join(List<TaxonList> theLists, int taxon1, int reversed1,
+                          int taxon2, int reversed2) {
 
         TaxonList tL1 = new TaxonList(), tL2 = new TaxonList();
 
         for (int n = 0; n < theLists.size(); n++) {
 
-            TaxonList tL = (TaxonList) theLists.get(n);
+            TaxonList tL = theLists.get(n);
 
             if (tL.contains(taxon1)) {
-
                 tL1 = tL;
-
             }
 
             if (tL.contains(taxon2)) {
-
                 tL2 = tL;
-
             }
-
         }
 
         theLists.remove(tL1);
@@ -692,34 +688,27 @@ class NewCyclicOrderer {
 
     }
 
-    static ArrayList join(ArrayList theLists, int taxon1, int reversed1,
+    static List<TaxonList> join(List<TaxonList> theLists, int taxon1, int reversed1,
                           int taxon2, int reversed2,
-                          int taxon3, int reversed3, ArrayList taxonNames) {
+                          int taxon3, int reversed3) {
 
         TaxonList tL1 = new TaxonList(), tL2 = new TaxonList(), tL3 = new TaxonList();
 
         for (int n = 0; n < theLists.size(); n++) {
 
-            TaxonList tL = (TaxonList) theLists.get(n);
+            TaxonList tL = theLists.get(n);
 
             if (tL.contains(taxon1)) {
-
                 tL1 = tL;
-
             }
 
             if (tL.contains(taxon2)) {
-
                 tL2 = tL;
-
             }
 
             if (tL.contains(taxon3)) {
-
                 tL3 = tL;
-
             }
-
         }
 
         theLists.remove(tL1);

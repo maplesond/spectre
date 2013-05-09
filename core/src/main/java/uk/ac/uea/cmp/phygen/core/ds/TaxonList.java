@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package uk.ac.uea.cmp.phygen.qnet;
+package uk.ac.uea.cmp.phygen.core.ds;
 
 import java.util.ArrayList;
 
@@ -24,7 +24,7 @@ import java.util.ArrayList;
  * Basically an ArrayList which can be joined and inverted
  *
  */
-public class TaxonList extends ArrayList {
+public class TaxonList extends ArrayList<Integer> {
 
     /**
      *

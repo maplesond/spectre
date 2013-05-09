@@ -15,12 +15,14 @@
  */
 package uk.ac.uea.cmp.phygen.qnet;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.io.FilenameUtils;
+import uk.ac.uea.cmp.phygen.core.ds.TaxonList;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -32,166 +34,7 @@ import java.util.ArrayList;
  */
 public class QNet {
 
-    private static Logger log = LoggerFactory.getLogger(QNet.class);
-
     /**
-     *
-     * Runnable method...
-     *
-     * Let�s see... the program should:
-     *
-     * - load the file according to specs
-     *
-     * - set up the proper set of lists
-     *
-     * - perform the joining loop
-     *
-     * - deliver the final single list
-     *
-     */
-    public static QNet theQNet = new QNet();
-
-    public static void main(String[] args) {
-        theQNet = new QNet();
-
-        /**
-         *
-         * Just a primitive version, command-line, no options. However, that�s
-         * just the way of testing. load and run methods are the core.
-         *
-         * Usage: <lin/log> <infile> <outfile> <optional: tolerance>
-         *
-         *
-         */
-        //QNet theQNet = new QNet ();
-
-        try {
-
-            if (args.length > 2) {
-
-                /**
-                 *
-                 * Now, calculate split weights
-                 *
-                 */
-                boolean log = false;
-
-                double tolerance = -1.0;
-
-                if (args[0].equals("log")) {
-
-                    log = true;
-
-                }
-
-                try {
-
-                    if (args.length > 3) {
-
-                        tolerance = Double.parseDouble(args[3]);
-
-                    }
-
-                } catch (NumberFormatException e) {
-                }
-
-                if (args[1].endsWith(".nex")) {
-
-                    QNetLoader.loadNexus(theQNet, args[1], log);
-
-                } else {
-
-                    QNetLoader.load(theQNet, args[1], log);
-
-                }
-
-                //Iterator it = theQNet.getTaxonNames().iterator();
-                //while(it.hasNext())
-                //{
-                //    System.out.println("Inside the QNet before joining: " + it.next());
-                //}
-
-                NewCyclicOrderer.order(theQNet);
-
-                //System.out.println ("QNet: Joining complete.");
-                if(args.length > 4) {
-                    WeightsComputeNNLSInformative.computeWeights(theQNet, args [1] + ".info", theQNet.getTheLists (), args[2], tolerance,args[4]);
-                }
-                else {
-                    WeightsComputeNNLSInformative.computeWeights(theQNet, args [1] + ".info", theQNet.getTheLists (), args[2], tolerance,"gurobi");
-                }
-                //WeightsWriterNNLSInformative.writeWeights (theQNet, args [1] + ".info", theQNet.getTheLists (), args[2], tolerance);
-                //WeightsWriterNNLS.writeWeights (theQNet, theQNet.getTheLists (), args[2], tolerance);
-
-                //System.out.println ("QNet: Splits written to file.");
-
-            }
-            else {
-                log.error("QNet: Please specify choice of (lin/log) treatments for weights, input and output filenames!");
-            }
-        }
-        catch(IOException e) {
-            log.error(e.getMessage(), e);
-            System.exit(2);
-        }
-        catch(Exception e) {
-            log.error(e.getMessage(), e);
-            System.exit(3);
-        }
-    }
-
-    public int getN() {
-
-        return N;
-    }
-
-    public void setN(int newN) {
-
-        N = newN;
-    }
-
-    public QuartetWeights getWeights() {
-
-        return theQuartetWeights;
-    }
-
-    public void setWeights(QuartetWeights newWeights) {
-
-        theQuartetWeights = newWeights;
-    }
-
-    public ArrayList getTaxonNames() {
-
-        return taxonNames;
-    }
-
-    public void setTaxonNames(ArrayList newTaxonNames) {
-
-        taxonNames = newTaxonNames;
-    }
-
-    public boolean getUseMax() {
-
-        return useMax;
-    }
-
-    public void setUseMax(boolean newUseMax) {
-
-        useMax = newUseMax;
-    }
-
-    public ArrayList getTheLists() {
-
-        return theLists;
-    }
-
-    public void setTheLists(ArrayList newLists) {
-
-        theLists = newLists;
-    }
-
-    /**
-     *
      * Structure for quartet weights.
      *
      * In this object, quartet weights are held by quartet + tree.
@@ -201,35 +44,94 @@ public class QNet {
      * Always access by small->large... with subtraction of the previous and
      * one... so 3, 5, 1, 8 is 1, 3, 5, 8 is 0 1 1 2 and then choose which tree
      * according to order u, v, x, y
-     *
      */
-    QuartetWeights theQuartetWeights = new QuartetWeights();
+    private QuartetWeights theQuartetWeights;
+
     /**
-     *
      * Taxon names
      *
      * ArrayList of Strings
-     *
      */
-    ArrayList taxonNames = new ArrayList();
+    private List<String> taxonNames;
+
     /**
-     *
      * Listing holder...
      *
      * Just an ArrayList of TaxonLists
-     *
      */
-    ArrayList theLists = new ArrayList();
+    private List<TaxonList> theLists;
+
     /**
-     *
      * Number of taxa...
-     *
      */
-    int N;
+    private int N;
+
     /**
-     *
      * Choice of min/max usage
-     *
      */
-    boolean useMax;
+    private boolean useMax;
+
+    public QNet() {
+
+        this.theQuartetWeights = new QuartetWeights();
+        this.taxonNames = new ArrayList<String>();
+        this.theLists = new ArrayList<TaxonList>();
+        this.N = 0;
+        this.useMax = false;
+    }
+
+
+    public int getN() {
+
+        return N;
+    }
+
+    public void setN(int newN) {
+
+        this.N = newN;
+    }
+
+    public QuartetWeights getWeights() {
+
+        return theQuartetWeights;
+    }
+
+    public List<String> getTaxonNames() {
+
+        return taxonNames;
+    }
+
+    public boolean useMax() {
+
+        return useMax;
+    }
+
+    public void setUseMax(boolean newUseMax) {
+
+        useMax = newUseMax;
+    }
+
+    public List<TaxonList> getTheLists() {
+
+        return theLists;
+    }
+
+
+    public void execute(File input, boolean log, double tolerance, String nnls) throws IOException, QNetException {
+
+        if (FilenameUtils.getExtension(input.getName()).equals("nex")) {
+            QNetLoader.loadNexus(this, input.getAbsolutePath(), log);
+        }
+        else {
+            QNetLoader.load(this, input.getAbsolutePath(), log);
+        }
+
+        NewCyclicOrderer.order(this);
+
+        File infoFile = new File(input, ".info");
+        WeightsComputeNNLSInformative.computeWeights(this, infoFile.getAbsolutePath(), tolerance, nnls);
+
+    }
+
+
 }

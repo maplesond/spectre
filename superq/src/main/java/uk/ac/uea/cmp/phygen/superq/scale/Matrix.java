@@ -25,78 +25,7 @@ import java.util.List;
 
 public class Matrix {
 
-    /**
-     * Returns a vector with the scaling factors for the input trees/quartets
-     */
-    public static double[] gurobiQ(double H[][]) {
 
-
-        double[] w = new double[H.length];
-
-        /*try {
-            //Creates model
-            //GRBEnv env = new GRBEnv("gurobi.log");
-            GRBEnv env = new GRBEnv();
-            env.set(GRB.IntParam.OutputFlag, 0);
-            GRBModel model = new GRBModel(env);
-            GRBVar[] variables = new GRBVar[H.length];
-
-
-
-            // Creates variables
-
-            for (int i = 0; i < H.length; i++) {
-                GRBVar x = model.addVar(0, Double.POSITIVE_INFINITY, 1.0, GRB.CONTINUOUS, "x" + i);
-                variables[i] = x;
-            }
-            // Integrates new variables
-
-            model.update();
-
-
-            //Add Objective
-            GRBQuadExpr obj = new GRBQuadExpr();
-            for (int i = 0; i < H.length; i++) {
-                for (int j = 0; j < H.length; j++) {
-                    obj.addTerm(H[i][j], variables[i], variables[j]);
-                }
-            }
-            model.setObjective(obj);
-
-            // Add constraints
-
-            GRBLinExpr expr = new GRBLinExpr();
-
-            for (int i = 0; i < H.length; i++) {
-
-                expr.addTerm(1.0, variables[i]);
-
-            }
-            model.addConstr(expr, GRB.EQUAL, 1.0, "c0");
-            // Optimize model
-
-            model.optimize();
-
-            //Stores solution in vector w
-            for (int i = 0; i < w.length; i++) {
-//              System.out.println(variables[i].get(GRB.StringAttr.VarName) + " " + variables[i].get(GRB.DoubleAttr.X));
-                w[i] = variables[i].get(GRB.DoubleAttr.X);
-            }
-
-
-//            System.out.println("Obj: " + model.get(GRB.DoubleAttr.ObjVal));
-            //Reset the model
-            model = null;
-        } catch (GRBException e) {
-            System.out.println("Error code: " + e.getErrorCode() + ". "
-                    + e.getMessage());
-        }*/
-        //Garbage collection to save space
-        System.gc();
-
-        //Returns solution vector
-        return w;
-    }
 
 //Updates the quartet weights in the new input files (scales the weights before they are processed by Chopper)
     public static void updateQuartetWeights(String path, String prefix, double[] w) throws IOException {

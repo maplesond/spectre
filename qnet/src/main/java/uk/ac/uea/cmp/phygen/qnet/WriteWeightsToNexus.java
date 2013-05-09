@@ -17,12 +17,13 @@ package uk.ac.uea.cmp.phygen.qnet;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import uk.ac.uea.cmp.phygen.core.ds.TaxonList;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetIndex;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 
 public class WriteWeightsToNexus {
 
@@ -30,14 +31,13 @@ public class WriteWeightsToNexus {
     //standard ... 0
     //minimum  ... 1
     //maximum  ... 2
-    public static void writeWeights(QNet parent, ArrayList cN, String outputName, double[] y, double[] x, int mode) {
-        ArrayList theLists = parent.getTheLists();
-        QuartetWeights theQuartetWeights = parent.getWeights();
-        ArrayList taxonNames = parent.getTaxonNames();
-        boolean useMax = parent.getUseMax();
-        int N = parent.getN();
+    public static void writeWeights(QNet qnet, String outputName, double[] y, double[] x, int mode) {
+        List<TaxonList> theLists = qnet.getTheLists();
+        QuartetWeights theQuartetWeights = qnet.getWeights();
+        List<String> taxonNames = qnet.getTaxonNames();
+        int N = qnet.getN();
 
-        TaxonList c = (TaxonList) theLists.get(0);
+        TaxonList c = theLists.get(0);
 
         Pair<Integer, Integer>[] splitIndices = new Pair[N * (N - 1) / 2 - N];
 

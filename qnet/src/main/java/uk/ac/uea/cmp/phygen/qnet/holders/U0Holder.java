@@ -16,13 +16,13 @@
 package uk.ac.uea.cmp.phygen.qnet.holders;
 
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
-import uk.ac.uea.cmp.phygen.qnet.TaxonList;
+import uk.ac.uea.cmp.phygen.core.ds.TaxonList;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class U0Holder {
 
-    public U0Holder(ArrayList theLists, int N, QuartetWeights theQuartetWeights) {
+    public U0Holder(List<TaxonList> theLists, int N, QuartetWeights theQuartetWeights) {
 
         counts = new Integer[QuartetWeights.over2(N)];
         weights = new Double[QuartetWeights.over2(N)];
@@ -51,7 +51,7 @@ public class U0Holder {
 
                 for (int m = 0; m < theLists.size(); m++) {
 
-                    TaxonList tL = (TaxonList) theLists.get(m);
+                    TaxonList tL = theLists.get(m);
 
                     if (tL.contains(i)) {
 
@@ -64,7 +64,7 @@ public class U0Holder {
 
                 for (int m = 0; m < theLists.size(); m++) {
 
-                    TaxonList tL = (TaxonList) theLists.get(m);
+                    TaxonList tL = theLists.get(m);
 
                     if (tL.contains(j)) {
 
@@ -92,8 +92,8 @@ public class U0Holder {
                 int count = 0;
                 double weight = 0.0;
 
-                TaxonList A = (TaxonList) theLists.get(a);
-                TaxonList B = (TaxonList) theLists.get(b);
+                TaxonList A = theLists.get(a);
+                TaxonList B = theLists.get(b);
 
                 // we now have two non-same lists
 
@@ -107,10 +107,10 @@ public class U0Holder {
 
                                 // this is a unique, suitable quartet
 
-                                int yA1 = ((Integer) A.get(xA1)).intValue();
-                                int yA2 = ((Integer) A.get(xA2)).intValue();
-                                int yB1 = ((Integer) B.get(xB1)).intValue();
-                                int yB2 = ((Integer) B.get(xB2)).intValue();
+                                int yA1 = A.get(xA1);
+                                int yA2 = A.get(xA2);
+                                int yB1 = B.get(xB1);
+                                int yB2 = B.get(xB2);
 
                                 count++;
                                 weight += theQuartetWeights.getWeight(yA1, yB1, yA2, yB2);

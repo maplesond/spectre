@@ -15,7 +15,7 @@
  */
 package uk.ac.uea.cmp.phygen.qnet.holders;
 
-import uk.ac.uea.cmp.phygen.qnet.TaxonList;
+import uk.ac.uea.cmp.phygen.core.ds.TaxonList;
 
 /**
  * PHolder class
