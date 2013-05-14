@@ -16,8 +16,6 @@
 
 package uk.ac.uea.cmp.phygen.netmake.edge;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.ds.SummedDistanceList;
 import uk.ac.uea.cmp.phygen.core.ds.Tableau;
 
@@ -32,8 +30,6 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public class EdgeSubsetFinder {
-
-    private final static Logger log = LoggerFactory.getLogger(EdgeSubsetFinder.class.getName());
 
     private Tableau t;
     private SummedDistanceList sdl;
@@ -108,8 +104,6 @@ public class EdgeSubsetFinder {
                 }
             }
         }
-
-        log.debug("P: {0}", sdl.get(largest_subset));
 
         result = new Subset(sdl.get(largest_subset), t.copyRow(largest_subset));
 

@@ -15,7 +15,12 @@
  */
 package uk.ac.uea.cmp.phygen.core.io;
 
+import org.apache.commons.lang3.StringUtils;
 import uk.ac.uea.cmp.phygen.core.io.nexus.NexusWriter;
+import uk.ac.uea.cmp.phygen.core.io.phylip.PhylipWriter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -36,8 +41,18 @@ public enum PhygenWriterFactory {
         public String[] getValidExtensions() {
             return new String[]{"nex", "nexus"};
         }
-    };
+    },
+    PHYLIP {
+        @Override
+        public PhygenWriter create() {
+            return new PhylipWriter();
+        }
 
+        @Override
+        public String[] getValidExtensions() {
+            return new String[]{"phy", "phylip"};
+        }
+    };
     public abstract PhygenWriter create();
 
     public abstract String[] getValidExtensions();
@@ -58,5 +73,16 @@ public enum PhygenWriterFactory {
 
     public String getPrimaryExtension() {
         return this.getValidExtensions()[0];
+    }
+
+    public static String listWriters() {
+
+        List<String> writerStrings = new ArrayList<String>();
+
+        for(PhygenWriterFactory mode : PhygenWriterFactory.values()) {
+            writerStrings.add(mode.name());
+        }
+
+        return "[" + StringUtils.join(writerStrings, ", ") + "]";
     }
 }

@@ -27,9 +27,13 @@ import uk.ac.uea.cmp.phygen.core.ds.split.CircularOrdering;
 import uk.ac.uea.cmp.phygen.core.io.PhygenReader;
 import uk.ac.uea.cmp.phygen.core.io.PhygenReaderFactory;
 import uk.ac.uea.cmp.phygen.core.io.nexus.NexusReader;
+import uk.ac.uea.cmp.phygen.core.ui.cli.CommandLineHelper;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Created with IntelliJ IDEA.
@@ -42,74 +46,100 @@ public class NetMECLI {
 
     private static Logger log = LoggerFactory.getLogger(NetMECLI.class);
 
-    private static NetMEOptions processCmdLine(String[] args) throws ParseException {
+    public static final String OPT_DISTANCES_FILE = "distances_file";
+    public static final String OPT_DISTANCES_FILE_TYPE = "distances_file_type";
+    public static final String OPT_CIRCULAR_ORDERING_FILE = "circular_ordering_file";
+    public static final String OPT_OUTPUT_DIR = "output";
+    public static final String OPT_OUTPUT_PREFIX = "prefix";
 
-        // Create the available options
-        Options options = NetMEOptions.createOptions();
+    public static Options createOptions() {
 
-        // Parse the actual arguments
-        CommandLineParser parser = new PosixParser();
+        // Options with arguments
+        Option optDistancesFile = OptionBuilder.withArgName("file").withLongOpt(OPT_DISTANCES_FILE).isRequired().hasArg()
+                .withDescription("The file containing the distance data.").create("i");
 
-        // parse the command line arguments
-        CommandLine line = parser.parse(options, args);
-        NetMEOptions netMEOptions = new NetMEOptions(line);
+        Option optDistancesFileType = OptionBuilder.withArgName("string").withLongOpt(OPT_DISTANCES_FILE_TYPE).hasArg()
+                .withDescription("The file type of the distance data file: [NEXUS, PHYLIP].").create("t");
 
-        return netMEOptions;
+        Option optCircularOrderingFile = OptionBuilder.withArgName("file").withLongOpt(OPT_CIRCULAR_ORDERING_FILE).isRequired().hasArg()
+                .withDescription("The nexus file containing the circular ordering.").create("j");
+
+        Option optOutputDir = OptionBuilder.withArgName("file").withLongOpt(OPT_OUTPUT_DIR).hasArg()
+                .withDescription("The directory to put output from this job.").create("o");
+
+        Option optOutputPrefix = OptionBuilder.withArgName("string").withLongOpt(OPT_OUTPUT_PREFIX).hasArg()
+                .withDescription("The prefix to apply to all files produced by this NetME run.  Default: netme-<timestamp>.").create("p");
+
+        // create Options object
+        Options options = new Options();
+        options.addOption(optDistancesFile);
+        options.addOption(optDistancesFileType);
+        options.addOption(optCircularOrderingFile);
+        options.addOption(optOutputDir);
+        options.addOption(optOutputPrefix);
+        options.addOption(CommandLineHelper.HELP_OPTION);
+
+        return options;
     }
 
 
     public static void main(String[] args) {
 
+        CommandLine commandLine = CommandLineHelper.startApp(createOptions(), "netme-<version>", "Net-ME", args);
+
+        // If we didn't return a command line object then just return.  Probably the user requested help or
+        // input invalid args
+        if (commandLine == null) {
+            return;
+        }
+
         try {
+            // Configure logging
+            BasicConfigurator.configure();
 
-            // Process the command line
-            NetMEOptions netMEOptions = processCmdLine(args);
+            log.info("NetME: Parsing arguments");
 
-            // If help was requested output that and finish before starting Spring
-            if (netMEOptions.doHelp()) {
-                netMEOptions.printUsage();
-            }
-            // Otherwise run NetMake proper
-            else {
+            DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd-HHmmss");
+            Date date = new Date();
+            String timeStamp = dateFormat.format(date);
 
-                // Configure logging
-                BasicConfigurator.configure();
+            File distancesFile = new File(commandLine.getOptionValue(OPT_DISTANCES_FILE));
+            String distancesFileType = commandLine.hasOption(OPT_DISTANCES_FILE_TYPE) ? commandLine.getOptionValue(OPT_DISTANCES_FILE_TYPE) : null;
+            File circularOrderingFile = new File(commandLine.getOptionValue(OPT_CIRCULAR_ORDERING_FILE));
+            File outputDir = commandLine.hasOption(OPT_OUTPUT_DIR) ? new File(commandLine.getOptionValue(OPT_OUTPUT_DIR)) : new File(".");
+            String prefix = commandLine.hasOption(OPT_OUTPUT_PREFIX) ? commandLine.getOptionValue(OPT_OUTPUT_PREFIX) : "netme-" + timeStamp;
 
-                // Load distanceMatrix from input file based on file type
-                PhygenReader phygenReader = netMEOptions.getDistancesFileType() != null ?
-                        PhygenReaderFactory.valueOf(netMEOptions.getDistancesFileType()).create() :
-                        PhygenReaderFactory.create(FilenameUtils.getExtension(netMEOptions.getDistancesFile().getName()));
+            log.info("NetME: Loading distance matrix from: " + distancesFile.getAbsolutePath());
 
-                DistanceMatrix distanceMatrix = phygenReader.read(netMEOptions.getDistancesFile());
+            // Load distanceMatrix from input file based on file type
+            PhygenReader phygenReader = distancesFileType != null ?
+                    PhygenReaderFactory.valueOf(distancesFileType).create() :
+                    PhygenReaderFactory.create(FilenameUtils.getExtension(distancesFile.getName()));
 
-                // Load circular ordering from nexus file
-                CircularOrdering circularOrdering = new NexusReader().extractCircOrdering(netMEOptions.getCircularOrderingFile());
+            DistanceMatrix distanceMatrix = phygenReader.read(distancesFile);
 
-                log.info("NetME: Data Loaded");
-                log.info("NetME: Started");
+            // Load circular ordering from nexus file
+            CircularOrdering circularOrdering = new NexusReader().extractCircOrdering(circularOrderingFile);
 
-                NetMEResult netMeResult = new NetME().calcMinEvoTree(distanceMatrix, circularOrdering);
+            log.info("NetME: Data Loaded");
+            log.info("NetME: Started");
 
-                log.info("NetME: Finished");
+            NetMEResult netMeResult = new NetME().calcMinEvoTree(distanceMatrix, circularOrdering);
 
-                // Save result to disk
-                netMeResult.save(
-                        new File(netMEOptions.getOutputDir(), netMEOptions.getPrefix() + ".min-evo.nex"),
-                        new File(netMEOptions.getOutputDir(), netMEOptions.getPrefix() + ".original-min-evo.nex")
-                );
+            log.info("NetME: Finished");
 
-                log.info("NetME: Results saved");
-            }
-        } catch (IOException ioe) {
-            log.error(ioe.getMessage(), ioe);
-            System.exit(2);
-        } catch (ParseException exp) {
-            System.err.println(exp.getMessage());
-            System.err.println(StringUtils.join(exp.getStackTrace(), "\n"));
-            System.exit(3);
+            // Save result to disk
+            netMeResult.save(
+                    new File(outputDir, prefix + ".min-evo.nex"),
+                    new File(outputDir, prefix + ".original-min-evo.nex")
+            );
+
+            log.info("NetME: Results saved");
+
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            System.exit(6);
+            System.err.println(e.getMessage());
+            System.err.println(StringUtils.join(e.getStackTrace(), "\n"));
+            System.exit(1);
         }
     }
 

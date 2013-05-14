@@ -308,6 +308,22 @@ public class DistanceMatrix {
     }
 
     /**
+     * Retrieves a single row of the distance matrix in string form.
+     * @param row The index of the row to return.
+     * @return The string form of the actual selected row of the distance matrix
+     */
+    public String getRowAsString(final int row) {
+        StringBuilder sb = new StringBuilder();
+
+        for(double d : matrix[row]) {
+            sb.append(d);
+            sb.append(" ");
+        }
+
+        return sb.toString().trim();
+    }
+
+    /**
      * Returns the size (number of rows or number of columns) of the square matrix.  This is also equivalent to the
      * number of taxa in the system
      *

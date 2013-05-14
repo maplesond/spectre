@@ -13,9 +13,24 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package uk.ac.uea.cmp.phygen.core.ui;
 
-public interface ThreadCompleteListener {
+package uk.ac.uea.cmp.phygen.tools;
 
-    void notifyOfThreadCompletion();
+import org.junit.Test;
+
+import static org.junit.Assert.assertTrue;
+
+/**
+ * Created with IntelliJ IDEA. User: Dan Date: 14/05/13 Time: 20:45 To change this template use File | Settings | File
+ * Templates.
+ */
+public class ToolsCLITest {
+
+    @Test
+    public void testHelp() {
+
+        ToolsCLI.main(new String[]{"--help"});
+
+        assertTrue(true);
+    }
 }

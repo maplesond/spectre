@@ -15,9 +15,9 @@
  */
 package uk.ac.uea.cmp.phygen.superq;
 
-import uk.ac.uea.cmp.phygen.core.ui.StatusTracker;
-import uk.ac.uea.cmp.phygen.core.ui.ToolHost;
-import uk.ac.uea.cmp.phygen.core.ui.ToolRunner;
+import uk.ac.uea.cmp.phygen.core.ui.gui.StatusTracker;
+import uk.ac.uea.cmp.phygen.core.ui.gui.ToolHost;
+import uk.ac.uea.cmp.phygen.core.ui.gui.ToolRunner;
 
 
 public class SuperQRunner extends ToolRunner {

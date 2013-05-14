@@ -25,10 +25,17 @@ import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phygen.core.io.PhygenReader;
 import uk.ac.uea.cmp.phygen.core.io.PhygenReaderFactory;
+import uk.ac.uea.cmp.phygen.core.ui.cli.CommandLineHelper;
 import uk.ac.uea.cmp.phygen.netmake.weighting.Weighting;
 import uk.ac.uea.cmp.phygen.netmake.weighting.Weightings;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.channels.NetworkChannel;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 
 /**
@@ -40,82 +47,127 @@ public class NetMakeCLI {
 
     private static Logger log = LoggerFactory.getLogger(NetMakeCLI.class);
 
-    private static NetMakeOptions processCmdLine(String[] args) throws ParseException {
+    public static final String OPT_INPUT = "input";
+    public static final String OPT_INPUT_TYPE = "input_file_type";
+    public static final String OPT_OUTPUT_DIR = "output";
+    public static final String OPT_OUTPUT_PREFIX = "prefix";
+    public static final String OPT_TREE_PARAM = "tree_param";
+    public static final String OPT_WEIGHTINGS_1 = "weightings_1";
+    public static final String OPT_WEIGHTINGS_2 = "weightings_2";
+    public static final String OPT_HELP = "help";
 
-        // Create the available options
-        Options options = NetMakeOptions.createOptions();
 
-        // Parse the actual arguments
-        CommandLineParser parser = new PosixParser();
+    public static Options createOptions() {
 
-        // parse the command line arguments
-        CommandLine line = parser.parse(options, args);
-        NetMakeOptions netMakeOptions = new NetMakeOptions(line);
+        // Options with arguments
+        Option optInput = OptionBuilder.withArgName("file").withLongOpt(OPT_INPUT).isRequired().hasArg()
+                .withDescription("The file containing the distance data to input.").create("i");
 
-        return netMakeOptions;
+        Option optInputType = OptionBuilder.withArgName("string").withLongOpt(OPT_INPUT_TYPE).hasArg()
+                .withDescription("The file type of the input file: [NEXUS, PHYLIP].").create("t");
+
+        Option optOutputDir = OptionBuilder.withArgName("file").withLongOpt(OPT_OUTPUT_DIR).hasArg()
+                .withDescription("The directory to put output from this job.").create("o");
+
+        Option optOutputPrefix = OptionBuilder.withArgName("string").withLongOpt(OPT_OUTPUT_PREFIX).hasArg()
+                .withDescription("The prefix to apply to all files produced by this NetMake run.  Default: netmake-<timestamp>.").create("p");
+
+        Option optTreeParam = OptionBuilder.withArgName("double").withLongOpt(OPT_TREE_PARAM).hasArg()
+                .withDescription("The weighting parameter passed to the chosen weighting algorithm. " +
+                        " Value must be between 0.0 and 1.0.  Default: 0.5.").create("z");
+
+        Option optWeighting1 = OptionBuilder.withArgName("string").withLongOpt(OPT_WEIGHTINGS_1).isRequired().hasArg()
+                .withDescription("Select Weighting type: [TSP, TREE, EQUAL, PARABOLA, GREEDY].  Default: ").create("w");
+
+        Option optWeighting2 = OptionBuilder.withArgName("string").withLongOpt(OPT_WEIGHTINGS_2).hasArg()
+                .withDescription("Select 2nd Weighting type: [TSP, TREE, EQUAL, PARABOLA, GREEDY]. Default: ").create("x");
+
+
+        // create Options object
+        Options options = new Options();
+        options.addOption(optInput);
+        options.addOption(optInputType);
+        options.addOption(optOutputDir);
+        options.addOption(optOutputPrefix);
+        options.addOption(optTreeParam);
+        options.addOption(optWeighting1);
+        options.addOption(optWeighting2);
+        options.addOption(CommandLineHelper.HELP_OPTION);
+
+        return options;
     }
+
 
 
     public static void main(String[] args) {
 
+        CommandLine commandLine = CommandLineHelper.startApp(createOptions(), "netmake-<version>", "Network Maker", args);
+
+        // If we didn't return a command line object then just return.  Probably the user requested help or
+        // input invalid args
+        if (commandLine == null) {
+            return;
+        }
+
         try {
 
-            // Process the command line
-            NetMakeOptions netMakeOptions = processCmdLine(args);
+            // Configure logging
+            BasicConfigurator.configure();
 
-            // If help was requested output that and finish before starting Spring
-            if (netMakeOptions.doHelp()) {
-                netMakeOptions.printUsage();
-            }
-            // Otherwise run NetMake proper
-            else {
+            DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd-HHmmss");
+            Date date = new Date();
+            String timeStamp = dateFormat.format(date);
 
-                // Configure logging
-                BasicConfigurator.configure();
+            log.info("NetMake: Parsing arguments");
 
-                // Load distanceMatrix from input file based on file type
-                PhygenReader phygenReader = netMakeOptions.getInputType() != null ?
-                        PhygenReaderFactory.valueOf(netMakeOptions.getInputType()).create() :
-                        PhygenReaderFactory.create(FilenameUtils.getExtension(netMakeOptions.getInput().getName()));
+            File input = new File(commandLine.getOptionValue(OPT_INPUT));
+            String inputType = commandLine.hasOption(OPT_INPUT_TYPE) ? commandLine.getOptionValue(OPT_INPUT_TYPE) : null;
+            File outputDir = commandLine.hasOption(OPT_OUTPUT_DIR) ? new File(commandLine.getOptionValue(OPT_OUTPUT_DIR)) : new File(".");
+            String prefix = commandLine.hasOption(OPT_OUTPUT_PREFIX) ? commandLine.getOptionValue(OPT_OUTPUT_PREFIX) : "netmake-" + timeStamp;
+            double treeParam = commandLine.hasOption(OPT_TREE_PARAM) ? Double.parseDouble(commandLine.getOptionValue(OPT_TREE_PARAM)) : 0.5;
+            String weightings1 = commandLine.getOptionValue(OPT_WEIGHTINGS_1);
+            String weightings2 = commandLine.hasOption(OPT_WEIGHTINGS_2) ? commandLine.getOptionValue(OPT_WEIGHTINGS_2) : null;
 
-                DistanceMatrix distanceMatrix = phygenReader.read(netMakeOptions.getInput());
 
-                // Create weighting objects
-                Weighting weighting1 = Weightings.createWeighting(netMakeOptions.getWeightings1(), distanceMatrix, netMakeOptions.getTreeParam(), true);
-                Weighting weighting2 = netMakeOptions.getWeightings2() != null ?
-                        Weightings.createWeighting(netMakeOptions.getWeightings2(), distanceMatrix, netMakeOptions.getTreeParam(), false) :
-                        null;
+            log.info("NetMake: Loading distance matrix from: " + input.getAbsolutePath());
 
-                // Create the configured NetMake object to process
-                NetMake netMake = new NetMake(
-                        distanceMatrix,
-                        weighting1,
-                        weighting2);
+            // Load distanceMatrix from input file based on file type
+            PhygenReader phygenReader = inputType != null ?
+                    PhygenReaderFactory.valueOf(inputType).create() :
+                    PhygenReaderFactory.create(FilenameUtils.getExtension(input.getName()));
 
-                log.info("NetMake: System configured.  Netmake runmode: " + netMake.getRunMode());
+            DistanceMatrix distanceMatrix = phygenReader.read(input);
 
-                log.info("NetMake: Processing Started");
+            // Create weighting objects
+            Weighting weighting1 = Weightings.createWeighting(weightings1, distanceMatrix, treeParam, true);
+            Weighting weighting2 = weightings2 != null ?
+                    Weightings.createWeighting(weightings2, distanceMatrix, treeParam, false) :
+                    null;
 
-                // Run NetMake
-                NetMakeResult netMakeResult = netMake.process();
+            // Create the configured NetMake object to process
+            NetMake netMake = new NetMake(
+                    distanceMatrix,
+                    weighting1,
+                    weighting2);
 
-                log.info("NetMake: Processing Finished");
+            log.info("NetMake: System configured.  Netmake runmode: " + netMake.getRunMode());
 
-                // Save results.
-                netMakeResult.save(netMakeOptions.getOutputDir(), netMakeOptions.getPrefix());
+            log.info("NetMake: Processing Started");
 
-                log.info("NetMake: Saved results to disk");
-            }
-        } catch (IOException ioe) {
-            log.error(ioe.getMessage(), ioe);
-            System.exit(2);
-        } catch (ParseException exp) {
-            System.err.println(exp.getMessage());
-            System.err.println(StringUtils.join(exp.getStackTrace(), "\n"));
-            System.exit(3);
+            // Run NetMake
+            NetMakeResult netMakeResult = netMake.process();
+
+            log.info("NetMake: Processing Finished");
+
+            // Save results.
+            netMakeResult.save(outputDir, prefix);
+
+            log.info("NetMake: Saved results to disk");
+
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            System.exit(6);
+            System.err.println(e.getMessage());
+            System.err.println(StringUtils.join(e.getStackTrace(), "\n"));
+            System.exit(1);
         }
     }
 

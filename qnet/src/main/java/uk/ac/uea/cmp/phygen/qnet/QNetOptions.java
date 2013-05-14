@@ -19,9 +19,6 @@ package uk.ac.uea.cmp.phygen.qnet;
 import org.apache.commons.cli.*;
 
 import java.io.File;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * Created with IntelliJ IDEA.

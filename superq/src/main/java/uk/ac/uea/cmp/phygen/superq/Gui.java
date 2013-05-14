@@ -19,9 +19,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.math.optimise.Objective;
 import uk.ac.uea.cmp.phygen.core.math.optimise.Solver;
-import uk.ac.uea.cmp.phygen.core.ui.JobController;
-import uk.ac.uea.cmp.phygen.core.ui.StatusTracker;
-import uk.ac.uea.cmp.phygen.core.ui.ToolHost;
+import uk.ac.uea.cmp.phygen.core.ui.gui.JobController;
+import uk.ac.uea.cmp.phygen.core.ui.gui.StatusTracker;
+import uk.ac.uea.cmp.phygen.core.ui.gui.ToolHost;
 
 import javax.swing.*;
 import java.io.File;

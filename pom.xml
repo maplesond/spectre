@@ -119,6 +119,7 @@
         <module>netme</module>
         <module>superq</module>
         <module>qnet</module>
+        <module>tools</module>
     </modules>
 
 </project>

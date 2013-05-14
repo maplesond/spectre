@@ -23,7 +23,6 @@ import uk.ac.uea.cmp.phygen.core.ds.tree.InnerNode;
 import uk.ac.uea.cmp.phygen.core.ds.tree.Leaf;
 
 import java.util.ArrayList;
-import java.util.List;
 
 class QJoiner {
 

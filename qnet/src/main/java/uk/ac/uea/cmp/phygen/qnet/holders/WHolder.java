@@ -15,9 +15,9 @@
  */
 package uk.ac.uea.cmp.phygen.qnet.holders;
 
+import uk.ac.uea.cmp.phygen.core.ds.TaxonList;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 import uk.ac.uea.cmp.phygen.core.math.tuple.Triplet;
-import uk.ac.uea.cmp.phygen.core.ds.TaxonList;
 
 import java.util.List;
 

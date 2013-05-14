@@ -69,12 +69,15 @@ public class GreedyMEWeighting extends Weighting {
                 splits.mergeRows(splits.rows() - 2, splits.rows() - 1);
 
                 // If we've created a split which contains the entire taxa set then remove it
-                if (splits.getRow(splits.rows() -1).size() == this.distanceMatrix.size()) {
+                /*if (splits.getRow(splits.rows() -1).size() == this.distanceMatrix.size()) {
                     splits.removeRow(splits.rows() - 1);
-                }
+                } */
+
+                log.debug("Number of splits: {0}", new Integer(splits.rows()));
 
                 double treeLength = this.calculateTreeLength(splits);
-                log.debug("Treelength: {0}", treeLength);
+
+                log.debug("Tree length is {0} for {1},{2}", new Object[]{new Double(treeLength), new Integer(i), new Integer(j)});
 
                 if (treeLength < oldTreeLength) {
                     oldTreeLength = treeLength;
@@ -83,6 +86,8 @@ public class GreedyMEWeighting extends Weighting {
 
                 splits.removeRow(splits.rows() - 1);
             }
+
+            log.debug("Made cherry for {0}", new Integer(i));
         }
 
         return bestSplits;
@@ -259,17 +264,14 @@ public class GreedyMEWeighting extends Weighting {
             for (int i = 0; i < C.length; i++) {
                 sum1 += ((w[i] * P.get(i)) / (double) C[i]);
             }
-            log.debug("sum1: {0}", sum1);
 
             for (int i = 0; i < initialVars.getcAlpha(); i++) {
                 sum2 += (initialVars.getnBeta() * w[i]);
             }
-            log.debug("sum2: {0}", sum2);
 
             for (int i = initialVars.getcAlpha(); i < C.length; i++) {
                 sum3 += (initialVars.getnAlpha() * w[i]);
             }
-            log.debug("sum3: {0}", sum3);
 
             return new Sums(sum1, sum2, sum3);
         }
@@ -327,7 +329,6 @@ public class GreedyMEWeighting extends Weighting {
                 s[i] = 0;
                 zero = i;
             } else {
-                log.debug("this.nb_taxa: {0} Ci: {1}", new Object[]{nbTaxa, C[i]});
                 s[i] = (double) C[i] / ((double) nbTaxa - 2.0 * (double) C[i]);
             }
         }
@@ -362,7 +363,6 @@ public class GreedyMEWeighting extends Weighting {
             w[zero] = (-gamma) + k * v[zero];
             for (int i = zero + 1; i < C.length; i++) {
                 w[i] = (1.0 / d[i]) * (v[i] - v[zero]);
-                log.debug("v : {0}", v[i]);
             }
 
         }
@@ -385,10 +385,11 @@ public class GreedyMEWeighting extends Weighting {
 
             EdgeAdjacents aEdgeAdjacents = EdgeAdjacents.retrieveAdjacents(splitsCopy, i, P, this.distanceMatrix.size());
 
-            //determine if edge external or internal
+            log.debug("Retrieved edge adjacents for {0}", new Integer(i));
 
-//            System.out.println("P_0: " + calculateP_0(splits.getRow(i)));
             edgeWeights.add(calculateEdges(P.get(i), aEdgeAdjacents, external));
+
+            log.debug("Calculated edges for {0}", new Integer(i));
         }
 
         return edgeWeights;

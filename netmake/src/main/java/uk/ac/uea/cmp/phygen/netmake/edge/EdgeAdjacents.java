@@ -16,8 +16,6 @@
 
 package uk.ac.uea.cmp.phygen.netmake.edge;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.ds.SummedDistanceList;
 import uk.ac.uea.cmp.phygen.core.ds.Tableau;
 
@@ -27,9 +25,6 @@ import uk.ac.uea.cmp.phygen.core.ds.Tableau;
  * @author Sarah Bastkowski
  */
 public class EdgeAdjacents {
-
-    private final static Logger log = LoggerFactory.getLogger(EdgeAdjacents.class);
-
 
     private int leaves_in_adjacents[];
     private SummedDistanceList temp_sdl;
@@ -83,20 +78,15 @@ public class EdgeAdjacents {
         // Get the edges on either side of the current split and sort them
         Edge edgeA = new Edge(splits.getASide().getRow(k));
         edgeA.sort();
-        log.debug("Edge A: {0}", edgeA);
 
         Edge edgeB = new Edge(splits.getBSide().getRow(k));
         edgeB.sort();
-        log.debug("Edge B: {0}", edgeB);
 
 
         Tableau<Integer> combinedSplitList = splits.combineSides();
         // Also we want to sort the elements in all rows of both a_side and b_side 
         // of the split object.
         splits.sortElementsInAllRows();
-
-//        if (Utils.VERBOSE)
-//            splits.print();
 
         EdgeSubsetFinder.SubsetList a_side = null;
         boolean internalEdge = edgeA.getType() == Edge.EdgeType.INTERNAL;
@@ -117,39 +107,18 @@ public class EdgeAdjacents {
         EdgeSubsetFinder esf_b = new EdgeSubsetFinder(combinedSplitList, sdl, edgeB);
         EdgeSubsetFinder.SubsetList b_side = esf_b.process();
 
-
-        if (internalEdge) {
-            log.debug(a_side.toString("A"));
-        }
-
-        log.debug(b_side.toString("B"));
-
-//        System.out.println("A_side: " + A_side.rows() + " B_side: " + B_side.rows());
-
         int offset = (edgeA.getType() == Edge.EdgeType.EXTERNAL) ? 0 : a_side.size();
         int C[] = new int[offset + b_side.size()];
-//        System.out.println("A_side Row size: "+A_side.rows());
         if (internalEdge) {
             for (int i = 0; i < a_side.size(); i++) {
-//            A_side.set(i, A_side.get(i).replaceAll(" ", ""));
-//            String help2[] = C_order.get(i).trim().split(" ");
-//            C[i] = help2.length;
-//            System.out.println("C lenght " + A_side.get(i).length());
                 C[i] = a_side.get(i).size();
             }
         }
 
 
         for (int i = 0; i < b_side.size(); i++) {
-//            splitsCopy.set(i, splitsCopy.get(i).replaceAll(" ", ""));
-//            String help2[] = C_order.get(i).trim().split(" ");
-//            C[i] = help2.length;
             C[i + offset] = b_side.get(i).size();
         }
-// for (int i = 0; i < C.length; i++) {
-//
-//            System.out.println("C_i: "+C[i]);
-//        }
         SummedDistanceList ptemp = new SummedDistanceList();
         if (internalEdge) {
             for (EdgeSubsetFinder.Subset ss : a_side) {

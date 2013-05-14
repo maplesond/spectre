@@ -1,4 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Phylogenetics Tool suite
+  ~ Copyright (C) 2013  UEA CMP Phylogenetics Group
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+  ~ License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+  ~ later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  ~ warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+  ~ details.
+  ~
+  ~ You should have received a copy of the GNU General Public License along with this program.  If not, see
+  ~ <http://www.gnu.org/licenses/>.
+  -->
+
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -9,10 +25,10 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>netmake</artifactId>
+    <artifactId>tools</artifactId>
     <version>1.0</version>
 
-    <name>Phylogenetics Tool Suite: Network Maker</name>
+    <name>Phylogenetics Tool Suite: Miscellaneous Tools</name>
 
     <build>
 
@@ -37,7 +53,7 @@
                                 <transformer
                                         implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <manifestEntries>
-                                        <Main-Class>uk.ac.uea.cmp.phygen.netmake.NetMakeCLI</Main-Class>
+                                        <Main-Class>uk.ac.uea.cmp.phygen.tools.ToolsCLI</Main-Class>
                                         <Build-Number>1</Build-Number>
                                     </manifestEntries>
                                 </transformer>
@@ -67,12 +83,21 @@
 
     <dependencies>
 
-        <!-- PhyGen -->
+        <!-- Phygen -->
 
         <dependency>
             <groupId>uk.ac.uea.cmp.phygen</groupId>
             <artifactId>core</artifactId>
             <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+
+        <!-- Logging -->
+
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version>
         </dependency>
 
 
@@ -94,14 +119,6 @@
             <version>3.0</version>
         </dependency>
 
-
-        <!-- Logging -->
-
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.17</version>
-        </dependency>
 
     </dependencies>
 

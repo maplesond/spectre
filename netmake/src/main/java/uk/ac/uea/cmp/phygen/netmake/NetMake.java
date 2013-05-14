@@ -171,6 +171,7 @@ public class NetMake {
     }
 
     protected NetMakeResult runNN() {
+
         // Contains the result of the neighbornet process.
         Tableau<Integer> treeSplits = new Tableau<Integer>();
         addTrivialSplits(treeSplits);
@@ -185,7 +186,7 @@ public class NetMake {
         GreedyMEWeighting gme = this.mode == RunMode.HYBRID_GREEDYME ? new GreedyMEWeighting(this.distanceMatrix) : null;
 
         // Loop until components has only one entry left.
-        while (components.rows() > 1) {
+        while (components.rows() > 2) {
 
             Pair<Integer, Integer> selectedComponents = this.mode == RunMode.HYBRID_GREEDYME ?
                     gme.makeMECherry(treeSplits, this.components) :
@@ -225,7 +226,7 @@ public class NetMake {
 
         // Remove last two rows (last row is the whole set and the last but
         // one is not required)
-        treeSplits.removeRow(treeSplits.rows() - 1);
+       // treeSplits.removeRow(treeSplits.rows() - 1);
         treeSplits.removeRow(treeSplits.rows() - 1);
 
         // Create ordering
@@ -465,10 +466,18 @@ public class NetMake {
     }
 
     protected CircularOrdering createCircularOrdering() {
-        int[] permutation = new int[distanceMatrix.size()];
-        for (int i = 0; i < components.rowSize(0); i++) {
-            permutation[i] = components.get(0, i);
+
+        ArrayList<Integer> help = new ArrayList<Integer>();
+        for (int j = 0; j < 2; j++)  {
+        for (int i = 0; i < components.rowSize(j); i++) {
+            help.add(components.get(j, i));
         }
+        }
+        int[] permutation = new int[help.size()];
+        for (int i = 0; i < help.size(); i++) {
+          permutation[i]=help.get(i);
+        }
+
 
         return new CircularOrdering(permutation);
     }
