@@ -18,6 +18,9 @@ package uk.ac.uea.cmp.phygen.tools;
 
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang3.StringUtils;
+import uk.ac.uea.cmp.phygen.tools.csv.CSVFileConstructor;
+import uk.ac.uea.cmp.phygen.tools.ctl.CompareTreelengths;
+import uk.ac.uea.cmp.phygen.tools.phycor.PhylipCorrector;
 import uk.ac.uea.cmp.phygen.tools.rdg.RandomDistanceGeneratorTool;
 
 import java.io.IOException;
@@ -40,6 +43,39 @@ public enum ToolsMode {
         public String getAlias() {
             return "RDG";
         }
+    },
+    PHYLIP_CORRECTOR {
+        @Override
+        public void execute(String[] args) throws IOException, ParseException {
+            new PhylipCorrector().execute(args);
+        }
+
+        @Override
+        public String getAlias() {
+            return "PC";
+        }
+    },
+    COMPARE_TREE_LENGTHS {
+        @Override
+        public void execute(String[] args) throws IOException, ParseException {
+            new CompareTreelengths().execute(args);
+        }
+
+        @Override
+        public String getAlias() {
+            return "CTL";
+        }
+    },
+    CSV_FILE_CONSTRUCTOR {
+        @Override
+        public void execute(String[] args) throws IOException, ParseException {
+            new CSVFileConstructor().execute(args);
+        }
+
+        @Override
+        public String getAlias() {
+            return "CSV";
+        }
     };
 
     public String toListString() {
@@ -51,9 +87,6 @@ public enum ToolsMode {
 
 
     // Alias handling
-
-    public static final ToolsMode RDG = RANDOM_DISTANCE_GENERATOR;
-
     public static ToolsMode parseName(String name) {
 
         ToolsMode regular = null;
