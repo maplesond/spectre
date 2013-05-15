@@ -64,7 +64,7 @@ public class CommandLineHelper {
 
         try {
             // Test for help first
-            CommandLine helpCl = new PosixParser().parse(createHelpOptions(), args);
+            CommandLine helpCl = new PosixParser().parse(createHelpOptions(), args, true);
 
             if (helpCl.hasOption(OPT_HELP) || helpCl.getArgList().isEmpty()) {
                 CommandLineHelper.printHelp(options, jarName, projectName);

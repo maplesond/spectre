@@ -21,64 +21,76 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.ac.uea.cmp.phygen.core.ui.cli.CommandLineHelper;
 
+import java.io.File;
 import java.io.IOException;
 
 
 public class QNetCLI {
 
-    private static Logger log = LoggerFactory.getLogger(QNetCLI.class);
+    private static Logger logger = LoggerFactory.getLogger(QNetCLI.class);
 
-    private static QNetOptions processCmdLine(String[] args) throws ParseException {
+    private static final String OPT_INPUT = "input";
+    private static final String OPT_LOG = "log";
+    private static final String OPT_TOLERANCE = "tolerance";
+    private static final String OPT_NNLS = "nnls";
 
-        // Create the available options
-        Options options = QNetOptions.createOptions();
+    private static Options createOptions() {
 
-        // Parse the actual arguments
-        CommandLineParser parser = new PosixParser();
+        Option optLog = new Option("l", OPT_LOG, false, "Linear if false, Log if true");
 
-        // parse the command line arguments
-        CommandLine line = parser.parse(options, args);
-        QNetOptions QNetOptions = new QNetOptions(line);
+        Option optInput = OptionBuilder.withArgName("file").withLongOpt(OPT_INPUT).isRequired().hasArg()
+                .withDescription("The file containing the distance data to input.").create("i");
 
-        return QNetOptions;
+        Option optTolerance = OptionBuilder.withArgName("double").withLongOpt(OPT_TOLERANCE).hasArg()
+                .withDescription("The tolerance").create("t");
+
+        Option optNnls = OptionBuilder.withArgName("string").withLongOpt(OPT_NNLS).hasArg()
+                .withDescription("If specified, uses optimisation: [gurobi]").create("n");
+
+        // create Options object
+        Options options = new Options();
+        options.addOption(CommandLineHelper.HELP_OPTION);
+        options.addOption(optInput);
+        options.addOption(optLog);
+        options.addOption(optTolerance);
+        options.addOption(optNnls);
+
+        return options;
     }
 
 
     public static void main(String[] args) {
 
+        // Parse command line args
+        CommandLine commandLine = CommandLineHelper.startApp(createOptions(), "qnet-<version>", "Q-NET", args);
+
+        // If we didn't return a command line object then just return.  Probably the user requested help or
+        // input invalid args
+        if (commandLine == null) {
+            return;
+        }
+
         try {
+            // Configure logging
+            BasicConfigurator.configure();
 
-            // Process the command line
-            QNetOptions qNetOptions = processCmdLine(args);
+            // Required arguments
+            File input = new File(commandLine.getOptionValue(OPT_INPUT));
+            boolean log = commandLine.hasOption(OPT_LOG);
+            double tolerance = commandLine.hasOption(OPT_TOLERANCE) ? Double.parseDouble(commandLine.getOptionValue(OPT_TOLERANCE)) : -1.0;
+            String nnls = commandLine.hasOption(OPT_NNLS) ? commandLine.getOptionValue(OPT_NNLS) : "gurobi";
 
-            // If help was requested output that and finish before starting Spring
-            if (qNetOptions.doHelp()) {
-                qNetOptions.printUsage();
-            }
-            // Otherwise run NetMake proper
-            else {
+            // Run QNet
+            new QNet().execute(input, log, tolerance, nnls);
 
-                // Configure logging
-                BasicConfigurator.configure();
+            // Now what??? Presumably there is some output created?!
 
-                // Run QNet
-                QNet qnet = new QNet();
-                qnet.execute(qNetOptions.getInput(), qNetOptions.isLog(), qNetOptions.getTolerance(), qNetOptions.getNnls());
-
-                // Now what??? Presumably there is some output created?!
-
-            }
-        } catch (IOException ioe) {
-            log.error(ioe.getMessage(), ioe);
-            System.exit(2);
-        } catch (ParseException exp) {
-            System.err.println(exp.getMessage());
-            System.err.println(StringUtils.join(exp.getStackTrace(), "\n"));
-            System.exit(3);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            System.exit(6);
+        }
+        catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            System.exit(1);
         }
     }
 
