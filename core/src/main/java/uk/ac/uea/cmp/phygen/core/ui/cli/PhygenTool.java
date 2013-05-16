@@ -14,7 +14,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.phygen.tools;
+package uk.ac.uea.cmp.phygen.core.ui.cli;
 
 import org.apache.commons.cli.*;
 

@@ -20,9 +20,7 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import uk.ac.uea.cmp.phygen.core.io.PhygenWriterFactory;
-import uk.ac.uea.cmp.phygen.tools.PhygenTool;
+import uk.ac.uea.cmp.phygen.core.ui.cli.PhygenTool;
 
 import java.io.File;
 import java.io.IOException;

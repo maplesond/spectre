@@ -25,7 +25,7 @@ import uk.ac.uea.cmp.phygen.core.ds.distance.RandomDistanceGenerator;
 import uk.ac.uea.cmp.phygen.core.io.PhygenWriter;
 import uk.ac.uea.cmp.phygen.core.io.PhygenWriterFactory;
 import uk.ac.uea.cmp.phygen.core.io.phylip.PhylipWriter;
-import uk.ac.uea.cmp.phygen.tools.PhygenTool;
+import uk.ac.uea.cmp.phygen.core.ui.cli.PhygenTool;
 
 import java.io.File;
 import java.io.IOException;

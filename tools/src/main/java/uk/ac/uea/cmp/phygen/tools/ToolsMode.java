@@ -18,8 +18,6 @@ package uk.ac.uea.cmp.phygen.tools;
 
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang3.StringUtils;
-import uk.ac.uea.cmp.phygen.tools.csv.CSVFileConstructor;
-import uk.ac.uea.cmp.phygen.tools.ctl.CompareTreelengths;
 import uk.ac.uea.cmp.phygen.tools.phycor.PhylipCorrector;
 import uk.ac.uea.cmp.phygen.tools.rdg.RandomDistanceGeneratorTool;
 
@@ -53,28 +51,6 @@ public enum ToolsMode {
         @Override
         public String getAlias() {
             return "PC";
-        }
-    },
-    COMPARE_TREE_LENGTHS {
-        @Override
-        public void execute(String[] args) throws IOException, ParseException {
-            new CompareTreelengths().execute(args);
-        }
-
-        @Override
-        public String getAlias() {
-            return "CTL";
-        }
-    },
-    CSV_FILE_CONSTRUCTOR {
-        @Override
-        public void execute(String[] args) throws IOException, ParseException {
-            new CSVFileConstructor().execute(args);
-        }
-
-        @Override
-        public String getAlias() {
-            return "CSV";
         }
     };
 
