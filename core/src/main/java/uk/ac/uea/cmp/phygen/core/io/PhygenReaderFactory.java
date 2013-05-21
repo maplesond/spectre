@@ -15,8 +15,12 @@
  */
 package uk.ac.uea.cmp.phygen.core.io;
 
+import org.apache.commons.lang3.StringUtils;
 import uk.ac.uea.cmp.phygen.core.io.nexus.NexusReader;
 import uk.ac.uea.cmp.phygen.core.io.phylip.PhylipReader;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -35,7 +39,7 @@ public enum PhygenReaderFactory {
 
         @Override
         public String[] getValidExtensions() {
-            return new String[]{"nex", "nexus"};
+            return new String[]{"nex", "nxs", "nexus"};
         }
     },
     PHYLIP {
@@ -70,5 +74,15 @@ public enum PhygenReaderFactory {
 
     public String getPrimaryExtension() {
         return this.getValidExtensions()[0];
+    }
+
+    public static String toListString() {
+        List<String> list = new ArrayList<>();
+
+        for(PhygenReaderFactory prf : PhygenReaderFactory.values()) {
+            list.add(prf.toString());
+        }
+
+        return "[" + StringUtils.join(list, ", ") + "]";
     }
 }

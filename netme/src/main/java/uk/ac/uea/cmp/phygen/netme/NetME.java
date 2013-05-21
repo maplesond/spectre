@@ -55,7 +55,9 @@ public class NetME {
 
         TreeAndWeights treeAndWeights = this.calculateME(distanceMatrix, circularOrdering);
 
+        //the ME tree + weights from OLS (\in R^+)
         CompatibleSplitSystem meTree = treeAndWeights.getTree().convertToSplitSystem(distanceMatrix, circularOrdering);
+        //The ME tree + original weights (\in R)
         CompatibleSplitSystem originalMETree = new CompatibleSplitSystem(meTree, treeAndWeights.getTreeWeights());
 
         return new NetMEResult(originalMETree, meTree);

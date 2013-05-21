@@ -39,7 +39,7 @@ public enum PhygenWriterFactory {
 
         @Override
         public String[] getValidExtensions() {
-            return new String[]{"nex", "nexus"};
+            return new String[]{"nex", "nxs", "nexus"};
         }
     },
     PHYLIP {

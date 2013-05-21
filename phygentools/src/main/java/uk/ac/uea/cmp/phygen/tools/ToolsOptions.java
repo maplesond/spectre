@@ -40,7 +40,8 @@ public class ToolsOptions {
      */
     public ToolsOptions(CommandLine cmdLine) throws ParseException {
 
-        help = cmdLine.hasOption(OPT_HELP) || cmdLine.getArgList().size() == 0 && cmdLine.getOptions().length == 0;
+        help = (cmdLine.hasOption(OPT_HELP) && cmdLine.getArgList().isEmpty() && cmdLine.getOptions().length < 2) ||
+                (cmdLine.getArgList().size() == 0 && cmdLine.getOptions().length == 0);
 
         if (!help) {
 

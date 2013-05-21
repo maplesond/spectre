@@ -40,9 +40,9 @@ public class CompatibleSplitSystem extends CircularSplitSystem {
 
         this.setTaxa(distanceMatrix.getTaxaSet());
 
-        this.setSplitWeights(this.calculateSplitWeighting(distanceMatrix, circularOrdering));
+        //this.setSplitWeights(this.calculateSplitWeighting(distanceMatrix, circularOrdering));
 
-        reweight(this.getSplitWeights());
+        reweight(this.calculateSplitWeighting(distanceMatrix, circularOrdering));
     }
 
     public CompatibleSplitSystem(CompatibleSplitSystem unweightedSplitSystem, TreeSplitWeights treeWeights) {
@@ -54,11 +54,10 @@ public class CompatibleSplitSystem extends CircularSplitSystem {
         reweight(treeWeights);
     }
 
-    public TreeSplitWeights getTreeSplitWeights() {
-        return (TreeSplitWeights) this.getSplitWeights();
-    }
-
-
+    /**
+     * Deletes all splits and adds the splits to the list that have a positive weight
+     * @param treeWeights
+     */
     protected void reweight(SplitWeights treeWeights) {
 
         int n = this.getNbTaxa();
@@ -77,6 +76,15 @@ public class CompatibleSplitSystem extends CircularSplitSystem {
                 }
             }
         }
+    }
+
+    public double calculateTreeLength() {
+
+        double sum = 0.0;
+        for(Split s : this.getSplits()) {
+            sum += s.getWeight();
+        }
+        return sum;
     }
 
     /**

@@ -76,6 +76,20 @@
                 </configuration>
             </plugin>
 
+            <!-- Create source jar for all modules -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
     </build>
     <dependencies>
@@ -119,7 +133,7 @@
         <module>netme</module>
         <module>superq</module>
         <module>qnet</module>
-        <module>tools</module>
+        <module>phygentools</module>
     </modules>
 
 </project>

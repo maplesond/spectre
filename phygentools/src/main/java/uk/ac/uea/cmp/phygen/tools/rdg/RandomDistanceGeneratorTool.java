@@ -26,9 +26,13 @@ import uk.ac.uea.cmp.phygen.core.io.PhygenWriter;
 import uk.ac.uea.cmp.phygen.core.io.PhygenWriterFactory;
 import uk.ac.uea.cmp.phygen.core.io.phylip.PhylipWriter;
 import uk.ac.uea.cmp.phygen.core.ui.cli.PhygenTool;
+import uk.ac.uea.cmp.phygen.core.util.Time;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Created with IntelliJ IDEA. User: Dan Date: 14/05/13 Time: 21:27 To change this template use File | Settings | File
@@ -36,8 +40,9 @@ import java.io.IOException;
  */
 public class RandomDistanceGeneratorTool extends PhygenTool {
 
-    public static final String OPT_OUTPUT = "output";
-    public static final String OPT_OUTPUT_TYPE = "output_type";
+    private static final String OPT_PREFIX = "prefix";
+    private static final String OPT_OUTPUT_DIR = "output";
+    private static final String OPT_OUTPUT_TYPE = "output_type";
 
 
     @Override
@@ -49,8 +54,14 @@ public class RandomDistanceGeneratorTool extends PhygenTool {
         options.addOption(OptionBuilder.withArgName("integer").hasArg().isRequired()
                 .withDescription("The number of taxa for the new distance matrix").create("n"));
 
-        options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_OUTPUT).hasArg().isRequired()
-                .withDescription("The file name for the new distance matrix").create("o"));
+        options.addOption(OptionBuilder.withArgName("integer").hasArg()
+                .withDescription("The number of samples to generate").create("s"));
+
+        options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_OUTPUT_DIR).hasArg()
+                .withDescription("The directory for the new distance matricies").create("o"));
+
+        options.addOption(OptionBuilder.withArgName("string").withLongOpt(OPT_PREFIX).hasArg()
+                .withDescription("The prefix for the output files").create("p"));
 
         options.addOption(OptionBuilder.withArgName("string").withLongOpt(OPT_OUTPUT_TYPE).hasArg()
                 .withDescription("The output file type: " + PhygenWriterFactory.listWriters()).create("t"));
@@ -63,33 +74,30 @@ public class RandomDistanceGeneratorTool extends PhygenTool {
 
         // Get the arguments
         int n = Integer.parseInt(commandLine.getOptionValue("n"));
-        File outFile = new File(commandLine.getOptionValue(OPT_OUTPUT));
-        PhygenWriter phygenWriter = determinePhygenWriter(commandLine, outFile);
+        int s = commandLine.hasOption("s") ? Integer.parseInt(commandLine.getOptionValue("s")) : 1;
+        File outputDir = commandLine.hasOption(OPT_OUTPUT_DIR) ? new File(commandLine.getOptionValue(OPT_OUTPUT_DIR)) : new File(".");
+        String prefix = commandLine.hasOption(OPT_PREFIX) ? commandLine.getOptionValue(OPT_PREFIX) : "rdg-" + Time.createTimestamp();
+        PhygenWriterFactory phygenWriterFactory = commandLine.hasOption(OPT_OUTPUT_TYPE) ?
+                PhygenWriterFactory.valueOf(commandLine.getOptionValue(OPT_OUTPUT_TYPE)) :
+                PhygenWriterFactory.PHYLIP;
+        PhygenWriter phygenWriter = phygenWriterFactory.create();
 
-        // Create the distance matrix
-        DistanceMatrix distanceMatrix = new RandomDistanceGenerator().generateDistances(n);
+        // Create the output directory if required
+        outputDir.mkdirs();
 
-        // Save to disk
-        phygenWriter.writeDistanceMatrix(outFile, distanceMatrix);
-    }
+        // For each sample
+        for(int i = 1; i <= s; i++) {
 
-    protected PhygenWriter determinePhygenWriter(CommandLine commandLine, File outputFile) {
+            // Create the distance matrix
+            DistanceMatrix distanceMatrix = new RandomDistanceGenerator().generateDistances(n);
 
-        // First set if specified at the command line
-        PhygenWriter phygenWriter = commandLine.hasOption(OPT_OUTPUT_TYPE) ?
-                PhygenWriterFactory.create(commandLine.getOptionValue(OPT_OUTPUT_TYPE)) :
-                null;
+            // Create a filename for this sample
+            File outFile = new File(outputDir, prefix + "-" + i + "." + phygenWriterFactory.getPrimaryExtension());
 
-        // If not on the command line guess from the output file
-        if (phygenWriter == null) {
-            phygenWriter = PhygenWriterFactory.create(FilenameUtils.getExtension(outputFile.getName()));
+            // Save to disk
+            phygenWriter.writeDistanceMatrix(outFile, distanceMatrix);
         }
 
-        // If still don't know what the extension is then assume we want Phylip
-        if (phygenWriter == null) {
-            phygenWriter = new PhylipWriter();
-        }
 
-        return phygenWriter;
     }
 }

@@ -61,10 +61,10 @@ public class NetMakeCLI {
 
         // Options with arguments
         Option optInput = OptionBuilder.withArgName("file").withLongOpt(OPT_INPUT).isRequired().hasArg()
-                .withDescription("The file containing the distance data to input.").create("i");
+                .withDescription("The file containing the distance matrix to input.").create("i");
 
         Option optInputType = OptionBuilder.withArgName("string").withLongOpt(OPT_INPUT_TYPE).hasArg()
-                .withDescription("The file type of the input file: [NEXUS, PHYLIP].").create("t");
+                .withDescription("The file type of the input file: " + PhygenReaderFactory.toListString() + ".").create("t");
 
         Option optOutputDir = OptionBuilder.withArgName("file").withLongOpt(OPT_OUTPUT_DIR).hasArg()
                 .withDescription("The directory to put output from this job.").create("o");
@@ -77,10 +77,10 @@ public class NetMakeCLI {
                         " Value must be between 0.0 and 1.0.  Default: 0.5.").create("z");
 
         Option optWeighting1 = OptionBuilder.withArgName("string").withLongOpt(OPT_WEIGHTINGS_1).isRequired().hasArg()
-                .withDescription("Select Weighting type: [TSP, TREE, EQUAL, PARABOLA, GREEDY].  Default: ").create("w");
+                .withDescription("Select Weighting type: " + Weightings.toListString() + ".  Default: ").create("w");
 
         Option optWeighting2 = OptionBuilder.withArgName("string").withLongOpt(OPT_WEIGHTINGS_2).hasArg()
-                .withDescription("Select 2nd Weighting type: [TSP, TREE, EQUAL, PARABOLA, GREEDY]. Default: ").create("x");
+                .withDescription("Select 2nd Weighting type: " + Weightings.toListString() + ". Default: ").create("x");
 
 
         // create Options object

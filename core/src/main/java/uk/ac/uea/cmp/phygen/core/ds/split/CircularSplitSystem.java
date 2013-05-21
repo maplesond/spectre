@@ -31,12 +31,10 @@ import java.util.List;
 public class CircularSplitSystem extends SplitSystem {
 
     private CircularOrdering circularOrdering;
-    private SplitWeights splitWeights;
 
     public CircularSplitSystem(List<Split> splits, CircularOrdering circularOrdering) {
         super(circularOrdering.size(), splits);
         this.circularOrdering = circularOrdering;
-        this.splitWeights = null;
     }
 
     public CircularSplitSystem(DistanceMatrix distanceMatrix, CircularOrdering circularOrdering) {
@@ -49,7 +47,7 @@ public class CircularSplitSystem extends SplitSystem {
             throw new IllegalArgumentException("Distance matrix and circular ordering are not the same size");
         }
 
-        this.splitWeights = this.calculateSplitWeighting(distanceMatrix, circularOrdering);
+        SplitWeights splitWeights = this.calculateSplitWeighting(distanceMatrix, circularOrdering);
 
         for (int i = 0; i < n; i++) {
             for (int j = i + 1; j < n; j++) {
@@ -76,14 +74,6 @@ public class CircularSplitSystem extends SplitSystem {
         return circularOrdering;
     }
 
-    protected void setSplitWeights(SplitWeights splitWeights) {
-        this.splitWeights = splitWeights;
-    }
-
-    public SplitWeights getSplitWeights() {
-        return this.splitWeights;
-    }
-
     /**
      * Returns the value of the permutation at the specified position.
      *
@@ -101,7 +91,7 @@ public class CircularSplitSystem extends SplitSystem {
      *
      * @return
      */
-    public DistanceMatrix generateDistanceMatrix() {
+    /*public DistanceMatrix generateDistanceMatrix() {
 
         final int t = this.getNbTaxa();
 
@@ -123,7 +113,7 @@ public class CircularSplitSystem extends SplitSystem {
         }
 
         return distanceMatrix;
-    }
+    }*/
 
 
     /**

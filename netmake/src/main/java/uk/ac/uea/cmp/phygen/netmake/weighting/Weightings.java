@@ -16,6 +16,7 @@
 
 package uk.ac.uea.cmp.phygen.netmake.weighting;
 
+import org.apache.commons.lang3.StringUtils;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 
 import java.util.ArrayList;
@@ -108,5 +109,15 @@ public enum Weightings {
         }
 
         return weightingsList;
+    }
+
+    public static String toListString() {
+        List<String> list = new ArrayList<>();
+
+        for(Weightings prf : Weightings.values()) {
+            list.add(prf.toString());
+        }
+
+        return "[" + StringUtils.join(list, ", ") + "]";
     }
 }

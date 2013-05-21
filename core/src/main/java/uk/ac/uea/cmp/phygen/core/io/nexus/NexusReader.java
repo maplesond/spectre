@@ -210,33 +210,27 @@ public class NexusReader implements PhygenReader {
 
             int s = 0;
             do {
-                log.debug("DO");
-                if (distanceBloc == true && matrix == true) {
-                    log.debug("IF2");
-                    if (aLine.isEmpty() == false || aLine.equals(";") == false) {
-                        log.debug("DistIF" + distanceMatrix.size());
+                if (distanceBloc && matrix) {
+                    if (!aLine.isEmpty() || !aLine.equals(";")) {
                         for (int i = distanceMatrix.size() - 1; i >= 0; i--) {
                             int lastIdx = aLine.length();
                             int firstIdx = aLine.lastIndexOf(" ");
                             String distance = aLine.substring(firstIdx + 1, lastIdx - 1);
 
-
-                            log.debug("Dist: " + distance);
-                            log.debug("S & i " + s + " " + i);
                             try {
                                 distanceMatrix.setDistance(s, i, Double.parseDouble(distance));
                             } catch (Exception e) {
                                 i = -1;
                                 isTriangle = true;
-                            } /*
-                             * assuming triangular matrix
-                             */
-//                      System.out.println("Dist: "+ distanceMatrix[s][i]);
-                            aLine = aLine.substring(0, firstIdx).trim();
+                            }
 
+
+                            // Check for -1 in case there are no labels on the distance matrix
+                            if (firstIdx != -1) {
+                                aLine = aLine.substring(0, firstIdx).trim();
+                            }
                         }
                         s++;
-
                     }
                 }
 
