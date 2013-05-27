@@ -57,18 +57,22 @@ public class PhylipReader implements PhygenReader {
         // Load file into line collection
         List<String> inLines = FileUtils.readLines(file);
 
-        // Assume first line contains number of taxa
-        String n = inLines.get(0).trim();
-        int taxanumber = Integer.parseInt(n);
-        DistanceMatrix distanceMatrix = new DistanceMatrix(taxanumber);
-        //permutation = new int[taxanumber];
+        // Execute Parseing code.
+        return alternativeParser(inLines);
+    }
+
+
+    private DistanceMatrix oldParser(List<String> lines) {
+        String firstLine = lines.get(0).trim();
+        int nbTaxa = Integer.parseInt(firstLine);
+        DistanceMatrix distanceMatrix = new DistanceMatrix(nbTaxa);
         int runidx2 = 0;
         int runidx = 0;
 
         // Process the rest of the lines
-        for (int i = 1; i < inLines.size(); i++) {
+        for (int i = 1; i < lines.size(); i++) {
 
-            String aLine = inLines.get(i);
+            String aLine = lines.get(i);
 
             if (aLine.trim().isEmpty())
                 continue;
@@ -88,7 +92,7 @@ public class PhylipReader implements PhygenReader {
 
             aLine = aLine.trim();
 
-            while (aLine.isEmpty() == false) {
+            while (!aLine.isEmpty()) {
                 aLine = aLine.trim();
                 if (aLine.contains(" ")) {
                     idx = aLine.indexOf(" ");
@@ -103,6 +107,60 @@ public class PhylipReader implements PhygenReader {
                 distanceMatrix.setDistance(runidx - 1, runidx2, Double.parseDouble(distance));
 
                 runidx2++;
+            }
+        }
+
+        return distanceMatrix;
+    }
+
+    /**
+     * Alternative Phylip parser which handles multi-line phylip files
+     * @param lines Data from input file split into lines
+     * @return DistanceMatrix
+     */
+    private DistanceMatrix alternativeParser(List<String> lines) {
+
+        if (lines == null || lines.isEmpty()) {
+            return null;
+        }
+
+        String firstLine = lines.get(0).trim();
+        int nbTaxa = Integer.parseInt(firstLine);
+
+        DistanceMatrix distanceMatrix = new DistanceMatrix(nbTaxa);
+
+        int dmRow = 0;
+        int dmCol = 0;
+
+        // Process the rest of the lines
+        for (int i = 1; i < lines.size(); i++) {
+
+            String aLine = lines.get(i);
+
+            // Ignore empty lines
+            if (aLine.trim().isEmpty())
+                continue;
+
+            String[] parts = aLine.split(" ");
+
+            // Assumes this means we are at the start of the row, so get the label first
+            if (dmCol == 0) {
+                distanceMatrix.setTaxa(dmRow, parts[0]);
+            }
+
+            // Run through the rest of the line
+            for(int j = 1; j < parts.length; j++) {
+
+                String trimmedPart = parts[j].trim();
+
+                if (!trimmedPart.isEmpty()) {
+                    distanceMatrix.setDistance(dmRow, dmCol++, Double.parseDouble(trimmedPart));
+                }
+            }
+
+            if (dmCol == nbTaxa) {
+                dmRow++;
+                dmCol = 0;
             }
         }
 

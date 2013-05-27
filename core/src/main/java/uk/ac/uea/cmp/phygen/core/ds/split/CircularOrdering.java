@@ -100,4 +100,5 @@ public class CircularOrdering {
 
         return new CircularOrdering(circOrdering);
     }
+
 }

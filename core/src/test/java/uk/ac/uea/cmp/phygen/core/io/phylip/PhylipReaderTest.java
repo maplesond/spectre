@@ -42,4 +42,14 @@ public class PhylipReaderTest {
 
         assertTrue(distanceMatrix.size() == 10);
     }
+
+    @Test
+    public void testMultiLine() throws IOException {
+
+        File testFile = FileUtils.toFile(PhylipReaderTest.class.getResource("/multi-line.phy"));
+
+        DistanceMatrix distanceMatrix = new PhylipReader().read(testFile);
+
+        assertTrue(distanceMatrix.size() == 25);
+    }
 }

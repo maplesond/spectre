@@ -72,17 +72,24 @@ public class NeighbourNet {
      */
     static public CircularOrdering computeNeighborNetOrdering(DistanceMatrix dist) {
         int ntax = dist.size();
-        CircularOrdering ordering = null;
+        int[] ordering = null;
         if (ntax < 4) {
             int[] orderingArray = new int[ntax + 1];
             for (int i = 1; i <= ntax; i++) {
                 orderingArray[i] = i;
             }
-            ordering = new CircularOrdering(orderingArray);
+            ordering = orderingArray;
         } else {
             ordering = runNeighborNet(dist);
         }
-        return ordering;
+
+        // Neighbour net produces 1 based array, we should change it to zero based for external use
+        int[] zeroBasedOrdering = new int[ntax];
+        for(int i = 0; i < ntax; i++) {
+            zeroBasedOrdering[i] = ordering[i+1] - 1;
+        }
+
+        return new CircularOrdering(zeroBasedOrdering);
     }
 
     /**
@@ -190,7 +197,7 @@ public class NeighbourNet {
     /**
      * Run the neighbor net algorithm
      */
-    private static CircularOrdering runNeighborNet(DistanceMatrix dist) {
+    private static int[] runNeighborNet(DistanceMatrix dist) {
 
         int ntax = dist.size();
 
@@ -200,7 +207,7 @@ public class NeighbourNet {
             int[] ordering = new int[ntax + 1];
             for (int i = 0; i <= ntax; i++)
                 ordering[i] = i;
-            return new CircularOrdering(ordering);
+            return ordering;
         }
 
         double[][] D = setupMatrix(dist);
@@ -521,7 +528,7 @@ public class NeighbourNet {
      * @param amalgs    stack of amalagations
      * @param netNodes  the net nodes
      */
-    static private CircularOrdering expandNodes(int num_nodes, int ntax, Stack amalgs, NetNode netNodes) {
+    static private int[] expandNodes(int num_nodes, int ntax, Stack amalgs, NetNode netNodes) {
 
         int[] ordering = new int[ntax + 1];
         //System.err.println("expandNodes");
@@ -578,7 +585,7 @@ public class NeighbourNet {
             ordering[++t] = a.id;
             a = a.next;
         } while (a != x);
-        return new CircularOrdering(ordering);
+        return ordering;
     }
 
 

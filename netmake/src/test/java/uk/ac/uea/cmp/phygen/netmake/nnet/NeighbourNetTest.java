@@ -49,7 +49,6 @@ public class NeighbourNetTest {
         CircularOrdering ordering = NeighbourNet.computeNeighborNetOrdering(dm);
 
         assertTrue(true);
-
     }
 
     @Test
@@ -60,6 +59,5 @@ public class NeighbourNetTest {
         CircularOrdering ordering = NeighbourNet.computeNeighborNetOrdering(dm);
 
         assertTrue(true);
-
     }
 }
