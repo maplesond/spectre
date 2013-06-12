@@ -47,6 +47,38 @@ public class Statistics {
         return sum;
     }
 
+    public static double mean(double[] array) {
+
+        return sumDoubles(array) / array.length;
+    }
+
+    public static double variance(double[] array) {
+        return variance(array, mean(array));
+    }
+
+    public static double variance(double[] array, double mean) {
+
+        double variance = 0.0;
+        for (double d : array) {
+            variance += (mean - d) * (mean - d);
+        }
+        return variance / array.length;
+    }
+
+    public static double stddev(double[] array) {
+        return stddev(variance(array));
+    }
+
+    public static double stddev(double[] array, double mean) {
+        return stddev(variance(array, mean));
+    }
+
+    public static double stddev(double variance) {
+        return Math.sqrt(variance);
+    }
+
+
+
 
     public static double sumIntegers(List<Integer> list) {
         int sum = 0;
