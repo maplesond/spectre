@@ -19,20 +19,15 @@ package uk.ac.uea.cmp.phygen.tools.rdg;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
-import org.apache.commons.io.FilenameUtils;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phygen.core.ds.distance.RandomDistanceGenerator;
 import uk.ac.uea.cmp.phygen.core.io.PhygenWriter;
 import uk.ac.uea.cmp.phygen.core.io.PhygenWriterFactory;
-import uk.ac.uea.cmp.phygen.core.io.phylip.PhylipWriter;
 import uk.ac.uea.cmp.phygen.core.ui.cli.PhygenTool;
 import uk.ac.uea.cmp.phygen.core.util.Time;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * Created with IntelliJ IDEA. User: Dan Date: 14/05/13 Time: 21:27 To change this template use File | Settings | File

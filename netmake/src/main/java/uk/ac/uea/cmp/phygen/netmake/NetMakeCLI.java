@@ -16,7 +16,10 @@
 
 package uk.ac.uea.cmp.phygen.netmake;
 
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.Options;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.BasicConfigurator;
@@ -30,9 +33,6 @@ import uk.ac.uea.cmp.phygen.netmake.weighting.Weighting;
 import uk.ac.uea.cmp.phygen.netmake.weighting.Weightings;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.nio.channels.NetworkChannel;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;

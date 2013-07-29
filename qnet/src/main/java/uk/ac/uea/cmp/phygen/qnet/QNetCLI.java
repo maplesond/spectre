@@ -16,15 +16,16 @@
 
 package uk.ac.uea.cmp.phygen.qnet;
 
-import org.apache.commons.cli.*;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.Options;
 import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.ui.cli.CommandLineHelper;
 
 import java.io.File;
-import java.io.IOException;
 
 
 public class QNetCLI {

@@ -30,8 +30,8 @@ import uk.ac.uea.cmp.phygen.core.ui.gui.StatusTracker;
 import uk.ac.uea.cmp.phygen.qnet.QNet;
 import uk.ac.uea.cmp.phygen.qnet.WeightsComputeNNLSInformative;
 import uk.ac.uea.cmp.phygen.qnet.WriteWeightsToNexus;
-import uk.ac.uea.cmp.phygen.superq.chopper.Chopper;
-import uk.ac.uea.cmp.phygen.superq.scale.Scaling;
+import uk.ac.uea.cmp.phygen.tools.chopper.Chopper;
+import uk.ac.uea.cmp.phygen.tools.scale.Scaling;
 
 import java.io.File;
 import java.io.IOException;
@@ -105,21 +105,24 @@ public class SuperQ extends RunnableTool {
                     log.warn("Can't apply scaling as Gurobi is not available.  Skipping step");
                 } else if (!(this.options.getInputFileFormat() == SuperQOptions.InputFormat.NEWICK
                         || this.options.getInputFileFormat() == SuperQOptions.InputFormat.SCRIPT)) {
-                    throw new Exception("Scale function can just be applied, if input format is newick or script!");
+                    throw new Exception("Scale function can only be applied if the input format is newick or script!");
                 } else {
                     notifyUser("SCALING - Scaling input trees - Using GUROBI");
-                    //The uk.ac.uea.cmp.phygen.superq.scale method gets the input file and produces a scaled quartet file for each of the input trees
-                    //uk.ac.uea.cmp.phygen.superq.scale function gets the format type, input file and a prefix to name the scaled quartet files
-                    Scaling.main(new String[]{
-                            this.options.getInputFileFormat().toString().toLowerCase(),
-                            this.options.getInputFile().getPath(),
-                            tmppath
-                    });
-                    type = "script";
 
                     int cutIdx1 = file.lastIndexOf(File.separator);
                     int cutIdx2 = file.lastIndexOf(".");
                     file = tmppath + "scaled" + file.substring(cutIdx1 + 1, cutIdx2) + ".script";
+
+
+                    //The uk.ac.uea.cmp.phygen.tools.scale method gets the input file and produces a scaled quartet file for each of the input trees
+                    //uk.ac.uea.cmp.phygen.tools.scale function gets the format type, input file and a prefix to name the scaled quartet files
+                    Scaling.run(
+                            this.options.getInputFile(),
+                            new File(file),
+                            Scaling.Mode.valueOf(this.options.getInputFileFormat().toString().toUpperCase()));
+
+                    type = "script";
+
 
                     rt.gc();
                     log.debug("FREE MEM - after scaling: " + rt.freeMemory());
@@ -129,11 +132,7 @@ public class SuperQ extends RunnableTool {
             }
 
             notifyUser("CHOPPER - Breaking input trees into quartets");
-            Chopper.main(new String[]{
-                    type,
-                    file,
-                    tmppath + "qw"
-            });
+            Chopper.run(new File(file), new File(tmppath + "qw"), Chopper.Type.valueOf(type.toUpperCase()));
 
             rt.gc();
             log.debug("FREE MEM - after running uk.ac.uea.cmp.phygen.superq.chopper: " + rt.freeMemory());

@@ -13,50 +13,44 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package uk.ac.uea.cmp.phygen.superq.chopper;
+package uk.ac.uea.cmp.phygen.tools.chopper;
 
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 
+import java.io.IOException;
 import java.util.LinkedList;
-import java.util.ListIterator;
 
 /**
- * Created by IntelliJ IDEA. User: Analysis Date: 2004-jul-11 Time: 21:26:52 To
+ * Created by IntelliJ IDEA. User: Analysis Date: 2004-jul-12 Time: 00:35:38 To
  * change this template use Options | File Templates.
  */
-public class Traverser {
+public interface Source {
 
-    // do it with all trees
-    public static LinkedList traverse(LinkedList trees, int N) {
+    public void load(String fileName, double weight) throws IOException;
 
-        ListIterator lI = trees.listIterator();
+    // make sure qWs exist
+    public void process();
 
-        LinkedList qWs = new LinkedList();
+    // these are the qWs
+    public LinkedList getQuartetWeights();
 
-        while (lI.hasNext()) {
+    // list of weights of qWs
+    public LinkedList getWeights();
 
-            qWs.add(quartetize(((Tree) lI.next()), N));
+    public double getWSum();
 
-        }
+    // note: translate BEFORE processing
+    public void translate(LinkedList taxonNames);
 
-        return qWs;
+    // straightforward union of taxon names, stored in the input, so clone if necessary
+    public void harvestNames(LinkedList taxonNames);
 
-    }
+    // name list for each
+    public LinkedList getTaxonNames();
 
-    // do it with any tree
-    public static QuartetWeights quartetize(Tree tree, int N) {
+    public boolean hasMoreSets();
 
-        QuartetWeights qW = new QuartetWeights();
+    public QuartetWeights getNextQuartetWeights();
 
-        qW.ensureCapacity(N);
-
-        // this gives values for non-supported quartets in this tree...
-
-        qW.initialize();
-
-        tree.split(qW, new LinkedList());
-
-        return qW;
-
-    }
+    public double getNextWeight();
 }

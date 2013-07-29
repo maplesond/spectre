@@ -18,8 +18,10 @@ package uk.ac.uea.cmp.phygen.tools;
 
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang3.StringUtils;
+import uk.ac.uea.cmp.phygen.tools.chopper.Chopper;
 import uk.ac.uea.cmp.phygen.tools.phycor.PhylipCorrector;
 import uk.ac.uea.cmp.phygen.tools.rdg.RandomDistanceGeneratorTool;
+import uk.ac.uea.cmp.phygen.tools.scale.Scaling;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -51,6 +53,28 @@ public enum ToolsMode {
         @Override
         public String getAlias() {
             return "PC";
+        }
+    },
+    CHOPPER {
+        @Override
+        public void execute(String[] args) throws IOException, ParseException {
+            new Chopper().execute(args);
+        }
+
+        @Override
+        public String getAlias() {
+            return "CHP";
+        }
+    },
+    SCALE {
+        @Override
+        public void execute(String[] args) throws IOException, ParseException {
+            new Scaling().execute(args);
+        }
+
+        @Override
+        public String getAlias() {
+            return "SCL";
         }
     };
 

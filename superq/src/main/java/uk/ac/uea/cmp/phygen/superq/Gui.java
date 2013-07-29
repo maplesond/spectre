@@ -126,7 +126,7 @@ public class Gui extends JFrame implements ToolHost {
 
         cboInputFormat.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "choose format of input file", "script", "newick"}));
 
-        chkScaleInput.setText("uk.ac.uea.cmp.phygen.superq.scale input");
+        chkScaleInput.setText("uk.ac.uea.cmp.phygen.tools.scale input");
         chkScaleInput.setToolTipText("Scale input trees");
         chkScaleInput.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {

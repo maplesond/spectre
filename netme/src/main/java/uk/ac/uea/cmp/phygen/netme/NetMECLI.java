@@ -16,7 +16,10 @@
 
 package uk.ac.uea.cmp.phygen.netme;
 
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.Options;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.BasicConfigurator;
@@ -32,10 +35,6 @@ import uk.ac.uea.cmp.phygen.core.util.Time;
 import uk.ac.uea.cmp.phygen.netmake.nnet.NeighbourNet;
 
 import java.io.File;
-import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * Created with IntelliJ IDEA.

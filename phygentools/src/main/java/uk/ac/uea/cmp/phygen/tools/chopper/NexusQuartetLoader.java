@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package uk.ac.uea.cmp.phygen.superq.chopper;
+package uk.ac.uea.cmp.phygen.tools.chopper;
 
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 
@@ -28,7 +28,7 @@ import java.util.StringTokenizer;
  * Created by IntelliJ IDEA. User: Analysis Date: 2004-jul-11 Time: 23:09:07 To
  * change this template use Options | File Templates.
  */
-public class NexusSplitsLoader implements Source {
+public class NexusQuartetLoader implements Source {
 
     public void load(String fileName, double weight) {
 
@@ -66,9 +66,9 @@ public class NexusSplitsLoader implements Source {
              * lines which will be the taxon names. We assume there are n choose
              * 4 quartets.
              *
-             * Keep on reading and tokenizing until "st_splits;" is found. Then
-             * proceed to "MATRIX". Then read the quartet lines until a line
-             * starts with ";".
+             * Keep on reading and tokenizing until "st_quartets;" is found.
+             * Then proceed to "MATRIX". Then read the quartet lines until a
+             * line starts with ";".
              *
              *
              *
@@ -155,7 +155,7 @@ public class NexusSplitsLoader implements Source {
 
                     String tT = sT.nextToken();
 
-                    if (tT.toLowerCase().startsWith("st_splits;") || tT.toLowerCase().startsWith("splits;")) {
+                    if (tT.toLowerCase().startsWith("st_quartets;")) {
 
                         readingState = false;
 
@@ -178,88 +178,34 @@ public class NexusSplitsLoader implements Source {
 
                     if (tT.toUpperCase().startsWith("MATRIX")) {
 
-                        boolean splitState = true;
+                        boolean quartetState = true;
 
-                        while (splitState) {
+                        while (quartetState) {
 
-                            String bLine = fileInput.readLine().trim();
+                            String bLine = fileInput.readLine();
 
                             if (bLine.startsWith(";")) {
 
-                                splitState = false;
+                                quartetState = false;
 
                             } else {
 
-                                // BEGIN reading a split line
-
-                                if (bLine.endsWith(",")) {
-
-                                    bLine = bLine.substring(0, bLine.length() - 1);
-                                }
-
-//                                System.out.println("bline: \"" + bLine + "\"");
-
                                 StringTokenizer bT = new StringTokenizer(bLine);
-//                                
-                                if (bT.nextToken().startsWith("[")) {
-                                    bT.nextToken();
-                                    bT.nextToken();
-                                }
+
+                                String label = bT.nextToken();
                                 double w = Double.parseDouble(bT.nextToken());
+                                int x = Integer.parseInt(bT.nextToken());
+                                int y = Integer.parseInt(bT.nextToken());
+                                String sC = bT.nextToken();
+                                int u = Integer.parseInt(bT.nextToken());
+                                String cS = bT.nextToken();
+                                int v = Integer.parseInt(cS.substring(0, cS.length() - 1));
 
-                                LinkedList setA = new LinkedList();
-                                LinkedList setB = new LinkedList();
+                                if (x != y && x != u && x != v && y != u && y != v && u != v) {
 
-                                while (bT.hasMoreTokens()) {
-
-                                    setA.add(new Integer(Integer.parseInt(bT.nextToken())));
-
-                                }
-
-                                for (int n = 0; n < N; n++) {
-
-                                    if (!setA.contains(new Integer(n + 1))) {
-
-                                        setB.add(new Integer(n + 1));
-
-                                    }
+                                    qW.setWeight(x, y, u, v, w);
 
                                 }
-
-                                if (setA.size() > 1 && setB.size() > 1) {
-
-                                    // we have a non-trivial split!
-                                    // which we must have, for trivial splits match no quartets...
-
-                                    // so, for all quartets in here, add the weight to their value
-
-                                    for (int iA1 = 0; iA1 < setA.size() - 1; iA1++) {
-
-                                        for (int iA2 = iA1 + 1; iA2 < setA.size(); iA2++) {
-
-                                            int a1 = ((Integer) setA.get(iA1)).intValue();
-                                            int a2 = ((Integer) setA.get(iA2)).intValue();
-
-                                            for (int iB1 = 0; iB1 < setB.size() - 1; iB1++) {
-
-                                                for (int iB2 = iB1 + 1; iB2 < setB.size(); iB2++) {
-
-                                                    int b1 = ((Integer) setB.get(iB1)).intValue();
-                                                    int b2 = ((Integer) setB.get(iB2)).intValue();
-
-                                                    qW.setWeight(a1, a2, b1, b2, qW.getWeight(a1, a2, b1, b2) + w);
-
-                                                }
-
-                                            }
-
-                                        }
-
-                                    }
-
-                                }
-
-                                // END reading a split line
 
                             }
 
@@ -316,32 +262,6 @@ public class NexusSplitsLoader implements Source {
 
     }
 
-    public LinkedList getWeights() {
-
-        LinkedList result = new LinkedList();
-
-        result.add(new Double(weight));
-
-        return result;
-
-    }
-
-    public double getWSum() {
-
-        return weight;
-
-    }
-
-    public LinkedList getTaxonNames() {
-
-        LinkedList result = new LinkedList();
-
-        result.add(taxonNames);
-
-        return result;
-
-    }
-
     public QuartetWeights getNextQuartetWeights() {
 
         index++;
@@ -367,6 +287,32 @@ public class NexusSplitsLoader implements Source {
             return false;
 
         }
+
+    }
+
+    public LinkedList getWeights() {
+
+        LinkedList result = new LinkedList();
+
+        result.add(new Double(weight));
+
+        return result;
+
+    }
+
+    public double getWSum() {
+
+        return weight;
+
+    }
+
+    public LinkedList getTaxonNames() {
+
+        LinkedList result = new LinkedList();
+
+        result.add(taxonNames);
+
+        return result;
 
     }
     QuartetWeights qW;

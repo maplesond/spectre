@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package uk.ac.uea.cmp.phygen.superq.chopper;
+package uk.ac.uea.cmp.phygen.tools.chopper;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,32 +24,21 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.ListIterator;
+import java.util.StringTokenizer;
 
 /**
  * Created by IntelliJ IDEA. User: Analysis Date: 2004-jul-12 Time: 00:03:05 To
  * change this template use Options | File Templates.
  */
-/**
- * Extracts QNet input from file
- *
- * @author sarah
- */
-public class TreeLoader implements Source {
+public class TreeFileLoader implements Source {
 
-    private static Logger log = LoggerFactory.getLogger(TreeLoader.class);
-
-    int index;
-    LinkedList qWs;
-    boolean branchLengths, treeWeights;
-    LinkedList trees, weights, taxonNames;
-
-    public TreeLoader() {
-    }
+    private static Logger log = LoggerFactory.getLogger(TreeFileLoader.class);
 
     public void load(String fileName, double weight) throws IOException {
 
         index = 0;
 
+        taxonNames = new LinkedList();
         trees = new LinkedList();
         weights = new LinkedList();
 
@@ -57,56 +46,127 @@ public class TreeLoader implements Source {
 
         String aLine = in.readLine();
 
-        if (aLine != null && aLine.indexOf(':') != - 1) {
+        // read until translate block
 
-            branchLengths = true;
+        boolean readingState = true;
 
-        } else {
+        while (readingState) {
 
-            branchLengths = false;
+            StringTokenizer sT = new StringTokenizer(aLine);
 
-        }
+            while (sT.hasMoreTokens()) {
 
-        if (aLine != null && !(aLine.trim().endsWith(";"))) {
+                String aWord = sT.nextToken().trim();
 
-            treeWeights = true;
+                if (aWord.equalsIgnoreCase("TRANSLATE")) {
 
-        } else {
+                    readingState = false;
+                    break;
 
-            treeWeights = false;
-
-        }
-
-        while (aLine != null) {
-
-            //if there is a blank line, go to next line
-            if (aLine.length() > 0) {
-
-                aLine = aLine.trim();
-                int endColon = aLine.lastIndexOf(";");
-
-                if (treeWeights) {
-
-                    String wS = aLine.substring(endColon + 1).trim();
-                    //System.out.println("WS:" + wS);
-                    weights.add(new Double(Double.parseDouble(wS) * weight));
-
-                } else {
-                    //System.out.println("ELSE");
-                    weights.add(new Double(weight));
                 }
 
-
-                aLine = aLine.substring(0, aLine.lastIndexOf(')') + 1).trim();
-
-                //quick hack to work around the problem that the weights
-                //used for unweighted trees were not correct
-                if (branchLengths) {
-                    trees.add(new Tree(aLine.substring(1, aLine.length() - 1), branchLengths));
-                } else {
-                    trees.add(new Tree((aLine.substring(1, aLine.length() - 1)) + ":", branchLengths));
-                }
             }
+
+            if (readingState) {
+
+                aLine = in.readLine();
+
+            }
+
+        }
+
+        // we have found translation
+
+        aLine = in.readLine();
+
+        while (!readingState && aLine != null) {
+
+            StringTokenizer sT = new StringTokenizer(aLine);
+
+            String first = sT.nextToken();
+
+            if (first.trim().equals(";")) {
+
+                readingState = true;
+
+            } else {
+
+                // process a translate line
+
+                if (sT.hasMoreTokens()) {
+
+                    String second = sT.nextToken();
+
+                    if (sT.hasMoreTokens()) {
+
+                        second = sT.nextToken();
+
+                    }
+
+                    taxonNames.add(second.trim().substring(0, second.trim().length() - 1));
+
+                }
+
+            }
+
+            if (!readingState) {
+
+                aLine = in.readLine();
+
+            }
+
+        }
+
+        branchLengths = false;
+        treeWeights = false;
+
+        // now, we will read tree lines until we find an end
+
+        aLine = in.readLine();
+
+        boolean readingTrees = true;
+
+        while (readingTrees && aLine != null) {
+
+            aLine = aLine.trim();
+
+            if (aLine.toUpperCase().startsWith("END")) {
+
+                readingTrees = false;
+                break;
+
+            }
+
+            if (aLine.trim().indexOf('(') != - 1 && aLine.trim().endsWith(");")) {
+
+                // we have a tree line here
+
+                weights.add(new Double(weight));
+
+                aLine = aLine.substring(aLine.indexOf('('), aLine.lastIndexOf(')') + 1).trim();
+
+                if (aLine.indexOf(":") != - 1) {
+
+                    branchLengths = true;
+
+                }
+
+                Tree aTree = new Tree(aLine.substring(1, aLine.length() - 1), branchLengths);
+
+                LinkedList numberNames = new LinkedList();
+
+                for (int n = 0; n < taxonNames.size(); n++) {
+
+                    numberNames.add(new String((n + 1) + ""));
+
+                }
+
+                aTree.rename(numberNames, taxonNames);
+
+                trees.add(aTree);
+
+            }
+
             aLine = in.readLine();
 
         }
@@ -222,4 +282,8 @@ public class TreeLoader implements Source {
         }
 
     }
+    LinkedList qWs;
+    boolean branchLengths, treeWeights;
+    LinkedList trees, weights, taxonNames;
+    int index;
 }

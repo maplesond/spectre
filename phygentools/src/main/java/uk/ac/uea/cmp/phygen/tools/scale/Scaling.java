@@ -13,27 +13,110 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package uk.ac.uea.cmp.phygen.superq.scale;
+package uk.ac.uea.cmp.phygen.tools.scale;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.Options;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
 import uk.ac.uea.cmp.phygen.core.math.optimise.Problem;
 import uk.ac.uea.cmp.phygen.core.math.optimise.gurobi.GurobiOptimiserQ;
 import uk.ac.uea.cmp.phygen.core.math.tuple.Key;
-import uk.ac.uea.cmp.phygen.superq.chopper.Chopper;
+import uk.ac.uea.cmp.phygen.core.ui.cli.PhygenTool;
+import uk.ac.uea.cmp.phygen.tools.chopper.Chopper;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class Scaling {
+public class Scaling extends PhygenTool {
 
     private static Logger log = LoggerFactory.getLogger(Scaling.class);
+
+    private static final String OPT_INPUT_FILE = "input";
+    private static final String OPT_OUTPUT_PREFIX = "output";
+    private static final String OPT_MODE = "mode";
+
+
+    @Override
+    protected Options createInternalOptions() {
+
+        // Create Options object
+        Options options = new Options();
+
+        options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_OUTPUT_PREFIX).hasArg()
+                .withDescription("The output prefix path, which will be used for all output files").create("o"));
+
+        options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_INPUT_FILE).hasArg()
+                .withDescription("The input file containing the tree to be scaled").create("i"));
+
+        options.addOption(OptionBuilder.withArgName("string").withLongOpt(OPT_MODE).hasArg()
+                .withDescription("The output file type: " + Mode.listTypes()).create("t"));
+
+        return options;
+    }
+
+    @Override
+    protected void execute(CommandLine commandLine) throws IOException {
+
+        // All options are required
+        File inputFile = new File(commandLine.getOptionValue(OPT_INPUT_FILE));
+        File outputPrefix = new File(commandLine.getOptionValue(OPT_OUTPUT_PREFIX));
+        Mode mode = Mode.valueOf(commandLine.getOptionValue(OPT_MODE).toUpperCase());
+
+        try {
+            execute(inputFile, outputPrefix, mode);
+        }
+        catch (OptimiserException oe) {
+            throw new IOException(oe);
+        }
+    }
+
+    public void execute(File inputFile, File outputPrefix, Mode mode) throws OptimiserException, IOException {
+
+        int ntrees = -1;
+
+        if (mode == Mode.NEWICK) {
+            //store input trees in separate files and
+            //get number of input trees
+            ntrees = separateTrees(inputFile.getPath(), outputPrefix.getPath());
+
+            //turn trees into collections of quartets
+            for (int i = 0; i < ntrees; i++) {
+                Chopper.run(
+                        new File(outputPrefix.getPath() + (i + 1) + ".tre"),
+                        new File(outputPrefix.getPath() + (i + 1) + ".qua"),
+                        Chopper.Type.NEWICK);
+            }
+
+        } else if (mode == Mode.SCRIPT) {
+            //turn trees into collections of quartets and
+            //get number of input trees
+            ntrees = computeQuartetFilesScript(inputFile.getPath(), outputPrefix.getName(), outputPrefix.getParent());
+        }
+
+        //call of method that computes the matrix
+        //of coefficients
+        double[][] h = getMatrix(outputPrefix.getPath(), ntrees);
+
+        Problem p = new Problem(new double[h.length], h, new double[h.length]);
+
+        //Updates quartet weights and writes them into a file
+        //for each input tree one quartet file is generated
+        Matrix.updateQuartetWeights(outputPrefix.getParent(), outputPrefix.getName(), new GurobiOptimiserQ().optimise(p));
+    }
+
+    public static void run(File inputFile, File outputPrefix, Mode mode) throws OptimiserException, IOException {
+        new Scaling().execute(inputFile, outputPrefix, mode);
+    }
 
     /**
      * ********************************************
@@ -62,25 +145,6 @@ public class Scaling {
         return ntrees;
     }
 
-    //turn each tree file into a quartet file
-    //parameters:
-    //prefix --> prefix of temporary files with input trees
-    //ntrees --> number of trees
-    public static void computeQuartetFilesNewick(String prefix, int ntrees) {
-        //loop variable
-        int i = 0;
-
-        //arguments used when calling the uk.ac.uea.cmp.phygen.superq.chopper
-        String[] args = new String[3];
-
-        //loop through input trees
-        for (i = 0; i < ntrees; i++) {
-            args[0] = "newick";
-            args[1] = prefix + (i + 1) + ".tre";
-            args[2] = prefix + (i + 1) + ".qua";
-            Chopper.main(args);
-        }
-    }
 
     //turn each tree file into a quartet file
     //parameters:
@@ -96,20 +160,16 @@ public class Scaling {
         //file handle for script file
         List<String> lines = FileUtils.readLines(new File(filename));
 
-        //arguments used when calling the uk.ac.uea.cmp.phygen.superq.chopper
-        String[] args = new String[3];
-
         for(String line : lines) {
 
             ntrees++;
             line = line.trim();
-            args[0] = line.substring(0, line.indexOf(' '));
-            //System.out.println("arg1: " + args[0]);
-            args[1] = filename.substring(0, filename.lastIndexOf(File.separator) + 1) + (line.substring(line.indexOf(' '))).trim();
-            //System.out.println("arg2: " + args[1]);
-            args[2] = path + prefix + (ntrees) + ".qua";
-            //System.out.println("arg3: " + args[2]);
-            Chopper.main(args);
+
+            Chopper.run(
+                    new File(filename.substring(0, filename.lastIndexOf(File.separator) + 1) + (line.substring(line.indexOf(' '))).trim()),
+                    new File(path + prefix + (ntrees) + ".qua"),
+                    Chopper.Type.valueOf(line.substring(0, line.indexOf(' ')))
+            );
         }
 
         return ntrees;
@@ -542,45 +602,6 @@ public class Scaling {
         return h;
     }
 
-    public static void main(String[] args) throws IOException, OptimiserException {
-        //check mode of operation
-        String mode = args[0];
-        //name of input file
-        String input = args[1];
-        String filename = input.substring(input.lastIndexOf(File.separator) + 1);
-        //prefix used for temporary files
-        String path = args[2];
-
-        int cutIdx1 = input.lastIndexOf(File.separator);
-        int cutIdx2 = input.lastIndexOf(".");
-        String prefix = "scaled" + input.substring(cutIdx1 + 1, cutIdx2);
-        int ntrees = -1;
-
-        if (mode.equals("newick")) {
-            //store input trees in separate files and
-            //get number of input trees
-            ntrees = separateTrees(input, path + prefix);
-
-            //turn trees into collections of quartets
-            computeQuartetFilesNewick(path + prefix, ntrees);
-
-        } else if (mode.equals("script")) {
-            //turn trees into collections of quartets and
-            //get number of input trees
-            ntrees = computeQuartetFilesScript(input, prefix, path);
-        }
-
-        //call of method that computes the matrix
-        //of coefficients
-        double[][] h = getMatrix(path + prefix, ntrees);
-
-        Problem p = new Problem(new double[h.length], h, new double[h.length]);
-
-        //Updates quartet weights and writes them into a file
-        //for each input tree one quartet file is generated
-        Matrix.updateQuartetWeights(path, prefix, new GurobiOptimiserQ().optimise(p));
-    }
-
     public static String getNewInput(String input) {
         String path = "";
 //        String filename = "";
@@ -599,5 +620,21 @@ public class Scaling {
 
         input = path + prefix + ".script";
         return input;
+    }
+
+    public static enum Mode {
+
+        SCRIPT,
+        NEWICK;
+
+        public static String listTypes() {
+            List<String> typeStrings = new ArrayList<String>();
+
+            for(Mode m : Mode.values()) {
+                typeStrings.add(m.name());
+            }
+
+            return "[" + StringUtils.join(typeStrings, ", ") + "]";
+        }
     }
 }

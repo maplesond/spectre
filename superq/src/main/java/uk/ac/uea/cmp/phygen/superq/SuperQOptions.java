@@ -79,7 +79,7 @@ public class SuperQOptions {
             if (!(this.getInputFileFormat() == InputFormat.NEWICK ||
                     this.getInputFileFormat() == InputFormat.SCRIPT)) {
                 this.setScaleInputTree(false);
-                logger.warn("Scale function can only be applied if input format is newick or script.  Running without uk.ac.uea.cmp.phygen.superq.scale function.");
+                logger.warn("Scale function can only be applied if input format is newick or script.  Running without uk.ac.uea.cmp.phygen.tools.scale function.");
             }
         }
     }

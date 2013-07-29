@@ -14,7 +14,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.phygen.superq.scale;
+package uk.ac.uea.cmp.phygen.tools.scale;
 
 import uk.ac.uea.cmp.phygen.core.math.tuple.Key;
 
