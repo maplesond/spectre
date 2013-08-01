@@ -16,6 +16,8 @@
 
 package uk.ac.uea.cmp.phygen.netmake.weighting;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * Fills and updates weighting list
  *
@@ -74,5 +76,10 @@ public abstract class Weighting {
      */
     public void setWeightingParam(int i, Double newValue) {
         weightingParameters[i] = newValue;
+    }
+
+    @Override
+    public String toString() {
+        return StringUtils.join(weightingParameters, ", ");
     }
 }

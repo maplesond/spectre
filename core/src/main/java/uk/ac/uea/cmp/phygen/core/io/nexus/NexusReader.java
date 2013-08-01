@@ -33,9 +33,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.StringTokenizer;
+import java.util.*;
 
 /**
  * Used to handle streaming of Nexus format files into memory, and convertion of
@@ -85,13 +83,12 @@ public class NexusReader implements PhygenReader {
 
         //Evaluation of file content (if there is a distance and a taxabloc)
         while (taxaBloc == false && distanceBloc == false) {
-            aLine = inLines.get(p);
+            aLine = inLines.get(p++);
             if (aLine.trim().toUpperCase().contains("BEGIN TAXA")) {
                 taxaBloc = true;
             } else if (aLine.trim().toUpperCase().contains("BEGIN DISTANCES")) {
                 distanceBloc = true;
             }
-            p++;
         }
 
         //If no taxa bloc, read distanceMatrix & tax labels from distance bloc
@@ -100,7 +97,7 @@ public class NexusReader implements PhygenReader {
             int s = 0;
 
             while (matrix == false) {
-                aLine = inLines.get(p);
+                aLine = inLines.get(p++);
                 if (aLine.trim().toUpperCase().startsWith("DIMENSIONS")) {
                     int beginIdx = aLine.toUpperCase().indexOf("NTAX=") + 5;
                     int endIdx = aLine.indexOf(";");
@@ -113,49 +110,21 @@ public class NexusReader implements PhygenReader {
                     matrix = true;
                 }
                 taxaNumberString = Integer.toString(taxaIndex);
-                p++;
             }
             aLine = inLines.get(p);
+
+            List<String> matrixLines = new ArrayList<>();
             do {
-                if (aLine.isEmpty() == false) {
-                    aLine = aLine.trim();
-                    int endIdx = aLine.indexOf(" ");
-                    String identifier = aLine.substring(0, endIdx);
-                    aLine = aLine.substring(endIdx, aLine.length()).trim();
-                    if (identifier.startsWith("[")) {
-                        if (identifier.endsWith("]")) {
-                            endIdx = aLine.indexOf(" ");
-                            identifier = aLine.substring(0, endIdx - 1);
-                        }
-                    }
-
-
-                    if (identifier.startsWith("'")) {
-                        identifier = identifier.substring(1);
-                    }
-                    if (identifier.endsWith("'")) {
-                        identifier = identifier.substring(0, endIdx - 2);
-                    }
-
-                    distanceMatrix.setTaxa(s, identifier);
-                    for (int i = distanceMatrix.size() - 1; i >= 0; i--) {
-                        int lastIdx = aLine.length();
-                        int firstIdx = aLine.lastIndexOf(" ");
-                        String distance = aLine.substring(firstIdx + 1, lastIdx - 1);
-                        try {
-                            distanceMatrix.setDistance(s, i, Double.parseDouble(distance));
-                            aLine = aLine.substring(0, firstIdx).trim();
-                        } catch (Exception e) {
-                            i = -1;
-                            isTriangle = true;
-                        }
-                    }
-                    s++;
+                aLine = aLine.trim();
+                if (!aLine.isEmpty()) {
+                    distanceMatrix.setTaxa(s++, getIdentifierFromMatrixLine(aLine));
+                    matrixLines.add(aLine);
                 }
-                p++;
-                aLine = inLines.get(p);
+                aLine = inLines.get(++p);
             } while (aLine.trim().toUpperCase().contains(";") == false);
 
+            TriangleFormat tf = fillDistanceMatrix(matrixLines, distanceMatrix);
+            log.debug("Matrix format: " + tf.toString());
         }
 
 
@@ -163,36 +132,27 @@ public class NexusReader implements PhygenReader {
         if (taxaBloc == true) {
             p--;
             do {
-                log.debug("IF");
                 if (aLine.trim().toUpperCase().startsWith("DIMENSIONS")) {
-                    log.debug("IFIF");
                     int beginIdx = aLine.toUpperCase().indexOf("NTAX=") + 5;
                     int endIdx = aLine.indexOf(";");
                     String dimString = aLine.substring(beginIdx, endIdx).trim();
 
                     int n = Integer.parseInt(dimString);
-                    log.debug(String.valueOf(n));
                     distanceMatrix = new DistanceMatrix(n);
-
                 }
-                p++;
-                aLine = inLines.get(p);
+                aLine = inLines.get(++p);
             } while (aLine.toUpperCase().contains("TAXLABELS") == false);
 
 
-            p++;
-            aLine = inLines.get(p);
+            aLine = inLines.get(++p);
 
             do {
                 if (aLine.isEmpty() == false && aLine.equals(";") == false) {
                     int beginIdx = aLine.indexOf("'") + 1;
                     int endIdx = aLine.lastIndexOf("'");
 
-                    log.debug(beginIdx + " " + endIdx);
                     try {
-                        log.debug("try");
                         String help = aLine.substring(beginIdx, endIdx);
-                        log.debug(help);
                         help = help.replace(' ', '_');
 
                         distanceMatrix.setTaxa(taxaIndex - 1, help);
@@ -203,34 +163,17 @@ public class NexusReader implements PhygenReader {
                     taxaNumberString = Integer.toString(taxaIndex);
                 }
 
-                p++;
-                aLine = inLines.get(p);
+                aLine = inLines.get(++p);
             } while (aLine.trim().toUpperCase().contains("END") == false);
 
 
-            int s = 0;
+            int row = 0;
+            List<String> matrixLines = new ArrayList<>();
             do {
                 if (distanceBloc && matrix) {
-                    if (!aLine.isEmpty() || !aLine.equals(";")) {
-                        for (int i = distanceMatrix.size() - 1; i >= 0; i--) {
-                            int lastIdx = aLine.length();
-                            int firstIdx = aLine.lastIndexOf(" ");
-                            String distance = aLine.substring(firstIdx + 1, lastIdx - 1);
 
-                            try {
-                                distanceMatrix.setDistance(s, i, Double.parseDouble(distance));
-                            } catch (Exception e) {
-                                i = -1;
-                                isTriangle = true;
-                            }
-
-
-                            // Check for -1 in case there are no labels on the distance matrix
-                            if (firstIdx != -1) {
-                                aLine = aLine.substring(0, firstIdx).trim();
-                            }
-                        }
-                        s++;
+                    if (!aLine.isEmpty() && !aLine.equals(";")) {
+                        matrixLines.add(aLine.trim());
                     }
                 }
 
@@ -240,34 +183,126 @@ public class NexusReader implements PhygenReader {
                 if (aLine.trim().toUpperCase().contains("MATRIX")) {
                     matrix = true;
                 }
-                p++;
-                aLine = inLines.get(p);
+                if (aLine.trim().toUpperCase().contains("FORMAT")) {
+                    // Nothing to do really...
+                }
+                aLine = inLines.get(++p);
             } while (aLine.trim().toUpperCase().contains("END") == false);
+
+            TriangleFormat tf = fillDistanceMatrix(matrixLines, distanceMatrix);
+            log.debug("Matrix format: " + tf.toString());
         }
 
-        /*
-         * filling the missing entries in a triangular matrix
-         */
-//        if (isTriangle) {
-//            for (int i = 0; i < distanceMatrix.length; i++) {
-//                for (int j = 0; j < (i + 1); j++) {
-//                    Double distValue = distanceMatrix[i][distanceMatrix.length
-//                                                    - (i + 1) + j];
-//
-//                    distanceMatrix[i][j] = distValue;
-//                }
-//            }
-//
-//            for (int i = 0; i < distanceMatrix.length; i++) {
-//                for (int j = i + 1; j < distanceMatrix.length; j++) {
-//                    Double distValue = distanceMatrix[j][i];
-//
-//                    distanceMatrix[i][j] = distValue;
-//                }
-//            }
-//        }
-
         return distanceMatrix;
+    }
+
+    private String getIdentifierFromMatrixLine(String aLine) {
+        int endIdx = aLine.indexOf(" ");
+        String identifier = aLine.substring(0, endIdx);
+        aLine = aLine.substring(endIdx, aLine.length()).trim();
+        if (identifier.startsWith("[")) {
+            if (identifier.endsWith("]")) {
+                endIdx = aLine.indexOf(" ");
+                identifier = aLine.substring(0, endIdx - 1);
+            }
+        }
+
+
+        if (identifier.startsWith("'")) {
+            identifier = identifier.substring(1);
+        }
+        if (identifier.endsWith("'")) {
+            identifier = identifier.substring(0, endIdx - 2);
+        }
+
+        return identifier;
+    }
+
+    private TriangleFormat fillDistanceMatrix(List<String> lines, DistanceMatrix distanceMatrix) throws IOException {
+
+        TriangleFormat tf = TriangleFormat.BOTH;
+
+        for(int i = 0; i < lines.size(); i++) {
+
+            List<String> matrixLineElements = getMatrixLineElements(lines.get(i));
+
+            // We have an lower triangular matrix
+            if (i == 0 && matrixLineElements.size() != distanceMatrix.size()) {
+                tf = TriangleFormat.LOWER;
+            }
+            // Not sure yet, either BOTH or UPPER, assume both for now
+            else if (i == 0 && matrixLineElements.size() == distanceMatrix.size()) {
+                tf = TriangleFormat.BOTH;
+            }
+            // Actually this is an upper triangular matrix
+            else if (i == 1 && matrixLineElements.size() != distanceMatrix.size() && tf == TriangleFormat.BOTH) {
+                tf = TriangleFormat.UPPER;
+            }
+
+            // We should have covered all the bases here and ensured tf is non-null;
+            tf.fillRow(i, matrixLineElements, distanceMatrix);
+        }
+
+        // We didn't know it was upper triangular format before the second line so computer the first column now
+        if (tf == TriangleFormat.UPPER) {
+            for(int i = 1; i < distanceMatrix.size(); i++) {
+                distanceMatrix.setDistance(i, 0, distanceMatrix.getDistance(0, i));
+            }
+        }
+
+        // Return triangle format type just for info
+        return tf;
+    }
+
+    private static List<String> getMatrixLineElements(String matrixLine) {
+
+        // Split line on any whitespace
+        String[] words = matrixLine.trim().split("\\s+");
+        List<String> elements = new ArrayList<>();
+
+        for(String s : words) {
+
+            // Don't add index or label if present
+            if (!s.startsWith("[") && !s.startsWith("'")) {
+                elements.add(s);
+            }
+        }
+
+        return elements;
+    }
+
+    private enum TriangleFormat {
+
+        BOTH {
+            @Override
+            public void fillRow(int row, List<String> elements, DistanceMatrix distanceMatrix) {
+                for(int j = 0; j < elements.size(); j++) {
+                    distanceMatrix.setDistance(row, j, Double.parseDouble(elements.get(j)));
+                }
+            }
+        },
+        LOWER {
+            @Override
+            public void fillRow(int row, List<String> elements, DistanceMatrix distanceMatrix) {
+                for(int j = 0; j < elements.size(); j++) {
+                    distanceMatrix.setDistance(row, j, Double.parseDouble(elements.get(j)));
+                    distanceMatrix.setDistance(j, row, Double.parseDouble(elements.get(j)));
+                }
+            }
+        },
+        UPPER {
+            @Override
+            public void fillRow(int row, List<String> elements, DistanceMatrix distanceMatrix) {
+                for(int j = 0; j < elements.size(); j++) {
+                    distanceMatrix.setDistance(row, j+row, Double.parseDouble(elements.get(j)));
+                    distanceMatrix.setDistance(j+row, row, Double.parseDouble(elements.get(j)));
+                }
+            }
+        };
+
+
+
+        public abstract void fillRow(int row, List<String> elements, DistanceMatrix distanceMatrix);
     }
 
     public CircularOrdering extractCircOrdering(File file) throws IOException {

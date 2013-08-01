@@ -138,11 +138,17 @@ public class NetMakeCLI {
 
             DistanceMatrix distanceMatrix = phygenReader.read(input);
 
+            log.info("NetMake: Loaded distance matrix.  Found " + distanceMatrix.size() + " taxa.");
+
             // Create weighting objects
             Weighting weighting1 = Weightings.createWeighting(weightings1, distanceMatrix, treeParam, true);
             Weighting weighting2 = weightings2 != null ?
                     Weightings.createWeighting(weightings2, distanceMatrix, treeParam, false) :
                     null;
+
+            log.info("NetMake: Weightings configured.");
+            log.info("          - Weighting 1: " + weighting1.toString());
+            log.info("          - Weighting 2: " + (weighting2 == null ? "null" : weighting2.toString()));
 
             // Create the configured NetMake object to process
             NetMake netMake = new NetMake(

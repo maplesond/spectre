@@ -64,7 +64,8 @@ public class NetMakeCLIIntegrationTest {
         NetMakeCLI.main(new String[]{
                 "--input", testFile2.getAbsolutePath(),
                 "--output", outputDir.getAbsolutePath(),
-                "--weightings_1", "TREE"
+                "--weightings_1", "GREEDY_ME",
+                "--weightings_2", "TSP"
         });
 
         assertTrue(outputDir.listFiles().length == 2);

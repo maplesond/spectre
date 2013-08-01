@@ -42,4 +42,14 @@ public class NexusReaderTest {
 
         assertTrue(distanceMatrix.size() == 6);
     }
+
+    @Test
+    public void testTriangularNexusReader() throws IOException {
+
+        File testFile = FileUtils.toFile(NexusReaderTest.class.getResource("/triangular.nex"));
+
+        DistanceMatrix distanceMatrix = new NexusReader().read(testFile);
+
+        assertTrue(distanceMatrix.size() == 5);
+    }
 }

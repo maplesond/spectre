@@ -16,6 +16,7 @@
 
 package uk.ac.uea.cmp.phygen.netmake.weighting;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
@@ -62,6 +63,8 @@ public class GreedyMEWeighting extends Weighting {
         Pair<Integer, Integer> bestSplits = null;
 
         for (int i = 0; i < splitsCreation.rows() - 1; i++) {
+
+            log.debug("Making cherry for " + i + "...");
             for (int j = i + 1; j < splitsCreation.rows(); j++) {
 
                 splits.addRow(splitsCreation.copyRow(i));
@@ -73,11 +76,11 @@ public class GreedyMEWeighting extends Weighting {
                     splits.removeRow(splits.rows() - 1);
                 } */
 
-                log.debug("Number of splits: {0}", new Integer(splits.rows()));
+                log.debug("  Number of splits: " + splits.rows());
 
                 double treeLength = this.calculateTreeLength(splits);
 
-                log.debug("Tree length is {0} for {1},{2}", new Object[]{new Double(treeLength), new Integer(i), new Integer(j)});
+                log.debug("  Tree length is " + treeLength + " for " + i + "," + j);
 
                 if (treeLength < oldTreeLength) {
                     oldTreeLength = treeLength;
@@ -87,7 +90,7 @@ public class GreedyMEWeighting extends Weighting {
                 splits.removeRow(splits.rows() - 1);
             }
 
-            log.debug("Made cherry for {0}", new Integer(i));
+            log.debug("Made cherry for " + i);
         }
 
         return bestSplits;
@@ -373,6 +376,8 @@ public class GreedyMEWeighting extends Weighting {
 
     public List<Double> getEdgeWeights(Tableau<Integer> tableau) {
 
+        log.debug("  Calculating Edge Weights...");
+
         ArrayList<Double> edgeWeights = new ArrayList<Double>();
 
         SummedDistanceList P = new SummedDistanceList(this.calculateP(tableau, this.distanceMatrix));
@@ -385,12 +390,14 @@ public class GreedyMEWeighting extends Weighting {
 
             EdgeAdjacents aEdgeAdjacents = EdgeAdjacents.retrieveAdjacents(splitsCopy, i, P, this.distanceMatrix.size());
 
-            log.debug("Retrieved edge adjacents for {0}", new Integer(i));
+            log.debug("    Retrieved edge adjacents for " + i + ". " + aEdgeAdjacents.getNumberOfLeavesInAdjacents().length + " leaves in adjacents");
 
             edgeWeights.add(calculateEdges(P.get(i), aEdgeAdjacents, external));
 
-            log.debug("Calculated edges for {0}", new Integer(i));
+            log.debug("    Calculated edge weight for " + i + ": " + edgeWeights.get(i));
         }
+
+        log.debug("  Calculated Edge Weights");
 
         return edgeWeights;
     }
