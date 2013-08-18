@@ -60,7 +60,11 @@ public class NetME {
         //The ME tree + original weights (\in R)
         CompatibleSplitSystem originalMETree = new CompatibleSplitSystem(meTree, treeAndWeights.getTreeWeights());
 
-        return new NetMEResult(originalMETree, meTree);
+        // Compile stats
+        double treeLength = treeAndWeights.getTreeWeights().calcTreeLength();
+        String stats = "Tree length: " + treeLength;
+
+        return new NetMEResult(originalMETree, meTree, stats);
     }
 
 

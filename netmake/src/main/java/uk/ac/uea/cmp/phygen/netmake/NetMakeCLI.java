@@ -23,6 +23,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.PropertyConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
@@ -112,7 +113,12 @@ public class NetMakeCLI {
         try {
 
             // Configure logging
-            BasicConfigurator.configure();
+            if (new File("log4j.properties").exists()) {
+                PropertyConfigurator.configure("log4j.properties");
+            }
+            else {
+                BasicConfigurator.configure();
+            }
 
             DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd-HHmmss");
             Date date = new Date();

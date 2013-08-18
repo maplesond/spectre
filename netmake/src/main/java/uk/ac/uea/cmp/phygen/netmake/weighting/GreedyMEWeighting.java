@@ -62,9 +62,11 @@ public class GreedyMEWeighting extends Weighting {
 
         Pair<Integer, Integer> bestSplits = null;
 
+        log.debug(splitsCreation.rows() + " cherries to produce");
+
         for (int i = 0; i < splitsCreation.rows() - 1; i++) {
 
-            log.debug("Making cherry for " + i + "...");
+            log.debug("Making cherry " + i + "...");
             for (int j = i + 1; j < splitsCreation.rows(); j++) {
 
                 splits.addRow(splitsCreation.copyRow(i));
@@ -90,7 +92,7 @@ public class GreedyMEWeighting extends Weighting {
                 splits.removeRow(splits.rows() - 1);
             }
 
-            log.debug("Made cherry for " + i);
+            log.debug("Made cherry " + i);
         }
 
         return bestSplits;
@@ -148,7 +150,7 @@ public class GreedyMEWeighting extends Weighting {
         double edgeWeight = P_0 - sums.getSum1();
 
         if (edgeWeight != 0.0) {
-            edgeWeight = edgeWeight / (n_alpha * n_beta - (sums.getSum2() + sums.getSum3()));
+            edgeWeight = edgeWeight / (n_alpha * n_beta - sums.getSum2() - sums.getSum3());
         }
 
         return edgeWeight;
@@ -376,7 +378,7 @@ public class GreedyMEWeighting extends Weighting {
 
     public List<Double> getEdgeWeights(Tableau<Integer> tableau) {
 
-        log.debug("  Calculating Edge Weights...");
+        log.debug("  Calculating " + tableau.rows() + " Edge Weights...");
 
         ArrayList<Double> edgeWeights = new ArrayList<Double>();
 

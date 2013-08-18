@@ -68,10 +68,12 @@ public class EdgeAdjacents {
      * @param P
      * @return A new EdgeAdjacents object containing C, pTemp and C_alpha values.
      */
-    public static EdgeAdjacents retrieveAdjacents(Tableau<Integer> splitsASide, int k, SummedDistanceList sdl, int nbTaxa) {
+    public static EdgeAdjacents retrieveAdjacents(Tableau<Integer> splitsASide, int k, SummedDistanceList sdlOriginal, int nbTaxa) {
 
-        SummedDistanceList sdlCopy = new SummedDistanceList(sdl);
-        sdl.addAll(sdlCopy);
+        // These two lines are killing performance... we are eating up far too much memory and cpu time duplicating
+        // this summed distance list... are we sure this is what we want to do???
+        SummedDistanceList sdl = new SummedDistanceList(sdlOriginal);
+        sdl.addAll(sdlOriginal);
 
         TableauSplits splits = new TableauSplits(splitsASide, nbTaxa);
 
@@ -100,7 +102,7 @@ public class EdgeAdjacents {
 
         //Getting the B_side
 
-        //First we have to get the elements on the B side A|B all taxa/leafs x \in B
+        //First we have to get the elements on the B side A|B all  taxa/leafs x \in B
         //these are stores in edge_b
 
 

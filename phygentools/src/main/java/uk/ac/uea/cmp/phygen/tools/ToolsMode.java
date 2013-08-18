@@ -19,6 +19,7 @@ package uk.ac.uea.cmp.phygen.tools;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang3.StringUtils;
 import uk.ac.uea.cmp.phygen.tools.chopper.Chopper;
+import uk.ac.uea.cmp.phygen.tools.convertor.Convertor;
 import uk.ac.uea.cmp.phygen.tools.phycor.PhylipCorrector;
 import uk.ac.uea.cmp.phygen.tools.rdg.RandomDistanceGeneratorTool;
 import uk.ac.uea.cmp.phygen.tools.scale.Scaling;
@@ -75,6 +76,17 @@ public enum ToolsMode {
         @Override
         public String getAlias() {
             return "SCL";
+        }
+    },
+    CONVERTOR {
+        @Override
+        public void execute(String[] args) throws IOException, ParseException {
+            new Convertor().execute(args);
+        }
+
+        @Override
+        public String getAlias() {
+            return "CNV";
         }
     };
 

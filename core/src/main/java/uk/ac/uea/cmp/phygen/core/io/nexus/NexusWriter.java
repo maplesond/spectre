@@ -119,7 +119,7 @@ public class NexusWriter implements PhygenWriter {
 
         fileContent.append("#nexus\n\nBEGIN Distances;\nDIMENSIONS ntax=");
         fileContent.append(n);
-        fileContent.append(";\nFORMAT labels=left diagonal triangle=both;\n"
+        fileContent.append(";\nFORMAT labels=left diagonal triangle=lower;\n"
                 + "MATRIX\n");
 
         for (int i = 1; i <= n; i++) {

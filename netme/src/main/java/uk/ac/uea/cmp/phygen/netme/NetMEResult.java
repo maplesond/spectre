@@ -16,6 +16,7 @@
 
 package uk.ac.uea.cmp.phygen.netme;
 
+import org.apache.commons.io.FileUtils;
 import uk.ac.uea.cmp.phygen.core.ds.split.CompatibleSplitSystem;
 import uk.ac.uea.cmp.phygen.core.io.nexus.NexusWriter;
 
@@ -33,10 +34,12 @@ public class NetMEResult {
 
     private CompatibleSplitSystem originalMETree;
     private CompatibleSplitSystem meTree;
+    private String stats;
 
-    public NetMEResult(CompatibleSplitSystem originalMETree, CompatibleSplitSystem meTree) {
+    public NetMEResult(CompatibleSplitSystem originalMETree, CompatibleSplitSystem meTree, String stats) {
         this.originalMETree = originalMETree;
         this.meTree = meTree;
+        this.stats = stats;
     }
 
     public CompatibleSplitSystem getMeTree() {
@@ -47,11 +50,13 @@ public class NetMEResult {
         return originalMETree;
     }
 
-    public void save(File minEvoFile, File origMinEvoFile) throws IOException {
+    public void save(File minEvoFile, File origMinEvoFile, File statFile) throws IOException {
 
         NexusWriter nexusWriter = new NexusWriter();
 
         nexusWriter.writeSplitSystem(minEvoFile, this.getMeTree());
         nexusWriter.writeSplitSystem(origMinEvoFile, this.getOriginalMETree());
+
+        FileUtils.writeStringToFile(statFile, stats);
     }
 }

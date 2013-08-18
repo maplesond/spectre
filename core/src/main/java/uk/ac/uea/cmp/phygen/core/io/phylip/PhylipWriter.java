@@ -47,7 +47,7 @@ public class PhylipWriter implements PhygenWriter {
 
         for (int i = 0; i < n; i++) {
 
-            fileContent.append(i);
+            fileContent.append(distanceMatrix.getTaxa(i));
             fileContent.append(" ");
             fileContent.append(distanceMatrix.getRowAsString(i));
             fileContent.append("\n");

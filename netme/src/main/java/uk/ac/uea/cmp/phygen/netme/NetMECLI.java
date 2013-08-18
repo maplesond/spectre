@@ -137,7 +137,8 @@ public class NetMECLI {
             // Save result to disk
             netMeResult.save(
                     new File(outputDir, prefix + ".min-evo.nex"),
-                    new File(outputDir, prefix + ".original-min-evo.nex")
+                    new File(outputDir, prefix + ".original-min-evo.nex"),
+                    new File(outputDir, prefix + ".stats")
             );
 
             log.info("NetME: Results saved");
