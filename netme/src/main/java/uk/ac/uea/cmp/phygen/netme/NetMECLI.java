@@ -32,7 +32,6 @@ import uk.ac.uea.cmp.phygen.core.io.PhygenReaderFactory;
 import uk.ac.uea.cmp.phygen.core.io.nexus.NexusReader;
 import uk.ac.uea.cmp.phygen.core.ui.cli.CommandLineHelper;
 import uk.ac.uea.cmp.phygen.core.util.Time;
-import uk.ac.uea.cmp.phygen.netmake.nnet.NeighbourNet;
 
 import java.io.File;
 
@@ -117,14 +116,10 @@ public class NetMECLI {
 
             log.info("NetME: Distance Matrix Loaded from file: " + distancesFile.getAbsolutePath());
 
-            // Load circular ordering from nexus file if provided, otherwise run neighbour net on distance matrix
-            CircularOrdering circularOrdering = circularOrderingFile != null ?
-                    new NexusReader().extractCircOrdering(circularOrderingFile) :
-                    NeighbourNet.computeNeighborNetOrdering(distanceMatrix);
+            // Load circular ordering from the provided nexus file
+            CircularOrdering circularOrdering = new NexusReader().extractCircOrdering(circularOrderingFile);
 
-            String circularOrderingMessage = circularOrderingFile != null ?
-                    "loaded from file " + circularOrderingFile.getAbsolutePath() :
-                    "calculated with neighbor net from distance matrix";
+            String circularOrderingMessage = "loaded from file " + circularOrderingFile.getAbsolutePath();
 
             log.info("NetME: Circular ordering " + circularOrderingMessage);
 
