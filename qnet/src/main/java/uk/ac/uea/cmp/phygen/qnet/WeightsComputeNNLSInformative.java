@@ -26,7 +26,10 @@ import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 import uk.ac.uea.cmp.phygen.core.math.matrix.BitMatrix;
 import uk.ac.uea.cmp.phygen.core.math.matrix.SymmetricMatrix;
 import uk.ac.uea.cmp.phygen.core.math.matrix.UpperTriangularMatrix;
-import uk.ac.uea.cmp.phygen.core.math.optimise.gurobi.GurobiOptimiserNNLS;
+import uk.ac.uea.cmp.phygen.core.math.optimise.Objective;
+import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
+import uk.ac.uea.cmp.phygen.core.math.optimise.Problem;
+import uk.ac.uea.cmp.phygen.core.math.optimise.Solver;
 import uk.ac.uea.cmp.phygen.qnet.holders.PHolder;
 
 import java.io.BufferedReader;
@@ -53,7 +56,7 @@ public class WeightsComputeNNLSInformative {
     private static SymmetricMatrix EtE;
     private static double[] x;
 
-    public static void computeWeights(QNet parent, String infoName, double tolerance, String nnls) throws QNetException, IOException {
+    public static void computeWeights(QNet parent, String infoName, double tolerance, Solver solver) throws QNetException, IOException, OptimiserException {
 
         boolean stepMessages = true;
         boolean cycleWarnings = false;
@@ -1020,10 +1023,11 @@ public class WeightsComputeNNLSInformative {
 
 
         //Call of method to solve NNLS for split weigths
-        if (nnls.equals("gurobi")) {
-        //if(true) {
-            //System.out.println("Using Gurobi to solve NNLS problem");
-            GurobiOptimiserNNLS.solveNNLS(Etf, EtE, x);
+        if (solver != null) {
+
+            Problem problem = new Problem(Etf, EtE.toArray(), x);
+
+            x = solver.getOptimiserSystem().optimise(Objective.NNLS, problem);
         } else {
             //System.out.println("Using DIY method to solve NNLS problem");
             int maxIterations = N * N;
@@ -1563,7 +1567,7 @@ public class WeightsComputeNNLSInformative {
 
                             }
 
-                            System.out.println();
+                            //System.out.println();
 
                         }
 

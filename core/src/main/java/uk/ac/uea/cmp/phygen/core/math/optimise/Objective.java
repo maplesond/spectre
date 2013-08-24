@@ -118,6 +118,18 @@ public enum Objective {
             return coefficients;
         }
     },
+    NNLS {
+        @Override
+        protected double[] optimise(Problem problem, OptimiserSystem optimiser) throws OptimiserException {
+            throw new UnsupportedOperationException();
+
+        }
+
+        @Override
+        public double[] buildCoefficients(int size) {
+            throw new UnsupportedOperationException();
+        }
+    },
     NONE {
 
         @Override

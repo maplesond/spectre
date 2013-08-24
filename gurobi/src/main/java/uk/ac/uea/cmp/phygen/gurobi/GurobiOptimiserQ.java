@@ -14,7 +14,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.phygen.core.math.optimise.gurobi;
+package uk.ac.uea.cmp.phygen.gurobi;
 
 import gurobi.*;
 import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;

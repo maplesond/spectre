@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package uk.ac.uea.cmp.phygen.core.math.optimise.gurobi;
+package uk.ac.uea.cmp.phygen.gurobi;
 
 import gurobi.*;
 import org.slf4j.Logger;

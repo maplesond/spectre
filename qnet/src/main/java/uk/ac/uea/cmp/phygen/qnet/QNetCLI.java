@@ -23,6 +23,7 @@ import org.apache.commons.cli.Options;
 import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.ac.uea.cmp.phygen.core.math.optimise.Solver;
 import uk.ac.uea.cmp.phygen.core.ui.cli.CommandLineHelper;
 
 import java.io.File;
@@ -35,7 +36,7 @@ public class QNetCLI {
     private static final String OPT_INPUT = "input";
     private static final String OPT_LOG = "log";
     private static final String OPT_TOLERANCE = "tolerance";
-    private static final String OPT_NNLS = "nnls";
+    private static final String OPT_OPTIMISER = "optimiser";
 
     private static Options createOptions() {
 
@@ -47,8 +48,8 @@ public class QNetCLI {
         Option optTolerance = OptionBuilder.withArgName("double").withLongOpt(OPT_TOLERANCE).hasArg()
                 .withDescription("The tolerance").create("t");
 
-        Option optNnls = OptionBuilder.withArgName("string").withLongOpt(OPT_NNLS).hasArg()
-                .withDescription("If specified, uses optimisation: [gurobi]").create("n");
+        Option optOptimiser = OptionBuilder.withArgName("string").withLongOpt(OPT_OPTIMISER).hasArg()
+                .withDescription("If specified, uses optimisation: " + Solver.listTypes()).create("p");
 
         // create Options object
         Options options = new Options();
@@ -56,7 +57,7 @@ public class QNetCLI {
         options.addOption(optInput);
         options.addOption(optLog);
         options.addOption(optTolerance);
-        options.addOption(optNnls);
+        options.addOption(optOptimiser);
 
         return options;
     }
@@ -81,10 +82,12 @@ public class QNetCLI {
             File input = new File(commandLine.getOptionValue(OPT_INPUT));
             boolean log = commandLine.hasOption(OPT_LOG);
             double tolerance = commandLine.hasOption(OPT_TOLERANCE) ? Double.parseDouble(commandLine.getOptionValue(OPT_TOLERANCE)) : -1.0;
-            String nnls = commandLine.hasOption(OPT_NNLS) ? commandLine.getOptionValue(OPT_NNLS) : "gurobi";
+            Solver solver = commandLine.hasOption(OPT_OPTIMISER) ?
+                    Solver.valueOf(commandLine.getOptionValue(OPT_OPTIMISER).toUpperCase()) :
+                    null;
 
             // Run QNet
-            new QNet().execute(input, log, tolerance, nnls);
+            new QNet().execute(input, log, tolerance, solver);
 
             // Now what??? Presumably there is some output created?!
 

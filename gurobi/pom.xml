@@ -10,64 +10,24 @@
         <version>1.0</version>
     </parent>
 
-    <artifactId>core</artifactId>
+    <artifactId>gurobi</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>Phylogenetics Tool Suite: Core functionality</name>
-
-
-    <!-- If you have gurobi installed then comment out this block.  This essentially excludes all gurobi java files
-         from being compiled.  As it stands gurobi do not make freely available their jar file (even though it only
-         contains JNI stubs), so we have to exclude these files by default as we cannot assume the user will have
-         gurobi installed. -->
-    <build>
-
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
-                <configuration>
-                    <excludes>
-                        <exclude>**/gurobi/*.java</exclude>
-                    </excludes>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-
-
-    <!-- This remote repository holds the GLPK jar -->
-
-    <repositories>
-        <repository>
-            <id>XypronRelease</id>
-            <name>Xypron Release</name>
-            <url>http://rsync.xypron.de/repository</url>
-            <layout>default</layout>
-        </repository>
-    </repositories>
-
+    <name>Phylogenetics Tool Suite: Gurobi Optimiser</name>
 
 
     <dependencies>
 
-        <!-- Optimisers -->
-
-        <!-- Note this GLPK jar does not actually contain the algorithms for GLPK, it's just a stub for managing the
-             JNI calls.  Assuming the user wishes to use GLPK they must make sure it is installed and properly
-             configured so that it's visible to this project at compile and run time.  On linux (debian) this is simply
-             a matter of typing "sudo apt-get install libglpk-java" (note that it may be necessary to alter the version
-             number in the dependency group below.)  For windows and mac follow the instructions on the website:
-             http://glpk-java.sourceforge.net/ -->
 
         <dependency>
-            <groupId>org.gnu.glpk</groupId>
-            <artifactId>glpk-java</artifactId>
-            <version>1.0.29</version>
+            <groupId>uk.ac.uea.cmp.phygen</groupId>
+            <artifactId>core</artifactId>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
 
+
+        <!-- Optimisers -->
 
         <!-- We cannot assume that the user has gurobi installed.  And they probably don't have gurobi in their local
              maven repository anyway.  If you do have gurobi installed, then uncomment this block, and make sure you've
@@ -76,13 +36,11 @@
              -Dversion=<gurobi-version> -Dpackaging=jar" Preferably download and use version 5.0.2... other versions may
              work but have not been tested -->
 
-        <!--
         <dependency>
             <groupId>gurobi</groupId>
             <artifactId>gurobi</artifactId>
             <version>5.0.2-64</version>
         </dependency>
-        -->
 
 
         <!-- Apache -->

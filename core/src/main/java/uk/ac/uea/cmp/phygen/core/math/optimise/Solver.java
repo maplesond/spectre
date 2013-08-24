@@ -15,10 +15,15 @@
  */
 package uk.ac.uea.cmp.phygen.core.math.optimise;
 
+import org.apache.commons.lang3.StringUtils;
 import uk.ac.uea.cmp.phygen.core.math.optimise.apache.ApacheOptimiserSystem;
 import uk.ac.uea.cmp.phygen.core.math.optimise.glpk.GLPKOptimiserSystem;
-import uk.ac.uea.cmp.phygen.core.math.optimise.gurobi.GurobiOptimiserSystem;
 import uk.ac.uea.cmp.phygen.core.math.optimise.phygen.PhygenOptimiserSystem;
+
+import java.util.ArrayList;
+import java.util.List;
+
+//import uk.ac.uea.cmp.phygen.gurobi.GurobiOptimiserSystem;
 
 
 public enum Solver {
@@ -29,12 +34,16 @@ public enum Solver {
             throw new UnsupportedOperationException("This entry cannot itself generate an optimiser system");
         }
     },
-    GUROBI {
+
+    /** Uncomment this block if gurobi is installed.  This would probably be better handled using SPI, but for the time
+      * being this is how it is!
+      */
+    /*GUROBI {
         @Override
         public OptimiserSystem getOptimiserSystem() {
             return new GurobiOptimiserSystem();
         }
-    },
+    },*/
     GLPK {
         @Override
         public OptimiserSystem getOptimiserSystem() {
@@ -92,6 +101,28 @@ public enum Solver {
         System.gc();
         
         return solution;
+    }
+
+    public static String listTypes() {
+        List<String> typeStrings = new ArrayList<String>();
+
+        for(Solver s : Solver.values()) {
+            typeStrings.add(s.name());
+        }
+
+        return "[" + StringUtils.join(typeStrings, ", ") + "]";
+    }
+
+    public static boolean isOperational(String name) {
+
+        try {
+            Solver s = Solver.valueOf(name.trim().toUpperCase());
+
+            return s.getOptimiserSystem().isOperational();
+        }
+        catch(IllegalArgumentException iae) {
+            return false;
+        }
     }
 
 }

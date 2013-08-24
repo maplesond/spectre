@@ -13,42 +13,52 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package uk.ac.uea.cmp.phygen.core.math.optimise.gurobi;
+package uk.ac.uea.cmp.phygen.gurobi;
 
 import gurobi.*;
 import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
 
 
-public class GurobiOptimiserLinear extends GurobiOptimiser {
+public class GurobiOptimiserQuadratic extends GurobiOptimiser {
 
-    public GurobiOptimiserLinear() throws OptimiserException {
+    public GurobiOptimiserQuadratic() throws OptimiserException {
         super();
     }
-    
+
     @Override
     public void setVariables() throws GRBException {
-        
+
         for (int i = 0; i < this.getLength(); i++) {
-            GRBVar x = this.getModel().addVar(-this.getRestrictionAt(i), Double.POSITIVE_INFINITY, this.getCoefficientAt(i), GRB.CONTINUOUS, "x" + i);
+            GRBVar x = this.getModel().addVar(0, Double.POSITIVE_INFINITY, this.getCoefficientAt(i), GRB.CONTINUOUS, "x" + i);
             this.setVariableAt(i, x);
         }
     }
 
     @Override
     public void addConstraints() throws GRBException {
+
+        double[][] matrix = this.getMatrix();
         
-        for (int i = 0; i < this.getLength(); i++) {
+        for (int i = 0; i < matrix.length; i++) {
             GRBLinExpr expr = new GRBLinExpr();
-            for (int j = 0; j < this.getLength(); j++) {
-                expr.addTerm(this.getMatrixAt(i,j), this.getVariableAt(j));
+            double sum = 0;
+            for (int j = 0; j < matrix.length; j++) {
+                expr.addTerm(matrix[i][j], this.getVariableAt(j));
+                sum += matrix[i][j] * this.getRestrictionAt(j);
             }
-            this.getModel().addConstr(expr, GRB.EQUAL, 0, "c0");
+            this.getModel().addConstr(expr, GRB.EQUAL, sum, "c0");
         }
     }
 
     @Override
     public GRBExpr getObjective() throws GRBException {
-        return null;
+
+        GRBQuadExpr obj = new GRBQuadExpr();
+        for (int i = 0; i < this.getLength(); i++) {
+            GRBVar var = this.getVariableAt(i);
+            obj.addTerm(1.0, var, var);
+        }
+        return obj;
     }
 
 }

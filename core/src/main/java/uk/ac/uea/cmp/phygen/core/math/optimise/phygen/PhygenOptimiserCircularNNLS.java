@@ -43,8 +43,8 @@ import java.util.TreeSet;
 public class PhygenOptimiserCircularNNLS {
 
     /* Epsilon constant for the conjugate gradient algorithm */
-    static final double logPiPlus2 = Math.log(Math.PI) + 2.0;
-    static final double CG_EPSILON = 0.0001;
+    private static final double logPiPlus2 = Math.log(Math.PI) + 2.0;
+    private static final double CG_EPSILON = 0.0001;
     private boolean minimizeAIC = false;
 
     /**
@@ -80,7 +80,7 @@ public class PhygenOptimiserCircularNNLS {
      * @param d     the distance matrix
      * @param power the power
      */
-    static void fillW(int ntax, double[][] W, double[][] d, int power) {
+    private static void fillW(int ntax, double[][] W, double[][] d, int power) {
         double d_ij, w_ij;
 
         if (power != 0) {
@@ -108,7 +108,7 @@ public class PhygenOptimiserCircularNNLS {
      * @param d    distance matrix
      * @param p    the result
      */
-    static void calculateAtx(int ntax, double[][] d, double[][] p) {
+    private static void calculateAtx(int ntax, double[][] d, double[][] p) {
         double p_ij = 0;
 
         for (int i = 0; i <= ntax - 2; i++) {
@@ -177,7 +177,7 @@ public class PhygenOptimiserCircularNNLS {
      * @param active the active constraints
      * @param x      the x matrix
      */
-    static void runConjugateGrads(int ntax,
+    private static void runConjugateGrads(int ntax,
                                   double[][] r, double[][] w, double[][] p, double[][] y,
                                   double[][] W, double[][] b,
                                   boolean[][] active, double[][] x) {
@@ -252,7 +252,7 @@ public class PhygenOptimiserCircularNNLS {
      * @param x the matrix
      * @return sum of squares of the lower triangle
      */
-    static double norm(int ntax, double[][] x) {
+    private static double norm(int ntax, double[][] x) {
         double ss = 0.0;
 
         for (int i = 0; i < ntax; i++) {
@@ -271,7 +271,7 @@ public class PhygenOptimiserCircularNNLS {
      * @param x      the x matrix
      * @param active the active constraints
      */
-    static void zeroActive(int ntax, double[][] x, boolean[][] active) {
+    private static void zeroActive(int ntax, double[][] x, boolean[][] active) {
         for (int i = 0; i < ntax; i++)
             for (int j = 0; j < i; j++)
                 if (active[i][j]) x[i][j] = 0.0;

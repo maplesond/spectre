@@ -101,7 +101,7 @@ public class SuperQ extends RunnableTool {
             if (this.options.isScaleInputTree()) {
                 //Optional scaling of input trees
                 //can just be applied to newick or script format
-                if (!Solver.GUROBI.getOptimiserSystem().isOperational()) {
+                if (!Solver.isOperational("GUROBI")) {
                     log.warn("Can't apply scaling as Gurobi is not available.  Skipping step");
                 } else if (!(this.options.getInputFileFormat() == SuperQOptions.InputFormat.NEWICK
                         || this.options.getInputFileFormat() == SuperQOptions.InputFormat.SCRIPT)) {
@@ -119,7 +119,8 @@ public class SuperQ extends RunnableTool {
                     Scaling.run(
                             this.options.getInputFile(),
                             new File(file),
-                            Scaling.Mode.valueOf(this.options.getInputFileFormat().toString().toUpperCase()));
+                            Scaling.Mode.valueOf(this.options.getInputFileFormat().toString().toUpperCase()),
+                            this.options.getPrimarySolver());
 
                     type = "script";
 
@@ -145,7 +146,7 @@ public class SuperQ extends RunnableTool {
                     new File(tmppath + "qw"),
                     false,
                     -1.0,
-                    this.options.getPrimarySolver().toString().toLowerCase()
+                    this.options.getPrimarySolver()
             );
 
             rt.gc();

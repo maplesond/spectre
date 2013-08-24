@@ -48,7 +48,7 @@ public class Gui extends JFrame implements ToolHost {
         setRunningStatus(false);
 
         // Only enable scaling if Gurobi is available
-        this.chkScaleInput.setEnabled(Solver.GUROBI.getOptimiserSystem().isOperational());
+        this.chkScaleInput.setEnabled(Solver.isOperational("GUROBI"));
     }
 
     @SuppressWarnings("unchecked")
@@ -153,7 +153,7 @@ public class Gui extends JFrame implements ToolHost {
 
         cmdCancel.setText("Cancel");
 
-        cboSelectSolver.setModel(new javax.swing.DefaultComboBoxModel(new Solver[]{Solver.BEST_AVAILABLE, Solver.GUROBI, Solver.GLPK}));
+        cboSelectSolver.setModel(new javax.swing.DefaultComboBoxModel(Solver.values()));
         cboSelectSolver.setToolTipText("Select Function");
         cboSelectSolver.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

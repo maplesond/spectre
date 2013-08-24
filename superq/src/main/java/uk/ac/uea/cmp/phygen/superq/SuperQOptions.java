@@ -45,7 +45,7 @@ public class SuperQOptions {
 
     public SuperQOptions() {
         this(null, null, null, 
-                Solver.GUROBI.getOptimiserSystem().isOperational() ? Solver.GUROBI : Solver.NNLS, 
+                Solver.NNLS,
                 Solver.BEST_AVAILABLE, null, 
                 false, null, false);
     }    
@@ -54,14 +54,11 @@ public class SuperQOptions {
             Solver primarySolver, Solver backupSolver, Objective backupObjective, 
             boolean scaleInputTree, Double filter, boolean verbose) {
         
-        Solver tempSolver = Solver.GUROBI.getOptimiserSystem().isOperational() ? Solver.GUROBI : Solver.NNLS;
-        if (primarySolver != Solver.GUROBI && primarySolver != Solver.NNLS) {
+        Solver tempSolver = primarySolver.getOptimiserSystem().isOperational() ? primarySolver : Solver.NNLS;
+        if (primarySolver != tempSolver) {
             logger.warn("The solver requested: \"" + primarySolver.toString() + "\" is not supported for first optimisation step.  Using: \"" + tempSolver + "\" instead");
         }
-        else {
-            tempSolver = primarySolver;
-        }
-        
+
         this.inputFile = inputFile;
         this.inputFileFormat = inputFileFormat;
         this.outputFile = outputFile;
