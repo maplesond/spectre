@@ -17,6 +17,7 @@
 package uk.ac.uea.cmp.phygen.core.ui.cli;
 
 import org.apache.commons.cli.*;
+import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
 
 import java.io.IOException;
 

@@ -17,6 +17,7 @@ package uk.ac.uea.cmp.phygen.gurobi;
 
 import gurobi.*;
 import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
+import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserObjectiveFactory;
 
 
 public class GurobiOptimiserLinear extends GurobiOptimiser {
@@ -50,5 +51,6 @@ public class GurobiOptimiserLinear extends GurobiOptimiser {
     public GRBExpr getObjective() throws GRBException {
         return null;
     }
+
 
 }

@@ -21,21 +21,21 @@ import org.apache.commons.math3.optimization.linear.LinearConstraint;
 import org.apache.commons.math3.optimization.linear.LinearObjectiveFunction;
 import org.apache.commons.math3.optimization.linear.Relationship;
 import org.apache.commons.math3.optimization.linear.SimplexSolver;
+import org.gnu.glpk.GLPK;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser;
-import uk.ac.uea.cmp.phygen.core.math.optimise.Problem;
+import uk.ac.uea.cmp.phygen.core.math.optimise.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
 
-public class ApacheOptimiser implements Optimiser {
+public class ApacheOptimiser extends AbstractOptimiser {
 
     private static Logger logger = LoggerFactory.getLogger(ApacheOptimiser.class);
 
     @Override
-    public double[] optimise(Problem problem) {
+    protected double[] optimise2(Objective objective, Problem problem) {
 
         LinearObjectiveFunction f = new LinearObjectiveFunction(problem.getCoefficients(), 0.0);
         
@@ -71,5 +71,56 @@ public class ApacheOptimiser implements Optimiser {
         PointValuePair pvp = solver.optimize(f, constraints, GoalType.MINIMIZE, false);
 
         return pvp.getPointRef();
+    }
+
+
+    @Override
+    public boolean acceptsIdentifier(String id) {
+        return id.equalsIgnoreCase(this.getDescription()) || id.equalsIgnoreCase(ApacheOptimiser.class.getName());
+    }
+
+    @Override
+    public boolean acceptsObjective(Objective objective) {
+        if (objective == Objective.LINEAR) {
+            return true;
+        }
+        else if (objective == Objective.QUADRATIC) {
+            return false;
+        }
+        else if (objective == Objective.MINIMA) {
+            return true;
+        }
+        else if (objective == Objective.NNLS) {
+            return false;
+        }
+        else {
+            return false;
+        }
+    }
+
+    @Override
+    public String getDescription() {
+        return "Apache";
+    }
+
+
+    /**
+     * Apache should always be operational, as it's an open source java library available via maven
+     * @return
+     */
+    @Override
+    public boolean isOperational() {
+
+        return true;
+    }
+
+    @Override
+    public boolean hasObjectiveFactory() {
+        return false;
+    }
+
+    @Override
+    public OptimiserObjectiveFactory getObjectiveFactory() {
+        return null;
     }
 }

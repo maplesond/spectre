@@ -18,12 +18,10 @@ package uk.ac.uea.cmp.phygen.gurobi;
 import gurobi.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser;
-import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
-import uk.ac.uea.cmp.phygen.core.math.optimise.Problem;
+import uk.ac.uea.cmp.phygen.core.math.optimise.*;
 
 
-public abstract class GurobiOptimiser implements Optimiser {
+public abstract class GurobiOptimiser extends AbstractOptimiser {
     
     private static Logger log = LoggerFactory.getLogger(GurobiOptimiser.class);
     
@@ -59,7 +57,7 @@ public abstract class GurobiOptimiser implements Optimiser {
     }
     
     @Override
-    public double[] optimise(Problem problem) throws OptimiserException {
+    protected double[] optimise2(Objective objective, Problem problem) throws OptimiserException {
         
         double[] solution = null;
         
@@ -167,5 +165,61 @@ public abstract class GurobiOptimiser implements Optimiser {
         }
         
         return solution;
+    }
+
+
+
+    @Override
+    public boolean acceptsIdentifier(String id) {
+        return id.equalsIgnoreCase(this.getDescription()) || id.equalsIgnoreCase(GurobiOptimiser.class.getName());
+    }
+
+    @Override
+    public boolean acceptsObjective(Objective objective) {
+
+        if (objective == Objective.LINEAR) {
+            return true;
+        }
+        else if (objective == Objective.QUADRATIC) {
+            return true;
+        }
+        else if (objective == Objective.MINIMA) {
+            return true;
+        }
+        else if (objective == Objective.NNLS) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    @Override
+    public String getDescription() {
+        return "Gurobi";
+    }
+
+    @Override
+    public boolean isOperational() {
+
+        try {
+            GRBEnv env = new GRBEnv();
+        }
+        catch(Throwable t) {
+            // Can't find the gurobi native libraries, so it's not operational
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean hasObjectiveFactory() {
+        return true;
+    }
+
+    @Override
+    public OptimiserObjectiveFactory getObjectiveFactory() {
+        return new GurobiObjectiveFactory();
     }
 }

@@ -137,7 +137,7 @@
 
         <!-- Uncomment this if you have gurobi installed, and have the gurobi jar installed in the local maven repo.
              QNet currently is designed to work only with gurobi so this is commented out as well for the moment. -->
-        <!--<module>gurobi</module>-->
+        <module>gurobi</module>
 
     </modules>
 

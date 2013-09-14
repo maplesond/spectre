@@ -18,7 +18,9 @@ package uk.ac.uea.cmp.phygen.superq;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.math.optimise.Objective;
-import uk.ac.uea.cmp.phygen.core.math.optimise.Solver;
+import uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser;
+import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
+import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserFactory;
 import uk.ac.uea.cmp.phygen.core.ui.gui.JobController;
 import uk.ac.uea.cmp.phygen.core.ui.gui.StatusTracker;
 import uk.ac.uea.cmp.phygen.core.ui.gui.ToolHost;
@@ -47,8 +49,9 @@ public class Gui extends JFrame implements ToolHost {
         this.go_control = new JobController(this.cmdRun, this.cmdCancel);
         setRunningStatus(false);
 
+        // Overridden this... this should work without gurobi :s
         // Only enable scaling if Gurobi is available
-        this.chkScaleInput.setEnabled(Solver.isOperational("GUROBI"));
+        //this.chkScaleInput.setEnabled(Optimiser.isOperational("GUROBI"));
     }
 
     @SuppressWarnings("unchecked")
@@ -153,7 +156,8 @@ public class Gui extends JFrame implements ToolHost {
 
         cmdCancel.setText("Cancel");
 
-        cboSelectSolver.setModel(new javax.swing.DefaultComboBoxModel(Solver.values()));
+        cboSelectSolver.setModel(new javax.swing.DefaultComboBoxModel(
+                OptimiserFactory.getInstance().listOperationalOptimisers().toArray()));
         cboSelectSolver.setToolTipText("Select Function");
         cboSelectSolver.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -313,7 +317,9 @@ private void cmdRunActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:
 
     SuperQOptions options = buildSuperQOptions();
 
-    this.superqRunner.runSuperQ(options, new StatusTracker(this.progStatus, this.lblStatus));
+    if (options != null)
+        this.superqRunner.runSuperQ(options, new StatusTracker(this.progStatus, this.lblStatus));
+
 }//GEN-LAST:event_cmdRunActionPerformed
 
 private void cboSelectObjectiveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboSelectObjectiveActionPerformed
@@ -332,7 +338,7 @@ private void cboSelectObjectiveActionPerformed(java.awt.event.ActionEvent evt) {
         // TODO add your handling code here:
     }//GEN-LAST:event_cboSelectSolverActionPerformed
 
-    private SuperQOptions buildSuperQOptions() {
+    private SuperQOptions buildSuperQOptions(){
 
         SuperQOptions options = new SuperQOptions();
 
@@ -352,12 +358,22 @@ private void cboSelectObjectiveActionPerformed(java.awt.event.ActionEvent evt) {
                 filter = Double.valueOf(txtFilter.getText());
             } catch (NumberFormatException e) {
                 showErrorDialog("Filter threshold must be a nonnegative real number");
+                return null;
             }
             options.setFilter(filter);
         }
 
         options.setBackupObjective((Objective) this.cboSelectObjective.getSelectedItem());
-        options.setBackupSolver((Solver) this.cboSelectSolver.getSelectedItem());
+
+        try {
+            options.setBackupSolver(OptimiserFactory.getInstance().createOptimiserInstance(
+                (String)this.cboSelectSolver.getSelectedItem(), options.getBackupObjective()));
+        }
+        catch (OptimiserException oe) {
+            showErrorDialog("Could not create requested optimiser: " + (String)this.cboSelectSolver.getSelectedItem());
+            return null;
+        }
+
         options.setScaleInputTree(this.chkScaleInput.isEnabled() && this.chkScaleInput.isSelected());
 
         return options;

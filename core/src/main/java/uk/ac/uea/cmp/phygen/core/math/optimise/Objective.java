@@ -27,7 +27,7 @@ public enum Objective {
     LINEAR {
 
         @Override
-        public double[] optimise(Problem problem, OptimiserSystem optimiser) throws OptimiserException {
+        public double[] optimise(Problem problem, Optimiser optimiser) throws OptimiserException {
             return optimiser.optimise(this, problem);
         }
 
@@ -41,7 +41,7 @@ public enum Objective {
     QUADRATIC {
 
         @Override
-        public double[] optimise(Problem problem, OptimiserSystem optimiser) throws OptimiserException {
+        public double[] optimise(Problem problem, Optimiser optimiser) throws OptimiserException {
             return optimiser.optimise(this, problem);
         }
 
@@ -55,7 +55,7 @@ public enum Objective {
     MINIMA {
 
         @Override
-        public double[] optimise(Problem problem, OptimiserSystem optimiser) throws OptimiserException {
+        public double[] optimise(Problem problem, Optimiser optimiser) throws OptimiserException {
 
             double[] data = problem.getRestriction();
             double[] coefficients = problem.getCoefficients();
@@ -89,7 +89,7 @@ public enum Objective {
     BALANCED {
 
         @Override
-        protected double[] optimise(Problem problem, OptimiserSystem optimiser) throws OptimiserException {
+        protected double[] optimise(Problem problem, Optimiser optimiser) throws OptimiserException {
             return optimiser.optimise(this, problem);
         }
 
@@ -120,7 +120,7 @@ public enum Objective {
     },
     NNLS {
         @Override
-        protected double[] optimise(Problem problem, OptimiserSystem optimiser) throws OptimiserException {
+        protected double[] optimise(Problem problem, Optimiser optimiser) throws OptimiserException {
             throw new UnsupportedOperationException();
 
         }
@@ -133,7 +133,7 @@ public enum Objective {
     NONE {
 
         @Override
-        public double[] optimise(Problem problem, OptimiserSystem optimiser) throws OptimiserException {
+        public double[] optimise(Problem problem, Optimiser optimiser) throws OptimiserException {
             return null;
         }
 
@@ -147,7 +147,7 @@ public enum Objective {
     private static Logger logger = LoggerFactory.getLogger(Objective.class);
     
 
-    protected abstract double[] optimise(Problem problem, OptimiserSystem optimiser) throws OptimiserException;
+    protected abstract double[] optimise(Problem problem, Optimiser optimiser) throws OptimiserException;
 
     public abstract double[] buildCoefficients(final int size);
 

@@ -39,7 +39,7 @@
         <dependency>
             <groupId>gurobi</groupId>
             <artifactId>gurobi</artifactId>
-            <version>5.0.2-64</version>
+            <version>5</version>
         </dependency>
 
 

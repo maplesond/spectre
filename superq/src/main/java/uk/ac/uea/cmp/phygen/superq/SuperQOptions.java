@@ -18,7 +18,9 @@ package uk.ac.uea.cmp.phygen.superq;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.math.optimise.Objective;
-import uk.ac.uea.cmp.phygen.core.math.optimise.Solver;
+import uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser;
+import uk.ac.uea.cmp.phygen.core.math.optimise.glpk.GLPKOptimiser;
+import uk.ac.uea.cmp.phygen.core.math.optimise.phygen.PhygenOptimiserCircularNNLS;
 
 import java.io.File;
 
@@ -36,25 +38,25 @@ public class SuperQOptions {
     private File inputFile;
     private InputFormat inputFileFormat;
     private File outputFile;
-    private Solver primarySolver;
-    private Solver backupSolver;    
+    private Optimiser primarySolver;
+    private Optimiser backupSolver;
     private Objective backupObjective;
     private boolean scaleInputTree;
     private Double filter;
     private boolean verbose;
 
     public SuperQOptions() {
-        this(null, null, null, 
-                Solver.NNLS,
-                Solver.BEST_AVAILABLE, null, 
+        this(null, null, null,
+                new GLPKOptimiser(),
+                null, null,
                 false, null, false);
     }    
     
     public SuperQOptions(File inputFile, InputFormat inputFileFormat, File outputFile,
-            Solver primarySolver, Solver backupSolver, Objective backupObjective, 
+                         Optimiser primarySolver, Optimiser backupSolver, Objective backupObjective,
             boolean scaleInputTree, Double filter, boolean verbose) {
-        
-        Solver tempSolver = primarySolver.getOptimiserSystem().isOperational() ? primarySolver : Solver.NNLS;
+
+        Optimiser tempSolver = primarySolver.isOperational() ? primarySolver : null;
         if (primarySolver != tempSolver) {
             logger.warn("The solver requested: \"" + primarySolver.toString() + "\" is not supported for first optimisation step.  Using: \"" + tempSolver + "\" instead");
         }
@@ -114,19 +116,19 @@ public class SuperQOptions {
         this.inputFileFormat = inputFileFormat;
     }
 
-    public Solver getPrimarySolver() {
+    public Optimiser getPrimarySolver() {
         return primarySolver;
     }
 
-    public void setPrimarySolver(Solver primarySolver) {
+    public void setPrimarySolver(Optimiser primarySolver) {
         this.primarySolver = primarySolver;
     }
     
-    public Solver getBackupSolver() {
+    public Optimiser getBackupSolver() {
         return backupSolver;
     }
 
-    public void setBackupSolver(Solver backupSolver) {
+    public void setBackupSolver(Optimiser backupSolver) {
         this.backupSolver = backupSolver;
     }
     

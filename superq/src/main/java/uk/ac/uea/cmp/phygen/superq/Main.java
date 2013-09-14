@@ -21,7 +21,8 @@ import org.apache.log4j.PropertyConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.math.optimise.Objective;
-import uk.ac.uea.cmp.phygen.core.math.optimise.Solver;
+import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
+import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserFactory;
 
 import java.io.File;
 import java.io.OutputStream;
@@ -164,13 +165,19 @@ public class Main {
         if (commandLine.hasOption(OPT_SECONDARY_OBJECTIVE)) {
             sqOpts.setBackupObjective(Objective.valueOf(commandLine.getOptionValue(OPT_SECONDARY_OBJECTIVE).toUpperCase()));
         }
-                
-        if (commandLine.hasOption(OPT_PRIMARY_SOLVER)) {
-            sqOpts.setPrimarySolver(Solver.valueOf(commandLine.getOptionValue(OPT_PRIMARY_SOLVER).toUpperCase()));
+
+        try {
+
+            if (commandLine.hasOption(OPT_PRIMARY_SOLVER)) {
+                sqOpts.setPrimarySolver(OptimiserFactory.getInstance().createOptimiserInstance(commandLine.getOptionValue(OPT_PRIMARY_SOLVER), Objective.NNLS));
+            }
+
+            if (commandLine.hasOption(OPT_SECONDARY_SOLVER)) {
+                sqOpts.setBackupSolver(OptimiserFactory.getInstance().createOptimiserInstance(commandLine.getOptionValue(OPT_SECONDARY_SOLVER), sqOpts.getBackupObjective()));
+            }
         }
-        
-        if (commandLine.hasOption(OPT_SECONDARY_SOLVER)) {
-            sqOpts.setBackupSolver(Solver.valueOf(commandLine.getOptionValue(OPT_SECONDARY_SOLVER).toUpperCase()));
+        catch(OptimiserException oe) {
+            throw new ParseException(oe.getMessage());
         }
         
         if (commandLine.hasOption(OPT_SCALE)) {

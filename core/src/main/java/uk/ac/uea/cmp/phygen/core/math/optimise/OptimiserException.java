@@ -19,7 +19,12 @@ package uk.ac.uea.cmp.phygen.core.math.optimise;
 public class OptimiserException extends Exception {
     
     private int errorCode;
-    
+
+    public OptimiserException(String message, int errorCode) {
+        super(message);
+        this.errorCode = errorCode;
+    }
+
     public OptimiserException(Throwable throwable, int errorCode) {
         super(throwable);        
         this.errorCode = errorCode;

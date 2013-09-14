@@ -18,8 +18,8 @@ package uk.ac.uea.cmp.phygen.qnet;
 import org.apache.commons.io.FilenameUtils;
 import uk.ac.uea.cmp.phygen.core.ds.TaxonList;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
+import uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser;
 import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
-import uk.ac.uea.cmp.phygen.core.math.optimise.Solver;
 
 import java.io.File;
 import java.io.IOException;
@@ -119,7 +119,7 @@ public class QNet {
     }
 
 
-    public void execute(File input, boolean log, double tolerance, Solver solver) throws IOException, QNetException, OptimiserException {
+    public void execute(File input, boolean log, double tolerance, Optimiser optimiser) throws IOException, QNetException, OptimiserException {
 
         if (FilenameUtils.getExtension(input.getName()).equals("nex")) {
             QNetLoader.loadNexus(this, input.getAbsolutePath(), log);
@@ -131,7 +131,7 @@ public class QNet {
         NewCyclicOrderer.order(this);
 
         File infoFile = new File(input, ".info");
-        WeightsComputeNNLSInformative.computeWeights(this, infoFile.getAbsolutePath(), tolerance, solver);
+        WeightsComputeNNLSInformative.computeWeights(this, infoFile.getAbsolutePath(), tolerance, optimiser);
 
     }
 

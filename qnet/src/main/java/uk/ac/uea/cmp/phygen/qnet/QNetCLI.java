@@ -23,7 +23,9 @@ import org.apache.commons.cli.Options;
 import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.uea.cmp.phygen.core.math.optimise.Solver;
+import uk.ac.uea.cmp.phygen.core.math.optimise.Objective;
+import uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser;
+import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserFactory;
 import uk.ac.uea.cmp.phygen.core.ui.cli.CommandLineHelper;
 
 import java.io.File;
@@ -49,7 +51,7 @@ public class QNetCLI {
                 .withDescription("The tolerance").create("t");
 
         Option optOptimiser = OptionBuilder.withArgName("string").withLongOpt(OPT_OPTIMISER).hasArg()
-                .withDescription("If specified, uses optimisation: " + Solver.listTypes()).create("p");
+                .withDescription("If specified, uses optimisation: " + OptimiserFactory.getInstance().listOperationalOptimisers()).create("p");
 
         // create Options object
         Options options = new Options();
@@ -82,12 +84,12 @@ public class QNetCLI {
             File input = new File(commandLine.getOptionValue(OPT_INPUT));
             boolean log = commandLine.hasOption(OPT_LOG);
             double tolerance = commandLine.hasOption(OPT_TOLERANCE) ? Double.parseDouble(commandLine.getOptionValue(OPT_TOLERANCE)) : -1.0;
-            Solver solver = commandLine.hasOption(OPT_OPTIMISER) ?
-                    Solver.valueOf(commandLine.getOptionValue(OPT_OPTIMISER).toUpperCase()) :
+            Optimiser optimiser = commandLine.hasOption(OPT_OPTIMISER) ?
+                    OptimiserFactory.getInstance().createOptimiserInstance(commandLine.getOptionValue(OPT_OPTIMISER), Objective.NNLS) :
                     null;
 
             // Run QNet
-            new QNet().execute(input, log, tolerance, solver);
+            new QNet().execute(input, log, tolerance, optimiser);
 
             // Now what??? Presumably there is some output created?!
 

@@ -24,7 +24,8 @@ import uk.ac.uea.cmp.phygen.core.io.nexus.NexusData;
 import uk.ac.uea.cmp.phygen.core.io.nexus.NexusReader;
 import uk.ac.uea.cmp.phygen.core.io.nexus.NexusWriter;
 import uk.ac.uea.cmp.phygen.core.math.optimise.Objective;
-import uk.ac.uea.cmp.phygen.core.math.optimise.Solver;
+import uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser;
+import uk.ac.uea.cmp.phygen.core.math.optimise.Problem;
 import uk.ac.uea.cmp.phygen.core.ui.gui.RunnableTool;
 import uk.ac.uea.cmp.phygen.core.ui.gui.StatusTracker;
 import uk.ac.uea.cmp.phygen.qnet.QNet;
@@ -101,13 +102,11 @@ public class SuperQ extends RunnableTool {
             if (this.options.isScaleInputTree()) {
                 //Optional scaling of input trees
                 //can just be applied to newick or script format
-                if (!Solver.isOperational("GUROBI")) {
-                    log.warn("Can't apply scaling as Gurobi is not available.  Skipping step");
-                } else if (!(this.options.getInputFileFormat() == SuperQOptions.InputFormat.NEWICK
+                if (!(this.options.getInputFileFormat() == SuperQOptions.InputFormat.NEWICK
                         || this.options.getInputFileFormat() == SuperQOptions.InputFormat.SCRIPT)) {
                     throw new Exception("Scale function can only be applied if the input format is newick or script!");
                 } else {
-                    notifyUser("SCALING - Scaling input trees - Using GUROBI");
+                    notifyUser("SCALING - Scaling input trees - Using: " + this.options.getPrimarySolver().getDescription());
 
                     int cutIdx1 = file.lastIndexOf(File.separator);
                     int cutIdx2 = file.lastIndexOf(".");
@@ -159,22 +158,19 @@ public class SuperQ extends RunnableTool {
             String weightsOutputPath = this.options.getFilter() != null ? filterTempFile : this.options.getOutputFile().getPath();
             double[] solution = WeightsComputeNNLSInformative.getx();
 
-            if (this.options.getBackupObjective() == Objective.NONE || this.options.getBackupSolver() == Solver.NONE) {
+            if (this.options.getBackupObjective() == null || this.options.getBackupSolver() == null) {
                 log.info("SECONDARY OPTIMISATION - Not requested");
             } else {
                 
-                Solver backupSolver = this.options.getBackupSolver();
-                if (backupSolver == Solver.BEST_AVAILABLE) {
-                    backupSolver = Solver.getBestOperationalSolver();
-                }
-                notifyUser("SECONDARY OPTIMISATION - Requested " + backupSolver.toString() + " solver with " + this.options.getBackupObjective() + " objective.");
+                Optimiser secondarySolver = this.options.getBackupSolver();
+                notifyUser("SECONDARY OPTIMISATION - Requested " + secondarySolver.toString() + " solver with " + this.options.getBackupObjective() + " objective.");
 
                 // Prepare problem matrix
                 double[][] matrix = WeightsComputeNNLSInformative.getEtE().toArray();
 
                 try {
                     // Run the secondary optimisation step
-                    double[] solution2 = backupSolver.optimise(solution, matrix, this.options.getBackupObjective());
+                    double[] solution2 = secondarySolver.optimise(this.options.getBackupObjective(), new Problem(solution, matrix, null));
 
                     // Sum the solutions
                     for (int i = 0; i < solution.length; i++) {

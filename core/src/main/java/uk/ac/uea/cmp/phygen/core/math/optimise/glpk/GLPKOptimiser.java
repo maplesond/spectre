@@ -18,16 +18,14 @@ package uk.ac.uea.cmp.phygen.core.math.optimise.glpk;
 import org.gnu.glpk.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser;
-import uk.ac.uea.cmp.phygen.core.math.optimise.Problem;
+import uk.ac.uea.cmp.phygen.core.math.optimise.*;
 
-
-public class GLPKOptimiser implements Optimiser {
+public class GLPKOptimiser extends AbstractOptimiser {
 
     private static Logger logger = LoggerFactory.getLogger(GLPKOptimiser.class);
 
     @Override
-    public double[] optimise(Problem problem) {
+    protected double[] optimise2(Objective objective, Problem problem) {
 
         double[] sol = new double[problem.getCoefficients().length];
 
@@ -154,10 +152,72 @@ public class GLPKOptimiser implements Optimiser {
 
 
     }
+
+
 /*
     public double[] directOptimise(Problem problem) {
     }
 
     double[] linoptOptimise(Problem problem) {
     }*/
+
+
+    @Override
+    public double[] optimise(Objective objective, Problem problem) throws OptimiserException {
+        return new double[0];  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public boolean acceptsIdentifier(String id) {
+        return id.equalsIgnoreCase(this.getDescription()) || id.equalsIgnoreCase(GLPKOptimiser.class.getName());
+    }
+
+    @Override
+    public boolean acceptsObjective(Objective objective) {
+
+        if (objective == Objective.LINEAR) {
+            return true;
+        }
+        else if (objective == Objective.QUADRATIC) {
+            return false;
+        }
+        else if (objective == Objective.MINIMA) {
+            return true;
+        }
+        else if (objective == Objective.NNLS) {
+            return false;
+        }
+        else {
+            return false;
+        }
+    }
+
+    @Override
+    public String getDescription() {
+        return "GLPK";
+    }
+
+
+    @Override
+    public boolean isOperational() {
+
+        try {
+            GLPK.glp_version();
+        } catch (Throwable err) {
+            // This means that GLPK isn't on the PATH env var.
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean hasObjectiveFactory() {
+        return false;
+    }
+
+    @Override
+    public OptimiserObjectiveFactory getObjectiveFactory() {
+        return null;
+    }
 }

@@ -22,10 +22,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.uea.cmp.phygen.core.math.optimise.Objective;
-import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
-import uk.ac.uea.cmp.phygen.core.math.optimise.Problem;
-import uk.ac.uea.cmp.phygen.core.math.optimise.Solver;
+import uk.ac.uea.cmp.phygen.core.math.optimise.*;
+import uk.ac.uea.cmp.phygen.core.math.optimise.apache.ApacheOptimiser;
 import uk.ac.uea.cmp.phygen.core.math.tuple.Key;
 import uk.ac.uea.cmp.phygen.core.ui.cli.PhygenTool;
 import uk.ac.uea.cmp.phygen.tools.chopper.Chopper;
@@ -64,7 +62,7 @@ public class Scaling extends PhygenTool {
                 .withDescription("The output file type: " + Mode.listTypes()).create("t"));
 
         options.addOption(OptionBuilder.withArgName("string").withLongOpt(OPT_OPTIMISER).hasArg()
-                .withDescription("The optimiser to use: " + Solver.listTypes()).create("p"));
+                .withDescription("The optimiser to use: " + OptimiserFactory.getInstance().listOperationalOptimisers()).create("p"));
 
         return options;
     }
@@ -76,19 +74,26 @@ public class Scaling extends PhygenTool {
         File inputFile = new File(commandLine.getOptionValue(OPT_INPUT_FILE));
         File outputPrefix = new File(commandLine.getOptionValue(OPT_OUTPUT_PREFIX));
         Mode mode = Mode.valueOf(commandLine.getOptionValue(OPT_MODE).toUpperCase());
-        Solver solver = commandLine.hasOption(OPT_OPTIMISER) ?
-                Solver.valueOf(commandLine.getOptionValue(OPT_OPTIMISER).toUpperCase()) :
-                Solver.APACHE;
+        Optimiser optimiser = null;
 
         try {
-            execute(inputFile, outputPrefix, mode, solver);
+            optimiser = commandLine.hasOption(OPT_OPTIMISER) ?
+                OptimiserFactory.getInstance().createOptimiserInstance(commandLine.getOptionValue(OPT_OPTIMISER), Objective.QUADRATIC) :
+                new ApacheOptimiser();
+        }
+        catch(OptimiserException oe) {
+            optimiser = new ApacheOptimiser();
+        }
+
+        try {
+            execute(inputFile, outputPrefix, mode, optimiser);
         }
         catch (OptimiserException oe) {
             throw new IOException(oe);
         }
     }
 
-    public void execute(File inputFile, File outputPrefix, Mode mode, Solver solver) throws OptimiserException, IOException {
+    public void execute(File inputFile, File outputPrefix, Mode mode, Optimiser optimiser) throws OptimiserException, IOException {
 
         int ntrees = -1;
 
@@ -119,11 +124,11 @@ public class Scaling extends PhygenTool {
 
         //Updates quartet weights and writes them into a file
         //for each input tree one quartet file is generated
-        Matrix.updateQuartetWeights(outputPrefix.getParent(), outputPrefix.getName(), solver.getOptimiserSystem().optimise(Objective.QUADRATIC, p));
+        Matrix.updateQuartetWeights(outputPrefix.getParent(), outputPrefix.getName(), optimiser.optimise(Objective.QUADRATIC, p));
     }
 
-    public static void run(File inputFile, File outputPrefix, Mode mode, Solver solver) throws OptimiserException, IOException {
-        new Scaling().execute(inputFile, outputPrefix, mode, solver);
+    public static void run(File inputFile, File outputPrefix, Mode mode, Optimiser optimiser) throws OptimiserException, IOException {
+        new Scaling().execute(inputFile, outputPrefix, mode, optimiser);
     }
 
     /**
