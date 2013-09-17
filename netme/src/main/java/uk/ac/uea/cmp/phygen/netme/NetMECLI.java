@@ -85,7 +85,8 @@ public class NetMECLI {
 
     public static void main(String[] args) {
 
-        CommandLine commandLine = CommandLineHelper.startApp(createOptions(), "netme-<version>", "Net-ME", args);
+        CommandLine commandLine = CommandLineHelper.startApp(createOptions(), "netme-<version>", "Net-ME",
+                "Finds minimum evolution tree within a circular split system.", args);
 
         // If we didn't return a command line object then just return.  Probably the user requested help or
         // input invalid args

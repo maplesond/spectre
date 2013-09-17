@@ -37,7 +37,7 @@ public class CommandLineHelperTest {
 
         String[] args = new String[]{};
 
-        CommandLineHelper.startApp(options, "jar", "project", args);
+        CommandLineHelper.startApp(options, "jar", "project", "description", args);
 
         assertTrue(true);
     }
@@ -49,7 +49,7 @@ public class CommandLineHelperTest {
 
         String[] args = new String[]{"--help"};
 
-        CommandLineHelper.startApp(options, "jar", "project", args);
+        CommandLineHelper.startApp(options, "jar", "project", "description", args);
     }
 
     @Test
@@ -59,7 +59,7 @@ public class CommandLineHelperTest {
 
         String[] args = new String[]{"-i", "file.phy", "-o", "output"};
 
-        CommandLine cl = CommandLineHelper.startApp(options, "jar", "project", args);
+        CommandLine cl = CommandLineHelper.startApp(options, "jar", "project", "description", args);
 
         assertTrue(cl == null);
     }
@@ -71,7 +71,7 @@ public class CommandLineHelperTest {
 
         String[] args = new String[]{"-i", "file.phy", "-j", "circular.nex", "-o", "output"};
 
-        CommandLine cl = CommandLineHelper.startApp(options, "jar", "project", args);
+        CommandLine cl = CommandLineHelper.startApp(options, "jar", "project", "description", args);
 
         assertTrue(cl != null);
     }

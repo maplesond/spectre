@@ -68,7 +68,8 @@ public class QNetCLI {
     public static void main(String[] args) {
 
         // Parse command line args
-        CommandLine commandLine = CommandLineHelper.startApp(createOptions(), "qnet-<version>", "Q-NET", args);
+        CommandLine commandLine = CommandLineHelper.startApp(createOptions(), "qnet-<version>", "Q-NET",
+                "Stephan's Circular Ordering Generator", args);
 
         // If we didn't return a command line object then just return.  Probably the user requested help or
         // input invalid args

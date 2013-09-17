@@ -47,6 +47,15 @@
                 <role>developer</role>
             </roles>
         </developer>
+        <developer>
+            <id>balvociute</id>
+            <name>Monica Balvociute</name>
+            <email>mokana@gmail.com</email>
+            <organization>Greifwald University</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
     </developers>
 
     <build>
@@ -134,10 +143,11 @@
         <module>superq</module>
         <module>phygentools</module>
         <module>qnet</module>
+        <module>flatnj</module>
 
         <!-- Uncomment this if you have gurobi installed, and have the gurobi jar installed in the local maven repo.
              QNet currently is designed to work only with gurobi so this is commented out as well for the moment. -->
-        <module>gurobi</module>
+        <!--<module>gurobi</module>-->
 
     </modules>
 

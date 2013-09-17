@@ -36,11 +36,11 @@ public class ApacheOptimiserTest {
         Optimiser apache = new ApacheOptimiser();
 
         Problem problem = new Problem();
-        Objective objective = null;
+        Objective objective = Objective.LINEAR;
 
 
         //double[] solution = apache.optimise(objective, problem);
 
-
+        assertTrue(true);
     }
 }

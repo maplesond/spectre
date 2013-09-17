@@ -34,11 +34,11 @@ public class CommandLineHelper {
     public static final Option HELP_OPTION = new Option("?", OPT_HELP, false, "Print this message.");
 
 
-    public static void printHelp(Options options, String jarName, String projectName) {
+    public static void printHelp(Options options, String jarName, String projectName, String description) {
         new HelpFormatter().printHelp(
                 CommandLineHelper.DEFAULT_WIDTH,
                 "java -jar " + jarName + ".jar",
-                "Phylogenetics Tool Suite: " + projectName,
+                "Phylogenetics Tool Suite: " + projectName + "\n" + description,
                 options,
                 CommandLineHelper.DEFAULT_FOOTER,
                 true);
@@ -60,14 +60,14 @@ public class CommandLineHelper {
         return options;
     }
 
-    public static CommandLine startApp(Options options, String jarName, String projectName, String[] args) {
+    public static CommandLine startApp(Options options, String jarName, String projectName, String description, String[] args) {
 
         try {
             // Test for help first
             CommandLine helpCl = new PosixParser().parse(createHelpOptions(), args, true);
 
             if (helpCl.hasOption(OPT_HELP) || helpCl.getArgList().isEmpty()) {
-                CommandLineHelper.printHelp(options, jarName, projectName);
+                CommandLineHelper.printHelp(options, jarName, projectName, description);
                 return null;
             }
 
