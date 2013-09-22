@@ -154,19 +154,6 @@ public class GLPKOptimiser extends AbstractOptimiser {
     }
 
 
-/*
-    public double[] directOptimise(Problem problem) {
-    }
-
-    double[] linoptOptimise(Problem problem) {
-    }*/
-
-
-    @Override
-    public double[] optimise(Objective objective, Problem problem) throws OptimiserException {
-        return new double[0];  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
     @Override
     public boolean acceptsIdentifier(String id) {
         return id.equalsIgnoreCase(this.getDescription()) || id.equalsIgnoreCase(GLPKOptimiser.class.getName());
@@ -174,22 +161,7 @@ public class GLPKOptimiser extends AbstractOptimiser {
 
     @Override
     public boolean acceptsObjective(Objective objective) {
-
-        if (objective == Objective.LINEAR) {
-            return true;
-        }
-        else if (objective == Objective.QUADRATIC) {
-            return false;
-        }
-        else if (objective == Objective.MINIMA) {
-            return true;
-        }
-        else if (objective == Objective.NNLS) {
-            return false;
-        }
-        else {
-            return false;
-        }
+        return GLPKObjective.acceptsObjective(objective);
     }
 
     @Override
@@ -219,5 +191,49 @@ public class GLPKOptimiser extends AbstractOptimiser {
     @Override
     public OptimiserObjectiveFactory getObjectiveFactory() {
         return null;
+    }
+
+
+    /**
+     * GLPK is currently only setup to support linear and minima objectives
+     */
+    private enum GLPKObjective {
+
+        LINEAR {
+            @Override
+            public boolean supported() {
+                return true;
+            }
+        },
+        QUADRATIC {
+            @Override
+            public boolean supported() {
+                return false;
+            }
+        },
+        BALANCED {
+            @Override
+            public boolean supported() {
+                return false;
+            }
+        },
+        MINIMA {
+            @Override
+            public boolean supported() {
+                return true;
+            }
+        },
+        NNLS {
+            @Override
+            public boolean supported() {
+                return false;
+            }
+        };
+
+        public abstract boolean supported();
+
+        public static boolean acceptsObjective(Objective objective) {
+            return GLPKObjective.valueOf(objective.name()).supported();
+        }
     }
 }

@@ -62,7 +62,7 @@ public class Problem {
     }
     
     public int getMatrixColumns() {
-        return this.matrix[0].length;
+        return this.matrix.length == 0 ? 0 : this.matrix[0].length;
     }
     
     public double getMatrixElement(int i, int j) {

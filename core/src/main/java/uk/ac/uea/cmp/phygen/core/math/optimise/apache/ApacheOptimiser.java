@@ -80,21 +80,7 @@ public class ApacheOptimiser extends AbstractOptimiser {
 
     @Override
     public boolean acceptsObjective(Objective objective) {
-        if (objective == Objective.LINEAR) {
-            return true;
-        }
-        else if (objective == Objective.QUADRATIC) {
-            return false;
-        }
-        else if (objective == Objective.MINIMA) {
-            return true;
-        }
-        else if (objective == Objective.NNLS) {
-            return false;
-        }
-        else {
-            return false;
-        }
+        return ApacheObjective.acceptsObjective(objective);
     }
 
     @Override
@@ -121,5 +107,49 @@ public class ApacheOptimiser extends AbstractOptimiser {
     @Override
     public OptimiserObjectiveFactory getObjectiveFactory() {
         return null;
+    }
+
+
+    /**
+     * Apache is currently only setup to support linear and minima objectives
+     */
+    private enum ApacheObjective {
+
+        LINEAR {
+            @Override
+            public boolean supported() {
+                return true;
+            }
+        },
+        QUADRATIC {
+            @Override
+            public boolean supported() {
+                return false;
+            }
+        },
+        BALANCED {
+            @Override
+            public boolean supported() {
+                return false;
+            }
+        },
+        MINIMA {
+            @Override
+            public boolean supported() {
+                return true;
+            }
+        },
+        NNLS {
+            @Override
+            public boolean supported() {
+                return false;
+            }
+        };
+
+        public abstract boolean supported();
+
+        public static boolean acceptsObjective(Objective objective) {
+            return ApacheObjective.valueOf(objective.name()).supported();
+        }
     }
 }

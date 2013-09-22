@@ -176,22 +176,7 @@ public abstract class GurobiOptimiser extends AbstractOptimiser {
 
     @Override
     public boolean acceptsObjective(Objective objective) {
-
-        if (objective == Objective.LINEAR) {
-            return true;
-        }
-        else if (objective == Objective.QUADRATIC) {
-            return true;
-        }
-        else if (objective == Objective.MINIMA) {
-            return true;
-        }
-        else if (objective == Objective.NNLS) {
-            return true;
-        }
-        else {
-            return false;
-        }
+        return GurobiObjective.acceptsObjective(objective);
     }
 
     @Override
@@ -221,5 +206,48 @@ public abstract class GurobiOptimiser extends AbstractOptimiser {
     @Override
     public OptimiserObjectiveFactory getObjectiveFactory() {
         return new GurobiObjectiveFactory();
+    }
+
+    /**
+     * Gurobi is setup to handle all objectives
+     */
+    private enum GurobiObjective {
+
+        LINEAR {
+            @Override
+            public boolean supported() {
+                return true;
+            }
+        },
+        QUADRATIC {
+            @Override
+            public boolean supported() {
+                return true;
+            }
+        },
+        MINIMA {
+            @Override
+            public boolean supported() {
+                return true;
+            }
+        },
+        BALANCED {
+            @Override
+            public boolean supported() {
+                return true;
+            }
+        },
+        NNLS {
+            @Override
+            public boolean supported() {
+                return true;
+            }
+        };
+
+        public abstract boolean supported();
+
+        public static boolean acceptsObjective(Objective objective) {
+            return GurobiObjective.valueOf(objective.name()).supported();
+        }
     }
 }

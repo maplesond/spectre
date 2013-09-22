@@ -93,21 +93,11 @@ public enum Objective {
         }
     };
     private int nbTaxa;
-    
-    private static Logger logger = LoggerFactory.getLogger(Objective.class);
 
     public abstract double[] buildCoefficients(final int size);
 
     private Objective() {
         this.nbTaxa = 0;
-    }
-
-    public static Logger getLogger() {
-        return logger;
-    }
-
-    public static void setLogger(Logger logger) {
-        Objective.logger = logger;
     }
 
     public int getNbTaxa() {
