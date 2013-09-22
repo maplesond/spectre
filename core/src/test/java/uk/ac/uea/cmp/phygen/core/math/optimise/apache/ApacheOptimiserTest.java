@@ -39,7 +39,7 @@ public class ApacheOptimiserTest {
         Objective objective = Objective.LINEAR;
 
 
-        //double[] solution = apache.optimise(objective, problem);
+        double[] solution = apache.optimise(objective, problem);
 
         assertTrue(true);
     }

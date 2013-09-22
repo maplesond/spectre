@@ -27,11 +27,6 @@ public enum Objective {
     LINEAR {
 
         @Override
-        public double[] optimise(Problem problem, Optimiser optimiser) throws OptimiserException {
-            return optimiser.optimise(this, problem);
-        }
-
-        @Override
         public double[] buildCoefficients(final int size) {
             double[] coefficients = new double[size];
             Arrays.fill(coefficients, 1.0);
@@ -39,11 +34,6 @@ public enum Objective {
         }
     },
     QUADRATIC {
-
-        @Override
-        public double[] optimise(Problem problem, Optimiser optimiser) throws OptimiserException {
-            return optimiser.optimise(this, problem);
-        }
 
         @Override
         public double[] buildCoefficients(final int size) {
@@ -55,31 +45,6 @@ public enum Objective {
     MINIMA {
 
         @Override
-        public double[] optimise(Problem problem, Optimiser optimiser) throws OptimiserException {
-
-            double[] data = problem.getRestriction();
-            double[] coefficients = problem.getCoefficients();
-
-            final int rows = problem.getRestriction().length;
-
-            double[] solution = new double[rows];
-            for (int k = 0; k < rows; k++) {
-                logger.debug("Split number " + k + 1 + "\n");
-                // double x = y[k];
-                if (data[k] > 0.0) {
-                    coefficients[k] = 1.0;
-                    double[] help = optimiser.optimise(this, problem);
-                    solution[k] = help[k];
-                    coefficients[k] = 0.0;
-                } else {
-                    solution[k] = 0;
-                }
-            }
-
-            return solution;
-        }
-
-        @Override
         public double[] buildCoefficients(final int size) {
             double[] coefficients = new double[size];
             Arrays.fill(coefficients, 0.0);
@@ -87,11 +52,6 @@ public enum Objective {
         }
     },
     BALANCED {
-
-        @Override
-        protected double[] optimise(Problem problem, Optimiser optimiser) throws OptimiserException {
-            return optimiser.optimise(this, problem);
-        }
 
         @Override
         public double[] buildCoefficients(final int size) {
@@ -119,11 +79,6 @@ public enum Objective {
         }
     },
     NNLS {
-        @Override
-        protected double[] optimise(Problem problem, Optimiser optimiser) throws OptimiserException {
-            throw new UnsupportedOperationException();
-
-        }
 
         @Override
         public double[] buildCoefficients(int size) {
@@ -133,11 +88,6 @@ public enum Objective {
     NONE {
 
         @Override
-        public double[] optimise(Problem problem, Optimiser optimiser) throws OptimiserException {
-            return null;
-        }
-
-        @Override
         public double[] buildCoefficients(final int size) {
             return null;
         }
@@ -145,9 +95,6 @@ public enum Objective {
     private int nbTaxa;
     
     private static Logger logger = LoggerFactory.getLogger(Objective.class);
-    
-
-    protected abstract double[] optimise(Problem problem, Optimiser optimiser) throws OptimiserException;
 
     public abstract double[] buildCoefficients(final int size);
 

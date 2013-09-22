@@ -57,7 +57,7 @@ public abstract class GurobiOptimiser extends AbstractOptimiser {
     }
     
     @Override
-    protected double[] optimise2(Objective objective, Problem problem) throws OptimiserException {
+    protected double[] internalOptimise(Problem problem) throws OptimiserException {
         
         double[] solution = null;
         

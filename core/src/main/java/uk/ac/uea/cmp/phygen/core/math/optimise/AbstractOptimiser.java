@@ -24,7 +24,7 @@ public abstract class AbstractOptimiser implements Optimiser {
         double[] coefficients = objective.buildCoefficients(problem.getRestriction().length);
         problem.setCoefficients(coefficients);
 
-        double[] solution = objective.optimise(problem, this);
+        double[] solution = this.internalOptimise(problem);
 
         // Probably used a lot of memory.  Collect Garbage to save space.
         System.gc();
@@ -32,5 +32,42 @@ public abstract class AbstractOptimiser implements Optimiser {
         return solution;
     }
 
-    protected abstract double[] optimise2(Objective objective, Problem problem) throws OptimiserException;
+    @Override
+    public double[] multiOptimise(Objective objective, Problem problem) throws OptimiserException {
+
+        if (!this.acceptsObjective(objective)) {
+            throw new UnsupportedOperationException("Objective: " + objective.toString() + " not accepted by " +
+                    this.getClass().getCanonicalName());
+        }
+
+        if (!this.isOperational()) {
+            throw new UnsupportedOperationException(this.getDescription() + " is not operational");
+        }
+
+        problem.setCoefficients(objective.buildCoefficients(problem.getRestriction().length));
+
+        double[] data = problem.getRestriction();
+
+        final int rows = problem.getRestriction().length;
+        double[] coefficients = problem.getCoefficients();
+
+        double[] solution = new double[rows];
+        for (int k = 0; k < rows; k++) {
+            if (data[k] > 0.0) {
+                coefficients[k] = 1.0;
+                double[] help = this.internalOptimise(problem);
+                solution[k] = help[k];
+                coefficients[k] = 0.0;
+            } else {
+                solution[k] = 0;
+            }
+        }
+
+        // Probably used a lot of memory.  Collect Garbage to save space.
+        System.gc();
+
+        return solution;
+    }
+
+    protected abstract double[] internalOptimise(Problem problem) throws OptimiserException;
 }

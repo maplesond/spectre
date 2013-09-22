@@ -25,7 +25,7 @@ public class GLPKOptimiser extends AbstractOptimiser {
     private static Logger logger = LoggerFactory.getLogger(GLPKOptimiser.class);
 
     @Override
-    protected double[] optimise2(Objective objective, Problem problem) {
+    protected double[] internalOptimise(Problem problem) {
 
         double[] sol = new double[problem.getCoefficients().length];
 

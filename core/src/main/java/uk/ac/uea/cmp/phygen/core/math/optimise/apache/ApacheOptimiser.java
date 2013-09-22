@@ -21,7 +21,6 @@ import org.apache.commons.math3.optimization.linear.LinearConstraint;
 import org.apache.commons.math3.optimization.linear.LinearObjectiveFunction;
 import org.apache.commons.math3.optimization.linear.Relationship;
 import org.apache.commons.math3.optimization.linear.SimplexSolver;
-import org.gnu.glpk.GLPK;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.math.optimise.*;
@@ -35,7 +34,7 @@ public class ApacheOptimiser extends AbstractOptimiser {
     private static Logger logger = LoggerFactory.getLogger(ApacheOptimiser.class);
 
     @Override
-    protected double[] optimise2(Objective objective, Problem problem) {
+    protected double[] internalOptimise(Problem problem) {
 
         LinearObjectiveFunction f = new LinearObjectiveFunction(problem.getCoefficients(), 0.0);
         

@@ -20,6 +20,8 @@ public interface Optimiser {
     
     double[] optimise(Objective objective, Problem problem) throws OptimiserException;
 
+    double[] multiOptimise(Objective objective, Problem problem) throws OptimiserException;
+
     boolean acceptsIdentifier(String id);
 
     boolean acceptsObjective(Objective objective);

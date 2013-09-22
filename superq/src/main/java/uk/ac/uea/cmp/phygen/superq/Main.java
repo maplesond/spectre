@@ -40,7 +40,7 @@ public class Main {
     private static String OPT_PRIMARY_SOLVER = "primary_solver";
     private static String OPT_SECONDARY_SOLVER = "secondary_solver";
     private static String OPT_SECONDARY_OBJECTIVE = "secondary_objective";
-    private static String OPT_SCALE = "uk/ac/uea/cmp/phygen/tools/scale";
+    private static String OPT_SCALE = "scale";
     private static String OPT_FILTER = "filter";
     private static String OPT_HELP = "help";
     private static String OPT_VERBOSE = "verbose";    
@@ -121,7 +121,7 @@ public class Main {
         options.addOption("x", OPT_PRIMARY_SOLVER, true, "The primary solver to use: GUROBI, NNLS.  Defaults to GUROBI if available otherwise NNLS.");
         options.addOption("y", OPT_SECONDARY_SOLVER, true, "The secondary solver to use: BEST_AVAILABLE, GUROBI, GLPK.  BEST_AVAILABLE will select GUROBI if available, otherwise GLPK.  Default: BEST_AVAILABLE");
         options.addOption("b", OPT_SECONDARY_OBJECTIVE, true, "The objective to use if the NNLS solution is non-unique");
-        options.addOption("s", OPT_SCALE, false, "Whether to uk.ac.uea.cmp.phygen.tools.scale the input tree.  Default: off");
+        options.addOption("s", OPT_SCALE, false, "Whether to scale the input tree.  Default: off");
         options.addOption("f", OPT_FILTER, true, "The filter value to use.  Default: no filter");
         options.addOption("h", OPT_HELP, false, "Shows this help.");
         options.addOption("v", OPT_VERBOSE, false, "Whether to output extra information");
