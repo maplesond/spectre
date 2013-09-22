@@ -19,6 +19,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.math.optimise.Objective;
 import uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser;
+import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
+import uk.ac.uea.cmp.phygen.core.math.optimise.apache.ApacheOptimiser;
 import uk.ac.uea.cmp.phygen.core.math.optimise.glpk.GLPKOptimiser;
 import uk.ac.uea.cmp.phygen.core.math.optimise.phygen.PhygenOptimiserCircularNNLS;
 
@@ -45,9 +47,9 @@ public class SuperQOptions {
     private Double filter;
     private boolean verbose;
 
-    public SuperQOptions() {
+    public SuperQOptions() throws OptimiserException {
         this(null, null, null,
-                new GLPKOptimiser(),
+                new ApacheOptimiser(),
                 null, null,
                 false, null, false);
     }    

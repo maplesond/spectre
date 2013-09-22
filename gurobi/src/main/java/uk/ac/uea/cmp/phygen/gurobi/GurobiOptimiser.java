@@ -208,6 +208,16 @@ public abstract class GurobiOptimiser extends AbstractOptimiser {
         return new GurobiObjectiveFactory();
     }
 
+    @Override
+    public boolean requiresInitialisation() {
+        return false;
+    }
+
+    @Override
+    public void initialise() throws OptimiserException {
+
+    }
+
     /**
      * Gurobi is setup to handle all objectives
      */

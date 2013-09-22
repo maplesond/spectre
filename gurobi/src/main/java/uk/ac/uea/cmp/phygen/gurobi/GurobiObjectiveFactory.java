@@ -21,10 +21,10 @@ public class GurobiObjectiveFactory implements OptimiserObjectiveFactory {
         if (objective == Objective.LINEAR ||
                 objective == Objective.MINIMA ||
                 objective == Objective.BALANCED) {
-            return new GurobiOptimiserLinear();
+            return new GurobiOptimiserLinear(objective);
         }
         else if (objective == Objective.QUADRATIC) {
-            return new GurobiOptimiserQuadratic();
+            return new GurobiOptimiserQuadratic(objective);
         }
 
         return null;

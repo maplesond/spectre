@@ -1015,9 +1015,6 @@ public class WeightsComputeNNLSInformative {
 
         }
 
-        x = new double[N * (N - 1) / 2 - N];
-
-
 
 //        double time = System.currentTimeMillis();
 
@@ -1025,9 +1022,10 @@ public class WeightsComputeNNLSInformative {
         //Call of method to solve NNLS for split weigths
         if (optimiser != null) {
 
-            Problem problem = new Problem(Etf, EtE.toArray(), x);
+            Problem problem = new Problem(Etf, EtE.toArray());
 
-            x = optimiser.optimise(Objective.NNLS, problem);
+            optimiser.setObjective(Objective.NNLS);
+            x = optimiser.optimise(problem);
         } else {
             //System.out.println("Using DIY method to solve NNLS problem");
             int maxIterations = N * N;

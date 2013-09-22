@@ -163,6 +163,7 @@ public class SuperQ extends RunnableTool {
             } else {
                 
                 Optimiser secondarySolver = this.options.getBackupSolver();
+                secondarySolver.setObjective(this.options.getBackupObjective());
                 notifyUser("SECONDARY OPTIMISATION - Requested " + secondarySolver.toString() + " solver with " + this.options.getBackupObjective() + " objective.");
 
                 // Prepare problem matrix
@@ -170,7 +171,7 @@ public class SuperQ extends RunnableTool {
 
                 try {
                     // Run the secondary optimisation step
-                    double[] solution2 = secondarySolver.optimise(this.options.getBackupObjective(), new Problem(solution, matrix, null));
+                    double[] solution2 = secondarySolver.optimise(new Problem(solution, matrix));
 
                     // Sum the solutions
                     for (int i = 0; i < solution.length; i++) {

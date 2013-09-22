@@ -19,7 +19,7 @@ public class ApacheOptimiserTest {
 
 
     @Test
-    public void testAcceptsIdentifier() {
+    public void testAcceptsIdentifier() throws OptimiserException {
 
         Optimiser apache = new ApacheOptimiser();
 
@@ -31,15 +31,13 @@ public class ApacheOptimiserTest {
 
 
     @Test
-    public void testOptimise() throws OptimiserException {
+    public void testNullOptimise() throws OptimiserException {
 
-        Optimiser apache = new ApacheOptimiser();
+        Optimiser apache = new ApacheOptimiser(Objective.LINEAR);
 
         Problem problem = new Problem();
-        Objective objective = Objective.LINEAR;
 
-
-        double[] solution = apache.optimise(objective, problem);
+        double[] solution = apache.optimise(problem);
 
         assertTrue(true);
     }

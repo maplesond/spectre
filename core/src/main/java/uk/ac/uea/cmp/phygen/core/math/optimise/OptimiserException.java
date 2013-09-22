@@ -20,6 +20,11 @@ public class OptimiserException extends Exception {
     
     private int errorCode;
 
+    public OptimiserException(String message) {
+        super(message);
+        this.errorCode = 1;
+    }
+
     public OptimiserException(String message, int errorCode) {
         super(message);
         this.errorCode = errorCode;

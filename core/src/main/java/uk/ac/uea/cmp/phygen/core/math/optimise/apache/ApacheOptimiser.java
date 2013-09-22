@@ -33,10 +33,19 @@ public class ApacheOptimiser extends AbstractOptimiser {
 
     private static Logger logger = LoggerFactory.getLogger(ApacheOptimiser.class);
 
-    @Override
-    protected double[] internalOptimise(Problem problem) {
+    public ApacheOptimiser() throws OptimiserException {
+        this(Objective.LINEAR);
+    }
 
-        LinearObjectiveFunction f = new LinearObjectiveFunction(problem.getCoefficients(), 0.0);
+    public ApacheOptimiser(Objective objective) throws OptimiserException {
+        super();
+        this.setObjective(objective);
+    }
+
+    @Override
+    protected double[] internalOptimise(Problem problem, double[] coefficients) {
+
+        LinearObjectiveFunction f = new LinearObjectiveFunction(coefficients, 0.0);
         
         
         Collection constraints = new ArrayList();
@@ -54,7 +63,7 @@ public class ApacheOptimiser extends AbstractOptimiser {
         
         // Add restriction constraint
         for(int i = 0; i < problem.getMatrixColumns(); i++) {
-            double[] constraint = new double[problem.getCoefficients().length];
+            double[] constraint = new double[coefficients.length];
         
             for(int j = 0; j < problem.getMatrixColumns(); j++) {
                 
@@ -107,6 +116,15 @@ public class ApacheOptimiser extends AbstractOptimiser {
     @Override
     public OptimiserObjectiveFactory getObjectiveFactory() {
         return null;
+    }
+
+    @Override
+    public boolean requiresInitialisation() {
+        return false;
+    }
+
+    @Override
+    public void initialise() {
     }
 
 

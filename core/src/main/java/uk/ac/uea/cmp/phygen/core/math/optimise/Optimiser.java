@@ -18,9 +18,9 @@ package uk.ac.uea.cmp.phygen.core.math.optimise;
 
 public interface Optimiser {
     
-    double[] optimise(Objective objective, Problem problem) throws OptimiserException;
+    double[] optimise(Problem problem) throws OptimiserException;
 
-    double[] multiOptimise(Objective objective, Problem problem) throws OptimiserException;
+    double[] multiOptimise(Problem problem) throws OptimiserException;
 
     boolean acceptsIdentifier(String id);
 
@@ -33,4 +33,10 @@ public interface Optimiser {
     boolean hasObjectiveFactory();
 
     OptimiserObjectiveFactory getObjectiveFactory();
+
+    boolean requiresInitialisation();
+
+    void initialise() throws OptimiserException;
+
+    void setObjective(Objective objective);
 }

@@ -15,6 +15,7 @@
  */
 package uk.ac.uea.cmp.phygen.superq;
 
+import org.apache.commons.cli.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.math.optimise.Objective;
@@ -340,7 +341,15 @@ private void cboSelectObjectiveActionPerformed(java.awt.event.ActionEvent evt) {
 
     private SuperQOptions buildSuperQOptions(){
 
-        SuperQOptions options = new SuperQOptions();
+        SuperQOptions options;
+
+        try {
+            options = new SuperQOptions();
+        }
+        catch(OptimiserException oe) {
+            showErrorDialog("Error occured configuring optimiser.   Check you have selected an operational optimiser and set an appropriate objective.");
+            return null;
+        }
 
         String type = (String) cboInputFormat.getSelectedItem();
         options.setInputFileFormat(SuperQOptions.InputFormat.valueOf(type.toUpperCase()));

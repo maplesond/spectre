@@ -133,7 +133,14 @@ public class Main {
 
         CommandLine commandLine = cmdLineParser.parse(options, args);
 
-        SuperQOptions sqOpts = new SuperQOptions();
+        SuperQOptions sqOpts = null;
+
+        try {
+            sqOpts = new SuperQOptions();
+        }
+        catch(OptimiserException oe) {
+            throw new ParseException("Error occured configuring optimiser.   Check you have selected an operational optimiser and set an appropriate objective.");
+        }
 
         // This is probably a bit dangerous to assume that no further processing 
         // should occur if this option is selected.  But we'll end here for simplicity.

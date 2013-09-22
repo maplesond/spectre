@@ -20,25 +20,14 @@ public class Problem {
     
     private double[] restriction;
     private double[][] matrix;
-    private double[] coefficients;
 
     public Problem() {
-        this(new double[0], new double[0][0], new double[0]);
+        this(new double[0], new double[0][0]);
     }
 
-    public Problem(double[] restriction, double[][] matrix, double[] coefficients) {
+    public Problem(double[] restriction, double[][] matrix) {
         this.restriction = restriction;
         this.matrix = matrix;
-        this.coefficients = coefficients;
-    }
-
-    
-    public double[] getCoefficients() {
-        return coefficients;
-    }
-
-    public void setCoefficients(double[] coefficients) {
-        this.coefficients = coefficients;
     }
 
     public double[] getRestriction() {

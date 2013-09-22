@@ -79,10 +79,10 @@ public class Scaling extends PhygenTool {
         try {
             optimiser = commandLine.hasOption(OPT_OPTIMISER) ?
                 OptimiserFactory.getInstance().createOptimiserInstance(commandLine.getOptionValue(OPT_OPTIMISER), Objective.QUADRATIC) :
-                new ApacheOptimiser();
+                new ApacheOptimiser(Objective.QUADRATIC);
         }
         catch(OptimiserException oe) {
-            optimiser = new ApacheOptimiser();
+            throw new IOException(oe);
         }
 
         try {
@@ -120,11 +120,11 @@ public class Scaling extends PhygenTool {
         //of coefficients
         double[][] h = getMatrix(outputPrefix.getPath(), ntrees);
 
-        Problem p = new Problem(new double[h.length], h, new double[h.length]);
+        Problem p = new Problem(new double[h.length], h);
 
         //Updates quartet weights and writes them into a file
         //for each input tree one quartet file is generated
-        Matrix.updateQuartetWeights(outputPrefix.getParent(), outputPrefix.getName(), optimiser.optimise(Objective.QUADRATIC, p));
+        Matrix.updateQuartetWeights(outputPrefix.getParent(), outputPrefix.getName(), optimiser.optimise(p));
     }
 
     public static void run(File inputFile, File outputPrefix, Mode mode, Optimiser optimiser) throws OptimiserException, IOException {

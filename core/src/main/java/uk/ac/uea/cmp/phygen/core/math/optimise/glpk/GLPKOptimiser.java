@@ -15,23 +15,36 @@
  */
 package uk.ac.uea.cmp.phygen.core.math.optimise.glpk;
 
+import org.apache.commons.lang3.StringUtils;
 import org.gnu.glpk.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.math.optimise.*;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
+
 public class GLPKOptimiser extends AbstractOptimiser {
 
     private static Logger logger = LoggerFactory.getLogger(GLPKOptimiser.class);
 
-    @Override
-    protected double[] internalOptimise(Problem problem) {
+    public GLPKOptimiser() throws OptimiserException {
+        this(Objective.LINEAR);
+    }
 
-        double[] sol = new double[problem.getCoefficients().length];
+    public GLPKOptimiser(Objective objective) throws OptimiserException {
+        super();
+        this.setObjective(objective);
+    }
+
+    @Override
+    protected double[] internalOptimise(Problem problem, double[] coefficients) {
+
+        int nbCoefficients = coefficients.length;
+        double[] sol = new double[nbCoefficients];
 
         double[] restriction = problem.getRestriction();
-
-        double[] coeff = problem.getCoefficients();
 
         double[][] matrix = problem.getMatrix();
 
@@ -61,8 +74,8 @@ public class GLPKOptimiser extends AbstractOptimiser {
 
         //Create Variables (columns)
 //        
-        GLPK.glp_add_cols(lp, problem.getCoefficients().length);
-        for (int i = 1; i < problem.getCoefficients().length + 1; i++) {
+        GLPK.glp_add_cols(lp, nbCoefficients);
+        for (int i = 1; i < nbCoefficients + 1; i++) {
             String s = "x" + i;
             GLPK.glp_set_col_name(lp, i, s);
             GLPK.glp_set_col_bnds(lp, i, GLPKConstants.GLP_LO, -restriction[i - 1], 0.0);
@@ -77,12 +90,12 @@ public class GLPKOptimiser extends AbstractOptimiser {
         }
 //        
 //        //Set up constrains
-        ia = GLPK.new_intArray(matrix.length * coeff.length);
-        ar = GLPK.new_doubleArray(matrix.length * coeff.length);
+        ia = GLPK.new_intArray(matrix.length * nbCoefficients);
+        ar = GLPK.new_doubleArray(matrix.length * nbCoefficients);
 
         for (int i = 1; i < matrix.length + 1; i++) {
             int k = 1;
-            for (int j = 1; j < coeff.length + 1; j++) {
+            for (int j = 1; j < nbCoefficients + 1; j++) {
 //          GLPK.intArray_setitem(ia, k, i);
                 GLPK.intArray_setitem(ia, k, j);
                 GLPK.doubleArray_setitem(ar, k, matrix[i - 1][j - 1]);
@@ -97,20 +110,18 @@ public class GLPKOptimiser extends AbstractOptimiser {
 //          
                 k++;
             }
-            GLPK.glp_set_mat_row(lp, i, coeff.length, ia, ar);
+            GLPK.glp_set_mat_row(lp, i, nbCoefficients, ia, ar);
 //            System.out.println("row"+i+": "+GLPK.glp_get_mat_row(lp, i, ia, ar));
         }
 //        
         GLPK.glp_print_mip(lp, "lp");
-        // Set Objective
 
+        // Set Objective
         GLPK.glp_set_obj_name(lp, "z");
         GLPK.glp_set_obj_dir(lp, GLPKConstants.GLP_MIN);
 
-        for (int i = 0; i < coeff.length; i++) {
-
-            GLPK.glp_set_obj_coef(lp, i, coeff[i]);
-
+        for (int i = 0; i < nbCoefficients; i++) {
+            GLPK.glp_set_obj_coef(lp, i, coefficients[i]);
         }
 
 // Solve model
@@ -191,6 +202,44 @@ public class GLPKOptimiser extends AbstractOptimiser {
     @Override
     public OptimiserObjectiveFactory getObjectiveFactory() {
         return null;
+    }
+
+    @Override
+    public boolean requiresInitialisation() {
+        return true;
+    }
+
+    @Override
+    public void initialise() throws OptimiserException {
+
+        String libPaths = System.getProperty("java.library.path");
+
+        List<String> libPathsList = new ArrayList<String>();
+
+        libPathsList.add(libPaths);
+
+        if (!libPaths.contains("/usr/local/lib")) {
+            libPathsList.add("/usr/local/lib");
+        }
+
+        if (!libPaths.contains("/usr/local/lib/jni")) {
+            libPathsList.add("/usr/local/lib/jni");
+        }
+
+        if (!libPaths.contains("/usr/lib/jni")) {
+            libPathsList.add("/usr/lib/jni");
+        }
+
+        System.setProperty( "java.library.path", StringUtils.join(libPathsList, ":"));
+
+        try {
+            Field fieldSysPath = ClassLoader.class.getDeclaredField( "sys_paths" );
+            fieldSysPath.setAccessible( true );
+            fieldSysPath.set( null, null );
+        }
+        catch(Throwable t) {
+            throw new OptimiserException(t, 1);
+        }
     }
 
 

@@ -16,13 +16,15 @@
 package uk.ac.uea.cmp.phygen.gurobi;
 
 import gurobi.*;
+import uk.ac.uea.cmp.phygen.core.math.optimise.Objective;
 import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
 
 
 public class GurobiOptimiserLinear extends GurobiOptimiser {
 
-    public GurobiOptimiserLinear() throws OptimiserException {
+    public GurobiOptimiserLinear(Objective objective) throws OptimiserException {
         super();
+        this.setObjective(objective);
     }
     
     @Override
@@ -50,6 +52,5 @@ public class GurobiOptimiserLinear extends GurobiOptimiser {
     public GRBExpr getObjective() throws GRBException {
         return null;
     }
-
 
 }
