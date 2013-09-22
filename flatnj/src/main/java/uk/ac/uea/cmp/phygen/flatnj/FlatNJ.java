@@ -42,6 +42,7 @@ public class FlatNJ
     private static final String OPT_OUTPUT = "out";
 
     private static final double DEFAULT_THRESHOLD = 0.15;
+    private static final String DEFAULT_OUTPUT = "flatnj.out";
 
     /**
      * Nexus file reader
@@ -107,16 +108,22 @@ public class FlatNJ
 
         // Options with arguments
         Option optThreshold = OptionBuilder.withArgName("double").withLongOpt(OPT_THRESHOLD).hasArg()
-                .withDescription("Filtering threshold, i.e. minimal weight ratio allowed for two incompatible splits. Default value " + DEFAULT_THRESHOLD).create("i");
+                .withDescription("Filtering threshold, i.e. minimal weight ratio allowed for two incompatible splits. Default value (" + DEFAULT_THRESHOLD + ")").create("t");
 
         Option optFilter = OptionBuilder.withArgName("boolean").withLongOpt(OPT_FILTER)
                 .withDescription("Filter the split system").create("f");
 
         Option optInputFile = OptionBuilder.withArgName("file").withLongOpt(OPT_INPUT).isRequired().hasArg()
-                .withDescription("Input file").create("i");
+                .withDescription("Input file - Quadruple data in nexus format.").create("i");
+
+        Option optOutputFile = OptionBuilder.withArgName("file").withLongOpt(OPT_OUTPUT).hasArg()
+                .withDescription("Output file - Default value (\"" + DEFAULT_OUTPUT + "\")").create("o");
+
 
         // create Options object
         Options options = new Options();
+        options.addOption(optInputFile);
+        options.addOption(optOutputFile);
         options.addOption(optThreshold);
         options.addOption(optFilter);
         options.addOption(CommandLineHelper.HELP_OPTION);
@@ -132,8 +139,8 @@ public class FlatNJ
     public static void main(String[] args)
     {
         // Setup the command line options
-        CommandLine commandLine = CommandLineHelper.startApp(createOptions(), "flatnj-<version>", "FlatNJBackup",
-                "FNet computes flat split networks from quadruple data. To generate quadruples please use GenQS.", args);
+        CommandLine commandLine = CommandLineHelper.startApp(createOptions(), "flatnj-<version>", "FlatNJ",
+                "Flat NJ computes flat split networks from quadruple data. To generate quadruples please use GenQS.", args);
 
         // If we didn't return a command line object then just return.  Probably the user requested help or
         // input invalid args
@@ -146,9 +153,9 @@ public class FlatNJ
 
             // Required
             File inFile = new File(commandLine.getOptionValue(OPT_INPUT));
-            File outFile = new File(commandLine.getOptionValue(OPT_OUTPUT));
 
             // Optional
+            File outFile = commandLine.hasOption(OPT_OUTPUT) ? new File(commandLine.getOptionValue(OPT_OUTPUT)) : new File(DEFAULT_OUTPUT);
             double threshold = commandLine.hasOption(OPT_THRESHOLD) ? Double.parseDouble(commandLine.getOptionValue(OPT_THRESHOLD)) : DEFAULT_THRESHOLD;
             boolean filterSplits = commandLine.hasOption(OPT_FILTER);
             
