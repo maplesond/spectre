@@ -10,6 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>netme</artifactId>
+    <version>1.0</version>
 
     <name>Phylogenetics Tool Suite: Net-ME</name>
 

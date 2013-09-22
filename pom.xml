@@ -99,6 +99,64 @@
                 </executions>
             </plugin>
 
+            <!-- Copy all final jars from sub modules into a single directory -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <inherited>false</inherited>
+                <executions>
+                    <execution>
+                        <id>copy-artifact</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>flatnj</artifactId>
+                                    <version>1.0</version>
+                                    <type>jar</type>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>superq</artifactId>
+                                    <version>2.0</version>
+                                    <type>jar</type>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>qnet</artifactId>
+                                    <version>2.0</version>
+                                    <type>jar</type>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>phygentools</artifactId>
+                                    <version>1.0</version>
+                                    <type>jar</type>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>netme</artifactId>
+                                    <version>1.0</version>
+                                    <type>jar</type>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>netmake</artifactId>
+                                    <version>1.0</version>
+                                    <type>jar</type>
+                                </artifactItem>
+                            </artifactItems>
+                            <outputDirectory>bin</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+
         </plugins>
     </build>
     <dependencies>
@@ -138,11 +196,11 @@
 
     <modules>
         <module>core</module>
+        <module>phygentools</module>
         <module>netmake</module>
         <module>netme</module>
-        <module>superq</module>
-        <module>phygentools</module>
         <module>qnet</module>
+        <module>superq</module>
         <module>flatnj</module>
 
         <!-- Uncomment this if you have gurobi installed, and have the gurobi jar installed in the local maven repo.

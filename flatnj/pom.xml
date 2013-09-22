@@ -12,7 +12,7 @@
     <artifactId>flatnj</artifactId>
     <version>1.0</version>
 
-    <name>Phylogenetics Tool Suite: SuperQ</name>
+    <name>Phylogenetics Tool Suite: FlatNJ</name>
 
     <build>
 
