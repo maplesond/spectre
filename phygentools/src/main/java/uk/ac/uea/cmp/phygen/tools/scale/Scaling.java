@@ -27,6 +27,7 @@ import uk.ac.uea.cmp.phygen.core.math.optimise.apache.ApacheOptimiser;
 import uk.ac.uea.cmp.phygen.core.math.tuple.Key;
 import uk.ac.uea.cmp.phygen.core.ui.cli.PhygenTool;
 import uk.ac.uea.cmp.phygen.tools.chopper.Chopper;
+import uk.ac.uea.cmp.phygen.tools.chopper.loader.LoaderType;
 
 import java.io.File;
 import java.io.FileReader;
@@ -107,7 +108,7 @@ public class Scaling extends PhygenTool {
                 Chopper.run(
                         new File(outputPrefix.getPath() + (i + 1) + ".tre"),
                         new File(outputPrefix.getPath() + (i + 1) + ".qua"),
-                        Chopper.Type.NEWICK);
+                        LoaderType.NEWICK);
             }
 
         } else if (mode == Mode.SCRIPT) {
@@ -181,7 +182,7 @@ public class Scaling extends PhygenTool {
             Chopper.run(
                     new File(filename.substring(0, filename.lastIndexOf(File.separator) + 1) + (line.substring(line.indexOf(' '))).trim()),
                     new File(path + prefix + (ntrees) + ".qua"),
-                    Chopper.Type.valueOf(line.substring(0, line.indexOf(' ')))
+                    LoaderType.valueOf(line.substring(0, line.indexOf(' ')))
             );
         }
 
@@ -231,13 +232,13 @@ public class Scaling extends PhygenTool {
     //parameters:
     //lnr   --> file handle
     //ntaxa --> number of taxa in tree
-    private static HashMap getQuartets(LineNumberReader lnr, int ntaxa) {
+    private static HashMap<Key, WeightVector> getQuartets(LineNumberReader lnr, int ntaxa) {
         //upper bound on the number of different 4-subsets
         //used to set initial capacity of HashMap
         int size = ntaxa * (ntaxa - 1) * (ntaxa - 2) * (ntaxa - 3) / (3 * 4);
 
         //new TreeSet for the quartets
-        HashMap quart = new HashMap(size);
+        HashMap<Key, WeightVector> quart = new HashMap<>(size);
 
         //loop variables
         int t1 = 0;

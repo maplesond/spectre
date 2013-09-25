@@ -17,8 +17,10 @@ package uk.ac.uea.cmp.phygen.tools.chopper;
 
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 import uk.ac.uea.cmp.phygen.core.math.tuple.Triplet;
+import uk.ac.uea.cmp.phygen.tools.chopper.loader.Source;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.ListIterator;
 
 /**
@@ -30,47 +32,45 @@ public class Combiner {
     // note: this now simply computes a weighted sum
     public static void add(QuartetWeights qW, QuartetWeights aW, double w) {
 
-        Triplet[] finalData = qW.getData();
+        List<Triplet<Double>> finalData = qW.getData();
 
         // this is the part that may be done in any number of ways
 
         // here, take weighted sum of every quartet
         // where the quartet is nonzero
 
-        Triplet[] data = aW.getData();
+        List<Triplet<Double>> data = aW.getData();
 
-        for (int n = 0; n < data.length; n++) {
+        for (int n = 0; n < data.size(); n++) {
 
-            Triplet<Double> fT = finalData[n];
-            Triplet<Double> T = data[n];
+            Triplet<Double> fT = finalData.get(n);
+            Triplet<Double> T = data.get(n);
 
             // just a potentially weighted mean
             // with this, quartets supported by few
             // trees will be weak, although if the trees are strong, they may be too
 
-            Triplet nT = new Triplet<Double>(
+            Triplet<Double> nT = new Triplet<>(
                     fT.getA() + w * T.getA(),
                     fT.getB() + w * T.getB(),
                     fT.getC() + w * T.getC()
             );
 
-            finalData[n] = nT;
-
+            finalData.set(n, nT);
         }
 
         qW.setData(finalData);
-
     }
 
     public static void divide(QuartetWeights qW, QuartetWeights summer) {
 
-        Triplet[] data = qW.getData();
-        Triplet[] sData = summer.getData();
+        List<Triplet<Double>> data = qW.getData();
+        List<Triplet<Double>> sData = summer.getData();
 
-        for (int n = 0; n < data.length; n++) {
+        for (int n = 0; n < data.size(); n++) {
 
-            Triplet<Double> T = data[n];
-            Triplet<Double> sT = sData[n];
+            Triplet<Double> T = data.get(n);
+            Triplet<Double> sT = sData.get(n);
 
             Triplet<Double> nT = new Triplet<>();
 
@@ -88,15 +88,12 @@ public class Combiner {
                 nT.setA(T.getA());
                 nT.setB(T.getB());
                 nT.setC(T.getC());
-
             }
 
-            data[n] = nT;
-
+            data.set(n, nT);
         }
 
         qW.setData(data);
-
     }
 
     public static void sum(QuartetWeights summer, LinkedList taxonNames, Source loader) {

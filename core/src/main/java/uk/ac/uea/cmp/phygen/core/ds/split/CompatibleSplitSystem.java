@@ -16,7 +16,6 @@
 package uk.ac.uea.cmp.phygen.core.ds.split;
 
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
-import uk.ac.uea.cmp.phygen.core.math.optimise.phygen.PhygenOptimiserCircularNNLS;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -96,7 +95,6 @@ public class CompatibleSplitSystem extends CircularSplitSystem {
     public SplitWeights calculateSplitWeighting(DistanceMatrix distanceMatrix, CircularOrdering circularOrdering) {
 
         int n = distanceMatrix.size();
-        double[][] treeWeights = new double[n][n];
         double[][] permutedDistances = new double[n][n];
         boolean[][] flag = new boolean[n][n];
         int[] permutationInvert = new int[n];
@@ -108,12 +106,6 @@ public class CompatibleSplitSystem extends CircularSplitSystem {
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 flag[i][j] = false;
-            }
-        }
-
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                treeWeights[i][j] = 0.;
             }
         }
 
@@ -141,15 +133,7 @@ public class CompatibleSplitSystem extends CircularSplitSystem {
             }
         }
 
-//        assert(checkFlags(flag) == 17);
-
-
-        new PhygenOptimiserCircularNNLS().treeInCycleLeastSquares(permutedDistances, flag,
-                n, treeWeights);
-
-        //      assert(checkWeights(treeWeights) == 17);
-
-        return new TreeSplitWeights(treeWeights);
+        return new CircularNNLS().treeInCycleLeastSquares(permutedDistances, flag, n);
     }
 
     private int checkFlags(boolean[][] flag) {

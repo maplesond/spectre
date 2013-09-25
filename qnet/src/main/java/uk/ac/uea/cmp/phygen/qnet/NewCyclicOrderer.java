@@ -54,14 +54,13 @@ class NewCyclicOrderer {
         // initalization step
         int p = N;
 
-        ArrayList X = new ArrayList();
+        ArrayList<Integer> X = new ArrayList<>();
 
         for (int n = 0; n < N; n++) {
 
             // the taxa set X (prime)
 
             X.add((theLists.get(n)).get(0));
-
         }
 
         // init all the uk.ac.uea.cmp.phygen.qnet.holders

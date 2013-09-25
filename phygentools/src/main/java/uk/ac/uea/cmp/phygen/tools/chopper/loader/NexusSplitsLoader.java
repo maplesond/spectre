@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package uk.ac.uea.cmp.phygen.tools.chopper;
+package uk.ac.uea.cmp.phygen.tools.chopper.loader;
 
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 
@@ -28,21 +28,13 @@ import java.util.StringTokenizer;
  * Created by IntelliJ IDEA. User: Analysis Date: 2004-jul-11 Time: 23:09:07 To
  * change this template use Options | File Templates.
  */
-public class NexusDistancesLoader implements Source {
+public class NexusSplitsLoader extends AbstractLoader {
 
+    @Override
     public void load(String fileName, double weight) {
 
-        boolean upper = false;
-
-        index = 0;
-
-        D = null;
-
-        this.weight = weight;
-
-        qW = new QuartetWeights();
-
-        taxonNames = new LinkedList();
+        this.weights.add(weight);
+        QuartetWeights qW = new QuartetWeights();
 
         /**
          *
@@ -97,8 +89,6 @@ public class NexusDistancesLoader implements Source {
                             taxonNames.add(new String(""));
 
                         }
-
-                        D = new double[N][N];
 
                         qW.ensureCapacity(N);
                         qW.setSize(QuartetWeights.over4(N));
@@ -161,7 +151,7 @@ public class NexusDistancesLoader implements Source {
 
                     String tT = sT.nextToken();
 
-                    if (tT.toLowerCase().startsWith("distances;")) {
+                    if (tT.toLowerCase().startsWith("st_splits;") || tT.toLowerCase().startsWith("splits;")) {
 
                         readingState = false;
 
@@ -196,42 +186,76 @@ public class NexusDistancesLoader implements Source {
 
                             } else {
 
-                                // BEGIN reading a distance line
+                                // BEGIN reading a split line
 
-                                StringTokenizer bT = new StringTokenizer(bLine);
+                                if (bLine.endsWith(",")) {
 
-                                String taxa = bT.nextToken().trim();
-                                String blub = "";
-
-                                if (taxa.startsWith("[") && taxa.endsWith("]")) {
-                                    taxa = bT.nextToken().trim();
-                                    if (taxa.startsWith("'") && taxa.endsWith("'")) {
-                                        bT.nextToken();
-                                        taxa = bT.nextToken().trim();
-                                    }
-
-
+                                    bLine = bLine.substring(0, bLine.length() - 1);
                                 }
 
-                                int pos = taxonNames.indexOf(taxa);
+//                                System.out.println("bline: \"" + bLine + "\"");
 
-                                int rowCount = 0;
+                                StringTokenizer bT = new StringTokenizer(bLine);
+//                                
+                                if (bT.nextToken().startsWith("[")) {
+                                    bT.nextToken();
+                                    bT.nextToken();
+                                }
+                                double w = Double.parseDouble(bT.nextToken());
+
+                                LinkedList<Integer> setA = new LinkedList<>();
+                                LinkedList<Integer> setB = new LinkedList<>();
 
                                 while (bT.hasMoreTokens()) {
 
-                                    D[pos][rowCount] = Double.parseDouble(bT.nextToken());
-
-                                    rowCount++;
+                                    setA.add(new Integer(Integer.parseInt(bT.nextToken())));
 
                                 }
 
-                                if (pos == 0 && rowCount > 1) {
+                                for (int n = 0; n < N; n++) {
 
-                                    upper = true;
+                                    if (!setA.contains(new Integer(n + 1))) {
+
+                                        setB.add(new Integer(n + 1));
+
+                                    }
 
                                 }
 
-                                // END reading a distance line
+                                if (setA.size() > 1 && setB.size() > 1) {
+
+                                    // we have a non-trivial split!
+                                    // which we must have, for trivial splits match no quartets...
+
+                                    // so, for all quartets in here, add the weight to their value
+
+                                    for (int iA1 = 0; iA1 < setA.size() - 1; iA1++) {
+
+                                        for (int iA2 = iA1 + 1; iA2 < setA.size(); iA2++) {
+
+                                            int a1 = ((Integer) setA.get(iA1)).intValue();
+                                            int a2 = ((Integer) setA.get(iA2)).intValue();
+
+                                            for (int iB1 = 0; iB1 < setB.size() - 1; iB1++) {
+
+                                                for (int iB2 = iB1 + 1; iB2 < setB.size(); iB2++) {
+
+                                                    int b1 = ((Integer) setB.get(iB1)).intValue();
+                                                    int b2 = ((Integer) setB.get(iB2)).intValue();
+
+                                                    qW.setWeight(a1, a2, b1, b2, qW.getWeight(a1, a2, b1, b2) + w);
+
+                                                }
+
+                                            }
+
+                                        }
+
+                                    }
+
+                                }
+
+                                // END reading a split line
 
                             }
 
@@ -248,156 +272,7 @@ public class NexusDistancesLoader implements Source {
         } catch (IOException e) {
         }
 
-        if (upper) {
-
-            for (int i = 0; i < N; i++) {
-
-                for (int j = i; j < N; j++) {
-
-                    D[j][i] = D[i][j];
-
-                }
-
-            }
-
-        } else {
-
-            for (int i = 0; i < N; i++) {
-
-                for (int j = i; j < N; j++) {
-
-                    D[i][j] = D[j][i];
-
-                }
-
-            }
-
-        }
-
-        for (int a = 0; a < N - 3; a++) {
-
-            for (int b = a + 1; b < N - 2; b++) {
-
-                for (int c = b + 1; c < N - 1; c++) {
-
-                    for (int d = c + 1; d < N; d++) {
-
-                        double w1, w2, w3;
-
-                        w1 = (D[a][c] + D[b][c] + D[a][d] + D[b][d] + - 2 * D[a][b] - 2 * D[c][d]) / 4.0;
-                        w2 = (D[a][b] + D[c][b] + D[a][d] + D[c][d] + - 2 * D[a][c] - 2 * D[b][d]) / 4.0;
-                        w3 = (D[a][c] + D[d][c] + D[a][b] + D[d][b] + - 2 * D[a][d] - 2 * D[c][b]) / 4.0;
-
-                        double min = Math.min(w1, Math.min(w2, w3));
-
-                        qW.setWeight(a + 1, b + 1, c + 1, d + 1, w1 - min);
-                        qW.setWeight(a + 1, c + 1, b + 1, d + 1, w2 - min);
-                        qW.setWeight(a + 1, d + 1, b + 1, c + 1, w3 - min);
-
-                    }
-
-                }
-
-            }
-
-        }
-
+        qWs.add(qW);
     }
 
-    public void process() {
-    }
-
-    public void harvestNames(LinkedList newTaxonNames) {
-
-        ListIterator lI = taxonNames.listIterator();
-
-        while (lI.hasNext()) {
-
-            String taxonName = (String) lI.next();
-
-            if (newTaxonNames.contains(taxonName)) {
-            } else {
-
-                newTaxonNames.add(taxonName);
-
-            }
-
-        }
-
-    }
-
-    public void translate(LinkedList newTaxonNames) {
-
-        qW = qW.translate(taxonNames, newTaxonNames);
-
-    }
-
-    public LinkedList getQuartetWeights() {
-
-        LinkedList result = new LinkedList();
-
-        result.add(qW);
-
-        return result;
-
-    }
-
-    public LinkedList getWeights() {
-
-        LinkedList result = new LinkedList();
-
-        result.add(new Double(weight));
-
-        return result;
-
-    }
-
-    public double getWSum() {
-
-        return weight;
-
-    }
-
-    public LinkedList getTaxonNames() {
-
-        LinkedList result = new LinkedList();
-
-        result.add(taxonNames);
-
-        return result;
-
-    }
-
-    public QuartetWeights getNextQuartetWeights() {
-
-        index++;
-
-        return qW;
-
-    }
-
-    public double getNextWeight() {
-
-        return weight;
-
-    }
-
-    public boolean hasMoreSets() {
-
-        if (index < 1) {
-
-            return true;
-
-        } else {
-
-            return false;
-
-        }
-
-    }
-    double[][] D;
-    QuartetWeights qW;
-    LinkedList taxonNames;
-    double weight;
-    int index;
 }

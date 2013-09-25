@@ -192,7 +192,7 @@ public class Tableau<E> {
     }
 
 
-    public void addAllRows(Tableau t) {
+    public void addAllRows(Tableau<E> t) {
         for (int i = 0; i < t.rows(); i++) {
             components.add(t.copyRow(i));
         }

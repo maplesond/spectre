@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package uk.ac.uea.cmp.phygen.tools.chopper;
+package uk.ac.uea.cmp.phygen.tools.chopper.loader;
 
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 
@@ -32,21 +32,21 @@ public interface Source {
     public void process();
 
     // these are the qWs
-    public LinkedList getQuartetWeights();
+    public LinkedList<QuartetWeights> getQuartetWeights();
 
     // list of weights of qWs
-    public LinkedList getWeights();
+    public LinkedList<Double> getWeights();
 
     public double getWSum();
 
     // note: translate BEFORE processing
-    public void translate(LinkedList taxonNames);
+    public void translate(LinkedList<String> taxonNames);
 
     // straightforward union of taxon names, stored in the input, so clone if necessary
-    public void harvestNames(LinkedList taxonNames);
+    public void harvestNames(LinkedList<String> taxonNames);
 
     // name list for each
-    public LinkedList getTaxonNames();
+    public LinkedList<String> getTaxonNames();
 
     public boolean hasMoreSets();
 

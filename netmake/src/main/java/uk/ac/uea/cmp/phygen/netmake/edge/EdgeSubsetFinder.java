@@ -31,7 +31,7 @@ import java.util.List;
  */
 public class EdgeSubsetFinder {
 
-    private Tableau t;
+    private Tableau<Integer> t;
     private SummedDistanceList sdl;
     private Edge edge;
 
@@ -40,7 +40,7 @@ public class EdgeSubsetFinder {
      * @param sdl
      * @param edge
      */
-    public EdgeSubsetFinder(Tableau t, SummedDistanceList sdl, Edge edge) {
+    public EdgeSubsetFinder(Tableau<Integer> t, SummedDistanceList sdl, Edge edge) {
         this.t = t;
         this.edge = edge;
         this.sdl = sdl;

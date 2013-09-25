@@ -48,7 +48,7 @@ public class ApacheOptimiser extends AbstractOptimiser {
         LinearObjectiveFunction f = new LinearObjectiveFunction(coefficients, 0.0);
         
         
-        Collection constraints = new ArrayList();
+        Collection<LinearConstraint> constraints = new ArrayList<>();
         for(int i = 0; i < problem.getMatrixRows(); i++) {
             double[] constraint = new double[problem.getMatrixColumns()];
         

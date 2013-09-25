@@ -39,12 +39,11 @@ class QJoiner {
         int N = qnet.getN();
         boolean useMax = qnet.useMax();
 
-        ArrayList cN = new ArrayList();
+        ArrayList<BinaryTree> cN = new ArrayList<>();
 
         for (int n = 0; n < N; n++) {
 
             cN.add(new Leaf(n + 1));
-
         }
 
         /**
@@ -97,26 +96,23 @@ class QJoiner {
                                  * weights, add to score, increment quartets
                                  *
                                  */
-                                ArrayList aL = new ArrayList();
-                                ArrayList bL = new ArrayList();
-                                ArrayList cL = new ArrayList();
-                                ArrayList dL = new ArrayList();
+                                ArrayList<Integer> aL = new ArrayList<>();
+                                ArrayList<Integer> bL = new ArrayList<>();
+                                ArrayList<Integer> cL = new ArrayList<>();
+                                ArrayList<Integer> dL = new ArrayList<>();
 
-                                ((BinaryTree) cN.get(a)).fillList(aL);
-                                ((BinaryTree) cN.get(b)).fillList(bL);
-                                ((BinaryTree) cN.get(c)).fillList(cL);
-                                ((BinaryTree) cN.get(d)).fillList(dL);
+                                cN.get(a).fillList(aL);
+                                cN.get(b).fillList(bL);
+                                cN.get(c).fillList(cL);
+                                cN.get(d).fillList(dL);
 
                                 QuartetWeights.MeanSumResult meanSumResult = theQuartetWeights.meanSum(aL, bL, cL, dL);
 
                                 quartets += meanSumResult.getCount();
                                 score += meanSumResult.getScore();
                             }
-
                         }
-
                     }
-
                 }
 
                 /**
@@ -127,9 +123,7 @@ class QJoiner {
                  */
                 qC[a][b] = quartets;
                 sC[a][b] = score;
-
             }
-
         }
 
         /**
@@ -176,13 +170,9 @@ class QJoiner {
                             quote = aQuote;
                             bestA = a;
                             bestB = b;
-
                         }
-
                     }
-
                 }
-
             }
 
             /**
@@ -192,26 +182,24 @@ class QJoiner {
              * Print out.
              *
              */
-            ArrayList aJ = new ArrayList();
-            ArrayList bJ = new ArrayList();
+            ArrayList<Integer> aJ = new ArrayList<>();
+            ArrayList<Integer> bJ = new ArrayList<>();
 
-            ((BinaryTree) cN.get(bestA)).fillList(aJ);
-            ((BinaryTree) cN.get(bestB)).fillList(bJ);
+            cN.get(bestA).fillList(aJ);
+            cN.get(bestB).fillList(bJ);
 
             String aS = new String();
 
             for (int e = 0; e < aJ.size(); e++) {
 
-                aS += (" " + ((Integer) aJ.get(e)).intValue());
-
+                aS += (" " + aJ.get(e));
             }
 
             String bS = new String();
 
             for (int e = 0; e < bJ.size(); e++) {
 
-                bS += (" " + ((Integer) bJ.get(e)).intValue());
-
+                bS += (" " + bJ.get(e));
             }
 
             log.debug("Iteration step " + (N - n + 1) + ": joining" + aS + " and" + bS + ", average weight: " + quote);
@@ -221,9 +209,9 @@ class QJoiner {
              * Make new qN and conversion list (cL)
              *
              */
-            ArrayList aCN = new ArrayList();
+            ArrayList<BinaryTree> aCN = new ArrayList<>();
 
-            ArrayList convert = new ArrayList();
+            ArrayList<Integer> convert = new ArrayList<>();
 
             int aC = 0;
 
@@ -240,9 +228,7 @@ class QJoiner {
                 } else {
 
                     convert.add(new Integer(n - 2));
-
                 }
-
             }
 
             aCN.add(new InnerNode((BinaryTree) cN.get(bestA), (BinaryTree) cN.get(bestB)));
@@ -313,15 +299,15 @@ class QJoiner {
 
                                     if (d != b && d != bestA && d != bestB) {
 
-                                        ArrayList aL = new ArrayList();
-                                        ArrayList bL = new ArrayList();
-                                        ArrayList cL = new ArrayList();
-                                        ArrayList dL = new ArrayList();
+                                        ArrayList<Integer> aL = new ArrayList<>();
+                                        ArrayList<Integer> bL = new ArrayList<>();
+                                        ArrayList<Integer> cL = new ArrayList<>();
+                                        ArrayList<Integer> dL = new ArrayList<>();
 
-                                        ((BinaryTree) cN.get(a)).fillList(aL);
-                                        ((BinaryTree) cN.get(b)).fillList(bL);
-                                        ((BinaryTree) cN.get(c)).fillList(cL);
-                                        ((BinaryTree) cN.get(d)).fillList(dL);
+                                        cN.get(a).fillList(aL);
+                                        cN.get(b).fillList(bL);
+                                        cN.get(c).fillList(cL);
+                                        cN.get(d).fillList(dL);
 
                                         QuartetWeights.MeanSumResult meanSumResult = theQuartetWeights.meanSum(aL, bL, cL, dL);
 
@@ -332,8 +318,8 @@ class QJoiner {
                             }
                         }
 
-                        aSC[((Integer) convert.get(b)).intValue()][n - 2] += score;
-                        aQC[((Integer) convert.get(b)).intValue()][n - 2] += count;
+                        aSC[convert.get(b)][n - 2] += score;
+                        aQC[convert.get(b)][n - 2] += count;
 
                     } else if (b == bestA || b == bestB) {
 
@@ -357,15 +343,15 @@ class QJoiner {
 
                                     if (d != a && d != bestA && d != bestB) {
 
-                                        ArrayList aL = new ArrayList();
-                                        ArrayList bL = new ArrayList();
-                                        ArrayList cL = new ArrayList();
-                                        ArrayList dL = new ArrayList();
+                                        ArrayList<Integer> aL = new ArrayList<>();
+                                        ArrayList<Integer> bL = new ArrayList<>();
+                                        ArrayList<Integer> cL = new ArrayList<>();
+                                        ArrayList<Integer> dL = new ArrayList<>();
 
-                                        ((BinaryTree) cN.get(a)).fillList(aL);
-                                        ((BinaryTree) cN.get(b)).fillList(bL);
-                                        ((BinaryTree) cN.get(c)).fillList(cL);
-                                        ((BinaryTree) cN.get(d)).fillList(dL);
+                                        cN.get(a).fillList(aL);
+                                        cN.get(b).fillList(bL);
+                                        cN.get(c).fillList(cL);
+                                        cN.get(d).fillList(dL);
 
                                         QuartetWeights.MeanSumResult meanSumResult = theQuartetWeights.meanSum(aL, bL, cL, dL);
 
@@ -379,8 +365,8 @@ class QJoiner {
 
                         }
 
-                        aSC[((Integer) convert.get(a)).intValue()][n - 2] += score;
-                        aQC[((Integer) convert.get(a)).intValue()][n - 2] += count;
+                        aSC[convert.get(a)][n - 2] += score;
+                        aQC[convert.get(a)][n - 2] += count;
 
                     } else {
 
@@ -394,20 +380,20 @@ class QJoiner {
                          * (a, b) - calc of (a, b, bestA, bestB)
                          *
                          */
-                        ArrayList aL = new ArrayList();
-                        ArrayList bL = new ArrayList();
-                        ArrayList cL = new ArrayList();
-                        ArrayList dL = new ArrayList();
+                        ArrayList<Integer> aL = new ArrayList<>();
+                        ArrayList<Integer> bL = new ArrayList<>();
+                        ArrayList<Integer> cL = new ArrayList<>();
+                        ArrayList<Integer> dL = new ArrayList<>();
 
-                        ((BinaryTree) cN.get(a)).fillList(aL);
-                        ((BinaryTree) cN.get(b)).fillList(bL);
-                        ((BinaryTree) cN.get(bestA)).fillList(cL);
-                        ((BinaryTree) cN.get(bestB)).fillList(dL);
+                        cN.get(a).fillList(aL);
+                        cN.get(b).fillList(bL);
+                        cN.get(bestA).fillList(cL);
+                        cN.get(bestB).fillList(dL);
 
                         QuartetWeights.MeanSumResult meanSumResult = theQuartetWeights.meanSum(aL, bL, cL, dL);
 
-                        aSC[((Integer) convert.get(a)).intValue()][((Integer) convert.get(b)).intValue()] = sC[a][b] - meanSumResult.getScore();
-                        aQC[((Integer) convert.get(a)).intValue()][((Integer) convert.get(b)).intValue()] = qC[a][b] - meanSumResult.getCount();
+                        aSC[convert.get(a)][convert.get(b)] = sC[a][b] - meanSumResult.getScore();
+                        aQC[convert.get(a)][convert.get(b)] = qC[a][b] - meanSumResult.getCount();
                     }
                 }
             }

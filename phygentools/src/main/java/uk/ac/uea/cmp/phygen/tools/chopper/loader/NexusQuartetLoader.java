@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package uk.ac.uea.cmp.phygen.tools.chopper;
+package uk.ac.uea.cmp.phygen.tools.chopper.loader;
 
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 
@@ -28,17 +28,13 @@ import java.util.StringTokenizer;
  * Created by IntelliJ IDEA. User: Analysis Date: 2004-jul-11 Time: 23:09:07 To
  * change this template use Options | File Templates.
  */
-public class NexusQuartetLoader implements Source {
+public class NexusQuartetLoader extends AbstractLoader {
 
+    @Override
     public void load(String fileName, double weight) {
 
-        index = 0;
-
-        this.weight = weight;
-
-        qW = new QuartetWeights();
-
-        taxonNames = new LinkedList();
+        this.weights.add(weight);
+        QuartetWeights qW = new QuartetWeights();
 
         /**
          *
@@ -221,102 +217,7 @@ public class NexusQuartetLoader implements Source {
 
         } catch (IOException e) {
         }
-
+        qWs.add(qW);
     }
 
-    public void process() {
-    }
-
-    public void harvestNames(LinkedList newTaxonNames) {
-
-        ListIterator lI = taxonNames.listIterator();
-
-        while (lI.hasNext()) {
-
-            String taxonName = (String) lI.next();
-
-            if (newTaxonNames.contains(taxonName)) {
-            } else {
-
-                newTaxonNames.add(taxonName);
-
-            }
-
-        }
-
-    }
-
-    public void translate(LinkedList newTaxonNames) {
-
-        qW = qW.translate(taxonNames, newTaxonNames);
-
-    }
-
-    public LinkedList getQuartetWeights() {
-
-        LinkedList result = new LinkedList();
-
-        result.add(qW);
-
-        return result;
-
-    }
-
-    public QuartetWeights getNextQuartetWeights() {
-
-        index++;
-
-        return qW;
-
-    }
-
-    public double getNextWeight() {
-
-        return weight;
-
-    }
-
-    public boolean hasMoreSets() {
-
-        if (index < 1) {
-
-            return true;
-
-        } else {
-
-            return false;
-
-        }
-
-    }
-
-    public LinkedList getWeights() {
-
-        LinkedList result = new LinkedList();
-
-        result.add(new Double(weight));
-
-        return result;
-
-    }
-
-    public double getWSum() {
-
-        return weight;
-
-    }
-
-    public LinkedList getTaxonNames() {
-
-        LinkedList result = new LinkedList();
-
-        result.add(taxonNames);
-
-        return result;
-
-    }
-    QuartetWeights qW;
-    LinkedList taxonNames;
-    double weight;
-    int index;
 }

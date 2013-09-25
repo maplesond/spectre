@@ -33,7 +33,7 @@ public class FastaReader
     public Alignment readAlignment(String alignmentFilePath) throws IOException {
         File alignmentFile = new File(alignmentFilePath);
         
-        aln = new LinkedHashMap();
+        aln = new LinkedHashMap<>();
 
         //Open alignment file
         FileReader fileReader = new FileReader(alignmentFile);

@@ -13,7 +13,10 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package uk.ac.uea.cmp.phygen.core.math.optimise.phygen;
+package uk.ac.uea.cmp.phygen.core.ds.split;
+
+import uk.ac.uea.cmp.phygen.core.ds.split.SplitWeights;
+import uk.ac.uea.cmp.phygen.core.ds.split.TreeSplitWeights;
 
 import java.util.Comparator;
 import java.util.Iterator;
@@ -40,7 +43,7 @@ import java.util.TreeSet;
  * method combined with a positivity constraint would speed up the constrained optimization considerably - as yet I
  * haven't found how this may be done.
  */
-public class PhygenOptimiserCircularNNLS {
+public class CircularNNLS {
 
     /* Epsilon constant for the conjugate gradient algorithm */
     private static final double logPiPlus2 = Math.log(Math.PI) + 2.0;
@@ -298,7 +301,7 @@ public class PhygenOptimiserCircularNNLS {
         int min_i = 0, min_j = 0;
         double xi = 0, min_xi = 0;
         double min_grad = 0, grad_ij = 0;
-        SortedSet neg_indices = new TreeSet(new DoubleIntInt());
+        SortedSet<DoubleIntInt> neg_indices = new TreeSet<DoubleIntInt>(new DoubleIntInt());
         boolean all_positive = true, first_pass = true;
         double[][] diagAtWA = null;
 
@@ -538,7 +541,7 @@ public class PhygenOptimiserCircularNNLS {
         int min_i = 0, min_j = 0;
         double xi = 0, min_xi = 0;
         double min_grad = 0, grad_ij = 0;
-        SortedSet neg_indices = new TreeSet(new DoubleIntInt());
+        SortedSet<DoubleIntInt> neg_indices = new TreeSet<DoubleIntInt>(new DoubleIntInt());
         double[][] diagAtWA = null;
 
         if (getMinimizeAIC()) {
@@ -741,35 +744,43 @@ public class PhygenOptimiserCircularNNLS {
         }
     }
 
-    //This method computes the least squares weights for the splits.
-    //Parameters:
-    //dist...distance matrix, the entries are permuted such that
-    //       the ordering 0,1,2,...,(ntax-1) is the circular ordering
-    //       for the full circular split system we want to compute
-    //       weights for.
-    //ntax...number of taxa, taxa are numbered 0,1,2,...,(ntax-1)
-    //x   ...2-dimensional array that contains the split weights
-    //       computed by the NNLS-fitting algorithm.
-    public void circularLeastSquares(double[][] dist, int ntax, double[][] x) {
+
+    /**
+     * This method computes the least squares weights for the splits
+     * @param dist distance matrix, the entries are permuted such that the ordering 0,1,2,...,(ntax-1) is the circular
+     *             ordering for the full circular split system we want to compute weights for.
+     * @param ntax number of taxa, taxa are numbered 0,1,2,...,(ntax-1)
+     * @return The split weights calculated by this method
+     */
+    public SplitWeights circularLeastSquares(double[][] dist, int ntax) {
         double[][] W = new double[ntax][ntax];
+        double[][] splitWeights = new double[ntax][ntax];
+
         fillW(ntax, W, dist, 1);
-        runActiveConjugate(ntax, dist, W, x);
+        runActiveConjugate(ntax, dist, W, splitWeights);
+
+        return new SplitWeights(splitWeights);
     }
 
-    public void treeInCycleLeastSquares(double[][] dist, boolean[][] flag, int ntax, double[][] x) {
+    public TreeSplitWeights treeInCycleLeastSquares(double[][] dist, boolean[][] flag, int ntax) {
         double[][] W = new double[ntax][ntax];
+        double[][] treeSplitWeights = new double[ntax][ntax];
+
         fillW(ntax, W, dist, 1);
-        runActiveConjugate(ntax, dist, W, flag, x);
+        runActiveConjugate(ntax, dist, W, flag, treeSplitWeights);
+
+        return new TreeSplitWeights(treeSplitWeights);
     }
 
-    class DoubleIntInt implements Comparator {
+    class DoubleIntInt implements Comparator<DoubleIntInt> {
         double d;
         int first;
         int second;
 
-        public int compare(Object obj1, Object obj2) throws ClassCastException {
-            DoubleIntInt dii1 = (DoubleIntInt) obj1;
-            DoubleIntInt dii2 = (DoubleIntInt) obj2;
+        @Override
+        public int compare(DoubleIntInt o1, DoubleIntInt o2) {
+            DoubleIntInt dii1 = o1;
+            DoubleIntInt dii2 = o2;
             if (dii1.d < dii2.d)
                 return -1;
             else if (dii1.d > dii2.d)
@@ -786,7 +797,7 @@ public class PhygenOptimiserCircularNNLS {
                 return 0;
         }
 
-        public boolean equals(Object obj1) {
+        public boolean equals(DoubleIntInt obj1) {
             return compare(this, obj1) == 0;
         }
     }

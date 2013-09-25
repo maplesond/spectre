@@ -43,8 +43,6 @@ import java.util.*;
  */
 public class NexusReader implements PhygenReader {
 
-    private static Logger log = LoggerFactory.getLogger(NexusReader.class);
-
     /**
      * Reads the file specified by this reader and converts the data into a set
      * of taxa and the distances between taxa.
@@ -124,7 +122,6 @@ public class NexusReader implements PhygenReader {
             } while (aLine.trim().toUpperCase().contains(";") == false);
 
             TriangleFormat tf = fillDistanceMatrix(matrixLines, distanceMatrix);
-            log.debug("Matrix format: " + tf.toString());
         }
 
 
@@ -190,7 +187,6 @@ public class NexusReader implements PhygenReader {
             } while (aLine.trim().toUpperCase().contains("END") == false);
 
             TriangleFormat tf = fillDistanceMatrix(matrixLines, distanceMatrix);
-            log.debug("Matrix format: " + tf.toString());
         }
 
         return distanceMatrix;

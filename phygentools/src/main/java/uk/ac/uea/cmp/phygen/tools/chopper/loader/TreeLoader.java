@@ -13,11 +13,12 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package uk.ac.uea.cmp.phygen.tools.chopper;
+package uk.ac.uea.cmp.phygen.tools.chopper.loader;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
+import uk.ac.uea.cmp.phygen.tools.chopper.Node;
+import uk.ac.uea.cmp.phygen.tools.chopper.Traverser;
+import uk.ac.uea.cmp.phygen.tools.chopper.Tree;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -34,24 +35,15 @@ import java.util.ListIterator;
  *
  * @author sarah
  */
-public class TreeLoader implements Source {
+public class TreeLoader extends AbstractTreeLoader {
 
-    private static Logger log = LoggerFactory.getLogger(TreeLoader.class);
-
-    int index;
-    LinkedList qWs;
-    boolean branchLengths, treeWeights;
-    LinkedList trees, weights, taxonNames;
-
-    public TreeLoader() {
-    }
-
+    @Override
     public void load(String fileName, double weight) throws IOException {
 
         index = 0;
 
-        trees = new LinkedList();
-        weights = new LinkedList();
+        trees = new LinkedList<>();
+        weights = new LinkedList<>();
 
         BufferedReader in = new BufferedReader(new FileReader(fileName));
 
@@ -112,114 +104,6 @@ public class TreeLoader implements Source {
         }
 
         in.close();
-
-    }
-
-    public void harvestNames(LinkedList newTaxonNames) {
-
-        ListIterator lI = trees.listIterator();
-
-        while (lI.hasNext()) {
-
-            ((Node) lI.next()).harvestNames(newTaxonNames);
-
-        }
-
-    }
-
-    public LinkedList getTaxonNames() {
-
-        LinkedList result = new LinkedList();
-
-        ListIterator lI = trees.listIterator();
-
-        while (lI.hasNext()) {
-
-            LinkedList treeNames = new LinkedList();
-
-            ((Node) lI.next()).harvestNames(treeNames);
-
-            result.add(treeNames);
-
-        }
-
-        return result;
-
-    }
-
-    public void translate(LinkedList newTaxonNames) {
-
-        taxonNames = newTaxonNames;
-
-        ListIterator lI = trees.listIterator();
-
-        while (lI.hasNext()) {
-
-            ((Node) lI.next()).index(taxonNames);
-
-        }
-
-    }
-
-    public void process() {
-
-        qWs = Traverser.traverse(trees, taxonNames.size());
-
-    }
-
-    public LinkedList getQuartetWeights() {
-
-        return qWs;
-
-    }
-
-    public LinkedList getWeights() {
-
-        return weights;
-
-    }
-
-    public double getWSum() {
-
-        double sum = 0.0;
-
-        for (int n = 0; n < weights.size(); n++) {
-
-            sum += ((Double) weights.get(n)).doubleValue();
-
-        }
-
-        return sum;
-
-    }
-
-    public QuartetWeights getNextQuartetWeights() {
-
-        Tree aTree = (Tree) trees.get(index);
-
-        index++;
-
-        return Traverser.quartetize(aTree, taxonNames.size());
-
-    }
-
-    public double getNextWeight() {
-
-        return ((Double) weights.get(index)).doubleValue();
-
-    }
-
-    public boolean hasMoreSets() {
-
-        if (index < trees.size()) {
-
-            return true;
-
-        } else {
-
-            return false;
-
-        }
 
     }
 }

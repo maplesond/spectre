@@ -16,7 +16,6 @@
 package uk.ac.uea.cmp.phygen.core.ds.split;
 
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
-import uk.ac.uea.cmp.phygen.core.math.optimise.phygen.PhygenOptimiserCircularNNLS;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -125,8 +124,6 @@ public class CircularSplitSystem extends SplitSystem {
     protected SplitWeights calculateSplitWeighting(DistanceMatrix distanceMatrix, CircularOrdering circularOrdering) {
         int n = distanceMatrix.size();
         double[][] permutedDistances = new double[n][n];
-        double[][] splitWeights = new double[n][n];
-        PhygenOptimiserCircularNNLS cnnls = new PhygenOptimiserCircularNNLS();
 
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
@@ -134,15 +131,7 @@ public class CircularSplitSystem extends SplitSystem {
             }
         }
 
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                splitWeights[i][j] = 0.;
-            }
-        }
-
-        cnnls.circularLeastSquares(permutedDistances, n, splitWeights);
-
-        return new SplitWeights(splitWeights);
+        return new CircularNNLS().circularLeastSquares(permutedDistances, n);
     }
 
 

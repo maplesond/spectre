@@ -26,44 +26,36 @@ public class Leaf implements Node {
     public Leaf(String source) {
 
         taxonName = source;
-
     }
 
-    public void index(LinkedList taxonNames) {
+    public void index(LinkedList<String> taxonNames) {
 
         taxonID = taxonNames.indexOf(taxonName);
-
     }
 
-    public void harvestNames(LinkedList taxonNames) {
+    public void harvestNames(LinkedList<String> taxonNames) {
 
-        if (taxonNames.contains(taxonName)) {
-        } else {
-
+        if (!taxonNames.contains(taxonName)) {
             taxonNames.add(taxonName);
-
         }
-
     }
 
-    public void harvest(LinkedList taxa) {
+    public void harvest(LinkedList<Integer> taxa) {
 
         taxa.add(new Integer(taxonID));
-
     }
 
     public boolean isTree() {
 
         return false;
-
     }
 
-    public void rename(LinkedList oldTaxa, LinkedList newTaxa) {
+    public void rename(LinkedList<String> oldTaxa, LinkedList<String> newTaxa) {
 
         int i = oldTaxa.indexOf(taxonName);
-        taxonName = (String) newTaxa.get(i);
-
+        taxonName = newTaxa.get(i);
     }
+
     String taxonName;
     int taxonID;
 }

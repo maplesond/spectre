@@ -165,7 +165,7 @@ public class DistanceMatrix {
         }
 
         // Ensure no duplicated elements in the taxa set.
-        LinkedHashSet tCheck = new LinkedHashSet(Arrays.asList(taxa));
+        LinkedHashSet<String> tCheck = new LinkedHashSet<String>(Arrays.asList(taxa));
         if (tCheck.size() != taxa.length) {
             throw new IllegalArgumentException("Provided taxa set contains duplicated elements.");
         }

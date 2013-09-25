@@ -13,11 +13,12 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package uk.ac.uea.cmp.phygen.tools.chopper;
+package uk.ac.uea.cmp.phygen.tools.chopper.loader;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
+import uk.ac.uea.cmp.phygen.tools.chopper.Node;
+import uk.ac.uea.cmp.phygen.tools.chopper.Traverser;
+import uk.ac.uea.cmp.phygen.tools.chopper.Tree;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -30,17 +31,16 @@ import java.util.StringTokenizer;
  * Created by IntelliJ IDEA. User: Analysis Date: 2004-jul-12 Time: 00:03:05 To
  * change this template use Options | File Templates.
  */
-public class TreeFileLoader implements Source {
+public class TreeFileLoader extends AbstractTreeLoader {
 
-    private static Logger log = LoggerFactory.getLogger(TreeFileLoader.class);
-
+    @Override
     public void load(String fileName, double weight) throws IOException {
 
         index = 0;
 
-        taxonNames = new LinkedList();
-        trees = new LinkedList();
-        weights = new LinkedList();
+        taxonNames = new LinkedList<>();
+        trees = new LinkedList<>();
+        weights = new LinkedList<>();
 
         BufferedReader in = new BufferedReader(new FileReader(fileName));
 
@@ -104,17 +104,13 @@ public class TreeFileLoader implements Source {
                     }
 
                     taxonNames.add(second.trim().substring(0, second.trim().length() - 1));
-
                 }
-
             }
 
             if (!readingState) {
 
                 aLine = in.readLine();
-
             }
-
         }
 
         branchLengths = false;
@@ -141,7 +137,7 @@ public class TreeFileLoader implements Source {
 
                 // we have a tree line here
 
-                weights.add(new Double(weight));
+                weights.add(weight);
 
                 aLine = aLine.substring(aLine.indexOf('('), aLine.lastIndexOf(')') + 1).trim();
 
@@ -153,7 +149,7 @@ public class TreeFileLoader implements Source {
 
                 Tree aTree = new Tree(aLine.substring(1, aLine.length() - 1), branchLengths);
 
-                LinkedList numberNames = new LinkedList();
+                LinkedList<String> numberNames = new LinkedList<>();
 
                 for (int n = 0; n < taxonNames.size(); n++) {
 
@@ -175,115 +171,4 @@ public class TreeFileLoader implements Source {
 
     }
 
-    public void harvestNames(LinkedList newTaxonNames) {
-
-        ListIterator lI = trees.listIterator();
-
-        while (lI.hasNext()) {
-
-            ((Node) lI.next()).harvestNames(newTaxonNames);
-
-        }
-
-    }
-
-    public LinkedList getTaxonNames() {
-
-        LinkedList result = new LinkedList();
-
-        ListIterator lI = trees.listIterator();
-
-        while (lI.hasNext()) {
-
-            LinkedList treeNames = new LinkedList();
-
-            ((Node) lI.next()).harvestNames(treeNames);
-
-            result.add(treeNames);
-
-        }
-
-        return result;
-
-    }
-
-    public void translate(LinkedList newTaxonNames) {
-
-        taxonNames = newTaxonNames;
-
-        ListIterator lI = trees.listIterator();
-
-        while (lI.hasNext()) {
-
-            ((Node) lI.next()).index(taxonNames);
-
-        }
-
-    }
-
-    public void process() {
-
-        qWs = Traverser.traverse(trees, taxonNames.size());
-
-    }
-
-    public LinkedList getQuartetWeights() {
-
-        return qWs;
-
-    }
-
-    public LinkedList getWeights() {
-
-        return weights;
-
-    }
-
-    public double getWSum() {
-
-        double sum = 0.0;
-
-        for (int n = 0; n < weights.size(); n++) {
-
-            sum += ((Double) weights.get(n)).doubleValue();
-
-        }
-
-        return sum;
-
-    }
-
-    public QuartetWeights getNextQuartetWeights() {
-
-        Tree aTree = (Tree) trees.get(index);
-
-        index++;
-
-        return Traverser.quartetize(aTree, taxonNames.size());
-
-    }
-
-    public double getNextWeight() {
-
-        return ((Double) weights.get(index)).doubleValue();
-
-    }
-
-    public boolean hasMoreSets() {
-
-        if (index < trees.size()) {
-
-            return true;
-
-        } else {
-
-            return false;
-
-        }
-
-    }
-    LinkedList qWs;
-    boolean branchLengths, treeWeights;
-    LinkedList trees, weights, taxonNames;
-    int index;
 }

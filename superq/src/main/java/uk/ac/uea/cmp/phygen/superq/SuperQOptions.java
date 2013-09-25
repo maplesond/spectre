@@ -21,8 +21,6 @@ import uk.ac.uea.cmp.phygen.core.math.optimise.Objective;
 import uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser;
 import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
 import uk.ac.uea.cmp.phygen.core.math.optimise.apache.ApacheOptimiser;
-import uk.ac.uea.cmp.phygen.core.math.optimise.glpk.GLPKOptimiser;
-import uk.ac.uea.cmp.phygen.core.math.optimise.phygen.PhygenOptimiserCircularNNLS;
 
 import java.io.File;
 

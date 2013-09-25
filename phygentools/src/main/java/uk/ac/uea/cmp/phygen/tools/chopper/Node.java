@@ -25,13 +25,13 @@ import java.util.LinkedList;
  */
 public interface Node {
 
-    void index(LinkedList taxonNames);
+    void index(LinkedList<String> taxonNames);
 
-    void harvestNames(LinkedList taxonNames);
+    void harvestNames(LinkedList<String> taxonNames);
 
-    void harvest(LinkedList taxa);
+    void harvest(LinkedList<Integer> taxa);
 
     boolean isTree();
 
-    void rename(LinkedList oldTaxa, LinkedList newTaxa);
+    void rename(LinkedList<String> oldTaxa, LinkedList<String> newTaxa);
 }

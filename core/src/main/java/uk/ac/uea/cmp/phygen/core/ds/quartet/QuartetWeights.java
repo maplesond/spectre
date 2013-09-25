@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.math.tuple.Triplet;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -39,7 +40,7 @@ public class QuartetWeights {
     /**
      * The heart of the data structure
      */
-    private Triplet[] data;
+    private List<Triplet<Double>> data;
     /**
      * Number of actual quartets
      */
@@ -140,18 +141,16 @@ public class QuartetWeights {
      */
     public void ensureCapacity(int N) {
 
-        data = new Triplet[over4(N)];
+        data = new ArrayList<>(over4(N));
 
     }
 
     public void initialize() {
 
-        int N = data.length;
+        int N = data.size();
 
         for (int n = 0; n < N; n++) {
-
-            Triplet t = new Triplet<Double>(0.0, 0.0, 0.0);
-            data[n] = t;
+            data.set(n, new Triplet<Double>(0.0, 0.0, 0.0));
         }
 
     }
@@ -238,7 +237,7 @@ public class QuartetWeights {
          * Next, use size-ordered numbers to access the triple
          *
          */
-        Triplet w = data[over4(x - 1) + over3(y - 1) + over2(u - 1) + over1(v - 1)];
+        Triplet w = data.get(over4(x - 1) + over3(y - 1) + over2(u - 1) + over1(v - 1));
 
         /**
          *
@@ -440,14 +439,14 @@ public class QuartetWeights {
 
         }
 
-        Triplet w = new Triplet<Double>(r1, r2, r3);
+        Triplet<Double> w = new Triplet<Double>(r1, r2, r3);
 
         /**
          *
          * Set to w
          *
          */
-        data[over4(x - 1) + over3(y - 1) + over2(u - 1) + over1(v - 1)] = w;
+        data.set(over4(x - 1) + over3(y - 1) + over2(u - 1) + over1(v - 1), w);
 
         theSize++;
 
@@ -468,7 +467,7 @@ public class QuartetWeights {
          * Create size-ordered quadruple x, y, u, v from a, b, c, d
          *
          */
-        log.debug("set weight of quartet: " + a + " " + b + " " + c + " " + d + " : " + data.length);
+        log.debug("set weight of quartet: " + a + " " + b + " " + c + " " + d + " : " + data.size());
         int x = a;
         int y = b;
         int u = c;
@@ -523,7 +522,7 @@ public class QuartetWeights {
 
         }
 //try{
-        Triplet w = data[over4(x - 1) + over3(y - 1) + over2(u - 1) + over1(v - 1)];
+        Triplet<Double> w = data.get(over4(x - 1) + over3(y - 1) + over2(u - 1) + over1(v - 1));
 
         /**
          *
@@ -555,7 +554,7 @@ public class QuartetWeights {
 
         }
 
-        data[over4(x - 1) + over3(y - 1) + over2(u - 1) + over1(v - 1)] = w;
+        data.set(over4(x - 1) + over3(y - 1) + over2(u - 1) + over1(v - 1), w);
     }
     /*
      * catch(Exception e){ e.printStackTrace(); }
@@ -572,9 +571,9 @@ public class QuartetWeights {
 
         if (useMax) {
 
-            for (int n = 0; n < data.length; n++) {
+            for (int n = 0; n < data.size(); n++) {
 
-                Triplet<Double> t = data[n];
+                Triplet<Double> t = data.get(n);
 
                 double min = Math.min(t.getA(), Math.min(t.getB(), t.getC()));
 
@@ -590,15 +589,14 @@ public class QuartetWeights {
                 t.setB(q2);
                 t.setC(q3);
 
-                data[n] = t;
-
+                data.set(n, t);
             }
 
         } else {
 
-            for (int n = 0; n < data.length; n++) {
+            for (int n = 0; n < data.size(); n++) {
 
-                Triplet<Double> t = data[n];
+                Triplet<Double> t = data.get(n);
 
                 double max = Math.max(t.getA(), Math.max(t.getB(), t.getC()));
 
@@ -614,12 +612,9 @@ public class QuartetWeights {
                 t.setB(q2);
                 t.setC(q3);
 
-                data[n] = t;
-
+                data.set(n, t);
             }
-
         }
-
     }
 
     /**
@@ -629,9 +624,9 @@ public class QuartetWeights {
 
         if (useMax) {
 
-            for (int n = 0; n < data.length; n++) {
+            for (int n = 0; n < data.size(); n++) {
 
-                Triplet t = data[n];
+                Triplet<Double> t = data.get(n);
 
                 // lowest weight must be nonnegative
 
@@ -693,15 +688,15 @@ public class QuartetWeights {
                 t.setB(q2 - min);
                 t.setC(q3 - min);
 
-                data[n] = t;
+                data.set(n, t);
 
             }
 
         } else {
 
-            for (int n = 0; n < data.length; n++) {
+            for (int n = 0; n < data.size(); n++) {
 
-                Triplet t = data[n];
+                Triplet<Double> t = data.get(n);
 
                 double q1 = t.getA().doubleValue();
                 double q2 = t.getB().doubleValue();
@@ -761,24 +756,18 @@ public class QuartetWeights {
                 t.setB(max - q2);
                 t.setC(max - q3);
 
-                data[n] = t;
-
+                data.set(n, t);
             }
-
         }
-
     }
 
-    public Triplet[] getData() {
-
+    public List<Triplet<Double>> getData() {
         return data;
-
     }
 
-    public void setData(Triplet[] newData) {
+    public void setData(List<Triplet<Double>> newData) {
 
         data = newData;
-
     }
 
     public QuartetWeights translate(LinkedList taxonNamesOld, LinkedList taxonNamesNew) {

@@ -33,6 +33,7 @@ import uk.ac.uea.cmp.phygen.qnet.QNet;
 import uk.ac.uea.cmp.phygen.qnet.WeightsComputeNNLSInformative;
 import uk.ac.uea.cmp.phygen.qnet.WriteWeightsToNexus;
 import uk.ac.uea.cmp.phygen.tools.chopper.Chopper;
+import uk.ac.uea.cmp.phygen.tools.chopper.loader.LoaderType;
 import uk.ac.uea.cmp.phygen.tools.scale.Scaling;
 
 import java.io.File;
@@ -133,7 +134,7 @@ public class SuperQ extends RunnableTool {
             }
 
             notifyUser("CHOPPER - Breaking input trees into quartets");
-            Chopper.run(new File(file), new File(tmppath + "qw"), Chopper.Type.valueOf(type.toUpperCase()));
+            Chopper.run(new File(file), new File(tmppath + "qw"), LoaderType.valueOf(type.toUpperCase()));
 
             rt.gc();
             log.debug("FREE MEM - after running uk.ac.uea.cmp.phygen.superq.chopper: " + rt.freeMemory());

@@ -48,8 +48,8 @@ public class Tree implements Node {
 
         int level = 0;
         int start = 0;
-        branches = new LinkedList();
-        weights = new LinkedList();
+        branches = new LinkedList<>();
+        weights = new LinkedList<>();
 
         //flag used to indicate whether the root has degree 2
         //used to get the weights in unweighted trees right
@@ -163,7 +163,7 @@ public class Tree implements Node {
 
     }
 
-    public void index(LinkedList taxonNames) {
+    public void index(LinkedList<String> taxonNames) {
 
         ListIterator lI = branches.listIterator();
 
@@ -175,7 +175,7 @@ public class Tree implements Node {
 
     }
 
-    public void harvestNames(LinkedList taxonNames) {
+    public void harvestNames(LinkedList<String> taxonNames) {
 
         ListIterator lI = branches.listIterator();
 
@@ -187,7 +187,7 @@ public class Tree implements Node {
 
     }
 
-    public void harvest(LinkedList taxa) {
+    public void harvest(LinkedList<Integer> taxa) {
 
         ListIterator lI = branches.listIterator();
 
@@ -199,7 +199,7 @@ public class Tree implements Node {
 
     }
 
-    public void split(QuartetWeights qW, LinkedList remainder) {
+    public void split(QuartetWeights qW, LinkedList<Integer> remainder) {
 
         // so...
         // we take all splits (those here, and those in the branches)
@@ -210,8 +210,8 @@ public class Tree implements Node {
 
         while (lI.hasNext()) {
 
-            LinkedList setA = new LinkedList();
-            LinkedList setB = (LinkedList) remainder.clone();
+            LinkedList<Integer> setA = new LinkedList<>();
+            LinkedList<Integer> setB = (LinkedList<Integer>) remainder.clone();
 
             Node branch = (Node) lI.next();
             double w = ((Double) wI.next()).doubleValue();
@@ -243,27 +243,23 @@ public class Tree implements Node {
 
                     for (int iA2 = iA1 + 1; iA2 < setA.size(); iA2++) {
 
-                        int a1 = 1 + ((Integer) setA.get(iA1)).intValue();
-                        int a2 = 1 + ((Integer) setA.get(iA2)).intValue();
+                        int a1 = 1 + setA.get(iA1);
+                        int a2 = 1 + setA.get(iA2);
 
                         for (int iB1 = 0; iB1 < setB.size() - 1; iB1++) {
 
                             for (int iB2 = iB1 + 1; iB2 < setB.size(); iB2++) {
 
-                                int b1 = 1 + ((Integer) setB.get(iB1)).intValue();
-                                int b2 = 1 + ((Integer) setB.get(iB2)).intValue();
+                                int b1 = 1 + setB.get(iB1);
+                                int b2 = 1 + setB.get(iB2);
 
                                 qW.setWeight(a1, a2, b1, b2, qW.getWeight(a1, a2, b1, b2) + w);
-
                             }
-
                         }
-
                     }
-
                 }
-
             }
+
             /*
              * else if (setA.size () == 1 && setB.size () > 2) {
              *
@@ -302,23 +298,17 @@ public class Tree implements Node {
             if (branch.isTree()) {
 
                 ((Tree) branch).split(qW, setB);
-
             }
-
         }
-
     }
 
-    public void rename(LinkedList oldTaxa, LinkedList newTaxa) {
+    public void rename(LinkedList<String> oldTaxa, LinkedList<String> newTaxa) {
 
         ListIterator lI = branches.listIterator();
 
         while (lI.hasNext()) {
-
             ((Node) lI.next()).rename(oldTaxa, newTaxa);
-
         }
-
     }
 
     public boolean isTree() {
@@ -326,6 +316,6 @@ public class Tree implements Node {
         return true;
 
     }
-    LinkedList branches;
-    LinkedList weights;
+    LinkedList<Node> branches;
+    LinkedList<Double> weights;
 }

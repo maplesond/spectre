@@ -19,15 +19,14 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 import uk.ac.uea.cmp.phygen.core.ui.cli.PhygenTool;
+import uk.ac.uea.cmp.phygen.tools.chopper.loader.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -58,7 +57,7 @@ public class Chopper extends PhygenTool {
                 .withDescription("The input file containing the tree to chop").create("i"));
 
         options.addOption(OptionBuilder.withArgName("string").withLongOpt(OPT_TYPE).hasArg()
-                .withDescription("The output file type: " + Type.listTypes()).create("t"));
+                .withDescription("The output file type: " + LoaderType.listTypes()).create("t"));
 
         return options;
     }
@@ -71,7 +70,7 @@ public class Chopper extends PhygenTool {
 
         // Ensures that requests to uk.ac.uea.cmp.phygen.superq.chopper are upper case and have colons replaced
         // with underscores to reflect enum Type.
-        Type type = Type.valueOf(commandLine.getOptionValue(OPT_TYPE).toUpperCase().replace(':', '_'));
+        LoaderType type = LoaderType.valueOf(commandLine.getOptionValue(OPT_TYPE).toUpperCase().replace(':', '_'));
 
         execute(inputFile, outputFile, type);
     }
@@ -82,9 +81,9 @@ public class Chopper extends PhygenTool {
      * @param outputFile
      * @param type
      */
-    public void execute(File inputFile, File outputFile, Type type) throws IOException {
+    public void execute(File inputFile, File outputFile, LoaderType type) throws IOException {
 
-        ChoppedTree choppedTree = type == Type.SCRIPT ?
+        ChoppedTree choppedTree = type == LoaderType.SCRIPT ?
                 doScript(inputFile) :
                 doOneType(inputFile, type, 1.0);
 
@@ -93,7 +92,7 @@ public class Chopper extends PhygenTool {
     }
 
 
-    public static void run(File inputFile, File outputFile, Type type) throws IOException {
+    public static void run(File inputFile, File outputFile, LoaderType type) throws IOException {
         new Chopper().execute(inputFile, outputFile, type);
     }
 
@@ -112,7 +111,7 @@ public class Chopper extends PhygenTool {
 
             if (sT.hasMoreTokens()) {
 
-                Type t = Type.valueOfDescriptiveName(sT.nextToken());
+                LoaderType t = LoaderType.valueOfDescriptiveName(sT.nextToken());
 
                 // line may be:
                 // (at each step, load (with dummy weight if need be))
@@ -141,7 +140,7 @@ public class Chopper extends PhygenTool {
 
                 } else {
 
-                    log.warn("QNet.Chopper: Script line lacking file name!");
+                    log.warn("Chopper: Script line lacking file name!");
                 }
             }
 
@@ -152,13 +151,13 @@ public class Chopper extends PhygenTool {
     }
 
 
-    protected ChoppedTree doOneType(File inputFile, Type type, double weight) throws IOException {
+    protected ChoppedTree doOneType(File inputFile, LoaderType type, double weight) throws IOException {
        return doOneType(inputFile, type, weight, new ChoppedTree());
     }
 
-    protected ChoppedTree doOneType(File inputFile, Type type, double weight, ChoppedTree choppedTree) throws IOException {
+    protected ChoppedTree doOneType(File inputFile, LoaderType type, double weight, ChoppedTree choppedTree) throws IOException {
 
-        LinkedList taxonNames = choppedTree.getTaxonNames();
+        LinkedList<String> taxonNames = choppedTree.getTaxonNames();
         QuartetWeights qW = choppedTree.getQuartetWeights();
         QuartetWeights summer = choppedTree.getSummer();
 
@@ -166,7 +165,7 @@ public class Chopper extends PhygenTool {
 
         // I'm sure it should be possible to tidy this up further.
         loader.load(inputFile.getPath(), weight);
-        LinkedList taxonNamesOld = (LinkedList) taxonNames.clone();
+        LinkedList<String> taxonNamesOld = (LinkedList<String>) taxonNames.clone();
         loader.harvestNames(taxonNames);
         loader.translate(taxonNames);
         qW = qW.translate(taxonNamesOld, taxonNames);
@@ -190,104 +189,4 @@ public class Chopper extends PhygenTool {
         return choppedTree;
     }
 
-
-
-
-    public static enum Type {
-
-        SCRIPT {
-
-            public Source getLoader() {
-                throw new UnsupportedOperationException("Can't get a loader from SCIPT mode.");
-            }
-
-            public String getDescriptiveName() {
-                return "script";
-            }
-        },
-        NEWICK {
-
-            public Source getLoader() {
-                return new TreeLoader();
-            }
-
-            public String getDescriptiveName() {
-                return "newick";
-            }
-        },
-        Q_WEIGHTS {
-
-            public Source getLoader() {
-                return new QWeightLoader();
-            }
-
-            public String getDescriptiveName() {
-                return "qweights";
-            }
-        },
-        NEXUS_ST_SPLITS {
-
-            public Source getLoader() {
-                return new NexusSplitsLoader();
-            }
-
-            public String getDescriptiveName() {
-                return "nexus:st_splits";
-            }
-        },
-        NEXUS_ST_QUARTETS {
-
-            public Source getLoader() {
-                return new NexusQuartetLoader();
-            }
-
-            public String getDescriptiveName() {
-                return "nexus:st_quartets";
-            }
-        },
-        NEXUS_TREES {
-
-            public Source getLoader() {
-                return new TreeFileLoader();
-            }
-
-            public String getDescriptiveName() {
-                return "nexus:trees";
-            }
-        },
-        NEXUS_DISTANCES {
-
-            public Source getLoader() {
-                return new NexusDistancesLoader();
-            }
-
-            public String getDescriptiveName() {
-                return "nexus:distances";
-            }
-        };
-
-        public abstract Source getLoader();
-
-        public abstract String getDescriptiveName();
-
-        public static Type valueOfDescriptiveName(String name) {
-            for (Type t : Type.values()) {
-                if (t.getDescriptiveName().equalsIgnoreCase(name)) {
-                    return t;
-                }
-            }
-
-            throw new IllegalArgumentException("Unknown type");
-        }
-
-        public static String listTypes() {
-            List<String> typeStrings = new ArrayList<String>();
-
-            for(Type t : Type.values()) {
-                typeStrings.add(t.name());
-            }
-
-            return "[" + StringUtils.join(typeStrings, ", ") + "]";
-        }
-    }
 }

@@ -30,21 +30,21 @@ import java.util.LinkedList;
  */
 public class ChoppedTree {
 
-    private LinkedList taxonNames;
+    private LinkedList<String> taxonNames;
     private QuartetWeights quartetWeights;
     private QuartetWeights summer;
 
     public ChoppedTree() {
-        this(new LinkedList(), new QuartetWeights(), new QuartetWeights());
+        this(new LinkedList<String>(), new QuartetWeights(), new QuartetWeights());
     }
 
-    public ChoppedTree(LinkedList taxonNames, QuartetWeights quartetWeights, QuartetWeights summer) {
+    public ChoppedTree(LinkedList<String> taxonNames, QuartetWeights quartetWeights, QuartetWeights summer) {
         this.taxonNames = taxonNames;
         this.quartetWeights = quartetWeights;
         this.summer = summer;
     }
 
-    public LinkedList getTaxonNames() {
+    public LinkedList<String> getTaxonNames() {
         return taxonNames;
     }
 

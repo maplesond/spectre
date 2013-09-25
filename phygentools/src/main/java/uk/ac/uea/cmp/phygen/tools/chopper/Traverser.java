@@ -27,16 +27,14 @@ import java.util.ListIterator;
 public class Traverser {
 
     // do it with all trees
-    public static LinkedList traverse(LinkedList trees, int N) {
+    public static LinkedList<QuartetWeights> traverse(LinkedList<Tree> trees, int N) {
 
-        ListIterator lI = trees.listIterator();
+        ListIterator<Tree> lI = trees.listIterator();
 
-        LinkedList qWs = new LinkedList();
+        LinkedList<QuartetWeights> qWs = new LinkedList<>();
 
         while (lI.hasNext()) {
-
-            qWs.add(quartetize(((Tree) lI.next()), N));
-
+            qWs.add(quartetize(lI.next(), N));
         }
 
         return qWs;
@@ -54,7 +52,7 @@ public class Traverser {
 
         qW.initialize();
 
-        tree.split(qW, new LinkedList());
+        tree.split(qW, new LinkedList<Integer>());
 
         return qW;
 
