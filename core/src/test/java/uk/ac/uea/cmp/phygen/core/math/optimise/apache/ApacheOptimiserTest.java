@@ -41,4 +41,18 @@ public class ApacheOptimiserTest {
 
         assertTrue(true);
     }
+
+    @Test
+    public void testSimpleProblem() throws OptimiserException {
+
+        Optimiser apache = new ApacheOptimiser(Objective.LINEAR);
+
+        Problem problem = new Problem();
+
+        double[] solution = apache.optimise(problem);
+
+        assertTrue(true);
+
+
+    }
 }

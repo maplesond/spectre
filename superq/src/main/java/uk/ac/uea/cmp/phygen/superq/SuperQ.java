@@ -25,6 +25,7 @@ import uk.ac.uea.cmp.phygen.core.io.nexus.NexusReader;
 import uk.ac.uea.cmp.phygen.core.io.nexus.NexusWriter;
 import uk.ac.uea.cmp.phygen.core.math.optimise.Objective;
 import uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser;
+import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
 import uk.ac.uea.cmp.phygen.core.math.optimise.Problem;
 import uk.ac.uea.cmp.phygen.core.ui.gui.RunnableTool;
 import uk.ac.uea.cmp.phygen.core.ui.gui.StatusTracker;
@@ -141,7 +142,7 @@ public class SuperQ extends RunnableTool {
 
             notifyUser("QNET - Calculating the circular ordering - Using " + this.options.getPrimarySolver().toString());
             QNet qnet = new QNet();
-            qnet.execute(
+            WeightsComputeNNLSInformative.ComputedWeights computedWeights = qnet.execute(
                     new File(tmppath + "qw"),
                     false,
                     -1.0,
@@ -156,7 +157,8 @@ public class SuperQ extends RunnableTool {
             //System.out.println("output path: " + this.output_file.getPath());
             String filterTempFile = tmppath + "unfiltered-split-system.nex";
             String weightsOutputPath = this.options.getFilter() != null ? filterTempFile : this.options.getOutputFile().getPath();
-            double[] solution = WeightsComputeNNLSInformative.getx();
+
+            double[] solution = computedWeights.getX();
 
             if (this.options.getBackupObjective() == null || this.options.getBackupSolver() == null) {
                 log.info("SECONDARY OPTIMISATION - Not requested");
@@ -166,18 +168,15 @@ public class SuperQ extends RunnableTool {
                 secondarySolver.setObjective(this.options.getBackupObjective());
                 notifyUser("SECONDARY OPTIMISATION - Requested " + secondarySolver.toString() + " solver with " + this.options.getBackupObjective() + " objective.");
 
-                // Prepare problem matrix
-                double[][] matrix = WeightsComputeNNLSInformative.getEtE().toArray();
-
                 try {
                     // Run the secondary optimisation step
-                    double[] solution2 = secondarySolver.optimise(new Problem(solution, matrix));
+                    double[] solution2 = secondarySolver.optimise(new Problem(computedWeights.getX(), computedWeights.getEtE().toArray()));
 
                     // Sum the solutions
                     for (int i = 0; i < solution.length; i++) {
                         solution[i] = solution[i] + solution2[i];
                     }
-                } catch (UnboundedSolutionException use) {
+                } catch (OptimiserException use) {
                     log.warn("SECONDARY OPTIMISATION - Invalid solution.  Keeping original solution from first optimisation step.");
                 }
             }

@@ -28,9 +28,9 @@ import java.io.File;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 
-public class Main {
+public class SuperQCLI {
 
-    private static Logger log = LoggerFactory.getLogger(Main.class);
+    private static Logger log = LoggerFactory.getLogger(SuperQCLI.class);
     
     private static String JAR_NAME = "SuperQ.jar";
 
@@ -73,7 +73,7 @@ public class Main {
 
                     @Override
                     public void run() {
-                        new Gui().setVisible(true);
+                        new SuperQGUI().setVisible(true);
                     }
                 });
                 return;

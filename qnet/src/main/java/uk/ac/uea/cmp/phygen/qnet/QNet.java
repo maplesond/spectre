@@ -119,7 +119,7 @@ public class QNet {
     }
 
 
-    public void execute(File input, boolean log, double tolerance, Optimiser optimiser) throws IOException, QNetException, OptimiserException {
+    public WeightsComputeNNLSInformative.ComputedWeights execute(File input, boolean log, double tolerance, Optimiser optimiser) throws IOException, QNetException, OptimiserException {
 
         if (FilenameUtils.getExtension(input.getName()).equals("nex")) {
             QNetLoader.loadNexus(this, input.getAbsolutePath(), log);
@@ -131,8 +131,9 @@ public class QNet {
         NewCyclicOrderer.order(this);
 
         File infoFile = new File(input, ".info");
-        WeightsComputeNNLSInformative.computeWeights(this, infoFile.getAbsolutePath(), tolerance, optimiser);
+        WeightsComputeNNLSInformative.ComputedWeights solution = WeightsComputeNNLSInformative.computeWeights(this, infoFile.getAbsolutePath(), tolerance, optimiser);
 
+        return solution;
     }
 
 

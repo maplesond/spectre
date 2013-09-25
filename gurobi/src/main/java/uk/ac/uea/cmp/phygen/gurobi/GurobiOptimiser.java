@@ -33,6 +33,7 @@ public abstract class GurobiOptimiser extends AbstractOptimiser {
     private GRBEnv env;            
     private GRBModel model;
     private GRBVar[] variables;
+    private double[] coefficients;
     
     public GurobiOptimiser() throws OptimiserException {
         try {    
@@ -50,20 +51,21 @@ public abstract class GurobiOptimiser extends AbstractOptimiser {
     public abstract void addConstraints() throws GRBException;
     public abstract GRBExpr getObjective() throws GRBException;
     
-    protected void initVariables(Problem problem) {
+    protected void initVariables(Problem problem, double[] coefficients) {
         this.length = problem.getRestriction().length;
         this.variables = new GRBVar[this.length];        
-        this.problem = problem; 
+        this.problem = problem;
+        this.coefficients = coefficients;
     }
     
     @Override
-    protected double[] internalOptimise(Problem problem) throws OptimiserException {
+    protected double[] internalOptimise(Problem problem, double[] coefficients) throws OptimiserException {
         
         double[] solution = null;
         
         try {
             // Initalise variables
-            initVariables(problem);
+            initVariables(problem, coefficients);
 
             // Set the variables according to sub class
             setVariables();   
@@ -127,15 +129,15 @@ public abstract class GurobiOptimiser extends AbstractOptimiser {
             return 0;        
         return this.getMatrix()[0].length;
     }
-    
+
     public double[] getCoefficients() {
-        return this.problem.getCoefficients();
+        return this.coefficients;
     }
-    
+
     public double getCoefficientAt(final int i) {
-        return this.getCoefficients()[i];
+        return this.coefficients[i];
     }
-    
+
     protected GRBEnv getEnv() {
         return env;
     }

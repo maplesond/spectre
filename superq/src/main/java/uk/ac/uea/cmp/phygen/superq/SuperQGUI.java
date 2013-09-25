@@ -15,11 +15,9 @@
  */
 package uk.ac.uea.cmp.phygen.superq;
 
-import org.apache.commons.cli.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.math.optimise.Objective;
-import uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser;
 import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
 import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserFactory;
 import uk.ac.uea.cmp.phygen.core.ui.gui.JobController;
@@ -29,16 +27,16 @@ import uk.ac.uea.cmp.phygen.core.ui.gui.ToolHost;
 import javax.swing.*;
 import java.io.File;
 
-public class Gui extends JFrame implements ToolHost {
+public class SuperQGUI extends JFrame implements ToolHost {
 
-    private static Logger log = LoggerFactory.getLogger(Gui.class);
+    private static Logger log = LoggerFactory.getLogger(SuperQGUI.class);
 
     JDialog dialog = new JDialog(this, "SUPERQ");
     JFrame gui = new JFrame("SUPERQ");
     JobController go_control;
     SuperQRunner superqRunner;
 
-    public Gui() {
+    public SuperQGUI() {
         initComponents();
         setTitle("SUPERQ");
 
@@ -271,7 +269,7 @@ public class Gui extends JFrame implements ToolHost {
         final JFileChooser fc = new JFileChooser();
         if (evt.getSource() == cmdSave) {
             fc.setSelectedFile(new File("outfile"));
-            int returnVal = fc.showSaveDialog(Gui.this);
+            int returnVal = fc.showSaveDialog(SuperQGUI.this);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
 
                 File file = fc.getSelectedFile();
@@ -302,7 +300,7 @@ private void cmdInputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
     //Create a file chooser
     final JFileChooser fc = new JFileChooser();
     if (evt.getSource() == cmdInput) {
-        int returnVal = fc.showOpenDialog(Gui.this);
+        int returnVal = fc.showOpenDialog(SuperQGUI.this);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = fc.getSelectedFile();
             String z = "";

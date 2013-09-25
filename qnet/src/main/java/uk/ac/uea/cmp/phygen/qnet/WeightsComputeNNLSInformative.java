@@ -46,23 +46,28 @@ public class WeightsComputeNNLSInformative {
 
     private static Logger log = LoggerFactory.getLogger(WeightsComputeNNLSInformative.class);
 
-    /**
-     *
-     * Write weights for the presented tree.
-     *
-     * Calculates split weights and prints them to a nexus file.
-     *
-     */
-    private static SymmetricMatrix EtE;
-    private static double[] x;
+    public static class ComputedWeights {
 
-    public static void computeWeights(QNet parent, String infoName, double tolerance, Optimiser optimiser) throws QNetException, IOException, OptimiserException {
+        private double[] x;
+        private SymmetricMatrix EtE;
 
-        boolean stepMessages = true;
-        boolean cycleWarnings = false;
-        boolean extract = false;
-        boolean startGuess = false;
+        public ComputedWeights(double[] x, SymmetricMatrix etE) {
+            this.x = x;
+            EtE = etE;
+        }
 
+        public double[] getX() {
+            return x;
+        }
+
+        public SymmetricMatrix getEtE() {
+            return EtE;
+        }
+    }
+
+    public static ComputedWeights computeWeights(QNet parent, String infoName, double tolerance, Optimiser optimiser) throws QNetException, IOException, OptimiserException {
+
+        // This method is probably going to take a while so start a timer.
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
 
@@ -153,95 +158,9 @@ public class WeightsComputeNNLSInformative {
 
         }
 
-        // we wish to extract the E matrix separately
-
-        if (extract) {
-
-            // and then, we use our index lists to fill up
-            // the E matrix
-
-            BitMatrix E = new BitMatrix(N * (N - 1) * (N - 2) * (N - 3) / 12, N * (N - 1) / 2 - N);
-
-            // simple filler:
-
-            for (int a = 0; a < N * (N - 1) * (N - 2) * (N - 3) / 12; a++) {
-
-                for (int b = 0; b < N * (N - 1) / 2 - N; b++) {
-
-                    // we have
-
-                    int p = splitIndices[b].getLeft();
-                    int q = splitIndices[b].getRight();
-                    int i = quartetIndices[a].getI();
-                    int j = quartetIndices[a].getJ();
-                    int k = quartetIndices[a].getK();
-                    int l = quartetIndices[a].getL();
-
-                    if ((a % 2 == 0) && ((i < j && j <= p && p < k && k < l && l <= q)
-                                         || (p < i && i < j && j <= q && q < k && k < l))) {
-
-                        E.setElementAt(a, b, 1);
-
-                    } else if ((a % 2 == 1) && (i <= p && p < k && k < l && l <= q && q < j)) {
-
-                        E.setElementAt(a, b, 1);
-
-                    } else {
-
-                        E.setElementAt(a, b, 0);
-
-                    }
-
-                }
-
-            }
-
-            try {
-
-                FileWriter fileOutput = new FileWriter("E.txt");
-
-                for (int a = 0; a < N * (N - 1) * (N - 2) * (N - 3) / 12; a++) {
-
-                    for (int b = 0; b < N * (N - 1) / 2 - N; b++) {
-
-                        fileOutput.write(E.elementAt(a, b) + " ");
-
-                    }
-
-                    fileOutput.write("\n");
-
-                }
-
-                fileOutput.close();
-
-            } catch (IOException e) {
-            }
-
-        }
-
-        if (extract) {
-
-            try {
-
-                FileWriter fileOutput = new FileWriter("f.txt");
-
-                for (int a = 0; a < N * (N - 1) * (N - 2) * (N - 3) / 12; a++) {
-
-                    fileOutput.write(f[a] + " ");
-
-                    fileOutput.write("\n");
-
-                }
-
-                fileOutput.close();
-
-            } catch (IOException e) {
-            }
-
-        }
 
         // HERE: Define matrices EtE and Etf
-        EtE = new SymmetricMatrix(N * (N - 1) / 2 - N);
+        SymmetricMatrix EtE = new SymmetricMatrix(N * (N - 1) / 2 - N);
         double[] Etf = new double[N * (N - 1) / 2 - N];
 
         // HERE: Fill them up...
@@ -1019,59 +938,107 @@ public class WeightsComputeNNLSInformative {
 //        double time = System.currentTimeMillis();
 
 
+        double[] result = null;
+
         //Call of method to solve NNLS for split weigths
         if (optimiser != null) {
 
+            log.info("Using " + optimiser.getDescription() + " to solve NNLS problem");
             Problem problem = new Problem(Etf, EtE.toArray());
-
             optimiser.setObjective(Objective.NNLS);
-            x = optimiser.optimise(problem);
+            result = optimiser.optimise(problem);
         } else {
-            //System.out.println("Using DIY method to solve NNLS problem");
-            int maxIterations = N * N;
-            int iterations = 0;
 
-            // once that is done, we wish to solve the NNLS problem Ex -f for x.
+            log.info("Using QNet's internal method to solve NNLS problem");
+            result = qnetNnlsOptimise(N, Etf, EtE, tolerance);
+        }
 
-            LinkedList P = new LinkedList();
-            LinkedList Z = new LinkedList();
+        stopWatch.stop();
+        log.info("Time taken to compute weights: " + stopWatch.toSplitString());
+
+        return new ComputedWeights(result, EtE);
+    }
 
 
+    /**
+     *
+     * @param N Number of Taxa
+     */
+    private static double[] qnetNnlsOptimise(int N, double[] Etf, SymmetricMatrix EtE, double tolerance) throws QNetException {
 
-            //Original implemented methode to solve NNLS
 
-            double[] w = new double[N * (N - 1) / 2 - N];
-            double[] z = new double[N * (N - 1) / 2 - N];
+        // Switches for the developer
+        //boolean stepMessages = true;
+        //boolean cycleWarnings = false;
 
-            // step 1:
 
-            log.debug("Step 1");
+        //System.out.println("Using DIY method to solve NNLS problem");
+        int maxIterations = N * N;
+        int iterations = 0;
 
-            // initially, all variables are classed as zero variables
+        // once that is done, we wish to solve the NNLS problem Ex -f for x.
 
-            for (int i = 0; i < N * (N - 1) / 2 - N; i++) {
+        LinkedList P = new LinkedList();
+        LinkedList Z = new LinkedList();
 
-                Z.add(new Integer(i));
 
+        int arraySize = N * (N - 1) / 2 - N;
+
+        //Original implemented method to solve NNLS
+
+        double[] x = new double[arraySize];
+        double[] w = new double[arraySize];
+        double[] z = new double[arraySize];
+
+        // step 1:
+
+        log.debug("Step 1");
+
+        // initially, all variables are classed as zero variables
+
+        for (int i = 0; i < arraySize; i++) {
+
+            Z.add(new Integer(i));
+        }
+
+        // initially, all variables are set to zero
+        for (int i = 0; i < arraySize; i++) {
+
+            x[i] = 0.0;
+            w[i] = 0.0;
+            z[i] = 0.0;
+        }
+
+        // finite precision test thing
+
+        boolean calculateW = true;
+
+        // start of outer loop
+
+        // list of choices tested
+
+        List<SolutionHypothesis> hypotheses = new LinkedList<SolutionHypothesis>();
+
+        int it = 0;
+
+        while (true) {
+
+            if (iterations > maxIterations) {
+
+                throw new QNetException(maxIterations + " iterations have been performed to no avail. Please increase the tolerance.");
             }
 
-            // initially, all variables are set to zero
+            iterations++;
 
-            for (int i = 0; i < N * (N - 1) / 2 - N; i++) {
+            // step 2:
 
-                x[i] = 0.0;
-                w[i] = 0.0;
-                z[i] = 0.0;
+            log.debug("Step 2");
 
-            }
+            // we are now in loop
 
-            // finite precision test thing
+            // compute w
 
-            boolean calculateW = true;
-
-            // start guess attempt
-
-            if (startGuess) {
+            if (calculateW) {
 
                 for (int i = 0; i < N * (N - 1) / 2 - N; i++) {
 
@@ -1079,788 +1046,558 @@ public class WeightsComputeNNLSInformative {
 
                     for (int j = 0; j < N * (N - 1) / 2 - N; j++) {
 
-                        int p = splitIndices[j].getLeft();
-                        int q = splitIndices[j].getRight();
-
-                        int a1, a2, b1, b2;
-
-                        if (q == N) {
-
-                            a1 = p + 1;
-                            a2 = q;
-                            b1 = p;
-                            b2 = 1;
-
-                        } else {
-
-                            a1 = p + 1;
-                            a2 = q;
-                            b1 = p;
-                            b2 = q + 1;
-
-                        }
-
-                        x[j] = theQuartetWeights.getWeight(a1, a2, b1, b2);
-
                         jsum += EtE.getElementAt(i, j) * x[j];
-
                     }
 
                     w[i] = Etf[i] - jsum;
-
-                    if (w[i] <= tolerance) {
-
-                        P.add(new Integer(i));
-                        Z.remove(new Integer(i));
-
-                    } else {
-
-                        x[i] = 0.0;
-
-                    }
-
                 }
 
-                calculateW = false;
+            } else {
+
+                calculateW = true;
+            }
+
+            // step 3:
+
+            log.debug("Step 3");
+
+            // check for stopping conditions
+            // if so, break
+
+            if (Z.isEmpty()) {
+
+                break;
 
             }
 
-            // start of outer loop
+            boolean allLequalZero = true;
 
-            // list of choices tested
+            ListIterator lI = Z.listIterator();
 
-            List<SolutionHypothesis> hypotheses = new LinkedList<SolutionHypothesis>();
+            while (lI.hasNext()) {
 
-            int it = 0;
+                int i = ((Integer) lI.next()).intValue();
+
+                if (w[i] > tolerance) {
+
+                    allLequalZero = false;
+                    break;
+                }
+            }
+
+            if (allLequalZero) {
+                break;
+            }
+
+            // step 4, 5:
+
+            log.debug("Step 4");
+
+            // find index t and move to nonzero set
+
+            int t = - 1;
 
             while (true) {
 
-                if (iterations > maxIterations) {
+                double max = Double.NEGATIVE_INFINITY;
+                t = - 1;
 
-                    throw new QNetException(maxIterations + " iterations have been performed to no avail. Please increase the tolerance.");
-                }
+                int noPositive = 0;
 
-                iterations++;
-
-                // step 2:
-
-                log.debug("Step 2");
-
-                // we are now in loop
-
-                // compute w
-
-                if (calculateW) {
-
-                    for (int i = 0; i < N * (N - 1) / 2 - N; i++) {
-
-                        double jsum = 0;
-
-                        for (int j = 0; j < N * (N - 1) / 2 - N; j++) {
-
-                            jsum += EtE.getElementAt(i, j) * x[j];
-
-                        }
-
-                        w[i] = Etf[i] - jsum;
-
-                    }
-
-                } else {
-
-                    calculateW = true;
-
-                }
-
-                // step 3:
-
-                log.debug("Step 3");
-
-                // check for stopping conditions
-                // if so, break
-
-                if (Z.isEmpty()) {
-
-                    break;
-
-                }
-
-                boolean allLequalZero = true;
-
-                ListIterator lI = Z.listIterator();
+                lI = Z.listIterator();
 
                 while (lI.hasNext()) {
 
                     int i = ((Integer) lI.next()).intValue();
 
-                    if (w[i] > tolerance) {
+                    if (w[i] > max) {
 
-                        allLequalZero = false;
-                        break;
-
+                        t = i;
+                        max = w[i];
                     }
 
+                    if (w[i] > 0.0) {
+
+                        noPositive++;
+                    }
                 }
 
-                if (allLequalZero) {
+                if (noPositive == 0) {
+
+                    // if there were no positive w:s this time around
+                    // then all must have been set to 0 or been <= 0
+                    // already then we can accept even previously tested solutions, for
+                    // then we will leave the algorithm anyway as we get out
 
                     break;
-
                 }
 
-                // step 4, 5:
+                // we have now found a candidate t
+                // before leaving this loop, we must see
+                // if it has been used before and if it has, then we zero that w
+                // and go back for one more round
+                // else, we store our decision
 
-                log.debug("Step 4");
+                SolutionHypothesis sH = new SolutionHypothesis(P, t);
 
-                // find index t and move to nonzero set
+                boolean isContained = false;
 
-                int t = - 1;
+                ListIterator hI = hypotheses.listIterator();
 
-                while (true) {
+                while (hI.hasNext()) {
 
-                    double max = Double.NEGATIVE_INFINITY;
-                    t = - 1;
+                    SolutionHypothesis oH = (SolutionHypothesis) hI.next();
 
-                    int noPositive = 0;
+                    if (oH.equals(sH)) {
 
-                    lI = Z.listIterator();
-
-                    while (lI.hasNext()) {
-
-                        int i = ((Integer) lI.next()).intValue();
-
-                        if (w[i] > max) {
-
-                            t = i;
-                            max = w[i];
-
-                        }
-
-                        if (w[i] > 0.0) {
-
-                            noPositive++;
-
-                        }
-
-                    }
-
-                    if (noPositive == 0) {
-
-                        // if there were no positive w:s this time around
-                        // then all must have been set to 0 or been <= 0
-                        // already then we can accept even previously tested solutions, for
-                        // then we will leave the algorithm anyway as we get out
-
+                        isContained = true;
                         break;
-
                     }
-
-                    // we have now found a candidate t
-                    // before leaving this loop, we must see
-                    // if it has been used before and if it has, then we zero that w
-                    // and go back for one more round
-                    // else, we store our decision
-
-                    SolutionHypothesis sH = new SolutionHypothesis(P, t);
-
-                    boolean isContained = false;
-
-                    ListIterator hI = hypotheses.listIterator();
-
-                    while (hI.hasNext()) {
-
-                        SolutionHypothesis oH = (SolutionHypothesis) hI.next();
-
-                        if (oH.equals(sH)) {
-
-                            isContained = true;
-                            break;
-                        }
-                    }
-
-                    if (isContained) {
-
-                        w[t] = 0.0;
-
-                    } else {
-
-                        hypotheses.add(sH);
-
-                        break;
-
-                    }
-
                 }
 
-                // stop if there is no good choice
+                if (isContained) {
 
-                if (w[t] <= tolerance) {
+                    w[t] = 0.0;
+                } else {
 
-                    // we end anyway
+                    hypotheses.add(sH);
 
                     break;
+                }
+            }
 
+            // stop if there is no good choice
+
+            if (w[t] <= tolerance) {
+
+                // we end anyway
+
+                break;
+            }
+
+            log.debug("Step 5");
+
+            Z.remove(new Integer(t));
+            P.add(new Integer(t));
+
+            // start of inner loop
+
+            // see if we enter from 5
+
+            boolean from5 = true;
+
+            while (true) {
+
+                if (from5) {
+                    log.debug("From outer loop: ");
+                }
+                else {
+                    log.debug("From inner loop: ");
                 }
 
-                log.debug("Step 5");
+                log.debug("P: ");
 
-                Z.remove(new Integer(t));
-                P.add(new Integer(t));
+                for (int i = 0; i < P.size(); i++) {
 
-                // start of inner loop
+                    log.debug(" x[" + ((Integer) P.get(i)).intValue() + "]: " + x[((Integer) P.get(i)).intValue()]);
+                }
 
-                // see if we enter from 5
+                // step 6:
 
-                boolean from5 = true;
+                log.debug("Step 6");
 
-                while (true) {
+                // LS subproblem!
 
-                    if (from5) {
-                        log.debug("From outer loop: ");
-                    }
-                    else {
-                        log.debug("From inner loop: ");
-                    }
+                // this is the difficult part...
 
-                    log.debug("P: ");
+                // generate submatrices, corresponding in size...
 
-                    for (int i = 0; i < P.size(); i++) {
+                int fullSplits = N * (N - 1) / 2 - N;
+                int noSplits = P.size();
 
-                        log.debug(" x[" + ((Integer) P.get(i)).intValue() + "]: " + x[((Integer) P.get(i)).intValue()]);
-                    }
+                double[][] EtEp = new double[noSplits][noSplits];
+                double[] Etfp = new double[noSplits];
 
-                    // step 6:
+                int row = 0;
+                int column = 0;
 
-                    log.debug("Step 6");
+                // fill
 
-                    // LS subproblem!
+                for (int i = 0; i < fullSplits; i++) {
 
-                    // this is the difficult part...
+                    if (P.contains(new Integer(i))) {
 
-                    // generate submatrices, corresponding in size...
+                        column = 0;
 
-                    int fullSplits = N * (N - 1) / 2 - N;
-                    int noSplits = P.size();
+                        for (int j = 0; j < fullSplits; j++) {
 
-                    double[][] EtEp = new double[noSplits][noSplits];
-                    double[] Etfp = new double[noSplits];
+                            if (P.contains(new Integer(j))) {
 
-                    int row = 0;
-                    int column = 0;
+                                EtEp[row][column] = EtE.getElementAt(i, j);
 
-                    // fill
-
-                    for (int i = 0; i < fullSplits; i++) {
-
-                        if (P.contains(new Integer(i))) {
-
-                            column = 0;
-
-                            for (int j = 0; j < fullSplits; j++) {
-
-                                if (P.contains(new Integer(j))) {
-
-                                    EtEp[row][column] = EtE.getElementAt(i, j);
-
-                                    column++;
-
-                                }
+                                column++;
 
                             }
 
-                            Etfp[row] = Etf[i];
-
-                            row++;
-
                         }
+
+                        Etfp[row] = Etf[i];
+
+                        row++;
 
                     }
 
-                    // done
-                    // now solve their least squares problem EtEp x = Etfp
+                }
 
-                    if (extract) {
+                // done
+                // now solve their least squares problem EtEp x = Etfp
 
-                        try {
 
-                            FileWriter fileOutput = new FileWriter("Ep" + it + ".txt");
+                // should be better initialized
 
-                            for (int a = 0; a < noSplits; a++) {
+                // BUT! we only have size (P) splits
 
-                                for (int b = 0; b < noSplits; b++) {
+                int[] aMap = new int[P.size()];
 
-                                    fileOutput.write(EtEp[a][b] + " ");
+                int mapIndex = 0;
 
-                                }
+                for (int i = 0; i < fullSplits; i++) {
 
-                                fileOutput.write("\n");
+                    if (P.contains(new Integer(i))) {
 
-                            }
+                        aMap[mapIndex] = i;
 
-                            fileOutput.close();
-
-                        } catch (IOException e) {
-                        }
+                        mapIndex++;
 
                     }
 
-                    // should be better initialized
+                }
 
-                    // BUT! we only have size (P) splits
+                // so aMap is the map reduced z to true z
 
-                    int[] aMap = new int[P.size()];
+                double Q[][] = new double[noSplits][noSplits];
 
-                    int mapIndex = 0;
+                for (int i = 0; i < noSplits; i++) {
 
-                    for (int i = 0; i < fullSplits; i++) {
+                    // for each column
 
-                        if (P.contains(new Integer(i))) {
+                    // the column is v
 
-                            aMap[mapIndex] = i;
+                    double[] v = new double[noSplits];
 
-                            mapIndex++;
+                    // take the list of dot products
+
+                    double[] L = new double[i];
+
+                    for (int j = 0; j < i; j++) {
+
+                        double sum = 0.0;
+
+                        for (int k = 0; k < noSplits; k++) {
+
+                            sum += EtEp[k][i] * Q[k][j];
 
                         }
 
+                        L[j] = sum;
+
                     }
 
-                    // so aMap is the map reduced z to true z
+                    // next...
 
-                    double Q[][] = new double[noSplits][noSplits];
+                    for (int k = 0; k < noSplits; k++) {
 
-                    for (int i = 0; i < noSplits; i++) {
-
-                        // for each column
-
-                        // the column is v
-
-                        double[] v = new double[noSplits];
-
-                        // take the list of dot products
-
-                        double[] L = new double[i];
+                        double jSum = 0.0;
 
                         for (int j = 0; j < i; j++) {
 
-                            double sum = 0.0;
-
-                            for (int k = 0; k < noSplits; k++) {
-
-                                sum += EtEp[k][i] * Q[k][j];
-
-                            }
-
-                            L[j] = sum;
+                            jSum += L[j] * Q[k][j];
 
                         }
 
-                        // next...
+                        // for all elements in the column
+
+                        v[k] = EtEp[k][i] - jSum;
+
+                    }
+
+                    // then we must normalize v before adding it
+
+                    double length = 0.0;
+
+                    for (int k = 0; k < noSplits; k++) {
+
+                        length += v[k] * v[k];
+
+                    }
+
+                    if (length != 0.0) {
 
                         for (int k = 0; k < noSplits; k++) {
 
-                            double jSum = 0.0;
-
-                            for (int j = 0; j < i; j++) {
-
-                                jSum += L[j] * Q[k][j];
-
-                            }
-
-                            // for all elements in the column
-
-                            v[k] = EtEp[k][i] - jSum;
-
-                        }
-
-                        // then we must normalize v before adding it
-
-                        double length = 0.0;
-
-                        for (int k = 0; k < noSplits; k++) {
-
-                            length += v[k] * v[k];
-
-                        }
-
-                        if (length != 0.0) {
-
-                            for (int k = 0; k < noSplits; k++) {
-
-                                v[k] = v[k] / Math.sqrt(length);
-
-                            }
-
-                        }
-
-                        // then store v
-
-                        for (int k = 0; k < noSplits; k++) {
-
-                            Q[k][i] = v[k];
+                            v[k] = v[k] / Math.sqrt(length);
 
                         }
 
                     }
 
-                    // then calculate R
+                    // then store v
 
-                    UpperTriangularMatrix R = new UpperTriangularMatrix(noSplits);
+                    for (int k = 0; k < noSplits; k++) {
+
+                        Q[k][i] = v[k];
+
+                    }
+
+                }
+
+                // then calculate R
+
+                UpperTriangularMatrix R = new UpperTriangularMatrix(noSplits);
+
+                for (int i = 0; i < noSplits; i++) {
+
+                    for (int j = 0; j < i + 1; j++) {
+
+                        double sum = 0.0;
+
+                        for (int k = 0; k < noSplits; k++) {
+
+                            sum += EtEp[k][i] * Q[k][j];
+
+                        }
+
+                        R.setElementAt(j, i, sum);
+
+                    }
+
+                }
+
+                // we now have the Q and R matrices
+
+                // check consistency!
+
+                if (R.getElementAt(noSplits - 1, noSplits - 1) == 0) {
+
+                    log.warn("Subproblem is underdetermined, results may not be unique!");
+                }
+
+                // done
+
+                if (false) {
+
+                    NumberFormat nF = NumberFormat.getInstance();
+                    nF.setMaximumFractionDigits(3);
+                    nF.setMinimumFractionDigits(3);
+
+
+                    StringBuilder sbq = new StringBuilder();
+                    sbq.append("Q:");
 
                     for (int i = 0; i < noSplits; i++) {
-
-                        for (int j = 0; j < i + 1; j++) {
-
-                            double sum = 0.0;
-
-                            for (int k = 0; k < noSplits; k++) {
-
-                                sum += EtEp[k][i] * Q[k][j];
-
-                            }
-
-                            R.setElementAt(j, i, sum);
-
-                        }
-
-                    }
-
-                    // we now have the Q and R matrices
-
-                    // check consistency!
-
-                    if (R.getElementAt(noSplits - 1, noSplits - 1) == 0) {
-
-                        log.warn("Subproblem is underdetermined, results may not be unique!");
-                    }
-
-                    // done
-
-                    if (false) {
-
-                        NumberFormat nF = NumberFormat.getInstance();
-                        nF.setMaximumFractionDigits(3);
-                        nF.setMinimumFractionDigits(3);
-
-
-                        StringBuilder sbq = new StringBuilder();
-                        sbq.append("Q:");
-
-                        for (int i = 0; i < noSplits; i++) {
-
-                            for (int j = 0; j < noSplits; j++) {
-
-                                sbq.append(" " + nF.format(Q[i][j]));
-                            }
-
-                            log.info(sbq.toString());
-                        }
-
-                        System.out.println("R:");
-
-                        for (int i = 0; i < noSplits; i++) {
-
-                            for (int j = 0; j < noSplits; j++) {
-
-                                System.out.print(" " + nF.format(R.getElementAt(i, j)));
-
-                            }
-
-                            //System.out.println();
-
-                        }
-
-                    }
-
-                    if (extract) {
-
-                        try {
-
-                            FileWriter fileOutput = new FileWriter("Q" + it + ".txt");
-
-                            for (int i = 0; i < noSplits; i++) {
-
-                                for (int j = 0; j < noSplits; j++) {
-
-                                    fileOutput.write(Q[i][j] + " ");
-
-                                }
-
-                                fileOutput.write("\n");
-
-                            }
-
-                            fileOutput.close();
-
-                            fileOutput = new FileWriter("R" + it + ".txt");
-
-                            for (int i = 0; i < noSplits; i++) {
-
-                                for (int j = 0; j < noSplits; j++) {
-
-                                    fileOutput.write(R.getElementAt(i, j) + " ");
-
-                                }
-
-                                fileOutput.write("\n");
-
-                            }
-
-                            fileOutput.close();
-
-                        } catch (IOException e) {
-                        }
-
-                    }
-
-                    // least squares solution of z:
-
-                    double[] QtEtfp = new double[noSplits];
-
-                    for (int i = 0; i < noSplits; i++) {
-
-                        double jSum = 0.0;
 
                         for (int j = 0; j < noSplits; j++) {
 
-                            jSum += Q[j][i] * Etfp[j];
-
+                            sbq.append(" " + nF.format(Q[i][j]));
                         }
 
-                        QtEtfp[i] = jSum;
-
+                        log.info(sbq.toString());
                     }
 
-                    // reduced row echelon whatever solver... maybe?
-
-                    // first for the non-personas...
-
-                    for (int i = 0; i < fullSplits; i++) {
-
-                        z[i] = 0.0;
-
-                    }
-
-                    // ... second those that exist; wonder if I can do this?
-
-                    double[] zRed = new double[noSplits];
+                    System.out.println("R:");
 
                     for (int i = 0; i < noSplits; i++) {
 
-                        int d = noSplits - 1;
+                        for (int j = 0; j < noSplits; j++) {
 
-                        double jSum = 0.0;
-
-                        for (int j = 0; j < i; j++) {
-
-                            jSum += R.getElementAt(d - i, d - j) * z[aMap[d - j]];
+                            System.out.print(" " + nF.format(R.getElementAt(i, j)));
 
                         }
 
-                        z[aMap[d - i]] = (QtEtfp[d - i] - jSum) / R.getElementAt(d - i, d - i);
-                        zRed[d - i] = z[aMap[d - i]];
+                        //System.out.println();
 
                     }
 
-                    if (extract) {
+                }
 
-                        try {
+                // least squares solution of z:
 
-                            FileWriter fileOutput = new FileWriter("z" + it + ".txt");
+                double[] QtEtfp = new double[noSplits];
 
-                            for (int b = 0; b < noSplits; b++) {
+                for (int i = 0; i < noSplits; i++) {
 
-                                fileOutput.write(zRed[b] + "\n");
+                    double jSum = 0.0;
 
-                            }
+                    for (int j = 0; j < noSplits; j++) {
 
-                            fileOutput.close();
-
-                        } catch (IOException e) {
-                        }
-
-                        it++;
+                        jSum += Q[j][i] * Etfp[j];
 
                     }
 
-                    // finite-precision test
+                    QtEtfp[i] = jSum;
 
-                    if (from5) {
+                }
 
-                        if (cycleWarnings) {
+                // reduced row echelon whatever solver... maybe?
 
-                            System.out.println("Testing z [" + t + "] = " + z[t] + " for nonnegativity by tolerance " + tolerance);
+                // first for the non-personas...
 
-                        }
+                for (int i = 0; i < fullSplits; i++) {
 
-                        if (z[t] <= tolerance) {
+                    z[i] = 0.0;
 
-                            if (stepMessages) {
+                }
 
-                                Pair<Integer, Integer> sI = splitIndices[t];
+                // ... second those that exist; wonder if I can do this?
 
-                                //  System.out.print("Removing directly split " + t + " :");
+                double[] zRed = new double[noSplits];
 
-                                //                            for (int p = sI.getN1() + 1; p < sI.getN2() + 1; p++) {
-                                //
-                                //                                System.out.print(" " + ((Integer) c.get(p - 1)).intValue());
-                                //
-                                //                            }
-                                //
-                                //                            System.out.println();
+                for (int i = 0; i < noSplits; i++) {
 
-                            }
+                    int d = noSplits - 1;
 
-                            w[t] = 0;
-                            calculateW = false;
-                            P.remove(new Integer(t));
-                            Z.add(new Integer(t));
-                            break;
+                    double jSum = 0.0;
 
-                        }
+                    for (int j = 0; j < i; j++) {
+
+                        jSum += R.getElementAt(d - i, d - j) * z[aMap[d - j]];
 
                     }
 
-                    log.debug("Step 7");
+                    z[aMap[d - i]] = (QtEtfp[d - i] - jSum) / R.getElementAt(d - i, d - i);
+                    zRed[d - i] = z[aMap[d - i]];
 
-                    // step 7:
+                }
 
-                    // check for stopping conditions
-                    // if so, break
 
-                    boolean allAboveZero = true;
+                // finite-precision test
 
-                    lI = P.listIterator();
+                if (from5) {
 
-                    while (lI.hasNext()) {
-
-                        int i = ((Integer) lI.next()).intValue();
-
-                        if (z[i] <= tolerance) {
-
-                            allAboveZero = false;
-                            break;
-
-                        }
-
+                    if (z[t] <= tolerance) {
+                        w[t] = 0;
+                        calculateW = false;
+                        P.remove(new Integer(t));
+                        Z.add(new Integer(t));
+                        break;
                     }
+                }
 
-                    if (allAboveZero) {
+                log.debug("Step 7");
 
-                        for (int i = 0; i < N * (N - 1) / 2 - N; i++) {
+                // step 7:
 
-                            x[i] = z[i];
+                // check for stopping conditions
+                // if so, break
 
-                        }
+                boolean allAboveZero = true;
 
+                lI = P.listIterator();
+
+                while (lI.hasNext()) {
+
+                    int i = ((Integer) lI.next()).intValue();
+
+                    if (z[i] <= tolerance) {
+
+                        allAboveZero = false;
                         break;
 
                     }
 
-                    // step 8:
+                }
 
-                    log.debug("Step 8");
-
-                    lI = P.listIterator();
-
-                    double min = Double.POSITIVE_INFINITY;
-                    int q = - 1;
-
-                    while (lI.hasNext()) {
-
-                        int i = ((Integer) lI.next()).intValue();
-
-                        if (z[i] <= tolerance) {
-
-                            if (x[i] / (x[i] - z[i]) < min) {
-
-                                q = i;
-                                min = x[i] / (x[i] - z[i]);
-
-                            }
-
-                        }
-
-                    }
-
-                    // step 9:
-
-                    log.debug("Step 9");
-
-                    double alpha = x[q] / (x[q] - z[q]);
-
-                    // step 10:
-
-                    log.debug("Step 10");
-
-                    log.debug("q " + q + " x " + x[q] + " z " + z[q] + " alpha " + alpha);
+                if (allAboveZero) {
 
                     for (int i = 0; i < N * (N - 1) / 2 - N; i++) {
 
-                        x[i] = x[i] + alpha * (z[i] - x[i]);
+                        x[i] = z[i];
 
                     }
 
-                    // step 11:
-
-                    log.debug("Step 11");
-
-                    lI = P.listIterator();
-
-                    while (lI.hasNext()) {
-
-                        int i = ((Integer) lI.next()).intValue();
-
-                        if (x[i] <= tolerance) {
-
-                            if (stepMessages) {
-
-                                Pair<Integer, Integer> sI = splitIndices[i];
-
-                                //                            System.out.print("Removing split " + i + " :");
-                                //
-                                //                            for (int p = sI.getN1() + 1; p < sI.getN2() + 1; p++) {
-                                //
-                                //                                System.out.print(" " + ((Integer) c.get(p - 1)).intValue());
-                                //
-                                //                            }
-                                //
-                                //                            System.out.println();
-
-                            }
-
-                            lI.remove();
-                            Z.add(new Integer(i));
-
-                        }
-
-                    }
-
-                    // we will now go back to 6 again, and from here
-
-                    from5 = false;
-
-                    System.gc();
+                    break;
 
                 }
 
+                // step 8:
+
+                log.debug("Step 8");
+
+                lI = P.listIterator();
+
+                double min = Double.POSITIVE_INFINITY;
+                int q = - 1;
+
+                while (lI.hasNext()) {
+
+                    int i = ((Integer) lI.next()).intValue();
+
+                    if (z[i] <= tolerance) {
+
+                        if (x[i] / (x[i] - z[i]) < min) {
+
+                            q = i;
+                            min = x[i] / (x[i] - z[i]);
+                        }
+                    }
+                }
+
+                // step 9:
+
+                log.debug("Step 9");
+
+                double alpha = x[q] / (x[q] - z[q]);
+
+                // step 10:
+
+                log.debug("Step 10");
+
+                log.debug("q " + q + " x " + x[q] + " z " + z[q] + " alpha " + alpha);
+
+                for (int i = 0; i < N * (N - 1) / 2 - N; i++) {
+
+                    x[i] = x[i] + alpha * (z[i] - x[i]);
+
+                }
+
+                // step 11:
+
+                log.debug("Step 11");
+
+                lI = P.listIterator();
+
+                while (lI.hasNext()) {
+                    int i = ((Integer) lI.next()).intValue();
+
+                    if (x[i] <= tolerance) {
+                        lI.remove();
+                        Z.add(new Integer(i));
+                    }
+                }
+
+                // we will now go back to 6 again, and from here
+                from5 = false;
+                System.gc();
             }
-
-            log.debug("Step 12");
-
-            stopWatch.stop();
-
-            log.info("Time taken to compute weights: " + stopWatch.toSplitString());
-
-            //computation of split weights in array x[] finished
-            // we do, then our split weights are done
-
-            // and we print them to file
         }
+
+        log.debug("Step 12");
+
+
+
+        //computation of split weights in array x[] finished
+        // we do, then our split weights are done
+
+        // and we print them to file
+
+
+        return x;
     }
 
 
 
-   public static void load(PHolder pHolder, String fileName) throws IOException {
+
+   private static void load(PHolder pHolder, String fileName) throws IOException {
 
         int N = 0;
 
@@ -2081,20 +1818,10 @@ public class WeightsComputeNNLSInformative {
                 N = (new Integer(theSecond)).intValue();
 
                 numberKnown = true;
-
             }
-
         }
-
     }
 
-    public static SymmetricMatrix getEtE() {
-        return EtE;
-    }
-
-    public static double[] getx() {
-        return x;
-    }
 
     protected static class SolutionHypothesis {
 
