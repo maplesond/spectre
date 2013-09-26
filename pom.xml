@@ -109,7 +109,7 @@
                 <executions>
                     <execution>
                         <id>copy-artifact</id>
-                        <phase>package</phase>
+                        <phase>deploy</phase>
                         <goals>
                             <goal>copy</goal>
                         </goals>
@@ -161,28 +161,8 @@
 
         </plugins>
     </build>
+
     <dependencies>
-
-        <!-- Logging -->
-
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>${slf4j-version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>${slf4j-version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jcl-over-slf4j</artifactId>
-            <version>${slf4j-version}</version>
-            <scope>runtime</scope>
-        </dependency>
-
 
         <!-- Testing -->
 
@@ -192,7 +172,6 @@
             <version>4.11</version>
             <scope>test</scope>
         </dependency>
-
 
     </dependencies>
 

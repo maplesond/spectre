@@ -26,11 +26,11 @@ import static org.junit.Assert.assertTrue;
  */
 public class ToolsCLITest {
 
-    @Test
+    /*@Test
     public void testHelp() {
 
         ToolsCLI.main(new String[]{"--help"});
 
         assertTrue(true);
-    }
+    }       */
 }

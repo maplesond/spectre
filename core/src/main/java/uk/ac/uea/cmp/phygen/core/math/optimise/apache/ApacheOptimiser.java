@@ -31,8 +31,6 @@ import java.util.Collection;
 
 public class ApacheOptimiser extends AbstractOptimiser {
 
-    private static Logger logger = LoggerFactory.getLogger(ApacheOptimiser.class);
-
     public ApacheOptimiser() throws OptimiserException {
         this(Objective.LINEAR);
     }

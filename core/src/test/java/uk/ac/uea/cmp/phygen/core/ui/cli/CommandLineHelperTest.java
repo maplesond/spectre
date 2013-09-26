@@ -30,7 +30,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class CommandLineHelperTest {
 
-    @Test
+    /*@Test
     public void testStartUpNoArgs() {
 
         Options options = createOptions();
@@ -74,7 +74,7 @@ public class CommandLineHelperTest {
         CommandLine cl = CommandLineHelper.startApp(options, "jar", "project", "description", args);
 
         assertTrue(cl != null);
-    }
+    }      */
 
 
     private static Options createOptions() {

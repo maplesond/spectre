@@ -16,6 +16,10 @@
 
 package uk.ac.uea.cmp.phygen.netmake;
 
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.junit.Before;
 import org.junit.Test;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phygen.netmake.weighting.GreedyMEWeighting;
@@ -28,6 +32,14 @@ import static org.junit.Assert.assertTrue;
  * Templates.
  */
 public class NetMakeTest {
+
+    @Before
+    public void setup() {
+
+        BasicConfigurator.configure();
+        LogManager.getRootLogger().setLevel(Level.WARN);
+    }
+
 
     @Test
     public void simpleTest() {
