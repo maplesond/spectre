@@ -1779,7 +1779,7 @@ public class SplitSystem
     public Set<Integer> similarSplits(SplitSystem ss2, double threshold)
     {
         int distThr = (int) (nTaxa * threshold);
-        Set<Integer> indices = new HashSet();
+        Set<Integer> indices = new HashSet<>();
         
         boolean[][] splits2 = ss2.getSplits();
         boolean[] active2 = ss2.getActive();

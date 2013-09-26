@@ -38,7 +38,7 @@ public class Window extends JPanel
     private Set<double[]> lastLinesSet;
     private Set<double[]> lastPointsSet;
     
-    private List<double[]> pointsToMark = new LinkedList();
+    private List<double[]> pointsToMark = new LinkedList<>();
     
     Color[] colors = new Color[3];
     
@@ -110,7 +110,7 @@ public class Window extends JPanel
         LinkedList<Edge> edges = DrawFlat.collect_edges(net.getFirstEdge());
         
         lines = new int[edges.size()][5];
-        Set<Integer[]> p = new HashSet();
+        Set<Integer[]> p = new HashSet<>();
 
         corners = Utilities.getCorners(DrawFlat.collect_vertices(net));
 

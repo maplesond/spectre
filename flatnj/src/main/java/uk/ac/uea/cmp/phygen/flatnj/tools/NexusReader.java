@@ -225,7 +225,7 @@ public abstract class NexusReader<E>
         if (lineLC.contains("cycle"))
         {
             lineLC = lineLC.substring(5).trim();
-            List<Integer> permutation = new LinkedList();
+            List<Integer> permutation = new LinkedList<>();
             boolean exit = false;
             while (!exit)
             {

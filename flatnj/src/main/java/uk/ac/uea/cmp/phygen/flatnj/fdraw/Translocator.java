@@ -195,7 +195,7 @@ public class Translocator
         deltaX -= edges.getFirst().top.x;
         deltaY -= edges.getFirst().top.y;
 
-        LinkedList<Vertex> vertices = new LinkedList();
+        LinkedList<Vertex> vertices = new LinkedList<>();
         for (int i = 0; i < edges.size(); i++)
         {
             vertices.add(edges.get(i).top);
@@ -534,7 +534,7 @@ public class Translocator
         deltaX -= w.x;
         deltaY -= w.y;
 
-        LinkedList<Vertex> vertices = new LinkedList();
+        LinkedList<Vertex> vertices = new LinkedList<>();
         for (int i = 0; i < edges.size(); i++)
         {
             if(top)
@@ -597,7 +597,7 @@ public class Translocator
 
     static void rotateAll(Vertex v, Set<Edge> edges, double alpha)
     {
-        Set<Vertex> verticesToRotate = new HashSet();
+        Set<Vertex> verticesToRotate = new HashSet<>();
         Iterator<Edge> edgeIt = edges.iterator();
         while(edgeIt.hasNext())
         {

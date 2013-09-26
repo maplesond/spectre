@@ -243,7 +243,7 @@ public class BoxOpener
 
     private LinkedList<NetworkBox> collectAndSortBoxesForTheSplit(int[] activeSplits, SplitSystemDraw ss, int S, TreeSet[] splitedges)
     {
-        LinkedList<NetworkBox> boxes = new LinkedList();
+        LinkedList<NetworkBox> boxes = new LinkedList<>();
         for (int i2 = 0; i2 < activeSplits.length; i2++)
         {
             int Si = activeSplits[i2];
@@ -257,7 +257,7 @@ public class BoxOpener
                 }
             }
         }
-        LinkedList<NetworkBox> boxesSorted = new LinkedList();
+        LinkedList<NetworkBox> boxesSorted = new LinkedList<>();
 
         while (!boxes.isEmpty())
         {

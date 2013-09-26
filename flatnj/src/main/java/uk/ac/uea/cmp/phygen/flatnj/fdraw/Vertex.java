@@ -52,8 +52,8 @@ public class Vertex
     {
         x = xcoord;
         y = ycoord;
-        elist = new LinkedList();
-        taxa = new LinkedList();
+        elist = new LinkedList<>();
+        taxa = new LinkedList<>();
         visited = false;
     }
 

@@ -34,8 +34,8 @@ public class Leaders
 
     public Leaders()
     {
-        lines = new LinkedList();
-        labels = new HashMap();
+        lines = new LinkedList<>();
+        labels = new HashMap<>();
     }
     
     public void add(Point a, Point b, Color c)

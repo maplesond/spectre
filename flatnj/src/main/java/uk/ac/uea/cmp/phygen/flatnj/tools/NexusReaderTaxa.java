@@ -39,7 +39,7 @@ public class NexusReaderTaxa extends NexusReader
     @Override
     protected void initializeDataStructures(Dimensions dimensions)
     {
-        labels = new LinkedList();
+        labels = new LinkedList<>();
     }
 
     @Override

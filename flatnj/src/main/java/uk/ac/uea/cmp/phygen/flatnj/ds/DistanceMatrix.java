@@ -56,7 +56,7 @@ public class DistanceMatrix
         this.matrix = distances;
         this.letters = letters;
         
-        symbols = new HashMap();
+        symbols = new HashMap<>();
         for (int i = 0; i < letters.length; i++)
         {
             symbols.put(letters[i], i);
@@ -97,7 +97,7 @@ public class DistanceMatrix
     //a.k.a. all allowable characters
     public Set<Character> getSymbols()
     {
-        Set<Character> s = new HashSet();
+        Set<Character> s = new HashSet<>();
         for (int i = 0; i < letters.length; i++)
         {
             s.add(letters[i]);

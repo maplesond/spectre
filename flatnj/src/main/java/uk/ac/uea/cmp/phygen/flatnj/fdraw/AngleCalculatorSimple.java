@@ -149,9 +149,9 @@ public class AngleCalculatorSimple implements AngleCalculator
 
     protected Set<Vertex> getAllVertices(Edge split, boolean top)
     {
-        LinkedList<Vertex> vertices = new LinkedList();
-        Set<Edge> edges = new HashSet();
-        Set<Vertex> verticesR = new HashSet();
+        LinkedList<Vertex> vertices = new LinkedList<>();
+        Set<Edge> edges = new HashSet<>();
+        Set<Vertex> verticesR = new HashSet<>();
 
         split.visited = true;
         if (top)
@@ -427,7 +427,7 @@ public class AngleCalculatorSimple implements AngleCalculator
     public double[] computeLeftAndRightAngles(Edge split, Vertex v, Vertex w)
     {
         double[] lr = new double[2];
-        LinkedList<Edge> around = new LinkedList();
+        LinkedList<Edge> around = new LinkedList<>();
         for (int i = 0; i < v.elist.size(); i++)
         {
             if (v.elist.get(i) != split)
@@ -472,7 +472,7 @@ public class AngleCalculatorSimple implements AngleCalculator
     @Override
     public double optimizedAngleForCompatible(Vertex v, Vertex w, Edge e, List<Edge> botEdges, List<Edge> topEdges)
     {
-        Set<Vertex> botVertices = new HashSet();
+        Set<Vertex> botVertices = new HashSet<>();
         for (int i = 0; i < botEdges.size(); i++)
         {
             Edge ee = botEdges.get(i);
@@ -480,7 +480,7 @@ public class AngleCalculatorSimple implements AngleCalculator
             botVertices.add(ee.top);
         }
         
-        Set<Vertex> topVertices = new HashSet();
+        Set<Vertex> topVertices = new HashSet<>();
         for (int i = 0; i < topEdges.size(); i++)
         {
             Edge ee = topEdges.get(i);
@@ -513,14 +513,14 @@ public class AngleCalculatorSimple implements AngleCalculator
                                                  Window window,
                                                  boolean outside)
     {
-        List<Double> angles = new LinkedList();
+        List<Double> angles = new LinkedList<>();
         
         double r = e.length();
         
         double vx = v.x;
         double vy = v.y;
         
-        Set<double[]> intersections = new HashSet();
+        Set<double[]> intersections = new HashSet<>();
         
         Iterator<Edge> edgeIt = edges.iterator();
         while(edgeIt.hasNext())
@@ -634,8 +634,8 @@ public class AngleCalculatorSimple implements AngleCalculator
 
     public List<double[]> sortPoints(Set<double[]> intersections, Vertex v, Vertex w)
     {
-        LinkedList<double[]> sorted = new LinkedList();
-        LinkedList<Integer> sIndex = new LinkedList();
+        LinkedList<double[]> sorted = new LinkedList<>();
+        LinkedList<Integer> sIndex = new LinkedList<>();
         
         double[] angles = new double[intersections.size()];
         double[][] points = new double[intersections.size()][2];

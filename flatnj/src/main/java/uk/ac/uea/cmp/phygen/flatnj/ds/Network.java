@@ -49,7 +49,7 @@ public class Network
     public Network(Vertex v)
     {
         allVertices = DrawFlat.collect_vertices(v);
-        labeledVertices = new LinkedList();
+        labeledVertices = new LinkedList<>();
         for (int i = 0; i < allVertices.size(); i++)
         {
             Vertex w = allVertices.get(i);
@@ -61,8 +61,8 @@ public class Network
         
         allEdges = DrawFlat.collect_edges(v.getFirstEdge());
         externalEdges = Collector.externalEdges(v);
-        trivialEdges = new LinkedList();
-        internalEdges = new LinkedList();
+        trivialEdges = new LinkedList<>();
+        internalEdges = new LinkedList<>();
         for (int i = 0; i < allEdges.size(); i++)
         {
             Edge e = allEdges.get(i);
@@ -92,10 +92,10 @@ public class Network
 
     public Network(Vertex[] vertices, Edge[] edges)
     {
-        allVertices = new LinkedList<Vertex>();
+        allVertices = new LinkedList<>();
         allVertices.addAll(Arrays.asList(vertices));
         
-        labeledVertices = new LinkedList();
+        labeledVertices = new LinkedList<>();
         for (int i = 0; i < allVertices.size(); i++)
         {
             Vertex w = allVertices.get(i);
@@ -105,11 +105,11 @@ public class Network
             }
         }
         
-        allEdges = new LinkedList<Edge>();
+        allEdges = new LinkedList<>();
         allEdges.addAll(Arrays.asList(edges));
         externalEdges = Collector.externalEdges(allVertices);
-        trivialEdges = new LinkedList();
-        internalEdges = new LinkedList();
+        trivialEdges = new LinkedList<>();
+        internalEdges = new LinkedList<>();
         for(Iterator<Edge> it = allEdges.iterator(); it.hasNext();)
         {
             Edge e = it.next();
@@ -142,32 +142,32 @@ public class Network
 
     public List<Edge> getEdges()
     {
-        return new LinkedList(allEdges);
+        return new LinkedList<>(allEdges);
     }
 
     public List<Vertex> getVertices()
     {
-        return new LinkedList(allVertices);
+        return new LinkedList<>(allVertices);
     }
 
     public List<Edge> getExternal()
     {
-        return new LinkedList(externalEdges);
+        return new LinkedList<>(externalEdges);
     }
 
     public List<Edge> getInternal()
     {
-        return new LinkedList(internalEdges);
+        return new LinkedList<>(internalEdges);
     }
 
     public List<Vertex> getLabeled()
     {
-        return new LinkedList(labeledVertices);
+        return new LinkedList<>(labeledVertices);
     }
 
     public List<Edge> getTrivial()
     {
-        return new LinkedList(trivialEdges);
+        return new LinkedList<>(trivialEdges);
     }
     
     public void removeVertices(LinkedList<Vertex> vertices)
@@ -194,7 +194,7 @@ public class Network
     
     public Set<Edge> getExternalEdges(Edge e1, Vertex a, Edge e2)
     {
-        Set<Edge> subset = new HashSet();
+        Set<Edge> subset = new HashSet<>();
         subset.add(e1);
         Edge current = e1;
         int index = externalEdges.indexOf(e1);
@@ -301,7 +301,7 @@ public class Network
 
     public Map<Integer,boolean[]> getSplits()
     {
-        List<String> allLabels = new LinkedList();
+        List<String> allLabels = new LinkedList<>();
         for(int i = 0; i < labeledVertices.size(); i ++)
         {
             uk.ac.uea.cmp.phygen.flatnj.fdraw.Label l = labeledVertices.get(i).getLabel();
@@ -317,15 +317,15 @@ public class Network
         String[] sortedLabels = new String[allLabels.size()];
         allLabels.toArray(sortedLabels);
         Arrays.sort(sortedLabels);
-        Map<String, Integer> indexes = new HashMap();
+        Map<String, Integer> indexes = new HashMap<>();
         for(int i = 0; i < sortedLabels.length; i++)
         {
             indexes.put(sortedLabels[i], i);
         }
         
-        Map<Integer,boolean[]> intSplits = new HashMap();
+        Map<Integer,boolean[]> intSplits = new HashMap<>();
         
-        Map<Integer, List<Edge>> splits = new HashMap();
+        Map<Integer, List<Edge>> splits = new HashMap<>();
         for(int i = 0; i < allEdges.size(); i ++)
         {
             int id = allEdges.get(i).getIdxsplit();
@@ -347,9 +347,9 @@ public class Network
             {
                 eIt.get(i).visited = true;
             }
-            List<Vertex> vv = new LinkedList();
+            List<Vertex> vv = new LinkedList<>();
             vv.add(eIt.get(0).getBot());
-            Set<String> taxa = new HashSet();
+            Set<String> taxa = new HashSet<>();
             while(!vv.isEmpty())
             {
                 Vertex v = vv.remove(0);
@@ -409,7 +409,7 @@ public class Network
 
     public List<Edge> getCompatible()
     {
-        List<Edge> compatible = new LinkedList();
+        List<Edge> compatible = new LinkedList<>();
         for(int i = 0; i < allEdges.size(); i ++)
         {
             Edge e = allEdges.get(i);

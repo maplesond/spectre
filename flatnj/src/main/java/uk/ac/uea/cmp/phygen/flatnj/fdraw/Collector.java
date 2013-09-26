@@ -36,7 +36,7 @@ public class Collector
     {
         LinkedList<Edge> edges = DrawFlat.collect_edges(v.elist.getFirst());
         LinkedList<Vertex> vertices = DrawFlat.collect_vertices(v);
-        LinkedList<Edge> trivial = new LinkedList();
+        LinkedList<Edge> trivial = new LinkedList<>();
         for (int i = 0; i < vertices.size(); i++)
         {
             Vertex w = vertices.get(i);
@@ -124,7 +124,7 @@ public class Collector
     public static Set<Vertex> getExternalVertices(Edge e1, Vertex b1, Edge e2)
     {
         //Set for storing all vertices in the top convex hull
-        Set<Vertex> externalVertices = new HashSet();
+        Set<Vertex> externalVertices = new HashSet<>();
         //current edge of the hull, for which we will be looking next one
         Edge current = e1;
 
@@ -200,8 +200,8 @@ public class Collector
 
     public static Set<Edge> getAllEdges(LinkedList<Edge> split, boolean top)
     {
-        LinkedList<Vertex> vertices = new LinkedList();
-        Set<Edge> edges = new HashSet();
+        LinkedList<Vertex> vertices = new LinkedList<>();
+        Set<Edge> edges = new HashSet<>();
 
         for (int i = 0; i < split.size(); i++)
         {
@@ -273,7 +273,7 @@ public class Collector
 
     public static LinkedList<LinkedList<Edge>> collectBallons(double angleThreshold, Vertex v)
     {
-        LinkedList<LinkedList<Edge>> balloons = new LinkedList();
+        LinkedList<LinkedList<Edge>> balloons = new LinkedList<>();
         
         LinkedList<Edge> external = Collector.collectAllExternalEdges(v, false);
 
@@ -392,7 +392,7 @@ public class Collector
 
     public static Set<Edge> getExternalEdges(Edge e1, Vertex a, Edge e2)
     {
-        Set<Edge> edges = new HashSet();
+        Set<Edge> edges = new HashSet<>();
         Edge current = e1;
         //Last vertex that was added to the top vertices list
         Vertex last = null;
@@ -468,7 +468,7 @@ public class Collector
         LinkedList<Vertex>[] verticesInBalloons = new LinkedList[balloons.size()];
         for (int i = 0; i < verticesInBalloons.length; i++)
         {
-            verticesInBalloons[i] = new LinkedList();
+            verticesInBalloons[i] = new LinkedList<>();
         }
 
         LinkedList<Vertex> vertices = DrawFlat.collect_vertices(v);
@@ -618,7 +618,7 @@ public class Collector
         
         Edge first = null;
         
-        LinkedList<Edge> ext = new LinkedList();
+        LinkedList<Edge> ext = new LinkedList<>();
         Vertex w = null;
         
         if(v.elist.size() == 1)
@@ -699,7 +699,7 @@ public class Collector
     static LinkedList<Edge> collectAllCompatibleNonTrivial(Vertex V)
     {
         LinkedList<Edge> edges = DrawFlat.collect_edges(V.getFirstEdge());
-        LinkedList<Edge> compatible = new LinkedList();
+        LinkedList<Edge> compatible = new LinkedList<>();
         for (int i = 0; i < edges.size(); i++)
         {
             Edge e = edges.get(i);
@@ -714,7 +714,7 @@ public class Collector
     public static void highlightLargestSplits(Vertex V, PermutationSequenceDraw ps, int n)
     {
         TreeSet<Edge>[] edges = collectEgdesForTheSplits(ps, V);
-        Map<Integer,Double> splits = new HashMap();
+        Map<Integer,Double> splits = new HashMap<>();
         for (int i = 0; i < edges.length; i++)
         {
             if(edges[i].size() > 1)
@@ -723,7 +723,7 @@ public class Collector
             }
         }
         Set<Integer> keySet = splits.keySet();
-        List<Integer> sortedKeys = new LinkedList();
+        List<Integer> sortedKeys = new LinkedList<>();
         Iterator<Integer> keyIt = keySet.iterator();
         while(keyIt.hasNext())
         {
@@ -783,7 +783,7 @@ public class Collector
         
         Edge first = null;
         
-        LinkedList<Edge> ext = new LinkedList();
+        LinkedList<Edge> ext = new LinkedList<>();
         Vertex w = null;
         
         if(v.elist.size() == 1)

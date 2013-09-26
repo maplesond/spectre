@@ -1228,7 +1228,7 @@ public class PermutationSequence
     private void setTrivial(double[] inTrivial, double[] weights)
     {
         boolean[][] splits = ss.getSplits();
-        Map<Integer,Integer> tr = new HashMap();
+        Map<Integer,Integer> tr = new HashMap<>();
         
         trivial = new double[inTrivial.length];
         System.arraycopy(inTrivial, 0, trivial, 0, nTaxa);

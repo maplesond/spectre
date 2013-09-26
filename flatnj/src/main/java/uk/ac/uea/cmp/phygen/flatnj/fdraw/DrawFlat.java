@@ -169,8 +169,8 @@ public class DrawFlat
     public static void write_splits_graph_to_file(Vertex v, String filename, int ntaxa, String[] taxaname, PermutationSequenceDraw psequ)
     {
         //collect vertices and edges of the network
-        LinkedList vlist = collect_vertices(v);
-        LinkedList elist = null;
+        LinkedList<Vertex> vlist = collect_vertices(v);
+        LinkedList<Edge> elist = null;
         if (vlist.size() > 1)
         {
             elist = collect_edges((Edge) (v.elist).getFirst());
@@ -524,7 +524,8 @@ public class DrawFlat
     }
 
     //Collect the edges that are relevant for clearing the quadrant.
-    private static void collect_edges_from_box(Edge h1, Edge h2, int s, int dirs, LinkedList elists, LinkedList crosslists, TreeSet[] splitedges, int parts)
+    private static void collect_edges_from_box(Edge h1, Edge h2, int s, int dirs, LinkedList<Edge> elists,
+                                               LinkedList<Edge> crosslists, TreeSet[] splitedges, int parts)
     {
         Iterator iter = splitedges[s].iterator();
 
@@ -565,11 +566,11 @@ public class DrawFlat
                     elists.addFirst(g);
                     if (parts == 1)
                     {
-                        crosslists.addFirst((Edge) g.top.elist.get((g.top.elist.indexOf(g) + g.top.elist.size() - 1) % g.top.elist.size()));
+                        crosslists.addFirst(g.top.elist.get((g.top.elist.indexOf(g) + g.top.elist.size() - 1) % g.top.elist.size()));
                     }
                     else
                     {
-                        crosslists.addFirst((Edge) g.bot.elist.get((g.bot.elist.indexOf(g) + 1) % g.bot.elist.size()));
+                        crosslists.addFirst(g.bot.elist.get((g.bot.elist.indexOf(g) + 1) % g.bot.elist.size()));
                     }
                 }
                 else
@@ -601,7 +602,7 @@ public class DrawFlat
 
     //Extract the edges from crosslista that correspond to
     //splits that also cross b
-    private static void find_cross_both(LinkedList crosslista, LinkedList crosslistb, LinkedList crossboth, int b)
+    private static void find_cross_both(LinkedList<Edge> crosslista, LinkedList<Edge> crosslistb, LinkedList<Edge> crossboth, int b)
     {
         ListIterator itera = crosslista.listIterator();
         ListIterator iterb = null;
@@ -643,7 +644,8 @@ public class DrawFlat
     }
 
     //This method cuts off the unecessary part of the network
-    private static Vertex cut_off_unnecessary_part(int a, int b, LinkedList elista, LinkedList elistb, int dira, int dirb, int parta, int partb, TreeSet[] splitedges, PermutationSequenceDraw psequ)
+    private static Vertex cut_off_unnecessary_part(int a, int b, LinkedList<Edge> elista, LinkedList<Edge> elistb,
+                                                   int dira, int dirb, int parta, int partb, TreeSet[] splitedges, PermutationSequenceDraw psequ)
     {
         //System.out.println("cut off unnecessary part");
 
@@ -663,8 +665,8 @@ public class DrawFlat
             while (headiter.hasNext())
             {
                 h = (Edge) headiter.next();
-                g1 = (Edge) h.top.elist.get((h.top.elist.indexOf(h) + (h.top.elist.size() - 1)) % h.top.elist.size());
-                g2 = (Edge) h.bot.elist.get((h.bot.elist.indexOf(h) + 1) % h.bot.elist.size());
+                g1 = h.top.elist.get((h.top.elist.indexOf(h) + (h.top.elist.size() - 1)) % h.top.elist.size());
+                g2 = h.bot.elist.get((h.bot.elist.indexOf(h) + 1) % h.bot.elist.size());
 
                 if ((parta == 1) && (g1.timestp < g2.timestp))
                 {
@@ -737,8 +739,8 @@ public class DrawFlat
             while (tailiter.hasNext())
             {
                 h = (Edge) tailiter.next();
-                g1 = (Edge) h.top.elist.get((h.top.elist.indexOf(h) + 1) % h.top.elist.size());
-                g2 = (Edge) h.bot.elist.get((h.bot.elist.indexOf(h) + (h.bot.elist.size() - 1)) % h.bot.elist.size());
+                g1 = h.top.elist.get((h.top.elist.indexOf(h) + 1) % h.top.elist.size());
+                g2 = h.bot.elist.get((h.bot.elist.indexOf(h) + (h.bot.elist.size() - 1)) % h.bot.elist.size());
 
                 if ((parta == 1) && (g1.timestp < g2.timestp))
                 {
@@ -803,7 +805,7 @@ public class DrawFlat
             }
         }
 
-        Edge f = (Edge) elistb.getFirst();
+        Edge f = elistb.getFirst();
 
         //next eliminate edges that correspond to splits thath cross b
         if (dirb == -1)
@@ -813,8 +815,8 @@ public class DrawFlat
             while (headiter.hasNext())
             {
                 h = (Edge) headiter.next();
-                g1 = (Edge) h.top.elist.get((h.top.elist.indexOf(h) + (h.top.elist.size() - 1)) % h.top.elist.size());
-                g2 = (Edge) h.bot.elist.get((h.bot.elist.indexOf(h) + 1) % h.bot.elist.size());
+                g1 = h.top.elist.get((h.top.elist.indexOf(h) + (h.top.elist.size() - 1)) % h.top.elist.size());
+                g2 = h.bot.elist.get((h.bot.elist.indexOf(h) + 1) % h.bot.elist.size());
 
                 if ((partb == 1) && (g1.timestp < g2.timestp))
                 {
@@ -887,8 +889,8 @@ public class DrawFlat
             while (tailiter.hasNext())
             {
                 h = (Edge) tailiter.next();
-                g1 = (Edge) h.top.elist.get((h.top.elist.indexOf(h) + 1) % h.top.elist.size());
-                g2 = (Edge) h.bot.elist.get((h.bot.elist.indexOf(h) + (h.bot.elist.size() - 1)) % h.bot.elist.size());
+                g1 = h.top.elist.get((h.top.elist.indexOf(h) + 1) % h.top.elist.size());
+                g2 = h.bot.elist.get((h.bot.elist.indexOf(h) + (h.bot.elist.size() - 1)) % h.bot.elist.size());
 
                 if ((partb == 1) && (g1.timestp < g2.timestp))
                 {
@@ -1058,7 +1060,7 @@ public class DrawFlat
     //This method locates a triangle and also collects the
     //the cleanlist containing those edges that can be used
     //to clear the triangle if necessary
-    private static int find_triangle(int a, int dira, int parta, LinkedList crossboth, LinkedList cleanlist, TreeSet[] splitedges)
+    private static int find_triangle(int a, int dira, int parta, LinkedList<Edge> crossboth, LinkedList<Edge> cleanlist, TreeSet[] splitedges)
     {
         cleanlist.clear();
 
@@ -1071,8 +1073,8 @@ public class DrawFlat
         int indexe = -1;
         int indexf = -1;
 
-        LinkedList liste = new LinkedList();
-        LinkedList listf = new LinkedList();
+        LinkedList<Edge> liste = new LinkedList<>();
+        LinkedList<Edge> listf = new LinkedList<>();
 
         ListIterator crossiter = crossboth.listIterator();
 
@@ -1110,7 +1112,7 @@ public class DrawFlat
 
     //This method walks through the network to the
     //first scrossing with a split in crossindices
-    private static int go_to_first_crossing(Edge e, int a, TreeSet crossindices, LinkedList liste, TreeSet[] splitedges)
+    private static int go_to_first_crossing(Edge e, int a, TreeSet crossindices, LinkedList<Edge> liste, TreeSet[] splitedges)
     {
         int dire = 0;
         int sidx = 0;
@@ -1124,7 +1126,7 @@ public class DrawFlat
         {
             dire = -1;
         }
-        else if (a == ((Edge) e.bot.elist.get((e.bot.elist.indexOf(e) + 1) % e.bot.elist.size())).idxsplit)
+        else if (a == (e.bot.elist.get((e.bot.elist.indexOf(e) + 1) % e.bot.elist.size())).idxsplit)
         {
             dire = 1;
         }
@@ -1141,7 +1143,7 @@ public class DrawFlat
             while (tailiter.hasNext())
             {
                 f = (Edge) tailiter.next();
-                sidx = ((Edge) f.top.elist.get((f.top.elist.indexOf(f) + 1) % f.top.elist.size())).idxsplit;
+                sidx = (f.top.elist.get((f.top.elist.indexOf(f) + 1) % f.top.elist.size())).idxsplit;
                 if (crossindices.contains(new Integer(sidx)))
                 {
                     return sidx;
@@ -1189,7 +1191,7 @@ public class DrawFlat
 
     //This method collects the indices of the splits
     //corresponding to the edges in crossboth
-    private static void get_cross_indices(LinkedList crossboth, TreeSet crossindices)
+    private static void get_cross_indices(LinkedList<Edge> crossboth, TreeSet crossindices)
     {
         ListIterator crossiter = crossboth.listIterator();
         Edge e = null;
@@ -1205,11 +1207,11 @@ public class DrawFlat
 
     //This method removes one triangle from the empty
     //quadrant of two compatible splits
-    private static void get_rid_of_triangle(int a, int b, int s, int dira, int dirb, int parta, int partb, LinkedList crossboth, LinkedList cleanlist, LinkedList elista, LinkedList elistb, TreeSet[] splitedges, PermutationSequenceDraw psequ)
+    private static void get_rid_of_triangle(int a, int b, int s, int dira, int dirb, int parta, int partb,
+                                            LinkedList<Edge> crossboth, LinkedList<Edge> cleanlist, LinkedList<Edge> elista,
+                                            LinkedList<Edge> elistb, TreeSet[] splitedges, PermutationSequenceDraw psequ)
     {
-        Edge e = (Edge) cleanlist.getFirst();
-        Edge g = null;
-        Edge h = null;
+        Edge e = cleanlist.getFirst();
 
         int flipdir = 0;
         int dire = 0;
@@ -1223,7 +1225,7 @@ public class DrawFlat
         {
             dire = 1;
         }
-        else if (a == ((Edge) e.bot.elist.get((e.bot.elist.indexOf(e) + 1) % e.bot.elist.size())).idxsplit)
+        else if (a == (e.bot.elist.get((e.bot.elist.indexOf(e) + 1) % e.bot.elist.size())).idxsplit)
         {
             dire = -1;
         }
@@ -1292,7 +1294,10 @@ public class DrawFlat
 
     //This method locates and flips a cube during the removal
     //of a triangle
-    private static void find_flippable_cube_in_triangle(LinkedList elist, LinkedList crossboth, int flipdir, int a, int b, int s, int parta, int dira, LinkedList elista, LinkedList elistb, TreeSet[] splitedges, PermutationSequenceDraw psequ)
+    private static void find_flippable_cube_in_triangle(LinkedList<Edge> elist, LinkedList<Edge> crossboth,
+                                                        int flipdir, int a, int b, int s, int parta, int dira,
+                                                        LinkedList<Edge> elista, LinkedList<Edge> elistb,
+                                                        TreeSet[] splitedges, PermutationSequenceDraw psequ)
     {
         if (elist.isEmpty())
         {
@@ -1340,8 +1345,8 @@ public class DrawFlat
                 v = e.top;
                 if (v.elist.size() == 3)
                 {
-                    e1 = (Edge) v.elist.get((v.elist.indexOf(e) + 2) % 3);
-                    e2 = (Edge) v.elist.get((v.elist.indexOf(e) + 1) % 3);
+                    e1 = v.elist.get((v.elist.indexOf(e) + 2) % 3);
+                    e2 = v.elist.get((v.elist.indexOf(e) + 1) % 3);
                     v5 = e.bot;
                     if (v == e2.bot)
                     {
@@ -1359,12 +1364,12 @@ public class DrawFlat
                     {
                         v3 = e1.bot;
                     }
-                    e3 = (Edge) v3.elist.get((v3.elist.indexOf(e1) + 1) % v3.elist.size());
-                    e4 = (Edge) v1.elist.get((v1.elist.indexOf(e2) + v1.elist.size() - 1) % v1.elist.size());
-                    e5 = (Edge) v1.elist.get((v1.elist.indexOf(e2) + 1) % v1.elist.size());
-                    e6 = (Edge) v5.elist.get((v5.elist.indexOf(e) + v5.elist.size() - 1) % v5.elist.size());
-                    e7 = (Edge) v5.elist.get((v5.elist.indexOf(e) + 1) % v5.elist.size());
-                    e8 = (Edge) v3.elist.get((v3.elist.indexOf(e1) + v3.elist.size() - 1) % v3.elist.size());
+                    e3 = v3.elist.get((v3.elist.indexOf(e1) + 1) % v3.elist.size());
+                    e4 = v1.elist.get((v1.elist.indexOf(e2) + v1.elist.size() - 1) % v1.elist.size());
+                    e5 = v1.elist.get((v1.elist.indexOf(e2) + 1) % v1.elist.size());
+                    e6 = v5.elist.get((v5.elist.indexOf(e) + v5.elist.size() - 1) % v5.elist.size());
+                    e7 = v5.elist.get((v5.elist.indexOf(e) + 1) % v5.elist.size());
+                    e8 = v3.elist.get((v3.elist.indexOf(e1) + v3.elist.size() - 1) % v3.elist.size());
                     if (v1 == e4.bot)
                     {
                         v2 = e4.top;
@@ -1678,12 +1683,12 @@ public class DrawFlat
                     {
                         v3 = e1.bot;
                     }
-                    e3 = (Edge) v3.elist.get((v3.elist.indexOf(e1) + 1) % v3.elist.size());
-                    e4 = (Edge) v1.elist.get((v1.elist.indexOf(e2) + v1.elist.size() - 1) % v1.elist.size());
-                    e5 = (Edge) v1.elist.get((v1.elist.indexOf(e2) + 1) % v1.elist.size());
-                    e6 = (Edge) v5.elist.get((v5.elist.indexOf(e) + v5.elist.size() - 1) % v5.elist.size());
-                    e7 = (Edge) v5.elist.get((v5.elist.indexOf(e) + 1) % v5.elist.size());
-                    e8 = (Edge) v3.elist.get((v3.elist.indexOf(e1) + v3.elist.size() - 1) % v3.elist.size());
+                    e3 = v3.elist.get((v3.elist.indexOf(e1) + 1) % v3.elist.size());
+                    e4 = v1.elist.get((v1.elist.indexOf(e2) + v1.elist.size() - 1) % v1.elist.size());
+                    e5 = v1.elist.get((v1.elist.indexOf(e2) + 1) % v1.elist.size());
+                    e6 = v5.elist.get((v5.elist.indexOf(e) + v5.elist.size() - 1) % v5.elist.size());
+                    e7 = v5.elist.get((v5.elist.indexOf(e) + 1) % v5.elist.size());
+                    e8 = v3.elist.get((v3.elist.indexOf(e1) + v3.elist.size() - 1) % v3.elist.size());
                     if (v1 == e4.bot)
                     {
                         v2 = e4.top;
@@ -2239,7 +2244,7 @@ public class DrawFlat
     //If we know which edge has changed, we pass
     //it to the method. Then the test can be performed
     //more efficiently.
-    private static Edge taxon_not_reached(int taxon, Edge e, LinkedList elist, SplitSystemDraw ssyst)
+    private static Edge taxon_not_reached(int taxon, Edge e, LinkedList<Edge> elist, SplitSystemDraw ssyst)
     {
         ListIterator iter = null;
         Edge h = null;
@@ -2301,7 +2306,7 @@ public class DrawFlat
 
     //This method locates and flips a cube during the pushing
     //out of trivial splits.
-    private static Edge find_flippable_cube(int taxon, LinkedList elist, SplitSystemDraw ssyst)
+    private static Edge find_flippable_cube(int taxon, LinkedList<Edge> elist, SplitSystemDraw ssyst)
     {
         Edge e = null;
         Edge h = null;
@@ -2335,8 +2340,8 @@ public class DrawFlat
                 v = e.top;
                 if (v.elist.size() == 3)
                 {
-                    e1 = (Edge) v.elist.get((v.elist.indexOf(e) + 2) % 3);
-                    e2 = (Edge) v.elist.get((v.elist.indexOf(e) + 1) % 3);
+                    e1 = v.elist.get((v.elist.indexOf(e) + 2) % 3);
+                    e2 = v.elist.get((v.elist.indexOf(e) + 1) % 3);
                     v5 = e.bot;
                     if (v == e2.bot)
                     {
@@ -2354,12 +2359,12 @@ public class DrawFlat
                     {
                         v3 = e1.bot;
                     }
-                    e3 = (Edge) v3.elist.get((v3.elist.indexOf(e1) + 1) % v3.elist.size());
-                    e4 = (Edge) v1.elist.get((v1.elist.indexOf(e2) + v1.elist.size() - 1) % v1.elist.size());
-                    e5 = (Edge) v1.elist.get((v1.elist.indexOf(e2) + 1) % v1.elist.size());
-                    e6 = (Edge) v5.elist.get((v5.elist.indexOf(e) + v5.elist.size() - 1) % v5.elist.size());
-                    e7 = (Edge) v5.elist.get((v5.elist.indexOf(e) + 1) % v5.elist.size());
-                    e8 = (Edge) v3.elist.get((v3.elist.indexOf(e1) + v3.elist.size() - 1) % v3.elist.size());
+                    e3 = v3.elist.get((v3.elist.indexOf(e1) + 1) % v3.elist.size());
+                    e4 = v1.elist.get((v1.elist.indexOf(e2) + v1.elist.size() - 1) % v1.elist.size());
+                    e5 = v1.elist.get((v1.elist.indexOf(e2) + 1) % v1.elist.size());
+                    e6 = v5.elist.get((v5.elist.indexOf(e) + v5.elist.size() - 1) % v5.elist.size());
+                    e7 = v5.elist.get((v5.elist.indexOf(e) + 1) % v5.elist.size());
+                    e8 = v3.elist.get((v3.elist.indexOf(e1) + v3.elist.size() - 1) % v3.elist.size());
                     if (v1 == e4.bot)
                     {
                         v2 = e4.top;
@@ -2480,12 +2485,12 @@ public class DrawFlat
                     {
                         v3 = e1.bot;
                     }
-                    e3 = (Edge) v3.elist.get((v3.elist.indexOf(e1) + 1) % v3.elist.size());
-                    e4 = (Edge) v1.elist.get((v1.elist.indexOf(e2) + v1.elist.size() - 1) % v1.elist.size());
-                    e5 = (Edge) v1.elist.get((v1.elist.indexOf(e2) + 1) % v1.elist.size());
-                    e6 = (Edge) v5.elist.get((v5.elist.indexOf(e) + v5.elist.size() - 1) % v5.elist.size());
-                    e7 = (Edge) v5.elist.get((v5.elist.indexOf(e) + 1) % v5.elist.size());
-                    e8 = (Edge) v3.elist.get((v3.elist.indexOf(e1) + v3.elist.size() - 1) % v3.elist.size());
+                    e3 = v3.elist.get((v3.elist.indexOf(e1) + 1) % v3.elist.size());
+                    e4 = v1.elist.get((v1.elist.indexOf(e2) + v1.elist.size() - 1) % v1.elist.size());
+                    e5 = v1.elist.get((v1.elist.indexOf(e2) + 1) % v1.elist.size());
+                    e6 = v5.elist.get((v5.elist.indexOf(e) + v5.elist.size() - 1) % v5.elist.size());
+                    e7 = v5.elist.get((v5.elist.indexOf(e) + 1) % v5.elist.size());
+                    e8 = v3.elist.get((v3.elist.indexOf(e1) + v3.elist.size() - 1) % v3.elist.size());
                     if (v1 == e4.bot)
                     {
                         v2 = e4.top;
@@ -2588,7 +2593,7 @@ public class DrawFlat
     //by flipping cubes until the vertex labeled by x
     //is an endpoint one of the edges representing S.
     //It returns this edge.
-    private static Edge flip_cubes(Vertex v, PermutationSequenceDraw pseq, LinkedList elist, SplitSystemDraw ssyst, String[] taxaname)
+    private static Edge flip_cubes(Vertex v, PermutationSequenceDraw pseq, LinkedList<Edge> elist, SplitSystemDraw ssyst, String[] taxaname)
     {
         Edge e = null;
         ListIterator iter = null;
@@ -2623,7 +2628,7 @@ public class DrawFlat
     //This method removes that part of the split graph
     //that is not needed to represent the trivial split x|X-x.
     //It returns the vertex labeled by x.
-    private static Vertex remove_clutter(PermutationSequenceDraw pseq, Edge e, LinkedList elist, SplitSystemDraw ssyst)
+    private static Vertex remove_clutter(PermutationSequenceDraw pseq, Edge e, LinkedList<Edge> elist, SplitSystemDraw ssyst)
     {
         Vertex v = null;
         Edge h = null;
@@ -2666,9 +2671,9 @@ public class DrawFlat
 
     //Auxiliary method used to collect the vertices
     //in the network.
-    private static void aux_collect_vertices(Vertex v, LinkedList vlist)
+    private static void aux_collect_vertices(Vertex v, LinkedList<Vertex> vlist)
     {
-        LinkedList tobeexplored = new LinkedList();
+        LinkedList<Vertex> tobeexplored = new LinkedList<>();
         tobeexplored.addLast(v);
         v.visited = true;
         Vertex u = null;
@@ -2728,9 +2733,9 @@ public class DrawFlat
 
     //Auxiliary method used to collect the edges
     //in the split network.
-    private static void aux_collect_edges(Edge e, LinkedList elist)
+    private static void aux_collect_edges(Edge e, LinkedList<Edge> elist)
     {
-        LinkedList tobeexplored = new LinkedList();
+        LinkedList<Edge> tobeexplored = new LinkedList<>();
         tobeexplored.addLast(e);
         e.visited = true;
 
@@ -2739,7 +2744,7 @@ public class DrawFlat
 
         while (tobeexplored.size() > 0)
         {
-            g = (Edge) tobeexplored.removeFirst();
+            g = tobeexplored.removeFirst();
             elist.addLast(g);
             Iterator iter = ((g.top).elist).iterator();
             while (iter.hasNext())
@@ -2766,9 +2771,9 @@ public class DrawFlat
 
     //This method computes a list of the edges 
     //in the split network.
-    public static LinkedList collect_edges(Edge e)
+    public static LinkedList<Edge> collect_edges(Edge e)
     {
-        LinkedList elist = new LinkedList();
+        LinkedList<Edge> elist = new LinkedList<>();
         aux_collect_edges(e, elist);
         ListIterator iter = elist.listIterator(0);
         int i = 1;
@@ -2815,7 +2820,7 @@ public class DrawFlat
          */
     }
 
-    private static void log_elist(LinkedList elist, String mes)
+    private static void log_elist(LinkedList<Edge> elist, String mes)
     {
         int i = 0;
         Edge f = null;
@@ -2834,7 +2839,7 @@ public class DrawFlat
         System.out.println("");
     }
 
-    private static void log_elist_idx(LinkedList elist, String mes)
+    private static void log_elist_idx(LinkedList<Edge> elist, String mes)
     {
         int i = 0;
         Edge f = null;

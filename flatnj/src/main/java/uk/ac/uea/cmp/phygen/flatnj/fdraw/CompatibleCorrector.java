@@ -119,7 +119,7 @@ public class CompatibleCorrector
         }
         minW /= 10;
 
-        Set<Edge> externalEdges = new HashSet();
+        Set<Edge> externalEdges = new HashSet<>();
         Collector.getExternalEdges(externalEdges, v.elist.getFirst(), v, v.elist.getFirst());
 
         double[] trivial = pseq.trivial;
@@ -173,8 +173,8 @@ public class CompatibleCorrector
 //                c.elist.add(newE);
 //                vertices.add(c);
 
-        LinkedList<Vertex> newVertices = new LinkedList();
-        LinkedList<Vertex> oldVertices = new LinkedList();
+        LinkedList<Vertex> newVertices = new LinkedList<>();
+        LinkedList<Vertex> oldVertices = new LinkedList<>();
 
         for (int j = 0; j < allV.size(); j++)
         {
@@ -203,7 +203,7 @@ public class CompatibleCorrector
                         e = new Edge(v, w, ++lastSplit, 0);
                         v.elist.add(e);
                         w.elist.add(e);
-                        w.taxa = new LinkedList();
+                        w.taxa = new LinkedList<>();
                         w.taxa.add(taxon);
                         oldVertices.add(v);
                         newVertices.add(w);
@@ -363,8 +363,8 @@ public class CompatibleCorrector
                         x = v.x - length * cosAlpha;
                     }
 
-                    if (!Translocator.twoLinesCrosses(v.x, v.y, x, y, new HashSet(allEdges)) 
-                        && !Translocator.twoLinesCrosses(w.x, w.y, x, y, new HashSet(allEdges)))
+                    if (!Translocator.twoLinesCrosses(v.x, v.y, x, y, new HashSet<>(allEdges))
+                        && !Translocator.twoLinesCrosses(w.x, w.y, x, y, new HashSet<>(allEdges)))
                     {
                         w.x = x;
                         w.y = y;
@@ -435,7 +435,7 @@ public class CompatibleCorrector
 
     private Set<Vertex> getVerticesFromEdges(LinkedList<Edge> edges)
     {
-        Set<Vertex> vertices = new HashSet();
+        Set<Vertex> vertices = new HashSet<>();
         for (int i = 0; i < edges.size(); i++)
         {
             vertices.add(edges.get(i).bot);
@@ -451,7 +451,7 @@ public class CompatibleCorrector
             if (splitedges[i].size() == 1)
             {
                 Edge e = (Edge) splitedges[i].first();
-                LinkedList<Edge> edges = new LinkedList();
+                LinkedList<Edge> edges = new LinkedList<>();
                 edges.add(e);
                 double moved = 0.0;
                 if (e.top.elist.size() == 1 || e.bot.elist.size() == 1)
@@ -506,12 +506,12 @@ public class CompatibleCorrector
 
     public int moveTrivial(Vertex V, int iterations, Window window, Network network)
     {
-        vertices = new LinkedList();
+        vertices = new LinkedList<>();
         
         C = computeCenterPoint(V);
 
-        Set<double[]> po = new HashSet();
-        Set<double[]> li = new HashSet();
+        Set<double[]> po = new HashSet<>();
+        Set<double[]> li = new HashSet<>();
 
         List<Edge> trivial = network.getTrivial();
 
@@ -655,8 +655,8 @@ public class CompatibleCorrector
     
     public List<Edge> sortEdges(List<Edge> edges, Vertex v, Vertex w)
     {
-        LinkedList<Edge> sorted = new LinkedList();
-        LinkedList<Integer> sIndex = new LinkedList();
+        LinkedList<Edge> sorted = new LinkedList<>();
+        LinkedList<Integer> sIndex = new LinkedList<>();
         
         double[] angles = new double[edges.size()];
         Iterator<Edge> eIt = edges.iterator();
@@ -899,7 +899,7 @@ public class CompatibleCorrector
             {
                 Edge e = compatible.get(k);
 
-                LinkedList<Edge> tmp = new LinkedList();
+                LinkedList<Edge> tmp = new LinkedList<>();
                 tmp.add(e);
                 Set<Edge> topEdges = Collector.getAllEdges(tmp, true);
                 Set<Edge> bottomEdges = Collector.getAllEdges(tmp, false);

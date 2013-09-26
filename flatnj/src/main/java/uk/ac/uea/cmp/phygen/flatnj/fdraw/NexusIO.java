@@ -526,8 +526,8 @@ public class NexusIO
         Split s = null;
         Split scirc = null;
         Split stemp = null;
-        TreeSet ssyst = new TreeSet(new Split());
-        TreeSet template = new TreeSet(new Split());
+        TreeSet<Split> ssyst = new TreeSet(new Split());
+        TreeSet<Split> template = new TreeSet(new Split());
 
         //first parse the splits block and extract the splits
         //and their weights
