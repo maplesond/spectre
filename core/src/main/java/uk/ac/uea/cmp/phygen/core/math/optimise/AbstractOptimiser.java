@@ -62,13 +62,13 @@ public abstract class AbstractOptimiser implements Optimiser {
 
         double[] coefficients = objective.buildCoefficients(problem.getRestriction().length);
 
-        double[] data = problem.getRestriction();
+        double[] constraints = problem.getRestriction();
 
         final int rows = problem.getRestriction().length;
 
         double[] solution = new double[rows];
         for (int k = 0; k < rows; k++) {
-            if (data[k] > 0.0) {
+            if (constraints[k] > 0.0) {
                 coefficients[k] = 1.0;
                 double[] help = this.internalOptimise(problem, coefficients);
                 solution[k] = help[k];
