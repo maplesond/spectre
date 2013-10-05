@@ -21,6 +21,9 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.lang3.StringUtils;
+import uk.ac.uea.cmp.phygen.core.math.optimise.Objective;
+import uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser;
+import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserFactory;
 import uk.ac.uea.cmp.phygen.core.ui.cli.CommandLineHelper;
 import uk.ac.uea.cmp.phygen.flatnj.ds.*;
 import uk.ac.uea.cmp.phygen.flatnj.fdraw.*;
@@ -40,6 +43,7 @@ public class FlatNJ
     private static final String OPT_FILTER = "filter";
     private static final String OPT_INPUT = "in";
     private static final String OPT_OUTPUT = "out";
+    private static final String OPT_OPTIMISER = "optimiser";
 
     private static final double DEFAULT_THRESHOLD = 0.15;
     private static final String DEFAULT_OUTPUT = "flatnj.out";
@@ -106,26 +110,25 @@ public class FlatNJ
 
     protected static Options createOptions() {
 
-        // Options with arguments
-        Option optThreshold = OptionBuilder.withArgName("double").withLongOpt(OPT_THRESHOLD).hasArg()
-                .withDescription("Filtering threshold, i.e. minimal weight ratio allowed for two incompatible splits. Default value (" + DEFAULT_THRESHOLD + ")").create("t");
-
-        Option optFilter = OptionBuilder.withArgName("boolean").withLongOpt(OPT_FILTER)
-                .withDescription("Filter the split system").create("f");
-
-        Option optInputFile = OptionBuilder.withArgName("file").withLongOpt(OPT_INPUT).isRequired().hasArg()
-                .withDescription("Input file - Quadruple data in nexus format.").create("i");
-
-        Option optOutputFile = OptionBuilder.withArgName("file").withLongOpt(OPT_OUTPUT).hasArg()
-                .withDescription("Output file - Default value (\"" + DEFAULT_OUTPUT + "\")").create("o");
-
-
         // create Options object
         Options options = new Options();
-        options.addOption(optInputFile);
-        options.addOption(optOutputFile);
-        options.addOption(optThreshold);
-        options.addOption(optFilter);
+
+        // Options with arguments
+        options.addOption(OptionBuilder.withArgName("double").withLongOpt(OPT_THRESHOLD).hasArg()
+                .withDescription("Filtering threshold, i.e. minimal weight ratio allowed for two incompatible splits. Default value (" + DEFAULT_THRESHOLD + ")").create("t"));
+
+        options.addOption(OptionBuilder.withArgName("boolean").withLongOpt(OPT_FILTER)
+                .withDescription("Filter the split system").create("f"));
+
+        options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_INPUT).isRequired().hasArg()
+                .withDescription("Input file - Quadruple data in nexus format.").create("i"));
+
+        options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_OUTPUT).hasArg()
+                .withDescription("Output file - Default value (\"" + DEFAULT_OUTPUT + "\")").create("o"));
+
+        options.addOption(OptionBuilder.withArgName("string").withLongOpt(OPT_OPTIMISER).hasArg()
+                .withDescription("The optimiser to use: " + OptimiserFactory.getInstance().listOperationalOptimisers()).create("p"));
+
         options.addOption(CommandLineHelper.HELP_OPTION);
 
         return options;
@@ -158,6 +161,9 @@ public class FlatNJ
             File outFile = commandLine.hasOption(OPT_OUTPUT) ? new File(commandLine.getOptionValue(OPT_OUTPUT)) : new File(DEFAULT_OUTPUT);
             double threshold = commandLine.hasOption(OPT_THRESHOLD) ? Double.parseDouble(commandLine.getOptionValue(OPT_THRESHOLD)) : DEFAULT_THRESHOLD;
             boolean filterSplits = commandLine.hasOption(OPT_FILTER);
+            Optimiser optimiser = commandLine.hasOption(OPT_OPTIMISER) ?
+                    OptimiserFactory.getInstance().createOptimiserInstance(commandLine.getOptionValue(OPT_OPTIMISER), Objective.FLATNJ) :
+                    null;
             
             readTaxa(inFile.getAbsolutePath());
             
@@ -172,8 +178,8 @@ public class FlatNJ
                 readQuadruples(inFile.getAbsolutePath());
                 qs.subtractMin();   //Subtract minimal weights. Tey will be
                                     //added back when the network is computed.
-                computeSplitSystem(threshold);
-                computeNetwork(threshold);
+                computeSplitSystem(threshold, optimiser);
+                computeNetwork(threshold, optimiser);
                 saveNetwork(outFile);
             }
         }
@@ -237,7 +243,7 @@ public class FlatNJ
     /**
      * Computes flat split system from input quadruple system
      */
-    private static void computeSplitSystem(double threshold)
+    private static void computeSplitSystem(double threshold, Optimiser optimiser)
     {
         System.err.print(Utilities.addDots("Computing flat split system ", 
                                            nDots));
@@ -249,10 +255,9 @@ public class FlatNJ
                                            nDots));
 
         wCalculator = new WeightCalculatorGurobi(ps, qs);
-        wCalculator.fitWeights();
+        wCalculator.fitWeights(optimiser);
 
         ps.filterSplits(threshold);
-        
 
         ps.setTaxaNames(taxa.getTaxaNames());
         ss = new SplitSystemFinal(ps);
@@ -263,11 +268,11 @@ public class FlatNJ
     /**
      * Computes planar network for previously computed flat split system
      */
-    private static void computeNetwork(double threshold)
+    private static void computeNetwork(double threshold, Optimiser optimiser)
     {
         if (ps == null)
         {
-            computeSplitSystem(threshold);
+            computeSplitSystem(threshold, optimiser);
         }
 
         System.err.print(Utilities.addDots("Computing network ", nDots));

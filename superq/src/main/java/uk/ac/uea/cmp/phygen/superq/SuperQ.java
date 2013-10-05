@@ -17,13 +17,11 @@ package uk.ac.uea.cmp.phygen.superq;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.time.StopWatch;
-import org.apache.commons.math3.optimization.linear.UnboundedSolutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.io.nexus.NexusData;
 import uk.ac.uea.cmp.phygen.core.io.nexus.NexusReader;
 import uk.ac.uea.cmp.phygen.core.io.nexus.NexusWriter;
-import uk.ac.uea.cmp.phygen.core.math.optimise.Objective;
 import uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser;
 import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
 import uk.ac.uea.cmp.phygen.core.math.optimise.Problem;
@@ -166,12 +164,11 @@ public class SuperQ extends RunnableTool {
             } else {
                 
                 Optimiser secondarySolver = this.options.getBackupSolver();
-                secondarySolver.setObjective(this.options.getBackupObjective());
                 notifyUser("SECONDARY OPTIMISATION - Requested " + secondarySolver.toString() + " solver with " + this.options.getBackupObjective() + " objective.");
 
                 try {
                     // Run the secondary optimisation step
-                    double[] solution2 = secondarySolver.optimise(new Problem(computedWeights.getX(), computedWeights.getEtE().toArray()));
+                    double[] solution2 = secondarySolver.optimise(new Problem(this.options.getBackupObjective(), computedWeights.getX(), computedWeights.getEtE().toArray()));
 
                     // Sum the solutions
                     for (int i = 0; i < solution.length; i++) {

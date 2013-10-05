@@ -16,13 +16,19 @@
 package uk.ac.uea.cmp.phygen.gurobi;
 
 import gurobi.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
 import uk.ac.uea.cmp.phygen.core.math.optimise.Problem;
 
+/**
+ *
+ */
+public class GurobiOptimiserFlatNJ extends GurobiOptimiser {
 
-public class GurobiOptimiserScaler extends GurobiOptimiser {
+    private static Logger log = LoggerFactory.getLogger(GurobiOptimiserFlatNJ.class);
 
-    public GurobiOptimiserScaler() throws OptimiserException {
+    public GurobiOptimiserFlatNJ() throws OptimiserException {
         super();
     }
 
@@ -58,7 +64,7 @@ public class GurobiOptimiserScaler extends GurobiOptimiser {
 
             GRBLinExpr expr = new GRBLinExpr();
             expr.addTerm(1.0, vars[i]);
-            constraints[i] = model.addConstr(expr, GRB.EQUAL, 0.0, "c0");
+            constraints[i] = model.addConstr(expr, GRB.GREATER_EQUAL, 0.0, "c0");
         }
 
         return constraints;
@@ -67,12 +73,21 @@ public class GurobiOptimiserScaler extends GurobiOptimiser {
     @Override
     public GRBExpr addObjective(Problem problem, GRBModel model, GRBVar[] vars) throws GRBException {
 
-        double[] nncs = problem.getNonNegativityConstraint();
+        double[] nnc = problem.getNonNegativityConstraint();
         double[][] ssc = problem.getSolutionSpaceConstraint();
 
+
         GRBQuadExpr obj = new GRBQuadExpr();
-        for (int i = 0; i < nncs.length; i++) {
-            for (int j = 0; j < nncs.length; j++) {
+
+        obj.addConstant(problem.getObjective().getConstant());
+
+        for (int i = 0; i < nnc.length; i++)
+        {
+            obj.addTerm( -2 * nnc[i], vars[i]);
+        }
+
+        for (int i = 0; i < nnc.length; i++) {
+            for (int j = 0; j < nnc.length; j++) {
                 obj.addTerm(ssc[j][i], vars[j], vars[i]);
             }
         }

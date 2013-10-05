@@ -21,8 +21,6 @@ import org.apache.commons.math3.optimization.linear.LinearConstraint;
 import org.apache.commons.math3.optimization.linear.LinearObjectiveFunction;
 import org.apache.commons.math3.optimization.linear.Relationship;
 import org.apache.commons.math3.optimization.linear.SimplexSolver;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.math.optimise.*;
 
 import java.util.ArrayList;
@@ -32,43 +30,42 @@ import java.util.Collection;
 public class ApacheOptimiser extends AbstractOptimiser {
 
     public ApacheOptimiser() throws OptimiserException {
-        this(Objective.LINEAR);
-    }
-
-    public ApacheOptimiser(Objective objective) throws OptimiserException {
         super();
-        this.setObjective(objective);
     }
 
     @Override
-    protected double[] internalOptimise(Problem problem, double[] coefficients) {
+    protected double[] internalOptimise(Problem problem) {
+
+        double[] nnc = problem.getNonNegativityConstraint();
+        double[][] ssc = problem.getSolutionSpaceConstraint();
+        double[] coefficients = problem.getObjective().buildCoefficients(nnc.length);
 
         LinearObjectiveFunction f = new LinearObjectiveFunction(coefficients, 0.0);
         
-        
+        int columns = ssc.length > 0 ? ssc[0].length : 0;
+
         Collection<LinearConstraint> constraints = new ArrayList<>();
-        for(int i = 0; i < problem.getMatrixRows(); i++) {
-            double[] constraint = new double[problem.getMatrixColumns()];
-        
-            int cols = problem.getMatrixColumns();
-            
-            for(int j = 0; j < cols; j++) {
-                constraint[j] = problem.getMatrixElement(i,j);
+        for(int i = 0; i < ssc.length; i++) {
+
+            double[] constraint = new double[columns];
+
+            for(int j = 0; j < columns; j++) {
+                constraint[j] = ssc[i][j];
             }
             
             constraints.add(new LinearConstraint(constraint, Relationship.EQ, 0.0));
         }
         
         // Add restriction constraint
-        for(int i = 0; i < problem.getMatrixColumns(); i++) {
+        for(int i = 0; i < columns; i++) {
             double[] constraint = new double[coefficients.length];
         
-            for(int j = 0; j < problem.getMatrixColumns(); j++) {
+            for(int j = 0; j < columns; j++) {
                 
                 constraint[j] = i == j ? 1.0 : 0.0;
             }
             
-            constraints.add(new LinearConstraint(constraint, Relationship.GEQ, -problem.getRestriction()[i]));
+            constraints.add(new LinearConstraint(constraint, Relationship.GEQ, -problem.getNonNegativityConstraint()[i]));
         }
         
         // create and run the solver
@@ -87,7 +84,7 @@ public class ApacheOptimiser extends AbstractOptimiser {
 
     @Override
     public boolean acceptsObjective(Objective objective) {
-        return ApacheObjective.acceptsObjective(objective);
+        return objective.isLinear();
     }
 
     @Override
@@ -102,7 +99,6 @@ public class ApacheOptimiser extends AbstractOptimiser {
      */
     @Override
     public boolean isOperational() {
-
         return true;
     }
 
@@ -116,56 +112,4 @@ public class ApacheOptimiser extends AbstractOptimiser {
         return null;
     }
 
-    @Override
-    public boolean requiresInitialisation() {
-        return false;
-    }
-
-    @Override
-    public void initialise() {
-    }
-
-
-    /**
-     * Apache is currently only setup to support linear and minima objectives
-     */
-    private enum ApacheObjective {
-
-        LINEAR {
-            @Override
-            public boolean supported() {
-                return true;
-            }
-        },
-        QUADRATIC {
-            @Override
-            public boolean supported() {
-                return false;
-            }
-        },
-        BALANCED {
-            @Override
-            public boolean supported() {
-                return false;
-            }
-        },
-        MINIMA {
-            @Override
-            public boolean supported() {
-                return true;
-            }
-        },
-        NNLS {
-            @Override
-            public boolean supported() {
-                return false;
-            }
-        };
-
-        public abstract boolean supported();
-
-        public static boolean acceptsObjective(Objective objective) {
-            return ApacheObjective.valueOf(objective.name()).supported();
-        }
-    }
 }

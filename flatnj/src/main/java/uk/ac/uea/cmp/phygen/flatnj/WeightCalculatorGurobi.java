@@ -16,6 +16,7 @@
 
 package uk.ac.uea.cmp.phygen.flatnj;
 
+import uk.ac.uea.cmp.phygen.core.math.optimise.*;
 import uk.ac.uea.cmp.phygen.flatnj.ds.PermutationSequence;
 import uk.ac.uea.cmp.phygen.flatnj.ds.QuadrupleSystem;
 
@@ -44,18 +45,43 @@ public class WeightCalculatorGurobi implements WeightCalculator
     }
     
     @Override
-    public void fitWeights()
+    public void fitWeights(Optimiser optimiser)
     {
         //qs.normalizeWeights();
         
         double[] b = ps.computebVector(qs);
         
         int[][] B = ps.computeBMatrix();
-        
+
+
+        double[][] BD = new double[B.length][B[0].length];
+
+        for(int i = 0; i < B.length; i++) {
+            for(int j = 0; j < B[i].length; j++) {
+                BD[i][j] = B[i][j];
+            }
+        }
+
+
         double wwT = qs.computeWxWT();
-        
-        
-        double[] weights = new double[b.length];
+
+
+        Objective objective = Objective.FLATNJ;
+        objective.setConstant(wwT);
+
+        try {
+            double[] weights = optimiser.optimise(new Problem(objective, b, BD));
+
+            // ps.setFit();???
+            ps.setWeights(weights);
+            ps.setTrivial(qs.getTrivial());
+        }
+        catch (OptimiserException oe) {
+            System.err.println(oe.getMessage());
+        }
+
+
+
         /*
         try
         {
@@ -114,10 +140,6 @@ public class WeightCalculatorGurobi implements WeightCalculator
             System.err.println(grbe.getMessage());
         }  */
 
-        ps.setWeights(weights);
-        ps.setTrivial(qs.getTrivial());
-
-        throw new UnsupportedOperationException("Still need to make this optimiser agnostic");
     }
 
 }

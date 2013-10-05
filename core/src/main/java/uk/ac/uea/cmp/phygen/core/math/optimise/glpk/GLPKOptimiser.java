@@ -15,38 +15,28 @@
  */
 package uk.ac.uea.cmp.phygen.core.math.optimise.glpk;
 
-import org.apache.commons.lang3.StringUtils;
 import org.gnu.glpk.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.math.optimise.*;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
-
 public class GLPKOptimiser extends AbstractOptimiser {
 
-    private static Logger logger = LoggerFactory.getLogger(GLPKOptimiser.class);
+    private static Logger log = LoggerFactory.getLogger(GLPKOptimiser.class);
 
     public GLPKOptimiser() throws OptimiserException {
-        this(Objective.LINEAR);
-    }
-
-    public GLPKOptimiser(Objective objective) throws OptimiserException {
         super();
-        this.setObjective(objective);
     }
 
     @Override
-    protected double[] internalOptimise(Problem problem, double[] coefficients) {
+    protected double[] internalOptimise(Problem problem) {
 
-        int nbCoefficients = coefficients.length;
+        double[] nnc = problem.getNonNegativityConstraint();
+        double[][] ssc = problem.getSolutionSpaceConstraint();
+        double[] coefficients = problem.getObjective().buildCoefficients(nnc.length);
+        int nbCoefficients = nnc.length;
+
         double[] sol = new double[nbCoefficients];
-
-        double[] restriction = problem.getRestriction();
-
-        double[][] matrix = problem.getMatrix();
 
         SWIGTYPE_p_int ia;
         SWIGTYPE_p_double ar;
@@ -66,7 +56,7 @@ public class GLPKOptimiser extends AbstractOptimiser {
         glp_smcp parm;
 //        GlpkSolver lp = new GlpkSolver();
         GLPK.glp_set_prob_name(lp, "LP");
-        logger.info("Problem created");
+        log.info("Problem created");
 
         //set optimisation direction
 
@@ -78,27 +68,27 @@ public class GLPKOptimiser extends AbstractOptimiser {
         for (int i = 1; i < nbCoefficients + 1; i++) {
             String s = "x" + i;
             GLPK.glp_set_col_name(lp, i, s);
-            GLPK.glp_set_col_bnds(lp, i, GLPKConstants.GLP_LO, -restriction[i - 1], 0.0);
+            GLPK.glp_set_col_bnds(lp, i, GLPKConstants.GLP_LO, -nnc[i - 1], 0.0);
 //            GLPK.glp_set_obj_coef(lp, i, coeff[i-1]);
 
         }
-        GLPK.glp_add_rows(lp, problem.getMatrix().length);
-        for (int i = 1; i < problem.getMatrix().length + 1; i++) {
+        GLPK.glp_add_rows(lp, ssc.length);
+        for (int i = 1; i < ssc.length + 1; i++) {
             String s = "y" + i;
             GLPK.glp_set_row_name(lp, i, s);
             GLPK.glp_set_row_bnds(lp, i, GLPKConstants.GLP_FX, 0.0, 0);
         }
 //        
 //        //Set up constrains
-        ia = GLPK.new_intArray(matrix.length * nbCoefficients);
-        ar = GLPK.new_doubleArray(matrix.length * nbCoefficients);
+        ia = GLPK.new_intArray(ssc.length * nbCoefficients);
+        ar = GLPK.new_doubleArray(ssc.length * nbCoefficients);
 
-        for (int i = 1; i < matrix.length + 1; i++) {
+        for (int i = 1; i < ssc.length + 1; i++) {
             int k = 1;
             for (int j = 1; j < nbCoefficients + 1; j++) {
 //          GLPK.intArray_setitem(ia, k, i);
                 GLPK.intArray_setitem(ia, k, j);
-                GLPK.doubleArray_setitem(ar, k, matrix[i - 1][j - 1]);
+                GLPK.doubleArray_setitem(ar, k, ssc[i - 1][j - 1]);
 
 //                System.out.println("k: "+k);
 //                System.out.println("ia: "+GLPK.intArray_getitem(ia, k));
@@ -136,15 +126,15 @@ public class GLPKOptimiser extends AbstractOptimiser {
 
             name = GLPK.glp_get_obj_name(lp);
 
-            logger.debug(name + " = " + GLPK.glp_get_obj_val(lp));
+            log.debug(name + " = " + GLPK.glp_get_obj_val(lp));
             n = GLPK.glp_get_num_cols(lp);
             for (i = 1; i <= n; i++) {
                 name = GLPK.glp_get_col_name(lp, i);
                 sol[i - 1] = GLPK.glp_get_col_prim(lp, i);
-                logger.debug(name + " = " + sol[i - 1]);
+                log.debug(name + " = " + sol[i - 1]);
             }
         } else {
-            logger.info("The problem could not be solved");
+            log.info("The problem could not be solved");
         }
 //        GLPK.glp_load_matrix(lp,matrix.length*matrix[1].length,ia,ja,ar);
 //
@@ -153,15 +143,9 @@ public class GLPKOptimiser extends AbstractOptimiser {
 //            sol[i] = GLPK.glp_get_col_prim(lp, i);
 //        }
 //
-//   
-
-
+//
 //   
         return sol;
-
-
-
-
     }
 
 
@@ -172,7 +156,7 @@ public class GLPKOptimiser extends AbstractOptimiser {
 
     @Override
     public boolean acceptsObjective(Objective objective) {
-        return GLPKObjective.acceptsObjective(objective);
+        return objective.isLinear();
     }
 
     @Override
@@ -204,85 +188,4 @@ public class GLPKOptimiser extends AbstractOptimiser {
         return null;
     }
 
-    @Override
-    public boolean requiresInitialisation() {
-        return true;
-    }
-
-    @Override
-    public void initialise() throws OptimiserException {
-
-        String libPaths = System.getProperty("java.library.path");
-
-        List<String> libPathsList = new ArrayList<String>();
-
-        libPathsList.add(libPaths);
-
-        if (!libPaths.contains("/usr/local/lib")) {
-            libPathsList.add("/usr/local/lib");
-        }
-
-        if (!libPaths.contains("/usr/local/lib/jni")) {
-            libPathsList.add("/usr/local/lib/jni");
-        }
-
-        if (!libPaths.contains("/usr/lib/jni")) {
-            libPathsList.add("/usr/lib/jni");
-        }
-
-        System.setProperty( "java.library.path", StringUtils.join(libPathsList, ":"));
-
-        try {
-            Field fieldSysPath = ClassLoader.class.getDeclaredField( "sys_paths" );
-            fieldSysPath.setAccessible( true );
-            fieldSysPath.set( null, null );
-        }
-        catch(Throwable t) {
-            throw new OptimiserException(t, 1);
-        }
-    }
-
-
-    /**
-     * GLPK is currently only setup to support linear and minima objectives
-     */
-    private enum GLPKObjective {
-
-        LINEAR {
-            @Override
-            public boolean supported() {
-                return true;
-            }
-        },
-        QUADRATIC {
-            @Override
-            public boolean supported() {
-                return false;
-            }
-        },
-        BALANCED {
-            @Override
-            public boolean supported() {
-                return false;
-            }
-        },
-        MINIMA {
-            @Override
-            public boolean supported() {
-                return true;
-            }
-        },
-        NNLS {
-            @Override
-            public boolean supported() {
-                return false;
-            }
-        };
-
-        public abstract boolean supported();
-
-        public static boolean acceptsObjective(Objective objective) {
-            return GLPKObjective.valueOf(objective.name()).supported();
-        }
-    }
 }

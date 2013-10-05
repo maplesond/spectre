@@ -18,43 +18,58 @@ package uk.ac.uea.cmp.phygen.core.math.optimise;
 
 public class Problem {
     
-    private double[] restriction;
-    private double[][] matrix;
+
+    private Objective objective;
+    private double[] nonNegativityConstraint;
+    private double[][] solutionSpaceConstraint;
 
     public Problem() {
-        this(new double[0], new double[0][0]);
+        this(null, new double[0], new double[0][0]);
     }
 
-    public Problem(double[] restriction, double[][] matrix) {
-        this.restriction = restriction;
-        this.matrix = matrix;
+    public Problem(Objective objective, double[] nonNegativityConstraint, double[][] solutionSpaceConstraint) {
+        this.objective = objective;
+        this.nonNegativityConstraint = nonNegativityConstraint;
+        this.solutionSpaceConstraint = solutionSpaceConstraint;
     }
 
-    public double[] getRestriction() {
-        return restriction;
+    public Objective getObjective() {
+        return objective;
     }
 
-    public void setRestriction(double[] restriction) {
-        this.restriction = restriction;
+    public void setObjective(Objective objective) {
+        this.objective = objective;
     }
 
-    public double[][] getMatrix() {
-        return matrix;
+    public double[] getNonNegativityConstraint() {
+        return nonNegativityConstraint;
     }
 
-    public void setMatrix(double[][] matrix) {
-        this.matrix = matrix;
+    public double getNonNegativityConstraintAt(final int i) {
+        return nonNegativityConstraint[i];
+    }
+
+    public void setNonNegativityConstraint(double[] nonNegativityConstraint) {
+        this.nonNegativityConstraint = nonNegativityConstraint;
+    }
+
+    public double[][] getSolutionSpaceConstraint() {
+        return solutionSpaceConstraint;
+    }
+
+    public void setSolutionSpaceConstraint(double[][] solutionSpaceConstraint) {
+        this.solutionSpaceConstraint = solutionSpaceConstraint;
     }
     
-    public int getMatrixRows() {
-        return this.matrix.length;
+    public int getSolutionSpaceConstraintRows() {
+        return this.solutionSpaceConstraint.length;
     }
     
-    public int getMatrixColumns() {
-        return this.matrix.length == 0 ? 0 : this.matrix[0].length;
+    public int getSolutionSpaceConstraintColumns() {
+        return this.solutionSpaceConstraint.length == 0 ? 0 : this.solutionSpaceConstraint[0].length;
     }
     
-    public double getMatrixElement(int i, int j) {
-        return this.matrix[i][j];
+    public double getSolutionSpaceConstraintElement(int i, int j) {
+        return this.solutionSpaceConstraint[i][j];
     }
 }

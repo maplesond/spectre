@@ -15,15 +15,17 @@
  */
 package uk.ac.uea.cmp.phygen.core.math.optimise;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 
 public enum Objective {
 
-    
+
+
     LINEAR {
 
         @Override
@@ -31,6 +33,11 @@ public enum Objective {
             double[] coefficients = new double[size];
             Arrays.fill(coefficients, 1.0);
             return coefficients;
+        }
+
+        @Override
+        public ObjectiveType getObjectivetype() {
+            return ObjectiveType.LINEAR;
         }
     },
     QUADRATIC {
@@ -41,6 +48,11 @@ public enum Objective {
             Arrays.fill(coefficients, 1.0);
             return coefficients;
         }
+
+        @Override
+        public ObjectiveType getObjectivetype() {
+            return ObjectiveType.QUADRATIC;
+        }
     },
     MINIMA {
 
@@ -50,6 +62,11 @@ public enum Objective {
             Arrays.fill(coefficients, 0.0);
             return coefficients;
         }
+
+        @Override
+        public ObjectiveType getObjectivetype() {
+            return ObjectiveType.LINEAR;
+        }
     },
     BALANCED {
 
@@ -58,7 +75,7 @@ public enum Objective {
             double[] coefficients = new double[size];
             int nbTaxa = this.getNbTaxa();
 
-            int n = 0, a = 0;
+            int n = 0;
 
             for (int m = 1; m < nbTaxa - 1; m++) {
 
@@ -66,23 +83,62 @@ public enum Objective {
 
                     if (m != 1 || j != nbTaxa) {
 
-                        a = j - m;
+                        int a = j - m;
                         //      SplitIndex [] splitIndices = new SplitIndex [N * (N - 1) / 2 - N];
                         //      Split index is defined as:   splitIndices [n] = new SplitIndex(m, j);
-                        coefficients[n] = a * (a - 1) * (nbTaxa - a) * (nbTaxa - a - 1);
-                        n++;
+                        coefficients[n++] = a * (a - 1) * (nbTaxa - a) * (nbTaxa - a - 1);
                     }
                 }
             }
 
             return coefficients;
         }
+
+        @Override
+        public ObjectiveType getObjectivetype() {
+            return ObjectiveType.LINEAR;
+        }
     },
     NNLS {
 
         @Override
         public double[] buildCoefficients(int size) {
-            throw new UnsupportedOperationException();
+            double[] coefficients = new double[size];
+            Arrays.fill(coefficients, 1.0);
+            return coefficients;
+        }
+
+        @Override
+        public ObjectiveType getObjectivetype() {
+            return ObjectiveType.QUADRATIC;
+        }
+    },
+    SCALING {
+
+        @Override
+        public double[] buildCoefficients(int size) {
+            double[] coefficients = new double[size];
+            Arrays.fill(coefficients, 1.0);
+            return coefficients;
+        }
+
+        @Override
+        public ObjectiveType getObjectivetype() {
+            return ObjectiveType.QUADRATIC;
+        }
+    },
+    FLATNJ {
+
+        @Override
+        public double[] buildCoefficients(int size) {
+            double[] coefficients = new double[size];
+            Arrays.fill(coefficients, 1.0);
+            return coefficients;
+        }
+
+        @Override
+        public ObjectiveType getObjectivetype() {
+            return ObjectiveType.QUADRATIC;
         }
     },
     NONE {
@@ -91,13 +147,19 @@ public enum Objective {
         public double[] buildCoefficients(final int size) {
             return null;
         }
-    };
-    private int nbTaxa;
 
-    public abstract double[] buildCoefficients(final int size);
+        @Override
+        public ObjectiveType getObjectivetype() {
+            return null;
+        }
+    };
+
+    private int nbTaxa;
+    private double constant;
 
     private Objective() {
         this.nbTaxa = 0;
+        this.constant = 0;
     }
 
     public int getNbTaxa() {
@@ -107,5 +169,43 @@ public enum Objective {
     public void setNbTaxa(int nbTaxa) {
         this.nbTaxa = nbTaxa;
     }
-  
+
+    public double getConstant() {
+        return constant;
+    }
+
+    public void setConstant(double constant) {
+        this.constant = constant;
+    }
+
+    public abstract double[] buildCoefficients(final int size);
+    public abstract ObjectiveType getObjectivetype();
+
+
+    public boolean isLinear()       { return this.getObjectivetype() == ObjectiveType.LINEAR; }
+    public boolean isQuadratic()    { return this.getObjectivetype() == ObjectiveType.QUADRATIC; }
+
+
+    public String listObjectivesAsString() {
+
+        List<String> typeStrings = listObjectives();
+
+        return "[" + StringUtils.join(typeStrings, ", ") + "]";
+    }
+
+    public List<String> listObjectives() {
+
+        List<String> typeStrings = new ArrayList<String>();
+
+        for(Objective objective : Objective.values()) {
+            typeStrings.add(objective.toString());
+        }
+
+        return typeStrings;
+    }
+
+    public static enum ObjectiveType {
+        LINEAR,
+        QUADRATIC
+    }
 }

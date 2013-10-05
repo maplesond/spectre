@@ -20,72 +20,74 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.math.matrix.SymmetricMatrix;
 import uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser;
+import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
+import uk.ac.uea.cmp.phygen.core.math.optimise.Problem;
 
 /**
  *
  */
-public class GurobiOptimiserNNLS {
+public class GurobiOptimiserNNLS extends GurobiOptimiser {
 
     private static Logger log = LoggerFactory.getLogger(GurobiOptimiserNNLS.class);
 
-    public static void solveNNLS(double[] Etf, SymmetricMatrix EtE, double[] x) {
-        try {
-            //GRBEnv env = new GRBEnv("gurobi.log");
-            GRBEnv env = new GRBEnv();
-            env.set(GRB.IntParam.OutputFlag, 0);
-            GRBModel model = new GRBModel(env);
-
-            // Create variables
-
-            GRBVar[] variables = new GRBVar[x.length];
-
-
-
-
-
-            // Create variables
-
-            for (int i = 0; i < x.length; i++) {
-                GRBVar y = model.addVar(0, Double.POSITIVE_INFINITY, 1.0, GRB.CONTINUOUS, "x" + i);
-                variables[i] = y;
-            }
-            model.update();
-
-            //System.out.println("EtE: "+EtE.getSize()+ " Etf: " +Etf.length+ " X: "+ x.length);
-            // Objective
-
-            GRBQuadExpr obj = new GRBQuadExpr();
-            for (int i = 0; i < x.length; i++) {
-                for (int j = 0; j < x.length; j++) {
-                    obj.addTerm(EtE.getElementAt(j, i), variables[j], variables[i]);
-                }
-                obj.addTerm(-2 * Etf[i], variables[i]);
-
-            }
-            model.setObjective(obj);
-
-            for (int i = 0; i < x.length; i++) {
-                GRBLinExpr expr = new GRBLinExpr();
-
-                expr.addTerm(1.0, variables[i]);
-                model.addConstr(expr, GRB.GREATER_EQUAL, 0.0, "c0");
-            }
-
-
-            model.optimize();
-
-            for (int i = 0; i < x.length; i++) {
-                //System.out.println(variables[i].get(GRB.StringAttr.VarName)+ " " +variables[i].get(GRB.DoubleAttr.X));
-                x[i] = variables[i].get(GRB.DoubleAttr.X);
-            }
-
-
-            //System.out.println("Obj: " + model.get(GRB.DoubleAttr.ObjVal));
-
-
-        } catch (GRBException e) {
-            log.error("Error code: " + e.getErrorCode() + ". "
-                    + e.getMessage());
-        }
+    public GurobiOptimiserNNLS() throws OptimiserException {
+        super();
     }
+
+    @Override
+    public GRBVar[] addVariables(Problem problem, GRBModel model) throws GRBException {
+
+        double[] nnc = problem.getNonNegativityConstraint();
+        double[] coefficients = problem.getObjective().buildCoefficients(nnc.length);
+
+        GRBVar[] vars = new GRBVar[nnc.length];
+
+        for (int i = 0; i < nnc.length; i++) {
+
+            GRBVar x = model.addVar(
+                    0,                         // Lower Bound
+                    Double.POSITIVE_INFINITY,  // Upper Bound
+                    coefficients[i],           // Objective coefficient
+                    GRB.CONTINUOUS,            // Type
+                    "x" + i);                  // Name
+
+            vars[i] = x;
+        }
+
+        return vars;
+    }
+
+    @Override
+    public GRBConstr[] addConstraints(Problem problem, GRBModel model, GRBVar[] grbVars) throws GRBException {
+
+        GRBConstr[] constraints = new GRBConstr[grbVars.length];
+
+        for (int i = 0; i < grbVars.length; i++) {
+
+            GRBLinExpr expr = new GRBLinExpr();
+            expr.addTerm(1.0, grbVars[i]);
+            constraints[i] = model.addConstr(expr, GRB.EQUAL, 0.0, "c0");
+        }
+
+        return constraints;
+    }
+
+    @Override
+    public GRBExpr addObjective(Problem problem, GRBModel model, GRBVar[] grbVars) throws GRBException {
+
+        double[] nncs = problem.getNonNegativityConstraint();
+        double[][] ssc = problem.getSolutionSpaceConstraint();
+
+        GRBQuadExpr obj = new GRBQuadExpr();
+        for (int i = 0; i < nncs.length; i++) {
+            for (int j = 0; j < nncs.length; j++) {
+                obj.addTerm(ssc[j][i], grbVars[j], grbVars[i]);
+            }
+            obj.addTerm(-2 * nncs[i], grbVars[i]);
+        }
+        model.setObjective(obj);
+
+        return obj;
+    }
+
 }

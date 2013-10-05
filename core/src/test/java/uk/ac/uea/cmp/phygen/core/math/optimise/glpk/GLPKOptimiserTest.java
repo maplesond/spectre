@@ -2,7 +2,6 @@ package uk.ac.uea.cmp.phygen.core.math.optimise.glpk;
 
 import org.junit.Test;
 import uk.ac.uea.cmp.phygen.core.math.optimise.*;
-import uk.ac.uea.cmp.phygen.core.math.optimise.apache.ApacheOptimiser;
 
 import static org.junit.Assert.assertTrue;
 

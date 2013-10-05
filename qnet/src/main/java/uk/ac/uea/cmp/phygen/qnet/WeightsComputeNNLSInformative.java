@@ -23,7 +23,6 @@ import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.ds.TaxonList;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetIndex;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
-import uk.ac.uea.cmp.phygen.core.math.matrix.BitMatrix;
 import uk.ac.uea.cmp.phygen.core.math.matrix.SymmetricMatrix;
 import uk.ac.uea.cmp.phygen.core.math.matrix.UpperTriangularMatrix;
 import uk.ac.uea.cmp.phygen.core.math.optimise.Objective;
@@ -34,7 +33,6 @@ import uk.ac.uea.cmp.phygen.qnet.holders.PHolder;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.LinkedList;
@@ -942,11 +940,8 @@ public class WeightsComputeNNLSInformative {
 
         //Call of method to solve NNLS for split weigths
         if (optimiser != null) {
-
             log.info("Using " + optimiser.getDescription() + " to solve NNLS problem");
-            Problem problem = new Problem(Etf, EtE.toArray());
-            optimiser.setObjective(Objective.NNLS);
-            result = optimiser.optimise(problem);
+            result = optimiser.optimise(new Problem(Objective.NNLS, Etf, EtE.toArray()));
         } else {
 
             log.info("Using QNet's internal method to solve NNLS problem");

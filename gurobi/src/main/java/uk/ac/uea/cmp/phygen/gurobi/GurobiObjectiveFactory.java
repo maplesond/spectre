@@ -1,9 +1,6 @@
 package uk.ac.uea.cmp.phygen.gurobi;
 
-import uk.ac.uea.cmp.phygen.core.math.optimise.Objective;
-import uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser;
-import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
-import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserObjectiveFactory;
+import uk.ac.uea.cmp.phygen.core.math.optimise.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -21,10 +18,16 @@ public class GurobiObjectiveFactory implements OptimiserObjectiveFactory {
         if (objective == Objective.LINEAR ||
                 objective == Objective.MINIMA ||
                 objective == Objective.BALANCED) {
-            return new GurobiOptimiserLinear(objective);
+            return new GurobiOptimiserLinear();
         }
         else if (objective == Objective.QUADRATIC) {
-            return new GurobiOptimiserQuadratic(objective);
+            return new GurobiOptimiserQuadratic();
+        }
+        else if (objective == Objective.NNLS) {
+            return new GurobiOptimiserNNLS();
+        }
+        else if (objective == Objective.SCALING) {
+            return new GurobiOptimiserScaler();
         }
 
         return null;

@@ -30,21 +30,19 @@ public class OptimiserFactory {
         return instance;
     }
 
-
-
     public Optimiser createOptimiserInstance(String name, Objective objective) throws OptimiserException {
 
         for(Optimiser optimiser : loader) {
 
             if (optimiser.acceptsIdentifier(name)) {
 
-                // Check if the requested objective is supported and set it if so
-                optimiser.setObjective(objective);
+                // Check if the requested objective is supported
+                if (!optimiser.acceptsObjective(objective))
+                    throw new UnsupportedOperationException("Objective Type: " + objective.toString() +
+                            " not accepted by " + optimiser.getDescription());
 
-                // Initialise the optimiser if necessary
-                if (optimiser.requiresInitialisation()) {
-                    optimiser.initialise();
-                }
+                // Initialise the optimiser
+                optimiser.initialise();
 
                 // Check the optimiser is operational
                 if (!optimiser.isOperational()) {

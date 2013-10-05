@@ -16,6 +16,8 @@
 
 package uk.ac.uea.cmp.phygen.flatnj;
 
+import uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser;
+
 /**
  * Computes split weights in the resulting {@linkplain  uk.ac.uea.cmp.phygen.flatnj.ds.PermutationSequence} or
  * {@linkplain  uk.ac.uea.cmp.phygen.core.ds.split.SplitSystem} depending on actual class chosen.
@@ -27,5 +29,5 @@ public interface WeightCalculator
     /**
      * Computes weights.
      */
-    public void fitWeights();
+    public void fitWeights(Optimiser optimiser);
 }

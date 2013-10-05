@@ -25,69 +25,53 @@ public abstract class GurobiOptimiser extends AbstractOptimiser {
     
     private static Logger log = LoggerFactory.getLogger(GurobiOptimiser.class);
     
-    // Input vars
-    private Problem problem;
-    private int length;
-    
     // GurobiOptimiser vars
     private GRBEnv env;            
-    private GRBModel model;
-    private GRBVar[] variables;
-    private double[] coefficients;
-    
+
     public GurobiOptimiser() throws OptimiserException {
         try {    
             //GRBEnv env = new GRBEnv("gurobi.log");
             this.env = new GRBEnv();
             this.env.set(GRB.IntParam.OutputFlag, 0);
-            this.model = new GRBModel(env);
         } catch (GRBException ge) {
             // Repackage any GurobiException and rethrow
             throw new OptimiserException(ge, ge.getErrorCode());
         }
     }
     
-    public abstract void setVariables() throws GRBException;
-    public abstract void addConstraints() throws GRBException;
-    public abstract GRBExpr getObjective() throws GRBException;
-    
-    protected void initVariables(Problem problem, double[] coefficients) {
-        this.length = problem.getRestriction().length;
-        this.variables = new GRBVar[this.length];        
-        this.problem = problem;
-        this.coefficients = coefficients;
-    }
-    
+    public abstract GRBVar[] addVariables(Problem problem, GRBModel model) throws GRBException;
+    public abstract GRBConstr[] addConstraints(Problem problem, GRBModel model, GRBVar[] vars) throws GRBException;
+    public abstract GRBExpr addObjective(Problem problem, GRBModel model, GRBVar[] grbVars) throws GRBException;
+
     @Override
-    protected double[] internalOptimise(Problem problem, double[] coefficients) throws OptimiserException {
+    protected double[] internalOptimise(Problem problem) throws OptimiserException {
         
         double[] solution = null;
         
         try {
-            // Initalise variables
-            initVariables(problem, coefficients);
+            // Create a new model
+            GRBModel model = new GRBModel(env);
 
-            // Set the variables according to sub class
-            setVariables();   
+            // Create the variables, exact method for this determined by subclass
+            GRBVar[] vars = addVariables(problem, model);
 
-            // Update the model
+            // Update the model after all variables have been added
             model.update();
 
             // Get the objective if present
-            GRBExpr expr = getObjective();
-
+            GRBExpr expr = addObjective(problem, model, vars);
             if (expr != null) {
                 model.setObjective(expr);
             }
 
             // Add constraints
-            addConstraints();
+            GRBConstr[] constraints = addConstraints(problem, model, vars);
 
             // Optimise the model
             model.optimize();
 
             // Create solution array from the optimised model
-            solution = this.buildSolution();
+            solution = this.buildSolution(vars);
 
             // Logging
             log.debug("Obj: " + model.get(GRB.DoubleAttr.ObjVal));
@@ -100,70 +84,18 @@ public abstract class GurobiOptimiser extends AbstractOptimiser {
         return solution;
     }
 
-    public int getLength() {
-        return length;
-    }
-    
-    public double[] getRestriction() {
-        return this.problem.getRestriction();
-    }
-    
-    public double getRestrictionAt(final int i) {
-        return this.getRestriction()[i];
-    }
-
-    public double[][] getMatrix() {
-        return this.problem.getMatrix();
-    }
-    
-    public double getMatrixAt(final int i, final int j) {
-        return this.getMatrix()[i][j];
-    }
-    
-    public int getMatrixRows() {
-        return this.getMatrix().length;
-    }
-    
-    public int getMatrixColumns() {
-        if (this.getMatrixRows() <= 0)
-            return 0;        
-        return this.getMatrix()[0].length;
-    }
-
-    public double[] getCoefficients() {
-        return this.coefficients;
-    }
-
-    public double getCoefficientAt(final int i) {
-        return this.coefficients[i];
-    }
 
     protected GRBEnv getEnv() {
         return env;
     }
 
-    protected GRBModel getModel() {
-        return model;
-    }
-
-    protected GRBVar[] getVariables() {
-        return variables;
-    }
     
-    protected GRBVar getVariableAt(final int i) {
-        return this.variables[i];
-    }
-    
-    protected void setVariableAt(final int i, final GRBVar var) {
-        this.variables[i] = var;
-    }
-    
-    protected double[] buildSolution() throws GRBException {
+    protected double[] buildSolution(GRBVar[] vars) throws GRBException {
         
-        double[] solution = new double[this.getLength()];
+        double[] solution = new double[vars.length];
         
-        for (int i = 0; i < this.getLength(); i++) {
-            solution[i] = this.getVariables()[i].get(GRB.DoubleAttr.X);
+        for (int i = 0; i < vars.length; i++) {
+            solution[i] = vars[i].get(GRB.DoubleAttr.X);
         }
         
         return solution;
@@ -176,9 +108,10 @@ public abstract class GurobiOptimiser extends AbstractOptimiser {
         return id.equalsIgnoreCase(this.getDescription()) || id.equalsIgnoreCase(GurobiOptimiser.class.getName());
     }
 
+
     @Override
     public boolean acceptsObjective(Objective objective) {
-        return GurobiObjective.acceptsObjective(objective);
+        return objective.isLinear() || objective.isQuadratic();
     }
 
     @Override
@@ -208,58 +141,5 @@ public abstract class GurobiOptimiser extends AbstractOptimiser {
     @Override
     public OptimiserObjectiveFactory getObjectiveFactory() {
         return new GurobiObjectiveFactory();
-    }
-
-    @Override
-    public boolean requiresInitialisation() {
-        return false;
-    }
-
-    @Override
-    public void initialise() throws OptimiserException {
-
-    }
-
-    /**
-     * Gurobi is setup to handle all objectives
-     */
-    private enum GurobiObjective {
-
-        LINEAR {
-            @Override
-            public boolean supported() {
-                return true;
-            }
-        },
-        QUADRATIC {
-            @Override
-            public boolean supported() {
-                return true;
-            }
-        },
-        MINIMA {
-            @Override
-            public boolean supported() {
-                return true;
-            }
-        },
-        BALANCED {
-            @Override
-            public boolean supported() {
-                return true;
-            }
-        },
-        NNLS {
-            @Override
-            public boolean supported() {
-                return true;
-            }
-        };
-
-        public abstract boolean supported();
-
-        public static boolean acceptsObjective(Objective objective) {
-            return GurobiObjective.valueOf(objective.name()).supported();
-        }
     }
 }

@@ -16,40 +16,60 @@
 package uk.ac.uea.cmp.phygen.gurobi;
 
 import gurobi.*;
-import uk.ac.uea.cmp.phygen.core.math.optimise.Objective;
 import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
+import uk.ac.uea.cmp.phygen.core.math.optimise.Problem;
 
 
 public class GurobiOptimiserLinear extends GurobiOptimiser {
 
-    public GurobiOptimiserLinear(Objective objective) throws OptimiserException {
+    public GurobiOptimiserLinear() throws OptimiserException {
         super();
-        this.setObjective(objective);
     }
     
     @Override
-    public void setVariables() throws GRBException {
+    public GRBVar[] addVariables(Problem problem, GRBModel model) throws GRBException {
         
-        for (int i = 0; i < this.getLength(); i++) {
-            GRBVar x = this.getModel().addVar(-this.getRestrictionAt(i), Double.POSITIVE_INFINITY, this.getCoefficientAt(i), GRB.CONTINUOUS, "x" + i);
-            this.setVariableAt(i, x);
+        double[] nnc = problem.getNonNegativityConstraint();
+        double[] coefficients = problem.getObjective().buildCoefficients(nnc.length);
+
+        GRBVar[] vars = new GRBVar[nnc.length];
+
+        for (int i = 0; i < nnc.length; i++) {
+
+            // Adds variable to model and retains a handle to it
+            vars[i] = model.addVar(
+                    -nnc[i],                   // Lower bound
+                    Double.POSITIVE_INFINITY,   // Upper bound
+                    coefficients[i],            // Objective
+                    GRB.CONTINUOUS,             // Type
+                    "x" + i);                   // Name
         }
+
+        return vars;
     }
 
     @Override
-    public void addConstraints() throws GRBException {
-        
-        for (int i = 0; i < this.getLength(); i++) {
+    public GRBConstr[] addConstraints(Problem problem, GRBModel model, GRBVar[] vars) throws GRBException {
+
+        double[][] ssc = problem.getSolutionSpaceConstraint();
+
+        GRBConstr[] constraints = new GRBConstr[vars.length];
+
+        for (int i = 0; i < vars.length; i++) {
+
             GRBLinExpr expr = new GRBLinExpr();
-            for (int j = 0; j < this.getLength(); j++) {
-                expr.addTerm(this.getMatrixAt(i,j), this.getVariableAt(j));
+            for (int j = 0; j < vars.length; j++) {
+                expr.addTerm(ssc[i][j], vars[j]);
             }
-            this.getModel().addConstr(expr, GRB.EQUAL, 0, "c0");
+
+            constraints[i] = model.addConstr(expr, GRB.EQUAL, 0, "c0");
         }
+
+        return constraints;
     }
 
     @Override
-    public GRBExpr getObjective() throws GRBException {
+    public GRBExpr addObjective(Problem problem, GRBModel model, GRBVar[] vars) throws GRBException {
         return null;
     }
 

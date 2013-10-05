@@ -20,8 +20,6 @@ public interface Optimiser {
     
     double[] optimise(Problem problem) throws OptimiserException;
 
-    double[] multiOptimise(Problem problem) throws OptimiserException;
-
     boolean acceptsIdentifier(String id);
 
     boolean acceptsObjective(Objective objective);
@@ -34,9 +32,5 @@ public interface Optimiser {
 
     OptimiserObjectiveFactory getObjectiveFactory();
 
-    boolean requiresInitialisation();
-
     void initialise() throws OptimiserException;
-
-    void setObjective(Objective objective);
 }

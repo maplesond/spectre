@@ -9,18 +9,10 @@ package uk.ac.uea.cmp.phygen.core.math.optimise;
  */
 public abstract class AbstractOptimiser implements Optimiser {
 
-    private Objective objective;
-
     @Override
-    public void setObjective(Objective objective) {
-
-        // Check if the requested objective is supported before setting it
-        if (!this.acceptsObjective(objective))
-            throw new UnsupportedOperationException("Objective: " + objective.toString() + " not accepted by " +
-                    this.getDescription());
-
-        this.objective = objective;
+    public void initialise() {
     }
+
 
     @Override
     public double[] optimise(Problem problem) throws OptimiserException {
@@ -31,15 +23,14 @@ public abstract class AbstractOptimiser implements Optimiser {
         }
 
         // Check we have an objective
-        if (this.objective == null) {
+        if (problem.getObjective() == null) {
             throw new OptimiserException("An objective must be specified for " + this.getDescription());
         }
 
-        // Build coeffiecients using objective
-        double[] coefficients = objective.buildCoefficients(problem.getRestriction().length);
-
-        // Call child class' optimise method
-        double[] solution = this.internalOptimise(problem, coefficients);
+        // Run the solver on the problem to get a (hopefully) optimal solution
+        double[] solution = problem.getObjective() == Objective.MINIMA ?
+            this.minimaOptimise(problem) :      // Special handling of MINIMA objective
+            this.internalOptimise(problem);     // Normally just call child's optimisation method
 
         // Probably used a lot of memory.  Collect Garbage to save space.
         System.gc();
@@ -47,30 +38,26 @@ public abstract class AbstractOptimiser implements Optimiser {
         return solution;
     }
 
-    @Override
-    public double[] multiOptimise(Problem problem) throws OptimiserException {
+    /**
+     * To be used in conjunction with the MINIMA objective
+     * @param problem
+     * @return
+     * @throws OptimiserException
+     */
+    protected double[] minimaOptimise(Problem problem) throws OptimiserException {
 
-        // Check the optimiser is operational
-        if (!this.isOperational()) {
-            throw new UnsupportedOperationException(this.getDescription() + " is not operational");
-        }
+        double[] data = problem.getNonNegativityConstraint();
+        double[] coefficients = problem.getObjective().buildCoefficients(data.length);
 
-        // Check we have an objective
-        if (this.objective == null) {
-            throw new OptimiserException("An objective must be specified for " + this.getDescription());
-        }
+        double[] solution = new double[data.length];
 
-        double[] coefficients = objective.buildCoefficients(problem.getRestriction().length);
-
-        double[] constraints = problem.getRestriction();
-
-        final int rows = problem.getRestriction().length;
-
-        double[] solution = new double[rows];
-        for (int k = 0; k < rows; k++) {
-            if (constraints[k] > 0.0) {
+        // This is a bit messy, but essentially what is happening is that we run the solver for each coefficient, and if
+        // the non-negativity constraint at each location is > 0, then we run the solver but we only take the result from
+        // this position, otherwise the solution at this position is 0.
+        for (int k = 0; k < data.length; k++) {
+            if (data[k] > 0.0) {
                 coefficients[k] = 1.0;
-                double[] help = this.internalOptimise(problem, coefficients);
+                double[] help = this.internalOptimise(problem);
                 solution[k] = help[k];
                 coefficients[k] = 0.0;
             } else {
@@ -78,11 +65,8 @@ public abstract class AbstractOptimiser implements Optimiser {
             }
         }
 
-        // Probably used a lot of memory.  Collect Garbage to save space.
-        System.gc();
-
         return solution;
     }
 
-    protected abstract double[] internalOptimise(Problem problem, double[] coefficients) throws OptimiserException;
+    protected abstract double[] internalOptimise(Problem problem) throws OptimiserException;
 }

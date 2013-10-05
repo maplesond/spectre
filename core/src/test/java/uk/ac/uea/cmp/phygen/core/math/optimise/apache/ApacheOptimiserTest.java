@@ -1,5 +1,6 @@
 package uk.ac.uea.cmp.phygen.core.math.optimise.apache;
 
+import org.junit.Before;
 import org.junit.Test;
 import uk.ac.uea.cmp.phygen.core.math.optimise.Objective;
 import uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser;
@@ -17,7 +18,6 @@ import static org.junit.Assert.assertTrue;
  */
 public class ApacheOptimiserTest {
 
-
     @Test
     public void testAcceptsIdentifier() throws OptimiserException {
 
@@ -33,11 +33,12 @@ public class ApacheOptimiserTest {
     @Test
     public void testNullOptimise() throws OptimiserException {
 
-        Optimiser apache = new ApacheOptimiser(Objective.LINEAR);
+        double[] nonNegativityConstraint = new double[0];
+        double[][] solutionSpaceConstraint = new double[0][0];
 
-        Problem problem = new Problem();
+        Problem problem = new Problem(Objective.LINEAR, nonNegativityConstraint, solutionSpaceConstraint);
 
-        double[] solution = apache.optimise(problem);
+        double[] solution = new ApacheOptimiser().optimise(problem);
 
         assertTrue(true);
     }
@@ -45,14 +46,13 @@ public class ApacheOptimiserTest {
     @Test
     public void testSimpleProblem() throws OptimiserException {
 
-        Optimiser apache = new ApacheOptimiser(Objective.LINEAR);
+        double[] nonNegativityConstraint = new double[0];
+        double[][] solutionSpaceConstraint = new double[0][0];
 
-        Problem problem = new Problem();
+        Problem problem = new Problem(Objective.LINEAR, nonNegativityConstraint, solutionSpaceConstraint);
 
-        double[] solution = apache.optimise(problem);
+        double[] solution = new ApacheOptimiser().optimise(problem);
 
         assertTrue(true);
-
-
     }
 }
