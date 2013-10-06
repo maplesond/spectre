@@ -92,10 +92,10 @@ public class NetMECLI {
                 "split system in nexus format to disk).  NetME outputs three files:\n" +
                 " - the weighted split system, in nexus format, corresponding to a restricted minimum evolution tree, where the weights " +
                 "are derived from the Ordinary Least Squares (OLS) method used for constructing the tree.\n" +
-                " - the weighted split system, in nexus format, corresponding to a restricted minimum evolution tree, where the weights \" +" +
+                " - the weighted split system, in nexus format, corresponding to a restricted minimum evolution tree, where the weights " +
                 "are recalculated by using a Non-Negative Least Squares (NNLS) method.\n" +
                 " - a file containing the tree length of tree weighted with OLS.\n\n" +
-                "The resulting split systems in nexus format can be visualised in SplitsTree4\n\n", args);
+                "The resulting split systems in nexus format can be visualised in SplitsTree4.\n\n", args);
 
         // If we didn't return a command line object then just return.  Probably the user requested help or
         // input invalid args

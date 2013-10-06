@@ -96,11 +96,10 @@ public class NexusReader implements PhygenReader {
 
             while (matrix == false) {
                 aLine = inLines.get(p++);
-                if (aLine.trim().toUpperCase().startsWith("DIMENSIONS")) {
-                    int beginIdx = aLine.toUpperCase().indexOf("NTAX=") + 5;
-                    int endIdx = aLine.indexOf(";");
-                    String dimString = aLine.substring(beginIdx, endIdx).trim();
-                    int n = Integer.parseInt(dimString);
+                // Try to find nbTaxa in properties
+                if (this.isPropertyGroup(aLine, "DIMENSIONS")) {
+                    String ntaxString = this.getValueFromPropertyInLine(aLine, "NTAX");
+                    int n = Integer.parseInt(ntaxString);
                     distanceMatrix = new DistanceMatrix(n);
                 }
 
@@ -129,14 +128,13 @@ public class NexusReader implements PhygenReader {
         if (taxaBloc == true) {
             p--;
             do {
-                if (aLine.trim().toUpperCase().startsWith("DIMENSIONS")) {
-                    int beginIdx = aLine.toUpperCase().indexOf("NTAX=") + 5;
-                    int endIdx = aLine.indexOf(";");
-                    String dimString = aLine.substring(beginIdx, endIdx).trim();
-
-                    int n = Integer.parseInt(dimString);
+                // Try to find nbTaxa in properties
+                if (this.isPropertyGroup(aLine, "DIMENSIONS")) {
+                    String ntaxString = this.getValueFromPropertyInLine(aLine, "NTAX");
+                    int n = Integer.parseInt(ntaxString);
                     distanceMatrix = new DistanceMatrix(n);
                 }
+
                 aLine = inLines.get(++p);
             } while (aLine.toUpperCase().contains("TAXLABELS") == false);
 
@@ -314,21 +312,19 @@ public class NexusReader implements PhygenReader {
         //Find circular ordering in document
         for (int i = 1; i < inLines.size(); i++) {
             aLine = inLines.get(i);
-            if (aLine.trim().toUpperCase().startsWith("DIMENSIONS") && taxaFound == false) {
-                int startIdx = aLine.toUpperCase().indexOf("NTAX=") + 5;
-                String dimString = aLine.substring(startIdx).trim();
-                int endIdx = dimString.indexOf(";");
-                dimString = dimString.substring(0, endIdx).trim();
-                n = Integer.parseInt(dimString);
-                taxaFound = true;
 
+            // Try to find nbTaxa in properties
+            if (this.isPropertyGroup(aLine, "DIMENSIONS") && taxaFound == false) {
+                String ntaxString = this.getValueFromPropertyInLine(aLine, "NTAX");
+                n = Integer.parseInt(ntaxString);
+                taxaFound = true;
             }
+
             if (aLine.toUpperCase().contains("CYCLE")) {
                 int startidx = aLine.indexOf(" ");
                 int endidx = aLine.indexOf(";");
                 circOrd = aLine.substring(startidx, endidx).trim();
             }
-
 
         }
 
@@ -521,5 +517,33 @@ public class NexusReader implements PhygenReader {
         }
 
         return new NexusData(taxonNames, cycle, splits, weights);
+    }
+
+    protected boolean isPropertyGroup(String line, String propertyGroup) {
+        return line.trim().toUpperCase().startsWith(propertyGroup);
+    }
+
+    protected String getValueFromPropertyInLine(String line, String property) throws IOException {
+
+        String[] properties = line.trim().toUpperCase().split(" ");
+
+        // Ignore the first part because it will be the group name
+        for(int i = 1; i < properties.length; i++) {
+
+            String[] propertyParts = properties[i].split("=");
+
+            if (propertyParts.length != 2)
+                throw new IOException("Property group line is ill formed: " + line);
+
+            String key = propertyParts[0];
+            String value = propertyParts[1].endsWith(";") ?
+                    propertyParts[1].substring(0, propertyParts[1].length()-1) :
+                    propertyParts[1];
+
+            if (key.equalsIgnoreCase(property))
+                return value;
+        }
+
+        return null;
     }
 }
