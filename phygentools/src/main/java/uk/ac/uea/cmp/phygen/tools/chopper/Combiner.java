@@ -132,9 +132,9 @@ public class Combiner {
                             String sD = (String) taxonNames.get(d);
 
                             if (lesserNames.contains(sA)
-                                && lesserNames.contains(sB)
-                                && lesserNames.contains(sC)
-                                && lesserNames.contains(sD)) {
+                                    && lesserNames.contains(sB)
+                                    && lesserNames.contains(sC)
+                                    && lesserNames.contains(sD)) {
 
                                 double oldW = summer.getWeight(a + 1, b + 1, c + 1, d + 1);
 

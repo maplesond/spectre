@@ -16,48 +16,49 @@
 
 package uk.ac.uea.cmp.phygen.flatnj;
 
-import uk.ac.uea.cmp.phygen.core.math.optimise.*;
+import uk.ac.uea.cmp.phygen.core.math.optimise.Objective;
+import uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser;
+import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
+import uk.ac.uea.cmp.phygen.core.math.optimise.Problem;
 import uk.ac.uea.cmp.phygen.flatnj.ds.PermutationSequence;
 import uk.ac.uea.cmp.phygen.flatnj.ds.QuadrupleSystem;
 
 /**
- * Computes split weights in the resulting {@linkplain  PermutationSequence} 
+ * Computes split weights in the resulting {@linkplain  PermutationSequence}
  * using <a href="http://www.gurobi.com/">Gurobi solver</a>.
- * 
+ *
  * @author balvociute
  */
 
-public class WeightCalculatorGurobi implements WeightCalculator
-{
+public class WeightCalculatorGurobi implements WeightCalculator {
     PermutationSequence ps;
     QuadrupleSystem qs;
 
     /**
      * Constructor used to initiate {@linkplain  WeightCalculator} and set
      * {@linkplain  PermutationSequence} and {@linkplain  QuadrupleSystem}.
+     *
      * @param ps {@link PermutationSequence}.
      * @param qs {@link QuadrupleSystem}.
      */
-    public WeightCalculatorGurobi(PermutationSequence ps, QuadrupleSystem qs)
-    {
+    public WeightCalculatorGurobi(PermutationSequence ps, QuadrupleSystem qs) {
         this.ps = ps;
         this.qs = qs;
     }
-    
+
     @Override
-    public void fitWeights(Optimiser optimiser)
-    {
+    public void fitWeights(Optimiser optimiser) {
         //qs.normalizeWeights();
-        
+
         double[] b = ps.computebVector(qs);
-        
+
         int[][] B = ps.computeBMatrix();
 
 
         double[][] BD = new double[B.length][B[0].length];
 
-        for(int i = 0; i < B.length; i++) {
-            for(int j = 0; j < B[i].length; j++) {
+        for (int i = 0; i < B.length; i++) {
+            for (int j = 0; j < B[i].length; j++) {
                 BD[i][j] = B[i][j];
             }
         }
@@ -66,8 +67,7 @@ public class WeightCalculatorGurobi implements WeightCalculator
         double wwT = qs.computeWxWT();
 
 
-        Objective objective = Objective.FLATNJ;
-        objective.setConstant(wwT);
+        Objective objective = new FlatNJObjective(wwT);
 
         try {
             double[] weights = optimiser.optimise(new Problem(objective, b, BD));
@@ -75,8 +75,7 @@ public class WeightCalculatorGurobi implements WeightCalculator
             // ps.setFit();???
             ps.setWeights(weights);
             ps.setTrivial(qs.getTrivial());
-        }
-        catch (OptimiserException oe) {
+        } catch (OptimiserException oe) {
             System.err.println(oe.getMessage());
         }
 

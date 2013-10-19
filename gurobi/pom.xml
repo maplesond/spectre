@@ -26,6 +26,13 @@
             <version>1.0</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.kohsuke.metainf-services</groupId>
+            <artifactId>metainf-services</artifactId>
+            <version>1.1</version>
+            <optional>true</optional>
+        </dependency>
+
 
         <!-- Optimisers -->
 
@@ -41,7 +48,6 @@
             <artifactId>gurobi</artifactId>
             <version>5</version>
         </dependency>
-
 
 
     </dependencies>

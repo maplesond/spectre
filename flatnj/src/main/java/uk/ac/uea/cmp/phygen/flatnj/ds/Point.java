@@ -17,35 +17,29 @@
 package uk.ac.uea.cmp.phygen.flatnj.ds;
 
 /**
- *
  * @author balvociute
  */
-public class Point 
-{
+public class Point {
     private double x;
     private double y;
     private int id;
 
-    public Point(int id, double x, double y)
-    {
+    public Point(int id, double x, double y) {
         this.x = x;
         this.y = y;
         this.id = id;
     }
 
-    public double getX()
-    {
+    public double getX() {
         return x;
     }
 
-    public double getY()
-    {
+    public double getY() {
         return y;
     }
 
-    public int getId()
-    {
+    public int getId() {
         return id;
     }
-    
+
 }

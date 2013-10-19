@@ -55,6 +55,7 @@ public class CompatibleSplitSystem extends CircularSplitSystem {
 
     /**
      * Deletes all splits and adds the splits to the list that have a positive weight
+     *
      * @param treeWeights
      */
     protected void reweight(SplitWeights treeWeights) {
@@ -80,7 +81,7 @@ public class CompatibleSplitSystem extends CircularSplitSystem {
     public double calculateTreeLength() {
 
         double sum = 0.0;
-        for(Split s : this.getSplits()) {
+        for (Split s : this.getSplits()) {
             sum += s.getWeight();
         }
         return sum;

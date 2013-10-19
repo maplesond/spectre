@@ -21,50 +21,38 @@ import java.util.Comparator;
 //This class is used to store the weights
 //of those splits that have negative weight
 
-public class SplitWeight 
-implements Comparator
-{
-   public double weight = 0.0;
-   public int index = 0;
+public class SplitWeight
+        implements Comparator {
+    public double weight = 0.0;
+    public int index = 0;
 
-   public SplitWeight(double w,int i)
-   {
-      weight = w;
-      index = i;
-   }
+    public SplitWeight(double w, int i) {
+        weight = w;
+        index = i;
+    }
 
-   public int compare(Object obj1, Object obj2) 
-   throws ClassCastException 
-   {
-      SplitWeight sw1 = (SplitWeight)obj1;
-      SplitWeight sw2 = (SplitWeight)obj2;
+    public int compare(Object obj1, Object obj2)
+            throws ClassCastException {
+        SplitWeight sw1 = (SplitWeight) obj1;
+        SplitWeight sw2 = (SplitWeight) obj2;
 
-      //compare weights
-      if(sw1.weight < sw2.weight)
-      {
-         return -1;
-      }
-      else if(sw1.weight > sw2.weight)
-      {
-         return 1;
-      }
-      //weights are the same, compare indices
-      if(sw1.index < sw2.index)
-      {
-         return -1;
-      }
-      else if(sw1.index < sw2.index)
-      {
-         return 1;
-      }
-      else
-      {
-         return 0;
-      }
-   }
+        //compare weights
+        if (sw1.weight < sw2.weight) {
+            return -1;
+        } else if (sw1.weight > sw2.weight) {
+            return 1;
+        }
+        //weights are the same, compare indices
+        if (sw1.index < sw2.index) {
+            return -1;
+        } else if (sw1.index < sw2.index) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
 
-   public boolean equals(Object obj)
-   {
-      return compare(this,obj) == 0;
-   }
+    public boolean equals(Object obj) {
+        return compare(this, obj) == 0;
+    }
 }

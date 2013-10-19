@@ -19,19 +19,17 @@ package uk.ac.uea.cmp.phygen.flatnj.fdraw;
 //This class is used to store the edges
 //of a box in the network
 
-public class NetworkBox
-{
-   Edge e1 = null;
-   Edge e2 = null;
-   Edge f1 = null;
-   Edge f2 = null;
+public class NetworkBox {
+    Edge e1 = null;
+    Edge e2 = null;
+    Edge f1 = null;
+    Edge f2 = null;
 
-   //constuctor of this class
-   public NetworkBox(Edge e1,Edge e2,Edge f1,Edge f2)
-   {
-      this.e1 = e1;
-      this.e2 = e2;
-      this.f1 = f1;
-      this.f2 = f2;
-   }
+    //constuctor of this class
+    public NetworkBox(Edge e1, Edge e2, Edge f1, Edge f2) {
+        this.e1 = e1;
+        this.e2 = e2;
+        this.f1 = f1;
+        this.f2 = f2;
+    }
 }

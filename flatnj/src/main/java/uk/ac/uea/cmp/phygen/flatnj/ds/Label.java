@@ -17,39 +17,32 @@
 package uk.ac.uea.cmp.phygen.flatnj.ds;
 
 /**
- *
  * @author balvociute
  */
-public class Label 
-{
+public class Label {
     private int vertexId;
     private double x;
     private double y;
 
-    public Label(int vertexId, double x, double y) 
-    {
+    public Label(int vertexId, double x, double y) {
         this.vertexId = vertexId;
         this.x = x;
         this.y = y;
     }
 
-    public double getX()
-    {
+    public double getX() {
         return x;
     }
 
-    public double getY()
-    {
+    public double getY() {
         return y;
     }
 
-    public int getVertexId()
-    {
+    public int getVertexId() {
         return vertexId;
     }
 
-    void setCoordinates(double smallX, double smallY)
-    {
+    void setCoordinates(double smallX, double smallY) {
         x = smallX;
         y = smallY;
     }

@@ -99,7 +99,6 @@ public class NetMakeCLI {
     }
 
 
-
     public static void main(String[] args) {
 
         CommandLine commandLine = CommandLineHelper.startApp(createOptions(), "netmake-<version>", "Network Maker",
@@ -116,8 +115,7 @@ public class NetMakeCLI {
             // Configure logging
             if (new File("log4j.properties").exists()) {
                 PropertyConfigurator.configure("log4j.properties");
-            }
-            else {
+            } else {
                 BasicConfigurator.configure();
             }
 

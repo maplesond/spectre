@@ -29,9 +29,7 @@ class QJoiner {
     private static Logger log = LoggerFactory.getLogger(QJoiner.class);
 
     /**
-     *
      * QJoin method
-     *
      */
     public static ArrayList join(QNet qnet) {
 

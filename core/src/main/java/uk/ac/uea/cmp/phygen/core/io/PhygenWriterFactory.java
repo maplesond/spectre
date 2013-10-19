@@ -53,6 +53,7 @@ public enum PhygenWriterFactory {
             return new String[]{"phy", "phylip"};
         }
     };
+
     public abstract PhygenWriter create();
 
     public abstract String[] getValidExtensions();
@@ -79,7 +80,7 @@ public enum PhygenWriterFactory {
 
         List<String> writerStrings = new ArrayList<String>();
 
-        for(PhygenWriterFactory mode : PhygenWriterFactory.values()) {
+        for (PhygenWriterFactory mode : PhygenWriterFactory.values()) {
             writerStrings.add(mode.name());
         }
 

@@ -18,9 +18,7 @@ package uk.ac.uea.cmp.phygen.core.ds.tree;
 import java.util.List;
 
 /**
- *
  * BinaryTree interface
- *
  */
 public interface BinaryTree {
 

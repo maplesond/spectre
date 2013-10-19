@@ -21,12 +21,16 @@ import org.apache.commons.math3.optimization.linear.LinearConstraint;
 import org.apache.commons.math3.optimization.linear.LinearObjectiveFunction;
 import org.apache.commons.math3.optimization.linear.Relationship;
 import org.apache.commons.math3.optimization.linear.SimplexSolver;
-import uk.ac.uea.cmp.phygen.core.math.optimise.*;
+import org.kohsuke.MetaInfServices;
+import uk.ac.uea.cmp.phygen.core.math.optimise.AbstractOptimiser;
+import uk.ac.uea.cmp.phygen.core.math.optimise.ObjectiveType;
+import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
+import uk.ac.uea.cmp.phygen.core.math.optimise.Problem;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-
+@MetaInfServices(uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser.class)
 public class ApacheOptimiser extends AbstractOptimiser {
 
     public ApacheOptimiser() throws OptimiserException {
@@ -41,33 +45,33 @@ public class ApacheOptimiser extends AbstractOptimiser {
         double[] coefficients = problem.getObjective().buildCoefficients(nnc.length);
 
         LinearObjectiveFunction f = new LinearObjectiveFunction(coefficients, 0.0);
-        
+
         int columns = ssc.length > 0 ? ssc[0].length : 0;
 
         Collection<LinearConstraint> constraints = new ArrayList<>();
-        for(int i = 0; i < ssc.length; i++) {
+        for (int i = 0; i < ssc.length; i++) {
 
             double[] constraint = new double[columns];
 
-            for(int j = 0; j < columns; j++) {
+            for (int j = 0; j < columns; j++) {
                 constraint[j] = ssc[i][j];
             }
-            
+
             constraints.add(new LinearConstraint(constraint, Relationship.EQ, 0.0));
         }
-        
+
         // Add restriction constraint
-        for(int i = 0; i < columns; i++) {
+        for (int i = 0; i < columns; i++) {
             double[] constraint = new double[coefficients.length];
-        
-            for(int j = 0; j < columns; j++) {
-                
+
+            for (int j = 0; j < columns; j++) {
+
                 constraint[j] = i == j ? 1.0 : 0.0;
             }
-            
+
             constraints.add(new LinearConstraint(constraint, Relationship.GEQ, -problem.getNonNegativityConstraint()[i]));
         }
-        
+
         // create and run the solver
         SimplexSolver solver = new SimplexSolver();
         solver.setMaxIterations(10000);
@@ -79,22 +83,23 @@ public class ApacheOptimiser extends AbstractOptimiser {
 
     @Override
     public boolean acceptsIdentifier(String id) {
-        return id.equalsIgnoreCase(this.getDescription()) || id.equalsIgnoreCase(ApacheOptimiser.class.getName());
+        return id.equalsIgnoreCase(this.getIdentifier()) || id.equalsIgnoreCase(ApacheOptimiser.class.getName());
     }
 
     @Override
-    public boolean acceptsObjective(Objective objective) {
-        return objective.isLinear();
+    public boolean acceptsObjectiveType(ObjectiveType objectiveType) {
+        return objectiveType.isLinear();
     }
 
     @Override
-    public String getDescription() {
+    public String getIdentifier() {
         return "Apache";
     }
 
 
     /**
      * Apache should always be operational, as it's an open source java library available via maven
+     *
      * @return
      */
     @Override
@@ -102,14 +107,5 @@ public class ApacheOptimiser extends AbstractOptimiser {
         return true;
     }
 
-    @Override
-    public boolean hasObjectiveFactory() {
-        return false;
-    }
-
-    @Override
-    public OptimiserObjectiveFactory getObjectiveFactory() {
-        return null;
-    }
 
 }

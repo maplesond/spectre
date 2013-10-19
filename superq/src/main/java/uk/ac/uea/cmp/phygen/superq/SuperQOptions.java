@@ -26,7 +26,7 @@ import java.io.File;
 
 
 public class SuperQOptions {
-    
+
     private static Logger logger = LoggerFactory.getLogger(SuperQOptions.class);
 
     public enum InputFormat {
@@ -39,8 +39,8 @@ public class SuperQOptions {
     private InputFormat inputFileFormat;
     private File outputFile;
     private Optimiser primarySolver;
-    private Optimiser backupSolver;
-    private Objective backupObjective;
+    private Optimiser secondarySolver;
+    private Objective secondaryObjective;
     private boolean scaleInputTree;
     private Double filter;
     private boolean verbose;
@@ -50,11 +50,11 @@ public class SuperQOptions {
                 new ApacheOptimiser(),
                 null, null,
                 false, null, false);
-    }    
-    
+    }
+
     public SuperQOptions(File inputFile, InputFormat inputFileFormat, File outputFile,
-                         Optimiser primarySolver, Optimiser backupSolver, Objective backupObjective,
-            boolean scaleInputTree, Double filter, boolean verbose) {
+                         Optimiser primarySolver, Optimiser secondarySolver, Objective secondaryObjective,
+                         boolean scaleInputTree, Double filter, boolean verbose) {
 
         Optimiser tempSolver = primarySolver.isOperational() ? primarySolver : null;
         if (primarySolver != tempSolver) {
@@ -65,13 +65,13 @@ public class SuperQOptions {
         this.inputFileFormat = inputFileFormat;
         this.outputFile = outputFile;
         this.primarySolver = tempSolver;
-        this.backupObjective = backupObjective;
-        this.backupSolver = backupSolver;
+        this.secondaryObjective = secondaryObjective;
+        this.secondarySolver = secondarySolver;
         this.scaleInputTree = scaleInputTree;
         this.filter = filter;
         this.verbose = verbose;
     }
-    
+
     public void createValidateConfig() {
         //check if scaling of input trees is required
         if (this.isScaleInputTree()) {
@@ -83,7 +83,7 @@ public class SuperQOptions {
         }
     }
 
-    
+
     public File getInputFile() {
         return inputFile;
     }
@@ -91,13 +91,13 @@ public class SuperQOptions {
     public void setInputFile(File inputFile) {
         this.inputFile = inputFile;
     }
-        
-    public Objective getBackupObjective() {
-        return backupObjective;
+
+    public Objective getSecondaryObjective() {
+        return secondaryObjective;
     }
 
-    public void setBackupObjective(Objective backupObjective) {
-        this.backupObjective = backupObjective;
+    public void setSecondaryObjective(Objective secondaryObjective) {
+        this.secondaryObjective = secondaryObjective;
     }
 
     public Double getFilter() {
@@ -123,15 +123,15 @@ public class SuperQOptions {
     public void setPrimarySolver(Optimiser primarySolver) {
         this.primarySolver = primarySolver;
     }
-    
-    public Optimiser getBackupSolver() {
-        return backupSolver;
+
+    public Optimiser getSecondarySolver() {
+        return secondarySolver;
     }
 
-    public void setBackupSolver(Optimiser backupSolver) {
-        this.backupSolver = backupSolver;
+    public void setSecondarySolver(Optimiser secondarySolver) {
+        this.secondarySolver = secondarySolver;
     }
-    
+
     public File getOutputFile() {
         return outputFile;
     }

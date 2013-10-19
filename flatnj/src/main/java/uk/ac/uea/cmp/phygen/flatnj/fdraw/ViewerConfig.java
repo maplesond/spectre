@@ -20,11 +20,9 @@ import java.awt.*;
 import java.util.Set;
 
 /**
- *
  * @author balvociute
  */
-public class ViewerConfig
-{
+public class ViewerConfig {
     private Dimension dimensions;
     private String leaderType = "";
     private String leaderStroke = "";
@@ -35,9 +33,8 @@ public class ViewerConfig
     Set<Integer> fixed;
     Double ratio;
 
-    public ViewerConfig()
-    {
-    }    
+    public ViewerConfig() {
+    }
 
     public ViewerConfig(Dimension dimensions,
                         String leaderType,
@@ -47,8 +44,7 @@ public class ViewerConfig
                         boolean showLabels,
                         boolean colorLabels,
                         Set<Integer> fixed,
-                        Double ratio)
-    {
+                        Double ratio) {
         this.dimensions = dimensions;
         this.leaderType = leaderType;
         this.leaderStroke = leaderStroke;
@@ -60,89 +56,72 @@ public class ViewerConfig
         this.ratio = ratio;
     }
 
-    public void setDimensions(Dimension dimensions)
-    {
+    public void setDimensions(Dimension dimensions) {
         this.dimensions = dimensions;
     }
 
-    public Dimension getDimensions()
-    {
+    public Dimension getDimensions() {
         return dimensions;
     }
 
-    public void setLeaderType(String leaderType)
-    {
+    public void setLeaderType(String leaderType) {
         this.leaderType = leaderType;
     }
 
-    public String getLeaderType()
-    {
+    public String getLeaderType() {
         return leaderType;
     }
 
-    public void setShowTrivial(boolean showTrivial)
-    {
+    public void setShowTrivial(boolean showTrivial) {
         this.showTrivial = showTrivial;
     }
 
-    public boolean showTrivial()
-    {
+    public boolean showTrivial() {
         return showTrivial;
     }
-    
-    
-    public void setShowLabels(boolean showLabels)
-    {
+
+
+    public void setShowLabels(boolean showLabels) {
         this.showLabels = showLabels;
     }
 
-    public boolean showLabels()
-    {
+    public boolean showLabels() {
         return showLabels;
     }
 
-    public void setColorLabels(boolean colorLabels)
-    {
+    public void setColorLabels(boolean colorLabels) {
         this.colorLabels = colorLabels;
     }
-    
-    public boolean colorLabels()
-    {
+
+    public boolean colorLabels() {
         return colorLabels;
     }
 
-    public void setLeaderColor(Color leaderColor)
-    {
+    public void setLeaderColor(Color leaderColor) {
         this.leaderColor = leaderColor;
     }
 
-    public Color getLeaderColor()
-    {
+    public Color getLeaderColor() {
         return leaderColor;
     }
 
-    public String getLeaderStroke()
-    {
+    public String getLeaderStroke() {
         return leaderStroke;
     }
 
-    public void setLeaderStroke(String leaderStroke)
-    {
+    public void setLeaderStroke(String leaderStroke) {
         this.leaderStroke = leaderStroke;
     }
 
-    public Set<Integer> getFixed()
-    {
+    public Set<Integer> getFixed() {
         return fixed;
     }
 
-    public void setRatio(Double ratio)
-    {
+    public void setRatio(Double ratio) {
         this.ratio = ratio;
     }
 
-    public Double getRatio()
-    {
+    public Double getRatio() {
         return ratio;
     }
 }

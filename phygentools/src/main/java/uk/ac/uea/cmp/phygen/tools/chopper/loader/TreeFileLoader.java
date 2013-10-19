@@ -15,16 +15,12 @@
  */
 package uk.ac.uea.cmp.phygen.tools.chopper.loader;
 
-import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
-import uk.ac.uea.cmp.phygen.tools.chopper.Node;
-import uk.ac.uea.cmp.phygen.tools.chopper.Traverser;
 import uk.ac.uea.cmp.phygen.tools.chopper.Tree;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.LinkedList;
-import java.util.ListIterator;
 import java.util.StringTokenizer;
 
 /**
@@ -133,7 +129,7 @@ public class TreeFileLoader extends AbstractTreeLoader {
 
             }
 
-            if (aLine.trim().indexOf('(') != - 1 && aLine.trim().endsWith(");")) {
+            if (aLine.trim().indexOf('(') != -1 && aLine.trim().endsWith(");")) {
 
                 // we have a tree line here
 
@@ -141,7 +137,7 @@ public class TreeFileLoader extends AbstractTreeLoader {
 
                 aLine = aLine.substring(aLine.indexOf('('), aLine.lastIndexOf(')') + 1).trim();
 
-                if (aLine.indexOf(":") != - 1) {
+                if (aLine.indexOf(":") != -1) {
 
                     branchLengths = true;
 

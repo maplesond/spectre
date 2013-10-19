@@ -23,6 +23,8 @@ import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserFactory;
 import uk.ac.uea.cmp.phygen.core.ui.gui.JobController;
 import uk.ac.uea.cmp.phygen.core.ui.gui.StatusTracker;
 import uk.ac.uea.cmp.phygen.core.ui.gui.ToolHost;
+import uk.ac.uea.cmp.phygen.superq.objectives.SecondaryObjective;
+import uk.ac.uea.cmp.phygen.superq.objectives.SecondaryObjectiveFactory;
 
 import javax.swing.*;
 import java.io.File;
@@ -126,7 +128,7 @@ public class SuperQGUI extends JFrame implements ToolHost {
 
         lblInput.setText("Choose input file:");
 
-        cboInputFormat.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "choose format of input file", "script", "newick"}));
+        cboInputFormat.setModel(new javax.swing.DefaultComboBoxModel(new String[]{"choose format of input file", "script", "newick"}));
 
         chkScaleInput.setText("uk.ac.uea.cmp.phygen.tools.scale input");
         chkScaleInput.setToolTipText("Scale input trees");
@@ -141,7 +143,7 @@ public class SuperQGUI extends JFrame implements ToolHost {
             }
         });
 
-        cboSelectObjective.setModel(new javax.swing.DefaultComboBoxModel(Objective.values()));
+        cboSelectObjective.setModel(new javax.swing.DefaultComboBoxModel(SecondaryObjectiveFactory.getInstance().listObjectives().toArray()));
         cboSelectObjective.setToolTipText("Select Function");
         cboSelectObjective.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -169,92 +171,92 @@ public class SuperQGUI extends JFrame implements ToolHost {
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(chkFilter, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(6, 6, 6)
-                        .addComponent(txtFilter, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(234, 234, 234)
-                                .addComponent(cmdRun, javax.swing.GroupLayout.PREFERRED_SIZE, 258, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(cmdCancel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addGroup(layout.createSequentialGroup()
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(lblStatus)
-                                    .addComponent(chkScaleInput))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(progStatus, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                        .addComponent(lblInput, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 118, Short.MAX_VALUE)
-                                        .addComponent(lblSave, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                    .addComponent(lblSelectObjective, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(txtInput)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(cmdInput, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(cboInputFormat, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(txtSave)
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addComponent(cboSelectObjective, 0, 178, Short.MAX_VALUE)
-                                                .addGap(18, 18, 18)
-                                                .addComponent(lblSelectSolver, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                            .addComponent(cboSelectSolver, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addComponent(cmdSave, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addGap(157, 157, 157)))))))
-                        .addGap(30, 30, 30))))
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addComponent(chkFilter, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addGap(6, 6, 6)
+                                                .addComponent(txtFilter, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                                        .addGroup(layout.createSequentialGroup()
+                                                                .addGap(234, 234, 234)
+                                                                .addComponent(cmdRun, javax.swing.GroupLayout.PREFERRED_SIZE, 258, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                                .addComponent(cmdCancel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                                        .addGroup(layout.createSequentialGroup()
+                                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                                        .addComponent(lblStatus)
+                                                                        .addComponent(chkScaleInput))
+                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                                .addComponent(progStatus, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                                        .addGroup(layout.createSequentialGroup()
+                                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                                                                .addComponent(lblInput, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 118, Short.MAX_VALUE)
+                                                                                .addComponent(lblSave, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                                                        .addComponent(lblSelectObjective, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                                        .addGroup(layout.createSequentialGroup()
+                                                                                .addComponent(txtInput)
+                                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                                                .addComponent(cmdInput, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                                                .addComponent(cboInputFormat, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                                        .addGroup(layout.createSequentialGroup()
+                                                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                                                        .addComponent(txtSave)
+                                                                                        .addGroup(layout.createSequentialGroup()
+                                                                                                .addComponent(cboSelectObjective, 0, 178, Short.MAX_VALUE)
+                                                                                                .addGap(18, 18, 18)
+                                                                                                .addComponent(lblSelectSolver, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                                                                        .addComponent(cboSelectSolver, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                                                        .addGroup(layout.createSequentialGroup()
+                                                                                                .addComponent(cmdSave, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                                                .addGap(157, 157, 157)))))))
+                                                .addGap(30, 30, 30))))
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(cboInputFormat, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblInput, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(cmdInput))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblSave, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtSave, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(cmdSave))
-                .addGap(13, 13, 13)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(lblSelectObjective, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(cboSelectObjective, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(lblSelectSolver, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(cboSelectSolver, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(txtFilter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(chkFilter))
-                .addGap(18, 18, 18)
-                .addComponent(chkScaleInput)
-                .addGap(35, 35, 35)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(progStatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblStatus))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(cmdRun, javax.swing.GroupLayout.DEFAULT_SIZE, 28, Short.MAX_VALUE)
-                    .addComponent(cmdCancel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(cboInputFormat, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(lblInput, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(txtInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(cmdInput))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(lblSave, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(txtSave, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(cmdSave))
+                                .addGap(13, 13, 13)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                                .addComponent(lblSelectObjective, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(cboSelectObjective, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(lblSelectSolver, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(cboSelectSolver, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(18, 18, 18)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addComponent(txtFilter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(chkFilter))
+                                .addGap(18, 18, 18)
+                                .addComponent(chkScaleInput)
+                                .addGap(35, 35, 35)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addComponent(progStatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(lblStatus))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addComponent(cmdRun, javax.swing.GroupLayout.DEFAULT_SIZE, 28, Short.MAX_VALUE)
+                                        .addComponent(cmdCancel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addContainerGap())
         );
 
         pack();
@@ -288,63 +290,61 @@ public class SuperQGUI extends JFrame implements ToolHost {
     private void chkScaleInputMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_chkScaleInputMouseClicked
     }//GEN-LAST:event_chkScaleInputMouseClicked
 
-private void chkFilterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkFilterActionPerformed
-    if (chkFilter.isSelected()) {
-        txtFilter.setEnabled(true);
-    } else {
-        txtFilter.setEnabled(false);
-    }
-}//GEN-LAST:event_chkFilterActionPerformed
-
-private void cmdInputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdInputActionPerformed
-    //Create a file chooser
-    final JFileChooser fc = new JFileChooser();
-    if (evt.getSource() == cmdInput) {
-        int returnVal = fc.showOpenDialog(SuperQGUI.this);
-        if (returnVal == JFileChooser.APPROVE_OPTION) {
-            File file = fc.getSelectedFile();
-            String z = "";
-            z = file.getAbsolutePath();
-            txtInput.setText(z);
+    private void chkFilterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkFilterActionPerformed
+        if (chkFilter.isSelected()) {
+            txtFilter.setEnabled(true);
         } else {
-            log.debug("Open command cancelled by user.");
+            txtFilter.setEnabled(false);
         }
-    }
-}//GEN-LAST:event_cmdInputActionPerformed
+    }//GEN-LAST:event_chkFilterActionPerformed
 
-private void cmdRunActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdRunActionPerformed
+    private void cmdInputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdInputActionPerformed
+        //Create a file chooser
+        final JFileChooser fc = new JFileChooser();
+        if (evt.getSource() == cmdInput) {
+            int returnVal = fc.showOpenDialog(SuperQGUI.this);
+            if (returnVal == JFileChooser.APPROVE_OPTION) {
+                File file = fc.getSelectedFile();
+                String z = "";
+                z = file.getAbsolutePath();
+                txtInput.setText(z);
+            } else {
+                log.debug("Open command cancelled by user.");
+            }
+        }
+    }//GEN-LAST:event_cmdInputActionPerformed
 
-    SuperQOptions options = buildSuperQOptions();
+    private void cmdRunActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdRunActionPerformed
 
-    if (options != null)
-        this.superqRunner.runSuperQ(options, new StatusTracker(this.progStatus, this.lblStatus));
+        SuperQOptions options = buildSuperQOptions();
 
-}//GEN-LAST:event_cmdRunActionPerformed
+        if (options != null)
+            this.superqRunner.runSuperQ(options, new StatusTracker(this.progStatus, this.lblStatus));
 
-private void cboSelectObjectiveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboSelectObjectiveActionPerformed
-    Objective newObjective = (Objective) this.cboSelectObjective.getSelectedItem();
+    }//GEN-LAST:event_cmdRunActionPerformed
 
-    if (newObjective == Objective.NONE) {
-        this.lblSelectSolver.setEnabled(false);
-        this.cboSelectSolver.setEnabled(false);
-    } else {
-        this.lblSelectSolver.setEnabled(true);
-        this.cboSelectSolver.setEnabled(true);
-    }
-}//GEN-LAST:event_cboSelectObjectiveActionPerformed
+    private void cboSelectObjectiveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboSelectObjectiveActionPerformed
+        SecondaryObjective newObjective = (SecondaryObjective) this.cboSelectObjective.getSelectedItem();
+        if (newObjective == null) {
+            this.lblSelectSolver.setEnabled(false);
+            this.cboSelectSolver.setEnabled(false);
+        } else {
+            this.lblSelectSolver.setEnabled(true);
+            this.cboSelectSolver.setEnabled(true);
+        }
+    }//GEN-LAST:event_cboSelectObjectiveActionPerformed
 
     private void cboSelectSolverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboSelectSolverActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_cboSelectSolverActionPerformed
 
-    private SuperQOptions buildSuperQOptions(){
+    private SuperQOptions buildSuperQOptions() {
 
         SuperQOptions options;
 
         try {
             options = new SuperQOptions();
-        }
-        catch(OptimiserException oe) {
+        } catch (OptimiserException oe) {
             showErrorDialog("Error occured configuring optimiser.   Check you have selected an operational optimiser and set an appropriate objective.");
             return null;
         }
@@ -370,14 +370,13 @@ private void cboSelectObjectiveActionPerformed(java.awt.event.ActionEvent evt) {
             options.setFilter(filter);
         }
 
-        options.setBackupObjective((Objective) this.cboSelectObjective.getSelectedItem());
+        options.setSecondaryObjective((Objective) this.cboSelectObjective.getSelectedItem());
 
         try {
-            options.setBackupSolver(OptimiserFactory.getInstance().createOptimiserInstance(
-                (String)this.cboSelectSolver.getSelectedItem(), options.getBackupObjective()));
-        }
-        catch (OptimiserException oe) {
-            showErrorDialog("Could not create requested optimiser: " + (String)this.cboSelectSolver.getSelectedItem());
+            options.setSecondarySolver(OptimiserFactory.getInstance().createOptimiserInstance(
+                    (String) this.cboSelectSolver.getSelectedItem(), options.getSecondaryObjective()));
+        } catch (OptimiserException oe) {
+            showErrorDialog("Could not create requested optimiser: " + (String) this.cboSelectSolver.getSelectedItem());
             return null;
         }
 
@@ -405,6 +404,7 @@ private void cboSelectObjectiveActionPerformed(java.awt.event.ActionEvent evt) {
             this.go_control.setRunning(running);
         }
     }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.ButtonGroup buttonGroup2;

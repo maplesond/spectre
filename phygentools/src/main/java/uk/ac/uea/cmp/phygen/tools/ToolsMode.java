@@ -95,6 +95,7 @@ public enum ToolsMode {
     }
 
     public abstract void execute(String[] args) throws IOException, ParseException;
+
     public abstract String getAlias();
 
 
@@ -105,8 +106,7 @@ public enum ToolsMode {
 
         try {
             regular = ToolsMode.valueOf(name);
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             regular = null;
         }
 
@@ -114,7 +114,7 @@ public enum ToolsMode {
             return regular;
         }
 
-        for(ToolsMode tm : ToolsMode.values()) {
+        for (ToolsMode tm : ToolsMode.values()) {
             if (tm.getAlias().equalsIgnoreCase(name)) {
                 return tm;
             }
@@ -127,7 +127,7 @@ public enum ToolsMode {
 
         List<String> toolStrings = new ArrayList<String>();
 
-        for(ToolsMode mode : ToolsMode.values()) {
+        for (ToolsMode mode : ToolsMode.values()) {
             toolStrings.add(mode.toListString());
         }
 

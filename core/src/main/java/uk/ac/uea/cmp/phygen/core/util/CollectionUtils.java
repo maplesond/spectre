@@ -27,34 +27,28 @@ import java.util.Set;
  */
 public class CollectionUtils {
 
-    public static String[] setToStringArray(Set<String> set)
-    {
+    public static String[] setToStringArray(Set<String> set) {
         /* This function converts Set of Strings to an array of Strings */
         String[] array = new String[set.size()];
         Iterator<String> setIterator = set.iterator();
-        for (int i = 0; i < array.length; i++)
-        {
+        for (int i = 0; i < array.length; i++) {
             array[i] = setIterator.next();
         }
         return array;
     }
 
-    public static int[] setToIntArray(Set<Integer> set)
-    {
+    public static int[] setToIntArray(Set<Integer> set) {
         /* This function converts Set of Strings to an array of Strings */
         int[] array = new int[set.size()];
         Iterator<Integer> setIterator = set.iterator();
-        for (int i = 0; i < array.length; i++)
-        {
+        for (int i = 0; i < array.length; i++) {
             array[i] = setIterator.next();
         }
         return array;
     }
 
-    public static void sortIntArray(int[] arr)
-    {
-        if (arr.length == 4)
-        {
+    public static void sortIntArray(int[] arr) {
+        if (arr.length == 4) {
             int a = arr[0];
             int b = arr[1];
             int c = arr[2];
@@ -66,19 +60,14 @@ public class CollectionUtils {
 
             arr[0] = min;
 
-            if (min == a)
-            {
+            if (min == a) {
                 a = b;
                 b = c;
                 c = d;
-            }
-            else if (min == b)
-            {
+            } else if (min == b) {
                 b = c;
                 c = d;
-            }
-            else if (min == c)
-            {
+            } else if (min == c) {
                 c = d;
             }
 
@@ -87,27 +76,19 @@ public class CollectionUtils {
 
             arr[1] = min;
 
-            if (min == a)
-            {
+            if (min == a) {
                 a = b;
                 b = c;
-            }
-            else if (min == b)
-            {
+            } else if (min == b) {
                 b = c;
             }
 
             arr[2] = (a < b) ? a : b;
             arr[3] = (a > b) ? a : b;
-        }
-        else
-        {
-            for (int i = 1; i < arr.length; i++)
-            {
-                for (int j = i; j > 0; j--)
-                {
-                    if (arr[j] < arr[j - 1])
-                    {
+        } else {
+            for (int i = 1; i < arr.length; i++) {
+                for (int j = i; j > 0; j--) {
+                    if (arr[j] < arr[j - 1]) {
                         int h = arr[j - 1];
                         arr[j - 1] = arr[j];
                         arr[j] = h;
@@ -117,13 +98,10 @@ public class CollectionUtils {
         }
     }
 
-    public static int size(boolean[] array)
-    {
+    public static int size(boolean[] array) {
         int size = 0;
-        for (int i = 0; i < array.length; i++)
-        {
-            if (array[i] == true)
-            {
+        for (int i = 0; i < array.length; i++) {
+            if (array[i] == true) {
                 size++;
             }
         }
@@ -133,15 +111,12 @@ public class CollectionUtils {
     }
 
 
-    public static int[] getElements(boolean[] set)
-    {
+    public static int[] getElements(boolean[] set) {
         int size = size(set);
         int[] elements = new int[size];
         int j = 0;
-        for (int i = 0; i < set.length; i++)
-        {
-            if (set[i] == true)
-            {
+        for (int i = 0; i < set.length; i++) {
+            if (set[i] == true) {
                 elements[j++] = i;
             }
         }
@@ -149,9 +124,7 @@ public class CollectionUtils {
     }
 
 
-
-    public static void swapTwoInAnArray(double[] array, int i1, int i2)
-    {
+    public static void swapTwoInAnArray(double[] array, int i1, int i2) {
         double tmp = array[i1];
         array[i1] = array[i2];
         array[i2] = tmp;

@@ -25,7 +25,6 @@ import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetIndex;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 import uk.ac.uea.cmp.phygen.core.math.matrix.SymmetricMatrix;
 import uk.ac.uea.cmp.phygen.core.math.matrix.UpperTriangularMatrix;
-import uk.ac.uea.cmp.phygen.core.math.optimise.Objective;
 import uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser;
 import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
 import uk.ac.uea.cmp.phygen.core.math.optimise.Problem;
@@ -250,12 +249,12 @@ public class WeightsComputeNNLSInformative {
                         if (pHolder.getR(iA + 1, iA + 3, iB + 1, iC + 1, c)) {
 
                             pHolder.setQ(iA, iA + 2, iB, iC, pHolder.getQ(iA + 1, iA + 2, iB, iC)
-                                                             + pHolder.getQ(iA, iA + 1, iB, iC) + 1);
+                                    + pHolder.getQ(iA, iA + 1, iB, iC) + 1);
 
                         } else {
 
                             pHolder.setQ(iA, iA + 2, iB, iC, pHolder.getQ(iA + 1, iA + 2, iB, iC)
-                                                             + pHolder.getQ(iA, iA + 1, iB, iC));
+                                    + pHolder.getQ(iA, iA + 1, iB, iC));
 
                         }
 
@@ -266,12 +265,12 @@ public class WeightsComputeNNLSInformative {
                         if (pHolder.getR(iA + 1, iB + 1, iB + 3, iC + 1, c)) {
 
                             pHolder.setQ(iB, iB + 2, iC, iA + N, pHolder.getQ(iB + 1, iB + 2, iC, iA + N)
-                                                                 + pHolder.getQ(iB, iB + 1, iC, iA + N) + 1);
+                                    + pHolder.getQ(iB, iB + 1, iC, iA + N) + 1);
 
                         } else {
 
                             pHolder.setQ(iB, iB + 2, iC, iA + N, pHolder.getQ(iB + 1, iB + 2, iC, iA + N)
-                                                                 + pHolder.getQ(iB, iB + 1, iC, iA + N));
+                                    + pHolder.getQ(iB, iB + 1, iC, iA + N));
 
                         }
 
@@ -296,14 +295,14 @@ public class WeightsComputeNNLSInformative {
                             if (pHolder.getR(iA + 1, iA + iD + 1, iB + 1, iC + 1, c)) {
 
                                 pHolder.setQ(iA, iA + iD, iB, iC, pHolder.getQ(iA + 1, iA + iD, iB, iC)
-                                                                  + pHolder.getQ(iA, iA + iD - 1, iB, iC)
-                                                                  - pHolder.getQ(iA + 1, iA + iD - 1, iB, iC) + 1);
+                                        + pHolder.getQ(iA, iA + iD - 1, iB, iC)
+                                        - pHolder.getQ(iA + 1, iA + iD - 1, iB, iC) + 1);
 
                             } else {
 
                                 pHolder.setQ(iA, iA + iD, iB, iC, pHolder.getQ(iA + 1, iA + iD, iB, iC)
-                                                                  + pHolder.getQ(iA, iA + iD - 1, iB, iC)
-                                                                  - pHolder.getQ(iA + 1, iA + iD - 1, iB, iC));
+                                        + pHolder.getQ(iA, iA + iD - 1, iB, iC)
+                                        - pHolder.getQ(iA + 1, iA + iD - 1, iB, iC));
 
                             }
 
@@ -314,14 +313,14 @@ public class WeightsComputeNNLSInformative {
                             if (pHolder.getR(iA + 1, iB + 1, iB + iD + 1, iC + 1, c)) {
 
                                 pHolder.setQ(iB, iB + iD, iC, iA + N, pHolder.getQ(iB + 1, iB + iD, iC, iA + N)
-                                                                      + pHolder.getQ(iB, iB + iD - 1, iC, iA + N)
-                                                                      - pHolder.getQ(iB + 1, iB + iD - 1, iC, iA + N) + 1);
+                                        + pHolder.getQ(iB, iB + iD - 1, iC, iA + N)
+                                        - pHolder.getQ(iB + 1, iB + iD - 1, iC, iA + N) + 1);
 
                             } else {
 
                                 pHolder.setQ(iB, iB + iD, iC, iA + N, pHolder.getQ(iB + 1, iB + iD, iC, iA + N)
-                                                                      + pHolder.getQ(iB, iB + iD - 1, iC, iA + N)
-                                                                      - pHolder.getQ(iB + 1, iB + iD - 1, iC, iA + N));
+                                        + pHolder.getQ(iB, iB + iD - 1, iC, iA + N)
+                                        - pHolder.getQ(iB + 1, iB + iD - 1, iC, iA + N));
 
                             }
 
@@ -350,8 +349,8 @@ public class WeightsComputeNNLSInformative {
             for (int iC = iB + 1; iC < N - 1; iC++) {
 
                 pHolder.setP(1, iB, iC, iC + 2, pHolder.getP(1, iB, iC + 1, iC + 2)
-                                                + pHolder.getP(1, iB, iC, iC + 1)
-                                                + pHolder.getQ(1, iB, iC, iC + 2));
+                        + pHolder.getP(1, iB, iC, iC + 1)
+                        + pHolder.getQ(1, iB, iC, iC + 2));
 
             }
 
@@ -364,9 +363,9 @@ public class WeightsComputeNNLSInformative {
                 for (int iC = iB + 1; iC < N - iD + 1; iC++) {
 
                     pHolder.setP(1, iB, iC, iC + iD, pHolder.getP(1, iB, iC + 1, iC + iD)
-                                                     + pHolder.getP(1, iB, iC, iC + iD - 1)
-                                                     - pHolder.getP(1, iB, iC + 1, iC + iD - 1)
-                                                     + pHolder.getQ(1, iB, iC, iC + iD));
+                            + pHolder.getP(1, iB, iC, iC + iD - 1)
+                            - pHolder.getP(1, iB, iC + 1, iC + iD - 1)
+                            + pHolder.getQ(1, iB, iC, iC + iD));
 
                 }
 
@@ -403,14 +402,14 @@ public class WeightsComputeNNLSInformative {
                         if (iC != N) {
 
                             pHolder.setP(iA, iB, iC, iC + 2, pHolder.getP(iA, iB, iC + 1, iC + 2)
-                                                             + pHolder.getP(iA, iB, iC, iC + 1)
-                                                             + pHolder.getQ(iA, iB, iC, iC + 2));
+                                    + pHolder.getP(iA, iB, iC, iC + 1)
+                                    + pHolder.getQ(iA, iB, iC, iC + 2));
 
                         } else {
 
                             pHolder.setP(iA, iB, iC, iC + 2, pHolder.getP(1, 2, iA, iB)
-                                                             + pHolder.getP(iA, iB, iC, iC + 1)
-                                                             + pHolder.getQ(iA, iB, iC, iC + 2));
+                                    + pHolder.getP(iA, iB, iC, iC + 1)
+                                    + pHolder.getQ(iA, iB, iC, iC + 2));
 
                         }
 
@@ -435,16 +434,16 @@ public class WeightsComputeNNLSInformative {
                             if (iC != N) {
 
                                 pHolder.setP(iA, iB, iC, iC + iD, pHolder.getP(iA, iB, iC + 1, iC + iD)
-                                                                  + pHolder.getP(iA, iB, iC, iC + iD - 1)
-                                                                  - pHolder.getP(iA, iB, iC + 1, iC + iD - 1)
-                                                                  + pHolder.getQ(iA, iB, iC, iC + iD));
+                                        + pHolder.getP(iA, iB, iC, iC + iD - 1)
+                                        - pHolder.getP(iA, iB, iC + 1, iC + iD - 1)
+                                        + pHolder.getQ(iA, iB, iC, iC + iD));
 
                             } else {
 
                                 pHolder.setP(iA, iB, iC, iC + iD, pHolder.getP(1, iD, iA, iB)
-                                                                  + pHolder.getP(iA, iB, iC, iC + iD - 1)
-                                                                  - pHolder.getP(1, iD - 1, iA, iB)
-                                                                  + pHolder.getQ(iA, iB, iC, iC + iD));
+                                        + pHolder.getP(iA, iB, iC, iC + iD - 1)
+                                        - pHolder.getP(1, iD - 1, iA, iB)
+                                        + pHolder.getQ(iA, iB, iC, iC + iD));
 
                             }
 
@@ -769,7 +768,7 @@ public class WeightsComputeNNLSInformative {
                             double aW = theQuartetWeights.getWeight(cA, cB, cC, cD);
 
                             gw[p - 1][p + 2][i - 1][j - 1] = aW
-                                                             + gw[p - 1][p + 1][i - 1][j - 1] + gw[p][p + 2][i - 1][j - 1];
+                                    + gw[p - 1][p + 1][i - 1][j - 1] + gw[p][p + 2][i - 1][j - 1];
 
                         } else {
 
@@ -781,8 +780,8 @@ public class WeightsComputeNNLSInformative {
                             double aW = theQuartetWeights.getWeight(cA, cB, cC, cD);
 
                             gw[p - 1][p + l - 1][i - 1][j - 1] = aW
-                                                                 + gw[p - 1][p + l - 2][i - 1][j - 1] + gw[p][p + l - 1][i - 1][j - 1]
-                                                                 - gw[p][p + l - 2][i - 1][j - 1];
+                                    + gw[p - 1][p + l - 2][i - 1][j - 1] + gw[p][p + l - 1][i - 1][j - 1]
+                                    - gw[p][p + l - 2][i - 1][j - 1];
 
                         }
 
@@ -811,7 +810,7 @@ public class WeightsComputeNNLSInformative {
                             double aW = theQuartetWeights.getWeight(cA, cB, cC, cD);
 
                             gw[p - 1][p + 2][i - 1][j - 1] = aW
-                                                             + gw[p - 1][p + 1][i - 1][j - 1] + gw[p][p + 2][i - 1][j - 1];
+                                    + gw[p - 1][p + 1][i - 1][j - 1] + gw[p][p + 2][i - 1][j - 1];
 
                         } else {
 
@@ -823,8 +822,8 @@ public class WeightsComputeNNLSInformative {
                             double aW = theQuartetWeights.getWeight(cA, cB, cC, cD);
 
                             gw[p - 1][p + l - 1][i - 1][j - 1] = aW
-                                                                 + gw[p - 1][p + l - 2][i - 1][j - 1] + gw[p][p + l - 1][i - 1][j - 1]
-                                                                 - gw[p][p + l - 2][i - 1][j - 1];
+                                    + gw[p - 1][p + l - 2][i - 1][j - 1] + gw[p][p + l - 1][i - 1][j - 1]
+                                    - gw[p][p + l - 2][i - 1][j - 1];
 
                         }
 
@@ -857,7 +856,7 @@ public class WeightsComputeNNLSInformative {
                             double aW = theQuartetWeights.getWeight(cA, cB, cC, cD);
 
                             gw[p - 1][p + 2][i - 1][j - 1] = aW
-                                                             + gw[p - 1][p + 1][i - 1][j - 1] + gw[p][p + 2][i - 1][j - 1];
+                                    + gw[p - 1][p + 1][i - 1][j - 1] + gw[p][p + 2][i - 1][j - 1];
 
                         } else {
 
@@ -869,8 +868,8 @@ public class WeightsComputeNNLSInformative {
                             double aW = theQuartetWeights.getWeight(cA, cB, cC, cD);
 
                             gw[p - 1][p + l - 1][i - 1][j - 1] = aW
-                                                                 + gw[p - 1][p + l - 2][i - 1][j - 1] + gw[p][p + l - 1][i - 1][j - 1]
-                                                                 - gw[p][p + l - 2][i - 1][j - 1];
+                                    + gw[p - 1][p + l - 2][i - 1][j - 1] + gw[p][p + l - 1][i - 1][j - 1]
+                                    - gw[p][p + l - 2][i - 1][j - 1];
 
                         }
 
@@ -940,8 +939,8 @@ public class WeightsComputeNNLSInformative {
 
         //Call of method to solve NNLS for split weigths
         if (optimiser != null) {
-            log.info("Using " + optimiser.getDescription() + " to solve NNLS problem");
-            result = optimiser.optimise(new Problem(Objective.NNLS, Etf, EtE.toArray()));
+            log.info("Using " + optimiser.getIdentifier() + " to solve NNLS problem");
+            result = optimiser.optimise(new Problem(new NNLSObjective(), Etf, EtE.toArray()));
         } else {
 
             log.info("Using QNet's internal method to solve NNLS problem");
@@ -956,7 +955,6 @@ public class WeightsComputeNNLSInformative {
 
 
     /**
-     *
      * @param N Number of Taxa
      */
     private static double[] qnetNnlsOptimise(int N, double[] Etf, SymmetricMatrix EtE, double tolerance) throws QNetException {
@@ -1090,12 +1088,12 @@ public class WeightsComputeNNLSInformative {
 
             // find index t and move to nonzero set
 
-            int t = - 1;
+            int t = -1;
 
             while (true) {
 
                 double max = Double.NEGATIVE_INFINITY;
-                t = - 1;
+                t = -1;
 
                 int noPositive = 0;
 
@@ -1185,8 +1183,7 @@ public class WeightsComputeNNLSInformative {
 
                 if (from5) {
                     log.debug("From outer loop: ");
-                }
-                else {
+                } else {
                     log.debug("From inner loop: ");
                 }
 
@@ -1521,7 +1518,7 @@ public class WeightsComputeNNLSInformative {
                 lI = P.listIterator();
 
                 double min = Double.POSITIVE_INFINITY;
-                int q = - 1;
+                int q = -1;
 
                 while (lI.hasNext()) {
 
@@ -1579,7 +1576,6 @@ public class WeightsComputeNNLSInformative {
         log.debug("Step 12");
 
 
-
         //computation of split weights in array x[] finished
         // we do, then our split weights are done
 
@@ -1590,9 +1586,7 @@ public class WeightsComputeNNLSInformative {
     }
 
 
-
-
-   private static void load(PHolder pHolder, String fileName) throws IOException {
+    private static void load(PHolder pHolder, String fileName) throws IOException {
 
         int N = 0;
 

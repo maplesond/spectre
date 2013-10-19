@@ -14,7 +14,6 @@ import java.util.List;
  */
 public enum LoaderType {
     SCRIPT {
-
         public Source getLoader() {
             throw new UnsupportedOperationException("Can't get a loader from SCIPT mode.");
         }
@@ -24,7 +23,6 @@ public enum LoaderType {
         }
     },
     NEWICK {
-
         public Source getLoader() {
             return new TreeLoader();
         }
@@ -34,7 +32,6 @@ public enum LoaderType {
         }
     },
     Q_WEIGHTS {
-
         public Source getLoader() {
             return new QWeightLoader();
         }
@@ -44,7 +41,6 @@ public enum LoaderType {
         }
     },
     NEXUS_ST_SPLITS {
-
         public Source getLoader() {
             return new NexusSplitsLoader();
         }
@@ -54,7 +50,6 @@ public enum LoaderType {
         }
     },
     NEXUS_ST_QUARTETS {
-
         public Source getLoader() {
             return new NexusQuartetLoader();
         }
@@ -64,7 +59,6 @@ public enum LoaderType {
         }
     },
     NEXUS_TREES {
-
         public Source getLoader() {
             return new TreeFileLoader();
         }
@@ -74,7 +68,6 @@ public enum LoaderType {
         }
     },
     NEXUS_DISTANCES {
-
         public Source getLoader() {
             return new NexusDistancesLoader();
         }
@@ -101,7 +94,7 @@ public enum LoaderType {
     public static String listTypes() {
         List<String> typeStrings = new ArrayList<String>();
 
-        for(LoaderType t : LoaderType.values()) {
+        for (LoaderType t : LoaderType.values()) {
             typeStrings.add(t.name());
         }
 

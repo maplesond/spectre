@@ -25,11 +25,9 @@ import java.util.List;
 import java.util.Scanner;
 
 /**
- *
  * @author balvociute
  */
-public abstract class NexusReader<E>
-{
+public abstract class NexusReader<E> {
 
     protected BufferedReader br;
     protected String line;
@@ -42,32 +40,22 @@ public abstract class NexusReader<E>
     int index;
     private String originalLine;
 
-    public E readBlock(String inFile)
-    {
+    public E readBlock(String inFile) {
         E e = null;
         openFile(inFile);
-        if (findBlock())
-        {
+        if (findBlock()) {
             Dimensions dimensions = null;
             Format format = new Format();
             Cycle cycle = null;
             Draw draw = null;
-            while(!lineLC.startsWith(data))
-            {
-                if (lineLC.contains("dimensions"))
-                {
+            while (!lineLC.startsWith(data)) {
+                if (lineLC.contains("dimensions")) {
                     dimensions = parseDimensions();
-                }
-                else if (lineLC.contains("format"))
-                {
+                } else if (lineLC.contains("format")) {
                     format = parseFormat();
-                }
-                else if (lineLC.contains("cycle"))
-                {
+                } else if (lineLC.contains("cycle")) {
                     cycle = parseCycle();
-                }
-                else if (lineLC.contains("draw"))
-                {
+                } else if (lineLC.contains("draw")) {
                     draw = parseDraw();
                 }
                 readLine();
@@ -78,50 +66,40 @@ public abstract class NexusReader<E>
         return e;
     }
 
-    protected E parseBlock(Dimensions dimensions, Format format, Cycle cycle, Draw draw)
-    {
+    protected E parseBlock(Dimensions dimensions, Format format, Cycle cycle, Draw draw) {
         E e = null;
         index = 0;
 
-        while (lineLC != null && !lineLC.contains(data))
-        {
+        while (lineLC != null && !lineLC.contains(data)) {
             readLine();
         }
-        if (lineLC != null && lineLC.contains(data))
-        {
+        if (lineLC != null && lineLC.contains(data)) {
             initializeDataStructures(dimensions);
 
             line = line.substring(lineLC.indexOf(data) + data.length());
             boolean exit = false;
-            while (!exit)
-            {
-                if(line.startsWith("["))
-                {
+            while (!exit) {
+                if (line.startsWith("[")) {
                     line = line.replaceFirst("\\[[^\\[\\]]+\\]", "");
                 }
                 scanner = new Scanner(line);
                 matched = scanner.findInLine(",\\s*$");
-                if(matched != null)
-                {
+                if (matched != null) {
                     line = line.replace(matched, "");
                 }
-                
-                if (lineLC.contains("end;"))
-                {
+
+                if (lineLC.contains("end;")) {
                     line = line.substring(0, lineLC.indexOf("end;"));
                     exit = true;
                 }
                 line = line.replace(";", "");
                 line = line.trim();
-                if (line.length() > 0)
-                {
+                if (line.length() > 0) {
                     lineLC = line.toLowerCase();
                     scanner = new Scanner(line);
                     scannerLC = new Scanner(lineLC);
                     parseLine(format);
-                }
-                else if (format != null && format.interleaved)
-                {
+                } else if (format != null && format.interleaved) {
                     index = 0;
                 }
                 readLine();
@@ -131,73 +109,60 @@ public abstract class NexusReader<E>
         return e;
     }
 
-    private Dimensions parseDimensions()
-    {
+    private Dimensions parseDimensions() {
         Dimensions dimensions = new Dimensions();
         boolean exit = false;
-        while (!exit)
-        {
+        while (!exit) {
             scannerLC = new Scanner(lineLC);
             matched = scannerLC.findInLine("ntax\\s*=\\s*(\\d+)");
-            if (matched != null)
-            {
+            if (matched != null) {
                 dimensions.nTax = Integer.parseInt((scannerLC.match()).group(1));
             }
             scannerLC = new Scanner(lineLC);
             matched = scannerLC.findInLine("nchar\\s*=\\s*(\\s+)");
-            if (matched != null)
-            {
+            if (matched != null) {
                 dimensions.nChar = Integer.parseInt((scannerLC.match()).group(1));
             }
             scannerLC = new Scanner(lineLC);
             matched = scannerLC.findInLine("nsplits\\s*=\\s*(\\d+)");
-            if (matched != null)
-            {
+            if (matched != null) {
                 dimensions.nSplits = Integer.parseInt((scannerLC.match()).group(1));
             }
             scannerLC = new Scanner(lineLC);
             matched = scannerLC.findInLine("nvertices\\s*=\\s*(\\d+)");
-            if (matched != null)
-            {
+            if (matched != null) {
                 dimensions.nVertices = Integer.parseInt((scannerLC.match()).group(1));
             }
             scannerLC = new Scanner(lineLC);
             matched = scannerLC.findInLine("nedges\\s*=\\s*(\\d+)");
-            if (matched != null)
-            {
+            if (matched != null) {
                 dimensions.nEdges = Integer.parseInt((scannerLC.match()).group(1));
             }
             scannerLC = new Scanner(lineLC);
             matched = scannerLC.findInLine("height\\s*=\\s*(\\d+)");
-            if (matched != null)
-            {
+            if (matched != null) {
                 dimensions.height = Integer.parseInt((scannerLC.match()).group(1));
             }
             scannerLC = new Scanner(lineLC);
             matched = scannerLC.findInLine("width\\s*=\\s*(\\d+)");
-            if (matched != null)
-            {
+            if (matched != null) {
                 dimensions.width = Integer.parseInt((scannerLC.match()).group(1));
             }
-            if (lineLC.contains(";"))
-            {
+            if (lineLC.contains(";")) {
                 exit = true;
             }
-            if(!exit)
-            {
+            if (!exit) {
                 readLine();
             }
         }
         return dimensions;
     }
 
-    private Format parseFormat()
-    {
+    private Format parseFormat() {
         Format format = new Format();
 
         boolean exit = false;
-        while (!exit)
-        {
+        while (!exit) {
             format.labels = findNoOptions(format.labels, "labels");
             format.interleaved = findNoOptions(format.interleaved, "interleaved");
             format.diagonal = findNoOptions(format.interleaved, "interleaved");
@@ -206,99 +171,74 @@ public abstract class NexusReader<E>
             format.weights = findNoOptions(format.weights, "weights");
             format.confidences = findNoOptions(format.confidences, "confidences");
 
-            if (lineLC.contains(";"))
-            {
+            if (lineLC.contains(";")) {
                 exit = true;
             }
-            if (!exit)
-            {
+            if (!exit) {
                 readLine();
             }
         }
         return format;
     }
 
-    private Cycle parseCycle()
-    {
+    private Cycle parseCycle() {
         Cycle cycle = new Cycle();
 
-        if (lineLC.contains("cycle"))
-        {
+        if (lineLC.contains("cycle")) {
             lineLC = lineLC.substring(5).trim();
             List<Integer> permutation = new LinkedList<>();
             boolean exit = false;
-            while (!exit)
-            {
+            while (!exit) {
                 String[] tmp = lineLC.split("\\s+");
-                for (int i = 0; i < tmp.length; i++)
-                {
-                    if (!tmp[i].contentEquals(";"))
-                    {
-                        try
-                        {
+                for (int i = 0; i < tmp.length; i++) {
+                    if (!tmp[i].contentEquals(";")) {
+                        try {
                             permutation.add(Integer.parseInt(tmp[i].replace(";", "")));
-                        }
-                        catch (NumberFormatException nfe)
-                        {
+                        } catch (NumberFormatException nfe) {
                             exitError("Taxa indexes in the cycle must be integers");
                         }
                     }
                 }
 
-                if (lineLC.contains(";"))
-                {
+                if (lineLC.contains(";")) {
                     exit = true;
                 }
-                if (!exit)
-                {
+                if (!exit) {
                     readLine();
                 }
             }
             cycle.permutation = new int[permutation.size()];
-            for (int i = 0; i < permutation.size(); i++)
-            {
+            for (int i = 0; i < permutation.size(); i++) {
                 cycle.permutation[i] = permutation.get(i) - 1;
             }
         }
         return cycle;
     }
 
-    private Draw parseDraw()
-    {
+    private Draw parseDraw() {
         Draw draw = new Draw();
 
         boolean exit = false;
-        while (!exit)
-        {
-            if (scannerLC.findInLine("rotateabout\\s*=\\s*(\\S+)[\\s;]") != null)
-            {
-                try
-                {
+        while (!exit) {
+            if (scannerLC.findInLine("rotateabout\\s*=\\s*(\\S+)[\\s;]") != null) {
+                try {
                     draw.angle = Double.parseDouble(scannerLC.match().group(1));
-                }
-                catch (NumberFormatException nfe)
-                {
+                } catch (NumberFormatException nfe) {
                     exitError("Rotation angle must be real number");
                 }
             }
-            if(scannerLC.findInLine("scale\\s*=\\s*(\\S+)[\\s;]") != null)
-            {
-                try
-                {
+            if (scannerLC.findInLine("scale\\s*=\\s*(\\S+)[\\s;]") != null) {
+                try {
                     draw.scale = Double.parseDouble(scannerLC.match().group(1));
-                }
-                catch (NumberFormatException nfe)
-                {
+                } catch (NumberFormatException nfe) {
                     exitError("Scale factor must be real number");
                 }
-                
+
             }
-            if (lineLC.contains(";"))
-            {
+            if (lineLC.contains(";")) {
                 exit = true;
             }
-            if (!exit)
-            {
+            if (!exit) {
                 readLine();
             }
         }
@@ -306,78 +246,57 @@ public abstract class NexusReader<E>
 
     }
 
-    private String findOption(String option, String optiontext)
-    {
+    private String findOption(String option, String optiontext) {
         matched = scannerLC.findInLine(optiontext + "\\s*=\\s*(\\w+);?");
-        if (matched != null)
-        {
+        if (matched != null) {
             option = scannerLC.match().group(1);
         }
 
         return option;
     }
 
-    private boolean findNoOptions(boolean option, String optiontext)
-    {
+    private boolean findNoOptions(boolean option, String optiontext) {
         matched = scannerLC.findInLine(optiontext + "\\s*=\\s*(\\w+);?");
-        if (matched != null)
-        {
-            if ((scannerLC.match()).group(1).contentEquals("no"))
-            {
+        if (matched != null) {
+            if ((scannerLC.match()).group(1).contentEquals("no")) {
                 option = false;
-            }
-            else if ((scannerLC.match()).group(1).contentEquals("yes"))
-            {
+            } else if ((scannerLC.match()).group(1).contentEquals("yes")) {
                 option = true;
             }
-        }
-        else
-        {
+        } else {
             matched = scannerLC.findInLine("no" + optiontext + "[;\\s]");
             option = (matched != null) ? false : option;
         }
         return option;
     }
 
-    private void openFile(String inFile)
-    {
-        try
-        {
+    private void openFile(String inFile) {
+        try {
             br = new BufferedReader(new FileReader(inFile));
-        }
-        catch (FileNotFoundException fnfe)
-        {
+        } catch (FileNotFoundException fnfe) {
             System.err.println("File " + inFile + " not found.");
             System.exit(1);
         }
     }
 
-    private void closeFile()
-    {
-        try
-        {
+    private void closeFile() {
+        try {
             br.close();
-        }
-        catch (IOException ioe)
-        {
+        } catch (IOException ioe) {
             System.err.println("Unable to close input file.");
         }
     }
 
-    private boolean findBlock()
-    {
+    private boolean findBlock() {
         readLine();
-        while (originalLine != null && scannerLC.findInLine("begin\\s+" + block) == null)
-        {
+        while (originalLine != null && scannerLC.findInLine("begin\\s+" + block) == null) {
             readLine();
         }
         return (originalLine != null);
     }
 
-    protected void readLine()
-    {
-        try
-        {
+    protected void readLine() {
+        try {
             line = br.readLine();
             originalLine = line;
             line = (line != null) ? line.trim() : "";
@@ -385,16 +304,13 @@ public abstract class NexusReader<E>
 
             scanner = new Scanner(line);
             scannerLC = new Scanner(lineLC);
-        }
-        catch (IOException ioe)
-        {
+        } catch (IOException ioe) {
             System.err.println("Error reading input file.");
             System.exit(1);
         }
     }
 
-    public void exitError(String message)
-    {
+    public void exitError(String message) {
         System.err.println("Error: " + message + ":\n" + originalLine + "\n");
         System.exit(1);
     }
@@ -405,8 +321,7 @@ public abstract class NexusReader<E>
 
     protected abstract E createObject(Dimensions dimensions, Cycle cycle, Draw draw);
 
-    protected class Dimensions
-    {
+    protected class Dimensions {
 
         Integer nTax;
         Integer nChar;
@@ -416,31 +331,24 @@ public abstract class NexusReader<E>
         Integer height;
         Integer width;
 
-        public Dimensions()
-        {
+        public Dimensions() {
         }
 
-        public void print()
-        {
+        public void print() {
             String string = "Dimensions:\n";
-            if (nTax != null)
-            {
+            if (nTax != null) {
                 string = string + "\tntax=" + nTax + "\n";
             }
-            if (nChar != null)
-            {
+            if (nChar != null) {
                 string = string + "\tnchar=" + nChar + "\n";
             }
-            if (nSplits != null)
-            {
+            if (nSplits != null) {
                 string = string + "\tnsplits=" + nSplits + "\n";
             }
-            if (nVertices != null)
-            {
+            if (nVertices != null) {
                 string = string + "\tnvertices=" + nVertices + "\n";
             }
-            if (nEdges != null)
-            {
+            if (nEdges != null) {
                 string = string + "\tnedges=" + nEdges + "\n";
             }
 
@@ -448,8 +356,7 @@ public abstract class NexusReader<E>
         }
     }
 
-    protected class Format
-    {
+    protected class Format {
 
         boolean labels;
         boolean interleaved;
@@ -459,8 +366,7 @@ public abstract class NexusReader<E>
         boolean weights;
         boolean confidences;
 
-        public Format()
-        {
+        public Format() {
             labels = true;
             interleaved = true;
             triangle = "both";
@@ -470,32 +376,25 @@ public abstract class NexusReader<E>
             confidences = false;
         }
 
-        public void print()
-        {
+        public void print() {
             String string = "Format:\n";
-            if (labels == true)
-            {
+            if (labels == true) {
                 string = string + "\tlabels\n";
             }
-            if (interleaved == true)
-            {
+            if (interleaved == true) {
                 string = string + "\tinterleaved\n";
             }
             string = string + "\ttriangle=" + triangle + "\n";
-            if (diagonal == true)
-            {
+            if (diagonal == true) {
                 string = string + "\tdiagonal\n";
             }
-            if (activeFlags == true)
-            {
+            if (activeFlags == true) {
                 string = string + "\tactiveflags\n";
             }
-            if (weights == true)
-            {
+            if (weights == true) {
                 string = string + "\tweights\n";
             }
-            if (confidences == true)
-            {
+            if (confidences == true) {
                 string = string + "\tconfidences\n";
             }
 
@@ -503,14 +402,12 @@ public abstract class NexusReader<E>
         }
     }
 
-    protected class Cycle
-    {
+    protected class Cycle {
 
         int[] permutation;
     }
 
-    protected class Draw
-    {
+    protected class Draw {
         double angle;
         double scale;
     }

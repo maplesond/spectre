@@ -81,7 +81,7 @@ public class RandomDistanceGeneratorTool extends PhygenTool {
         outputDir.mkdirs();
 
         // For each sample
-        for(int i = 1; i <= s; i++) {
+        for (int i = 1; i <= s; i++) {
 
             // Create the distance matrix
             DistanceMatrix distanceMatrix = new RandomDistanceGenerator().generateDistances(n);

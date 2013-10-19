@@ -75,7 +75,7 @@ public class SuperQ extends RunnableTool {
 
         try {
             validateOptions();
-            
+
             // Start timing
             StopWatch stopWatch = new StopWatch();
             stopWatch.start();
@@ -106,7 +106,7 @@ public class SuperQ extends RunnableTool {
                         || this.options.getInputFileFormat() == SuperQOptions.InputFormat.SCRIPT)) {
                     throw new Exception("Scale function can only be applied if the input format is newick or script!");
                 } else {
-                    notifyUser("SCALING - Scaling input trees - Using: " + this.options.getPrimarySolver().getDescription());
+                    notifyUser("SCALING - Scaling input trees - Using: " + this.options.getPrimarySolver().getIdentifier());
 
                     int cutIdx1 = file.lastIndexOf(File.separator);
                     int cutIdx2 = file.lastIndexOf(".");
@@ -159,16 +159,16 @@ public class SuperQ extends RunnableTool {
 
             double[] solution = computedWeights.getX();
 
-            if (this.options.getBackupObjective() == null || this.options.getBackupSolver() == null) {
+            if (this.options.getSecondaryObjective() == null || this.options.getSecondarySolver() == null) {
                 log.info("SECONDARY OPTIMISATION - Not requested");
             } else {
-                
-                Optimiser secondarySolver = this.options.getBackupSolver();
-                notifyUser("SECONDARY OPTIMISATION - Requested " + secondarySolver.toString() + " solver with " + this.options.getBackupObjective() + " objective.");
+
+                Optimiser secondarySolver = this.options.getSecondarySolver();
+                notifyUser("SECONDARY OPTIMISATION - Requested " + secondarySolver.toString() + " solver with " + this.options.getSecondaryObjective() + " objective.");
 
                 try {
                     // Run the secondary optimisation step
-                    double[] solution2 = secondarySolver.optimise(new Problem(this.options.getBackupObjective(), computedWeights.getX(), computedWeights.getEtE().toArray()));
+                    double[] solution2 = secondarySolver.optimise(new Problem(this.options.getSecondaryObjective(), computedWeights.getX(), computedWeights.getEtE().toArray()));
 
                     // Sum the solutions
                     for (int i = 0; i < solution.length; i++) {

@@ -30,9 +30,7 @@ class NewCyclicOrderer {
     private static Logger log = LoggerFactory.getLogger(NewCyclicOrderer.class);
 
     /**
-     *
      * Run method
-     *
      */
     public static String order(QNet parent) {
 
@@ -115,8 +113,8 @@ class NewCyclicOrderer {
 
             // find a, b, a < b, in X so s (a, b) / n (a, b) maximal
 
-            int aMax = - 1;
-            int bMax = - 1;
+            int aMax = -1;
+            int bMax = -1;
             double qMax = Double.NEGATIVE_INFINITY;
 
             for (int xA = 0; xA < X.size() - 1; xA++) {
@@ -149,7 +147,7 @@ class NewCyclicOrderer {
             // the four terms
 
             double yMax = Double.NEGATIVE_INFINITY;
-            int y = - 1;
+            int y = -1;
 
             double tABK = 0;
             double tBAK = 0;
@@ -172,25 +170,25 @@ class NewCyclicOrderer {
             }
 
             double y1 = (zH.getZ(a) - 1) * tABK
-                        + (zH.getZ(b) - 1) * tBAK
-                        + (zH.getZ(b) - 1) * (zH.getZ(a) - 1) * c
-                          * (N - zH.getZ(a) - zH.getZ(b)) * u0H.getU(a, b);
+                    + (zH.getZ(b) - 1) * tBAK
+                    + (zH.getZ(b) - 1) * (zH.getZ(a) - 1) * c
+                    * (N - zH.getZ(a) - zH.getZ(b)) * u0H.getU(a, b);
             double y2 = (zH.getZ(a) - 1) * tABK
-                        + (zH.getZ(b) - 1) * tBKA
-                        + (zH.getZ(b) - 1) * (zH.getZ(a) - 1) * c
-                          * (N - zH.getZ(a) - zH.getZ(b)) * u1H.getU(a, b);
+                    + (zH.getZ(b) - 1) * tBKA
+                    + (zH.getZ(b) - 1) * (zH.getZ(a) - 1) * c
+                    * (N - zH.getZ(a) - zH.getZ(b)) * u1H.getU(a, b);
             double y3 = (zH.getZ(a) - 1) * tAKB
-                        + (zH.getZ(b) - 1) * tBAK
-                        + (zH.getZ(b) - 1) * (zH.getZ(a) - 1) * c
-                          * (N - zH.getZ(a) - zH.getZ(b)) * u1H.getU(a, b);
+                    + (zH.getZ(b) - 1) * tBAK
+                    + (zH.getZ(b) - 1) * (zH.getZ(a) - 1) * c
+                    * (N - zH.getZ(a) - zH.getZ(b)) * u1H.getU(a, b);
             double y4 = (zH.getZ(a) - 1) * tAKB
-                        + (zH.getZ(b) - 1) * tBKA
-                        + (zH.getZ(b) - 1) * (zH.getZ(a) - 1) * c
-                          * (N - zH.getZ(a) - zH.getZ(b)) * u0H.getU(a, b);
+                    + (zH.getZ(b) - 1) * tBKA
+                    + (zH.getZ(b) - 1) * (zH.getZ(a) - 1) * c
+                    * (N - zH.getZ(a) - zH.getZ(b)) * u0H.getU(a, b);
 
             log.debug("Deciding on direction to join by:\nsum t (a, b, k): " + tABK + "\nsum t (a, k, b): " + tAKB
-                                   + "\nsum t (b, a, k):" + tBAK + "\nsum t (b, k, a): " + tBKA + "\nu (a, b, 0): "
-                                   + u0H.getU(a, b) + "\nu (a, b, 1): " + u1H.getU(a, b) + "\ny1: " + y1 + " y2: " + y2 + " y3: " + y3 + " y4: " + y4);
+                    + "\nsum t (b, a, k):" + tBAK + "\nsum t (b, k, a): " + tBKA + "\nu (a, b, 0): "
+                    + u0H.getU(a, b) + "\nu (a, b, 1): " + u1H.getU(a, b) + "\ny1: " + y1 + " y2: " + y2 + " y3: " + y3 + " y4: " + y4);
 
 
             if (y1 > yMax) {
@@ -291,8 +289,8 @@ class NewCyclicOrderer {
                     int nBK = snH.getN(b, k);
 
                     snH.setN(a, k, nAK + nBK - 2
-                                               * (N - zH.getZ(a) - zH.getZ(b) - zH.getZ(k))
-                                               * zH.getZ(a) * zH.getZ(b) * zH.getZ(k));
+                            * (N - zH.getZ(a) - zH.getZ(b) - zH.getZ(k))
+                            * zH.getZ(a) * zH.getZ(b) * zH.getZ(k));
 
                     for (int xL = 0; xL < X.size(); xL++) {
 
@@ -307,7 +305,7 @@ class NewCyclicOrderer {
 
                             snH.setS(k, l, sKL - wH.getW(a, b, k, l));
                             snH.setN(k, l, nKL - zH.getZ(a) * zH.getZ(b)
-                                                 * zH.getZ(k) * zH.getZ(l));
+                                    * zH.getZ(k) * zH.getZ(l));
 
                             if (y == 1) {
 
@@ -479,56 +477,56 @@ class NewCyclicOrderer {
         int j = ((Integer) X.get(1)).intValue();
         int k = ((Integer) X.get(2)).intValue();
 
-        int y = - 1;
+        int y = -1;
         double yMax = Double.NEGATIVE_INFINITY;
 
         double y1 = tH.getT(i, k, j)
-                    + tH.getT(j, i, k)
-                    + tH.getT(k, j, i) + c * (u1H.getU(i, j)
-                                              + u1H.getU(i, k)
-                                              + u1H.getU(j, k));
+                + tH.getT(j, i, k)
+                + tH.getT(k, j, i) + c * (u1H.getU(i, j)
+                + u1H.getU(i, k)
+                + u1H.getU(j, k));
 
         double y2 = tH.getT(i, k, j)
-                    + tH.getT(j, i, k)
-                    + tH.getT(k, i, j) + c * (u1H.getU(i, j)
-                                              + u0H.getU(i, k)
-                                              + u0H.getU(j, k));
+                + tH.getT(j, i, k)
+                + tH.getT(k, i, j) + c * (u1H.getU(i, j)
+                + u0H.getU(i, k)
+                + u0H.getU(j, k));
 
         double y3 = tH.getT(i, k, j)
-                    + tH.getT(j, k, i)
-                    + tH.getT(k, j, i) + c * (u0H.getU(i, j)
-                                              + u1H.getU(i, k)
-                                              + u0H.getU(j, k));
+                + tH.getT(j, k, i)
+                + tH.getT(k, j, i) + c * (u0H.getU(i, j)
+                + u1H.getU(i, k)
+                + u0H.getU(j, k));
 
         double y4 = tH.getT(i, k, j)
-                    + tH.getT(j, k, i)
-                    + tH.getT(k, i, j) + c * (u0H.getU(i, j)
-                                              + u0H.getU(i, k)
-                                              + u1H.getU(j, k));
+                + tH.getT(j, k, i)
+                + tH.getT(k, i, j) + c * (u0H.getU(i, j)
+                + u0H.getU(i, k)
+                + u1H.getU(j, k));
 
         double y5 = tH.getT(i, j, k)
-                    + tH.getT(j, i, k)
-                    + tH.getT(k, j, i) + c * (u0H.getU(i, j)
-                                              + u0H.getU(i, k)
-                                              + u1H.getU(j, k));
+                + tH.getT(j, i, k)
+                + tH.getT(k, j, i) + c * (u0H.getU(i, j)
+                + u0H.getU(i, k)
+                + u1H.getU(j, k));
 
         double y6 = tH.getT(i, j, k)
-                    + tH.getT(j, i, k)
-                    + tH.getT(k, i, j) + c * (u0H.getU(i, j)
-                                              + u1H.getU(i, k)
-                                              + u0H.getU(j, k));
+                + tH.getT(j, i, k)
+                + tH.getT(k, i, j) + c * (u0H.getU(i, j)
+                + u1H.getU(i, k)
+                + u0H.getU(j, k));
 
         double y7 = tH.getT(i, j, k)
-                    + tH.getT(j, k, i)
-                    + tH.getT(k, j, i) + c * (u1H.getU(i, j)
-                                              + u0H.getU(i, k)
-                                              + u0H.getU(j, k));
+                + tH.getT(j, k, i)
+                + tH.getT(k, j, i) + c * (u1H.getU(i, j)
+                + u0H.getU(i, k)
+                + u0H.getU(j, k));
 
         double y8 = tH.getT(i, j, k)
-                    + tH.getT(j, k, i)
-                    + tH.getT(k, i, j) + c * (u1H.getU(i, j)
-                                              + u1H.getU(i, k)
-                                              + u1H.getU(j, k));
+                + tH.getT(j, k, i)
+                + tH.getT(k, i, j) + c * (u1H.getU(i, j)
+                + u1H.getU(i, k)
+                + u1H.getU(j, k));
 
         if (y1 > yMax) {
 
@@ -659,7 +657,7 @@ class NewCyclicOrderer {
     }
 
     static List<TaxonList> join(List<TaxonList> theLists, int taxon1, int reversed1,
-                          int taxon2, int reversed2) {
+                                int taxon2, int reversed2) {
 
         TaxonList tL1 = new TaxonList(), tL2 = new TaxonList();
 
@@ -688,8 +686,8 @@ class NewCyclicOrderer {
     }
 
     static List<TaxonList> join(List<TaxonList> theLists, int taxon1, int reversed1,
-                          int taxon2, int reversed2,
-                          int taxon3, int reversed3) {
+                                int taxon2, int reversed2,
+                                int taxon3, int reversed3) {
 
         TaxonList tL1 = new TaxonList(), tL2 = new TaxonList(), tL3 = new TaxonList();
 

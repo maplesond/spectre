@@ -23,7 +23,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 import uk.ac.uea.cmp.phygen.core.ui.cli.PhygenTool;
-import uk.ac.uea.cmp.phygen.tools.chopper.loader.*;
+import uk.ac.uea.cmp.phygen.tools.chopper.loader.LoaderType;
+import uk.ac.uea.cmp.phygen.tools.chopper.loader.Source;
 
 import java.io.File;
 import java.io.IOException;
@@ -77,6 +78,7 @@ public class Chopper extends PhygenTool {
 
     /**
      * Executes Chopper programmatically.
+     *
      * @param inputFile
      * @param outputFile
      * @param type
@@ -97,15 +99,13 @@ public class Chopper extends PhygenTool {
     }
 
 
-
-
     protected ChoppedTree doScript(File inputFile) throws IOException {
 
         ChoppedTree choppedTree = null;
 
         List<String> lines = FileUtils.readLines(inputFile);
 
-        for(String line : lines) {
+        for (String line : lines) {
 
             StringTokenizer sT = new StringTokenizer(line);
 
@@ -152,7 +152,7 @@ public class Chopper extends PhygenTool {
 
 
     protected ChoppedTree doOneType(File inputFile, LoaderType type, double weight) throws IOException {
-       return doOneType(inputFile, type, weight, new ChoppedTree());
+        return doOneType(inputFile, type, weight, new ChoppedTree());
     }
 
     protected ChoppedTree doOneType(File inputFile, LoaderType type, double weight, ChoppedTree choppedTree) throws IOException {

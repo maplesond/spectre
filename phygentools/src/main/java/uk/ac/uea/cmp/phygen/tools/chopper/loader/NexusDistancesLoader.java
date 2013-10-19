@@ -20,8 +20,6 @@ import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.LinkedList;
-import java.util.ListIterator;
 import java.util.StringTokenizer;
 
 /**
@@ -280,9 +278,9 @@ public class NexusDistancesLoader extends AbstractLoader {
 
                         double w1, w2, w3;
 
-                        w1 = (D[a][c] + D[b][c] + D[a][d] + D[b][d] + - 2 * D[a][b] - 2 * D[c][d]) / 4.0;
-                        w2 = (D[a][b] + D[c][b] + D[a][d] + D[c][d] + - 2 * D[a][c] - 2 * D[b][d]) / 4.0;
-                        w3 = (D[a][c] + D[d][c] + D[a][b] + D[d][b] + - 2 * D[a][d] - 2 * D[c][b]) / 4.0;
+                        w1 = (D[a][c] + D[b][c] + D[a][d] + D[b][d] + -2 * D[a][b] - 2 * D[c][d]) / 4.0;
+                        w2 = (D[a][b] + D[c][b] + D[a][d] + D[c][d] + -2 * D[a][c] - 2 * D[b][d]) / 4.0;
+                        w3 = (D[a][c] + D[d][c] + D[a][b] + D[d][b] + -2 * D[a][d] - 2 * D[c][b]) / 4.0;
 
                         double min = Math.min(w1, Math.min(w2, w3));
 

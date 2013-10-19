@@ -20,15 +20,15 @@ import uk.ac.uea.cmp.phygen.flatnj.ds.QuadrupleSystem;
 
 /**
  * {@linkplain QuadrupleSystem} agglomerator.
- * 
+ *
  * @author balvociute
  */
-public interface QuadrupleAgglomerator
-{    
+public interface QuadrupleAgglomerator {
     /**
      * Agglomerates {@linkplain uk.ac.uea.cmp.phygen.core.ds.quadruple.Quadruple}s in the given {@linkplain QuadrupleSystem} by joining
      * given {@linkplain Neighbours}.
-     * @param qs {@linkplain QuadrupleSystem}.
+     *
+     * @param qs         {@linkplain QuadrupleSystem}.
      * @param neighbours {@linkplain Neighbours}.
      */
     public void agglomerate(QuadrupleSystem qs, Neighbours neighbours);

@@ -26,8 +26,7 @@ import java.util.List;
 public class Matrix {
 
 
-
-//Updates the quartet weights in the new input files (scales the weights before they are processed by Chopper)
+    //Updates the quartet weights in the new input files (scales the weights before they are processed by Chopper)
     public static void updateQuartetWeights(String path, String prefix, double[] w) throws IOException {
 
         Runtime rt = Runtime.getRuntime();

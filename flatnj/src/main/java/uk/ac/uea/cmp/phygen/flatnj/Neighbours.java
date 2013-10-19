@@ -16,60 +16,54 @@
 
 package uk.ac.uea.cmp.phygen.flatnj;
 
- /**
-  * Class for storing pair of taxa that has been chosen as neighbors by
-  * {@linkplain NeighbourFinder}
-  */
+/**
+ * Class for storing pair of taxa that has been chosen as neighbors by
+ * {@linkplain NeighbourFinder}
+ */
 
-public class Neighbours
-{
-   //a and b are the neighbours in the list of taxa.
-   //a is the smaller taxon.
-   int a = 0;
-   int b = 0;
+public class Neighbours {
+    //a and b are the neighbours in the list of taxa.
+    //a is the smaller taxon.
+    int a = 0;
+    int b = 0;
 
-   /**
-    * Constructor.
-    * @param inA index of the first neighbor.
-    * @param inB index of the second neighbor.
-    */
-   public Neighbours(int inA, int inB)
-   {
-       setAB(inA, inB);
-   }
-
-   /**
-    * Constructor without parameters.
-    */
-    public Neighbours()
-    {
+    /**
+     * Constructor.
+     *
+     * @param inA index of the first neighbor.
+     * @param inB index of the second neighbor.
+     */
+    public Neighbours(int inA, int inB) {
+        setAB(inA, inB);
     }
 
     /**
-     * 
+     * Constructor without parameters.
+     */
+    public Neighbours() {
+    }
+
+    /**
      * @return neighbor with smallest index.
      */
-    public int getA() 
-    {
+    public int getA() {
         return a;
     }
 
     /**
-     * 
      * @return neighbor with biggest index.
      */
-    public int getB()
-    {
+    public int getB() {
         return b;
     }
 
     /**
      * Sets neighbors.
+     *
      * @param inA index of the first neighbor.
      * @param inB index of the second neighbor.
      */
-    public void setAB(int inA, int inB)
-    {
+    public void setAB(int inA, int inB) {
         a = inA < inB ? inA : inB;
         b = inA < inB ? inB : inA;
     }
@@ -77,10 +71,9 @@ public class Neighbours
     /**
      * Prints indexes of the neighbors to the screen.
      */
-    void printNeihbors()
-    {
-        System.out.println("Neighbors are: "+a+" "+b);
+    void printNeihbors() {
+        System.out.println("Neighbors are: " + a + " " + b);
     }
-   
-   
+
+
 }

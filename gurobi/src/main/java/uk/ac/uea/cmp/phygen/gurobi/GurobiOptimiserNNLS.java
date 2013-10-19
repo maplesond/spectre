@@ -16,16 +16,16 @@
 package uk.ac.uea.cmp.phygen.gurobi;
 
 import gurobi.*;
+import org.kohsuke.MetaInfServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.uea.cmp.phygen.core.math.matrix.SymmetricMatrix;
-import uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser;
 import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
 import uk.ac.uea.cmp.phygen.core.math.optimise.Problem;
 
 /**
  *
  */
+@MetaInfServices(uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser.class)
 public class GurobiOptimiserNNLS extends GurobiOptimiser {
 
     private static Logger log = LoggerFactory.getLogger(GurobiOptimiserNNLS.class);

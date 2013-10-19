@@ -82,7 +82,7 @@ public class Tree implements Node {
                     int indexColon = subSource.lastIndexOf(':');
                     String wS = subSource.substring(indexColon + 1);
 
-                    if (subSource.lastIndexOf(')') != - 1) {
+                    if (subSource.lastIndexOf(')') != -1) {
 
                         subSource = subSource.substring(0, subSource.lastIndexOf(')') + 1).trim();
 
@@ -127,7 +127,7 @@ public class Tree implements Node {
             int indexColon = subSource.lastIndexOf(':');
             String wS = subSource.substring(indexColon + 1);
 
-            if (subSource.lastIndexOf(')') != - 1) {
+            if (subSource.lastIndexOf(')') != -1) {
 
                 subSource = subSource.substring(0, subSource.lastIndexOf(')') + 1).trim();
 
@@ -316,6 +316,7 @@ public class Tree implements Node {
         return true;
 
     }
+
     LinkedList<Node> branches;
     LinkedList<Double> weights;
 }

@@ -18,8 +18,7 @@ package uk.ac.uea.cmp.phygen.flatnj.fdraw;
 
 /*This class implements methods to handle a weighted split system*/
 
-public class SplitSystemDraw
-{
+public class SplitSystemDraw {
     //number of taxa
 
     public int ntaxa = 0;
@@ -34,8 +33,7 @@ public class SplitSystemDraw
     public int[][] splits = null;
 
     //This method prints information about the split system on the screen
-    public void print_splits()
-    {
+    public void print_splits() {
         int i = 0;
         int j = 0;
 
@@ -44,10 +42,8 @@ public class SplitSystemDraw
 
         System.out.println("List of splits:");
 
-        for (i = 0; i < nsplits; i++)
-        {
-            for (j = 0; j < ntaxa; j++)
-            {
+        for (i = 0; i < nsplits; i++) {
+            for (j = 0; j < ntaxa; j++) {
                 System.out.print(splits[i][j]);
             }
             System.out.println(" *");
@@ -59,8 +55,7 @@ public class SplitSystemDraw
     //1-side of the split if it lies below the face
     //represening the split. The pseudoline arrangement
     //is given as a permutation sequence.
-    public SplitSystemDraw(PermutationSequenceDraw p_sequ)
-    {
+    public SplitSystemDraw(PermutationSequenceDraw p_sequ) {
         int i = 0;
         int j = 0;
         int h = 0;
@@ -71,27 +66,21 @@ public class SplitSystemDraw
         int[] cur_sequ = new int[ntaxa];
 
         //Initialize current sequence with initial permutation
-        for (i = 0; i < ntaxa; i++)
-        {
+        for (i = 0; i < ntaxa; i++) {
             cur_sequ[i] = p_sequ.initSequ[i];
         }
 
         //Write splits into 0/1-array.
-        for (i = 0; i < nsplits; i++)
-        {
+        for (i = 0; i < nsplits; i++) {
             //compute current permutation
             h = cur_sequ[p_sequ.swaps[i]];
             cur_sequ[p_sequ.swaps[i]] = cur_sequ[p_sequ.swaps[i] + 1];
             cur_sequ[p_sequ.swaps[i] + 1] = h;
             //turn it into a 0/1 sequence
-            for (j = 0; j < ntaxa; j++)
-            {
-                if (j <= p_sequ.swaps[i])
-                {
+            for (j = 0; j < ntaxa; j++) {
+                if (j <= p_sequ.swaps[i]) {
                     splits[i][cur_sequ[j]] = 1;
-                }
-                else
-                {
+                } else {
                     splits[i][cur_sequ[j]] = 0;
                 }
             }
@@ -105,8 +94,7 @@ public class SplitSystemDraw
     // 2: splits compatible, 10 pattern 
     // 3: splits compatible, 01 pattern
     // 4: splits compatible, 00 pattern
-    public int is_compatible(int a, int b)
-    {
+    public int is_compatible(int a, int b) {
         //loop variable
         int i = 0;
 
@@ -116,82 +104,59 @@ public class SplitSystemDraw
         int count01 = 0;
         int count00 = 0;
 
-        for (i = 0; i < ntaxa; i++)
-        {
-            if ((splits[a][i] == 1) && (splits[b][i] == 1))
-            {
+        for (i = 0; i < ntaxa; i++) {
+            if ((splits[a][i] == 1) && (splits[b][i] == 1)) {
                 count11++;
             }
-            if ((splits[a][i] == 1) && (splits[b][i] == 0))
-            {
+            if ((splits[a][i] == 1) && (splits[b][i] == 0)) {
                 count10++;
             }
-            if ((splits[a][i] == 0) && (splits[b][i] == 1))
-            {
+            if ((splits[a][i] == 0) && (splits[b][i] == 1)) {
                 count01++;
             }
-            if ((splits[a][i] == 0) && (splits[b][i] == 0))
-            {
+            if ((splits[a][i] == 0) && (splits[b][i] == 0)) {
                 count00++;
             }
         }
 
-        if (count11 == 0)
-        {
+        if (count11 == 0) {
             return 1;
-        }
-        else if (count10 == 0)
-        {
+        } else if (count10 == 0) {
             return 2;
-        }
-        else if (count01 == 0)
-        {
+        } else if (count01 == 0) {
             return 3;
-        }
-        else if (count00 == 0)
-        {
+        } else if (count00 == 0) {
             return 4;
-        }
-        else
-        {
+        } else {
             return -1;
         }
     }
-    
-    public boolean isCompatible(int a, int b)
-    {
+
+    public boolean isCompatible(int a, int b) {
         //variables for counting the number of occurences of patterns
         int count11 = 0;
         int count10 = 0;
         int count01 = 0;
         int count00 = 0;
 
-        for (int i = 0; i < ntaxa; i++)
-        {
-            if ((splits[a][i] == 1) && (splits[b][i] == 1))
-            {
+        for (int i = 0; i < ntaxa; i++) {
+            if ((splits[a][i] == 1) && (splits[b][i] == 1)) {
                 count11++;
             }
-            if ((splits[a][i] == 1) && (splits[b][i] == 0))
-            {
+            if ((splits[a][i] == 1) && (splits[b][i] == 0)) {
                 count10++;
             }
-            if ((splits[a][i] == 0) && (splits[b][i] == 1))
-            {
+            if ((splits[a][i] == 0) && (splits[b][i] == 1)) {
                 count01++;
             }
-            if ((splits[a][i] == 0) && (splits[b][i] == 0))
-            {
+            if ((splits[a][i] == 0) && (splits[b][i] == 0)) {
                 count00++;
             }
         }
 
-        if (count11 == 0 || count10 == 0 || count01 == 0 || count00 == 0)
-        {
+        if (count11 == 0 || count10 == 0 || count01 == 0 || count00 == 0) {
             return true;
-        }
-        else
-        {
+        } else {
             return false;
         }
     }

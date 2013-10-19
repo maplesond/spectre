@@ -26,15 +26,13 @@ import java.util.TreeSet;
  * To change this template, choose Tools | Templates and open the template in
  * the editor.
  */
+
 /**
- *
  * @author balvociute
  */
-public class LayoutOptimizer
-{
+public class LayoutOptimizer {
 
-    public Vertex optimize(Vertex v, PermutationSequenceDraw ps, Network network)
-    {
+    public Vertex optimize(Vertex v, PermutationSequenceDraw ps, Network network) {
         //Compute split system
         SplitSystemDraw ss = new SplitSystemDraw(ps);
 
@@ -48,13 +46,13 @@ public class LayoutOptimizer
 
         AngleCalculator angleCalculatorSimple = new AngleCalculatorSimple();
         AngleCalculator angleCalculatorPrecise = new AngleCalculatorMaximalArea();
-        
+
         //Two types of box openers are used. Simple one tries to open boxes by
         //no more than certain constant angle, whereas precise one uses angle
         //which maximises certain function.
         BoxOpener boxOpenerSimple = new BoxOpener(angleCalculatorSimple);
         BoxOpener boxOpenerPrecise = new BoxOpener(angleCalculatorPrecise);
-        
+
         //CompatibleCorrectors are used to change angles for compatible splits.
         CompatibleCorrector compatibleCorrectorSimple = new CompatibleCorrector(angleCalculatorSimple);
         CompatibleCorrector compatibleCorrectorPrecise = new CompatibleCorrector(angleCalculatorPrecise);
@@ -64,38 +62,34 @@ public class LayoutOptimizer
         //are repeated a few times. This king of strategy proved to produce
         //networks that look much better rather than using simple or precise
         //alone.
-        
+
         int trivial = 2 + network.getTrivial().size() / 10;
         int precise = 2 + ps.ntaxa / 20;
         int iterations = 2 + ps.ntaxa / 50;
         int finish = precise + 5;
         int compatible = 1;// + ps.ntaxa / 40;
-        
+
         //compatibleCorrectorPrecise.moveTrivial(v, 2 + ((int)(ps.ntaxa * 0.03)), null);
-        for (int j = 0; j < iterations; j++)
-        {
+        for (int j = 0; j < iterations; j++) {
             //System.err.print("iteration precise: ");
-            for (int i = 0; i < precise; i++)
-            {
+            for (int i = 0; i < precise; i++) {
                 //System.err.print((i + 1) + " ");
                 boxOpenerPrecise.openIncompatible(activeSplits, v, ss, vertices, splitedges, network);
             }
-            for (int i = 0; i < compatible; i++)
-            {
+            for (int i = 0; i < compatible; i++) {
                 //System.err.print((i + 1) + " ");
                 compatibleCorrectorPrecise.moveCompatible(v, 1, null, network);
             }
             //System.err.print("moving trivial: ");
             compatibleCorrectorPrecise.moveTrivial(v, trivial, null, network);
-                
+
             //System.err.println();
         }
         //System.err.println("Finishing: ");
-        for (int i = 0; i < finish; i++)
-        {
+        for (int i = 0; i < finish; i++) {
             //System.out.println((i+1) + " ");
             boxOpenerPrecise.openOneIncompatible(activeSplits, v, ss, vertices, splitedges, network);
-        }        
+        }
         return v;
     }
 }

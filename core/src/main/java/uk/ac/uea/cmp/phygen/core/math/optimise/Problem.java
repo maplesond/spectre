@@ -17,7 +17,7 @@ package uk.ac.uea.cmp.phygen.core.math.optimise;
 
 
 public class Problem {
-    
+
 
     private Objective objective;
     private double[] nonNegativityConstraint;
@@ -60,15 +60,15 @@ public class Problem {
     public void setSolutionSpaceConstraint(double[][] solutionSpaceConstraint) {
         this.solutionSpaceConstraint = solutionSpaceConstraint;
     }
-    
+
     public int getSolutionSpaceConstraintRows() {
         return this.solutionSpaceConstraint.length;
     }
-    
+
     public int getSolutionSpaceConstraintColumns() {
         return this.solutionSpaceConstraint.length == 0 ? 0 : this.solutionSpaceConstraint[0].length;
     }
-    
+
     public double getSolutionSpaceConstraintElement(int i, int j) {
         return this.solutionSpaceConstraint[i][j];
     }

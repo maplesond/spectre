@@ -22,21 +22,19 @@ import uk.ac.uea.cmp.phygen.flatnj.ds.QuadrupleSystem;
 /**
  * Computes {@linkplain PermutationSequence} by separating {@linkplain Neighbours} in the
  * reverse order.
- * 
+ *
  * @author balvociute
  */
-public interface NeighbourSeparator 
-{
+public interface NeighbourSeparator {
     /**
      * Separates all pairs of taxa that were identified as neighbors in the
      * agglomeration phase.
-     * 
+     *
      * @param neighbours array of pairs of neighbors
-     * @param ps permutation sequence on 4 taxa
-     * @param qs quadruple system
-     * @param j number of neighbors
-     * @param n number of taxa
-     * 
+     * @param ps         permutation sequence on 4 taxa
+     * @param qs         quadruple system
+     * @param j          number of neighbors
+     * @param n          number of taxa
      * @return full flat split system as a permutation sequence
      */
     public PermutationSequence popOutNeighbours(Neighbours[] neighbours,

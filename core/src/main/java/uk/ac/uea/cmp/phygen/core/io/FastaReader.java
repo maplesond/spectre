@@ -17,22 +17,23 @@ package uk.ac.uea.cmp.phygen.core.io;
 
 import uk.ac.uea.cmp.phygen.core.ds.Alignment;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- *
  * @author balvociute
  */
-public class FastaReader
-{
-    private Map<String,String> aln;
+public class FastaReader {
+    private Map<String, String> aln;
     private BufferedReader bufferedReader;
-    
+
     public Alignment readAlignment(String alignmentFilePath) throws IOException {
         File alignmentFile = new File(alignmentFilePath);
-        
+
         aln = new LinkedHashMap<>();
 
         //Open alignment file
@@ -50,22 +51,18 @@ public class FastaReader
         //id - last read sequence identifier
         String id = null;
 
-        while(bufferedReader.ready())
-        {
+        while (bufferedReader.ready()) {
             String line = bufferedReader.readLine();
             line = line.trim();
             line = line.replaceAll("\\s", "");
-            if(line.startsWith(">"))
-            {
+            if (line.startsWith(">")) {
                 id = line.substring(1);
-            }
-            else if(id != null)
-            {
-                String sequence = ((String)(aln.get(id) != null ? aln.get(id) : "")).concat(line);
+            } else if (id != null) {
+                String sequence = ((String) (aln.get(id) != null ? aln.get(id) : "")).concat(line);
                 aln.put(id, sequence);
             }
         }
 
     }
-    
+
 }

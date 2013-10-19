@@ -114,7 +114,7 @@ public enum Weightings {
     public static String toListString() {
         List<String> list = new ArrayList<>();
 
-        for(Weightings prf : Weightings.values()) {
+        for (Weightings prf : Weightings.values()) {
             list.add(prf.toString());
         }
 

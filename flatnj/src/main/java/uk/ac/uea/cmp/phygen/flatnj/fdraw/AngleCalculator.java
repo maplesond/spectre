@@ -28,28 +28,24 @@ import java.util.Set;
  */
 
 /**
- *
  * @author balvociute
  */
-public interface AngleCalculator
-{
+public interface AngleCalculator {
     /**
-     *
      * @param boxesSorted
      * @param edges
      * @param bottom
      * @return
      */
     public double computeOptimalAngle(LinkedList<NetworkBox> boxesSorted, LinkedList<Edge> edges, boolean bottom);
-    
+
     public double computeForCompatible(LinkedList<Edge> edges);
-    
+
     public double getAngle(Vertex v1, Vertex a, Vertex v2);
-    
+
     public double getSafeAngleBot(double deltaAlpha, Edge leftmost, Edge rightmost, Set<Vertex> bottomVertices, Set<Vertex> topVertices);
 
     /**
-     *
      * @param deltaAlpha
      * @param leftmost
      * @param rightmost
@@ -58,12 +54,12 @@ public interface AngleCalculator
      * @return
      */
     public double getSafeAngleTop(double deltaAlpha, Edge leftmost, Edge rightmost, Set<Vertex> bottomVertices, Set<Vertex> topVertices);
-    
+
     public double computeMiddleAngleForTrivial(Edge split, Vertex bot, Vertex top);
 
     public double[] computeLeftAndRightAngles(Edge e, Vertex v, Vertex w);
-    
+
     public double optimizedAngleForCompatible(Vertex v, Vertex w, Edge e, List<Edge> botEdges, List<Edge> topEdges);
-    
+
     public double[] optimizedAngleForCompatible2(Vertex v, Vertex w, Edge e, List<Edge> edges, CompatibleCorrector cc, Network network, Window window, boolean outside);
 }

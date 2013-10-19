@@ -23,16 +23,14 @@ import java.util.LinkedList;
  * To change this template, choose Tools | Templates and open the template in
  * the editor.
  */
+
 /**
- *
  * @author balvociute
  */
-public class AngleCalculatorEqualAngles extends AngleCalculatorMaximalArea
-{
+public class AngleCalculatorEqualAngles extends AngleCalculatorMaximalArea {
 
     @Override
-    protected double computeOptimal(LinkedList<NetworkBox> boxesSorted)
-    {
+    protected double computeOptimal(LinkedList<NetworkBox> boxesSorted) {
         double gap = 0.1;
 
         double A = 0;
@@ -41,8 +39,7 @@ public class AngleCalculatorEqualAngles extends AngleCalculatorMaximalArea
         Double minUp = null;
         Double minDown = null;
 
-        for (int i = 0; i < boxesSorted.size(); i++)
-        {
+        for (int i = 0; i < boxesSorted.size(); i++) {
             NetworkBox b = boxesSorted.get(i);
             Edge e1 = b.e1;
             Edge e2 = b.e2;
@@ -56,34 +53,24 @@ public class AngleCalculatorEqualAngles extends AngleCalculatorMaximalArea
             B += (Math.PI * Math.PI) / 4.0 - alphaSi * Math.PI + alphaSi * alphaSi;
 
         }
-        
+
         double deltaAlpha = -A / (2 * boxesSorted.size());
-        if (deltaAlpha < 0 && Math.abs(deltaAlpha) > minDown - gap)
-        {
-            if (minDown > gap)
-            {
+        if (deltaAlpha < 0 && Math.abs(deltaAlpha) > minDown - gap) {
+            if (minDown > gap) {
                 deltaAlpha = (minDown - gap) * Math.signum(deltaAlpha);
-            }
-            else
-            {
+            } else {
                 deltaAlpha = 0;
             }
-        }
-        else if (deltaAlpha > 0 && deltaAlpha > minUp - gap)
-        {
-            if (minUp > gap)
-            {
+        } else if (deltaAlpha > 0 && deltaAlpha > minUp - gap) {
+            if (minUp > gap) {
                 deltaAlpha = minUp - gap;
-            }
-            else
-            {
+            } else {
                 deltaAlpha = 0;
             }
         }
 
         return deltaAlpha;
     }
-    
-    
-    
+
+
 }

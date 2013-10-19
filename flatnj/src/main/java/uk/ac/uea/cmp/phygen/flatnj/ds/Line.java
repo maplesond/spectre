@@ -19,42 +19,35 @@ package uk.ac.uea.cmp.phygen.flatnj.ds;
 import java.awt.*;
 
 /**
- *
  * @author balvociute
  */
-public class Line 
-{
+public class Line {
     Point a;
     Point b;
-    
+
     int width = 1;
-    
+
     Color color;
 
-    public Line(Point a, Point b, Color c)
-    {
+    public Line(Point a, Point b, Color c) {
         this.a = a;
         this.b = b;
         this.color = c;
     }
 
-    public Point getA()
-    {
+    public Point getA() {
         return a;
     }
 
-    public Point getB()
-    {
+    public Point getB() {
         return b;
     }
 
-    public Color getColor()
-    {
+    public Color getColor() {
         return color;
     }
 
-    public int getWidth()
-    {
+    public int getWidth() {
         return width;
     }
 }

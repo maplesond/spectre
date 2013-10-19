@@ -20,17 +20,16 @@ import uk.ac.uea.cmp.phygen.flatnj.ds.QuadrupleSystem;
 
 /**
  * {@linkplain Neighbours} selector from {@linkplain QuadrupleSystem}.
- * 
+ *
  * @author balvociute
  */
-public interface NeighbourFinder
-{
+public interface NeighbourFinder {
     /**
      * Finds {@linkplain Neighbours} in the current quadruple system.
-     * 
-     * @param qs current {@linkplain QuadrupleSystem}.
+     *
+     * @param qs     current {@linkplain QuadrupleSystem}.
      * @param scores precomputed scores between pairs of taxa.
-     * @return 
+     * @return
      */
     public Neighbours findNeighbours(QuadrupleSystem qs, double[][][] scores);
 }

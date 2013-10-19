@@ -17,38 +17,30 @@
 package uk.ac.uea.cmp.phygen.flatnj.ds;
 
 /**
- *
  * @author Mo
  */
-public class SplitSystemFinal extends SplitSystem
-{
+public class SplitSystemFinal extends SplitSystem {
     double[] trivialTmp;
 
-    public SplitSystemFinal(PermutationSequence ps)
-    {
+    public SplitSystemFinal(PermutationSequence ps) {
         super(ps);
         int extra = 0;
-        for (int i = 0; i < trivialTmp.length; i++)
-        {
-            if(trivialTmp[i] > 0.0)
-            {
+        for (int i = 0; i < trivialTmp.length; i++) {
+            if (trivialTmp[i] > 0.0) {
                 extra++;
             }
         }
         boolean[][] splits2 = new boolean[nSplits + extra][nTaxa];
         double[] weights2 = new double[nSplits + extra];
         boolean[] active2 = new boolean[nSplits + extra];
-        for (int i = 0; i < nSplits; i++)
-        {
+        for (int i = 0; i < nSplits; i++) {
             System.arraycopy(splits[i], 0, splits2[i], 0, nTaxa);
             weights2[i] = weights[i];
             active2[i] = active[i];
         }
         int j = nSplits;
-        for (int i = 0; i < trivialTmp.length; i++)
-        {
-            if(trivialTmp[i] > 0.0)
-            {
+        for (int i = 0; i < trivialTmp.length; i++) {
+            if (trivialTmp[i] > 0.0) {
                 splits2[j][i] = true;
                 weights2[j] = trivialTmp[i];
                 active2[j] = true;
@@ -62,22 +54,19 @@ public class SplitSystemFinal extends SplitSystem
     }
 
     @Override
-    public void setWeights(double[] weights, double[] minTrivial)
-    {
+    public void setWeights(double[] weights, double[] minTrivial) {
         trivialTmp = new double[nTaxa];
         System.arraycopy(minTrivial, 0, trivialTmp, 0, nTaxa);
-        
+
         this.weights = new double[weights.length];
         trivialWeights = new double[nTaxa];
-        for (int i = 0; i < weights.length; i++)
-        {
-            if (isTrivial(splits[i]) && minTrivial != null)
-            {
+        for (int i = 0; i < weights.length; i++) {
+            if (isTrivial(splits[i]) && minTrivial != null) {
                 this.weights[i] = minTrivial[trivialTaxa(splits[i])];
                 trivialTmp[trivialTaxa(splits[i])] = 0.0;
             }
             this.weights[i] += weights[i];
         }
     }
-    
+
 }

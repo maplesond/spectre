@@ -21,16 +21,14 @@ import java.util.Comparator;
 
 //This class is used to store the weights
 //of those splits that have negative weight
-public class Split implements Comparator
-{
+public class Split implements Comparator {
 
     public double weight = 0.0;
     public int ntaxa = 0;
     public int index = 0;
     public int[] s = null;
 
-    public Split(double w, int n, int idx)
-    {
+    public Split(double w, int n, int idx) {
         int i = 0;
 
         weight = w;
@@ -40,25 +38,20 @@ public class Split implements Comparator
         s = new int[ntaxa];
     }
 
-    public Split()
-    {
+    public Split() {
     }
 
     @Override
-    public int compare(Object obj1, Object obj2) throws ClassCastException
-    {
+    public int compare(Object obj1, Object obj2) throws ClassCastException {
         Split s1 = (Split) obj1;
         Split s2 = (Split) obj2;
 
         //use lexicographic order
-        for (int i = 0; i < s1.ntaxa; i++)
-        {
-            if (s1.s[i] < s2.s[i])
-            {
+        for (int i = 0; i < s1.ntaxa; i++) {
+            if (s1.s[i] < s2.s[i]) {
                 return -1;
             }
-            if (s1.s[i] > s2.s[i])
-            {
+            if (s1.s[i] > s2.s[i]) {
                 return 1;
             }
         }
@@ -66,17 +59,14 @@ public class Split implements Comparator
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
+    public boolean equals(Object obj) {
         return compare(this, obj) == 0;
     }
 
-    public void print_split()
-    {
+    public void print_split() {
         int i = 0;
 
-        for (i = 0; i < ntaxa; i++)
-        {
+        for (i = 0; i < ntaxa; i++) {
             System.out.print(s[i] + " ");
         }
         System.out.println("");

@@ -17,7 +17,6 @@
 package uk.ac.uea.cmp.phygen.core.ui.cli;
 
 import org.apache.commons.cli.*;
-import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
 
 import java.io.IOException;
 
@@ -30,6 +29,7 @@ public abstract class PhygenTool {
     public static final String OPT_HELP = "help";
 
     protected abstract Options createInternalOptions();
+
     protected abstract void execute(CommandLine commandLine) throws IOException;
 
     public Options createOptions() {
@@ -53,12 +53,10 @@ public abstract class PhygenTool {
 
             if (commandLine.hasOption(OPT_HELP)) {
                 printUsage();
-            }
-            else {
+            } else {
                 this.execute(commandLine);
             }
-        }
-        catch (ParseException p) {
+        } catch (ParseException p) {
             System.err.println(p.getMessage());
             printUsage();
         }

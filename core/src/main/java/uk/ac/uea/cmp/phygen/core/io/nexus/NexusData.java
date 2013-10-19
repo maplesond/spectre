@@ -137,12 +137,10 @@ public class NexusData {
                 if (w > maxWeight * threshold) {
                     splitExists[i] = true;
                     existingSplits++;
-                }
-                else {
+                } else {
                     splitExists[i] = false;
                 }
-            }
-            else {
+            } else {
                 splitExists[i] = false;
             }
         }
@@ -165,7 +163,7 @@ public class NexusData {
         int wn = 0;
         double ws = 0.0;
 
-        for(int i = 0; i < filteredWeights.size(); i++) {
+        for (int i = 0; i < filteredWeights.size(); i++) {
             wn++;
             ws += filteredWeights.get(i);
         }
@@ -174,7 +172,7 @@ public class NexusData {
 
         for (int i = 0; i < N; i++) {
             filteredWeights.add(mw);
-            filteredSplits.add(new SplitBlock(new int[]{i+1}));
+            filteredSplits.add(new SplitBlock(new int[]{i + 1}));
         }
 
         return new NexusData(taxaCopy, cycleCopy, filteredSplits, filteredWeights);

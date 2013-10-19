@@ -18,18 +18,21 @@ package uk.ac.uea.cmp.phygen.gurobi;
 import gurobi.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.uea.cmp.phygen.core.math.optimise.*;
+import uk.ac.uea.cmp.phygen.core.math.optimise.AbstractOptimiser;
+import uk.ac.uea.cmp.phygen.core.math.optimise.ObjectiveType;
+import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
+import uk.ac.uea.cmp.phygen.core.math.optimise.Problem;
 
 
 public abstract class GurobiOptimiser extends AbstractOptimiser {
-    
+
     private static Logger log = LoggerFactory.getLogger(GurobiOptimiser.class);
-    
+
     // GurobiOptimiser vars
-    private GRBEnv env;            
+    private GRBEnv env;
 
     public GurobiOptimiser() throws OptimiserException {
-        try {    
+        try {
             //GRBEnv env = new GRBEnv("gurobi.log");
             this.env = new GRBEnv();
             this.env.set(GRB.IntParam.OutputFlag, 0);
@@ -38,16 +41,18 @@ public abstract class GurobiOptimiser extends AbstractOptimiser {
             throw new OptimiserException(ge, ge.getErrorCode());
         }
     }
-    
+
     public abstract GRBVar[] addVariables(Problem problem, GRBModel model) throws GRBException;
+
     public abstract GRBConstr[] addConstraints(Problem problem, GRBModel model, GRBVar[] vars) throws GRBException;
+
     public abstract GRBExpr addObjective(Problem problem, GRBModel model, GRBVar[] grbVars) throws GRBException;
 
     @Override
     protected double[] internalOptimise(Problem problem) throws OptimiserException {
-        
+
         double[] solution = null;
-        
+
         try {
             // Create a new model
             GRBModel model = new GRBModel(env);
@@ -75,12 +80,12 @@ public abstract class GurobiOptimiser extends AbstractOptimiser {
 
             // Logging
             log.debug("Obj: " + model.get(GRB.DoubleAttr.ObjVal));
-        
+
         } catch (GRBException ge) {
             // Repackage any GurobiException and rethrow
             throw new OptimiserException(ge, ge.getErrorCode());
         }
-        
+
         return solution;
     }
 
@@ -89,33 +94,32 @@ public abstract class GurobiOptimiser extends AbstractOptimiser {
         return env;
     }
 
-    
+
     protected double[] buildSolution(GRBVar[] vars) throws GRBException {
-        
+
         double[] solution = new double[vars.length];
-        
+
         for (int i = 0; i < vars.length; i++) {
             solution[i] = vars[i].get(GRB.DoubleAttr.X);
         }
-        
+
         return solution;
     }
 
 
-
     @Override
     public boolean acceptsIdentifier(String id) {
-        return id.equalsIgnoreCase(this.getDescription()) || id.equalsIgnoreCase(GurobiOptimiser.class.getName());
+        return id.equalsIgnoreCase(this.getIdentifier()) || id.equalsIgnoreCase(GurobiOptimiser.class.getName());
     }
 
 
     @Override
-    public boolean acceptsObjective(Objective objective) {
-        return objective.isLinear() || objective.isQuadratic();
+    public boolean acceptsObjectiveType(ObjectiveType objectiveType) {
+        return objectiveType.isLinear() || objectiveType.isQuadratic();
     }
 
     @Override
-    public String getDescription() {
+    public String getIdentifier() {
         return "Gurobi";
     }
 
@@ -124,22 +128,11 @@ public abstract class GurobiOptimiser extends AbstractOptimiser {
 
         try {
             GRBEnv env = new GRBEnv();
-        }
-        catch(Throwable t) {
+        } catch (Throwable t) {
             // Can't find the gurobi native libraries, so it's not operational
             return false;
         }
 
         return true;
-    }
-
-    @Override
-    public boolean hasObjectiveFactory() {
-        return true;
-    }
-
-    @Override
-    public OptimiserObjectiveFactory getObjectiveFactory() {
-        return new GurobiObjectiveFactory();
     }
 }

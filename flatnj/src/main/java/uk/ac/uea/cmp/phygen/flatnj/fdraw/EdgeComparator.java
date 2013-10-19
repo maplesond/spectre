@@ -19,30 +19,23 @@ package uk.ac.uea.cmp.phygen.flatnj.fdraw;
 import java.util.Comparator;
 
 public class EdgeComparator
-implements Comparator
-{
-   //default constructor
-   public EdgeComparator()
-   {}
+        implements Comparator {
+    //default constructor
+    public EdgeComparator() {
+    }
 
-   public int compare(Object obj1, Object obj2) 
-   throws ClassCastException 
-   {
-      Edge e1 = (Edge)obj1;
-      Edge e2 = (Edge)obj2;
+    public int compare(Object obj1, Object obj2)
+            throws ClassCastException {
+        Edge e1 = (Edge) obj1;
+        Edge e2 = (Edge) obj2;
 
-      //compare time stamps
-      if(e1.timestp < e2.timestp)
-      {
-         return -1;
-      }
-      else if(e1.timestp > e2.timestp)
-      {
-         return 1;
-      }
-      else
-      {
-         return 0;
-      }
-   }
+        //compare time stamps
+        if (e1.timestp < e2.timestp) {
+            return -1;
+        } else if (e1.timestp > e2.timestp) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
 }

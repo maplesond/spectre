@@ -20,29 +20,27 @@ import java.util.Map;
 
 /**
  * Class for storing multiple sequence alignment (MSA).
+ *
  * @author balvociute
  */
-public class Alignment
-{    
+public class Alignment {
     //Taxa labels
     private String[] taxaLabels;
     //Sequences
     private String[] sequences;
-    
+
     /**
      * Initializes alignment from the map that maps taxa labels to corresponding
      * sequences
-     * 
+     *
      * @param aln multiple sequence alignment
      */
-    public Alignment(Map<String, String> aln) 
-    {
+    public Alignment(Map<String, String> aln) {
         taxaLabels = new String[aln.size()];
         sequences = new String[aln.size()];
         Iterator<String> alnIterator = aln.keySet().iterator();
         int i = 0;
-        while(alnIterator.hasNext())
-        {
+        while (alnIterator.hasNext()) {
             taxaLabels[i] = alnIterator.next();
             sequences[i] = aln.get(taxaLabels[i]);
             i++;
@@ -51,69 +49,56 @@ public class Alignment
     }
 
     //Initializes alignment from two arrays
-    public Alignment(String[] n, String[] seq)
-    {
+    public Alignment(String[] n, String[] seq) {
         taxaLabels = new String[n.length];
         System.arraycopy(n, 0, taxaLabels, 0, n.length);
         sequences = new String[seq.length];
         System.arraycopy(seq, 0, sequences, 0, seq.length);
-        if(!sameLength())
-        {
+        if (!sameLength()) {
             taxaLabels = null;
             sequences = null;
         }
     }
-    
+
     //Prints alignment in the fasta format to the screen
-    public void printAlignmentInFasta()
-    {
-        for(int i = 0; i < taxaLabels.length; i++)
-        {
+    public void printAlignmentInFasta() {
+        for (int i = 0; i < taxaLabels.length; i++) {
             System.out.println(">" + taxaLabels[i] + "\n" + sequences[i]);
         }
     }
 
     //Returns labels of taxa
-    public String[] getTaxaLabels()
-    {
+    public String[] getTaxaLabels() {
         return taxaLabels;
     }
 
-    public void setTaxaLabels(String[] taxaLabels)
-    {
+    public void setTaxaLabels(String[] taxaLabels) {
         this.taxaLabels = taxaLabels;
     }
 
     //Returns sequences
-    public String[] getSequences()
-    {
+    public String[] getSequences() {
         return sequences;
     }
-    
+
     //Transforms sequences from strings to the arrays of characters
-    public char[][] getSequencesAsCharArray()
-    {
+    public char[][] getSequencesAsCharArray() {
         char[][] s = new char[sequences.length][sequences[0].length()];
-        for (int i = 0; i < sequences.length; i++)
-        {
+        for (int i = 0; i < sequences.length; i++) {
             s[i] = sequences[i].toCharArray();
         }
         return s;
     }
-    
+
     //Returns number of sequences
-    public int size()
-    {
+    public int size() {
         return sequences.length;
     }
-    
+
     //Checks if all sequences are the same length
-    public boolean sameLength()
-    {
-        for (int i = 0; i < sequences.length-1; i++)
-        {
-            if(sequences[i].length() != sequences[i+1].length())
-            {
+    public boolean sameLength() {
+        for (int i = 0; i < sequences.length - 1; i++) {
+            if (sequences[i].length() != sequences[i + 1].length()) {
                 return false;
             }
         }

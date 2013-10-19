@@ -79,7 +79,7 @@ public enum PhygenReaderFactory {
     public static String toListString() {
         List<String> list = new ArrayList<>();
 
-        for(PhygenReaderFactory prf : PhygenReaderFactory.values()) {
+        for (PhygenReaderFactory prf : PhygenReaderFactory.values()) {
             list.add(prf.toString());
         }
 

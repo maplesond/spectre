@@ -19,18 +19,18 @@ public abstract class AbstractOptimiser implements Optimiser {
 
         // Check the optimiser is operational
         if (!this.isOperational()) {
-            throw new UnsupportedOperationException(this.getDescription() + " is not operational");
+            throw new UnsupportedOperationException(this.getIdentifier() + " is not operational");
         }
 
         // Check we have an objective
         if (problem.getObjective() == null) {
-            throw new OptimiserException("An objective must be specified for " + this.getDescription());
+            throw new OptimiserException("An objective must be specified for " + this.getIdentifier());
         }
 
         // Run the solver on the problem to get a (hopefully) optimal solution
-        double[] solution = problem.getObjective() == Objective.MINIMA ?
-            this.minimaOptimise(problem) :      // Special handling of MINIMA objective
-            this.internalOptimise(problem);     // Normally just call child's optimisation method
+        double[] solution = problem.getObjective().runForEachCoefficient() ?
+                this.minimaOptimise(problem) :      // Special handling of MINIMA objective
+                this.internalOptimise(problem);     // Normally just call child's optimisation method
 
         // Probably used a lot of memory.  Collect Garbage to save space.
         System.gc();
@@ -40,6 +40,7 @@ public abstract class AbstractOptimiser implements Optimiser {
 
     /**
      * To be used in conjunction with the MINIMA objective
+     *
      * @param problem
      * @return
      * @throws OptimiserException

@@ -31,9 +31,7 @@ public class QNetLoader {
     private static Logger log = LoggerFactory.getLogger(QNetLoader.class);
 
     /**
-     *
      * Load method
-     *
      */
     public static void load(QNet qnet, String fileName, boolean logNormalize) throws IOException {
 

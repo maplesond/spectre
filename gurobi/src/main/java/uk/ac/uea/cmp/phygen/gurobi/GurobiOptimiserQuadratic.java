@@ -16,10 +16,11 @@
 package uk.ac.uea.cmp.phygen.gurobi;
 
 import gurobi.*;
+import org.kohsuke.MetaInfServices;
 import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
 import uk.ac.uea.cmp.phygen.core.math.optimise.Problem;
 
-
+@MetaInfServices(uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser.class)
 public class GurobiOptimiserQuadratic extends GurobiOptimiser {
 
     public GurobiOptimiserQuadratic() throws OptimiserException {

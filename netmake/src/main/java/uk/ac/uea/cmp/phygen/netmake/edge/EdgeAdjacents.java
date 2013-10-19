@@ -64,7 +64,7 @@ public class EdgeAdjacents {
      * Creates an object EdgeAdjacents, so C, pTemp and C_alpha will be determined
      *
      * @param splitsASide The split list
-     * @param k          The index of particular split we are dealing with
+     * @param k           The index of particular split we are dealing with
      * @param P
      * @return A new EdgeAdjacents object containing C, pTemp and C_alpha values.
      */

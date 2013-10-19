@@ -170,7 +170,7 @@ public class NexusWriter implements PhygenWriter {
 
         for (int n = 0; n < nexusData.getNbSplits(); n++) {
 
-             // Add one for splitstree...
+            // Add one for splitstree...
             nexusString.append(n + 1).append("   ").append(nexusData.getWeightAt(n)).append("  ");
 
             SplitBlock aSplit = nexusData.getSplitAt(n);

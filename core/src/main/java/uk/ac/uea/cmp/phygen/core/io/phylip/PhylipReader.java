@@ -115,6 +115,7 @@ public class PhylipReader implements PhygenReader {
 
     /**
      * Alternative Phylip parser which handles multi-line phylip files
+     *
      * @param lines Data from input file split into lines
      * @return DistanceMatrix
      */
@@ -149,7 +150,7 @@ public class PhylipReader implements PhygenReader {
             }
 
             // Run through the rest of the line
-            for(int j = 1; j < parts.length; j++) {
+            for (int j = 1; j < parts.length; j++) {
 
                 String trimmedPart = parts[j].trim();
 

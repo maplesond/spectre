@@ -19,8 +19,7 @@ package uk.ac.uea.cmp.phygen.flatnj.fdraw;
 import java.awt.*;
 
 
-public class Edge
-{
+public class Edge {
     //endpoints of the edge.
 
     Vertex top = null;
@@ -34,14 +33,13 @@ public class Edge
     int timestp = 0;
     //Flags used when traversing the splitsgraph
     public boolean visited = false;
-    
+
     int width = 1;
     Color color = Color.black;
     public boolean compatible = false;
 
     //Constructor.
-    public Edge(Vertex t, Vertex b, int idx, int time)
-    {
+    public Edge(Vertex t, Vertex b, int idx, int time) {
         top = t;
         bot = b;
         idxsplit = idx;
@@ -49,86 +47,67 @@ public class Edge
         visited = false;
     }
 
-    Edge(double x, double y, double x1, double y1)
-    {
+    Edge(double x, double y, double x1, double y1) {
         top = new Vertex(x, y);
         bot = new Vertex(x1, y1);
     }
 
-    public void setNxnum(int nxnum)
-    {
+    public void setNxnum(int nxnum) {
         this.nxnum = nxnum;
     }
-    
 
-    public double length()
-    {
+
+    public double length() {
         return Math.sqrt((bot.x - top.x) * (bot.x - top.x) + (bot.y - top.y) * (bot.y - top.y));
     }
-    
+
     @Override
-    public String toString()
-    {
-        return "Nr. " + nxnum + "\nSplit: " + idxsplit + "\nBot: " + bot.nxnum + " [" + bot.x + ", " + bot.y + "]\nTop: " + top.nxnum +" [" + top.x + ", " + top.y + "]\n";
+    public String toString() {
+        return "Nr. " + nxnum + "\nSplit: " + idxsplit + "\nBot: " + bot.nxnum + " [" + bot.x + ", " + bot.y + "]\nTop: " + top.nxnum + " [" + top.x + ", " + top.y + "]\n";
     }
 
-    public void setColor(Color c)
-    {
+    public void setColor(Color c) {
         color = c;
     }
 
-    public Vertex getBot()
-    {
+    public Vertex getBot() {
         return bot;
     }
 
-    public Color getColor()
-    {
+    public Color getColor() {
         return color;
     }
 
-    public int getIdxsplit()
-    {
+    public int getIdxsplit() {
         return idxsplit;
     }
 
-    public int getNxnum()
-    {
+    public int getNxnum() {
         return nxnum;
     }
 
-    public Vertex getTop()
-    {
+    public Vertex getTop() {
         return top;
     }
 
-    public int getWidth()
-    {
+    public int getWidth() {
         return width;
     }
 
-    public void setWidth(int i)
-    {
+    public void setWidth(int i) {
         width = i;
     }
 
-    public void setIdxsplit(int idxsplit)
-    {
+    public void setIdxsplit(int idxsplit) {
         this.idxsplit = idxsplit;
     }
 
-    public Vertex getOther(Vertex v)
-    {
-        if(bot == v)
-        {
+    public Vertex getOther(Vertex v) {
+        if (bot == v) {
             return top;
-        }
-        else if(top == v)
-        {
+        } else if (top == v) {
             return bot;
-        }
-        else
-        {
+        } else {
             return null;
         }
     }

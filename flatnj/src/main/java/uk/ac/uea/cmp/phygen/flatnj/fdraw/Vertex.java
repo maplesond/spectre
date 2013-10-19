@@ -20,8 +20,7 @@ package uk.ac.uea.cmp.phygen.flatnj.fdraw;
 import java.awt.*;
 import java.util.LinkedList;
 
-public class Vertex
-{
+public class Vertex {
     //List of the edges that are incident to this vertex.
     //The edges are sorted clockwise around the vertex.
 
@@ -36,20 +35,19 @@ public class Vertex
     //flags used in various methods when traversing the
     //splitsgraph and so on
     boolean visited = false;
-    
+
     int width = 0;
     int height = 0;
-    
+
     Color bgColor = Color.BLACK;
     Color fgColor = Color.BLACK;
-    
+
     String shape = null;
-    
+
     Label label;
 
     //Constructor.
-    public Vertex(double xcoord, double ycoord)
-    {
+    public Vertex(double xcoord, double ycoord) {
         x = xcoord;
         y = ycoord;
         elist = new LinkedList<>();
@@ -58,150 +56,121 @@ public class Vertex
     }
 
     //Methods to add an edge to the list of incident edges.
-    void add_edge_before_first(Edge e)
-    {
+    void add_edge_before_first(Edge e) {
         elist.addFirst(e);
     }
 
-    void add_edge_after_last(Edge e)
-    {
+    void add_edge_after_last(Edge e) {
         elist.addLast(e);
     }
 
     @Override
-    public String toString()
-    {
-        return nxnum + " [" + x + ", " + y + "] : " + elist.size(); 
+    public String toString() {
+        return nxnum + " [" + x + ", " + y + "] : " + elist.size();
     }
 
-    public void setBackgroundColor(Color color)
-    {
+    public void setBackgroundColor(Color color) {
         bgColor = color;
         //System.arraycopy(c, 0, bgColor, 0, bgColor.length);
     }
 
-    public void setSize(int i)
-    {
+    public void setSize(int i) {
         width = i;
         height = i;
     }
-    
-    public Edge getFirstEdge()
-    {
+
+    public Edge getFirstEdge() {
         return elist.getFirst();
     }
 
-    public LinkedList<Integer> getTaxa()
-    {
+    public LinkedList<Integer> getTaxa() {
         return taxa;
     }
 
-    public int getNxnum()
-    {
+    public int getNxnum() {
         return nxnum;
     }
 
-    public double getX()
-    {
+    public double getX() {
         return x;
     }
 
-    public double getY()
-    {
+    public double getY() {
         return y;
     }
 
-    public int getWidth()
-    {
+    public int getWidth() {
         return width;
     }
 
-    public int getHeight()
-    {
+    public int getHeight() {
         return height;
     }
 
-    public Color getBackgroundColor()
-    {
+    public Color getBackgroundColor() {
         return bgColor;
     }
-    
-    public void setShape(String s)
-    {
+
+    public void setShape(String s) {
         shape = s;
     }
-    
-    public String getShape()
-    {
+
+    public String getShape() {
         return shape;
     }
 
-    public boolean equals(Vertex v2)
-    {
-        if(x == v2.x && y == v2.y)
-        {
+    public boolean equals(Vertex v2) {
+        if (x == v2.x && y == v2.y) {
             return true;
         }
         return false;
     }
 
-    public LinkedList<Edge> getElist()
-    {
+    public LinkedList<Edge> getElist() {
         return elist;
     }
 
-    public void setWidth(int w)
-    {
+    public void setWidth(int w) {
         width = w;
     }
 
-    public void setHeight(int h)
-    {
+    public void setHeight(int h) {
         height = h;
     }
 
-    public void setLineColor(Color c)
-    {
+    public void setLineColor(Color c) {
         fgColor = c;
     }
-    
-    public Color getLineColor()
-    {
+
+    public Color getLineColor() {
         return fgColor;
     }
 
-    public void setLabel(Label label)
-    {
-        if(label != null)
-        {
+    public void setLabel(Label label) {
+        if (label != null) {
             label.setVertex(this);
         }
         this.label = label;
     }
 
-    public Label getLabel()
-    {
+    public Label getLabel() {
         return label;
     }
 
-    public void setNxnum(int nxnum)
-    {
+    public void setNxnum(int nxnum) {
         this.nxnum = nxnum;
     }
 
-    public void setCoordinates(double newX, double newY)
-    {
+    public void setCoordinates(double newX, double newY) {
         x = newX;
         y = newY;
     }
 
-    public void setX(double x)
-    {
+    public void setX(double x) {
         this.x = x;
     }
 
-    public void setY(double y)
-    {
+    public void setY(double y) {
         this.y = y;
     }
 }

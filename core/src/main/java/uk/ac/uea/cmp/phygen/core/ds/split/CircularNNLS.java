@@ -15,9 +15,6 @@
  */
 package uk.ac.uea.cmp.phygen.core.ds.split;
 
-import uk.ac.uea.cmp.phygen.core.ds.split.SplitWeights;
-import uk.ac.uea.cmp.phygen.core.ds.split.TreeSplitWeights;
-
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.SortedSet;
@@ -26,18 +23,18 @@ import java.util.TreeSet;
 /**
  * Given a circular ordering and a distance matrix, computes the unconstrained or constrained least square weighted
  * splits.
- *
+ * <p/>
  * Contains routines for performing OLS and WLS for circular splits. The splits are specified by their circular
  * ordering.
- *
+ * <p/>
  * For the unconstrained case (and a maximal collection of circular splits), both OLS and WLS give the same answer - the
  * least squares branch estimates can be computed directly from the distances as proven by Chepoi et al.
- *
+ * <p/>
  * The constrained case (constrained to non-negative values) is handled using an active set method, with an iterative
  * technique (conjugate gradients) for the equality constrained optimizations at each step. The use of conjugate
  * gradients means that we only need O(n^2) memory (n = number of taxa) compared to O(n^4) memory if we compute A^tWA
  * and apply Cholesky decomposition.
- *
+ * <p/>
  * There is still room for improvement - it may be that a more sophisticated iterative method (e.g. Memoryless
  * Quasi-Newton) converges faster than the conjugate gradient method. Furthermore, I can imagine that an iterative
  * method combined with a positivity constraint would speed up the constrained optimization considerably - as yet I
@@ -181,9 +178,9 @@ public class CircularNNLS {
      * @param x      the x matrix
      */
     private static void runConjugateGrads(int ntax,
-                                  double[][] r, double[][] w, double[][] p, double[][] y,
-                                  double[][] W, double[][] b,
-                                  boolean[][] active, double[][] x) {
+                                          double[][] r, double[][] w, double[][] p, double[][] y,
+                                          double[][] W, double[][] b,
+                                          boolean[][] active, double[][] x) {
         int kmax = ntax * (ntax - 1) / 2;
         /* Maximum number of iterations of the cg algorithm (probably too many) */
         calculateAb(ntax, x, y);
@@ -591,7 +588,7 @@ public class CircularNNLS {
                 runConjugateGrads(ntax, r, w, p, y, W, AtWd, active, x);
 
                 if (collapse_many_negs) { /* Typically, a large number of edges are negative, so on the first
-                								pass of the algorithm we add the worst 60% to the active set */
+                                                pass of the algorithm we add the worst 60% to the active set */
                     neg_indices.clear();
                     for (int i = 0; i < ntax; i++) {
                         for (int j = 0; j < i; j++) {
@@ -747,6 +744,7 @@ public class CircularNNLS {
 
     /**
      * This method computes the least squares weights for the splits
+     *
      * @param dist distance matrix, the entries are permuted such that the ordering 0,1,2,...,(ntax-1) is the circular
      *             ordering for the full circular split system we want to compute weights for.
      * @param ntax number of taxa, taxa are numbered 0,1,2,...,(ntax-1)

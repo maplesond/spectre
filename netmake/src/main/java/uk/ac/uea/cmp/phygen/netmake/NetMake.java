@@ -226,7 +226,7 @@ public class NetMake {
 
         // Remove last two rows (last row is the whole set and the last but
         // one is not required)
-       // treeSplits.removeRow(treeSplits.rows() - 1);
+        // treeSplits.removeRow(treeSplits.rows() - 1);
         treeSplits.removeRow(treeSplits.rows() - 1);
 
         // Create ordering
@@ -468,14 +468,14 @@ public class NetMake {
     protected CircularOrdering createCircularOrdering() {
 
         ArrayList<Integer> help = new ArrayList<Integer>();
-        for (int j = 0; j < 2; j++)  {
-        for (int i = 0; i < components.rowSize(j); i++) {
-            help.add(components.get(j, i));
-        }
+        for (int j = 0; j < 2; j++) {
+            for (int i = 0; i < components.rowSize(j); i++) {
+                help.add(components.get(j, i));
+            }
         }
         int[] permutation = new int[help.size()];
         for (int i = 0; i < help.size(); i++) {
-          permutation[i]=help.get(i);
+            permutation[i] = help.get(i);
         }
 
 

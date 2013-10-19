@@ -17,11 +17,9 @@
 package uk.ac.uea.cmp.phygen.flatnj.ds;
 
 /**
- * 
  * @author balvociute
  */
-public class Location
-{
+public class Location {
     /**
      * x coordinate of the location.
      */
@@ -37,31 +35,30 @@ public class Location
 
     /**
      * creates Location object with given coordinates and label.
-     * @param x x coordinate of the location.
-     * @param y y coordinate of the location.
+     *
+     * @param x     x coordinate of the location.
+     * @param y     y coordinate of the location.
      * @param label location`s label.
      */
-    public Location(double x, double y, String label)
-    {
+    public Location(double x, double y, String label) {
         this.x = x;
         this.y = y;
         this.label = label;
     }
-    
+
     /**
      * creates Location object with given.
+     *
      * @param x x coordinate of the location.
      * @param y y coordinate of the location.
      */
-    public Location(double x, double y)
-    {
+    public Location(double x, double y) {
         this.x = x;
         this.y = y;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         String loc = x + "\t" + y;
         loc = (label == null) ? loc : label + " " + loc;
         return loc;
@@ -69,42 +66,41 @@ public class Location
 
     /**
      * returns label for this location.
+     *
      * @return label
      */
-    public String getLabel()
-    {
+    public String getLabel() {
         return label;
     }
 
     /**
      * returns x coordinate for this location.
+     *
      * @return x
      */
-    public double getX()
-    {
+    public double getX() {
         return x;
     }
 
     /**
      * returns y coordinate for this location.
+     *
      * @return y
      */
-    public double getY()
-    {
+    public double getY() {
         return y;
     }
 
     /**
      * estimates euclidean distance from this location to loc.
+     *
      * @param loc location to measure distance to.
      * @return distance.
      */
-    public double distanceTo(Location loc)
-    {
-        double d = Math.sqrt((x - loc.getX())*(x - loc.getX()) + (y - loc.getY())*(y - loc.getY()));
+    public double distanceTo(Location loc) {
+        double d = Math.sqrt((x - loc.getX()) * (x - loc.getX()) + (y - loc.getY()) * (y - loc.getY()));
         return d;
     }
-    
-    
-    
+
+
 }

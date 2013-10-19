@@ -15,21 +15,18 @@
  */
 package uk.ac.uea.cmp.phygen.tools.chopper.loader;
 
-import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
-import uk.ac.uea.cmp.phygen.tools.chopper.Node;
-import uk.ac.uea.cmp.phygen.tools.chopper.Traverser;
 import uk.ac.uea.cmp.phygen.tools.chopper.Tree;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.LinkedList;
-import java.util.ListIterator;
 
 /**
  * Created by IntelliJ IDEA. User: Analysis Date: 2004-jul-12 Time: 00:03:05 To
  * change this template use Options | File Templates.
  */
+
 /**
  * Extracts QNet input from file
  *
@@ -49,7 +46,7 @@ public class TreeLoader extends AbstractTreeLoader {
 
         String aLine = in.readLine();
 
-        if (aLine != null && aLine.indexOf(':') != - 1) {
+        if (aLine != null && aLine.indexOf(':') != -1) {
 
             branchLengths = true;
 

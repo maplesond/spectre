@@ -22,16 +22,14 @@ import java.awt.*;
 
 
 /**
- *
  * @author balvociute
  */
-public class Label
-{
+public class Label {
     String name;
     Vertex v;
     double offsetX = 1;
     double offsetY = 1;
-    
+
     int height;
     int width;
     Color bgColor;
@@ -40,205 +38,162 @@ public class Label
     private String fontStyle = "plain";
     private int intStyle = Font.PLAIN;
     private int fontSize = 10;
-    
+
     private Font font;
     private FontMetrics fontMetrics;
-    
-    public Boolean movable = true;
-    
 
-    public Label()
-    {
+    public Boolean movable = true;
+
+
+    public Label() {
         initFont();
     }
 
-    public Label(String label)
-    {
+    public Label(String label) {
         setName(label);
         initFont();
     }
-    
-    
+
 
     @Override
-    public String toString()
-    {
-        return (name + " [" + offsetX + "," + offsetY + "]; [" + fontFamily + ", " + fontStyle + ", " + fontSize + "]; [" + fontColor.getRed()+ " " + fontColor.getGreen() + " " + fontColor.getBlue() + "]");
-    }    
+    public String toString() {
+        return (name + " [" + offsetX + "," + offsetY + "]; [" + fontFamily + ", " + fontStyle + ", " + fontSize + "]; [" + fontColor.getRed() + " " + fontColor.getGreen() + " " + fontColor.getBlue() + "]");
+    }
 
-    public void setName(String name)
-    {
+    public void setName(String name) {
         this.name = name;
     }
 
-    public void setOffsetX(double offsetX)
-    {
+    public void setOffsetX(double offsetX) {
         this.offsetX = offsetX;
     }
 
-    public void setOffsetY(double offsetY)
-    {
+    public void setOffsetY(double offsetY) {
         this.offsetY = offsetY;
     }
 
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
-    public double getOffsetX()
-    {
+    public double getOffsetX() {
         return offsetX;
     }
 
-    public double getOffsetY()
-    {
+    public double getOffsetY() {
         return offsetY;
     }
 
-    void setVertex(Vertex vertex)
-    {
+    void setVertex(Vertex vertex) {
         v = vertex;
     }
 
-    public void setBackgoundColor(Color c)
-    {
+    public void setBackgoundColor(Color c) {
         bgColor = c;
     }
 
-    public Color getBackgroundColor()
-    {
+    public Color getBackgroundColor() {
         return bgColor;
     }
 
-    public void setFontColor(Color c)
-    {
+    public void setFontColor(Color c) {
         fontColor = c;
     }
 
-    public Color getFontColor()
-    {
+    public Color getFontColor() {
         return fontColor;
     }
 
-    public void setFontFamily(String family)
-    {
+    public void setFontFamily(String family) {
         fontFamily = family;
         initFont();
     }
 
-    public void setFontStyle(String style)
-    {
+    public void setFontStyle(String style) {
         fontStyle = style.toLowerCase();
         intStyle = convertFontStyle();
         initFont();
     }
 
-    public void setFontSize(int size)
-    {
+    public void setFontSize(int size) {
         fontSize = size;
         updateOffsets();
     }
 
-    public String getFontFamily()
-    {
+    public String getFontFamily() {
         return fontFamily;
     }
 
-    public int getFontSize()
-    {
+    public int getFontSize() {
         return fontSize;
     }
 
-    public int convertFontStyle()
-    {
+    public int convertFontStyle() {
         int style = 0;
-        if(fontStyle.contains("plain"))
-        {
+        if (fontStyle.contains("plain")) {
             style = Font.PLAIN;
-        }
-        else
-        {
-            if(fontStyle.contains("bold"))
-            {
-                style += Font.BOLD; 
+        } else {
+            if (fontStyle.contains("bold")) {
+                style += Font.BOLD;
             }
-            if(fontStyle.contains("italic"))
-            {
+            if (fontStyle.contains("italic")) {
                 style += Font.ITALIC;
             }
         }
         return style;
     }
-    
-    public int getFontStyle()
-    {
+
+    public int getFontStyle() {
         return intStyle;
     }
 
-    public Font getFont()
-    {
+    public Font getFont() {
         return font;
     }
 
-    private void initFont()
-    {
+    private void initFont() {
         font = new Font(fontFamily, getFontStyle(), fontSize);
         fontMetrics = SwingUtilities2.getFontMetrics(null, font);
-        if(name != null)
-        {
+        if (name != null) {
             width = fontMetrics.stringWidth(name);
             height = fontMetrics.getHeight();
         }
     }
 
-    public int getHeight()
-    {
+    public int getHeight() {
         return height;
     }
 
-    public int getWidth()
-    {
+    public int getWidth() {
         return width;
     }
 
 
-    private void updateOffsets()
-    {
+    private void updateOffsets() {
         int prevWidth = width;
         int prevHeight = height;
         initFont();
-        if(offsetX < 0)
-        {
+        if (offsetX < 0) {
             offsetX += (prevWidth - width);
         }
-        if(offsetY > 0)
-        {
+        if (offsetY > 0) {
             offsetY -= (prevHeight - height);
         }
     }
 
-    public void makeBold(boolean bold)
-    {
-        if(bold && (intStyle == 0 || intStyle == 2))
-        {
+    public void makeBold(boolean bold) {
+        if (bold && (intStyle == 0 || intStyle == 2)) {
             intStyle++;
-        }
-        else if(!bold && (intStyle == 1 || intStyle == 3))
-        {
+        } else if (!bold && (intStyle == 1 || intStyle == 3)) {
             intStyle--;
         }
         updateOffsets();
     }
 
-    public void makeItalic(boolean italic)
-    {
-        if(italic && (intStyle <= 1))
-        {
+    public void makeItalic(boolean italic) {
+        if (italic && (intStyle <= 1)) {
             intStyle += 2;
-        }
-        else if(!italic && intStyle >= 2)
-        {
+        } else if (!italic && intStyle >= 2) {
             intStyle -= 2;
         }
         updateOffsets();

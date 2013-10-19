@@ -23,46 +23,39 @@ import java.util.LinkedList;
 
 
 /**
- *
  * @author balvociute
  */
-public class NexusReaderTaxa extends NexusReader
-{
+public class NexusReaderTaxa extends NexusReader {
     LinkedList<String> labels;
-    
-    public NexusReaderTaxa()
-    {
+
+    public NexusReaderTaxa() {
         block = "taxa";
         data = "taxlabels";
     }
 
     @Override
-    protected void initializeDataStructures(Dimensions dimensions)
-    {
+    protected void initializeDataStructures(Dimensions dimensions) {
         labels = new LinkedList<>();
     }
 
     @Override
-    protected void parseLine(Format format)
-    {
+    protected void parseLine(Format format) {
         line = line.replace("'", "");
         String[] l = line.split("\\s+");
         labels.addAll(Arrays.asList(l));
     }
+
     @Override
-    protected Taxa createObject(Dimensions dimensions, Cycle cycle, Draw draw)
-    {
+    protected Taxa createObject(Dimensions dimensions, Cycle cycle, Draw draw) {
         Taxa taxa = null;
-        if(labels.size() > 0)
-        {
+        if (labels.size() > 0) {
             String[] labelsAsArray = new String[labels.size()];
-            for (int i = 0; i < labelsAsArray.length; i++)
-            {
+            for (int i = 0; i < labelsAsArray.length; i++) {
                 labelsAsArray[i] = labels.get(i);
             }
             taxa = new Taxa(labelsAsArray);
         }
         return taxa;
     }
-    
+
 }

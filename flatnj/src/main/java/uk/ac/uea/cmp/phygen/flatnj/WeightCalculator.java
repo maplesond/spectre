@@ -21,11 +21,10 @@ import uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser;
 /**
  * Computes split weights in the resulting {@linkplain  uk.ac.uea.cmp.phygen.flatnj.ds.PermutationSequence} or
  * {@linkplain  uk.ac.uea.cmp.phygen.core.ds.split.SplitSystem} depending on actual class chosen.
- * 
+ *
  * @author balvociute
  */
-public interface WeightCalculator
-{
+public interface WeightCalculator {
     /**
      * Computes weights.
      */

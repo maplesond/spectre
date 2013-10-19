@@ -17,7 +17,6 @@
 package uk.ac.uea.cmp.phygen.tools.convertor;
 
 import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.io.FilenameUtils;

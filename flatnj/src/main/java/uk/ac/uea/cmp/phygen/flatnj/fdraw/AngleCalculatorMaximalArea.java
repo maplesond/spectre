@@ -22,16 +22,14 @@ import java.util.LinkedList;
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
+
 /**
- *
  * @author balvociute
  */
-public class AngleCalculatorMaximalArea extends AngleCalculatorSimple
-{
+public class AngleCalculatorMaximalArea extends AngleCalculatorSimple {
 
     @Override
-    protected double computeOptimal(LinkedList<NetworkBox> boxesSorted)
-    {
+    protected double computeOptimal(LinkedList<NetworkBox> boxesSorted) {
 
         double gap = 0.1;
 
@@ -41,8 +39,7 @@ public class AngleCalculatorMaximalArea extends AngleCalculatorSimple
         Double minUp = null;
         Double minDown = null;
 
-        for (int i = 0; i < boxesSorted.size(); i++)
-        {
+        for (int i = 0; i < boxesSorted.size(); i++) {
             NetworkBox b = boxesSorted.get(i);
             Edge e1 = b.e1;
             Edge e2 = b.e2;
@@ -59,26 +56,17 @@ public class AngleCalculatorMaximalArea extends AngleCalculatorSimple
 
         }
         double deltaAlpha = Math.atan(A / B);
-        
-        if (deltaAlpha < 0 && Math.abs(deltaAlpha) > minDown - gap)
-        {
-            if (minDown > gap)
-            {
+
+        if (deltaAlpha < 0 && Math.abs(deltaAlpha) > minDown - gap) {
+            if (minDown > gap) {
                 deltaAlpha = (minDown - gap) * Math.signum(deltaAlpha);
-            }
-            else
-            {
+            } else {
                 deltaAlpha = 0;
             }
-        }
-        else if (deltaAlpha > 0 && deltaAlpha > minUp - gap)
-        {
-            if (minUp > gap)
-            {
+        } else if (deltaAlpha > 0 && deltaAlpha > minUp - gap) {
+            if (minUp > gap) {
                 deltaAlpha = minUp - gap;
-            }
-            else
-            {
+            } else {
                 deltaAlpha = 0;
             }
         }
@@ -87,8 +75,7 @@ public class AngleCalculatorMaximalArea extends AngleCalculatorSimple
     }
 
     @Override
-    protected double computeOptimalCompatible(double bAngleLeft, double bAngleRight)
-    {
+    protected double computeOptimalCompatible(double bAngleLeft, double bAngleRight) {
         double middle = (bAngleLeft + bAngleRight) / 2;
         return middle - bAngleRight;
     }

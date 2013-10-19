@@ -18,18 +18,14 @@ package uk.ac.uea.cmp.phygen.core.ds;
 import java.util.ArrayList;
 
 /**
- *
  * TaxonList class
- *
+ * <p/>
  * Basically an ArrayList which can be joined and inverted
- *
  */
 public class TaxonList extends ArrayList<Integer> {
 
     /**
-     *
      * Constructor
-     *
      */
     public TaxonList() {
 
@@ -38,9 +34,7 @@ public class TaxonList extends ArrayList<Integer> {
     }
 
     /**
-     *
      * Seeded constructor
-     *
      */
     public TaxonList(int aTaxon) {
 
@@ -56,9 +50,7 @@ public class TaxonList extends ArrayList<Integer> {
     }
 
     /**
-     *
      * Invert method. Places everything in opposite order...
-     *
      */
     public TaxonList invert() {
 
@@ -80,10 +72,8 @@ public class TaxonList extends ArrayList<Integer> {
     }
 
     /**
-     *
      * Join method. Joins in that order the two lists, in the specified
      * orientation
-     *
      */
     public static TaxonList join(TaxonList theFirst, int firstDirection,
                                  TaxonList theSecond, int secondDirection) {
@@ -170,9 +160,7 @@ public class TaxonList extends ArrayList<Integer> {
     }
 
     /**
-     *
      * INCLUSIVE sublist
-     *
      */
     public TaxonList sublist(int I, int J) {
 
@@ -189,9 +177,7 @@ public class TaxonList extends ArrayList<Integer> {
     }
 
     /**
-     *
      * EXCLUSIVE sublist-complement, reverse-order (so front-front, back-back)
-     *
      */
     public TaxonList complement(int I, int J) {
 
@@ -214,9 +200,7 @@ public class TaxonList extends ArrayList<Integer> {
     }
 
     /**
-     *
      * Assume integer listings, return true if element is contained
-     *
      */
     public boolean contains(int I) {
 

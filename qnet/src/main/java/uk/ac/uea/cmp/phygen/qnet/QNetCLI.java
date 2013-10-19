@@ -23,7 +23,6 @@ import org.apache.commons.cli.Options;
 import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.uea.cmp.phygen.core.math.optimise.Objective;
 import uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser;
 import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserFactory;
 import uk.ac.uea.cmp.phygen.core.ui.cli.CommandLineHelper;
@@ -86,7 +85,7 @@ public class QNetCLI {
             boolean log = commandLine.hasOption(OPT_LOG);
             double tolerance = commandLine.hasOption(OPT_TOLERANCE) ? Double.parseDouble(commandLine.getOptionValue(OPT_TOLERANCE)) : -1.0;
             Optimiser optimiser = commandLine.hasOption(OPT_OPTIMISER) ?
-                    OptimiserFactory.getInstance().createOptimiserInstance(commandLine.getOptionValue(OPT_OPTIMISER), Objective.NNLS) :
+                    OptimiserFactory.getInstance().createOptimiserInstance(commandLine.getOptionValue(OPT_OPTIMISER), new NNLSObjective()) :
                     null;
 
             // Run QNet
@@ -94,8 +93,7 @@ public class QNetCLI {
 
             // Now what??? Presumably there is some output created?!
 
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             logger.error(e.getMessage(), e);
             System.exit(1);
         }

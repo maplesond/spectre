@@ -17,26 +17,21 @@
 package uk.ac.uea.cmp.phygen.flatnj.ds;
 
 /**
- *
  * @author balvociute
  */
-public class Taxa
-{
+public class Taxa {
     private String[] taxaNames;
 
-    public Taxa(String[] taxaNames)
-    {
+    public Taxa(String[] taxaNames) {
         this.taxaNames = new String[taxaNames.length];
         System.arraycopy(taxaNames, 0, this.taxaNames, 0, taxaNames.length);
     }
 
-    public String[] getTaxaNames()
-    {
+    public String[] getTaxaNames() {
         return taxaNames;
     }
 
-    public Integer getN()
-    {
+    public Integer getN() {
         return taxaNames.length;
     }
 

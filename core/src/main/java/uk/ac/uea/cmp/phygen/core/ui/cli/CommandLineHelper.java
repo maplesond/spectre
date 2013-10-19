@@ -73,8 +73,7 @@ public class CommandLineHelper {
 
             // Parse the full options, catch any errors
             return new PosixParser().parse(options, args);
-        }
-        catch(ParseException p) {
+        } catch (ParseException p) {
             System.err.println(p.getMessage());
             CommandLineHelper.printUsage(options, projectName);
             return null;

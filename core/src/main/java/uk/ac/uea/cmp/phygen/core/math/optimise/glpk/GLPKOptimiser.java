@@ -16,10 +16,15 @@
 package uk.ac.uea.cmp.phygen.core.math.optimise.glpk;
 
 import org.gnu.glpk.*;
+import org.kohsuke.MetaInfServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.uea.cmp.phygen.core.math.optimise.*;
+import uk.ac.uea.cmp.phygen.core.math.optimise.AbstractOptimiser;
+import uk.ac.uea.cmp.phygen.core.math.optimise.ObjectiveType;
+import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
+import uk.ac.uea.cmp.phygen.core.math.optimise.Problem;
 
+@MetaInfServices(uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser.class)
 public class GLPKOptimiser extends AbstractOptimiser {
 
     private static Logger log = LoggerFactory.getLogger(GLPKOptimiser.class);
@@ -93,7 +98,7 @@ public class GLPKOptimiser extends AbstractOptimiser {
 //                System.out.println("k: "+k);
 //                System.out.println("ia: "+GLPK.intArray_getitem(ia, k));
 //                System.out.println("ar: "+GLPK.doubleArray_getitem(ar, k));
-                
+
 //            ia[k] = i;
 //            ja[k] = j;
 //            ar[k] = matrix[i-1][j-1];
@@ -151,16 +156,16 @@ public class GLPKOptimiser extends AbstractOptimiser {
 
     @Override
     public boolean acceptsIdentifier(String id) {
-        return id.equalsIgnoreCase(this.getDescription()) || id.equalsIgnoreCase(GLPKOptimiser.class.getName());
+        return id.equalsIgnoreCase(this.getIdentifier()) || id.equalsIgnoreCase(GLPKOptimiser.class.getName());
     }
 
     @Override
-    public boolean acceptsObjective(Objective objective) {
-        return objective.isLinear();
+    public boolean acceptsObjectiveType(ObjectiveType objectiveType) {
+        return objectiveType.isLinear();
     }
 
     @Override
-    public String getDescription() {
+    public String getIdentifier() {
         return "GLPK";
     }
 
@@ -176,16 +181,6 @@ public class GLPKOptimiser extends AbstractOptimiser {
         }
 
         return true;
-    }
-
-    @Override
-    public boolean hasObjectiveFactory() {
-        return false;
-    }
-
-    @Override
-    public OptimiserObjectiveFactory getObjectiveFactory() {
-        return null;
     }
 
 }

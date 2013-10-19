@@ -17,7 +17,7 @@ package uk.ac.uea.cmp.phygen.core.math.optimise;
 
 
 public class OptimiserException extends Exception {
-    
+
     private int errorCode;
 
     public OptimiserException(String message) {
@@ -31,10 +31,10 @@ public class OptimiserException extends Exception {
     }
 
     public OptimiserException(Throwable throwable, int errorCode) {
-        super(throwable);        
+        super(throwable);
         this.errorCode = errorCode;
     }
-    
+
     public int getErrorCode() {
         return this.errorCode;
     }

@@ -16,19 +16,20 @@
 package uk.ac.uea.cmp.phygen.gurobi;
 
 import gurobi.*;
+import org.kohsuke.MetaInfServices;
 import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
 import uk.ac.uea.cmp.phygen.core.math.optimise.Problem;
 
-
+@MetaInfServices(uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser.class)
 public class GurobiOptimiserLinear extends GurobiOptimiser {
 
     public GurobiOptimiserLinear() throws OptimiserException {
         super();
     }
-    
+
     @Override
     public GRBVar[] addVariables(Problem problem, GRBModel model) throws GRBException {
-        
+
         double[] nnc = problem.getNonNegativityConstraint();
         double[] coefficients = problem.getObjective().buildCoefficients(nnc.length);
 

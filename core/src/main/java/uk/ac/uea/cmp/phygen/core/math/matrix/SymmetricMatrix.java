@@ -83,8 +83,8 @@ public class SymmetricMatrix {
         }
 
     }
-    
-    
+
+
     public double[][] toArray() {
         double[][] w = new double[getSize()][getSize()];
 
@@ -96,7 +96,7 @@ public class SymmetricMatrix {
 
         return w;
     }
-    
+
     int size;
     double[] diagonal;
     double[] triangle;

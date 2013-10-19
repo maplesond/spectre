@@ -23,30 +23,25 @@ import uk.ac.uea.cmp.phygen.flatnj.ds.QuadrupleSystem;
  * Finds {@linkplain Neighbours} by combing two criteria. First finds pairs of taxa
  * whose agglomeration would result loosing least weight. Then, from these pairs
  * selects one that maximizes the remaining weight.
- * 
+ *
  * @author balvociute
  */
-public class NeighbourFinderCombined implements NeighbourFinder
-{
+public class NeighbourFinderCombined implements NeighbourFinder {
 
     @Override
-    public Neighbours findNeighbours(QuadrupleSystem qs, double[][][] scores)
-    {
+    public Neighbours findNeighbours(QuadrupleSystem qs, double[][][] scores) {
         Neighbours neighbours = new Neighbours();
         Double maxSoFar = null;
         Double minSoFar = null;
-        
+
         int atAll = 0;
-        
+
         int[] taxa = CollectionUtils.getElements(qs.getTaxa());
         int nTaxa = taxa.length;
-        
-        for(int i1=0;i1<nTaxa-1;i1++)
-        {
-            for(int i2=i1+1;i2<nTaxa;i2++)
-            {
-                if(scores[taxa[i1]][taxa[i2]][0] < 0)
-                {
+
+        for (int i1 = 0; i1 < nTaxa - 1; i1++) {
+            for (int i2 = i1 + 1; i2 < nTaxa; i2++) {
+                if (scores[taxa[i1]][taxa[i2]][0] < 0) {
                     System.out.println(taxa.length);
                     System.out.println(scores[taxa[i1]][taxa[i2]][0]);
                     System.exit(1);
@@ -55,18 +50,14 @@ public class NeighbourFinderCombined implements NeighbourFinder
                 atAll++;
             }
         }
-        
+
         double treshold = 0.001 * minSoFar;
-        
-        for(int i1=0;i1<nTaxa-1;i1++)
-        {
-            for(int i2=i1+1;i2<nTaxa;i2++)
-            {
-                if(scores[taxa[i1]][taxa[i2]][0] - minSoFar <= treshold)
-                {
-                    if(maxSoFar == null || scores[taxa[i1]][taxa[i2]][1] > maxSoFar)
-                    {
-                        neighbours.setAB(taxa[i1],taxa[i2]);
+
+        for (int i1 = 0; i1 < nTaxa - 1; i1++) {
+            for (int i2 = i1 + 1; i2 < nTaxa; i2++) {
+                if (scores[taxa[i1]][taxa[i2]][0] - minSoFar <= treshold) {
+                    if (maxSoFar == null || scores[taxa[i1]][taxa[i2]][1] > maxSoFar) {
+                        neighbours.setAB(taxa[i1], taxa[i2]);
                         maxSoFar = scores[taxa[i1]][taxa[i2]][1];
                     }
                 }

@@ -16,13 +16,9 @@
 
 package uk.ac.uea.cmp.phygen.core.ui.cli;
 
-import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
-import org.junit.Test;
-
-import static org.junit.Assert.assertTrue;
 
 /**
  * Created with IntelliJ IDEA. User: Dan Date: 15/05/13 Time: 00:08 To change this template use File | Settings | File

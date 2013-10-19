@@ -1,3 +1,18 @@
+/*
+ * Phylogenetics Tool suite
+ * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ *
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
 package uk.ac.uea.cmp.phygen.core.math.optimise;
 
 import org.apache.commons.lang3.StringUtils;
@@ -32,25 +47,25 @@ public class OptimiserFactory {
 
     public Optimiser createOptimiserInstance(String name, Objective objective) throws OptimiserException {
 
-        for(Optimiser optimiser : loader) {
+        for (Optimiser optimiser : loader) {
 
             if (optimiser.acceptsIdentifier(name)) {
 
                 // Check if the requested objective is supported
-                if (!optimiser.acceptsObjective(objective))
-                    throw new UnsupportedOperationException("Objective Type: " + objective.toString() +
-                            " not accepted by " + optimiser.getDescription());
+                if (!optimiser.acceptsObjectiveType(objective.getObjectiveType()))
+                    throw new UnsupportedOperationException("Objective Type: " + objective.getObjectiveType().toString() +
+                            "; from Objective: " + objective.toString() + "; not accepted by " + optimiser.getIdentifier());
 
                 // Initialise the optimiser
                 optimiser.initialise();
 
                 // Check the optimiser is operational
                 if (!optimiser.isOperational()) {
-                    throw new UnsupportedOperationException(optimiser.getDescription() + " is not operational");
+                    throw new UnsupportedOperationException(optimiser.getIdentifier() + " is not operational");
                 }
 
                 // Create the appropriate optimiser, based on the objective if required
-                return optimiser.hasObjectiveFactory() ? optimiser.getObjectiveFactory().create(objective) : optimiser;
+                return optimiser;
             }
         }
 
@@ -76,8 +91,8 @@ public class OptimiserFactory {
 
         List<String> typeStrings = new ArrayList<String>();
 
-        for(Optimiser optimiser : operationalOptimisers) {
-            typeStrings.add(optimiser.getDescription());
+        for (Optimiser optimiser : operationalOptimisers) {
+            typeStrings.add(optimiser.getIdentifier());
         }
 
         return typeStrings;
@@ -88,7 +103,7 @@ public class OptimiserFactory {
         return getOperationalOptimisers(null);
     }
 
-    public List<Optimiser> getOperationalOptimisers(Objective objective) {
+    public List<Optimiser> getOperationalOptimisers(ObjectiveType objectiveType) {
 
         Iterator<Optimiser> it = loader.iterator();
 
@@ -97,7 +112,8 @@ public class OptimiserFactory {
         while (it.hasNext()) {
             Optimiser optimiser = it.next();
             if (optimiser.isOperational() &&
-                    (objective == null || (objective != null && optimiser.acceptsObjective(objective))))  {
+                    (objectiveType == null || (objectiveType != null && optimiser.acceptsObjectiveType(objectiveType)))
+                    ) {
                 optimiserList.add(optimiser);
             }
         }

@@ -27,22 +27,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
  * The QNet main class
- *
+ * <p/>
  * Presently runnable holder for Stefan Gr�newalds circular ordering-generating
  * algorithm
- *
  */
 public class QNet {
 
     /**
      * Structure for quartet weights.
-     *
+     * <p/>
      * In this object, quartet weights are held by quartet + tree.
-     *
+     * <p/>
      * Say... ArrayList of ArrayLists of ArrayLists of triplets?
-     *
+     * <p/>
      * Always access by small->large... with subtraction of the previous and
      * one... so 3, 5, 1, 8 is 1, 3, 5, 8 is 0 1 1 2 and then choose which tree
      * according to order u, v, x, y
@@ -51,14 +49,14 @@ public class QNet {
 
     /**
      * Taxon names
-     *
+     * <p/>
      * ArrayList of Strings
      */
     private List<String> taxonNames;
 
     /**
      * Listing holder...
-     *
+     * <p/>
      * Just an ArrayList of TaxonLists
      */
     private List<TaxonList> theLists;
@@ -123,8 +121,7 @@ public class QNet {
 
         if (FilenameUtils.getExtension(input.getName()).equals("nex")) {
             QNetLoader.loadNexus(this, input.getAbsolutePath(), log);
-        }
-        else {
+        } else {
             QNetLoader.load(this, input.getAbsolutePath(), log);
         }
 

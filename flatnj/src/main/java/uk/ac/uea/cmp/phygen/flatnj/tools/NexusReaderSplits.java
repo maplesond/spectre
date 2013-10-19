@@ -19,24 +19,20 @@ package uk.ac.uea.cmp.phygen.flatnj.tools;
 import uk.ac.uea.cmp.phygen.flatnj.ds.SplitSystem;
 
 /**
- *
  * @author balvociute
  */
-public class NexusReaderSplits extends NexusReader
-{
+public class NexusReaderSplits extends NexusReader {
     boolean[][] splits;
     boolean[] active;
     double[] weights;
     int currentSplit;
 
-    public NexusReaderSplits()
-    {
+    public NexusReaderSplits() {
         block = "splits";
     }
 
     @Override
-    protected void initializeDataStructures(Dimensions dimensions)
-    {
+    protected void initializeDataStructures(Dimensions dimensions) {
         splits = new boolean[dimensions.nSplits][dimensions.nTax];
         active = new boolean[dimensions.nSplits];
         weights = new double[dimensions.nSplits];
@@ -44,108 +40,72 @@ public class NexusReaderSplits extends NexusReader
     }
 
     @Override
-    protected void parseLine(Format format)
-    {
+    protected void parseLine(Format format) {
         double wgh = 1.0;
-        
+
         String toMatch = "";
-        
+
         String sWgh = null;
         String sSpl = null;
-        if(format.weights)
-        {
-            if(format.labels && format.confidences)
-            {
+        if (format.weights) {
+            if (format.labels && format.confidences) {
                 toMatch = "\\S+\\s+(\\S+)\\s+\\S+\\s+(.+)$";
-            }
-            else if(format.labels && !format.confidences)
-            {
+            } else if (format.labels && !format.confidences) {
                 toMatch = "\\S+\\s+(\\S+)\\s+(.+)$";
-            }
-            else if(!format.labels && format.confidences)
-            {
+            } else if (!format.labels && format.confidences) {
                 toMatch = "(\\S+)\\s+\\S+\\s+(.+)$";
-            }
-            else if(!format.labels && !format.confidences)
-            {
+            } else if (!format.labels && !format.confidences) {
                 toMatch = "(\\S+)\\s+(.+)$";
             }
             matched = scanner.findInLine(toMatch);
-            if(matched == null)
-            {
+            if (matched == null) {
                 exitError("Wrong line in the SPLITS block");
-            }
-            else
-            {
+            } else {
                 sWgh = scanner.match().group(1);
                 sSpl = scanner.match().group(2);
             }
-        }
-        else
-        {
-            if(format.labels && format.confidences)
-            {
+        } else {
+            if (format.labels && format.confidences) {
                 toMatch = "\\S+\\s+\\S+\\s+(.+)\\s*,";
-            }
-            else if(format.labels && !format.confidences)
-            {
+            } else if (format.labels && !format.confidences) {
                 toMatch = "\\S+\\s+(.+)\\s*,";
-            }
-            else if(!format.labels && format.confidences)
-            {
+            } else if (!format.labels && format.confidences) {
                 toMatch = "\\S+\\s+(.+)\\s*,";
-            }
-            else if(!format.labels && !format.confidences)
-            {
+            } else if (!format.labels && !format.confidences) {
                 toMatch = "(.+)\\s*,";
             }
             matched = scanner.findInLine(toMatch);
-            if(matched == null)
-            {
+            if (matched == null) {
                 exitError("Wrong line in the SPLITS block");
-            }
-            else
-            {
+            } else {
                 sSpl = scanner.match().group(1);
             }
         }
-        if(sWgh != null)
-        {
-            try
-            {
+        if (sWgh != null) {
+            try {
                 wgh = Double.parseDouble(sWgh);
-            }
-            catch(NumberFormatException nfe)
-            {
+            } catch (NumberFormatException nfe) {
                 exitError("Weight in the flatsplits block is not a real number");
             }
         }
         weights[currentSplit] = wgh;
         active[currentSplit] = true;
-        
+
         String[] tmp = sSpl.split("\\s+");
-        for (int i = 0; i < tmp.length; i++)
-        {
-            try
-            {
+        for (int i = 0; i < tmp.length; i++) {
+            try {
                 index = Integer.parseInt(tmp[i]) - 1;
-            }
-            catch(NumberFormatException nfe)
-            {
+            } catch (NumberFormatException nfe) {
                 exitError("Taxa id is not an integer");
             }
-            
-            if(index < 0 || index > splits[0].length)
-            {
+
+            if (index < 0 || index > splits[0].length) {
                 exitError("Wrong taxa id. Ssmaller than 1 or bigger than the number of taxa");
             }
-            
-            try
-            {
+
+            try {
                 splits[currentSplit][index] = true;
-            }
-            catch(IndexOutOfBoundsException ioobe)
-            {
+            } catch (IndexOutOfBoundsException ioobe) {
                 exitError("Wrong number of splits is bigger than indicated by nsplits");
             }
         }
@@ -153,9 +113,8 @@ public class NexusReaderSplits extends NexusReader
     }
 
     @Override
-    protected SplitSystem createObject(Dimensions dimensions, Cycle cycle, Draw draw)
-    {
+    protected SplitSystem createObject(Dimensions dimensions, Cycle cycle, Draw draw) {
         return new SplitSystem(splits, weights, cycle.permutation, active);
     }
-    
+
 }

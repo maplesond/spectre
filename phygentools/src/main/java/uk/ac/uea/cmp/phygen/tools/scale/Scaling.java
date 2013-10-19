@@ -23,7 +23,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.math.optimise.*;
-import uk.ac.uea.cmp.phygen.core.math.optimise.apache.ApacheOptimiser;
 import uk.ac.uea.cmp.phygen.core.math.tuple.Key;
 import uk.ac.uea.cmp.phygen.core.ui.cli.PhygenTool;
 import uk.ac.uea.cmp.phygen.tools.chopper.Chopper;
@@ -45,6 +44,8 @@ public class Scaling extends PhygenTool {
     private static final String OPT_OUTPUT_PREFIX = "output";
     private static final String OPT_MODE = "mode";
     private static final String OPT_OPTIMISER = "optimiser";
+
+    protected final Objective scalingObjective = new ScalingObjective();
 
 
     @Override
@@ -79,17 +80,15 @@ public class Scaling extends PhygenTool {
 
         try {
             optimiser = commandLine.hasOption(OPT_OPTIMISER) ?
-                OptimiserFactory.getInstance().createOptimiserInstance(commandLine.getOptionValue(OPT_OPTIMISER), Objective.SCALING) :
-                null;
-        }
-        catch(OptimiserException oe) {
+                    OptimiserFactory.getInstance().createOptimiserInstance(commandLine.getOptionValue(OPT_OPTIMISER), scalingObjective) :
+                    null;
+        } catch (OptimiserException oe) {
             throw new IOException(oe);
         }
 
         try {
             execute(inputFile, outputPrefix, mode, optimiser);
-        }
-        catch (OptimiserException oe) {
+        } catch (OptimiserException oe) {
             throw new IOException(oe);
         }
     }
@@ -121,7 +120,7 @@ public class Scaling extends PhygenTool {
         //of coefficients
         double[][] h = getMatrix(outputPrefix.getPath(), ntrees);
 
-        Problem p = new Problem(Objective.SCALING, new double[h.length], h);
+        Problem p = new Problem(scalingObjective, new double[h.length], h);
 
         //Updates quartet weights and writes them into a file
         //for each input tree one quartet file is generated
@@ -135,7 +134,7 @@ public class Scaling extends PhygenTool {
     /**
      * ********************************************
      * Code for generating the quartet files
-     **********************************************
+     * *********************************************
      */
     //read the trees from newick file line by line
     //and write them each in a separate file
@@ -149,7 +148,7 @@ public class Scaling extends PhygenTool {
         //number of trees -- to be determined
         int ntrees = 0;
 
-        for(String line : lines) {
+        for (String line : lines) {
 
             ntrees++;
             line = line.trim();
@@ -174,7 +173,7 @@ public class Scaling extends PhygenTool {
         //file handle for script file
         List<String> lines = FileUtils.readLines(new File(filename));
 
-        for(String line : lines) {
+        for (String line : lines) {
 
             ntrees++;
             line = line.trim();
@@ -192,7 +191,7 @@ public class Scaling extends PhygenTool {
     /**
      * ********************************************
      * Code for computing the matrix of coefficients
-     **********************************************
+     * *********************************************
      */
     //extract the three weights from a line
     //in the quartet file
@@ -644,7 +643,7 @@ public class Scaling extends PhygenTool {
         public static String listTypes() {
             List<String> typeStrings = new ArrayList<String>();
 
-            for(Mode m : Mode.values()) {
+            for (Mode m : Mode.values()) {
                 typeStrings.add(m.name());
             }
 

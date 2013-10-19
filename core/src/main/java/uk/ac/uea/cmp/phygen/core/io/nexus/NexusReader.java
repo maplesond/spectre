@@ -21,8 +21,6 @@ package uk.ac.uea.cmp.phygen.core.io.nexus;
  */
 
 import org.apache.commons.io.FileUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phygen.core.ds.split.CircularOrdering;
 import uk.ac.uea.cmp.phygen.core.ds.split.SplitBlock;
@@ -33,7 +31,10 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.StringTokenizer;
 
 /**
  * Used to handle streaming of Nexus format files into memory, and convertion of
@@ -216,7 +217,7 @@ public class NexusReader implements PhygenReader {
 
         TriangleFormat tf = TriangleFormat.BOTH;
 
-        for(int i = 0; i < lines.size(); i++) {
+        for (int i = 0; i < lines.size(); i++) {
 
             List<String> matrixLineElements = getMatrixLineElements(lines.get(i));
 
@@ -239,7 +240,7 @@ public class NexusReader implements PhygenReader {
 
         // We didn't know it was upper triangular format before the second line so computer the first column now
         if (tf == TriangleFormat.UPPER) {
-            for(int i = 1; i < distanceMatrix.size(); i++) {
+            for (int i = 1; i < distanceMatrix.size(); i++) {
                 distanceMatrix.setDistance(i, 0, distanceMatrix.getDistance(0, i));
             }
         }
@@ -254,7 +255,7 @@ public class NexusReader implements PhygenReader {
         String[] words = matrixLine.trim().split("\\s+");
         List<String> elements = new ArrayList<>();
 
-        for(String s : words) {
+        for (String s : words) {
 
             // Don't add index or label if present
             if (!s.startsWith("[") && !s.startsWith("'")) {
@@ -270,7 +271,7 @@ public class NexusReader implements PhygenReader {
         BOTH {
             @Override
             public void fillRow(int row, List<String> elements, DistanceMatrix distanceMatrix) {
-                for(int j = 0; j < elements.size(); j++) {
+                for (int j = 0; j < elements.size(); j++) {
                     distanceMatrix.setDistance(row, j, Double.parseDouble(elements.get(j)));
                 }
             }
@@ -278,7 +279,7 @@ public class NexusReader implements PhygenReader {
         LOWER {
             @Override
             public void fillRow(int row, List<String> elements, DistanceMatrix distanceMatrix) {
-                for(int j = 0; j < elements.size(); j++) {
+                for (int j = 0; j < elements.size(); j++) {
                     distanceMatrix.setDistance(row, j, Double.parseDouble(elements.get(j)));
                     distanceMatrix.setDistance(j, row, Double.parseDouble(elements.get(j)));
                 }
@@ -287,13 +288,12 @@ public class NexusReader implements PhygenReader {
         UPPER {
             @Override
             public void fillRow(int row, List<String> elements, DistanceMatrix distanceMatrix) {
-                for(int j = 0; j < elements.size(); j++) {
-                    distanceMatrix.setDistance(row, j+row, Double.parseDouble(elements.get(j)));
-                    distanceMatrix.setDistance(j+row, row, Double.parseDouble(elements.get(j)));
+                for (int j = 0; j < elements.size(); j++) {
+                    distanceMatrix.setDistance(row, j + row, Double.parseDouble(elements.get(j)));
+                    distanceMatrix.setDistance(j + row, row, Double.parseDouble(elements.get(j)));
                 }
             }
         };
-
 
 
         public abstract void fillRow(int row, List<String> elements, DistanceMatrix distanceMatrix);
@@ -446,7 +446,7 @@ public class NexusReader implements PhygenReader {
 
                     String[] cycleParts = aLine.split(" ");
 
-                    for(String cyclePart : cycleParts) {
+                    for (String cyclePart : cycleParts) {
 
                         String trimmed = cyclePart.trim();
 
@@ -528,7 +528,7 @@ public class NexusReader implements PhygenReader {
         String[] properties = line.trim().toUpperCase().split(" ");
 
         // Ignore the first part because it will be the group name
-        for(int i = 1; i < properties.length; i++) {
+        for (int i = 1; i < properties.length; i++) {
 
             String[] propertyParts = properties[i].split("=");
 
@@ -537,7 +537,7 @@ public class NexusReader implements PhygenReader {
 
             String key = propertyParts[0];
             String value = propertyParts[1].endsWith(";") ?
-                    propertyParts[1].substring(0, propertyParts[1].length()-1) :
+                    propertyParts[1].substring(0, propertyParts[1].length() - 1) :
                     propertyParts[1];
 
             if (key.equalsIgnoreCase(property))

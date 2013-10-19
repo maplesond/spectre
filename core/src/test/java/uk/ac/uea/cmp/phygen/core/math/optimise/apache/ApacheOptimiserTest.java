@@ -1,11 +1,9 @@
 package uk.ac.uea.cmp.phygen.core.math.optimise.apache;
 
-import org.junit.Before;
 import org.junit.Test;
-import uk.ac.uea.cmp.phygen.core.math.optimise.Objective;
-import uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser;
-import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
-import uk.ac.uea.cmp.phygen.core.math.optimise.Problem;
+import uk.ac.uea.cmp.phygen.core.math.optimise.*;
+
+import java.util.Arrays;
 
 import static org.junit.Assert.assertTrue;
 
@@ -17,6 +15,22 @@ import static org.junit.Assert.assertTrue;
  * To change this template use File | Settings | File Templates.
  */
 public class ApacheOptimiserTest {
+
+    private static class SimpleObjective extends AbstractObjective {
+
+        @Override
+        public double[] buildCoefficients(final int size) {
+            double[] coefficients = new double[size];
+            Arrays.fill(coefficients, 1.0);
+            return coefficients;
+        }
+
+        @Override
+        public ObjectiveType getObjectiveType() {
+            return ObjectiveType.LINEAR;
+        }
+    }
+
 
     @Test
     public void testAcceptsIdentifier() throws OptimiserException {
@@ -36,7 +50,7 @@ public class ApacheOptimiserTest {
         double[] nonNegativityConstraint = new double[0];
         double[][] solutionSpaceConstraint = new double[0][0];
 
-        Problem problem = new Problem(Objective.LINEAR, nonNegativityConstraint, solutionSpaceConstraint);
+        Problem problem = new Problem(new SimpleObjective(), nonNegativityConstraint, solutionSpaceConstraint);
 
         double[] solution = new ApacheOptimiser().optimise(problem);
 
@@ -49,7 +63,7 @@ public class ApacheOptimiserTest {
         double[] nonNegativityConstraint = new double[0];
         double[][] solutionSpaceConstraint = new double[0][0];
 
-        Problem problem = new Problem(Objective.LINEAR, nonNegativityConstraint, solutionSpaceConstraint);
+        Problem problem = new Problem(new SimpleObjective(), nonNegativityConstraint, solutionSpaceConstraint);
 
         double[] solution = new ApacheOptimiser().optimise(problem);
 

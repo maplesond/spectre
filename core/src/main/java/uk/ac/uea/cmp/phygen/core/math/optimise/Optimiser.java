@@ -17,20 +17,46 @@ package uk.ac.uea.cmp.phygen.core.math.optimise;
 
 
 public interface Optimiser {
-    
+
+    /**
+     * Given a problem, finds the solution
+     * @param problem
+     * @return
+     * @throws OptimiserException
+     */
     double[] optimise(Problem problem) throws OptimiserException;
 
+    /**
+     * The identifier which which the user can locate this optimsier
+     * @return
+     */
+    String getIdentifier();
+
+    /**
+     * Whether or not this optimiser recognises the given id.
+     * @param id
+     * @return
+     */
     boolean acceptsIdentifier(String id);
 
-    boolean acceptsObjective(Objective objective);
+    /**
+     * Whether or not this optimiser can process a certain kind of objective.  i.e. linear or quadratic objectives
+     * @param objective
+     * @return
+     */
+    boolean acceptsObjectiveType(ObjectiveType objective);
 
-    String getDescription();
 
+    /**
+     * Whether or not this optimiser is currently operational.  This is useful for optimisers that are external to phygen,
+     * in order to ensure the necessary links are in place so that phygen can access the functions of the optimiser.
+     * @return
+     */
     boolean isOperational();
 
-    boolean hasObjectiveFactory();
-
-    OptimiserObjectiveFactory getObjectiveFactory();
-
+    /**
+     * Any additional setup to the optimiser that is required to take place after construction can be done here.
+     * @throws OptimiserException
+     */
     void initialise() throws OptimiserException;
 }

@@ -16,10 +16,6 @@
 
 package uk.ac.uea.cmp.phygen.tools;
 
-import org.junit.Test;
-
-import static org.junit.Assert.assertTrue;
-
 /**
  * Created with IntelliJ IDEA. User: Dan Date: 14/05/13 Time: 20:45 To change this template use File | Settings | File
  * Templates.

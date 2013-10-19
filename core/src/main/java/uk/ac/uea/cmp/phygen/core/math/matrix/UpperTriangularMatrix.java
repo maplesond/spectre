@@ -76,6 +76,7 @@ public class UpperTriangularMatrix {
         }
 
     }
+
     int size;
     double[] diagonal;
     double[] triangle;

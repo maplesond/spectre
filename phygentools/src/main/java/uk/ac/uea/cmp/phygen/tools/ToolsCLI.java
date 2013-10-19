@@ -60,8 +60,7 @@ public class ToolsCLI {
                 // Execute the requested simulation
                 toolsOptions.getMode().execute(cmdLine.getArgs());
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.err.println(e.getMessage());
             System.err.println(StringUtils.join(e.getStackTrace(), "\n"));
             System.exit(6);

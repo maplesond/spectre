@@ -74,8 +74,7 @@ public class PhylipCorrector extends PhygenTool {
 
             aline = inlines.get(i);
 
-            if (aline.startsWith(" ") && i != 0)
-            {
+            if (aline.startsWith(" ") && i != 0) {
                 outlines.add(current);
 
                 current = new ArrayList<String>();
@@ -94,8 +93,7 @@ public class PhylipCorrector extends PhygenTool {
                 }
                 aline = modifiedLine + aline;
 
-            }
-            else if (aline.lastIndexOf(" ") > 9) {
+            } else if (aline.lastIndexOf(" ") > 9) {
 
                 //not sure if this cuts right
                 String modifiedLine = aline.substring(0, aline.lastIndexOf(" "));
@@ -111,7 +109,7 @@ public class PhylipCorrector extends PhygenTool {
         outlines.add(current);
 
         int i = 1;
-        for(List<String> group : outlines) {
+        for (List<String> group : outlines) {
 
             File groupOut = new File(outputFile, prefix + "_" + i + ".phy");
             FileUtils.writeLines(groupOut, group);

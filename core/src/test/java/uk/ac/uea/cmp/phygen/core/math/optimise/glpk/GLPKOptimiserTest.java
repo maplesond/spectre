@@ -3,6 +3,8 @@ package uk.ac.uea.cmp.phygen.core.math.optimise.glpk;
 import org.junit.Test;
 import uk.ac.uea.cmp.phygen.core.math.optimise.*;
 
+import java.util.Arrays;
+
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -14,6 +16,20 @@ import static org.junit.Assert.assertTrue;
  */
 public class GLPKOptimiserTest {
 
+    private static class SimpleObjective extends AbstractObjective {
+
+        @Override
+        public double[] buildCoefficients(final int size) {
+            double[] coefficients = new double[size];
+            Arrays.fill(coefficients, 1.0);
+            return coefficients;
+        }
+
+        @Override
+        public ObjectiveType getObjectiveType() {
+            return ObjectiveType.LINEAR;
+        }
+    }
 
     @Test
     public void testAcceptsIdentifier() throws OptimiserException {
@@ -30,7 +46,7 @@ public class GLPKOptimiserTest {
     @Test
     public void testNullOptimise() throws OptimiserException {
 
-        Optimiser glpk = OptimiserFactory.getInstance().createOptimiserInstance("glpk", Objective.LINEAR);
+        Optimiser glpk = OptimiserFactory.getInstance().createOptimiserInstance("glpk", new SimpleObjective());
 
         Problem problem = new Problem();
 

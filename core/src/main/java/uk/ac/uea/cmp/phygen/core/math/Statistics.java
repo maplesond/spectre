@@ -78,8 +78,6 @@ public class Statistics {
     }
 
 
-
-
     public static double sumIntegers(List<Integer> list) {
         int sum = 0;
 

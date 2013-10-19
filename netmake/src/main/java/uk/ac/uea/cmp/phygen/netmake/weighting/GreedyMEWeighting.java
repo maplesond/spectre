@@ -16,7 +16,6 @@
 
 package uk.ac.uea.cmp.phygen.netmake.weighting;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
@@ -319,8 +318,10 @@ public class GreedyMEWeighting extends Weighting {
             return Statistics.sumDoubles(s) + 1.0;
         }
     }
+
     /**
      * Matrix inversion for X^-1 (see D.Bryant thesis page 153)
+     *
      * @param C
      * @param nbTaxa
      * @return
@@ -343,6 +344,7 @@ public class GreedyMEWeighting extends Weighting {
 
     /**
      * There is no zero in the matrix "D" (notation refers to D.Bryant thesis algorithm 15)
+     *
      * @param zero
      * @param nbTaxa
      * @param k
