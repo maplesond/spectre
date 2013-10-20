@@ -95,7 +95,7 @@ public class Problem {
     public double[] getCoefficients() {
         double[] coefficients = new double[variables.size()];
 
-        for(int i = 0; i < variables.size(); i++) {
+        for (int i = 0; i < variables.size(); i++) {
             coefficients[i] = variables.get(i).getCoefficient();
         }
 

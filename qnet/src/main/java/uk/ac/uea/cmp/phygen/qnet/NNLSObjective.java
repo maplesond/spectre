@@ -15,12 +15,12 @@
  */
 package uk.ac.uea.cmp.phygen.qnet;
 
-import uk.ac.uea.cmp.phygen.core.math.optimise.AbstractObjective;
+import uk.ac.uea.cmp.phygen.core.math.optimise.Objective;
 
 /**
  * This is used as the objective for the primary solver, hence it is not included in the list of secondary objectives
  */
-public class NNLSObjective extends AbstractObjective {
+public class NNLSObjective implements Objective {
 
     @Override
     public ObjectiveType getType() {

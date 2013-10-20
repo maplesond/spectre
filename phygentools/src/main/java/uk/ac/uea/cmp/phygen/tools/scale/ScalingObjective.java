@@ -15,9 +15,9 @@
  */
 package uk.ac.uea.cmp.phygen.tools.scale;
 
-import uk.ac.uea.cmp.phygen.core.math.optimise.AbstractObjective;
+import uk.ac.uea.cmp.phygen.core.math.optimise.Objective;
 
-public class ScalingObjective extends AbstractObjective {
+public class ScalingObjective implements Objective {
 
 
     @Override

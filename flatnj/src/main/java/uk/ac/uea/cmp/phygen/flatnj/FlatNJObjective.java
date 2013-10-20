@@ -15,10 +15,10 @@
  */
 package uk.ac.uea.cmp.phygen.flatnj;
 
-import uk.ac.uea.cmp.phygen.core.math.optimise.AbstractObjective;
 
+import uk.ac.uea.cmp.phygen.core.math.optimise.Objective;
 
-public class FlatNJObjective extends AbstractObjective {
+public class FlatNJObjective implements Objective {
 
     private double constant;
 

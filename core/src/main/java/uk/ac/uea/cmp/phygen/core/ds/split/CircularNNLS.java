@@ -645,7 +645,7 @@ public class CircularNNLS {
                     break;
                 }
                 if (min_i != -1) {/* There are still negative edges. We move to the feasible point that is closest to
-                							x on the line from x to old_x */
+                                            x on the line from x to old_x */
 
                     for (int i = 0; i < ntax; i++) /* Move to the last feasible solution on the path from old_x to x */
                         for (int j = 0; j < i; j++)

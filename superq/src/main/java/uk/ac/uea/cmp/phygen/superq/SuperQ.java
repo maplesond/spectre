@@ -172,8 +172,13 @@ public class SuperQ extends RunnableTool {
                     // Create variables based on the objective and the non negativity constraints
                     List<Variable> variables = createVariables(this.options.getSecondaryObjective(), computedWeights.getX());
 
+                    Problem problem = new Problem(variables, this.options.getSecondaryObjective(), computedWeights.getX(),
+                            computedWeights.getEtE().toArray());
+
                     // Run the secondary optimisation step
-                    double[] solution2 = secondarySolver.optimise(new Problem(variables, this.options.getSecondaryObjective(), computedWeights.getX(), computedWeights.getEtE().toArray()));
+                    double[] solution2 = this.options.getSecondaryObjective().getIdentifier() == "MINIMA" ?
+                            this.minimaOptimise(secondarySolver, problem) :     // Special handling of MINIMA objective
+                            secondarySolver.optimise(problem);                  // Normally just call child's optimisation method
 
                     // Sum the solutions
                     for (int i = 0; i < solution.length; i++) {
@@ -224,7 +229,7 @@ public class SuperQ extends RunnableTool {
 
         List<Variable> variables = new ArrayList<>();
 
-        for(int i = 0; i < coefficients.length; i++) {
+        for (int i = 0; i < coefficients.length; i++) {
             variables.add(new Variable(
                     "x" + i,                                        // Name
                     coefficients[i],                                // Coefficient
@@ -235,6 +240,37 @@ public class SuperQ extends RunnableTool {
         }
 
         return variables;
+    }
+
+    /**
+     * To be used only in conjunction with the MINIMA objective
+     *
+     * @param problem
+     * @return
+     * @throws OptimiserException
+     */
+    protected double[] minimaOptimise(Optimiser optimiser, Problem problem) throws OptimiserException {
+
+        double[] data = problem.getNonNegativityConstraint();
+        double[] coefficients = problem.getCoefficients();
+
+        double[] solution = new double[data.length];
+
+        // This is a bit messy, but essentially what is happening is that we run the solver for each coefficient, and if
+        // the non-negativity constraint at each location is > 0, then we run the solver but we only take the result from
+        // this position, otherwise the solution at this position is 0.
+        for (int k = 0; k < data.length; k++) {
+            if (data[k] > 0.0) {
+                coefficients[k] = 1.0;
+                double[] help = optimiser.optimise(problem);
+                solution[k] = help[k];
+                coefficients[k] = 0.0;
+            } else {
+                solution[k] = 0;
+            }
+        }
+
+        return solution;
     }
 
     protected void filter(File inFile, File outFile, double threshold) throws IOException {

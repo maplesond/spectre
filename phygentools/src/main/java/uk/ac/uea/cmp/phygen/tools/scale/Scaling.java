@@ -135,7 +135,7 @@ public class Scaling extends PhygenTool {
 
         List<Variable> variables = new ArrayList<>();
 
-        for(int i = 0; i < coefficients.length; i++) {
+        for (int i = 0; i < coefficients.length; i++) {
             variables.add(new Variable(
                     "x" + i,                                    // Name
                     coefficients[i],                            // Coefficient

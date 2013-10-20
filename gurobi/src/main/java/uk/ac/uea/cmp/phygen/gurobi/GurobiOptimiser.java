@@ -45,11 +45,9 @@ public abstract class GurobiOptimiser extends AbstractOptimiser {
 
         if (variableType == Variable.VariableType.CONTINUOUS) {
             return GRB.CONTINUOUS;
-        }
-        else if (variableType == Variable.VariableType.INTEGER) {
+        } else if (variableType == Variable.VariableType.INTEGER) {
             return GRB.INTEGER;
-        }
-        else if (variableType == Variable.VariableType.BINARY) {
+        } else if (variableType == Variable.VariableType.BINARY) {
             return GRB.BINARY;
         }
 
@@ -62,7 +60,7 @@ public abstract class GurobiOptimiser extends AbstractOptimiser {
 
         GRBVar[] grbVars = new GRBVar[variables.size()];
 
-        for(int i = 0; i < variables.size(); i++) {
+        for (int i = 0; i < variables.size(); i++) {
 
             Variable var = variables.get(i);
             grbVars[i] = model.addVar(

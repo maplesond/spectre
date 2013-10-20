@@ -4,7 +4,6 @@ import org.junit.Test;
 import uk.ac.uea.cmp.phygen.core.math.optimise.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import static org.junit.Assert.assertTrue;
 
@@ -17,7 +16,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class ApacheOptimiserTest {
 
-    private static class SimpleObjective extends AbstractObjective {
+    private static class SimpleObjective implements Objective {
 
         @Override
         public ObjectiveType getType() {

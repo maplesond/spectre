@@ -54,7 +54,7 @@ public class WeightCalculatorGurobi implements WeightCalculator {
         Arrays.fill(coefficients, 1.0);
 
         List<Variable> variables = new ArrayList<>();
-        for(int i = 0; i < size; i++) {
+        for (int i = 0; i < size; i++) {
             variables.add(new Variable(
                     "x" + i,                                 // Name
                     coefficients[i],                         // Coefficient
@@ -85,7 +85,6 @@ public class WeightCalculatorGurobi implements WeightCalculator {
 
 
         double wwT = qs.computeWxWT();
-
 
 
         List<Variable> variables = createVariables(b.length);

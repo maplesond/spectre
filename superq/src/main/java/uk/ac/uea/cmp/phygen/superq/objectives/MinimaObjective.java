@@ -16,13 +16,12 @@
 package uk.ac.uea.cmp.phygen.superq.objectives;
 
 import org.kohsuke.MetaInfServices;
-import uk.ac.uea.cmp.phygen.core.math.optimise.AbstractObjective;
 
 import java.util.Arrays;
 
 
 @MetaInfServices(uk.ac.uea.cmp.phygen.superq.objectives.SecondaryObjective.class)
-public class MinimaObjective extends AbstractObjective implements SecondaryObjective {
+public class MinimaObjective implements SecondaryObjective {
 
     @Override
     public double[] buildCoefficients(final int size) {
@@ -50,10 +49,5 @@ public class MinimaObjective extends AbstractObjective implements SecondaryObjec
     public boolean acceptsIdentifier(String id) {
         return id.equalsIgnoreCase(getIdentifier()) ||
                 id.equalsIgnoreCase(this.getClass().getName());
-    }
-
-    @Override
-    public boolean runForEachCoefficient() {
-        return true;
     }
 }

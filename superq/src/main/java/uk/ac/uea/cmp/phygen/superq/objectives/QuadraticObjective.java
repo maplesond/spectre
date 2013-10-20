@@ -16,13 +16,12 @@
 package uk.ac.uea.cmp.phygen.superq.objectives;
 
 import org.kohsuke.MetaInfServices;
-import uk.ac.uea.cmp.phygen.core.math.optimise.AbstractObjective;
 
 import java.util.Arrays;
 
 
 @MetaInfServices(uk.ac.uea.cmp.phygen.superq.objectives.SecondaryObjective.class)
-public class QuadraticObjective extends AbstractObjective implements SecondaryObjective {
+public class QuadraticObjective implements SecondaryObjective {
 
     @Override
     public double[] buildCoefficients(final int size) {

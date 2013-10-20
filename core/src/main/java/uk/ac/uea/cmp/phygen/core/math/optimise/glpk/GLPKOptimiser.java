@@ -37,11 +37,9 @@ public class GLPKOptimiser extends AbstractOptimiser {
 
         if (variableType == Variable.VariableType.CONTINUOUS) {
             return GLPKConstants.GLP_CV;
-        }
-        else if (variableType == Variable.VariableType.INTEGER) {
+        } else if (variableType == Variable.VariableType.INTEGER) {
             return GLPKConstants.GLP_IV;
-        }
-        else if (variableType == Variable.VariableType.BINARY) {
+        } else if (variableType == Variable.VariableType.BINARY) {
             return GLPKConstants.GLP_BV;
         }
 
@@ -52,17 +50,13 @@ public class GLPKOptimiser extends AbstractOptimiser {
 
         if (boundType == Bounds.BoundType.FREE) {
             return GLPKConstants.GLP_FR;
-        }
-        else if (boundType == Bounds.BoundType.LOWER) {
+        } else if (boundType == Bounds.BoundType.LOWER) {
             return GLPKConstants.GLP_LO;
-        }
-        else if (boundType == Bounds.BoundType.UPPER) {
+        } else if (boundType == Bounds.BoundType.UPPER) {
             return GLPKConstants.GLP_UP;
-        }
-        else if (boundType == Bounds.BoundType.DOUBLE) {
+        } else if (boundType == Bounds.BoundType.DOUBLE) {
             return GLPKConstants.GLP_DB;
-        }
-        else if (boundType == Bounds.BoundType.FIXED) {
+        } else if (boundType == Bounds.BoundType.FIXED) {
             return GLPKConstants.GLP_FX;
         }
 
@@ -72,8 +66,7 @@ public class GLPKOptimiser extends AbstractOptimiser {
     protected int convertObjectiveDirection(Objective.ObjectiveDirection objectiveDirection) {
         if (objectiveDirection == Objective.ObjectiveDirection.MAXIMISE) {
             return GLPKConstants.GLP_MAX;
-        }
-        else if (objectiveDirection == Objective.ObjectiveDirection.MINIMISE) {
+        } else if (objectiveDirection == Objective.ObjectiveDirection.MINIMISE) {
             return GLPKConstants.GLP_MIN;
         }
 

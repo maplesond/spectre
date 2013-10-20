@@ -38,26 +38,21 @@ public class Bounds {
     public Bounds(double bound, BoundType boundType) {
         if (boundType == BoundType.DOUBLE) {
             throw new IllegalArgumentException("BoundType.DOUBLE (a double bounded variable), requires both a lower and an upper bound.  Please use the alternate constructor for this BoundType");
-        }
-        else if (boundType == BoundType.FREE) {
+        } else if (boundType == BoundType.FREE) {
             throw new IllegalArgumentException("BoundType.FREE (a non-bounded variable), does not require a bound.  Please use the default constructor for this BoundType.");
-        }
-        else if (boundType == BoundType.LOWER) {
+        } else if (boundType == BoundType.LOWER) {
             this.lower = bound;
             this.upper = Double.POSITIVE_INFINITY;
             this.boundType = boundType;
-        }
-        else if (boundType == BoundType.UPPER) {
+        } else if (boundType == BoundType.UPPER) {
             this.lower = Double.NEGATIVE_INFINITY;
             this.upper = bound;
             this.boundType = boundType;
-        }
-        else if (boundType == BoundType.FIXED) {
+        } else if (boundType == BoundType.FIXED) {
             this.lower = bound;
             this.upper = bound;
             this.boundType = boundType;
-        }
-        else {
+        } else {
             throw new IllegalArgumentException("Unrecognized BoundType: " + boundType.toString());
         }
     }

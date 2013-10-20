@@ -28,6 +28,7 @@ public interface SecondaryObjective extends Objective {
 
     /**
      * Creates a set of coefficients to be used for this objective
+     *
      * @param size The number of coefficients to create
      * @return A set of coefficients to use for this objective
      */
