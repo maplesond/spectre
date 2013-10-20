@@ -18,10 +18,9 @@ package uk.ac.uea.cmp.phygen.gurobi;
 import gurobi.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.uea.cmp.phygen.core.math.optimise.AbstractOptimiser;
-import uk.ac.uea.cmp.phygen.core.math.optimise.ObjectiveType;
-import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
-import uk.ac.uea.cmp.phygen.core.math.optimise.Problem;
+import uk.ac.uea.cmp.phygen.core.math.optimise.*;
+
+import java.util.List;
 
 
 public abstract class GurobiOptimiser extends AbstractOptimiser {
@@ -42,7 +41,41 @@ public abstract class GurobiOptimiser extends AbstractOptimiser {
         }
     }
 
-    public abstract GRBVar[] addVariables(Problem problem, GRBModel model) throws GRBException;
+    protected char convertVariableType(Variable.VariableType variableType) {
+
+        if (variableType == Variable.VariableType.CONTINUOUS) {
+            return GRB.CONTINUOUS;
+        }
+        else if (variableType == Variable.VariableType.INTEGER) {
+            return GRB.INTEGER;
+        }
+        else if (variableType == Variable.VariableType.BINARY) {
+            return GRB.BINARY;
+        }
+
+        throw new IllegalArgumentException("Unknown Variable Type");
+    }
+
+    protected GRBVar[] addDecisionVariables(Problem problem, GRBModel model) throws GRBException {
+
+        List<Variable> variables = problem.getVariables();
+
+        GRBVar[] grbVars = new GRBVar[variables.size()];
+
+        for(int i = 0; i < variables.size(); i++) {
+
+            Variable var = variables.get(i);
+            grbVars[i] = model.addVar(
+                    var.getBounds().getLower(),
+                    var.getBounds().getUpper(),
+                    var.getCoefficient(),
+                    convertVariableType(var.getType()),
+                    var.getName()
+            );
+        }
+
+        return grbVars;
+    }
 
     public abstract GRBConstr[] addConstraints(Problem problem, GRBModel model, GRBVar[] vars) throws GRBException;
 
@@ -57,10 +90,10 @@ public abstract class GurobiOptimiser extends AbstractOptimiser {
             // Create a new model
             GRBModel model = new GRBModel(env);
 
-            // Create the variables, exact method for this determined by subclass
-            GRBVar[] vars = addVariables(problem, model);
+            // Create the decision variables from the problem and add to the model
+            GRBVar[] vars = addDecisionVariables(problem, model);
 
-            // Update the model after all variables have been added
+            // Update the model after all decision variables have been added
             model.update();
 
             // Get the objective if present
@@ -114,7 +147,7 @@ public abstract class GurobiOptimiser extends AbstractOptimiser {
 
 
     @Override
-    public boolean acceptsObjectiveType(ObjectiveType objectiveType) {
+    public boolean acceptsObjectiveType(Objective.ObjectiveType objectiveType) {
         return objectiveType.isLinear() || objectiveType.isQuadratic();
     }
 

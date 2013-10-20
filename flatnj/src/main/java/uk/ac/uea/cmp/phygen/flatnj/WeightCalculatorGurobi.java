@@ -16,12 +16,13 @@
 
 package uk.ac.uea.cmp.phygen.flatnj;
 
-import uk.ac.uea.cmp.phygen.core.math.optimise.Objective;
-import uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser;
-import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
-import uk.ac.uea.cmp.phygen.core.math.optimise.Problem;
+import uk.ac.uea.cmp.phygen.core.math.optimise.*;
 import uk.ac.uea.cmp.phygen.flatnj.ds.PermutationSequence;
 import uk.ac.uea.cmp.phygen.flatnj.ds.QuadrupleSystem;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Computes split weights in the resulting {@linkplain  PermutationSequence}
@@ -46,6 +47,25 @@ public class WeightCalculatorGurobi implements WeightCalculator {
         this.qs = qs;
     }
 
+
+    protected List<Variable> createVariables(final int size) {
+
+        double[] coefficients = new double[size];
+        Arrays.fill(coefficients, 1.0);
+
+        List<Variable> variables = new ArrayList<>();
+        for(int i = 0; i < size; i++) {
+            variables.add(new Variable(
+                    "x" + i,                                 // Name
+                    coefficients[i],                         // Coefficient
+                    new Bounds(0.0, Bounds.BoundType.LOWER), // Bounds
+                    Variable.VariableType.CONTINUOUS         // Type
+            ));
+        }
+
+        return variables;
+    }
+
     @Override
     public void fitWeights(Optimiser optimiser) {
         //qs.normalizeWeights();
@@ -67,10 +87,12 @@ public class WeightCalculatorGurobi implements WeightCalculator {
         double wwT = qs.computeWxWT();
 
 
+
+        List<Variable> variables = createVariables(b.length);
         Objective objective = new FlatNJObjective(wwT);
 
         try {
-            double[] weights = optimiser.optimise(new Problem(objective, b, BD));
+            double[] weights = optimiser.optimise(new Problem(variables, objective, b, BD));
 
             // ps.setFit();???
             ps.setWeights(weights);

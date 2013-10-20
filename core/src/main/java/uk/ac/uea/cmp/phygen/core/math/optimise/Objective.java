@@ -15,11 +15,50 @@
  */
 package uk.ac.uea.cmp.phygen.core.math.optimise;
 
+import java.util.List;
+
 public interface Objective {
 
-    double[] buildCoefficients(final int size);
+    /**
+     * Returns what type of objective this is.
+     * @return
+     */
+    ObjectiveType getType();
 
-    ObjectiveType getObjectiveType();
+    /**
+     * Returns whether to try and minimise or maximise this objective
+     * @return
+     */
+    ObjectiveDirection getDirection();
 
+    /**
+     * If true, then instead of trying to optimise this objective once we try to optimise it
+     * @return
+     */
     boolean runForEachCoefficient();
+
+    /**
+     * Defines whether this objective is linear or quadratic in nature.  This will effect which optimisers can optimise
+     * this objective
+     */
+    public static enum ObjectiveType {
+        LINEAR,
+        QUADRATIC;
+
+        public boolean isLinear() {
+            return this == ObjectiveType.LINEAR;
+        }
+
+        public boolean isQuadratic() {
+            return this == ObjectiveType.QUADRATIC;
+        }
+    }
+
+    /**
+     * Whether to try and minimise or maximise this objective
+     */
+    public enum ObjectiveDirection {
+        MINIMISE,
+        MAXIMISE
+    }
 }

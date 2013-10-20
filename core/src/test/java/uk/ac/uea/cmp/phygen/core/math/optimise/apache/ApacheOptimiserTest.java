@@ -3,6 +3,7 @@ package uk.ac.uea.cmp.phygen.core.math.optimise.apache;
 import org.junit.Test;
 import uk.ac.uea.cmp.phygen.core.math.optimise.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import static org.junit.Assert.assertTrue;
@@ -19,15 +20,13 @@ public class ApacheOptimiserTest {
     private static class SimpleObjective extends AbstractObjective {
 
         @Override
-        public double[] buildCoefficients(final int size) {
-            double[] coefficients = new double[size];
-            Arrays.fill(coefficients, 1.0);
-            return coefficients;
+        public ObjectiveType getType() {
+            return ObjectiveType.LINEAR;
         }
 
         @Override
-        public ObjectiveType getObjectiveType() {
-            return ObjectiveType.LINEAR;
+        public ObjectiveDirection getDirection() {
+            return ObjectiveDirection.MINIMISE;
         }
     }
 
@@ -50,7 +49,7 @@ public class ApacheOptimiserTest {
         double[] nonNegativityConstraint = new double[0];
         double[][] solutionSpaceConstraint = new double[0][0];
 
-        Problem problem = new Problem(new SimpleObjective(), nonNegativityConstraint, solutionSpaceConstraint);
+        Problem problem = new Problem(new ArrayList<Variable>(), new SimpleObjective(), nonNegativityConstraint, solutionSpaceConstraint);
 
         double[] solution = new ApacheOptimiser().optimise(problem);
 
@@ -63,7 +62,7 @@ public class ApacheOptimiserTest {
         double[] nonNegativityConstraint = new double[0];
         double[][] solutionSpaceConstraint = new double[0][0];
 
-        Problem problem = new Problem(new SimpleObjective(), nonNegativityConstraint, solutionSpaceConstraint);
+        Problem problem = new Problem(new ArrayList<Variable>(), new SimpleObjective(), nonNegativityConstraint, solutionSpaceConstraint);
 
         double[] solution = new ApacheOptimiser().optimise(problem);
 

@@ -16,22 +16,18 @@
 package uk.ac.uea.cmp.phygen.tools.scale;
 
 import uk.ac.uea.cmp.phygen.core.math.optimise.AbstractObjective;
-import uk.ac.uea.cmp.phygen.core.math.optimise.ObjectiveType;
-
-import java.util.Arrays;
 
 public class ScalingObjective extends AbstractObjective {
 
+
     @Override
-    public double[] buildCoefficients(int size) {
-        double[] coefficients = new double[size];
-        Arrays.fill(coefficients, 1.0);
-        return coefficients;
+    public ObjectiveType getType() {
+        return ObjectiveType.QUADRATIC;
     }
 
     @Override
-    public ObjectiveType getObjectiveType() {
-        return ObjectiveType.QUADRATIC;
+    public ObjectiveDirection getDirection() {
+        return ObjectiveDirection.MINIMISE;
     }
 
 }

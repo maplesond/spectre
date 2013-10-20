@@ -19,10 +19,9 @@ import org.gnu.glpk.*;
 import org.kohsuke.MetaInfServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.uea.cmp.phygen.core.math.optimise.AbstractOptimiser;
-import uk.ac.uea.cmp.phygen.core.math.optimise.ObjectiveType;
-import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
-import uk.ac.uea.cmp.phygen.core.math.optimise.Problem;
+import uk.ac.uea.cmp.phygen.core.math.optimise.*;
+
+import java.util.List;
 
 @MetaInfServices(uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser.class)
 public class GLPKOptimiser extends AbstractOptimiser {
@@ -33,15 +32,78 @@ public class GLPKOptimiser extends AbstractOptimiser {
         super();
     }
 
+
+    protected int convertVariableType(Variable.VariableType variableType) {
+
+        if (variableType == Variable.VariableType.CONTINUOUS) {
+            return GLPKConstants.GLP_CV;
+        }
+        else if (variableType == Variable.VariableType.INTEGER) {
+            return GLPKConstants.GLP_IV;
+        }
+        else if (variableType == Variable.VariableType.BINARY) {
+            return GLPKConstants.GLP_BV;
+        }
+
+        throw new IllegalArgumentException("Unknown variable type encountered: " + variableType.toString());
+    }
+
+    protected int convertBoundType(Bounds.BoundType boundType) {
+
+        if (boundType == Bounds.BoundType.FREE) {
+            return GLPKConstants.GLP_FR;
+        }
+        else if (boundType == Bounds.BoundType.LOWER) {
+            return GLPKConstants.GLP_LO;
+        }
+        else if (boundType == Bounds.BoundType.UPPER) {
+            return GLPKConstants.GLP_UP;
+        }
+        else if (boundType == Bounds.BoundType.DOUBLE) {
+            return GLPKConstants.GLP_DB;
+        }
+        else if (boundType == Bounds.BoundType.FIXED) {
+            return GLPKConstants.GLP_FX;
+        }
+
+        throw new IllegalArgumentException("Unknown bound type encountered: " + boundType.toString());
+    }
+
+    protected int convertObjectiveDirection(Objective.ObjectiveDirection objectiveDirection) {
+        if (objectiveDirection == Objective.ObjectiveDirection.MAXIMISE) {
+            return GLPKConstants.GLP_MAX;
+        }
+        else if (objectiveDirection == Objective.ObjectiveDirection.MINIMISE) {
+            return GLPKConstants.GLP_MIN;
+        }
+
+        throw new IllegalArgumentException("Unknown objective direction encountered: " + objectiveDirection.toString());
+    }
+
+    protected void addDecisionVariables(glp_prob lp, Problem problem) {
+
+        List<Variable> variables = problem.getVariables();
+
+        GLPK.glp_add_cols(lp, variables.size());
+        for (int i = 0; i < variables.size(); i++) {
+
+            Variable var = variables.get(i);
+
+            GLPK.glp_set_col_name(lp, i, var.getName());
+            GLPK.glp_set_col_kind(lp, i, convertVariableType(var.getType()));
+            GLPK.glp_set_col_bnds(lp, i,
+                    convertBoundType(var.getBounds().getBoundType()),
+                    var.getBounds().getLower(),
+                    var.getBounds().getUpper());
+        }
+    }
+
     @Override
     protected double[] internalOptimise(Problem problem) {
 
-        double[] nnc = problem.getNonNegativityConstraint();
         double[][] ssc = problem.getSolutionSpaceConstraint();
-        double[] coefficients = problem.getObjective().buildCoefficients(nnc.length);
-        int nbCoefficients = nnc.length;
 
-        double[] sol = new double[nbCoefficients];
+        double[] sol = new double[problem.getNbVariables()];
 
         SWIGTYPE_p_int ia;
         SWIGTYPE_p_double ar;
@@ -55,42 +117,29 @@ public class GLPKOptimiser extends AbstractOptimiser {
 //     
 //    
 //        
-        //Initialize Problem
-
+        // Initialize Problem
         glp_prob lp = GLPK.glp_create_prob();
-        glp_smcp parm;
-//        GlpkSolver lp = new GlpkSolver();
         GLPK.glp_set_prob_name(lp, "LP");
         log.info("Problem created");
 
-        //set optimisation direction
+        // Add Variables to problem (columns)
+        addDecisionVariables(lp, problem);
 
-        GLPK.glp_set_obj_dir(lp, GLPK.GLP_MIN);
-
-        //Create Variables (columns)
-//        
-        GLPK.glp_add_cols(lp, nbCoefficients);
-        for (int i = 1; i < nbCoefficients + 1; i++) {
-            String s = "x" + i;
-            GLPK.glp_set_col_name(lp, i, s);
-            GLPK.glp_set_col_bnds(lp, i, GLPKConstants.GLP_LO, -nnc[i - 1], 0.0);
-//            GLPK.glp_set_obj_coef(lp, i, coeff[i-1]);
-
-        }
-        GLPK.glp_add_rows(lp, ssc.length);
+        // Is it necessary to create rows???
+        /*GLPK.glp_add_rows(lp, ssc.length);
         for (int i = 1; i < ssc.length + 1; i++) {
             String s = "y" + i;
             GLPK.glp_set_row_name(lp, i, s);
             GLPK.glp_set_row_bnds(lp, i, GLPKConstants.GLP_FX, 0.0, 0);
-        }
-//        
-//        //Set up constrains
-        ia = GLPK.new_intArray(ssc.length * nbCoefficients);
-        ar = GLPK.new_doubleArray(ssc.length * nbCoefficients);
+        }*/
+
+        // Add constraints to problem
+        ia = GLPK.new_intArray(ssc.length * problem.getNbVariables());
+        ar = GLPK.new_doubleArray(ssc.length * problem.getNbVariables());
 
         for (int i = 1; i < ssc.length + 1; i++) {
             int k = 1;
-            for (int j = 1; j < nbCoefficients + 1; j++) {
+            for (int j = 1; j < problem.getNbVariables() + 1; j++) {
 //          GLPK.intArray_setitem(ia, k, i);
                 GLPK.intArray_setitem(ia, k, j);
                 GLPK.doubleArray_setitem(ar, k, ssc[i - 1][j - 1]);
@@ -105,7 +154,7 @@ public class GLPKOptimiser extends AbstractOptimiser {
 //          
                 k++;
             }
-            GLPK.glp_set_mat_row(lp, i, nbCoefficients, ia, ar);
+            GLPK.glp_set_mat_row(lp, i, problem.getNbVariables(), ia, ar);
 //            System.out.println("row"+i+": "+GLPK.glp_get_mat_row(lp, i, ia, ar));
         }
 //        
@@ -113,14 +162,14 @@ public class GLPKOptimiser extends AbstractOptimiser {
 
         // Set Objective
         GLPK.glp_set_obj_name(lp, "z");
-        GLPK.glp_set_obj_dir(lp, GLPKConstants.GLP_MIN);
+        GLPK.glp_set_obj_dir(lp, convertObjectiveDirection(problem.getObjective().getDirection()));
 
-        for (int i = 0; i < nbCoefficients; i++) {
-            GLPK.glp_set_obj_coef(lp, i, coefficients[i]);
+        for (int i = 0; i < problem.getNbVariables(); i++) {
+            GLPK.glp_set_obj_coef(lp, i, problem.getVariables().get(i).getCoefficient());
         }
 
 // Solve model
-        parm = new glp_smcp();
+        glp_smcp parm = new glp_smcp();
         GLPK.glp_init_smcp(parm);
         ret = GLPK.glp_simplex(lp, parm);
 // Retrieve solution
@@ -160,7 +209,7 @@ public class GLPKOptimiser extends AbstractOptimiser {
     }
 
     @Override
-    public boolean acceptsObjectiveType(ObjectiveType objectiveType) {
+    public boolean acceptsObjectiveType(Objective.ObjectiveType objectiveType) {
         return objectiveType.isLinear();
     }
 

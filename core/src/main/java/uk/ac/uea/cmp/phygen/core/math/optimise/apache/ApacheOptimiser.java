@@ -22,13 +22,11 @@ import org.apache.commons.math3.optimization.linear.LinearObjectiveFunction;
 import org.apache.commons.math3.optimization.linear.Relationship;
 import org.apache.commons.math3.optimization.linear.SimplexSolver;
 import org.kohsuke.MetaInfServices;
-import uk.ac.uea.cmp.phygen.core.math.optimise.AbstractOptimiser;
-import uk.ac.uea.cmp.phygen.core.math.optimise.ObjectiveType;
-import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
-import uk.ac.uea.cmp.phygen.core.math.optimise.Problem;
+import uk.ac.uea.cmp.phygen.core.math.optimise.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 @MetaInfServices(uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser.class)
 public class ApacheOptimiser extends AbstractOptimiser {
@@ -37,12 +35,12 @@ public class ApacheOptimiser extends AbstractOptimiser {
         super();
     }
 
+
     @Override
     protected double[] internalOptimise(Problem problem) {
 
-        double[] nnc = problem.getNonNegativityConstraint();
         double[][] ssc = problem.getSolutionSpaceConstraint();
-        double[] coefficients = problem.getObjective().buildCoefficients(nnc.length);
+        double[] coefficients = problem.getCoefficients();
 
         LinearObjectiveFunction f = new LinearObjectiveFunction(coefficients, 0.0);
 
@@ -87,7 +85,7 @@ public class ApacheOptimiser extends AbstractOptimiser {
     }
 
     @Override
-    public boolean acceptsObjectiveType(ObjectiveType objectiveType) {
+    public boolean acceptsObjectiveType(Objective.ObjectiveType objectiveType) {
         return objectiveType.isLinear();
     }
 

@@ -44,7 +44,7 @@ public interface Optimiser {
      * @param objective
      * @return
      */
-    boolean acceptsObjectiveType(ObjectiveType objective);
+    boolean acceptsObjectiveType(Objective.ObjectiveType objective);
 
 
     /**

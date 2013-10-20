@@ -27,27 +27,6 @@ public class GurobiOptimiserLinear extends GurobiOptimiser {
         super();
     }
 
-    @Override
-    public GRBVar[] addVariables(Problem problem, GRBModel model) throws GRBException {
-
-        double[] nnc = problem.getNonNegativityConstraint();
-        double[] coefficients = problem.getObjective().buildCoefficients(nnc.length);
-
-        GRBVar[] vars = new GRBVar[nnc.length];
-
-        for (int i = 0; i < nnc.length; i++) {
-
-            // Adds variable to model and retains a handle to it
-            vars[i] = model.addVar(
-                    -nnc[i],                   // Lower bound
-                    Double.POSITIVE_INFINITY,   // Upper bound
-                    coefficients[i],            // Objective
-                    GRB.CONTINUOUS,             // Type
-                    "x" + i);                   // Name
-        }
-
-        return vars;
-    }
 
     @Override
     public GRBConstr[] addConstraints(Problem problem, GRBModel model, GRBVar[] vars) throws GRBException {

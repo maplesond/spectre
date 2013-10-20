@@ -48,7 +48,7 @@ public abstract class AbstractOptimiser implements Optimiser {
     protected double[] minimaOptimise(Problem problem) throws OptimiserException {
 
         double[] data = problem.getNonNegativityConstraint();
-        double[] coefficients = problem.getObjective().buildCoefficients(data.length);
+        double[] coefficients = problem.getCoefficients();
 
         double[] solution = new double[data.length];
 

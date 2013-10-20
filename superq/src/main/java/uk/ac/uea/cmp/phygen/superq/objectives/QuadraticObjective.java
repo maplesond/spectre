@@ -17,7 +17,6 @@ package uk.ac.uea.cmp.phygen.superq.objectives;
 
 import org.kohsuke.MetaInfServices;
 import uk.ac.uea.cmp.phygen.core.math.optimise.AbstractObjective;
-import uk.ac.uea.cmp.phygen.core.math.optimise.ObjectiveType;
 
 import java.util.Arrays;
 
@@ -33,8 +32,13 @@ public class QuadraticObjective extends AbstractObjective implements SecondaryOb
     }
 
     @Override
-    public ObjectiveType getObjectiveType() {
+    public ObjectiveType getType() {
         return ObjectiveType.QUADRATIC;
+    }
+
+    @Override
+    public ObjectiveDirection getDirection() {
+        return ObjectiveDirection.MINIMISE;
     }
 
     @Override

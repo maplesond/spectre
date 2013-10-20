@@ -25,19 +25,14 @@ import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetIndex;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 import uk.ac.uea.cmp.phygen.core.math.matrix.SymmetricMatrix;
 import uk.ac.uea.cmp.phygen.core.math.matrix.UpperTriangularMatrix;
-import uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser;
-import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
-import uk.ac.uea.cmp.phygen.core.math.optimise.Problem;
+import uk.ac.uea.cmp.phygen.core.math.optimise.*;
 import uk.ac.uea.cmp.phygen.qnet.holders.PHolder;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.NumberFormat;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.StringTokenizer;
+import java.util.*;
 
 public class WeightsComputeNNLSInformative {
 
@@ -134,10 +129,10 @@ public class WeightsComputeNNLSInformative {
 
                     for (int l = k + 1; l < N + 1; l++) {
 
-                        int cI = ((Integer) c.get(i - 1)).intValue();
-                        int cJ = ((Integer) c.get(j - 1)).intValue();
-                        int cK = ((Integer) c.get(k - 1)).intValue();
-                        int cL = ((Integer) c.get(l - 1)).intValue();
+                        int cI = c.get(i - 1);
+                        int cJ = c.get(j - 1);
+                        int cK = c.get(k - 1);
+                        int cL = c.get(l - 1);
 
                         quartetIndices[n] = new QuartetIndex(i, j, k, l);
                         f[n] = theQuartetWeights.getWeight(cI, cJ, cK, cL);
@@ -940,7 +935,7 @@ public class WeightsComputeNNLSInformative {
         //Call of method to solve NNLS for split weigths
         if (optimiser != null) {
             log.info("Using " + optimiser.getIdentifier() + " to solve NNLS problem");
-            result = optimiser.optimise(new Problem(new NNLSObjective(), Etf, EtE.toArray()));
+            result = optimiser.optimise(new Problem(createVariables(Etf.length), new NNLSObjective(), Etf, EtE.toArray()));
         } else {
 
             log.info("Using QNet's internal method to solve NNLS problem");
@@ -951,6 +946,26 @@ public class WeightsComputeNNLSInformative {
         log.info("Time taken to compute weights: " + stopWatch.toSplitString());
 
         return new ComputedWeights(result, EtE);
+    }
+
+
+    public static List<Variable> createVariables(int size) {
+
+        double[] coefficients = new double[size];
+        Arrays.fill(coefficients, 1.0);
+
+        List<Variable> variables = new ArrayList<>();
+
+        for(int i = 0; i < coefficients.length; i++) {
+            variables.add(new Variable(
+                    "x" + i,                                    // Name
+                    coefficients[i],                            // Coefficient
+                    new Bounds(0.0, Bounds.BoundType.LOWER),    // Bounds
+                    Variable.VariableType.CONTINUOUS            // Type
+            ));
+        }
+
+        return variables;
     }
 
 

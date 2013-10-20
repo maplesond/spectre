@@ -370,7 +370,7 @@ public class SuperQGUI extends JFrame implements ToolHost {
             options.setFilter(filter);
         }
 
-        options.setSecondaryObjective((Objective) this.cboSelectObjective.getSelectedItem());
+        options.setSecondaryObjective((SecondaryObjective) this.cboSelectObjective.getSelectedItem());
 
         try {
             options.setSecondarySolver(OptimiserFactory.getInstance().createOptimiserInstance(

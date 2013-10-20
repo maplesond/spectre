@@ -22,20 +22,21 @@ import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.io.nexus.NexusData;
 import uk.ac.uea.cmp.phygen.core.io.nexus.NexusReader;
 import uk.ac.uea.cmp.phygen.core.io.nexus.NexusWriter;
-import uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser;
-import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
-import uk.ac.uea.cmp.phygen.core.math.optimise.Problem;
+import uk.ac.uea.cmp.phygen.core.math.optimise.*;
 import uk.ac.uea.cmp.phygen.core.ui.gui.RunnableTool;
 import uk.ac.uea.cmp.phygen.core.ui.gui.StatusTracker;
 import uk.ac.uea.cmp.phygen.qnet.QNet;
 import uk.ac.uea.cmp.phygen.qnet.WeightsComputeNNLSInformative;
 import uk.ac.uea.cmp.phygen.qnet.WriteWeightsToNexus;
+import uk.ac.uea.cmp.phygen.superq.objectives.SecondaryObjective;
 import uk.ac.uea.cmp.phygen.tools.chopper.Chopper;
 import uk.ac.uea.cmp.phygen.tools.chopper.loader.LoaderType;
 import uk.ac.uea.cmp.phygen.tools.scale.Scaling;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SuperQ extends RunnableTool {
 
@@ -167,8 +168,12 @@ public class SuperQ extends RunnableTool {
                 notifyUser("SECONDARY OPTIMISATION - Requested " + secondarySolver.toString() + " solver with " + this.options.getSecondaryObjective() + " objective.");
 
                 try {
+
+                    // Create variables based on the objective and the non negativity constraints
+                    List<Variable> variables = createVariables(this.options.getSecondaryObjective(), computedWeights.getX());
+
                     // Run the secondary optimisation step
-                    double[] solution2 = secondarySolver.optimise(new Problem(this.options.getSecondaryObjective(), computedWeights.getX(), computedWeights.getEtE().toArray()));
+                    double[] solution2 = secondarySolver.optimise(new Problem(variables, this.options.getSecondaryObjective(), computedWeights.getX(), computedWeights.getEtE().toArray()));
 
                     // Sum the solutions
                     for (int i = 0; i < solution.length; i++) {
@@ -210,6 +215,26 @@ public class SuperQ extends RunnableTool {
         } finally {
             this.notifyListener();
         }
+    }
+
+
+    public List<Variable> createVariables(SecondaryObjective objective, double[] nnc) {
+
+        double[] coefficients = objective.buildCoefficients(nnc.length);
+
+        List<Variable> variables = new ArrayList<>();
+
+        for(int i = 0; i < coefficients.length; i++) {
+            variables.add(new Variable(
+                    "x" + i,                                        // Name
+                    coefficients[i],                                // Coefficient
+                    new Bounds(objective.getType() == Objective.ObjectiveType.QUADRATIC ? 0.0 : -nnc[i],
+                            Bounds.BoundType.LOWER),                // Bounds
+                    Variable.VariableType.CONTINUOUS                // Type
+            ));
+        }
+
+        return variables;
     }
 
     protected void filter(File inFile, File outFile, double threshold) throws IOException {

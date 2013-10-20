@@ -33,6 +33,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -120,12 +121,32 @@ public class Scaling extends PhygenTool {
         //of coefficients
         double[][] h = getMatrix(outputPrefix.getPath(), ntrees);
 
-        Problem p = new Problem(scalingObjective, new double[h.length], h);
+        Problem p = new Problem(createVariables(h.length), scalingObjective, new double[h.length], h);
 
         //Updates quartet weights and writes them into a file
         //for each input tree one quartet file is generated
         Matrix.updateQuartetWeights(outputPrefix.getParent(), outputPrefix.getName(), optimiser.optimise(p));
     }
+
+    protected List<Variable> createVariables(final int size) {
+
+        double[] coefficients = new double[size];
+        Arrays.fill(coefficients, 1.0);
+
+        List<Variable> variables = new ArrayList<>();
+
+        for(int i = 0; i < coefficients.length; i++) {
+            variables.add(new Variable(
+                    "x" + i,                                    // Name
+                    coefficients[i],                            // Coefficient
+                    new Bounds(0.0, Bounds.BoundType.LOWER),    // Bounds
+                    Variable.VariableType.CONTINUOUS            // Type
+            ));
+        }
+
+        return variables;
+    }
+
 
     public static void run(File inputFile, File outputPrefix, Mode mode, Optimiser optimiser) throws OptimiserException, IOException {
         new Scaling().execute(inputFile, outputPrefix, mode, optimiser);

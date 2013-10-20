@@ -19,15 +19,13 @@ public class GLPKOptimiserTest {
     private static class SimpleObjective extends AbstractObjective {
 
         @Override
-        public double[] buildCoefficients(final int size) {
-            double[] coefficients = new double[size];
-            Arrays.fill(coefficients, 1.0);
-            return coefficients;
+        public ObjectiveType getType() {
+            return ObjectiveType.LINEAR;
         }
 
         @Override
-        public ObjectiveType getObjectiveType() {
-            return ObjectiveType.LINEAR;
+        public ObjectiveDirection getDirection() {
+            return ObjectiveDirection.MINIMISE;
         }
     }
 

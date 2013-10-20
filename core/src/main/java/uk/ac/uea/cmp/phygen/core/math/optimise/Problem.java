@@ -16,21 +16,33 @@
 package uk.ac.uea.cmp.phygen.core.math.optimise;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Problem {
 
-
+    private List<Variable> variables;
     private Objective objective;
     private double[] nonNegativityConstraint;
     private double[][] solutionSpaceConstraint;
 
     public Problem() {
-        this(null, new double[0], new double[0][0]);
+        this(new ArrayList<Variable>(), null, new double[0], new double[0][0]);
     }
 
-    public Problem(Objective objective, double[] nonNegativityConstraint, double[][] solutionSpaceConstraint) {
+    public Problem(List<Variable> variables, Objective objective, double[] nonNegativityConstraint, double[][] solutionSpaceConstraint) {
+        this.variables = variables;
         this.objective = objective;
         this.nonNegativityConstraint = nonNegativityConstraint;
         this.solutionSpaceConstraint = solutionSpaceConstraint;
+    }
+
+    public List<Variable> getVariables() {
+        return variables;
+    }
+
+    public void setVariables(List<Variable> variables) {
+        this.variables = variables;
     }
 
     public Objective getObjective() {
@@ -71,5 +83,22 @@ public class Problem {
 
     public double getSolutionSpaceConstraintElement(int i, int j) {
         return this.solutionSpaceConstraint[i][j];
+    }
+
+    public int getNbVariables() {
+        if (this.variables == null)
+            return 0;
+
+        return this.variables.size();
+    }
+
+    public double[] getCoefficients() {
+        double[] coefficients = new double[variables.size()];
+
+        for(int i = 0; i < variables.size(); i++) {
+            coefficients[i] = variables.get(i).getCoefficient();
+        }
+
+        return coefficients;
     }
 }

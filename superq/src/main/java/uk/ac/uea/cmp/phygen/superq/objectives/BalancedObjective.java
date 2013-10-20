@@ -17,7 +17,6 @@ package uk.ac.uea.cmp.phygen.superq.objectives;
 
 import org.kohsuke.MetaInfServices;
 import uk.ac.uea.cmp.phygen.core.math.optimise.AbstractObjective;
-import uk.ac.uea.cmp.phygen.core.math.optimise.ObjectiveType;
 
 
 @MetaInfServices(uk.ac.uea.cmp.phygen.superq.objectives.SecondaryObjective.class)
@@ -65,8 +64,13 @@ public class BalancedObjective extends AbstractObjective implements SecondaryObj
     }
 
     @Override
-    public ObjectiveType getObjectiveType() {
+    public ObjectiveType getType() {
         return ObjectiveType.LINEAR;
+    }
+
+    @Override
+    public ObjectiveDirection getDirection() {
+        return ObjectiveDirection.MINIMISE;
     }
 
     @Override

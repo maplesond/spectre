@@ -16,17 +16,8 @@
 package uk.ac.uea.cmp.phygen.flatnj;
 
 import uk.ac.uea.cmp.phygen.core.math.optimise.AbstractObjective;
-import uk.ac.uea.cmp.phygen.core.math.optimise.ObjectiveType;
 
-import java.util.Arrays;
 
-/**
- * Created with IntelliJ IDEA.
- * User: dan
- * Date: 19/10/13
- * Time: 12:12
- * To change this template use File | Settings | File Templates.
- */
 public class FlatNJObjective extends AbstractObjective {
 
     private double constant;
@@ -40,14 +31,12 @@ public class FlatNJObjective extends AbstractObjective {
     }
 
     @Override
-    public double[] buildCoefficients ( int size){
-        double[] coefficients = new double[size];
-        Arrays.fill(coefficients, 1.0);
-        return coefficients;
+    public ObjectiveType getType() {
+        return ObjectiveType.QUADRATIC;
     }
 
     @Override
-    public ObjectiveType getObjectiveType() {
-        return ObjectiveType.QUADRATIC;
+    public ObjectiveDirection getDirection() {
+        return ObjectiveDirection.MINIMISE;
     }
 }

@@ -21,6 +21,7 @@ import uk.ac.uea.cmp.phygen.core.math.optimise.Objective;
 import uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser;
 import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
 import uk.ac.uea.cmp.phygen.core.math.optimise.apache.ApacheOptimiser;
+import uk.ac.uea.cmp.phygen.superq.objectives.SecondaryObjective;
 
 import java.io.File;
 
@@ -40,7 +41,7 @@ public class SuperQOptions {
     private File outputFile;
     private Optimiser primarySolver;
     private Optimiser secondarySolver;
-    private Objective secondaryObjective;
+    private SecondaryObjective secondaryObjective;
     private boolean scaleInputTree;
     private Double filter;
     private boolean verbose;
@@ -53,7 +54,7 @@ public class SuperQOptions {
     }
 
     public SuperQOptions(File inputFile, InputFormat inputFileFormat, File outputFile,
-                         Optimiser primarySolver, Optimiser secondarySolver, Objective secondaryObjective,
+                         Optimiser primarySolver, Optimiser secondarySolver, SecondaryObjective secondaryObjective,
                          boolean scaleInputTree, Double filter, boolean verbose) {
 
         Optimiser tempSolver = primarySolver.isOperational() ? primarySolver : null;
@@ -92,11 +93,11 @@ public class SuperQOptions {
         this.inputFile = inputFile;
     }
 
-    public Objective getSecondaryObjective() {
+    public SecondaryObjective getSecondaryObjective() {
         return secondaryObjective;
     }
 
-    public void setSecondaryObjective(Objective secondaryObjective) {
+    public void setSecondaryObjective(SecondaryObjective secondaryObjective) {
         this.secondaryObjective = secondaryObjective;
     }
 

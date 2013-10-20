@@ -52,8 +52,8 @@ public class OptimiserFactory {
             if (optimiser.acceptsIdentifier(name)) {
 
                 // Check if the requested objective is supported
-                if (!optimiser.acceptsObjectiveType(objective.getObjectiveType()))
-                    throw new UnsupportedOperationException("Objective Type: " + objective.getObjectiveType().toString() +
+                if (!optimiser.acceptsObjectiveType(objective.getType()))
+                    throw new UnsupportedOperationException("Objective Type: " + objective.getType().toString() +
                             "; from Objective: " + objective.toString() + "; not accepted by " + optimiser.getIdentifier());
 
                 // Initialise the optimiser
@@ -103,7 +103,7 @@ public class OptimiserFactory {
         return getOperationalOptimisers(null);
     }
 
-    public List<Optimiser> getOperationalOptimisers(ObjectiveType objectiveType) {
+    public List<Optimiser> getOperationalOptimisers(Objective.ObjectiveType objectiveType) {
 
         Iterator<Optimiser> it = loader.iterator();
 
