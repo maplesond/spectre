@@ -20,6 +20,7 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.lang3.StringUtils;
+import uk.ac.uea.cmp.phygen.core.math.optimise.Objective;
 import uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser;
 import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserFactory;
 import uk.ac.uea.cmp.phygen.core.ui.cli.CommandLineHelper;
@@ -159,7 +160,7 @@ public class FlatNJ {
             double threshold = commandLine.hasOption(OPT_THRESHOLD) ? Double.parseDouble(commandLine.getOptionValue(OPT_THRESHOLD)) : DEFAULT_THRESHOLD;
             boolean filterSplits = commandLine.hasOption(OPT_FILTER);
             Optimiser optimiser = commandLine.hasOption(OPT_OPTIMISER) ?
-                    OptimiserFactory.getInstance().createOptimiserInstance(commandLine.getOptionValue(OPT_OPTIMISER), new FlatNJObjective()) :
+                    OptimiserFactory.getInstance().createOptimiserInstance(commandLine.getOptionValue(OPT_OPTIMISER), Objective.ObjectiveType.QUADRATIC) :
                     null;
 
             readTaxa(inFile.getAbsolutePath());
@@ -240,7 +241,7 @@ public class FlatNJ {
         System.err.print(Utilities.addDots("Weighting flat split system ",
                 nDots));
 
-        wCalculator = new WeightCalculatorGurobi(ps, qs);
+        wCalculator = new WeightCalculatorImpl(ps, qs);
         wCalculator.fitWeights(optimiser);
 
         ps.filterSplits(threshold);

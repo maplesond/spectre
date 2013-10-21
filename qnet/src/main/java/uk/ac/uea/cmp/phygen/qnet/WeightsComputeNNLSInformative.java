@@ -752,8 +752,8 @@ public class WeightsComputeNNLSInformative {
                             double aW = theQuartetWeights.getWeight(cA, cB, cC, cD);
 
                             gw[p - 1][p + 1][i - 1][j - 1] = aW;
-
-                        } else if (l == 3) {
+                        }
+                        else if (l == 3) {
 
                             int cA = ((Integer) c.get(p)).intValue();
                             int cB = ((Integer) c.get(p + 2)).intValue();
@@ -764,8 +764,8 @@ public class WeightsComputeNNLSInformative {
 
                             gw[p - 1][p + 2][i - 1][j - 1] = aW
                                     + gw[p - 1][p + 1][i - 1][j - 1] + gw[p][p + 2][i - 1][j - 1];
-
-                        } else {
+                        }
+                        else {
 
                             int cA = ((Integer) c.get(p)).intValue();
                             int cB = ((Integer) c.get(p + l - 1)).intValue();
@@ -777,9 +777,7 @@ public class WeightsComputeNNLSInformative {
                             gw[p - 1][p + l - 1][i - 1][j - 1] = aW
                                     + gw[p - 1][p + l - 2][i - 1][j - 1] + gw[p][p + l - 1][i - 1][j - 1]
                                     - gw[p][p + l - 2][i - 1][j - 1];
-
                         }
-
                     }
 
                     for (int j = p + 1 + l; j < N + 1; j++) {
@@ -794,8 +792,8 @@ public class WeightsComputeNNLSInformative {
                             double aW = theQuartetWeights.getWeight(cA, cB, cC, cD);
 
                             gw[p - 1][p + 1][i - 1][j - 1] = aW;
-
-                        } else if (l == 3) {
+                        }
+                        else if (l == 3) {
 
                             int cA = ((Integer) c.get(p)).intValue();
                             int cB = ((Integer) c.get(p + 2)).intValue();
@@ -806,8 +804,8 @@ public class WeightsComputeNNLSInformative {
 
                             gw[p - 1][p + 2][i - 1][j - 1] = aW
                                     + gw[p - 1][p + 1][i - 1][j - 1] + gw[p][p + 2][i - 1][j - 1];
-
-                        } else {
+                        }
+                        else {
 
                             int cA = ((Integer) c.get(p)).intValue();
                             int cB = ((Integer) c.get(p + l - 1)).intValue();
@@ -819,11 +817,8 @@ public class WeightsComputeNNLSInformative {
                             gw[p - 1][p + l - 1][i - 1][j - 1] = aW
                                     + gw[p - 1][p + l - 2][i - 1][j - 1] + gw[p][p + l - 1][i - 1][j - 1]
                                     - gw[p][p + l - 2][i - 1][j - 1];
-
                         }
-
                     }
-
                 }
 
                 for (int i = p + l + 1; i < N + 1; i++) {
@@ -867,13 +862,9 @@ public class WeightsComputeNNLSInformative {
                                     - gw[p][p + l - 2][i - 1][j - 1];
 
                         }
-
                     }
-
                 }
-
             }
-
         }
 
         for (int a = 0; a < N * (N - 1) / 2 - N; a++) {
@@ -884,59 +875,44 @@ public class WeightsComputeNNLSInformative {
             double sum = 0.0;
 
             for (int i = 1; i < p + 1; i++) {
-
                 for (int j = i + 1; j < p + 1; j++) {
-
                     sum += gw[p - 1][q - 1][i - 1][j - 1];
-
                 }
 
                 for (int j = q + 1; j < N + 1; j++) {
-
                     sum += gw[p - 1][q - 1][i - 1][j - 1];
-
                 }
-
             }
 
             for (int i = q + 1; i < N + 1; i++) {
-
                 for (int j = i + 1; j < N + 1; j++) {
-
                     sum += gw[p - 1][q - 1][i - 1][j - 1];
-
                 }
-
             }
 
 //            System.out.println ("Etf: split (" + p + " " + q + "] | rest has value " + sum);
 
             Etf[a] = sum;
-
-        }
-
-        // tolerance level!
-        // if set to negative previously, use default
-
-        if (tolerance < -0.0) {
-
-            double epsilon = 2.2204e-016;
-
-            tolerance = 10.0 * Math.pow(((double) N), 8.0) / 48.0 / 64.0 * epsilon;
-
         }
 
 
-//        double time = System.currentTimeMillis();
-
+        stopWatch.split();
 
         double[] result = null;
 
-        //Call of method to solve NNLS for split weigths
+        // Call of method to solve NNLS for split weights.  Either use an external solver if specified or use our internal NNLS implementation
         if (optimiser != null) {
+
             log.info("Using " + optimiser.getIdentifier() + " to solve NNLS problem");
-            result = optimiser.optimise(new Problem(createVariables(Etf.length), new NNLSObjective(), Etf, EtE.toArray()));
-        } else {
+            result = optimise(optimiser, Etf, EtE.toArray());
+        }
+        else {
+
+            // Tolerance level!  If set to negative previously, use default
+            if (tolerance < -0.0) {
+                final double epsilon = 2.2204e-016;
+                tolerance = 10.0 * Math.pow(((double) N), 8.0) / 48.0 / 64.0 * epsilon;
+            }
 
             log.info("Using QNet's internal method to solve NNLS problem");
             result = qnetNnlsOptimise(N, Etf, EtE, tolerance);
@@ -949,7 +925,46 @@ public class WeightsComputeNNLSInformative {
     }
 
 
-    public static List<Variable> createVariables(int size) {
+    private static double[] optimise(Optimiser optimiser, double[] Etf, double[][] EtE) throws OptimiserException {
+
+        // Create the problem
+        List<Variable> variables = createVariables(Etf.length);
+        List<Constraint> constraints = createConstraints(variables);
+        Objective objective = createObjective(variables, Etf, EtE);
+        Problem problem = new Problem(variables, constraints, objective);
+
+        // Run the solver on the problem and return the result
+        return optimiser.optimise(problem);
+    }
+
+    private static Objective createObjective(List<Variable> variables, double[] Etf, double[][] EtE) {
+
+        QuadraticExpression expr = new QuadraticExpression();
+
+        for (int i = 0; i < variables.size(); i++) {
+            for (int j = 0; j < variables.size(); j++) {
+                expr.addTerm(EtE[j][i], variables.get(j), variables.get(i));
+            }
+            expr.addTerm(-2 * Etf[i], variables.get(i));
+        }
+
+        return new QuadraticObjective(Objective.ObjectiveDirection.MINIMISE, expr);
+    }
+
+    private static List<Constraint> createConstraints(List<Variable> variables) {
+
+        List<Constraint> constraints = new ArrayList<>(variables.size());
+
+        for (Variable var : variables) {
+            LinearExpression expr = new LinearExpression().addTerm(1.0, var);
+            constraints.add(new Constraint("c0", expr, Constraint.Relation.EQUAL, 0.0));
+        }
+
+        return constraints;
+    }
+
+
+    private static List<Variable> createVariables(int size) {
 
         double[] coefficients = new double[size];
         Arrays.fill(coefficients, 1.0);

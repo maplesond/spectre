@@ -16,6 +16,7 @@
 package uk.ac.uea.cmp.phygen.gurobi;
 
 import gurobi.*;
+import org.gnu.glpk.GLPKConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.math.optimise.*;
@@ -53,6 +54,17 @@ public abstract class GurobiOptimiser extends AbstractOptimiser {
 
         throw new IllegalArgumentException("Unknown Variable Type");
     }
+
+    protected int convertObjectiveDirection(Objective.ObjectiveDirection objectiveDirection) {
+        if (objectiveDirection == Objective.ObjectiveDirection.MAXIMISE) {
+            return GRB.MAXIMIZE;
+        } else if (objectiveDirection == Objective.ObjectiveDirection.MINIMISE) {
+            return GRB.MINIMIZE;
+        }
+
+        throw new IllegalArgumentException("Unknown objective direction encountered: " + objectiveDirection.toString());
+    }
+
 
     protected GRBVar[] addDecisionVariables(Problem problem, GRBModel model) throws GRBException {
 
@@ -97,7 +109,7 @@ public abstract class GurobiOptimiser extends AbstractOptimiser {
             // Get the objective if present
             GRBExpr expr = addObjective(problem, model, vars);
             if (expr != null) {
-                model.setObjective(expr);
+                model.setObjective(expr, convertObjectiveDirection(problem.getObjective().getDirection()));
             }
 
             // Add constraints

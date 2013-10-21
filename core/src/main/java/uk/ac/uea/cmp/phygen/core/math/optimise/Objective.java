@@ -15,21 +15,27 @@
  */
 package uk.ac.uea.cmp.phygen.core.math.optimise;
 
-public interface Objective {
+public abstract class Objective {
+
+    private ObjectiveDirection direction;
+
+    protected Objective(ObjectiveDirection direction) {
+        this.direction = direction;
+    }
 
     /**
      * Returns what type of objective this is.
-     *
      * @return
      */
-    ObjectiveType getType();
+    public abstract ObjectiveType getType();
 
     /**
      * Returns whether to try and minimise or maximise this objective
-     *
      * @return
      */
-    ObjectiveDirection getDirection();
+    public ObjectiveDirection getDirection() {
+        return this.direction;
+    }
 
     /**
      * Defines whether this objective is linear or quadratic in nature.  This will effect which optimisers can optimise

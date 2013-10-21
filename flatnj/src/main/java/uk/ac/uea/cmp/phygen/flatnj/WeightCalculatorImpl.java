@@ -31,7 +31,7 @@ import java.util.List;
  * @author balvociute
  */
 
-public class WeightCalculatorGurobi implements WeightCalculator {
+public class WeightCalculatorImpl implements WeightCalculator {
     PermutationSequence ps;
     QuadrupleSystem qs;
 
@@ -42,7 +42,7 @@ public class WeightCalculatorGurobi implements WeightCalculator {
      * @param ps {@link PermutationSequence}.
      * @param qs {@link QuadrupleSystem}.
      */
-    public WeightCalculatorGurobi(PermutationSequence ps, QuadrupleSystem qs) {
+    public WeightCalculatorImpl(PermutationSequence ps, QuadrupleSystem qs) {
         this.ps = ps;
         this.qs = qs;
     }
@@ -66,32 +66,75 @@ public class WeightCalculatorGurobi implements WeightCalculator {
         return variables;
     }
 
+    /**
+     * Ensures all variables are non-negative (are these actually required?  Might want to try removing these and see
+     * if we get the same result, as we have already requested that the variables are non-negative.  Probably these
+     * constraints will just slow the solver down.)
+     * @param variables
+     * @return
+     */
+    protected List<Constraint> createConstraints(List<Variable> variables) {
+
+        List<Constraint> constraints = new ArrayList<>(variables.size());
+
+        for (Variable var : variables) {
+
+            LinearExpression expr = new LinearExpression().addTerm(1.0, var);
+
+            constraints.add(new Constraint("c0", expr, Constraint.Relation.GREATER_THAN_OR_EQUAL_TO, 0.0));
+        }
+
+        return constraints;
+    }
+
+    protected QuadraticObjective createObjective(List<Variable> variables) {
+
+        // Extract linear and quadratic terms from ps and qs
+
+        double[] linearCoefficients = ps.computebVector(qs);
+
+        int[][] B = ps.computeBMatrix();
+
+        double[][] quadraticCoefficients = new double[B.length][B[0].length];
+
+        for (int i = 0; i < B.length; i++) {
+            for (int j = 0; j < B[i].length; j++) {
+                quadraticCoefficients[i][j] = B[i][j];
+            }
+        }
+
+        double constant = qs.computeWxWT();
+
+        // Create the phygen quadratic objective
+        QuadraticExpression quadExpr = new QuadraticExpression();
+
+        quadExpr.addConstant(constant);
+
+        // Add linear terms
+        for (int i = 0; i < variables.size(); i++) {
+            quadExpr.addTerm(-2 * linearCoefficients[i], variables.get(i));
+        }
+
+        // Add quadratic terms
+        for (int i = 0; i < variables.size(); i++) {
+            for (int j = 0; j < variables.size(); j++) {
+                quadExpr.addTerm(quadraticCoefficients[j][i], variables.get(j), variables.get(i));
+            }
+        }
+
+        return new QuadraticObjective(Objective.ObjectiveDirection.MINIMISE, quadExpr);
+    }
+
     @Override
     public void fitWeights(Optimiser optimiser) {
         //qs.normalizeWeights();
 
-        double[] b = ps.computebVector(qs);
-
-        int[][] B = ps.computeBMatrix();
-
-
-        double[][] BD = new double[B.length][B[0].length];
-
-        for (int i = 0; i < B.length; i++) {
-            for (int j = 0; j < B[i].length; j++) {
-                BD[i][j] = B[i][j];
-            }
-        }
-
-
-        double wwT = qs.computeWxWT();
-
-
-        List<Variable> variables = createVariables(b.length);
-        Objective objective = new FlatNJObjective(wwT);
+        List<Variable> variables = this.createVariables(ps.getnSwaps());
+        List<Constraint> constraints = this.createConstraints(variables);
+        Objective objective = this.createObjective(variables);
 
         try {
-            double[] weights = optimiser.optimise(new Problem(variables, objective, b, BD));
+            double[] weights = optimiser.optimise(new Problem(variables, constraints, objective));
 
             // ps.setFit();???
             ps.setWeights(weights);

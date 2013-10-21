@@ -372,8 +372,9 @@ public class SuperQGUI extends JFrame implements ToolHost {
         options.setSecondaryObjective((SecondaryObjective) this.cboSelectObjective.getSelectedItem());
 
         try {
-            options.setSecondarySolver(OptimiserFactory.getInstance().createOptimiserInstance(
-                    (String) this.cboSelectSolver.getSelectedItem(), options.getSecondaryObjective()));
+            options.setSecondarySolver(
+                    OptimiserFactory.getInstance().createOptimiserInstance(
+                        (String) this.cboSelectSolver.getSelectedItem(), options.getSecondaryObjective().getObjectiveType()));
         } catch (OptimiserException oe) {
             showErrorDialog("Could not create requested optimiser: " + (String) this.cboSelectSolver.getSelectedItem());
             return null;

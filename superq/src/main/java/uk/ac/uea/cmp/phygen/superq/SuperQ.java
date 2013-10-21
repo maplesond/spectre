@@ -28,15 +28,12 @@ import uk.ac.uea.cmp.phygen.core.ui.gui.StatusTracker;
 import uk.ac.uea.cmp.phygen.qnet.QNet;
 import uk.ac.uea.cmp.phygen.qnet.WeightsComputeNNLSInformative;
 import uk.ac.uea.cmp.phygen.qnet.WriteWeightsToNexus;
-import uk.ac.uea.cmp.phygen.superq.objectives.SecondaryObjective;
 import uk.ac.uea.cmp.phygen.tools.chopper.Chopper;
 import uk.ac.uea.cmp.phygen.tools.chopper.loader.LoaderType;
 import uk.ac.uea.cmp.phygen.tools.scale.Scaling;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class SuperQ extends RunnableTool {
 
@@ -169,15 +166,12 @@ public class SuperQ extends RunnableTool {
 
                 try {
 
-                    // Create variables based on the objective and the non negativity constraints
-                    List<Variable> variables = createVariables(this.options.getSecondaryObjective(), computedWeights.getX());
-
-                    Problem problem = new Problem(variables, this.options.getSecondaryObjective(), computedWeights.getX(),
-                            computedWeights.getEtE().toArray());
+                    // Create problem from the computer weights
+                    Problem problem = this.options.getSecondaryObjective().compileProblem(qnet.getN(), computedWeights.getX(), computedWeights.getEtE().toArray());
 
                     // Run the secondary optimisation step
-                    double[] solution2 = this.options.getSecondaryObjective().getIdentifier() == "MINIMA" ?
-                            this.minimaOptimise(secondarySolver, problem) :     // Special handling of MINIMA objective
+                    double[] solution2 = this.options.getSecondaryObjective().getName() == "MINIMA" ?
+                            this.minimaOptimise(secondarySolver, problem, computedWeights.getX()) :     // Special handling of MINIMA objective
                             secondarySolver.optimise(problem);                  // Normally just call child's optimisation method
 
                     // Sum the solutions
@@ -222,43 +216,24 @@ public class SuperQ extends RunnableTool {
         }
     }
 
-
-    public List<Variable> createVariables(SecondaryObjective objective, double[] nnc) {
-
-        double[] coefficients = objective.buildCoefficients(nnc.length);
-
-        List<Variable> variables = new ArrayList<>();
-
-        for (int i = 0; i < coefficients.length; i++) {
-            variables.add(new Variable(
-                    "x" + i,                                        // Name
-                    coefficients[i],                                // Coefficient
-                    new Bounds(objective.getType() == Objective.ObjectiveType.QUADRATIC ? 0.0 : -nnc[i],
-                            Bounds.BoundType.LOWER),                // Bounds
-                    Variable.VariableType.CONTINUOUS                // Type
-            ));
-        }
-
-        return variables;
-    }
-
     /**
      * To be used only in conjunction with the MINIMA objective
+     *
+     * NOTE: This might be broken... probably need to modify the coefficients of the problem internally for each run
      *
      * @param problem
      * @return
      * @throws OptimiserException
      */
-    protected double[] minimaOptimise(Optimiser optimiser, Problem problem) throws OptimiserException {
+    protected double[] minimaOptimise(Optimiser optimiser, Problem problem, double[] data) throws OptimiserException {
 
-        double[] data = problem.getNonNegativityConstraint();
         double[] coefficients = problem.getCoefficients();
 
         double[] solution = new double[data.length];
 
         // This is a bit messy, but essentially what is happening is that we run the solver for each coefficient, and if
-        // the non-negativity constraint at each location is > 0, then we run the solver but we only take the result from
-        // this position, otherwise the solution at this position is 0.
+        // the non-negativity constraint at each variable is > 0, then we run the solver but we only take the result from
+        // this variable, otherwise the solution at this position is 0.
         for (int k = 0; k < data.length; k++) {
             if (data[k] > 0.0) {
                 coefficients[k] = 1.0;

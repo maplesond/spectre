@@ -76,7 +76,7 @@ public class SecondaryObjectiveFactory {
         List<String> ids = new ArrayList<>();
 
         for (SecondaryObjective secondaryObjective : secondaryObjectives) {
-            ids.add(secondaryObjective.getIdentifier());
+            ids.add(secondaryObjective.getName());
         }
 
         return ids;

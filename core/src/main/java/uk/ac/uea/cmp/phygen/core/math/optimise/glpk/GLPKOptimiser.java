@@ -88,6 +88,7 @@ public class GLPKOptimiser extends AbstractOptimiser {
                     convertBoundType(var.getBounds().getBoundType()),
                     var.getBounds().getLower(),
                     var.getBounds().getUpper());
+            GLPK.glp_set_obj_coef(lp, i, problem.getVariables().get(i).getCoefficient());
         }
     }
 
@@ -157,9 +158,6 @@ public class GLPKOptimiser extends AbstractOptimiser {
         GLPK.glp_set_obj_name(lp, "z");
         GLPK.glp_set_obj_dir(lp, convertObjectiveDirection(problem.getObjective().getDirection()));
 
-        for (int i = 0; i < problem.getNbVariables(); i++) {
-            GLPK.glp_set_obj_coef(lp, i, problem.getVariables().get(i).getCoefficient());
-        }
 
 // Solve model
         glp_smcp parm = new glp_smcp();

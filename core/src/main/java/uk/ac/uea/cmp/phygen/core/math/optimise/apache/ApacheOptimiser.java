@@ -21,14 +21,15 @@ import org.apache.commons.math3.optimization.linear.LinearConstraint;
 import org.apache.commons.math3.optimization.linear.LinearObjectiveFunction;
 import org.apache.commons.math3.optimization.linear.Relationship;
 import org.apache.commons.math3.optimization.linear.SimplexSolver;
+import org.gnu.glpk.GLPK;
+import org.gnu.glpk.GLPKConstants;
+import org.gnu.glpk.glp_prob;
 import org.kohsuke.MetaInfServices;
-import uk.ac.uea.cmp.phygen.core.math.optimise.AbstractOptimiser;
-import uk.ac.uea.cmp.phygen.core.math.optimise.Objective;
-import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
-import uk.ac.uea.cmp.phygen.core.math.optimise.Problem;
+import uk.ac.uea.cmp.phygen.core.math.optimise.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 @MetaInfServices(uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser.class)
 public class ApacheOptimiser extends AbstractOptimiser {
@@ -37,47 +38,122 @@ public class ApacheOptimiser extends AbstractOptimiser {
         super();
     }
 
+    protected Relationship convertRelationship(Constraint.Relation relation) {
+
+        if (relation == Constraint.Relation.EQUAL) {
+            return Relationship.EQ;
+        }
+        else if (relation == Constraint.Relation.GREATER_THAN_OR_EQUAL_TO) {
+            return Relationship.GEQ;
+        }
+        else if (relation == Constraint.Relation.LESS_THAN_OR_EQUAL_TO) {
+            return Relationship.LEQ;
+        }
+
+        throw new UnsupportedOperationException("Apache cannot handle this Relation: " + relation.toString());
+    }
+
+    protected GoalType convertObjectiveDirection(Objective.ObjectiveDirection objectiveDirection) {
+        if (objectiveDirection == Objective.ObjectiveDirection.MAXIMISE) {
+            return GoalType.MAXIMIZE;
+        } else if (objectiveDirection == Objective.ObjectiveDirection.MINIMISE) {
+            return GoalType.MINIMIZE;
+        }
+
+        throw new IllegalArgumentException("Unknown objective direction encountered: " + objectiveDirection.toString());
+    }
+
+    protected void addDecisionVariables(Collection<LinearConstraint> constraints, Problem problem) {
+
+        List<Variable> variables = problem.getVariables();
+
+        // Add restriction constraint
+        for (int i = 0; i < variables.size(); i++) {
+
+            Variable var = variables.get(i);
+
+            double[] coefficients = new double[variables.size()];
+
+            for (int j = 0; j < variables.size(); j++) {
+
+                coefficients[j] = i == j ? 1.0 : 0.0;
+            }
+
+            Bounds.BoundType boundType = var.getBounds().getBoundType();
+
+            if (boundType == Bounds.BoundType.FREE) {
+                // Do nothing in this case
+            }
+            else if (boundType == Bounds.BoundType.LOWER) {
+                constraints.add(new LinearConstraint(coefficients, Relationship.GEQ, var.getBounds().getLower()));
+            }
+            else if (boundType == Bounds.BoundType.UPPER) {
+                constraints.add(new LinearConstraint(coefficients, Relationship.LEQ, var.getBounds().getUpper()));
+            }
+            else if (boundType == Bounds.BoundType.DOUBLE) {
+                constraints.add(new LinearConstraint(coefficients, Relationship.GEQ, var.getBounds().getLower()));
+                constraints.add(new LinearConstraint(coefficients, Relationship.LEQ, var.getBounds().getUpper()));
+            }
+            else if (boundType == Bounds.BoundType.FIXED) {
+                constraints.add(new LinearConstraint(coefficients, Relationship.EQ, var.getBounds().getLower()));
+            }
+            else {
+                throw new IllegalArgumentException("Unknown bound type encountered: " + boundType.toString());
+            }
+        }
+    }
+
+    protected void addRegularConstraints(Collection<LinearConstraint> apacheConstraints, Problem problem) {
+
+        List<Variable> variables = problem.getVariables();
+        List<Constraint> constraints = problem.getConstraints();
+
+        for(Constraint constraint: constraints) {
+
+            double[] coefficients = new double[variables.size()];
+
+            List<LinearTerm> terms = constraint.getLinearExpression().getTerms();
+
+            for(LinearTerm term : terms) {
+                for (int j = 0; j < variables.size(); j++) {
+
+                    if (variables.get(j).getName().equals(term.getVariable().getName())) {
+                        coefficients[j] = term.getCoefficient();
+                    }
+                }
+            }
+
+            Relationship relationship = this.convertRelationship(constraint.getRelation());
+
+            apacheConstraints.add(new LinearConstraint(coefficients, relationship, constraint.getValue() - constraint.getLinearExpression().getConstant()));
+        }
+    }
+
 
     @Override
     protected double[] internalOptimise(Problem problem) {
 
-        double[][] ssc = problem.getSolutionSpaceConstraint();
-        double[] coefficients = problem.getCoefficients();
+        // Create the objective function
+        LinearObjectiveFunction f = new LinearObjectiveFunction(problem.getCoefficients(), 0.0);
 
-        LinearObjectiveFunction f = new LinearObjectiveFunction(coefficients, 0.0);
-
-        int columns = ssc.length > 0 ? ssc[0].length : 0;
-
+        // Setup collection for constraints
         Collection<LinearConstraint> constraints = new ArrayList<>();
-        for (int i = 0; i < ssc.length; i++) {
 
-            double[] constraint = new double[columns];
+        // Add the decision variable constraints (i.e. upper and lower bounds)
+        this.addDecisionVariables(constraints, problem);
 
-            for (int j = 0; j < columns; j++) {
-                constraint[j] = ssc[i][j];
-            }
+        // Add the regular constraints
+        this.addRegularConstraints(constraints, problem);
 
-            constraints.add(new LinearConstraint(constraint, Relationship.EQ, 0.0));
-        }
-
-        // Add restriction constraint
-        for (int i = 0; i < columns; i++) {
-            double[] constraint = new double[coefficients.length];
-
-            for (int j = 0; j < columns; j++) {
-
-                constraint[j] = i == j ? 1.0 : 0.0;
-            }
-
-            constraints.add(new LinearConstraint(constraint, Relationship.GEQ, -problem.getNonNegativityConstraint()[i]));
-        }
-
-        // create and run the solver
+        // Create and run the solver
         SimplexSolver solver = new SimplexSolver();
-        solver.setMaxIterations(10000);
-        PointValuePair pvp = solver.optimize(f, constraints, GoalType.MINIMIZE, false);
+        solver.setMaxIterations(1000);
+        PointValuePair pvp = solver.optimize(f, constraints,
+                convertObjectiveDirection(problem.getObjective().getDirection()),
+                false);
 
-        return pvp.getPointRef();
+        // Return results
+        return pvp.getPoint();
     }
 
 

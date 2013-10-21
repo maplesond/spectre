@@ -23,7 +23,6 @@ import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.math.optimise.Objective;
 import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
 import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserFactory;
-import uk.ac.uea.cmp.phygen.qnet.NNLSObjective;
 import uk.ac.uea.cmp.phygen.superq.objectives.SecondaryObjectiveFactory;
 
 import java.io.File;
@@ -180,11 +179,15 @@ public class SuperQCLI {
         try {
 
             if (commandLine.hasOption(OPT_PRIMARY_SOLVER)) {
-                sqOpts.setPrimarySolver(OptimiserFactory.getInstance().createOptimiserInstance(commandLine.getOptionValue(OPT_PRIMARY_SOLVER), new NNLSObjective()));
+                sqOpts.setPrimarySolver(
+                        OptimiserFactory.getInstance().createOptimiserInstance(
+                                commandLine.getOptionValue(OPT_PRIMARY_SOLVER), Objective.ObjectiveType.QUADRATIC));
             }
 
             if (commandLine.hasOption(OPT_SECONDARY_SOLVER)) {
-                sqOpts.setSecondarySolver(OptimiserFactory.getInstance().createOptimiserInstance(commandLine.getOptionValue(OPT_SECONDARY_SOLVER), sqOpts.getSecondaryObjective()));
+                sqOpts.setSecondarySolver(
+                        OptimiserFactory.getInstance().createOptimiserInstance(
+                                commandLine.getOptionValue(OPT_SECONDARY_SOLVER), sqOpts.getSecondaryObjective().getObjectiveType()));
             }
         } catch (OptimiserException oe) {
             throw new ParseException(oe.getMessage());

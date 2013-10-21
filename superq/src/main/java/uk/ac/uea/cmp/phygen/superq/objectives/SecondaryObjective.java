@@ -15,7 +15,12 @@
  */
 package uk.ac.uea.cmp.phygen.superq.objectives;
 
+import uk.ac.uea.cmp.phygen.core.math.optimise.Constraint;
 import uk.ac.uea.cmp.phygen.core.math.optimise.Objective;
+import uk.ac.uea.cmp.phygen.core.math.optimise.Problem;
+import uk.ac.uea.cmp.phygen.core.math.optimise.Variable;
+
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -24,17 +29,33 @@ import uk.ac.uea.cmp.phygen.core.math.optimise.Objective;
  * Time: 11:56
  * To change this template use File | Settings | File Templates.
  */
-public interface SecondaryObjective extends Objective {
+public interface SecondaryObjective {
 
     /**
-     * Creates a set of coefficients to be used for this objective
-     *
-     * @param size The number of coefficients to create
-     * @return A set of coefficients to use for this objective
+     * Creates the problem to solve from SuperQ input for this objective
+     * @param nbTaxa
+     * @param X
+     * @param EtE
+     * @return
      */
-    double[] buildCoefficients(final int size);
+    Problem compileProblem(int nbTaxa, double[] X, double[][] EtE);
 
-    String getIdentifier();
+    /**
+     * Whether this problem requires a quadratic or linear objective to find a solution
+     * @return
+     */
+    Objective.ObjectiveType getObjectiveType();
 
+    /**
+     * The identifier for this objective, which allows the user to easily identify and request this objective.
+     * @return
+     */
+    String getName();
+
+    /**
+     * Whether or not this objective recognises the input identifier
+     * @param id
+     * @return
+     */
     boolean acceptsIdentifier(String id);
 }

@@ -46,8 +46,6 @@ public class Scaling extends PhygenTool {
     private static final String OPT_MODE = "mode";
     private static final String OPT_OPTIMISER = "optimiser";
 
-    protected final Objective scalingObjective = new ScalingObjective();
-
 
     @Override
     protected Options createInternalOptions() {
@@ -81,7 +79,8 @@ public class Scaling extends PhygenTool {
 
         try {
             optimiser = commandLine.hasOption(OPT_OPTIMISER) ?
-                    OptimiserFactory.getInstance().createOptimiserInstance(commandLine.getOptionValue(OPT_OPTIMISER), scalingObjective) :
+                    OptimiserFactory.getInstance().createOptimiserInstance(
+                            commandLine.getOptionValue(OPT_OPTIMISER), Objective.ObjectiveType.QUADRATIC) :
                     null;
         } catch (OptimiserException oe) {
             throw new IOException(oe);
@@ -121,11 +120,49 @@ public class Scaling extends PhygenTool {
         //of coefficients
         double[][] h = getMatrix(outputPrefix.getPath(), ntrees);
 
-        Problem p = new Problem(createVariables(h.length), scalingObjective, new double[h.length], h);
+        // Create the problem from the coefficients and run the solver to get the optimal solution
+        double[] solution = this.optimise(optimiser, h);
 
         //Updates quartet weights and writes them into a file
         //for each input tree one quartet file is generated
-        Matrix.updateQuartetWeights(outputPrefix.getParent(), outputPrefix.getName(), optimiser.optimise(p));
+        Matrix.updateQuartetWeights(outputPrefix.getParent(), outputPrefix.getName(), solution);
+    }
+
+    private double[] optimise(Optimiser optimiser, double[][] h) throws OptimiserException {
+
+        List<Variable> variables = this.createVariables(h.length);
+        List<Constraint> constraints = this.createConstraints(variables, h);
+        Objective objective = this.createObjective(variables, h);
+
+        Problem problem = new Problem(variables, constraints, objective);
+
+        // Run the solver on the problem and return the result
+        return optimiser.optimise(problem);
+    }
+
+    private Objective createObjective(List<Variable> variables, double[][] h) {
+
+        QuadraticExpression expr = new QuadraticExpression();
+
+        for (int i = 0; i < variables.size(); i++) {
+            for (int j = 0; j < variables.size(); j++) {
+                expr.addTerm(h[j][i], variables.get(j), variables.get(i));
+            }
+        }
+
+        return new QuadraticObjective(Objective.ObjectiveDirection.MINIMISE, expr);
+    }
+
+    private List<Constraint> createConstraints(List<Variable> variables, double[][] h) {
+
+        List<Constraint> constraints = new ArrayList<>(variables.size());
+
+        for (Variable var : variables) {
+            LinearExpression expr = new LinearExpression().addTerm(1.0, var);
+            constraints.add(new Constraint("c0", expr, Constraint.Relation.EQUAL, 0.0));
+        }
+
+        return constraints;
     }
 
     protected List<Variable> createVariables(final int size) {

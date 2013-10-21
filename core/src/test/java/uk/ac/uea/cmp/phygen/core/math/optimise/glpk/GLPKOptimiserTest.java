@@ -14,19 +14,6 @@ import static org.junit.Assert.assertTrue;
  */
 public class GLPKOptimiserTest {
 
-    private static class SimpleObjective implements Objective {
-
-        @Override
-        public ObjectiveType getType() {
-            return ObjectiveType.LINEAR;
-        }
-
-        @Override
-        public ObjectiveDirection getDirection() {
-            return ObjectiveDirection.MINIMISE;
-        }
-    }
-
     @Test
     public void testAcceptsIdentifier() throws OptimiserException {
 
@@ -42,7 +29,7 @@ public class GLPKOptimiserTest {
     @Test
     public void testNullOptimise() throws OptimiserException {
 
-        Optimiser glpk = OptimiserFactory.getInstance().createOptimiserInstance("glpk", new SimpleObjective());
+        Optimiser glpk = OptimiserFactory.getInstance().createOptimiserInstance("glpk", Objective.ObjectiveType.LINEAR);
 
         Problem problem = new Problem();
 
