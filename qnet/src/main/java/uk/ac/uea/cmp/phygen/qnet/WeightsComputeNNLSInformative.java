@@ -904,7 +904,7 @@ public class WeightsComputeNNLSInformative {
         if (optimiser != null) {
 
             log.info("Using " + optimiser.getIdentifier() + " to solve NNLS problem");
-            result = optimise(optimiser, Etf, EtE.toArray());
+            result = optimise(optimiser, Etf, EtE.toArray()).getVariableValues();
         }
         else {
 
@@ -925,13 +925,13 @@ public class WeightsComputeNNLSInformative {
     }
 
 
-    private static double[] optimise(Optimiser optimiser, double[] Etf, double[][] EtE) throws OptimiserException {
+    private static Solution optimise(Optimiser optimiser, double[] Etf, double[][] EtE) throws OptimiserException {
 
         // Create the problem
         List<Variable> variables = createVariables(Etf.length);
         List<Constraint> constraints = createConstraints(variables);
         Objective objective = createObjective(variables, Etf, EtE);
-        Problem problem = new Problem(variables, constraints, objective);
+        Problem problem = new Problem("NNLS", variables, constraints, objective);
 
         // Run the solver on the problem and return the result
         return optimiser.optimise(problem);
@@ -939,7 +939,7 @@ public class WeightsComputeNNLSInformative {
 
     private static Objective createObjective(List<Variable> variables, double[] Etf, double[][] EtE) {
 
-        QuadraticExpression expr = new QuadraticExpression();
+        Expression expr = new Expression();
 
         for (int i = 0; i < variables.size(); i++) {
             for (int j = 0; j < variables.size(); j++) {
@@ -948,7 +948,7 @@ public class WeightsComputeNNLSInformative {
             expr.addTerm(-2 * Etf[i], variables.get(i));
         }
 
-        return new QuadraticObjective(Objective.ObjectiveDirection.MINIMISE, expr);
+        return new Objective("NNLS", Objective.ObjectiveDirection.MINIMISE, expr);
     }
 
     private static List<Constraint> createConstraints(List<Variable> variables) {
@@ -956,7 +956,7 @@ public class WeightsComputeNNLSInformative {
         List<Constraint> constraints = new ArrayList<>(variables.size());
 
         for (Variable var : variables) {
-            LinearExpression expr = new LinearExpression().addTerm(1.0, var);
+            Expression expr = new Expression().addTerm(1.0, var);
             constraints.add(new Constraint("c0", expr, Constraint.Relation.EQUAL, 0.0));
         }
 

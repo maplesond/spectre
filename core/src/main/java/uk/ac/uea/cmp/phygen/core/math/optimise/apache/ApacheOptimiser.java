@@ -21,9 +21,7 @@ import org.apache.commons.math3.optimization.linear.LinearConstraint;
 import org.apache.commons.math3.optimization.linear.LinearObjectiveFunction;
 import org.apache.commons.math3.optimization.linear.Relationship;
 import org.apache.commons.math3.optimization.linear.SimplexSolver;
-import org.gnu.glpk.GLPK;
-import org.gnu.glpk.GLPKConstants;
-import org.gnu.glpk.glp_prob;
+import org.apache.commons.math3.util.Pair;
 import org.kohsuke.MetaInfServices;
 import uk.ac.uea.cmp.phygen.core.math.optimise.*;
 
@@ -112,7 +110,7 @@ public class ApacheOptimiser extends AbstractOptimiser {
 
             double[] coefficients = new double[variables.size()];
 
-            List<LinearTerm> terms = constraint.getLinearExpression().getTerms();
+            List<LinearTerm> terms = constraint.getExpression().getLinearTerms();
 
             for(LinearTerm term : terms) {
                 for (int j = 0; j < variables.size(); j++) {
@@ -125,16 +123,51 @@ public class ApacheOptimiser extends AbstractOptimiser {
 
             Relationship relationship = this.convertRelationship(constraint.getRelation());
 
-            apacheConstraints.add(new LinearConstraint(coefficients, relationship, constraint.getValue() - constraint.getLinearExpression().getConstant()));
+            apacheConstraints.add(new LinearConstraint(coefficients, relationship, constraint.getValue() - constraint.getExpression().getConstant()));
         }
+    }
+
+    protected LinearObjectiveFunction convertObjective(Objective phygenObjective, List<Variable> variables) {
+
+        List<LinearTerm> terms = phygenObjective.getExpression().getLinearTerms();
+
+        double[] coefficients = new double[variables.size()];
+
+        for (int i = 0; i < variables.size(); i++) {
+
+            double coefficient = 0.0;
+
+            for(LinearTerm term : terms) {
+
+                if (term.getVariable().getName().equals(variables.get(i).getName())) {
+                    coefficient = term.getCoefficient();
+                    break;
+                }
+            }
+
+            coefficients[i] = coefficient;
+        }
+
+        return new LinearObjectiveFunction(coefficients, phygenObjective.getExpression().getConstant());
+    }
+
+    protected Solution createSolution(PointValuePair pvp, List<Variable> variables) {
+
+        List<Pair<String,Double>> variableValues = new ArrayList<>();
+
+        for(int i = 0; i < variables.size(); i++) {
+            variableValues.add(new Pair<>(variables.get(i).getName(), pvp.getPoint()[i]));
+        }
+
+        return new Solution(variableValues, pvp.getValue());
     }
 
 
     @Override
-    protected double[] internalOptimise(Problem problem) {
+    protected Solution internalOptimise(Problem problem) {
 
         // Create the objective function
-        LinearObjectiveFunction f = new LinearObjectiveFunction(problem.getCoefficients(), 0.0);
+        LinearObjectiveFunction f = this.convertObjective(problem.getObjective(), problem.getVariables());
 
         // Setup collection for constraints
         Collection<LinearConstraint> constraints = new ArrayList<>();
@@ -153,7 +186,7 @@ public class ApacheOptimiser extends AbstractOptimiser {
                 false);
 
         // Return results
-        return pvp.getPoint();
+        return this.createSolution(pvp, problem.getVariables());
     }
 
 

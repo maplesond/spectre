@@ -19,13 +19,13 @@ package uk.ac.uea.cmp.phygen.core.math.optimise;
 public interface Optimiser {
 
     /**
-     * Given a problem, finds the solution
+     * Given a problem, finds the solution      *
      *
      * @param problem
      * @return
      * @throws OptimiserException
      */
-    double[] optimise(Problem problem) throws OptimiserException;
+    Solution optimise(Problem problem) throws OptimiserException;
 
     /**
      * The identifier which which the user can locate this optimsier
@@ -58,11 +58,4 @@ public interface Optimiser {
      * @return
      */
     boolean isOperational();
-
-    /**
-     * Any additional setup to the optimiser that is required to take place after construction can be done here.
-     *
-     * @throws OptimiserException
-     */
-    void initialise() throws OptimiserException;
 }

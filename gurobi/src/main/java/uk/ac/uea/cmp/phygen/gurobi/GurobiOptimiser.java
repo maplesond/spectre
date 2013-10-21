@@ -16,17 +16,14 @@
 package uk.ac.uea.cmp.phygen.gurobi;
 
 import gurobi.*;
-import org.gnu.glpk.GLPKConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.math3.util.Pair;
 import uk.ac.uea.cmp.phygen.core.math.optimise.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
-public abstract class GurobiOptimiser extends AbstractOptimiser {
-
-    private static Logger log = LoggerFactory.getLogger(GurobiOptimiser.class);
+public class GurobiOptimiser extends AbstractOptimiser {
 
     // GurobiOptimiser vars
     private GRBEnv env;
@@ -40,6 +37,21 @@ public abstract class GurobiOptimiser extends AbstractOptimiser {
             // Repackage any GurobiException and rethrow
             throw new OptimiserException(ge, ge.getErrorCode());
         }
+    }
+
+    protected char convertRelationship(Constraint.Relation relation) {
+
+        if (relation == Constraint.Relation.EQUAL) {
+            return GRB.EQUAL;
+        }
+        else if (relation == Constraint.Relation.GREATER_THAN_OR_EQUAL_TO) {
+            return GRB.GREATER_EQUAL;
+        }
+        else if (relation == Constraint.Relation.LESS_THAN_OR_EQUAL_TO) {
+            return GRB.LESS_EQUAL;
+        }
+
+        throw new UnsupportedOperationException("Gurobi cannot handle this Relation: " + relation.toString());
     }
 
     protected char convertVariableType(Variable.VariableType variableType) {
@@ -87,14 +99,101 @@ public abstract class GurobiOptimiser extends AbstractOptimiser {
         return grbVars;
     }
 
-    public abstract GRBConstr[] addConstraints(Problem problem, GRBModel model, GRBVar[] vars) throws GRBException;
+    public GRBConstr[] addConstraints(List<Constraint> constraints, GRBModel model, GRBVar[] vars) throws GRBException {
 
-    public abstract GRBExpr addObjective(Problem problem, GRBModel model, GRBVar[] grbVars) throws GRBException;
+        GRBConstr[] grbConstraints = new GRBConstr[constraints.size()];
+
+        for(int i = 0; i < constraints.size(); i++) {
+
+            Constraint phygenConstraint = constraints.get(i);
+
+            GRBLinExpr grbLinExpr = new GRBLinExpr();
+
+            for(LinearTerm term : phygenConstraint.getExpression().getLinearTerms()) {
+
+                GRBVar var = findGurobiVar(vars, term.getVariable().getName());
+                grbLinExpr.addTerm(term.getCoefficient(), var);
+            }
+
+            grbLinExpr.addConstant(phygenConstraint.getExpression().getConstant());
+
+            grbConstraints[i] = model.addConstr(
+                    grbLinExpr,
+                    this.convertRelationship(phygenConstraint.getRelation()),
+                    phygenConstraint.getValue(),
+                    phygenConstraint.getName());
+        }
+
+        return grbConstraints;
+    }
+
+    public GRBExpr addObjective(Objective objective, GRBModel model, GRBVar[] grbVars) throws GRBException {
+
+        GRBExpr expr = null;
+        if (objective.getType() == Objective.ObjectiveType.QUADRATIC) {
+            GRBQuadExpr quadExpr = new GRBQuadExpr();
+
+            quadExpr.addConstant(objective.getExpression().getConstant());
+
+            for (LinearTerm linTerm : objective.getExpression().getLinearTerms()) {
+                GRBVar var = findGurobiVar(grbVars, linTerm.getVariable().getName());
+                quadExpr.addTerm(linTerm.getCoefficient(), var);
+            }
+
+            for(QuadraticTerm quadraticTerm : objective.getExpression().getQuadraticTerms()) {
+                GRBVar var1 = findGurobiVar(grbVars, quadraticTerm.getVariable1().getName());
+                GRBVar var2 = findGurobiVar(grbVars, quadraticTerm.getVariable2().getName());
+
+                quadExpr.addTerm(quadraticTerm.getCoefficient(), var1, var2);
+            }
+
+            expr = quadExpr;
+        }
+        else {
+            GRBLinExpr linExpr = new GRBLinExpr();
+
+            linExpr.addConstant(objective.getExpression().getConstant());
+
+            for (LinearTerm linTerm : objective.getExpression().getLinearTerms()) {
+                GRBVar var = findGurobiVar(grbVars, linTerm.getVariable().getName());
+                linExpr.addTerm(linTerm.getCoefficient(), var);
+            }
+
+            expr = linExpr;
+        }
+
+        model.setObjective(expr, convertObjectiveDirection(objective.getDirection()));
+
+        return expr;
+    }
+
+    protected GRBVar findGurobiVar(GRBVar[] vars, String name) throws GRBException {
+
+        for(int j = 0; j < vars.length; j++) {
+            if (name.equals(vars[j].get(GRB.StringAttr.VarName))) {
+                return vars[j];
+            }
+        }
+
+        throw new IllegalArgumentException("Gurobi variable: " + name + "; could not be found.");
+    }
+
+
+    protected Solution buildSolution(GRBVar[] vars, double solution) throws GRBException {
+
+        List<Pair<String,Double>> variableValues = new ArrayList<>(vars.length);
+
+        for (int i = 0; i < vars.length; i++) {
+            variableValues.add(new Pair<>(vars[i].get(GRB.StringAttr.VarName), vars[i].get(GRB.DoubleAttr.X)));
+        }
+
+        return new Solution(variableValues, solution);
+    }
 
     @Override
-    protected double[] internalOptimise(Problem problem) throws OptimiserException {
+    protected Solution internalOptimise(Problem problem) throws OptimiserException {
 
-        double[] solution = null;
+        Solution solution = null;
 
         try {
             // Create a new model
@@ -107,22 +206,22 @@ public abstract class GurobiOptimiser extends AbstractOptimiser {
             model.update();
 
             // Get the objective if present
-            GRBExpr expr = addObjective(problem, model, vars);
+            GRBExpr expr = addObjective(problem.getObjective(), model, vars);
             if (expr != null) {
                 model.setObjective(expr, convertObjectiveDirection(problem.getObjective().getDirection()));
             }
 
             // Add constraints
-            GRBConstr[] constraints = addConstraints(problem, model, vars);
+            GRBConstr[] constraints = addConstraints(problem.getConstraints(), model, vars);
 
             // Optimise the model
             model.optimize();
 
             // Create solution array from the optimised model
-            solution = this.buildSolution(vars);
+            solution = this.buildSolution(vars, model.get(GRB.DoubleAttr.ObjVal));
 
-            // Logging
-            log.debug("Obj: " + model.get(GRB.DoubleAttr.ObjVal));
+            // Delete the model now that we have the solution
+            model.dispose();
 
         } catch (GRBException ge) {
             // Repackage any GurobiException and rethrow
@@ -135,18 +234,6 @@ public abstract class GurobiOptimiser extends AbstractOptimiser {
 
     protected GRBEnv getEnv() {
         return env;
-    }
-
-
-    protected double[] buildSolution(GRBVar[] vars) throws GRBException {
-
-        double[] solution = new double[vars.length];
-
-        for (int i = 0; i < vars.length; i++) {
-            solution[i] = vars[i].get(GRB.DoubleAttr.X);
-        }
-
-        return solution;
     }
 
 

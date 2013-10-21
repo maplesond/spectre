@@ -10,12 +10,7 @@ package uk.ac.uea.cmp.phygen.core.math.optimise;
 public abstract class AbstractOptimiser implements Optimiser {
 
     @Override
-    public void initialise() {
-    }
-
-
-    @Override
-    public double[] optimise(Problem problem) throws OptimiserException {
+    public Solution optimise(Problem problem) throws OptimiserException {
 
         // Check the optimiser is operational
         if (!this.isOperational()) {
@@ -23,12 +18,18 @@ public abstract class AbstractOptimiser implements Optimiser {
         }
 
         // Check we have an objective
-        if (problem.getObjective() == null) {
+        if (problem.getObjective() == null || problem.getObjective().getExpression() == null) {
             throw new OptimiserException("An objective must be specified for " + this.getIdentifier());
         }
 
+        // Check this solver can handle the objective
+        if (!this.acceptsObjectiveType(problem.getObjective().getType())) {
+            throw new UnsupportedOperationException("This optimiser: " + this.getIdentifier() + "; cannot handle objective: " +
+                problem.getObjective().getName() + "; which is: " + problem.getObjective().getType().toString());
+        }
+
         // Run the solver on the problem to get a (hopefully) optimal solution
-        double[] solution = this.internalOptimise(problem);
+        Solution solution = this.internalOptimise(problem);
 
         // Probably used a lot of memory.  Collect Garbage to save space.
         System.gc();
@@ -37,5 +38,5 @@ public abstract class AbstractOptimiser implements Optimiser {
     }
 
 
-    protected abstract double[] internalOptimise(Problem problem) throws OptimiserException;
+    protected abstract Solution internalOptimise(Problem problem) throws OptimiserException;
 }

@@ -43,13 +43,17 @@ public class Constraint {
     private String name;
     private double value;
     private Relation relation;
-    private LinearExpression linearExpression;
+    private Expression expression;
 
-    public Constraint(String name, LinearExpression linearExpression, Relation relation, double value) {
+    public Constraint(String name, Expression expression, Relation relation, double value) {
+
+        if (expression.isQuadratic())
+            throw new IllegalArgumentException("Can't handle quadratic expressions for defining constraints");
+
         this.name = name;
         this.value = value;
         this.relation = relation;
-        this.linearExpression = linearExpression;
+        this.expression = expression;
     }
 
     public String getName() {
@@ -64,7 +68,7 @@ public class Constraint {
         return relation;
     }
 
-    public LinearExpression getLinearExpression() {
-        return linearExpression;
+    public Expression getExpression() {
+        return expression;
     }
 }

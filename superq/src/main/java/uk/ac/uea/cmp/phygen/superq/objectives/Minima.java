@@ -23,8 +23,8 @@ import java.util.Arrays;
 import java.util.List;
 
 
-@MetaInfServices(uk.ac.uea.cmp.phygen.superq.objectives.SecondaryObjective.class)
-public class Minima implements SecondaryObjective {
+@MetaInfServices(SecondaryProblem.class)
+public class Minima implements SecondaryProblem {
 
     @Override
     public Problem compileProblem(int nbTaxa, double[] X, double[][] EtE) {
@@ -33,7 +33,7 @@ public class Minima implements SecondaryObjective {
         List<Constraint> constraints = this.createConstraints(variables, X, EtE);
         Objective objective = this.createObjective(variables);
 
-        return new Problem(variables, constraints, objective);
+        return new Problem(this.getName(), variables, constraints, objective);
     }
 
     @Override
@@ -43,7 +43,7 @@ public class Minima implements SecondaryObjective {
 
     private Objective createObjective(List<Variable> variables) {
 
-        return new LinearObjective(Objective.ObjectiveDirection.MINIMISE, null);
+        return new Objective(this.getName(), Objective.ObjectiveDirection.MINIMISE, null);
     }
 
     private List<Constraint> createConstraints(List<Variable> variables, double[] X, double[][] EtE) {
@@ -51,7 +51,7 @@ public class Minima implements SecondaryObjective {
         List<Constraint> constraints = new ArrayList<>();
 
         for (int i = 0; i < EtE.length; i++) {
-            LinearExpression expr = new LinearExpression();
+            Expression expr = new Expression();
             for (int j = 0; j < EtE.length; j++) {
                 expr.addTerm(EtE[i][j], variables.get(j));
             }

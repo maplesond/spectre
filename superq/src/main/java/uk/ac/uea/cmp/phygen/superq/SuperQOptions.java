@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser;
 import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
 import uk.ac.uea.cmp.phygen.core.math.optimise.apache.ApacheOptimiser;
-import uk.ac.uea.cmp.phygen.superq.objectives.SecondaryObjective;
+import uk.ac.uea.cmp.phygen.superq.objectives.SecondaryProblem;
 
 import java.io.File;
 
@@ -40,7 +40,7 @@ public class SuperQOptions {
     private File outputFile;
     private Optimiser primarySolver;
     private Optimiser secondarySolver;
-    private SecondaryObjective secondaryObjective;
+    private SecondaryProblem secondaryProblem;
     private boolean scaleInputTree;
     private Double filter;
     private boolean verbose;
@@ -53,7 +53,7 @@ public class SuperQOptions {
     }
 
     public SuperQOptions(File inputFile, InputFormat inputFileFormat, File outputFile,
-                         Optimiser primarySolver, Optimiser secondarySolver, SecondaryObjective secondaryObjective,
+                         Optimiser primarySolver, Optimiser secondarySolver, SecondaryProblem secondaryProblem,
                          boolean scaleInputTree, Double filter, boolean verbose) {
 
         Optimiser tempSolver = primarySolver.isOperational() ? primarySolver : null;
@@ -65,7 +65,7 @@ public class SuperQOptions {
         this.inputFileFormat = inputFileFormat;
         this.outputFile = outputFile;
         this.primarySolver = tempSolver;
-        this.secondaryObjective = secondaryObjective;
+        this.secondaryProblem = secondaryProblem;
         this.secondarySolver = secondarySolver;
         this.scaleInputTree = scaleInputTree;
         this.filter = filter;
@@ -92,12 +92,12 @@ public class SuperQOptions {
         this.inputFile = inputFile;
     }
 
-    public SecondaryObjective getSecondaryObjective() {
-        return secondaryObjective;
+    public SecondaryProblem getSecondaryProblem() {
+        return secondaryProblem;
     }
 
-    public void setSecondaryObjective(SecondaryObjective secondaryObjective) {
-        this.secondaryObjective = secondaryObjective;
+    public void setSecondaryProblem(SecondaryProblem secondaryProblem) {
+        this.secondaryProblem = secondaryProblem;
     }
 
     public Double getFilter() {

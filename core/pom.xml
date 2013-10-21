@@ -78,6 +78,12 @@
             <version>1.0.29</version>
         </dependency>
 
+        <dependency>
+            <groupId>de.xypron.linopt</groupId>
+            <artifactId>linopt</artifactId>
+            <version>1.8</version>
+        </dependency>
+
 
         <!-- We cannot assume that the user has gurobi installed.  And they probably don't have gurobi in their local
              maven repository anyway.  If you do have gurobi installed, then uncomment this block, and make sure you've

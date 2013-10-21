@@ -29,7 +29,7 @@ import java.util.List;
  * Time: 11:56
  * To change this template use File | Settings | File Templates.
  */
-public interface SecondaryObjective {
+public interface SecondaryProblem {
 
     /**
      * Creates the problem to solve from SuperQ input for this objective
@@ -47,7 +47,7 @@ public interface SecondaryObjective {
     Objective.ObjectiveType getObjectiveType();
 
     /**
-     * The identifier for this objective, which allows the user to easily identify and request this objective.
+     * The identifier for this objective, which allows the user to easily identify and request this problem.
      * @return
      */
     String getName();

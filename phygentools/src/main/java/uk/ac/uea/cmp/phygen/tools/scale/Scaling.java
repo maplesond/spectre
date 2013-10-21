@@ -121,20 +121,20 @@ public class Scaling extends PhygenTool {
         double[][] h = getMatrix(outputPrefix.getPath(), ntrees);
 
         // Create the problem from the coefficients and run the solver to get the optimal solution
-        double[] solution = this.optimise(optimiser, h);
+        Solution solution = this.optimise(optimiser, h);
 
         //Updates quartet weights and writes them into a file
         //for each input tree one quartet file is generated
-        Matrix.updateQuartetWeights(outputPrefix.getParent(), outputPrefix.getName(), solution);
+        Matrix.updateQuartetWeights(outputPrefix.getParent(), outputPrefix.getName(), solution.getVariableValues());
     }
 
-    private double[] optimise(Optimiser optimiser, double[][] h) throws OptimiserException {
+    private Solution optimise(Optimiser optimiser, double[][] h) throws OptimiserException {
 
         List<Variable> variables = this.createVariables(h.length);
         List<Constraint> constraints = this.createConstraints(variables, h);
         Objective objective = this.createObjective(variables, h);
 
-        Problem problem = new Problem(variables, constraints, objective);
+        Problem problem = new Problem("scaling", variables, constraints, objective);
 
         // Run the solver on the problem and return the result
         return optimiser.optimise(problem);
@@ -142,7 +142,7 @@ public class Scaling extends PhygenTool {
 
     private Objective createObjective(List<Variable> variables, double[][] h) {
 
-        QuadraticExpression expr = new QuadraticExpression();
+        Expression expr = new Expression();
 
         for (int i = 0; i < variables.size(); i++) {
             for (int j = 0; j < variables.size(); j++) {
@@ -150,7 +150,7 @@ public class Scaling extends PhygenTool {
             }
         }
 
-        return new QuadraticObjective(Objective.ObjectiveDirection.MINIMISE, expr);
+        return new Objective("scaling", Objective.ObjectiveDirection.MINIMISE, expr);
     }
 
     private List<Constraint> createConstraints(List<Variable> variables, double[][] h) {
@@ -158,7 +158,7 @@ public class Scaling extends PhygenTool {
         List<Constraint> constraints = new ArrayList<>(variables.size());
 
         for (Variable var : variables) {
-            LinearExpression expr = new LinearExpression().addTerm(1.0, var);
+            Expression expr = new Expression().addTerm(1.0, var);
             constraints.add(new Constraint("c0", expr, Constraint.Relation.EQUAL, 0.0));
         }
 

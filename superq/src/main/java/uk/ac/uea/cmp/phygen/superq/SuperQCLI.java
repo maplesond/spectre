@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.math.optimise.Objective;
 import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
 import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserFactory;
-import uk.ac.uea.cmp.phygen.superq.objectives.SecondaryObjectiveFactory;
+import uk.ac.uea.cmp.phygen.superq.objectives.SecondaryProblemFactory;
 
 import java.io.File;
 import java.io.OutputStream;
@@ -121,7 +121,7 @@ public class SuperQCLI {
         options.addOption("y", OPT_SECONDARY_SOLVER, true, "The secondary solver to use: BEST_AVAILABLE, GUROBI, GLPK.  " +
                 "BEST_AVAILABLE will select GUROBI if available, otherwise GLPK.  Default: BEST_AVAILABLE");
         options.addOption("b", OPT_SECONDARY_OBJECTIVE, true, "The objective to use if the NNLS solution is non-unique.  " +
-                "Available options: " + SecondaryObjectiveFactory.getInstance().listSecondaryObjectivesAsString());
+                "Available options: " + SecondaryProblemFactory.getInstance().listSecondaryObjectivesAsString());
         options.addOption("s", OPT_SCALE, false, "Whether to scale the input tree.  Default: off");
         options.addOption("f", OPT_FILTER, true, "The filter value to use.  Default: no filter");
         options.addOption("h", OPT_HELP, false, "Shows this help.");
@@ -171,8 +171,8 @@ public class SuperQCLI {
 
         if (commandLine.hasOption(OPT_SECONDARY_OBJECTIVE)) {
 
-            sqOpts.setSecondaryObjective(
-                    SecondaryObjectiveFactory.getInstance().createSecondaryObjective(
+            sqOpts.setSecondaryProblem(
+                    SecondaryProblemFactory.getInstance().createSecondaryObjective(
                             commandLine.getOptionValue(OPT_SECONDARY_OBJECTIVE).toUpperCase()));
         }
 
@@ -187,7 +187,7 @@ public class SuperQCLI {
             if (commandLine.hasOption(OPT_SECONDARY_SOLVER)) {
                 sqOpts.setSecondarySolver(
                         OptimiserFactory.getInstance().createOptimiserInstance(
-                                commandLine.getOptionValue(OPT_SECONDARY_SOLVER), sqOpts.getSecondaryObjective().getObjectiveType()));
+                                commandLine.getOptionValue(OPT_SECONDARY_SOLVER), sqOpts.getSecondaryProblem().getObjectiveType()));
             }
         } catch (OptimiserException oe) {
             throw new ParseException(oe.getMessage());

@@ -79,7 +79,7 @@ public class WeightCalculatorImpl implements WeightCalculator {
 
         for (Variable var : variables) {
 
-            LinearExpression expr = new LinearExpression().addTerm(1.0, var);
+            Expression expr = new Expression().addTerm(1.0, var);
 
             constraints.add(new Constraint("c0", expr, Constraint.Relation.GREATER_THAN_OR_EQUAL_TO, 0.0));
         }
@@ -87,7 +87,7 @@ public class WeightCalculatorImpl implements WeightCalculator {
         return constraints;
     }
 
-    protected QuadraticObjective createObjective(List<Variable> variables) {
+    protected Objective createObjective(List<Variable> variables) {
 
         // Extract linear and quadratic terms from ps and qs
 
@@ -106,7 +106,7 @@ public class WeightCalculatorImpl implements WeightCalculator {
         double constant = qs.computeWxWT();
 
         // Create the phygen quadratic objective
-        QuadraticExpression quadExpr = new QuadraticExpression();
+        Expression quadExpr = new Expression();
 
         quadExpr.addConstant(constant);
 
@@ -122,7 +122,7 @@ public class WeightCalculatorImpl implements WeightCalculator {
             }
         }
 
-        return new QuadraticObjective(Objective.ObjectiveDirection.MINIMISE, quadExpr);
+        return new Objective("flatnj", Objective.ObjectiveDirection.MINIMISE, quadExpr);
     }
 
     @Override
@@ -134,7 +134,9 @@ public class WeightCalculatorImpl implements WeightCalculator {
         Objective objective = this.createObjective(variables);
 
         try {
-            double[] weights = optimiser.optimise(new Problem(variables, constraints, objective));
+            Solution solution = optimiser.optimise(new Problem("flatnj", variables, constraints, objective));
+
+            double[] weights = solution.getVariableValues();
 
             // ps.setFit();???
             ps.setWeights(weights);
@@ -142,67 +144,6 @@ public class WeightCalculatorImpl implements WeightCalculator {
         } catch (OptimiserException oe) {
             System.err.println(oe.getMessage());
         }
-
-
-
-        /*
-        try
-        {
-            GRBEnv env = new GRBEnv();
-            GRBModel model = new GRBModel(env);
-            GRBVar[] variables = new GRBVar[b.length];
-
-            // Create variables
-
-            for (int i = 0; i < b.length; i++)
-            {
-                GRBVar x = model.addVar(0, Double.POSITIVE_INFINITY, 1.0, GRB.CONTINUOUS, "x" + i);
-                variables[i] = x;
-            }
-            model.update();
-
-            GRBQuadExpr obj = new GRBQuadExpr();
-
-            obj.addConstant(wwT);        
-
-            for (int i = 0; i < b.length; i++)
-            {
-                obj.addTerm( -2*b[i], variables[i]);
-            }
-
-            for (int i = 0; i < b.length; i++)
-            {
-                for (int j = 0; j < b.length; j++)
-                {
-                    obj.addTerm(B[j][i],variables[j],variables[i]);
-                }
-            }
-
-            model.setObjective(obj);
-
-            for (int i = 0; i < b.length; i++) 
-            {
-                GRBLinExpr expr = new GRBLinExpr();
-
-                expr.addTerm(1.0, variables[i]);
-                model.addConstr(expr, GRB.GREATER_EQUAL, 0.0, "c0");
-            }
-            model.getEnv().set(GRB.IntParam.OutputFlag, 0);
-
-            model.optimize();
-
-            for (int i = 0; i < b.length; i++)
-            {
-                weights[i] = variables[i].get(GRB.DoubleAttr.X);
-            }
-            
-            ps.setFit(model.get(GRB.DoubleAttr.ObjVal));
-        }
-        catch(GRBException grbe)
-        {
-            System.err.println(grbe.getMessage());
-        }  */
-
     }
 
 }

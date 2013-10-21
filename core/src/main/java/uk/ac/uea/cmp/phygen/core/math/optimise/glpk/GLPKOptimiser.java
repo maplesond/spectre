@@ -15,182 +15,155 @@
  */
 package uk.ac.uea.cmp.phygen.core.math.optimise.glpk;
 
+import de.xypron.linopt.*;
+import org.apache.commons.math3.util.Pair;
 import org.gnu.glpk.*;
 import org.kohsuke.MetaInfServices;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.math.optimise.*;
+import uk.ac.uea.cmp.phygen.core.math.optimise.Problem;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @MetaInfServices(uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser.class)
 public class GLPKOptimiser extends AbstractOptimiser {
-
-    private static Logger log = LoggerFactory.getLogger(GLPKOptimiser.class);
 
     public GLPKOptimiser() throws OptimiserException {
         super();
     }
 
 
-    protected int convertVariableType(Variable.VariableType variableType) {
+    protected de.xypron.linopt.Problem.ColumnType convertVariableType(Variable.VariableType variableType) {
 
         if (variableType == Variable.VariableType.CONTINUOUS) {
-            return GLPKConstants.GLP_CV;
+            return de.xypron.linopt.Problem.ColumnType.FLOAT;
         } else if (variableType == Variable.VariableType.INTEGER) {
-            return GLPKConstants.GLP_IV;
+            return de.xypron.linopt.Problem.ColumnType.INTEGER;
         } else if (variableType == Variable.VariableType.BINARY) {
-            return GLPKConstants.GLP_BV;
+            return de.xypron.linopt.Problem.ColumnType.BINARY;
         }
 
         throw new IllegalArgumentException("Unknown variable type encountered: " + variableType.toString());
     }
 
-    protected int convertBoundType(Bounds.BoundType boundType) {
-
-        if (boundType == Bounds.BoundType.FREE) {
-            return GLPKConstants.GLP_FR;
-        } else if (boundType == Bounds.BoundType.LOWER) {
-            return GLPKConstants.GLP_LO;
-        } else if (boundType == Bounds.BoundType.UPPER) {
-            return GLPKConstants.GLP_UP;
-        } else if (boundType == Bounds.BoundType.DOUBLE) {
-            return GLPKConstants.GLP_DB;
-        } else if (boundType == Bounds.BoundType.FIXED) {
-            return GLPKConstants.GLP_FX;
-        }
-
-        throw new IllegalArgumentException("Unknown bound type encountered: " + boundType.toString());
-    }
-
-    protected int convertObjectiveDirection(Objective.ObjectiveDirection objectiveDirection) {
+    protected de.xypron.linopt.Problem.Direction convertObjectiveDirection(Objective.ObjectiveDirection objectiveDirection) {
         if (objectiveDirection == Objective.ObjectiveDirection.MAXIMISE) {
-            return GLPKConstants.GLP_MAX;
+            return de.xypron.linopt.Problem.Direction.MAXIMIZE;
         } else if (objectiveDirection == Objective.ObjectiveDirection.MINIMISE) {
-            return GLPKConstants.GLP_MIN;
+            return de.xypron.linopt.Problem.Direction.MINIMIZE;
         }
 
         throw new IllegalArgumentException("Unknown objective direction encountered: " + objectiveDirection.toString());
     }
 
-    protected void addDecisionVariables(glp_prob lp, Problem problem) {
+    protected void addDecisionVariables(de.xypron.linopt.Problem glpkProblem, List<Variable> variables) {
 
-        List<Variable> variables = problem.getVariables();
-
-        GLPK.glp_add_cols(lp, variables.size());
         for (int i = 0; i < variables.size(); i++) {
 
             Variable var = variables.get(i);
 
-            GLPK.glp_set_col_name(lp, i, var.getName());
-            GLPK.glp_set_col_kind(lp, i, convertVariableType(var.getType()));
-            GLPK.glp_set_col_bnds(lp, i,
-                    convertBoundType(var.getBounds().getBoundType()),
-                    var.getBounds().getLower(),
-                    var.getBounds().getUpper());
-            GLPK.glp_set_obj_coef(lp, i, problem.getVariables().get(i).getCoefficient());
+            glpkProblem.column(var.getName(), i)
+                    .type(convertVariableType(var.getType()))
+                    .bounds(
+                            var.getBounds().getLower() == Double.NEGATIVE_INFINITY ? null : var.getBounds().getLower(),
+                            var.getBounds().getUpper() == Double.POSITIVE_INFINITY ? null : var.getBounds().getUpper());
         }
     }
 
+    private void addConstraints(de.xypron.linopt.Problem glpkProblem, List<Constraint> constraints) {
+
+        for(Constraint constraint : constraints) {
+            String name = constraint.getName();
+
+            for(LinearTerm term : constraint.getExpression().getLinearTerms()) {
+
+                de.xypron.linopt.Problem.Column col = null;
+
+                for(de.xypron.linopt.Problem.Column column : glpkProblem.getColumns()) {
+                    if (column.getKey().equals(term.getVariable().getName())) {
+                        col = column;
+                        break;
+                    }
+                }
+
+                if (col == null)
+                    throw new IllegalArgumentException("GLPK columns and phygen variables are out of sync");
+
+                glpkProblem.row(name, col.getColumnNumber()).add(term.getCoefficient(), col);
+
+                if (constraint.getRelation() == Constraint.Relation.EQUAL) {
+                    glpkProblem.row(name, col.getColumnNumber()).bounds(constraint.getValue(), constraint.getValue());
+                }
+                else if (constraint.getRelation() == Constraint.Relation.GREATER_THAN_OR_EQUAL_TO) {
+                    glpkProblem.row(name, col.getColumnNumber()).bounds(0.0, null);
+                }
+                else if (constraint.getRelation() == Constraint.Relation.LESS_THAN_OR_EQUAL_TO) {
+                    glpkProblem.row(name, col.getColumnNumber()).bounds(null, 0.0);
+                }
+            }
+        }
+
+    }
+
+    protected void addObjective(de.xypron.linopt.Problem glpkProblem, Objective objective) {
+
+        glpkProblem.objective(objective.getName(), convertObjectiveDirection(objective.getDirection()));
+
+        for(LinearTerm term : objective.getExpression().getLinearTerms()) {
+
+            de.xypron.linopt.Problem.Column col = null;
+
+            for(de.xypron.linopt.Problem.Column column : glpkProblem.getColumns()) {
+                if (column.getKey().equals(term.getVariable().getName())) {
+                    col = column;
+                    break;
+                }
+            }
+
+            if (col == null)
+                throw new IllegalArgumentException("GLPK columns and phygen variables are out of sync");
+
+            glpkProblem.objective().add(term.getCoefficient(), col);
+        }
+
+        // What about the constant???
+    }
+
+    protected Solution buildSolution(de.xypron.linopt.Problem glpkProblem) {
+
+        List<Pair<String,Double>> variableValues = new ArrayList<>(glpkProblem.getColumns().size());
+
+        for (de.xypron.linopt.Problem.Column column : glpkProblem.getColumns()) {
+            variableValues.add(new Pair<>(column.getKey(), column.getValue()));
+        }
+
+        return new Solution(variableValues, glpkProblem.objective().getValue());
+    }
+
     @Override
-    protected double[] internalOptimise(Problem problem) {
-
-        double[][] ssc = problem.getSolutionSpaceConstraint();
-
-        double[] sol = new double[problem.getNbVariables()];
+    protected Solution internalOptimise(Problem problem) {
 
         SWIGTYPE_p_int ia;
         SWIGTYPE_p_double ar;
 
-        int ret;
-//        int[] ia = new int[matrix[1].length * matrix.length];
-//        
-//       int[] ja = new int[matrix[1].length * matrix.length];
-//       double[] ar =new double[matrix[1].length * matrix.length];
-//        
-//     
-//    
-//        
         // Initialize Problem
-        glp_prob lp = GLPK.glp_create_prob();
-        GLPK.glp_set_prob_name(lp, "LP");
-        log.info("Problem created");
+        de.xypron.linopt.Problem glpkProblem = new de.xypron.linopt.Problem().setName(problem.getName());
 
         // Add Variables to problem (columns)
-        addDecisionVariables(lp, problem);
+        this.addDecisionVariables(glpkProblem, problem.getVariables());
 
-        // Is it necessary to create rows???
-        /*GLPK.glp_add_rows(lp, ssc.length);
-        for (int i = 1; i < ssc.length + 1; i++) {
-            String s = "y" + i;
-            GLPK.glp_set_row_name(lp, i, s);
-            GLPK.glp_set_row_bnds(lp, i, GLPKConstants.GLP_FX, 0.0, 0);
-        }*/
+        // Add objectives
+        this.addObjective(glpkProblem, problem.getObjective());
 
-        // Add constraints to problem
-        ia = GLPK.new_intArray(ssc.length * problem.getNbVariables());
-        ar = GLPK.new_doubleArray(ssc.length * problem.getNbVariables());
+        // Add constraints
+        this.addConstraints(glpkProblem, problem.getConstraints());
 
-        for (int i = 1; i < ssc.length + 1; i++) {
-            int k = 1;
-            for (int j = 1; j < problem.getNbVariables() + 1; j++) {
-//          GLPK.intArray_setitem(ia, k, i);
-                GLPK.intArray_setitem(ia, k, j);
-                GLPK.doubleArray_setitem(ar, k, ssc[i - 1][j - 1]);
-
-//                System.out.println("k: "+k);
-//                System.out.println("ia: "+GLPK.intArray_getitem(ia, k));
-//                System.out.println("ar: "+GLPK.doubleArray_getitem(ar, k));
-
-//            ia[k] = i;
-//            ja[k] = j;
-//            ar[k] = matrix[i-1][j-1];
-//          
-                k++;
-            }
-            GLPK.glp_set_mat_row(lp, i, problem.getNbVariables(), ia, ar);
-//            System.out.println("row"+i+": "+GLPK.glp_get_mat_row(lp, i, ia, ar));
-        }
-//        
-        GLPK.glp_print_mip(lp, "lp");
-
-        // Set Objective
-        GLPK.glp_set_obj_name(lp, "z");
-        GLPK.glp_set_obj_dir(lp, convertObjectiveDirection(problem.getObjective().getDirection()));
-
-
-// Solve model
-        glp_smcp parm = new glp_smcp();
-        GLPK.glp_init_smcp(parm);
-        ret = GLPK.glp_simplex(lp, parm);
-// Retrieve solution
-        if (ret == 0) {
-            int i;
-            int n;
-            String name;
-
-            name = GLPK.glp_get_obj_name(lp);
-
-            log.debug(name + " = " + GLPK.glp_get_obj_val(lp));
-            n = GLPK.glp_get_num_cols(lp);
-            for (i = 1; i <= n; i++) {
-                name = GLPK.glp_get_col_name(lp, i);
-                sol[i - 1] = GLPK.glp_get_col_prim(lp, i);
-                log.debug(name + " = " + sol[i - 1]);
-            }
+        // Solve the problem using simplex
+        if (!new SolverGlpk().solve(glpkProblem)) {
+            return this.buildSolution(glpkProblem);
         } else {
-            log.info("The problem could not be solved");
+            return null;
         }
-//        GLPK.glp_load_matrix(lp,matrix.length*matrix[1].length,ia,ja,ar);
-//
-//
-//        for (int i = 0; i < problem.getCoefficients().length; i++) {
-//            sol[i] = GLPK.glp_get_col_prim(lp, i);
-//        }
-//
-//
-//   
-        return sol;
     }
 
 

@@ -157,22 +157,22 @@ public class SuperQ extends RunnableTool {
 
             double[] solution = computedWeights.getX();
 
-            if (this.options.getSecondaryObjective() == null || this.options.getSecondarySolver() == null) {
+            if (this.options.getSecondaryProblem() == null || this.options.getSecondarySolver() == null) {
                 log.info("SECONDARY OPTIMISATION - Not requested");
             } else {
 
                 Optimiser secondarySolver = this.options.getSecondarySolver();
-                notifyUser("SECONDARY OPTIMISATION - Requested " + secondarySolver.toString() + " solver with " + this.options.getSecondaryObjective() + " objective.");
+                notifyUser("SECONDARY OPTIMISATION - Requested " + secondarySolver.toString() + " solver with " + this.options.getSecondaryProblem() + " objective.");
 
                 try {
 
                     // Create problem from the computer weights
-                    Problem problem = this.options.getSecondaryObjective().compileProblem(qnet.getN(), computedWeights.getX(), computedWeights.getEtE().toArray());
+                    Problem problem = this.options.getSecondaryProblem().compileProblem(qnet.getN(), computedWeights.getX(), computedWeights.getEtE().toArray());
 
                     // Run the secondary optimisation step
-                    double[] solution2 = this.options.getSecondaryObjective().getName() == "MINIMA" ?
+                    double[] solution2 = this.options.getSecondaryProblem().getName() == "MINIMA" ?
                             this.minimaOptimise(secondarySolver, problem, computedWeights.getX()) :     // Special handling of MINIMA objective
-                            secondarySolver.optimise(problem);                  // Normally just call child's optimisation method
+                            secondarySolver.optimise(problem).getVariableValues();                      // Normally just call child's optimisation method
 
                     // Sum the solutions
                     for (int i = 0; i < solution.length; i++) {
@@ -237,7 +237,7 @@ public class SuperQ extends RunnableTool {
         for (int k = 0; k < data.length; k++) {
             if (data[k] > 0.0) {
                 coefficients[k] = 1.0;
-                double[] help = optimiser.optimise(problem);
+                double[] help = optimiser.optimise(problem).getVariableValues();
                 solution[k] = help[k];
                 coefficients[k] = 0.0;
             } else {

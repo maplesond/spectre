@@ -22,8 +22,8 @@ import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserFactory;
 import uk.ac.uea.cmp.phygen.core.ui.gui.JobController;
 import uk.ac.uea.cmp.phygen.core.ui.gui.StatusTracker;
 import uk.ac.uea.cmp.phygen.core.ui.gui.ToolHost;
-import uk.ac.uea.cmp.phygen.superq.objectives.SecondaryObjective;
-import uk.ac.uea.cmp.phygen.superq.objectives.SecondaryObjectiveFactory;
+import uk.ac.uea.cmp.phygen.superq.objectives.SecondaryProblem;
+import uk.ac.uea.cmp.phygen.superq.objectives.SecondaryProblemFactory;
 
 import javax.swing.*;
 import java.io.File;
@@ -142,7 +142,7 @@ public class SuperQGUI extends JFrame implements ToolHost {
             }
         });
 
-        cboSelectObjective.setModel(new javax.swing.DefaultComboBoxModel(SecondaryObjectiveFactory.getInstance().listObjectives().toArray()));
+        cboSelectObjective.setModel(new javax.swing.DefaultComboBoxModel(SecondaryProblemFactory.getInstance().listObjectives().toArray()));
         cboSelectObjective.setToolTipText("Select Function");
         cboSelectObjective.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -323,7 +323,7 @@ public class SuperQGUI extends JFrame implements ToolHost {
     }//GEN-LAST:event_cmdRunActionPerformed
 
     private void cboSelectObjectiveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboSelectObjectiveActionPerformed
-        SecondaryObjective newObjective = (SecondaryObjective) this.cboSelectObjective.getSelectedItem();
+        SecondaryProblem newObjective = (SecondaryProblem) this.cboSelectObjective.getSelectedItem();
         if (newObjective == null) {
             this.lblSelectSolver.setEnabled(false);
             this.cboSelectSolver.setEnabled(false);
@@ -369,12 +369,12 @@ public class SuperQGUI extends JFrame implements ToolHost {
             options.setFilter(filter);
         }
 
-        options.setSecondaryObjective((SecondaryObjective) this.cboSelectObjective.getSelectedItem());
+        options.setSecondaryProblem((SecondaryProblem) this.cboSelectObjective.getSelectedItem());
 
         try {
             options.setSecondarySolver(
                     OptimiserFactory.getInstance().createOptimiserInstance(
-                        (String) this.cboSelectSolver.getSelectedItem(), options.getSecondaryObjective().getObjectiveType()));
+                        (String) this.cboSelectSolver.getSelectedItem(), options.getSecondaryProblem().getObjectiveType()));
         } catch (OptimiserException oe) {
             showErrorDialog("Could not create requested optimiser: " + (String) this.cboSelectSolver.getSelectedItem());
             return null;

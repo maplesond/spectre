@@ -26,51 +26,70 @@ import java.util.List;
  * Time: 22:19
  * To change this template use File | Settings | File Templates.
  */
-public class QuadraticExpression {
+public class Expression {
 
     private List<QuadraticTerm> quadraticTerms;
     private List<LinearTerm> linearTerms;
     private double constant;
 
-    public QuadraticExpression() {
+    public Expression() {
         this(new ArrayList<QuadraticTerm>(), new ArrayList<LinearTerm>(), 0.0);
     }
 
-    public QuadraticExpression(List<QuadraticTerm> quadraticTerms, List<LinearTerm> linearTerms, double constant) {
+    public Expression(List<QuadraticTerm> quadraticTerms, List<LinearTerm> linearTerms, double constant) {
         this.quadraticTerms = quadraticTerms;
         this.linearTerms = linearTerms;
         this.constant = constant;
     }
 
+    public boolean isQuadratic() {
+        if (this.quadraticTerms == null || this.quadraticTerms.isEmpty())
+            return false;
+
+        return true;
+    }
+
+    public boolean isLinear() {
+        if (this.quadraticTerms == null || this.quadraticTerms.isEmpty())
+            return true;
+
+        return false;
+    }
+
+
     public List<QuadraticTerm> getQuadraticTerms() {
         return quadraticTerms;
+    }
+
+    public List<LinearTerm> getLinearTerms() {
+        return linearTerms;
     }
 
     public double getConstant() {
         return constant;
     }
 
-    public QuadraticExpression addTerm(QuadraticTerm term) {
+    public Expression addTerm(QuadraticTerm term) {
         this.quadraticTerms.add(term);
         return this;
     }
 
-    public QuadraticExpression addTerm(LinearTerm term) {
+    public Expression addTerm(LinearTerm term) {
         this.linearTerms.add(term);
         return this;
     }
 
-    public QuadraticExpression addTerm(double coefficient, Variable variable1, Variable variable2) {
+    public Expression addTerm(double coefficient, Variable variable1, Variable variable2) {
         this.quadraticTerms.add(new QuadraticTerm(coefficient, variable1, variable2));
         return this;
     }
 
-    public QuadraticExpression addTerm(double coefficient, Variable variable) {
+    public Expression addTerm(double coefficient, Variable variable) {
         this.linearTerms.add(new LinearTerm(coefficient, variable));
         return this;
     }
 
-    public QuadraticExpression addConstant(double constant) {
+    public Expression addConstant(double constant) {
         this.constant += constant;
         return this;
     }

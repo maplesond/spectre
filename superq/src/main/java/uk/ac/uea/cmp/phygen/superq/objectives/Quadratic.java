@@ -23,8 +23,8 @@ import java.util.Arrays;
 import java.util.List;
 
 
-@MetaInfServices(uk.ac.uea.cmp.phygen.superq.objectives.SecondaryObjective.class)
-public class Quadratic implements SecondaryObjective {
+@MetaInfServices(SecondaryProblem.class)
+public class Quadratic implements SecondaryProblem {
 
     @Override
     public Problem compileProblem(int nbTaxa, double[] X, double[][] EtE) {
@@ -33,7 +33,7 @@ public class Quadratic implements SecondaryObjective {
         List<Constraint> constraints = this.createConstraints(variables, X, EtE);
         Objective objective = this.createObjective(variables);
 
-        return new Problem(variables, constraints, objective);
+        return new Problem(this.getName(), variables, constraints, objective);
     }
 
     @Override
@@ -42,12 +42,12 @@ public class Quadratic implements SecondaryObjective {
     }
 
     private Objective createObjective(List<Variable> variables) {
-        QuadraticExpression quadraticExpression = new QuadraticExpression();
+        Expression expression = new Expression();
         for (int i = 0; i < variables.size(); i++) {
-            quadraticExpression.addTerm(1.0, variables.get(i), variables.get(i));
+            expression.addTerm(1.0, variables.get(i), variables.get(i));
         }
 
-        return new QuadraticObjective(Objective.ObjectiveDirection.MINIMISE, quadraticExpression);
+        return new Objective(this.getName(), Objective.ObjectiveDirection.MINIMISE, expression);
     }
 
     private List<Constraint> createConstraints(List<Variable> variables, double[] X, double[][] EtE) {
@@ -55,7 +55,7 @@ public class Quadratic implements SecondaryObjective {
         List<Constraint> constraints = new ArrayList<>();
 
         for (int i = 0; i < EtE.length; i++) {
-            LinearExpression expr = new LinearExpression();
+            Expression expr = new Expression();
             double sum = 0.0;
             for (int j = 0; j < EtE.length; j++) {
                 expr.addTerm(EtE[i][j], variables.get(j));

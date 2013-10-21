@@ -23,29 +23,29 @@ import java.util.List;
 import java.util.ServiceLoader;
 
 
-public class SecondaryObjectiveFactory {
+public class SecondaryProblemFactory {
 
-    private static SecondaryObjectiveFactory instance;
-    private ServiceLoader<SecondaryObjective> loader;
+    private static SecondaryProblemFactory instance;
+    private ServiceLoader<SecondaryProblem> loader;
 
-    public SecondaryObjectiveFactory() {
-        this.loader = ServiceLoader.load(SecondaryObjective.class);
+    public SecondaryProblemFactory() {
+        this.loader = ServiceLoader.load(SecondaryProblem.class);
     }
 
-    public static synchronized SecondaryObjectiveFactory getInstance() {
+    public static synchronized SecondaryProblemFactory getInstance() {
         if (instance == null) {
-            instance = new SecondaryObjectiveFactory();
+            instance = new SecondaryProblemFactory();
         }
         return instance;
     }
 
-    public SecondaryObjective createSecondaryObjective(String name) {
+    public SecondaryProblem createSecondaryObjective(String name) {
 
-        for (SecondaryObjective secondaryObjective : loader) {
+        for (SecondaryProblem secondaryProblem : loader) {
 
-            if (secondaryObjective.acceptsIdentifier(name)) {
+            if (secondaryProblem.acceptsIdentifier(name)) {
 
-                return secondaryObjective;
+                return secondaryProblem;
             }
         }
 
@@ -59,24 +59,24 @@ public class SecondaryObjectiveFactory {
         return "[" + StringUtils.join(typeStrings, ", ") + "]";
     }
 
-    public List<SecondaryObjective> listObjectives() {
+    public List<SecondaryProblem> listObjectives() {
 
-        List<SecondaryObjective> secondaryObjectives = new ArrayList<>();
+        List<SecondaryProblem> secondaryProblems = new ArrayList<>();
 
-        for (SecondaryObjective secondaryObjective : loader) {
-            secondaryObjectives.add(secondaryObjective);
+        for (SecondaryProblem secondaryProblem : loader) {
+            secondaryProblems.add(secondaryProblem);
         }
 
-        return secondaryObjectives;
+        return secondaryProblems;
     }
 
     public List<String> listObjectivesByIdentifier() {
 
-        List<SecondaryObjective> secondaryObjectives = listObjectives();
+        List<SecondaryProblem> secondaryProblems = listObjectives();
         List<String> ids = new ArrayList<>();
 
-        for (SecondaryObjective secondaryObjective : secondaryObjectives) {
-            ids.add(secondaryObjective.getName());
+        for (SecondaryProblem secondaryProblem : secondaryProblems) {
+            ids.add(secondaryProblem.getName());
         }
 
         return ids;

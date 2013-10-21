@@ -22,12 +22,12 @@ import java.util.List;
 import static org.junit.Assert.assertTrue;
 
 
-public class SecondaryObjectiveFactoryTest {
+public class SecondaryProblemFactoryTest {
 
     @Test
     public void testListObjectives() {
 
-        List<String> objectives = SecondaryObjectiveFactory.getInstance().listObjectivesByIdentifier();
+        List<String> objectives = SecondaryProblemFactory.getInstance().listObjectivesByIdentifier();
 
         assertTrue(objectives.contains("BALANCED"));
 

@@ -56,9 +56,6 @@ public class OptimiserFactory {
                     throw new UnsupportedOperationException("Objective Type: " + objectiveType.toString() +
                             "; not accepted by " + optimiser.getIdentifier());
 
-                // Initialise the optimiser
-                optimiser.initialise();
-
                 // Check the optimiser is operational
                 if (!optimiser.isOperational()) {
                     throw new UnsupportedOperationException(optimiser.getIdentifier() + " is not operational");

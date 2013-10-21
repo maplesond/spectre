@@ -15,19 +15,34 @@
  */
 package uk.ac.uea.cmp.phygen.core.math.optimise;
 
-public abstract class Objective {
+public class Objective {
 
+    private String name;
     private ObjectiveDirection direction;
+    private Expression expression;
 
-    protected Objective(ObjectiveDirection direction) {
+
+    public Objective(String name, ObjectiveDirection direction, Expression expression) {
+        this.name = name;
         this.direction = direction;
+        this.expression = expression;
+    }
+
+    public String getName() {
+        return name;
     }
 
     /**
      * Returns what type of objective this is.
      * @return
      */
-    public abstract ObjectiveType getType();
+    public ObjectiveType getType() {
+        return this.expression == null ?
+                ObjectiveType.LINEAR :
+                this.expression.isQuadratic() ?
+                        ObjectiveType.QUADRATIC :
+                        ObjectiveType.LINEAR;
+    }
 
     /**
      * Returns whether to try and minimise or maximise this objective
@@ -35,6 +50,11 @@ public abstract class Objective {
      */
     public ObjectiveDirection getDirection() {
         return this.direction;
+    }
+
+
+    public Expression getExpression() {
+        return expression;
     }
 
     /**

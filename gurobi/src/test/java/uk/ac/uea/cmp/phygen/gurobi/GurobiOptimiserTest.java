@@ -1,7 +1,24 @@
-package uk.ac.uea.cmp.phygen.core.math.optimise.apache;
+/*
+ * Phylogenetics Tool suite
+ * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ *
+ * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
+
+package uk.ac.uea.cmp.phygen.gurobi;
 
 import org.junit.Test;
 import uk.ac.uea.cmp.phygen.core.math.optimise.*;
+import uk.ac.uea.cmp.phygen.core.math.optimise.apache.ApacheOptimiser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,31 +28,29 @@ import static org.junit.Assert.assertTrue;
 /**
  * Created with IntelliJ IDEA.
  * User: dan
- * Date: 14/09/13
- * Time: 21:53
+ * Date: 21/10/13
+ * Time: 14:02
  * To change this template use File | Settings | File Templates.
  */
-public class ApacheOptimiserTest {
-
+public class GurobiOptimiserTest {
     @Test
     public void testAcceptsIdentifier() throws OptimiserException {
 
-        Optimiser apache = new ApacheOptimiser();
+        /*Optimiser gurobi = new GurobiOptimiser();
 
-        assertTrue(apache.acceptsIdentifier("apache"));
-        assertTrue(apache.acceptsIdentifier("Apache"));
-        assertTrue(apache.acceptsIdentifier("APACHE"));
-        assertTrue(apache.acceptsIdentifier("uk.ac.uea.cmp.phygen.core.math.optimise.apache.ApacheOptimiser"));
+        assertTrue(gurobi.acceptsIdentifier("gurobi"));
+        assertTrue(gurobi.acceptsIdentifier("Gurobi"));
+        assertTrue(gurobi.acceptsIdentifier("GUROBI"));
+        assertTrue(gurobi.acceptsIdentifier("uk.ac.uea.cmp.phygen.gurobi.GurobiOptimiser"));  */
     }
 
 
     @Test
     public void testSimpleProblem() throws OptimiserException {
 
-        Problem problem = new Problem("simple", new ArrayList<Variable>(), new ArrayList<Constraint>(),
-                new Objective("z", Objective.ObjectiveDirection.MINIMISE, new Expression()));
+        Problem problem = new Problem("simple", new ArrayList<Variable>(), new ArrayList<Constraint>(), null);
 
-        Solution solution = new ApacheOptimiser().optimise(problem);
+        //Solution solution = new GurobiOptimiser().optimise(problem);
 
         assertTrue(true);
     }
@@ -65,7 +80,7 @@ public class ApacheOptimiserTest {
 
         // Set objective: maximize x + y + 2 z
         Expression objExpr = new Expression().addTerm(1.0, x).addTerm(1.0, y).addTerm(2.0, z);
-        Objective objective = new Objective("z", Objective.ObjectiveDirection.MAXIMISE, objExpr);
+        Objective objective = new Objective("mip1", Objective.ObjectiveDirection.MAXIMISE, objExpr);
 
         // Setup constraints
         List<Constraint> constraints = new ArrayList<>();
@@ -82,15 +97,9 @@ public class ApacheOptimiserTest {
         Problem problem = new Problem("mip1", variables, constraints, objective);
 
         // Solve
-        Solution solution = new ApacheOptimiser().optimise(problem);
+        //Solution solution = new GurobiOptimiser().optimise(problem);
 
         // Check result
-        assertTrue(solution.getSolution() == 3.0);
-
-        double[] vals = solution.getVariableValues();
-
-        assertTrue(vals[0] == 1.0);
-        assertTrue(vals[1] == 0.0);
-        assertTrue(vals[2] == 1.0);
+        assertTrue(true);
     }
 }

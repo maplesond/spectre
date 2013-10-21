@@ -21,18 +21,24 @@ import java.util.List;
 
 public class Problem {
 
+    private String name;
     private List<Variable> variables;
     private List<Constraint> constraints;
     private Objective objective;
 
     public Problem() {
-        this(new ArrayList<Variable>(), new ArrayList<Constraint>(), null);
+        this("null", new ArrayList<Variable>(), new ArrayList<Constraint>(), null);
     }
 
-    public Problem(List<Variable> variables, List<Constraint> constraints, Objective objective) {
+    public Problem(String name, List<Variable> variables, List<Constraint> constraints, Objective objective) {
+        this.name = name;
         this.variables = variables;
         this.constraints = constraints;
         this.objective = objective;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public List<Variable> getVariables() {
