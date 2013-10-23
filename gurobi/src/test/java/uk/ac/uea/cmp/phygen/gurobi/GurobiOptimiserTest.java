@@ -18,7 +18,6 @@ package uk.ac.uea.cmp.phygen.gurobi;
 
 import org.junit.Test;
 import uk.ac.uea.cmp.phygen.core.math.optimise.*;
-import uk.ac.uea.cmp.phygen.core.math.optimise.apache.ApacheOptimiser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +47,7 @@ public class GurobiOptimiserTest {
     @Test
     public void testSimpleProblem() throws OptimiserException {
 
-        Problem problem = new Problem("simple", new ArrayList<Variable>(), new ArrayList<Constraint>(), null);
+        Problem problem = new Problem("empty", new ArrayList<Variable>(), new ArrayList<Constraint>(), null);
 
         //Solution solution = new GurobiOptimiser().optimise(problem);
 
@@ -57,7 +56,7 @@ public class GurobiOptimiserTest {
 
 
     /**
-     * This example formulates and solves the following simple MIP model:
+     * This example formulates and solves the following empty MIP model:
      *  maximize    x +   y + 2 z
      *  subject to  x + 2 y + 3 z <= 4
      *  x + y       >= 1

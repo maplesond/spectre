@@ -19,7 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser;
 import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
-import uk.ac.uea.cmp.phygen.core.math.optimise.apache.ApacheOptimiser;
+import uk.ac.uea.cmp.phygen.core.math.optimise.external.Apache;
 import uk.ac.uea.cmp.phygen.superq.objectives.SecondaryProblem;
 
 import java.io.File;
@@ -47,7 +47,7 @@ public class SuperQOptions {
 
     public SuperQOptions() throws OptimiserException {
         this(null, null, null,
-                new ApacheOptimiser(),
+                new Apache(),
                 null, null,
                 false, null, false);
     }

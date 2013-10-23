@@ -93,4 +93,55 @@ public class Expression {
         this.constant += constant;
         return this;
     }
+
+    public double[] getLinearCoefficients(List<Variable> variables) {
+
+        double[] coefficients = new double[variables.size()];
+
+        for (int i = 0; i < variables.size(); i++) {
+
+            double coefficient = 0.0;
+
+            for(LinearTerm term : this.getLinearTerms()) {
+
+                if (term.getVariable().getName().equals(variables.get(i).getName())) {
+                    coefficient = term.getCoefficient();
+                    break;
+                }
+            }
+
+            coefficients[i] = coefficient;
+        }
+
+        return coefficients;
+    }
+
+    public double[][] getQuadraticCoefficients(List<Variable> variables) {
+
+        double[][] coefficients = new double[variables.size()][variables.size()];
+
+        for(int i = 0; i < variables.size(); i++) {
+            for(int j = 0; j < variables.size(); j++) {
+
+                boolean found = false;
+
+                for(QuadraticTerm quadraticTerm : this.quadraticTerms) {
+                    if (quadraticTerm.getVariable1().getName().equals(variables.get(i).getName()) &&
+                            quadraticTerm.getVariable2().getName().equals(variables.get(j).getName())) {
+                        coefficients[i][j] = quadraticTerm.getCoefficient();
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (!found) {
+                    coefficients[i][j] = i == j ?
+                        1.0 :
+                        0.0;
+                }
+            }
+        }
+
+        return coefficients;
+    }
 }

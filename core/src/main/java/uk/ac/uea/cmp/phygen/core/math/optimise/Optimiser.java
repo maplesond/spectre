@@ -45,10 +45,27 @@ public interface Optimiser {
     /**
      * Whether or not this optimiser can process a certain kind of objective.  i.e. linear or quadratic objectives
      *
-     * @param objective
+     * @param objectiveType
      * @return
      */
-    boolean acceptsObjectiveType(Objective.ObjectiveType objective);
+    boolean acceptsObjectiveType(Objective.ObjectiveType objectiveType);
+
+    /**
+     * Whether or not this optimiser can handle a certain kind of objective direction.  i.e. minimise or maximise
+     * @param objectiveDirection
+     * @return
+     */
+    boolean acceptsObjectiveDirection(Objective.ObjectiveDirection objectiveDirection);
+
+    /**
+     * Whether or not this optimiser can process a certain kind of constraint.  i.e. linear or quadratic constraints
+     *
+     * @param constraintType
+     * @return
+     */
+    boolean acceptsConstraintType(Constraint.ConstraintType constraintType);
+
+
 
 
     /**

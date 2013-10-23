@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package uk.ac.uea.cmp.phygen.core.math.optimise.glpk;
+package uk.ac.uea.cmp.phygen.core.math.optimise.external;
 
 import de.xypron.linopt.*;
 import org.apache.commons.math3.util.Pair;
@@ -26,9 +26,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @MetaInfServices(uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser.class)
-public class GLPKOptimiser extends AbstractOptimiser {
+public class GLPK extends AbstractOptimiser {
 
-    public GLPKOptimiser() throws OptimiserException {
+    public GLPK() throws OptimiserException {
         super();
     }
 
@@ -62,7 +62,7 @@ public class GLPKOptimiser extends AbstractOptimiser {
 
             Variable var = variables.get(i);
 
-            glpkProblem.column(var.getName(), i)
+            glpkProblem.column(var.getName())
                     .type(convertVariableType(var.getType()))
                     .bounds(
                             var.getBounds().getLower() == Double.NEGATIVE_INFINITY ? null : var.getBounds().getLower(),
@@ -141,10 +141,7 @@ public class GLPKOptimiser extends AbstractOptimiser {
     }
 
     @Override
-    protected Solution internalOptimise(Problem problem) {
-
-        SWIGTYPE_p_int ia;
-        SWIGTYPE_p_double ar;
+    protected Solution internalOptimise(Problem problem) throws OptimiserException {
 
         // Initialize Problem
         de.xypron.linopt.Problem glpkProblem = new de.xypron.linopt.Problem().setName(problem.getName());
@@ -159,22 +156,34 @@ public class GLPKOptimiser extends AbstractOptimiser {
         this.addConstraints(glpkProblem, problem.getConstraints());
 
         // Solve the problem using simplex
-        if (!new SolverGlpk().solve(glpkProblem)) {
+        Solver glpkSolver = new SolverGlpk();
+        if (glpkSolver.solve(glpkProblem)) {
             return this.buildSolution(glpkProblem);
-        } else {
-            return null;
+        }
+        else {
+            throw new OptimiserException("GLPK could not solve problem.", 1);
         }
     }
 
 
     @Override
     public boolean acceptsIdentifier(String id) {
-        return id.equalsIgnoreCase(this.getIdentifier()) || id.equalsIgnoreCase(GLPKOptimiser.class.getName());
+        return id.equalsIgnoreCase(this.getIdentifier()) || id.equalsIgnoreCase(GLPK.class.getName());
     }
 
     @Override
     public boolean acceptsObjectiveType(Objective.ObjectiveType objectiveType) {
         return objectiveType.isLinear();
+    }
+
+    @Override
+    public boolean acceptsObjectiveDirection(Objective.ObjectiveDirection objectiveDirection) {
+        return true;
+    }
+
+    @Override
+    public boolean acceptsConstraintType(Constraint.ConstraintType constraintType) {
+        return constraintType.isLinear();
     }
 
     @Override
@@ -187,7 +196,8 @@ public class GLPKOptimiser extends AbstractOptimiser {
     public boolean isOperational() {
 
         try {
-            GLPK.glp_version();
+            String version = org.gnu.glpk.GLPK.glp_version();
+            int i = 0;
         } catch (Throwable err) {
             // This means that GLPK isn't on the PATH env var.
             return false;

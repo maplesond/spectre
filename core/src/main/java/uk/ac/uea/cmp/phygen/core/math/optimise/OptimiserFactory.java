@@ -53,12 +53,12 @@ public class OptimiserFactory {
 
                 // Check if the requested objective is supported
                 if (!optimiser.acceptsObjectiveType(objectiveType))
-                    throw new UnsupportedOperationException("Objective Type: " + objectiveType.toString() +
+                    throw new OptimiserException("Objective Type: " + objectiveType.toString() +
                             "; not accepted by " + optimiser.getIdentifier());
 
                 // Check the optimiser is operational
                 if (!optimiser.isOperational()) {
-                    throw new UnsupportedOperationException(optimiser.getIdentifier() + " is not operational");
+                    throw new OptimiserException(optimiser.getIdentifier() + " is not operational");
                 }
 
                 // Create the appropriate optimiser, based on the objective if required

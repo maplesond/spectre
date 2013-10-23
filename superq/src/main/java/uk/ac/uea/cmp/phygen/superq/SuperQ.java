@@ -227,7 +227,7 @@ public class SuperQ extends RunnableTool {
      */
     protected double[] minimaOptimise(Optimiser optimiser, Problem problem, double[] data) throws OptimiserException {
 
-        double[] coefficients = problem.getCoefficients();
+        double[] coefficients = problem.getInitialPointCoefficients();
 
         double[] solution = new double[data.length];
 

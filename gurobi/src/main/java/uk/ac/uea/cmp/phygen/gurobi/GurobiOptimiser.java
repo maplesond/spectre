@@ -99,7 +99,7 @@ public class GurobiOptimiser extends AbstractOptimiser {
         return grbVars;
     }
 
-    public GRBConstr[] addConstraints(List<Constraint> constraints, GRBModel model, GRBVar[] vars) throws GRBException {
+    public GRBConstr[] addLinearConstraints(List<Constraint> constraints, GRBModel model, GRBVar[] vars) throws GRBException {
 
         GRBConstr[] grbConstraints = new GRBConstr[constraints.size()];
 
@@ -212,7 +212,7 @@ public class GurobiOptimiser extends AbstractOptimiser {
             }
 
             // Add constraints
-            GRBConstr[] constraints = addConstraints(problem.getConstraints(), model, vars);
+            GRBConstr[] constraints = addLinearConstraints(problem.getConstraints(), model, vars);
 
             // Optimise the model
             model.optimize();
@@ -246,6 +246,21 @@ public class GurobiOptimiser extends AbstractOptimiser {
     @Override
     public boolean acceptsObjectiveType(Objective.ObjectiveType objectiveType) {
         return objectiveType.isLinear() || objectiveType.isQuadratic();
+    }
+
+    @Override
+    public boolean acceptsObjectiveDirection(Objective.ObjectiveDirection objectiveDirection) {
+        return true;
+    }
+
+    @Override
+    public boolean acceptsConstraintType(Constraint.ConstraintType constraintType) {
+
+        if (constraintType.isQuadratic())
+            throw new UnsupportedOperationException("Gurobi can handle quadratic constraints but the translation code has " +
+                    "not been implemented yet");
+
+        return true;
     }
 
     @Override

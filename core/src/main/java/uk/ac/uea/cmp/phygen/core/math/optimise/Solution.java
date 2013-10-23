@@ -32,10 +32,12 @@ public class Solution {
 
     private List<Pair<String, Double>> variables;
     private double solution;
+    private String timeTaken;
 
     public Solution(List<Pair<String, Double>> variables, double solution) {
         this.variables = variables;
         this.solution = solution;
+        this.timeTaken = "";
     }
 
     public List<Pair<String, Double>> getVariables() {
@@ -57,6 +59,14 @@ public class Solution {
         return solution;
     }
 
+    public String getTimeTaken() {
+        return timeTaken;
+    }
+
+    public void setTimeTaken(String timeTaken) {
+        this.timeTaken = timeTaken;
+    }
+
     @Override
     public String toString() {
 
@@ -69,6 +79,10 @@ public class Solution {
         }
 
         sb.append("Objective solution: " + this.solution);
+
+        if (!timeTaken.isEmpty()) {
+            sb.append("\nTime taken to calculate solution: " + timeTaken);
+        }
 
         return sb.toString();
     }

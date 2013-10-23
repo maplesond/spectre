@@ -1,5 +1,7 @@
 package uk.ac.uea.cmp.phygen.core.math.optimise;
 
+import org.apache.commons.lang3.time.StopWatch;
+
 /**
  * Created with IntelliJ IDEA.
  * User: dan
@@ -22,14 +24,39 @@ public abstract class AbstractOptimiser implements Optimiser {
             throw new OptimiserException("An objective must be specified for " + this.getIdentifier());
         }
 
-        // Check this solver can handle the objective
-        if (!this.acceptsObjectiveType(problem.getObjective().getType())) {
-            throw new UnsupportedOperationException("This optimiser: " + this.getIdentifier() + "; cannot handle objective: " +
-                problem.getObjective().getName() + "; which is: " + problem.getObjective().getType().toString());
+        // Check we have variables
+        if (problem.getVariables() == null || problem.getVariables().isEmpty()) {
+            throw new OptimiserException("At least one problem variable must be specified to find a solution for " + this.getIdentifier());
         }
+
+        // Check this solver can handle the objective type
+        if (!this.acceptsObjectiveType(problem.getObjectiveType())) {
+            throw new UnsupportedOperationException("This optimiser: " + this.getIdentifier() + "; cannot handle objective type: " +
+                problem.getObjective().getName() + "; which is: " + problem.getObjectiveType().toString());
+        }
+
+        // Check this solver can handle the objective direction
+        if (!this.acceptsObjectiveDirection(problem.getObjectiveDirection())) {
+            throw new UnsupportedOperationException("This optimiser: " + this.getIdentifier() + "; cannot handle objective direction: " +
+                    problem.getObjective().getName() + "; which is: " + problem.getObjectiveDirection().toString());
+        }
+
+        // Check this solver can handle the constraints
+        if (!this.acceptsConstraintType(problem.getConstraintType())) {
+            throw new UnsupportedOperationException("This optimiser: " + this.getIdentifier() + "; cannot handle constraint type: " +
+                    problem.getConstraintType().toString());
+        }
+
+        // Start the timer
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
 
         // Run the solver on the problem to get a (hopefully) optimal solution
         Solution solution = this.internalOptimise(problem);
+
+        // Stop the timer
+        stopWatch.stop();
+        solution.setTimeTaken(stopWatch.toString());
 
         // Probably used a lot of memory.  Collect Garbage to save space.
         System.gc();

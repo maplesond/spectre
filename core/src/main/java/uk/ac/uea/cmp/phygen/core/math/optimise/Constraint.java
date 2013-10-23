@@ -47,9 +47,6 @@ public class Constraint {
 
     public Constraint(String name, Expression expression, Relation relation, double value) {
 
-        if (expression.isQuadratic())
-            throw new IllegalArgumentException("Can't handle quadratic expressions for defining constraints");
-
         this.name = name;
         this.value = value;
         this.relation = relation;
@@ -70,5 +67,30 @@ public class Constraint {
 
     public Expression getExpression() {
         return expression;
+    }
+
+    /**
+     * Returns what type of constraint this is.
+     * @return
+     */
+    public ConstraintType getType() {
+        return this.expression == null ?
+                ConstraintType.LINEAR :
+                this.expression.isQuadratic() ?
+                        ConstraintType.QUADRATIC :
+                        ConstraintType.LINEAR;
+    }
+
+    public enum ConstraintType {
+        LINEAR,
+        QUADRATIC;
+
+        public boolean isLinear() {
+            return this == ConstraintType.LINEAR;
+        }
+
+        public boolean isQuadratic() {
+            return this == ConstraintType.QUADRATIC;
+        }
     }
 }

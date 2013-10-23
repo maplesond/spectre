@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package uk.ac.uea.cmp.phygen.core.math.optimise.apache;
+package uk.ac.uea.cmp.phygen.core.math.optimise.external;
 
 import org.apache.commons.math3.optimization.GoalType;
 import org.apache.commons.math3.optimization.PointValuePair;
@@ -30,9 +30,9 @@ import java.util.Collection;
 import java.util.List;
 
 @MetaInfServices(uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser.class)
-public class ApacheOptimiser extends AbstractOptimiser {
+public class Apache extends AbstractOptimiser {
 
-    public ApacheOptimiser() throws OptimiserException {
+    public Apache() throws OptimiserException {
         super();
     }
 
@@ -129,26 +129,9 @@ public class ApacheOptimiser extends AbstractOptimiser {
 
     protected LinearObjectiveFunction convertObjective(Objective phygenObjective, List<Variable> variables) {
 
-        List<LinearTerm> terms = phygenObjective.getExpression().getLinearTerms();
-
-        double[] coefficients = new double[variables.size()];
-
-        for (int i = 0; i < variables.size(); i++) {
-
-            double coefficient = 0.0;
-
-            for(LinearTerm term : terms) {
-
-                if (term.getVariable().getName().equals(variables.get(i).getName())) {
-                    coefficient = term.getCoefficient();
-                    break;
-                }
-            }
-
-            coefficients[i] = coefficient;
-        }
-
-        return new LinearObjectiveFunction(coefficients, phygenObjective.getExpression().getConstant());
+        return new LinearObjectiveFunction(
+                phygenObjective.getExpression().getLinearCoefficients(variables),
+                phygenObjective.getExpression().getConstant());
     }
 
     protected Solution createSolution(PointValuePair pvp, List<Variable> variables) {
@@ -178,9 +161,15 @@ public class ApacheOptimiser extends AbstractOptimiser {
         // Add the regular constraints
         this.addRegularConstraints(constraints, problem);
 
-        // Create and run the solver
+        // Create the solver
         SimplexSolver solver = new SimplexSolver();
-        solver.setMaxIterations(1000);
+
+        // Set max iterations if set by the user
+        if (problem.getMaxIterations() != 0) {
+            solver.setMaxIterations(problem.getMaxIterations());
+        }
+
+        // Run the solver
         PointValuePair pvp = solver.optimize(f, constraints,
                 convertObjectiveDirection(problem.getObjective().getDirection()),
                 false);
@@ -192,12 +181,22 @@ public class ApacheOptimiser extends AbstractOptimiser {
 
     @Override
     public boolean acceptsIdentifier(String id) {
-        return id.equalsIgnoreCase(this.getIdentifier()) || id.equalsIgnoreCase(ApacheOptimiser.class.getName());
+        return id.equalsIgnoreCase(this.getIdentifier()) || id.equalsIgnoreCase(Apache.class.getName());
     }
 
     @Override
     public boolean acceptsObjectiveType(Objective.ObjectiveType objectiveType) {
         return objectiveType.isLinear();
+    }
+
+    @Override
+    public boolean acceptsObjectiveDirection(Objective.ObjectiveDirection objectiveDirection) {
+        return true;
+    }
+
+    @Override
+    public boolean acceptsConstraintType(Constraint.ConstraintType constraintType) {
+        return constraintType.isLinear();
     }
 
     @Override

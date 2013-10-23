@@ -25,6 +25,9 @@ public class Problem {
     private List<Variable> variables;
     private List<Constraint> constraints;
     private Objective objective;
+    private int maxIterations;
+    private double tolerance;
+    private boolean initialPoint;
 
     public Problem() {
         this("null", new ArrayList<Variable>(), new ArrayList<Constraint>(), null);
@@ -35,6 +38,9 @@ public class Problem {
         this.variables = variables;
         this.constraints = constraints;
         this.objective = objective;
+        this.maxIterations = 0;
+        this.tolerance = 0.0;
+        this.initialPoint = false;
     }
 
     public String getName() {
@@ -53,6 +59,30 @@ public class Problem {
         return objective;
     }
 
+    public int getMaxIterations() {
+        return maxIterations;
+    }
+
+    public void setMaxIterations(int maxIterations) {
+        this.maxIterations = maxIterations;
+    }
+
+    public double getTolerance() {
+        return tolerance;
+    }
+
+    public void setTolerance(double tolerance) {
+        this.tolerance = tolerance;
+    }
+
+    public boolean isInitialPointSet() {
+        return initialPoint;
+    }
+
+    public void setInitialPoint(boolean initialPoint) {
+        this.initialPoint = initialPoint;
+    }
+
     public int getNbVariables() {
         if (this.variables == null)
             return 0;
@@ -60,7 +90,7 @@ public class Problem {
         return this.variables.size();
     }
 
-    public double[] getCoefficients() {
+    public double[] getInitialPointCoefficients() {
         double[] coefficients = new double[variables.size()];
 
         for (int i = 0; i < variables.size(); i++) {
@@ -68,5 +98,24 @@ public class Problem {
         }
 
         return coefficients;
+    }
+
+    public Objective.ObjectiveType getObjectiveType() {
+        return this.objective.getType();
+    }
+
+    public Objective.ObjectiveDirection getObjectiveDirection() {
+        return this.objective.getDirection();
+    }
+
+    public Constraint.ConstraintType getConstraintType() {
+
+        for(Constraint constraint : this.constraints) {
+            if (constraint.getType() == Constraint.ConstraintType.QUADRATIC) {
+                return Constraint.ConstraintType.QUADRATIC;
+            }
+        }
+
+        return Constraint.ConstraintType.LINEAR;
     }
 }

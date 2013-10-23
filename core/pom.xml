@@ -84,21 +84,13 @@
             <version>1.8</version>
         </dependency>
 
-
-        <!-- We cannot assume that the user has gurobi installed.  And they probably don't have gurobi in their local
-             maven repository anyway.  If you do have gurobi installed, then uncomment this block, and make sure you've
-             manually added the gurobi jar into your local maven repository with this command (edit where appropriate):
-             "mvn install:install-file -Dfile=<path-to-gurobi-jar> -DgroupId=gurobi -DartifactId=gurobi \
-             -Dversion=<gurobi-version> -Dpackaging=jar" Preferably download and use version 5.0.2... other versions may
-             work but have not been tested -->
-
-        <!--
         <dependency>
-            <groupId>gurobi</groupId>
-            <artifactId>gurobi</artifactId>
-            <version>5.0.2-64</version>
+            <groupId>joptimizer</groupId>
+            <artifactId>joptimizer</artifactId>
+            <version>3.2.0</version>
         </dependency>
-        -->
+
+
 
 
         <!-- METAINF services -->
