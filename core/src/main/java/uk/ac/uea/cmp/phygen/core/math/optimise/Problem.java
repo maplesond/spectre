@@ -118,4 +118,17 @@ public class Problem {
 
         return Constraint.ConstraintType.LINEAR;
     }
+
+    public int getNbEqualityConstraints() {
+
+        int count = 0;
+
+        for(Constraint constraint : this.constraints) {
+            if (constraint.getRelation() == Constraint.Relation.EQUAL) {
+                count++;
+            }
+        }
+
+        return count;
+    }
 }

@@ -96,13 +96,16 @@ public class Expression {
 
     public double[] getLinearCoefficients(List<Variable> variables) {
 
+        if (this.linearTerms == null || this.linearTerms.isEmpty())
+            return null;
+
         double[] coefficients = new double[variables.size()];
 
         for (int i = 0; i < variables.size(); i++) {
 
             double coefficient = 0.0;
 
-            for(LinearTerm term : this.getLinearTerms()) {
+            for(LinearTerm term : this.linearTerms) {
 
                 if (term.getVariable().getName().equals(variables.get(i).getName())) {
                     coefficient = term.getCoefficient();
@@ -117,6 +120,9 @@ public class Expression {
     }
 
     public double[][] getQuadraticCoefficients(List<Variable> variables) {
+
+        if (this.quadraticTerms == null || this.quadraticTerms.isEmpty())
+            return null;
 
         double[][] coefficients = new double[variables.size()][variables.size()];
 

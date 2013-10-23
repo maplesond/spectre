@@ -17,18 +17,19 @@ package uk.ac.uea.cmp.phygen.gurobi;
 
 import gurobi.*;
 import org.apache.commons.math3.util.Pair;
+import org.kohsuke.MetaInfServices;
 import uk.ac.uea.cmp.phygen.core.math.optimise.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@MetaInfServices(uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser.class)
+public class Gurobi extends AbstractOptimiser {
 
-public class GurobiOptimiser extends AbstractOptimiser {
-
-    // GurobiOptimiser vars
+    // Gurobi vars
     private GRBEnv env;
 
-    public GurobiOptimiser() throws OptimiserException {
+    public Gurobi() throws OptimiserException {
         try {
             //GRBEnv env = new GRBEnv("gurobi.log");
             this.env = new GRBEnv();
@@ -239,7 +240,7 @@ public class GurobiOptimiser extends AbstractOptimiser {
 
     @Override
     public boolean acceptsIdentifier(String id) {
-        return id.equalsIgnoreCase(this.getIdentifier()) || id.equalsIgnoreCase(GurobiOptimiser.class.getName());
+        return id.equalsIgnoreCase(this.getIdentifier()) || id.equalsIgnoreCase(Gurobi.class.getName());
     }
 
 

@@ -84,15 +84,47 @@ public class JOptimizer extends AbstractOptimiser {
         }
     }
 
-    protected void addRegularConstraints(List<ConvexMultivariateRealFunction> constraints, Problem problem) {
-
+    protected void addInequalityConstraints(List<ConvexMultivariateRealFunction> constraints, Problem problem) {
         for(Constraint constraint: problem.getConstraints()) {
 
-            constraints.add(new LinearMultivariateRealFunction(
-                    constraint.getExpression().getLinearCoefficients(problem.getVariables()),
-                    constraint.getValue() - constraint.getExpression().getConstant())
-            );
+            if (constraint.getRelation() != Constraint.Relation.EQUAL) {
+                constraints.add(new LinearMultivariateRealFunction(
+                        constraint.getExpression().getLinearCoefficients(problem.getVariables()),
+                        constraint.getValue() - constraint.getExpression().getConstant())
+                );
+            }
         }
+    }
+
+    protected EqualityConstraints getEqualityConstraints(Problem problem) {
+
+        int nbEqualityConstraints = problem.getNbEqualityConstraints();
+
+        if (nbEqualityConstraints == 0)
+            return null;
+
+        double[][] coefficients = new double[nbEqualityConstraints][problem.getNbVariables()];
+        double[] constants = new double[nbEqualityConstraints];
+
+        double constant = 0.0;
+        boolean found = false;
+
+        int eqConstIdx = 0;
+        for(Constraint constraint: problem.getConstraints()) {
+            if (constraint.getRelation() == Constraint.Relation.EQUAL) {
+                double[] phygenCoefficients = constraint.getExpression().getLinearCoefficients(problem.getVariables());
+
+                for(int i = 0; i < problem.getNbVariables(); i++) {
+                    coefficients[eqConstIdx][i] = phygenCoefficients[i];
+                }
+
+                constants[eqConstIdx] = constraint.getExpression().getConstant() - constraint.getValue();
+
+                eqConstIdx++;
+            }
+        }
+
+        return new EqualityConstraints(coefficients, constants);
     }
 
     protected ConvexMultivariateRealFunction convertObjective(Objective phygenObjective, List<Variable> variables) {
@@ -127,6 +159,24 @@ public class JOptimizer extends AbstractOptimiser {
         return new Solution(variableValues, 0.0);
     }
 
+    private class EqualityConstraints {
+        private double[][] A;
+        private double[] B;
+
+        private EqualityConstraints(double[][] a, double[] b) {
+            A = a;
+            B = b;
+        }
+
+        private double[][] getA() {
+            return A;
+        }
+
+        private double[] getB() {
+            return B;
+        }
+    }
+
 
     @Override
     protected Solution internalOptimise(Problem problem) throws OptimiserException {
@@ -140,13 +190,21 @@ public class JOptimizer extends AbstractOptimiser {
         // Add the decision variable constraints (i.e. upper and lower bounds)
         this.addDecisionVariables(constraints, problem);
 
-        // Add the regular constraints
-        this.addRegularConstraints(constraints, problem);
+        // Add the inequality constraints
+        this.addInequalityConstraints(constraints, problem);
+
+        // Add quality constraints
+        EqualityConstraints equalityConstraint = this.getEqualityConstraints(problem);
 
         // Create the request
         OptimizationRequest or = new OptimizationRequest();
         or.setF0(objective);
         or.setFi(constraints.toArray(new ConvexMultivariateRealFunction[constraints.size()]));
+
+        if (equalityConstraint != null) {
+            or.setA(equalityConstraint.getA());
+            or.setB(equalityConstraint.getB());
+        }
 
         if (problem.isInitialPointSet()) {
             or.setInitialPoint(problem.getInitialPointCoefficients());

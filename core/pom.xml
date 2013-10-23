@@ -75,7 +75,7 @@
         <dependency>
             <groupId>org.gnu.glpk</groupId>
             <artifactId>glpk-java</artifactId>
-            <version>1.0.29</version>
+            <version>1.0.31</version>
         </dependency>
 
         <dependency>
