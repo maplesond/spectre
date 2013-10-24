@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package uk.ac.uea.cmp.phygen.superq.objectives;
+package uk.ac.uea.cmp.phygen.superq.problems;
 
 import org.kohsuke.MetaInfServices;
 import uk.ac.uea.cmp.phygen.core.math.optimise.*;
@@ -24,7 +24,7 @@ import java.util.List;
 
 
 @MetaInfServices(SecondaryProblem.class)
-public class Minima implements SecondaryProblem {
+public class Quadratic implements SecondaryProblem {
 
     @Override
     public Problem compileProblem(int nbTaxa, double[] X, double[][] EtE) {
@@ -38,12 +38,20 @@ public class Minima implements SecondaryProblem {
 
     @Override
     public Objective.ObjectiveType getObjectiveType() {
-        return Objective.ObjectiveType.LINEAR;
+        return Objective.ObjectiveType.QUADRATIC;
     }
 
     private Objective createObjective(List<Variable> variables) {
+        Expression expression = new Expression();
+        for (int i = 0; i < variables.size(); i++) {
+            expression.addTerm(1.0, variables.get(i), variables.get(i));
+        }
 
-        return new Objective(this.getName(), Objective.ObjectiveDirection.MINIMISE, null);
+        /*for(int i = 0; i < variables.size(); i++) {
+            expression.addTerm(1.0, variables.get(i));
+        }*/
+
+        return new Objective(this.getName(), Objective.ObjectiveDirection.MINIMISE, expression);
     }
 
     private List<Constraint> createConstraints(List<Variable> variables, double[] X, double[][] EtE) {
@@ -52,10 +60,12 @@ public class Minima implements SecondaryProblem {
 
         for (int i = 0; i < EtE.length; i++) {
             Expression expr = new Expression();
+            double sum = 0.0;
             for (int j = 0; j < EtE.length; j++) {
                 expr.addTerm(EtE[i][j], variables.get(j));
+                sum += EtE[i][j] * X[j];
             }
-            constraints.add(new Constraint("c0", expr, Constraint.Relation.EQUAL, 0.0));
+            constraints.add(new Constraint("c0", expr, Constraint.Relation.EQUAL, sum));
         }
 
         return constraints;
@@ -63,16 +73,12 @@ public class Minima implements SecondaryProblem {
 
     public List<Variable> createVariables(double[] X) {
 
-        double[] coefficients = new double[X.length];
-        Arrays.fill(coefficients, 0.0);
-
         List<Variable> variables = new ArrayList<>();
 
-        for (int i = 0; i < coefficients.length; i++) {
+        for (int i = 0; i < X.length; i++) {
             variables.add(new Variable(
                     "x" + i,                                        // Name
-                    coefficients[i],                                // Coefficient
-                    new Bounds(-X[i], Bounds.BoundType.LOWER),      // Bounds
+                    new Bounds(0.0, Bounds.BoundType.LOWER),        // Bounds
                     Variable.VariableType.CONTINUOUS                // Type
             ));
         }
@@ -83,7 +89,7 @@ public class Minima implements SecondaryProblem {
 
     @Override
     public String getName() {
-        return "MINIMA";
+        return "QUADRATIC";
     }
 
     @Override

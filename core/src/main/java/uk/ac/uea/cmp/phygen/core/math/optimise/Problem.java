@@ -27,7 +27,7 @@ public class Problem {
     private Objective objective;
     private int maxIterations;
     private double tolerance;
-    private boolean initialPoint;
+    private double[] initialPoint;
 
     public Problem() {
         this("null", new ArrayList<Variable>(), new ArrayList<Constraint>(), null);
@@ -40,7 +40,7 @@ public class Problem {
         this.objective = objective;
         this.maxIterations = 0;
         this.tolerance = 0.0;
-        this.initialPoint = false;
+        this.initialPoint = null;
     }
 
     public String getName() {
@@ -75,11 +75,11 @@ public class Problem {
         this.tolerance = tolerance;
     }
 
-    public boolean isInitialPointSet() {
+    public double[] getInitialPoint() {
         return initialPoint;
     }
 
-    public void setInitialPoint(boolean initialPoint) {
+    public void setInitialPoint(double[] initialPoint) {
         this.initialPoint = initialPoint;
     }
 
@@ -88,16 +88,6 @@ public class Problem {
             return 0;
 
         return this.variables.size();
-    }
-
-    public double[] getInitialPointCoefficients() {
-        double[] coefficients = new double[variables.size()];
-
-        for (int i = 0; i < variables.size(); i++) {
-            coefficients[i] = variables.get(i).getCoefficient();
-        }
-
-        return coefficients;
     }
 
     public Objective.ObjectiveType getObjectiveType() {
@@ -117,6 +107,20 @@ public class Problem {
         }
 
         return Constraint.ConstraintType.LINEAR;
+    }
+
+    public Variable.VariableType getVariableType() {
+
+        for(Variable variable : this.variables) {
+            if (variable.getType() == Variable.VariableType.BINARY) {
+                return Variable.VariableType.BINARY;
+            }
+            else if (variable.getType() == Variable.VariableType.INTEGER) {
+                return Variable.VariableType.INTEGER;
+            }
+        }
+
+        return Variable.VariableType.CONTINUOUS;
     }
 
     public int getNbEqualityConstraints() {

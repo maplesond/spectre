@@ -40,6 +40,8 @@ public class JOptimizer extends AbstractOptimiser {
 
         List<Variable> variables = problem.getVariables();
 
+        boolean invertedObjective = problem.getObjectiveDirection() == Objective.ObjectiveDirection.MAXIMISE;
+
         // Add restriction constraint
         for (int i = 0; i < variables.size(); i++) {
 
@@ -48,15 +50,17 @@ public class JOptimizer extends AbstractOptimiser {
             double[] lowerCoefficients = new double[variables.size()];
 
             for (int j = 0; j < variables.size(); j++) {
-
-                lowerCoefficients[j] = i == j ? -1.0 : 0.0;
+                lowerCoefficients[j] = i == j ?
+                        invertedObjective ? 1.0 : -1.0 :
+                        0.0;
             }
 
             double[] upperCoefficients = new double[variables.size()];
 
             for (int j = 0; j < variables.size(); j++) {
-
-                upperCoefficients[j] = i == j ? -1.0 : 0.0;
+                upperCoefficients[j] = i == j ?
+                        invertedObjective ? -1.0 : 1.0 :
+                        0.0;
             }
 
             Bounds.BoundType boundType = var.getBounds().getBoundType();
@@ -64,34 +68,43 @@ public class JOptimizer extends AbstractOptimiser {
             if (boundType == Bounds.BoundType.FREE) {
                 // Do nothing in this case
             }
-            else if (boundType == Bounds.BoundType.LOWER) {
-                constraints.add(new LinearMultivariateRealFunction(lowerCoefficients, var.getBounds().getLower()));
-            }
-            else if (boundType == Bounds.BoundType.UPPER) {
-                constraints.add(new LinearMultivariateRealFunction(upperCoefficients, var.getBounds().getUpper()));
-            }
-            else if (boundType == Bounds.BoundType.DOUBLE) {
-                constraints.add(new LinearMultivariateRealFunction(lowerCoefficients, var.getBounds().getLower()));
-                constraints.add(new LinearMultivariateRealFunction(upperCoefficients, var.getBounds().getUpper()));
-            }
-            else if (boundType == Bounds.BoundType.FIXED) {
-                constraints.add(new LinearMultivariateRealFunction(lowerCoefficients, var.getBounds().getLower()));
-                constraints.add(new LinearMultivariateRealFunction(upperCoefficients, var.getBounds().getLower()));
-            }
             else {
-                throw new IllegalArgumentException("Unknown bound type encountered: " + boundType.toString());
+                if (boundType == Bounds.BoundType.LOWER || boundType == Bounds.BoundType.DOUBLE || boundType == Bounds.BoundType.FIXED) {
+                    constraints.add(new LinearMultivariateRealFunction(lowerCoefficients,
+                            invertedObjective ? -var.getBounds().getLower() : var.getBounds().getLower()));
+                }
+
+                if (boundType == Bounds.BoundType.UPPER || boundType == Bounds.BoundType.DOUBLE || boundType == Bounds.BoundType.FIXED) {
+                    constraints.add(new LinearMultivariateRealFunction(upperCoefficients,
+                            invertedObjective ? var.getBounds().getUpper() : -var.getBounds().getUpper()));
+                }
             }
         }
     }
 
     protected void addInequalityConstraints(List<ConvexMultivariateRealFunction> constraints, Problem problem) {
+
+        boolean invertedObjective = problem.getObjectiveDirection() == Objective.ObjectiveDirection.MAXIMISE;
+
         for(Constraint constraint: problem.getConstraints()) {
 
             if (constraint.getRelation() != Constraint.Relation.EQUAL) {
-                constraints.add(new LinearMultivariateRealFunction(
-                        constraint.getExpression().getLinearCoefficients(problem.getVariables()),
-                        constraint.getValue() - constraint.getExpression().getConstant())
-                );
+                boolean invertedConstraint = constraint.getRelation() == Constraint.Relation.GREATER_THAN_OR_EQUAL_TO;
+
+                boolean invert = invertedObjective ^ invertedConstraint;
+
+                if (invert) {
+                    constraints.add(new LinearMultivariateRealFunction(
+                            constraint.getExpression().getInvertedLinearCoefficients(problem.getVariables()),
+                            constraint.getValue() - constraint.getExpression().getConstant())
+                    );
+                }
+                else {
+                    constraints.add(new LinearMultivariateRealFunction(
+                            constraint.getExpression().getLinearCoefficients(problem.getVariables()),
+                            constraint.getExpression().getConstant() - constraint.getValue())
+                    );
+                }
             }
         }
     }
@@ -112,13 +125,17 @@ public class JOptimizer extends AbstractOptimiser {
         int eqConstIdx = 0;
         for(Constraint constraint: problem.getConstraints()) {
             if (constraint.getRelation() == Constraint.Relation.EQUAL) {
-                double[] phygenCoefficients = constraint.getExpression().getLinearCoefficients(problem.getVariables());
+                double[] phygenCoefficients = problem.getObjectiveDirection() == Objective.ObjectiveDirection.MAXIMISE ?
+                        constraint.getExpression().getInvertedLinearCoefficients(problem.getVariables()) :
+                        constraint.getExpression().getLinearCoefficients(problem.getVariables());
 
                 for(int i = 0; i < problem.getNbVariables(); i++) {
                     coefficients[eqConstIdx][i] = phygenCoefficients[i];
                 }
 
-                constants[eqConstIdx] = constraint.getExpression().getConstant() - constraint.getValue();
+                constants[eqConstIdx] = problem.getObjectiveDirection() == Objective.ObjectiveDirection.MAXIMISE ?
+                        constraint.getExpression().getConstant() - constraint.getValue() :
+                        constraint.getValue() - constraint.getExpression().getConstant();
 
                 eqConstIdx++;
             }
@@ -130,30 +147,41 @@ public class JOptimizer extends AbstractOptimiser {
     protected ConvexMultivariateRealFunction convertObjective(Objective phygenObjective, List<Variable> variables) {
 
         if (phygenObjective.getType().isLinear()) {
-            return new LinearMultivariateRealFunction(
-                    phygenObjective.getExpression().getLinearCoefficients(variables),
-                    phygenObjective.getExpression().getConstant()
-            );
+            return phygenObjective.getDirection() == Objective.ObjectiveDirection.MAXIMISE ?
+                    new LinearMultivariateRealFunction(
+                            phygenObjective.getExpression().getInvertedLinearCoefficients(variables),
+                            -phygenObjective.getExpression().getConstant()) :
+                    new LinearMultivariateRealFunction(
+                            phygenObjective.getExpression().getLinearCoefficients(variables),
+                            phygenObjective.getExpression().getConstant());
         }
         else if (phygenObjective.getType().isQuadratic()) {
 
-            return new PDQuadraticMultivariateRealFunction(
-                    phygenObjective.getExpression().getQuadraticCoefficients(variables),
-                    phygenObjective.getExpression().getLinearCoefficients(variables),
-                    phygenObjective.getExpression().getConstant()
-            );
+            return phygenObjective.getDirection() == Objective.ObjectiveDirection.MAXIMISE ?
+                    new PDQuadraticMultivariateRealFunction(
+                            phygenObjective.getExpression().getInvertedQuadraticCoefficients(variables),
+                            phygenObjective.getExpression().getInvertedLinearCoefficients(variables),
+                            -phygenObjective.getExpression().getConstant()) :
+                    new PDQuadraticMultivariateRealFunction(
+                            phygenObjective.getExpression().getQuadraticCoefficients(variables),
+                            phygenObjective.getExpression().getLinearCoefficients(variables),
+                            phygenObjective.getExpression().getConstant());
         }
         else {
             throw new IllegalArgumentException("JOptimizer is not sure how to translate objective.");
         }
     }
 
-    protected Solution createSolution(double[] solution, List<Variable> variables) {
+    protected Solution createSolution(double[] solution, Problem problem) {
 
         List<Pair<String,Double>> variableValues = new ArrayList<>();
 
-        for(int i = 0; i < variables.size(); i++) {
-            variableValues.add(new Pair<>(variables.get(i).getName(), solution[i]));
+        for(int i = 0; i < problem.getVariables().size(); i++) {
+            variableValues.add(new Pair<>(problem.getVariables().get(i).getName(),
+                    problem.getObjectiveDirection() == Objective.ObjectiveDirection.MAXIMISE ?
+                            -1.0 * solution[i] :
+                            solution[i]
+            ));
         }
 
         return new Solution(variableValues, 0.0);
@@ -206,8 +234,8 @@ public class JOptimizer extends AbstractOptimiser {
             or.setB(equalityConstraint.getB());
         }
 
-        if (problem.isInitialPointSet()) {
-            or.setInitialPoint(problem.getInitialPointCoefficients());
+        if (problem.getInitialPoint() != null) {
+            or.setInitialPoint(problem.getInitialPoint());
         }
 
         if (problem.getMaxIterations() != 0) {
@@ -228,7 +256,7 @@ public class JOptimizer extends AbstractOptimiser {
             int returnCode = optimizer.optimize();
 
             if (returnCode == 0) {
-                return this.createSolution(optimizer.getOptimizationResponse().getSolution(), problem.getVariables());
+                return this.createSolution(optimizer.getOptimizationResponse().getSolution(), problem);
             }
             else {
                 throw new OptimiserException("JOptimize could not solve problem.  Return code: " + returnCode);
@@ -252,17 +280,17 @@ public class JOptimizer extends AbstractOptimiser {
     }
 
     @Override
-    public boolean acceptsObjectiveDirection(Objective.ObjectiveDirection objectiveDirection) {
-        return objectiveDirection == Objective.ObjectiveDirection.MINIMISE;
-    }
-
-    @Override
     public boolean acceptsConstraintType(Constraint.ConstraintType constraintType) {
         if (constraintType.isQuadratic())
             throw new UnsupportedOperationException("JOptimizer can handle quadratic constraints but the translation code has " +
                     "not been implemented yet");
 
         return true;
+    }
+
+    @Override
+    public boolean acceptsVariableType(Variable.VariableType variableType) {
+        return variableType == Variable.VariableType.CONTINUOUS;
     }
 
     @Override

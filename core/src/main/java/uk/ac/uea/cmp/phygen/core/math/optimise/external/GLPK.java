@@ -25,7 +25,7 @@ import uk.ac.uea.cmp.phygen.core.math.optimise.Problem;
 import java.util.ArrayList;
 import java.util.List;
 
-@MetaInfServices(uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser.class)
+//@MetaInfServices(uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser.class)
 public class GLPK extends AbstractOptimiser {
 
     public GLPK() throws OptimiserException {
@@ -62,11 +62,13 @@ public class GLPK extends AbstractOptimiser {
 
             Variable var = variables.get(i);
 
-            glpkProblem.column(var.getName())
-                    .type(convertVariableType(var.getType()))
-                    .bounds(
-                            var.getBounds().getLower() == Double.NEGATIVE_INFINITY ? null : var.getBounds().getLower(),
-                            var.getBounds().getUpper() == Double.POSITIVE_INFINITY ? null : var.getBounds().getUpper());
+            de.xypron.linopt.Problem.Column col = glpkProblem.column(var.getName()).type(convertVariableType(var.getType()));
+
+            if (var.getBounds().getBoundType() != Bounds.BoundType.FREE) {
+                 col.bounds(
+                         var.getBounds().getLower(),
+                         var.getBounds().getUpper());
+            }
         }
     }
 
@@ -126,7 +128,7 @@ public class GLPK extends AbstractOptimiser {
             glpkProblem.objective().add(term.getCoefficient(), col);
         }
 
-        // What about the constant???
+        glpkProblem.objective().setValue(objective.getExpression().getConstant());
     }
 
     protected Solution buildSolution(de.xypron.linopt.Problem glpkProblem) {
@@ -177,13 +179,13 @@ public class GLPK extends AbstractOptimiser {
     }
 
     @Override
-    public boolean acceptsObjectiveDirection(Objective.ObjectiveDirection objectiveDirection) {
-        return true;
+    public boolean acceptsConstraintType(Constraint.ConstraintType constraintType) {
+        return constraintType.isLinear();
     }
 
     @Override
-    public boolean acceptsConstraintType(Constraint.ConstraintType constraintType) {
-        return constraintType.isLinear();
+    public boolean acceptsVariableType(Variable.VariableType variableType) {
+        return true;
     }
 
     @Override

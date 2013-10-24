@@ -13,41 +13,66 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package uk.ac.uea.cmp.phygen.superq.objectives;
+package uk.ac.uea.cmp.phygen.superq.problems;
 
 import org.kohsuke.MetaInfServices;
 import uk.ac.uea.cmp.phygen.core.math.optimise.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 
 @MetaInfServices(SecondaryProblem.class)
-public class Quadratic implements SecondaryProblem {
+public class Balanced implements SecondaryProblem {
+
+    private double[] buildCoefficients(final int size, final int nbTaxa) {
+        double[] coefficients = new double[size];
+
+        int n = 0;
+
+        for (int m = 1; m < nbTaxa - 1; m++) {
+
+            for (int j = m + 2; j < nbTaxa + 1; j++) {
+
+                if (m != 1 || j != nbTaxa) {
+
+                    int a = j - m;
+                    //      SplitIndex [] splitIndices = new SplitIndex [N * (N - 1) / 2 - N];
+                    //      Split index is defined as:   splitIndices [n] = new SplitIndex(m, j);
+                    coefficients[n++] = a * (a - 1) * (nbTaxa - a) * (nbTaxa - a - 1);
+                }
+            }
+        }
+
+        return coefficients;
+    }
+
+    @Override
+    public Objective.ObjectiveType getObjectiveType() {
+        return Objective.ObjectiveType.LINEAR;
+    }
+
 
     @Override
     public Problem compileProblem(int nbTaxa, double[] X, double[][] EtE) {
 
         List<Variable> variables = this.createVariables(X);
         List<Constraint> constraints = this.createConstraints(variables, X, EtE);
-        Objective objective = this.createObjective(variables);
+        Objective objective = this.createObjective(nbTaxa, variables);
 
         return new Problem(this.getName(), variables, constraints, objective);
     }
 
-    @Override
-    public Objective.ObjectiveType getObjectiveType() {
-        return Objective.ObjectiveType.QUADRATIC;
-    }
+    private Objective createObjective(final int nbTaxa, List<Variable> variables) {
 
-    private Objective createObjective(List<Variable> variables) {
-        Expression expression = new Expression();
+        double[] coefficients = this.buildCoefficients(variables.size(), nbTaxa);
+
+        Expression expr = new Expression();
         for (int i = 0; i < variables.size(); i++) {
-            expression.addTerm(1.0, variables.get(i), variables.get(i));
+            expr.addTerm(coefficients[i], variables.get(i));
         }
 
-        return new Objective(this.getName(), Objective.ObjectiveDirection.MINIMISE, expression);
+        return new Objective(this.getName(), Objective.ObjectiveDirection.MINIMISE, expr);
     }
 
     private List<Constraint> createConstraints(List<Variable> variables, double[] X, double[][] EtE) {
@@ -56,40 +81,32 @@ public class Quadratic implements SecondaryProblem {
 
         for (int i = 0; i < EtE.length; i++) {
             Expression expr = new Expression();
-            double sum = 0.0;
             for (int j = 0; j < EtE.length; j++) {
                 expr.addTerm(EtE[i][j], variables.get(j));
-                sum += EtE[i][j] * X[j];
             }
-            constraints.add(new Constraint("c0", expr, Constraint.Relation.EQUAL, sum));
+            constraints.add(new Constraint("c0", expr, Constraint.Relation.EQUAL, 0.0));
         }
 
         return constraints;
     }
 
-    public List<Variable> createVariables(double[] X) {
-
-        double[] coefficients = new double[X.length];
-        Arrays.fill(coefficients, 1.0);
+    public List<Variable> createVariables(final double[] X) {
 
         List<Variable> variables = new ArrayList<>();
 
-        for (int i = 0; i < coefficients.length; i++) {
+        for (int i = 0; i < X.length; i++) {
             variables.add(new Variable(
                     "x" + i,                                        // Name
-                    coefficients[i],                                // Coefficient
-                    new Bounds(0.0, Bounds.BoundType.LOWER),        // Bounds
+                    new Bounds(-X[i], Bounds.BoundType.LOWER),      // Bounds
                     Variable.VariableType.CONTINUOUS                // Type
             ));
         }
 
         return variables;
     }
-
-
     @Override
     public String getName() {
-        return "QUADRATIC";
+        return "BALANCED";
     }
 
     @Override

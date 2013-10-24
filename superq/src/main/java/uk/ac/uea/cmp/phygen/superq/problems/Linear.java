@@ -13,38 +13,27 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package uk.ac.uea.cmp.phygen.superq.objectives;
+package uk.ac.uea.cmp.phygen.superq.problems;
 
 import org.kohsuke.MetaInfServices;
 import uk.ac.uea.cmp.phygen.core.math.optimise.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
 @MetaInfServices(SecondaryProblem.class)
-public class Balanced implements SecondaryProblem {
+public class Linear implements SecondaryProblem {
 
-    private double[] buildCoefficients(final int size, final int nbTaxa) {
-        double[] coefficients = new double[size];
+    @Override
+    public Problem compileProblem(int nbTaxa, double[] X, double[][] EtE) {
 
-        int n = 0;
+        List<Variable> variables = this.createVariables(X);
+        List<Constraint> constraints = this.createConstraints(variables, X, EtE);
+        Objective objective = this.createObjective(variables);
 
-        for (int m = 1; m < nbTaxa - 1; m++) {
-
-            for (int j = m + 2; j < nbTaxa + 1; j++) {
-
-                if (m != 1 || j != nbTaxa) {
-
-                    int a = j - m;
-                    //      SplitIndex [] splitIndices = new SplitIndex [N * (N - 1) / 2 - N];
-                    //      Split index is defined as:   splitIndices [n] = new SplitIndex(m, j);
-                    coefficients[n++] = a * (a - 1) * (nbTaxa - a) * (nbTaxa - a - 1);
-                }
-            }
-        }
-
-        return coefficients;
+        return new Problem(this.getName(), variables, constraints, objective);
     }
 
     @Override
@@ -53,19 +42,14 @@ public class Balanced implements SecondaryProblem {
     }
 
 
-    @Override
-    public Problem compileProblem(int nbTaxa, double[] X, double[][] EtE) {
-
-        List<Variable> variables = this.createVariables(nbTaxa, X);
-        List<Constraint> constraints = this.createConstraints(variables, X, EtE);
-        Objective objective = this.createObjective(variables);
-
-        return new Problem(this.getName(), variables, constraints, objective);
-    }
-
     private Objective createObjective(List<Variable> variables) {
 
-        return new Objective(this.getName(), Objective.ObjectiveDirection.MINIMISE, null);
+        Expression expression = new Expression();
+        for(int i = 0; i < variables.size(); i++) {
+            expression.addTerm(1.0, variables.get(i));
+        }
+
+        return new Objective(this.getName(), Objective.ObjectiveDirection.MINIMISE, expression);
     }
 
     private List<Constraint> createConstraints(List<Variable> variables, double[] X, double[][] EtE) {
@@ -83,17 +67,13 @@ public class Balanced implements SecondaryProblem {
         return constraints;
     }
 
-    public List<Variable> createVariables(final int nbTaxa, double[] X) {
-
-        double[] coefficients = this.buildCoefficients(nbTaxa, X.length);
-
+    public List<Variable> createVariables(double[] X) {
 
         List<Variable> variables = new ArrayList<>();
 
-        for (int i = 0; i < coefficients.length; i++) {
+        for (int i = 0; i < X.length; i++) {
             variables.add(new Variable(
                     "x" + i,                                        // Name
-                    coefficients[i],                                // Coefficient
                     new Bounds(-X[i], Bounds.BoundType.LOWER),      // Bounds
                     Variable.VariableType.CONTINUOUS                // Type
             ));
@@ -101,9 +81,10 @@ public class Balanced implements SecondaryProblem {
 
         return variables;
     }
+
     @Override
     public String getName() {
-        return "BALANCED";
+        return "LINEAR";
     }
 
     @Override

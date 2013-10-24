@@ -18,8 +18,10 @@ package uk.ac.uea.cmp.phygen.gurobi;
 
 import org.junit.Before;
 import org.junit.Test;
+import uk.ac.uea.cmp.phygen.core.math.Equality;
 import uk.ac.uea.cmp.phygen.core.math.optimise.*;
 import uk.ac.uea.cmp.phygen.core.math.optimise.external.JOptimizer;
+import uk.ac.uea.cmp.phygen.core.math.optimise.test.Problems;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -90,20 +92,18 @@ public class GurobiTest {
      *  x + y       >= 1
      *  x, y, z binary
      *
-     *  We don't expect this to work because JOptimizer cannot maximise its objectives
-     *
      * @throws OptimiserException
      */
-    @Test(expected=UnsupportedOperationException.class)
+    @Test
     public void testMip1() throws OptimiserException {
 
         assumeTrue(gurobi != null);
 
         // Create the MIP1 Problem
-        Problem problem = Problems.mip1();
+        Problem problem = Problems.mixedIntegerLinear1();
 
         // Solve
-        Solution solution = new JOptimizer().optimise(problem);
+        Solution solution = gurobi.optimise(problem);
 
         // Check result
         assertTrue(solution.getSolution() == 3.0);
@@ -125,16 +125,41 @@ public class GurobiTest {
 
         assumeTrue(gurobi != null);
 
-        // Create the MIP1 Problem
+        // Create the Problem
         Problem problem = Problems.simpleLinear();
 
         // Solve
-        Solution solution = new JOptimizer().optimise(problem);
+        Solution solution = gurobi.optimise(problem);
 
         // Check result
         double[] vals = solution.getVariableValues();
-        assertTrue(OptimiserTestUtils.approxEquals(vals[0], 1.5));
-        assertTrue(OptimiserTestUtils.approxEquals(vals[1], 0.0));
+
+        assertTrue(Equality.approxEquals(vals[0], 1.5));
+        assertTrue(Equality.approxEquals(vals[1], 0.0));
+        assertTrue(solution.getSolution() == 2.5);
+    }
+
+    /**
+     * This example formulates and solves a simple linear problem
+     *
+     * @throws OptimiserException
+     */
+    @Test
+    public void testMixedIntegerLinear2() throws OptimiserException {
+
+        assumeTrue(gurobi != null);
+
+        // Create the simple linear Problem
+        Problem problem = Problems.mixedIntegerLinear2();
+
+        // Solve
+        Solution solution = gurobi.optimise(problem);
+
+        // Check result
+        double[] vals = solution.getVariableValues();
+        assertTrue(vals[0] == 16.0);
+        assertTrue(vals[1] == 59.0);
+        assertTrue(solution.getSolution() == 5828.0);
     }
 
     /**
@@ -147,15 +172,40 @@ public class GurobiTest {
 
         assumeTrue(gurobi != null);
 
-        // Create the MIP1 Problem
+        // Create the Problem
         Problem problem = Problems.simpleQuadratic();
 
         // Solve
-        Solution solution = new JOptimizer().optimise(problem);
+        Solution solution = gurobi.optimise(problem);
 
         // Check result
         double[] vals = solution.getVariableValues();
-        assertTrue(OptimiserTestUtils.approxEquals(vals[0], 0.5));
-        assertTrue(OptimiserTestUtils.approxEquals(vals[1], 0.5));
+        assertTrue(Equality.approxEquals(vals[0], 0.5));
+        assertTrue(Equality.approxEquals(vals[1], 0.5));
+        assertTrue(Equality.approxEquals(solution.getSolution(), 0.7));
+    }
+
+    /**
+     * This example formulates and solves a simple quadratic problem
+     *
+     * @throws OptimiserException
+     */
+    @Test
+    public void testSimpleQuadratic2() throws OptimiserException {
+
+        assumeTrue(gurobi != null);
+
+        // Create the Problem
+        Problem problem = Problems.simpleQuadratic2();
+
+        // Solve
+        Solution solution = gurobi.optimise(problem);
+
+        // Check result
+        double[] vals = solution.getVariableValues();
+        assertTrue(Equality.approxEquals(vals[0], 0.0));
+        assertTrue(Equality.approxEquals(vals[1], 1.0));
+        assertTrue(Equality.approxEquals(vals[2], 2.0/3.0));
+        assertTrue(Equality.approxEquals(solution.getSolution(), 2.1111111));
     }
 }

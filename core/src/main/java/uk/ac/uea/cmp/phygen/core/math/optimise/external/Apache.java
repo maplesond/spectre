@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-@MetaInfServices(uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser.class)
+//@MetaInfServices(uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser.class)
 public class Apache extends AbstractOptimiser {
 
     public Apache() throws OptimiserException {
@@ -103,19 +103,16 @@ public class Apache extends AbstractOptimiser {
 
     protected void addRegularConstraints(Collection<LinearConstraint> apacheConstraints, Problem problem) {
 
-        List<Variable> variables = problem.getVariables();
-        List<Constraint> constraints = problem.getConstraints();
+        for(Constraint constraint: problem.getConstraints()) {
 
-        for(Constraint constraint: constraints) {
-
-            double[] coefficients = new double[variables.size()];
+            double[] coefficients = new double[problem.getNbVariables()];
 
             List<LinearTerm> terms = constraint.getExpression().getLinearTerms();
 
             for(LinearTerm term : terms) {
-                for (int j = 0; j < variables.size(); j++) {
+                for (int j = 0; j < problem.getNbVariables(); j++) {
 
-                    if (variables.get(j).getName().equals(term.getVariable().getName())) {
+                    if (problem.getVariables().get(j).getName().equals(term.getVariable().getName())) {
                         coefficients[j] = term.getCoefficient();
                     }
                 }
@@ -190,13 +187,13 @@ public class Apache extends AbstractOptimiser {
     }
 
     @Override
-    public boolean acceptsObjectiveDirection(Objective.ObjectiveDirection objectiveDirection) {
-        return true;
+    public boolean acceptsConstraintType(Constraint.ConstraintType constraintType) {
+        return constraintType.isLinear();
     }
 
     @Override
-    public boolean acceptsConstraintType(Constraint.ConstraintType constraintType) {
-        return constraintType.isLinear();
+    public boolean acceptsVariableType(Variable.VariableType variableType) {
+        return variableType == Variable.VariableType.CONTINUOUS;
     }
 
     @Override

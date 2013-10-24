@@ -40,8 +40,7 @@
              maven repository anyway.  If you do have gurobi installed, then uncomment this block, and make sure you've
              manually added the gurobi jar into your local maven repository with this command (edit where appropriate):
              "mvn install:install-file -Dfile=<path-to-gurobi-jar> -DgroupId=gurobi -DartifactId=gurobi \
-             -Dversion=<gurobi-version> -Dpackaging=jar" Preferably download and use version 5.0.2... other versions may
-             work but have not been tested -->
+             -Dversion=<gurobi-version> -Dpackaging=jar" -->
 
         <dependency>
             <groupId>gurobi</groupId>

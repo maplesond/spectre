@@ -35,16 +35,16 @@ public abstract class AbstractOptimiser implements Optimiser {
                 problem.getObjective().getName() + "; which is: " + problem.getObjectiveType().toString());
         }
 
-        // Check this solver can handle the objective direction
-        if (!this.acceptsObjectiveDirection(problem.getObjectiveDirection())) {
-            throw new UnsupportedOperationException("This optimiser: " + this.getIdentifier() + "; cannot handle objective direction: " +
-                    problem.getObjective().getName() + "; which is: " + problem.getObjectiveDirection().toString());
-        }
-
         // Check this solver can handle the constraints
         if (!this.acceptsConstraintType(problem.getConstraintType())) {
             throw new UnsupportedOperationException("This optimiser: " + this.getIdentifier() + "; cannot handle constraint type: " +
                     problem.getConstraintType().toString());
+        }
+
+        // Check this solver can handle the variables
+        if (!this.acceptsVariableType(problem.getVariableType())) {
+            throw new UnsupportedOperationException("This optimiser: " + this.getIdentifier() + "; cannot handle variable type: " +
+                    problem.getVariableType().toString());
         }
 
         // Start the timer

@@ -51,13 +51,6 @@ public interface Optimiser {
     boolean acceptsObjectiveType(Objective.ObjectiveType objectiveType);
 
     /**
-     * Whether or not this optimiser can handle a certain kind of objective direction.  i.e. minimise or maximise
-     * @param objectiveDirection
-     * @return
-     */
-    boolean acceptsObjectiveDirection(Objective.ObjectiveDirection objectiveDirection);
-
-    /**
      * Whether or not this optimiser can process a certain kind of constraint.  i.e. linear or quadratic constraints
      *
      * @param constraintType
@@ -66,6 +59,12 @@ public interface Optimiser {
     boolean acceptsConstraintType(Constraint.ConstraintType constraintType);
 
 
+    /**
+     * Whether or not this optimiser can process a certain kind of variable.  i.e. continuous, float or binary
+     * @param variableType
+     * @return
+     */
+    boolean acceptsVariableType(Variable.VariableType variableType);
 
 
     /**

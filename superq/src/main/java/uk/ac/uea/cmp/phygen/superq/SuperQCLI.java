@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.math.optimise.Objective;
 import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
 import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserFactory;
-import uk.ac.uea.cmp.phygen.superq.objectives.SecondaryProblemFactory;
+import uk.ac.uea.cmp.phygen.superq.problems.SecondaryProblemFactory;
 
 import java.io.File;
 import java.io.OutputStream;

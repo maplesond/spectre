@@ -28,15 +28,11 @@ public class Constraint {
     public static enum Relation {
 
         EQUAL,
-        LESS_THAN,
         LESS_THAN_OR_EQUAL_TO,
-        GREATER_THAN,
         GREATER_THAN_OR_EQUAL_TO;
 
         public static Relation EQ = EQUAL;
-        public static Relation LT = LESS_THAN;
         public static Relation LTE = LESS_THAN_OR_EQUAL_TO;
-        public static Relation GT = GREATER_THAN;
         public static Relation GTE = GREATER_THAN_OR_EQUAL_TO;
     }
 

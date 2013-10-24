@@ -31,10 +31,10 @@ public class Gurobi extends AbstractOptimiser {
 
     public Gurobi() throws OptimiserException {
         try {
-            //GRBEnv env = new GRBEnv("gurobi.log");
             this.env = new GRBEnv();
             this.env.set(GRB.IntParam.OutputFlag, 0);
-        } catch (GRBException ge) {
+        }
+        catch (GRBException ge) {
             // Repackage any GurobiException and rethrow
             throw new OptimiserException(ge, ge.getErrorCode());
         }
@@ -91,7 +91,7 @@ public class Gurobi extends AbstractOptimiser {
             grbVars[i] = model.addVar(
                     var.getBounds().getLower(),
                     var.getBounds().getUpper(),
-                    var.getCoefficient(),
+                    0.0,  // The variable linear coefficients should be set in the objective
                     convertVariableType(var.getType()),
                     var.getName()
             );
@@ -134,13 +134,6 @@ public class Gurobi extends AbstractOptimiser {
         if (objective.getType() == Objective.ObjectiveType.QUADRATIC) {
             GRBQuadExpr quadExpr = new GRBQuadExpr();
 
-            quadExpr.addConstant(objective.getExpression().getConstant());
-
-            for (LinearTerm linTerm : objective.getExpression().getLinearTerms()) {
-                GRBVar var = findGurobiVar(grbVars, linTerm.getVariable().getName());
-                quadExpr.addTerm(linTerm.getCoefficient(), var);
-            }
-
             for(QuadraticTerm quadraticTerm : objective.getExpression().getQuadraticTerms()) {
                 GRBVar var1 = findGurobiVar(grbVars, quadraticTerm.getVariable1().getName());
                 GRBVar var2 = findGurobiVar(grbVars, quadraticTerm.getVariable2().getName());
@@ -148,17 +141,24 @@ public class Gurobi extends AbstractOptimiser {
                 quadExpr.addTerm(quadraticTerm.getCoefficient(), var1, var2);
             }
 
+            for (LinearTerm linTerm : objective.getExpression().getLinearTerms()) {
+                GRBVar var = findGurobiVar(grbVars, linTerm.getVariable().getName());
+                quadExpr.addTerm(linTerm.getCoefficient(), var);
+            }
+
+            quadExpr.addConstant(objective.getExpression().getConstant());
+
             expr = quadExpr;
         }
         else {
             GRBLinExpr linExpr = new GRBLinExpr();
 
-            linExpr.addConstant(objective.getExpression().getConstant());
-
             for (LinearTerm linTerm : objective.getExpression().getLinearTerms()) {
                 GRBVar var = findGurobiVar(grbVars, linTerm.getVariable().getName());
                 linExpr.addTerm(linTerm.getCoefficient(), var);
             }
+
+            linExpr.addConstant(objective.getExpression().getConstant());
 
             expr = linExpr;
         }
@@ -207,10 +207,7 @@ public class Gurobi extends AbstractOptimiser {
             model.update();
 
             // Get the objective if present
-            GRBExpr expr = addObjective(problem.getObjective(), model, vars);
-            if (expr != null) {
-                model.setObjective(expr, convertObjectiveDirection(problem.getObjective().getDirection()));
-            }
+            GRBExpr objective = addObjective(problem.getObjective(), model, vars);
 
             // Add constraints
             GRBConstr[] constraints = addLinearConstraints(problem.getConstraints(), model, vars);
@@ -250,17 +247,17 @@ public class Gurobi extends AbstractOptimiser {
     }
 
     @Override
-    public boolean acceptsObjectiveDirection(Objective.ObjectiveDirection objectiveDirection) {
-        return true;
-    }
-
-    @Override
     public boolean acceptsConstraintType(Constraint.ConstraintType constraintType) {
 
         if (constraintType.isQuadratic())
             throw new UnsupportedOperationException("Gurobi can handle quadratic constraints but the translation code has " +
                     "not been implemented yet");
 
+        return true;
+    }
+
+    @Override
+    public boolean acceptsVariableType(Variable.VariableType variableType) {
         return true;
     }
 

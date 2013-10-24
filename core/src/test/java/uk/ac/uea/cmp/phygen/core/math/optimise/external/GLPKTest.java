@@ -3,8 +3,7 @@ package uk.ac.uea.cmp.phygen.core.math.optimise.external;
 import org.junit.Before;
 import org.junit.Test;
 import uk.ac.uea.cmp.phygen.core.math.optimise.*;
-import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserTestUtils;
-import uk.ac.uea.cmp.phygen.core.math.optimise.Problems;
+import uk.ac.uea.cmp.phygen.core.math.optimise.test.Problems;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeThat;
@@ -26,10 +25,17 @@ public class GLPKTest {
 
         boolean success = true;
         try {
-            glpk = OptimiserFactory.getInstance().createOptimiserInstance("glpk", Objective.ObjectiveType.LINEAR);
+            glpk = new GLPK();
         }
         catch (OptimiserException oe) {
             success = false;
+        }
+
+        if (!glpk.isOperational()) {
+            success = false;
+        }
+
+        if (!success) {
             System.err.println("GLPK not configured for you system... skipping GLPK tests");
         }
 
@@ -76,19 +82,19 @@ public class GLPKTest {
         assumeTrue(glpk != null);
 
         // Create the MIP1 Problem
-        Problem problem = Problems.mip1();
+        Problem problem = Problems.mixedIntegerLinear1();
 
         // Solve
         Solution solution = glpk.optimise(problem);
 
         // Check result
-        //assertTrue(solution.getSolution() == 3.0);
-
         double[] vals = solution.getVariableValues();
 
-        //assertTrue(vals[0] == 1.0);
-        //assertTrue(vals[1] == 0.0);
-        //assertTrue(vals[2] == 1.0);
+        /*assertTrue(vals[0] == 1.0);
+        assertTrue(vals[1] == 0.0);
+        assertTrue(vals[2] == 1.0);
+
+        assertTrue(solution.getSolution() == 3.0)*/
     }
 
     /**
@@ -109,7 +115,7 @@ public class GLPKTest {
 
         // Check result
         double[] vals = solution.getVariableValues();
-        //assertTrue(OptimiserTestUtils.approxEquals(vals[0], 1.5));
-        //assertTrue(OptimiserTestUtils.approxEquals(vals[1], 0.0));
+        //assertTrue(Equality.approxEquals(vals[0], 1.5));
+        //assertTrue(Equality.approxEquals(vals[1], 0.0));
     }
 }

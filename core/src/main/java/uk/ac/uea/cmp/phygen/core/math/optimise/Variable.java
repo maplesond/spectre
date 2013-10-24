@@ -19,23 +19,17 @@ package uk.ac.uea.cmp.phygen.core.math.optimise;
 public class Variable {
 
     private String name;
-    private double coefficient;
     private Bounds bounds;
     private VariableType type;
 
-    public Variable(String name, double coefficient, Bounds bounds, VariableType type) {
+    public Variable(String name, Bounds bounds, VariableType type) {
         this.name = name;
-        this.coefficient = coefficient;
         this.bounds = bounds;
         this.type = type;
     }
 
     public String getName() {
         return name;
-    }
-
-    public double getCoefficient() {
-        return coefficient;
     }
 
     public Bounds getBounds() {

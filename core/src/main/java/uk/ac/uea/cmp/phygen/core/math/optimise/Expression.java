@@ -94,6 +94,16 @@ public class Expression {
         return this;
     }
 
+    public double[] getInvertedLinearCoefficients(List<Variable> variables) {
+        double[] coefficients = this.getLinearCoefficients(variables);
+
+        for(int i = 0; i < coefficients.length; i++) {
+            coefficients[i] = -1.0 * coefficients[i];
+        }
+
+        return coefficients;
+    }
+
     public double[] getLinearCoefficients(List<Variable> variables) {
 
         if (this.linearTerms == null || this.linearTerms.isEmpty())
@@ -114,6 +124,19 @@ public class Expression {
             }
 
             coefficients[i] = coefficient;
+        }
+
+        return coefficients;
+    }
+
+    public double[][] getInvertedQuadraticCoefficients(List<Variable> variables) {
+
+        double[][] coefficients = this.getQuadraticCoefficients(variables);
+
+        for(int i = 0; i < variables.size(); i++) {
+            for(int j = 0; j < variables.size(); j++) {
+                coefficients[i][j] = -1.0 * coefficients[i][j];
+            }
         }
 
         return coefficients;

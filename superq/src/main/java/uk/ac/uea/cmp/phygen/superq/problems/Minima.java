@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package uk.ac.uea.cmp.phygen.superq.objectives;
+package uk.ac.uea.cmp.phygen.superq.problems;
 
 import org.kohsuke.MetaInfServices;
 import uk.ac.uea.cmp.phygen.core.math.optimise.*;
@@ -24,7 +24,7 @@ import java.util.List;
 
 
 @MetaInfServices(SecondaryProblem.class)
-public class Linear implements SecondaryProblem {
+public class Minima implements SecondaryProblem {
 
     @Override
     public Problem compileProblem(int nbTaxa, double[] X, double[][] EtE) {
@@ -41,10 +41,14 @@ public class Linear implements SecondaryProblem {
         return Objective.ObjectiveType.LINEAR;
     }
 
-
     private Objective createObjective(List<Variable> variables) {
 
-        return new Objective(this.getName(), Objective.ObjectiveDirection.MINIMISE, null);
+        Expression expression = new Expression();
+        for(int i = 0; i < variables.size(); i++) {
+            expression.addTerm(0.0, variables.get(i));
+        }
+
+        return new Objective(this.getName(), Objective.ObjectiveDirection.MINIMISE, expression);
     }
 
     private List<Constraint> createConstraints(List<Variable> variables, double[] X, double[][] EtE) {
@@ -64,15 +68,11 @@ public class Linear implements SecondaryProblem {
 
     public List<Variable> createVariables(double[] X) {
 
-        double[] coefficients = new double[X.length];
-        Arrays.fill(coefficients, 1.0);
-
         List<Variable> variables = new ArrayList<>();
 
-        for (int i = 0; i < coefficients.length; i++) {
+        for (int i = 0; i < X.length; i++) {
             variables.add(new Variable(
                     "x" + i,                                        // Name
-                    coefficients[i],                                // Coefficient
                     new Bounds(-X[i], Bounds.BoundType.LOWER),      // Bounds
                     Variable.VariableType.CONTINUOUS                // Type
             ));
@@ -81,9 +81,10 @@ public class Linear implements SecondaryProblem {
         return variables;
     }
 
+
     @Override
     public String getName() {
-        return "LINEAR";
+        return "MINIMA";
     }
 
     @Override

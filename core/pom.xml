@@ -75,7 +75,7 @@
         <dependency>
             <groupId>org.gnu.glpk</groupId>
             <artifactId>glpk-java</artifactId>
-            <version>1.0.31</version>
+            <version>1.0.18</version>
         </dependency>
 
         <dependency>
@@ -152,7 +152,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-math3</artifactId>
-            <version>3.0</version>
+            <version>3.2</version>
         </dependency>
 
         <dependency>

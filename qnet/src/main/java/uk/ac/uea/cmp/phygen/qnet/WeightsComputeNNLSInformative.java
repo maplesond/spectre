@@ -966,15 +966,11 @@ public class WeightsComputeNNLSInformative {
 
     private static List<Variable> createVariables(int size) {
 
-        double[] coefficients = new double[size];
-        Arrays.fill(coefficients, 1.0);
-
         List<Variable> variables = new ArrayList<>();
 
-        for (int i = 0; i < coefficients.length; i++) {
+        for (int i = 0; i < size; i++) {
             variables.add(new Variable(
                     "x" + i,                                    // Name
-                    coefficients[i],                            // Coefficient
                     new Bounds(0.0, Bounds.BoundType.LOWER),    // Bounds
                     Variable.VariableType.CONTINUOUS            // Type
             ));

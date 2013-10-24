@@ -1,11 +1,13 @@
 package uk.ac.uea.cmp.phygen.core.math.optimise.external;
 
+import org.junit.Before;
 import org.junit.Test;
+import uk.ac.uea.cmp.phygen.core.math.Equality;
 import uk.ac.uea.cmp.phygen.core.math.optimise.*;
-import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserTestUtils;
-import uk.ac.uea.cmp.phygen.core.math.optimise.Problems;
+import uk.ac.uea.cmp.phygen.core.math.optimise.test.Problems;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
 
 /**
  * Created with IntelliJ IDEA.
@@ -16,10 +18,27 @@ import static org.junit.Assert.assertTrue;
  */
 public class ApacheTest {
 
+    private Optimiser apache = null;
+
+    @Before
+    public void setup() {
+
+        boolean success = true;
+        try {
+            apache = new Apache();
+        }
+        catch (OptimiserException oe) {
+            success = false;
+            System.err.println("Apache not configured for you system... skipping Apache tests");
+        }
+
+        assumeTrue(success);
+    }
+
     @Test
     public void testAcceptsIdentifier() throws OptimiserException {
 
-        Optimiser apache = new Apache();
+        assumeTrue(apache != null);
 
         assertTrue(apache.acceptsIdentifier("apache"));
         assertTrue(apache.acceptsIdentifier("Apache"));
@@ -31,41 +50,17 @@ public class ApacheTest {
     @Test(expected=OptimiserException.class)
     public void testSimpleProblem() throws OptimiserException {
 
+        assumeTrue(apache != null);
+
         Problem problem = Problems.empty();
 
-        Solution solution = new Apache().optimise(problem);
+        Solution solution = apache.optimise(problem);
 
         assertTrue(solution.getSolution() == 0.0);
         assertTrue(solution.getVariableValues().length == 0);
     }
 
 
-    /**
-     * This example formulates and solves the following empty MIP model:
-     *  maximize    x +   y + 2 z
-     *  subject to  x + 2 y + 3 z <= 4
-     *  x + y       >= 1
-     *  x, y, z binary
-     * @throws OptimiserException
-     */
-    @Test
-    public void testMip1() throws OptimiserException {
-
-        // Create the MIP1 Problem
-        Problem problem = Problems.mip1();
-
-        // Solve
-        Solution solution = new Apache().optimise(problem);
-
-        // Check result
-        assertTrue(solution.getSolution() == 3.0);
-
-        double[] vals = solution.getVariableValues();
-
-        assertTrue(vals[0] == 1.0);
-        assertTrue(vals[1] == 0.0);
-        assertTrue(vals[2] == 1.0);
-    }
 
     /**
      * This example formulates and solves a simple linear problem
@@ -75,15 +70,18 @@ public class ApacheTest {
     @Test
     public void testSimpleLinear() throws OptimiserException {
 
+        assumeTrue(apache != null);
+
         // Create the simple linear Problem
         Problem problem = Problems.simpleLinear();
 
         // Solve
-        Solution solution = new Apache().optimise(problem);
+        Solution solution = apache.optimise(problem);
 
         // Check result
         double[] vals = solution.getVariableValues();
-        //assertTrue(OptimiserTestUtils.approxEquals(vals[0], 1.5));
-        //assertTrue(OptimiserTestUtils.approxEquals(vals[1], 0.0));
+        assertTrue(Equality.approxEquals(vals[0], 1.5));
+        assertTrue(Equality.approxEquals(vals[1], 0.0));
+        assertTrue(solution.getSolution() == 2.5);
     }
 }
