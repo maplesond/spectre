@@ -3,7 +3,10 @@ package uk.ac.uea.cmp.phygen.core.math.optimise.external;
 import org.junit.Before;
 import org.junit.Test;
 import uk.ac.uea.cmp.phygen.core.math.Equality;
-import uk.ac.uea.cmp.phygen.core.math.optimise.*;
+import uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser;
+import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
+import uk.ac.uea.cmp.phygen.core.math.optimise.Problem;
+import uk.ac.uea.cmp.phygen.core.math.optimise.Solution;
 import uk.ac.uea.cmp.phygen.core.math.optimise.test.Problems;
 
 import static org.junit.Assert.assertTrue;

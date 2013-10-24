@@ -21,7 +21,6 @@ import uk.ac.uea.cmp.phygen.flatnj.ds.PermutationSequence;
 import uk.ac.uea.cmp.phygen.flatnj.ds.QuadrupleSystem;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**

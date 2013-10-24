@@ -15,12 +15,10 @@
  */
 package uk.ac.uea.cmp.phygen.core.math.optimise.external;
 
-import de.xypron.linopt.*;
+import de.xypron.linopt.Solver;
+import de.xypron.linopt.SolverGlpk;
 import org.apache.commons.math3.util.Pair;
-import org.gnu.glpk.*;
-import org.kohsuke.MetaInfServices;
 import uk.ac.uea.cmp.phygen.core.math.optimise.*;
-import uk.ac.uea.cmp.phygen.core.math.optimise.Problem;
 
 import java.util.ArrayList;
 import java.util.List;

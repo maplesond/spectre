@@ -65,19 +65,6 @@
 
         <!-- Optimisers -->
 
-        <!-- Note this GLPK jar does not actually contain the algorithms for GLPK, it's just a stub for managing the
-             JNI calls.  Assuming the user wishes to use GLPK they must make sure it is installed and properly
-             configured so that it's visible to this project at compile and run time.  On linux (debian) this is simply
-             a matter of typing "sudo apt-get install libglpk-java" (note that it may be necessary to alter the version
-             number in the dependency group below.)  For windows and mac follow the instructions on the website:
-             http://glpk-java.sourceforge.net/ -->
-
-        <dependency>
-            <groupId>org.gnu.glpk</groupId>
-            <artifactId>glpk-java</artifactId>
-            <version>1.0.18</version>
-        </dependency>
-
         <dependency>
             <groupId>de.xypron.linopt</groupId>
             <artifactId>linopt</artifactId>
@@ -88,6 +75,20 @@
             <groupId>joptimizer</groupId>
             <artifactId>joptimizer</artifactId>
             <version>3.2.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.commons</groupId>
+                    <artifactId>commons-lang3</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.commons</groupId>
+                    <artifactId>commons-math3</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
 

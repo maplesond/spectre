@@ -2,11 +2,13 @@ package uk.ac.uea.cmp.phygen.core.math.optimise.external;
 
 import org.junit.Before;
 import org.junit.Test;
-import uk.ac.uea.cmp.phygen.core.math.optimise.*;
+import uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser;
+import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
+import uk.ac.uea.cmp.phygen.core.math.optimise.Problem;
+import uk.ac.uea.cmp.phygen.core.math.optimise.Solution;
 import uk.ac.uea.cmp.phygen.core.math.optimise.test.Problems;
 
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeThat;
 import static org.junit.Assume.assumeTrue;
 
 /**
@@ -115,7 +117,7 @@ public class GLPKTest {
 
         // Check result
         double[] vals = solution.getVariableValues();
-        //assertTrue(Equality.approxEquals(vals[0], 1.5));
-        //assertTrue(Equality.approxEquals(vals[1], 0.0));
+        /*assertTrue(Equality.approxEquals(vals[0], 1.5));
+        assertTrue(Equality.approxEquals(vals[1], 0.0));*/
     }
 }

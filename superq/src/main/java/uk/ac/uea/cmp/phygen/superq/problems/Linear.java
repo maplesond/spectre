@@ -19,7 +19,6 @@ import org.kohsuke.MetaInfServices;
 import uk.ac.uea.cmp.phygen.core.math.optimise.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 

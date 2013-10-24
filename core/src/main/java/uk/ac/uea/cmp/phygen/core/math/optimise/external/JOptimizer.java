@@ -19,14 +19,11 @@ import com.joptimizer.functions.ConvexMultivariateRealFunction;
 import com.joptimizer.functions.LinearMultivariateRealFunction;
 import com.joptimizer.functions.PDQuadraticMultivariateRealFunction;
 import com.joptimizer.optimizers.OptimizationRequest;
-import org.apache.commons.math3.optimization.linear.LinearConstraint;
-import org.apache.commons.math3.optimization.linear.Relationship;
 import org.apache.commons.math3.util.Pair;
 import org.kohsuke.MetaInfServices;
 import uk.ac.uea.cmp.phygen.core.math.optimise.*;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 @MetaInfServices(Optimiser.class)

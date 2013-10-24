@@ -15,14 +15,10 @@
  */
 package uk.ac.uea.cmp.phygen.core.math.optimise.external;
 
-import org.apache.commons.math3.optimization.GoalType;
-import org.apache.commons.math3.optimization.PointValuePair;
-import org.apache.commons.math3.optimization.linear.LinearConstraint;
-import org.apache.commons.math3.optimization.linear.LinearObjectiveFunction;
-import org.apache.commons.math3.optimization.linear.Relationship;
-import org.apache.commons.math3.optimization.linear.SimplexSolver;
+import org.apache.commons.math3.optim.PointValuePair;
+import org.apache.commons.math3.optim.linear.*;
+import org.apache.commons.math3.optim.nonlinear.scalar.GoalType;
 import org.apache.commons.math3.util.Pair;
-import org.kohsuke.MetaInfServices;
 import uk.ac.uea.cmp.phygen.core.math.optimise.*;
 
 import java.util.ArrayList;
@@ -31,6 +27,9 @@ import java.util.List;
 
 //@MetaInfServices(uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser.class)
 public class Apache extends AbstractOptimiser {
+
+    protected static final double DEFAULT_TOLERANCE = 1e-9;
+    protected static final int DEFAULT_MAX_ITERATIONS = 10000;
 
     public Apache() throws OptimiserException {
         super();
@@ -161,15 +160,24 @@ public class Apache extends AbstractOptimiser {
         // Create the solver
         SimplexSolver solver = new SimplexSolver();
 
-        // Set max iterations if set by the user
-        if (problem.getMaxIterations() != 0) {
-            solver.setMaxIterations(problem.getMaxIterations());
-        }
+        /* //The latest version of apache has some options for non-linear solving... I should get this working when I get some
+           //time
+        final int maxIterations = problem.getMaxIterations() > 0 ? problem.getMaxIterations() : DEFAULT_MAX_ITERATIONS;
+        final double tolerance = problem.getTolerance() != 0.0 ? problem.getTolerance() : DEFAULT_TOLERANCE;
+
+        CMAESOptimizer solver = new CMAESOptimizer(maxIterations, tolerance,
+                true,                                   // Active CMA... do we want this???
+                problem.getNbVariables() > 100 ? 1 : 0, // diagonal only... speeds things up for high dimensional problems
+                0,
+                new JDKRandomGenerator(),
+                false,
+                new SimpleValueChecker(-1.0, tolerance, maxIterations)
+        );*/
 
         // Run the solver
-        PointValuePair pvp = solver.optimize(f, constraints,
-                convertObjectiveDirection(problem.getObjective().getDirection()),
-                false);
+        PointValuePair pvp = solver.optimize(f, new LinearConstraintSet(constraints),
+                convertObjectiveDirection(problem.getObjective().getDirection()));
+
 
         // Return results
         return this.createSolution(pvp, problem.getVariables());
@@ -183,7 +191,7 @@ public class Apache extends AbstractOptimiser {
 
     @Override
     public boolean acceptsObjectiveType(Objective.ObjectiveType objectiveType) {
-        return objectiveType.isLinear();
+        return true;
     }
 
     @Override

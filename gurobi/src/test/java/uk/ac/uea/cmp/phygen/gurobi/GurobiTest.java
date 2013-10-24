@@ -20,11 +20,7 @@ import org.junit.Before;
 import org.junit.Test;
 import uk.ac.uea.cmp.phygen.core.math.Equality;
 import uk.ac.uea.cmp.phygen.core.math.optimise.*;
-import uk.ac.uea.cmp.phygen.core.math.optimise.external.JOptimizer;
 import uk.ac.uea.cmp.phygen.core.math.optimise.test.Problems;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
