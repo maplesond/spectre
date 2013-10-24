@@ -56,15 +56,10 @@ public class SuperQOptions {
                          Optimiser primarySolver, Optimiser secondarySolver, SecondaryProblem secondaryProblem,
                          boolean scaleInputTree, Double filter, boolean verbose) {
 
-        Optimiser tempSolver = primarySolver.isOperational() ? primarySolver : null;
-        if (primarySolver != tempSolver) {
-            logger.warn("The solver requested: \"" + primarySolver.toString() + "\" is not supported for first optimisation step.  Using: \"" + tempSolver + "\" instead");
-        }
-
         this.inputFile = inputFile;
         this.inputFileFormat = inputFileFormat;
         this.outputFile = outputFile;
-        this.primarySolver = tempSolver;
+        this.primarySolver = primarySolver;
         this.secondaryProblem = secondaryProblem;
         this.secondarySolver = secondarySolver;
         this.scaleInputTree = scaleInputTree;

@@ -142,7 +142,7 @@ public class SuperQGUI extends JFrame implements ToolHost {
             }
         });
 
-        cboSelectObjective.setModel(new javax.swing.DefaultComboBoxModel(SecondaryProblemFactory.getInstance().listObjectives().toArray()));
+        cboSelectObjective.setModel(new javax.swing.DefaultComboBoxModel(SecondaryProblemFactory.getInstance().listObjectivesByIdentifier().toArray()));
         cboSelectObjective.setToolTipText("Select Function");
         cboSelectObjective.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -323,7 +323,7 @@ public class SuperQGUI extends JFrame implements ToolHost {
     }//GEN-LAST:event_cmdRunActionPerformed
 
     private void cboSelectObjectiveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboSelectObjectiveActionPerformed
-        SecondaryProblem newObjective = (SecondaryProblem) this.cboSelectObjective.getSelectedItem();
+        SecondaryProblem newObjective = SecondaryProblemFactory.getInstance().createSecondaryObjective(this.cboSelectObjective.getSelectedItem().toString());
         if (newObjective == null) {
             this.lblSelectSolver.setEnabled(false);
             this.cboSelectSolver.setEnabled(false);

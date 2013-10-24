@@ -18,6 +18,7 @@ package uk.ac.uea.cmp.phygen.core.math.optimise.external;
 import de.xypron.linopt.Solver;
 import de.xypron.linopt.SolverGlpk;
 import org.apache.commons.math3.util.Pair;
+import org.kohsuke.MetaInfServices;
 import uk.ac.uea.cmp.phygen.core.math.optimise.*;
 
 import java.util.ArrayList;

@@ -238,7 +238,7 @@ public class Scaling extends PhygenTool {
             Chopper.run(
                     new File(filename.substring(0, filename.lastIndexOf(File.separator) + 1) + (line.substring(line.indexOf(' '))).trim()),
                     new File(path + prefix + (ntrees) + ".qua"),
-                    LoaderType.valueOf(line.substring(0, line.indexOf(' ')))
+                    LoaderType.valueOf(line.substring(0, line.indexOf(' ')).replaceAll(":","_").toUpperCase())
             );
         }
 

@@ -157,6 +157,9 @@ public class Chopper extends PhygenTool {
 
     protected ChoppedTree doOneType(File inputFile, LoaderType type, double weight, ChoppedTree choppedTree) throws IOException {
 
+        if (choppedTree == null)
+            choppedTree = new ChoppedTree();
+
         LinkedList<String> taxonNames = choppedTree.getTaxonNames();
         QuartetWeights qW = choppedTree.getQuartetWeights();
         QuartetWeights summer = choppedTree.getSummer();

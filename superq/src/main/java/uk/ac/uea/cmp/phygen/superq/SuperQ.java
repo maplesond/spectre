@@ -93,6 +93,10 @@ public class SuperQ extends RunnableTool {
             tmpdir.mkdir();
             String tmppath = tmpdir.getPath() + File.separator;
 
+            String primarySolverName = this.options.getPrimarySolver() == null ?
+                    "Internal NNLS method" :
+                    this.options.getPrimarySolver().getIdentifier();
+
             //System.out.println("path to output file: " + path);
             //System.out.println("temporary path: " + tmppath);
 
@@ -106,7 +110,7 @@ public class SuperQ extends RunnableTool {
                         || this.options.getInputFileFormat() == SuperQOptions.InputFormat.SCRIPT)) {
                     throw new Exception("Scale function can only be applied if the input format is newick or script!");
                 } else {
-                    notifyUser("SCALING - Scaling input trees - Using: " + this.options.getPrimarySolver().getIdentifier());
+                    notifyUser("SCALING - Scaling input trees - Using: " + primarySolverName);
 
                     int cutIdx1 = file.lastIndexOf(File.separator);
                     int cutIdx2 = file.lastIndexOf(".");
@@ -139,7 +143,7 @@ public class SuperQ extends RunnableTool {
 
             this.continueRun();
 
-            notifyUser("QNET - Calculating the circular ordering - Using " + this.options.getPrimarySolver().toString());
+            notifyUser("QNET - Calculating the circular ordering - Using " + primarySolverName);
             QNet qnet = new QNet();
             WeightsComputeNNLSInformative.ComputedWeights computedWeights = qnet.execute(
                     new File(tmppath + "qw"),

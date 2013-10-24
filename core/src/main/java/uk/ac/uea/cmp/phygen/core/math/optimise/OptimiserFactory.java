@@ -77,14 +77,32 @@ public class OptimiserFactory {
      */
     public String listOperationalOptimisersAsString() {
 
-        List<String> typeStrings = listOperationalOptimisers();
+        return this.listOperationalOptimisersAsString(null);
+    }
+
+    /**
+     * Goes through all optimisers found on the classpath and checks to see if they are operational.  Returns a list as
+     * a string of all operational optimisers
+     *
+     * @return
+     */
+    public String listOperationalOptimisersAsString(Objective.ObjectiveType objectiveType) {
+
+        List<String> typeStrings = listOperationalOptimisers(objectiveType);
 
         return "[" + StringUtils.join(typeStrings, ", ") + "]";
     }
 
+
+
     public List<String> listOperationalOptimisers() {
 
-        List<Optimiser> operationalOptimisers = getOperationalOptimisers();
+        return this.listOperationalOptimisers(null);
+    }
+
+    public List<String> listOperationalOptimisers(Objective.ObjectiveType objectiveType) {
+
+        List<Optimiser> operationalOptimisers = getOperationalOptimisers(objectiveType);
 
         List<String> typeStrings = new ArrayList<String>();
 

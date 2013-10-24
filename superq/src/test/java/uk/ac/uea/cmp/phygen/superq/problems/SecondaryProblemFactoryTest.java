@@ -30,6 +30,5 @@ public class SecondaryProblemFactoryTest {
         List<String> objectives = SecondaryProblemFactory.getInstance().listObjectivesByIdentifier();
 
         assertTrue(objectives.contains("BALANCED"));
-
     }
 }

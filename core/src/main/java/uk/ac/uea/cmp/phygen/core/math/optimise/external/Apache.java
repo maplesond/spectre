@@ -19,13 +19,14 @@ import org.apache.commons.math3.optim.PointValuePair;
 import org.apache.commons.math3.optim.linear.*;
 import org.apache.commons.math3.optim.nonlinear.scalar.GoalType;
 import org.apache.commons.math3.util.Pair;
+import org.kohsuke.MetaInfServices;
 import uk.ac.uea.cmp.phygen.core.math.optimise.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-//@MetaInfServices(uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser.class)
+@MetaInfServices(uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser.class)
 public class Apache extends AbstractOptimiser {
 
     protected static final double DEFAULT_TOLERANCE = 1e-9;
@@ -191,7 +192,7 @@ public class Apache extends AbstractOptimiser {
 
     @Override
     public boolean acceptsObjectiveType(Objective.ObjectiveType objectiveType) {
-        return true;
+        return objectiveType == Objective.ObjectiveType.LINEAR;
     }
 
     @Override
