@@ -21,10 +21,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import uk.ac.uea.cmp.phygen.core.math.optimise.Objective;
 import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
-import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserFactory;
-import uk.ac.uea.cmp.phygen.core.math.optimise.external.JOptimizer;
 
 import java.io.File;
 
@@ -38,7 +35,7 @@ import static junit.framework.TestCase.assertTrue;
  * Time: 23:54
  * To change this template use File | Settings | File Templates.
  */
-public class SuperQTest {
+public class SuperQIntegrationTest {
 
     @Rule
     public TemporaryFolder folder= new TemporaryFolder();
@@ -53,7 +50,7 @@ public class SuperQTest {
     protected SuperQOptions createSimpleOptions() throws OptimiserException {
 
         SuperQOptions options = new SuperQOptions(
-                FileUtils.toFile(SuperQTest.class.getResource("/simple/in.script")),
+                FileUtils.toFile(SuperQIntegrationTest.class.getResource("/simple/in.script")),
                 SuperQOptions.InputFormat.SCRIPT,
                 new File(simpleOutput, "simple.out"),
                 null,

@@ -31,13 +31,6 @@ public class QuartetWeights {
     private static Logger log = LoggerFactory.getLogger(QuartetWeights.class);
 
     /**
-     * ArrayList of ArrayLists of etc. of triplets
-     * <p/>
-     * and a get and set method
-     */
-    public static QuartetWeights qW;
-
-    /**
      * The heart of the data structure
      */
     private List<Triplet<Double>> data;
@@ -49,7 +42,6 @@ public class QuartetWeights {
     public QuartetWeights() {
 
         theSize = 0;
-
     }
 
     /**
@@ -166,6 +158,9 @@ public class QuartetWeights {
      */
     public double getWeight(int a, int b, int c, int d) {
 
+        if (data.size() == 0)
+            return 0.0;
+
         /**
          *
          * Size-order and decide which topology this is
@@ -237,7 +232,8 @@ public class QuartetWeights {
          * Next, use size-ordered numbers to access the triple
          *
          */
-        Triplet w = data.get(over4(x - 1) + over3(y - 1) + over2(u - 1) + over1(v - 1));
+        int index = over4(x - 1) + over3(y - 1) + over2(u - 1) + over1(v - 1);
+        Triplet w = data.get(index);
 
         /**
          *
@@ -775,9 +771,8 @@ public class QuartetWeights {
         int NNew = taxonNamesNew.size();
         int NOld = taxonNamesOld.size();
 
-        qW = new QuartetWeights();
-        qW.ensureCapacity(NNew);
-        qW.initialize();
+        this.ensureCapacity(NNew);
+        this.initialize();
 
         for (int iA = 0; iA < NOld - 3; iA++) {
 
@@ -797,9 +792,9 @@ public class QuartetWeights {
                         int nC = taxonNamesNew.indexOf(taxonNamesOld.get(iC)) + 1;
                         int nD = taxonNamesNew.indexOf(taxonNamesOld.get(iD)) + 1;
 
-                        qW.setWeight(nA, nB, nC, nD, getWeight(a, b, c, d));
-                        qW.setWeight(nA, nC, nB, nD, getWeight(a, c, b, d));
-                        qW.setWeight(nA, nD, nB, nC, getWeight(a, d, b, c));
+                        this.setWeight(nA, nB, nC, nD, getWeight(a, b, c, d));
+                        this.setWeight(nA, nC, nB, nD, getWeight(a, c, b, d));
+                        this.setWeight(nA, nD, nB, nC, getWeight(a, d, b, c));
 
                     }
 
@@ -809,8 +804,7 @@ public class QuartetWeights {
 
         }
 
-        return qW;
-
+        return this;
     }
 
 
