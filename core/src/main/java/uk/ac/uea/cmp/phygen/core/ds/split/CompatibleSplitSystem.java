@@ -21,11 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created with IntelliJ IDEA.
- * User: Dan
- * Date: 28/04/13
- * Time: 16:57
- * To change this template use File | Settings | File Templates.
+ * A Compatible Split System can be represented by a tree
  */
 public class CompatibleSplitSystem extends CircularSplitSystem {
 

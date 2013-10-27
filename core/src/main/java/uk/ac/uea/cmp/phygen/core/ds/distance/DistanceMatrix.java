@@ -27,7 +27,7 @@ public class DistanceMatrix {
 
     private final String[] taxa;
     private final double[][] matrix;
-    private final int NB_TAXA;
+    private final int nbTaxa;
 
 
     /**
@@ -74,8 +74,8 @@ public class DistanceMatrix {
         validateTaxa(taxa);
 
         this.taxa = taxa;
-        this.NB_TAXA = taxa.length;
-        this.matrix = new double[this.NB_TAXA][this.NB_TAXA];
+        this.nbTaxa = taxa.length;
+        this.matrix = new double[this.nbTaxa][this.nbTaxa];
 
         this.fill(val);
     }
@@ -89,7 +89,7 @@ public class DistanceMatrix {
     public DistanceMatrix(final DistanceMatrix copy) {
         this.taxa = copyTaxa(copy.taxa);
         this.matrix = copyDistances(copy.matrix);
-        this.NB_TAXA = copy.NB_TAXA;
+        this.nbTaxa = copy.nbTaxa;
 
         validate();
     }
@@ -103,7 +103,7 @@ public class DistanceMatrix {
     public DistanceMatrix(final String[] taxa, double[][] distances) {
         this.taxa = copyTaxa(taxa);
         this.matrix = copyDistances(distances);
-        this.NB_TAXA = taxa.length;
+        this.nbTaxa = taxa.length;
 
         validate();
     }
@@ -202,7 +202,7 @@ public class DistanceMatrix {
         validateTaxa(this.taxa);
         validateDistances(this.matrix);
 
-        if (this.taxa.length != this.matrix.length && this.taxa.length == this.NB_TAXA)
+        if (this.taxa.length != this.matrix.length && this.taxa.length == this.nbTaxa)
             throw new IllegalArgumentException("Distance matrix is not the same size as the taxa set.");
     }
 
@@ -214,7 +214,7 @@ public class DistanceMatrix {
             if (!Arrays.equals(taxa, dd.taxa))
                 return false;
 
-            for (int i = 0; i < NB_TAXA; i++) {
+            for (int i = 0; i < nbTaxa; i++) {
                 if (!Arrays.equals(matrix[i], dd.matrix[i]))
                     return false;
             }
@@ -231,6 +231,14 @@ public class DistanceMatrix {
         hash = 79 * hash + Arrays.deepHashCode(this.taxa);
         hash = 79 * hash + Arrays.deepHashCode(this.matrix);
         return hash;
+    }
+
+    /**
+     * Returns the number of taxa represented by this distance matrix
+     * @return number of taxa in this distance matrix
+     */
+    public int getNbTaxa() {
+        return nbTaxa;
     }
 
     /**
@@ -331,7 +339,7 @@ public class DistanceMatrix {
      * @return The size of the matrix along one dimension, or the number of taxa in the system.
      */
     public int size() {
-        return NB_TAXA;
+        return nbTaxa;
     }
 
     /**
@@ -340,7 +348,7 @@ public class DistanceMatrix {
      * @return The total number of elements in the matrix
      */
     public int elements() {
-        return NB_TAXA * NB_TAXA;
+        return nbTaxa * nbTaxa;
     }
 
     /**
@@ -384,21 +392,21 @@ public class DistanceMatrix {
         StringBuilder sb = new StringBuilder();
 
         sb.append("[");
-        for (int i = 0; i < NB_TAXA; i++) {
+        for (int i = 0; i < nbTaxa; i++) {
             sb.append("\"");
             sb.append(taxa[i]);
             sb.append("\"");
 
-            if (i != NB_TAXA - 1)
+            if (i != nbTaxa - 1)
                 sb.append(",");
         }
         sb.append("]\n");
-        for (int i = 0; i < NB_TAXA; i++) {
+        for (int i = 0; i < nbTaxa; i++) {
             sb.append("[");
-            for (int j = 0; j < NB_TAXA; j++) {
+            for (int j = 0; j < nbTaxa; j++) {
                 sb.append(matrix[i][j]);
 
-                if (j != NB_TAXA - 1)
+                if (j != nbTaxa - 1)
                     sb.append(",");
             }
             sb.append("]");
