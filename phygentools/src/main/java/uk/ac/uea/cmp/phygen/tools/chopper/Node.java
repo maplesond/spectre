@@ -16,6 +16,7 @@
 package uk.ac.uea.cmp.phygen.tools.chopper;
 
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * A node is either a tree or a leaf
@@ -25,13 +26,13 @@ import java.util.LinkedList;
  */
 public interface Node {
 
-    void index(LinkedList<String> taxonNames);
+    void index(List<String> taxonNames);
 
-    void harvestNames(LinkedList<String> taxonNames);
+    void harvestNames(List<String> taxonNames);
 
-    void harvest(LinkedList<Integer> taxa);
+    void harvest(List<Integer> taxa);
 
     boolean isTree();
 
-    void rename(LinkedList<String> oldTaxa, LinkedList<String> newTaxa);
+    void rename(List<String> oldTaxa, List<String> newTaxa);
 }

@@ -15,6 +15,7 @@
  */
 package uk.ac.uea.cmp.phygen.tools.chopper.loader;
 
+import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 
 import java.io.BufferedReader;
@@ -29,10 +30,10 @@ import java.util.StringTokenizer;
 public class NexusQuartetLoader extends AbstractLoader {
 
     @Override
-    public void load(String fileName, double weight) {
+    public void load(String fileName, double weight) throws IOException {
 
         this.weights.add(weight);
-        QuartetWeights qW = new QuartetWeights();
+        QuartetWeights qW = null;
 
         /**
          *
@@ -41,180 +42,168 @@ public class NexusQuartetLoader extends AbstractLoader {
          */
         int N = 0;
 
-        try {
+        /**
+         *
+         * File reader
+         *
+         */
+        BufferedReader fileInput = new BufferedReader(new FileReader(fileName));
 
-            /**
-             *
-             * File reader
-             *
-             */
-            BufferedReader fileInput = new BufferedReader(new FileReader(fileName));
+        /**
+         *
+         * Keep on reading and tokenizing until... a token is found
+         * beginning with "ntax=" parse its remainder for the number of
+         * taxa.
+         *
+         * Keep on reading until a token is found "TAXLABELS". Then read N
+         * lines which will be the taxon names. We assume there are n choose
+         * 4 quartets.
+         *
+         * Keep on reading and tokenizing until "st_quartets;" is found.
+         * Then proceed to "MATRIX". Then read the quartet lines until a
+         * line starts with ";".
+         *
+         *
+         *
+         */
+        boolean readingState = true;
 
-            /**
-             *
-             * Keep on reading and tokenizing until... a token is found
-             * beginning with "ntax=" parse its remainder for the number of
-             * taxa.
-             *
-             * Keep on reading until a token is found "TAXLABELS". Then read N
-             * lines which will be the taxon names. We assume there are n choose
-             * 4 quartets.
-             *
-             * Keep on reading and tokenizing until "st_quartets;" is found.
-             * Then proceed to "MATRIX". Then read the quartet lines until a
-             * line starts with ";".
-             *
-             *
-             *
-             */
-            boolean readingState = true;
+        while (readingState) {
 
-            while (readingState) {
+            String aLine = fileInput.readLine();
+            StringTokenizer sT = new StringTokenizer(aLine);
 
-                String aLine = fileInput.readLine();
-                StringTokenizer sT = new StringTokenizer(aLine);
+            while (sT.hasMoreTokens()) {
 
-                while (sT.hasMoreTokens()) {
+                String tT = sT.nextToken();
 
-                    String tT = sT.nextToken();
+                if (tT.toLowerCase().startsWith("ntax=")) {
 
-                    if (tT.toLowerCase().startsWith("ntax=")) {
+                    N = Integer.parseInt(tT.substring(5, tT.length() - 1));
 
-                        N = Integer.parseInt(tT.substring(5, tT.length() - 1));
+                    for (int n = 0; n < N; n++) {
 
-                        for (int n = 0; n < N; n++) {
-
-                            taxonNames.add(new String(""));
-
-                        }
-
-                        qW.ensureCapacity(N);
-                        qW.setSize(QuartetWeights.over4(N));
-                        qW.initialize();
-
-                        readingState = false;
+                        taxonNames.add(new String(""));
 
                     }
+
+                    qW = new QuartetWeights(Quartet.over4(N));
+
+                    readingState = false;
 
                 }
 
             }
 
-            readingState = true;
-
-            while (readingState) {
-
-                String aLine = fileInput.readLine();
-                StringTokenizer sT = new StringTokenizer(aLine);
-
-                while (sT.hasMoreTokens()) {
-
-                    String tT = sT.nextToken();
-
-                    if (tT.toUpperCase().startsWith("TAXLABELS")) {
-
-                        for (int n = 0; n < N; n++) {
-
-                            StringTokenizer aST = new StringTokenizer(fileInput.readLine().trim());
-
-                            String aS = aST.nextToken();
-
-                            if (aST.hasMoreTokens()) {
-
-                                aS = aST.nextToken();
-
-                            }
-
-                            taxonNames.set(n, aS);
-
-                        }
-
-                        readingState = false;
-
-                    }
-
-                }
-
-
-            }
-
-            readingState = true;
-
-            while (readingState) {
-
-                String aLine = fileInput.readLine();
-                StringTokenizer sT = new StringTokenizer(aLine);
-
-                while (sT.hasMoreTokens()) {
-
-                    String tT = sT.nextToken();
-
-                    if (tT.toLowerCase().startsWith("st_quartets;")) {
-
-                        readingState = false;
-
-                    }
-
-                }
-
-            }
-
-            readingState = true;
-
-            while (readingState) {
-
-                String aLine = fileInput.readLine();
-                StringTokenizer sT = new StringTokenizer(aLine);
-
-                while (sT.hasMoreTokens()) {
-
-                    String tT = sT.nextToken();
-
-                    if (tT.toUpperCase().startsWith("MATRIX")) {
-
-                        boolean quartetState = true;
-
-                        while (quartetState) {
-
-                            String bLine = fileInput.readLine();
-
-                            if (bLine.startsWith(";")) {
-
-                                quartetState = false;
-
-                            } else {
-
-                                StringTokenizer bT = new StringTokenizer(bLine);
-
-                                String label = bT.nextToken();
-                                double w = Double.parseDouble(bT.nextToken());
-                                int x = Integer.parseInt(bT.nextToken());
-                                int y = Integer.parseInt(bT.nextToken());
-                                String sC = bT.nextToken();
-                                int u = Integer.parseInt(bT.nextToken());
-                                String cS = bT.nextToken();
-                                int v = Integer.parseInt(cS.substring(0, cS.length() - 1));
-
-                                if (x != y && x != u && x != v && y != u && y != v && u != v) {
-
-                                    qW.setWeight(x, y, u, v, w);
-
-                                }
-
-                            }
-
-                        }
-
-                        readingState = false;
-
-                    }
-
-                }
-
-            }
-
-        } catch (IOException e) {
         }
+
+        readingState = true;
+
+        while (readingState) {
+
+            String aLine = fileInput.readLine();
+            StringTokenizer sT = new StringTokenizer(aLine);
+
+            while (sT.hasMoreTokens()) {
+
+                String tT = sT.nextToken();
+
+                if (tT.toUpperCase().startsWith("TAXLABELS")) {
+
+                    for (int n = 0; n < N; n++) {
+
+                        StringTokenizer aST = new StringTokenizer(fileInput.readLine().trim());
+
+                        String aS = aST.nextToken();
+
+                        if (aST.hasMoreTokens()) {
+
+                            aS = aST.nextToken();
+
+                        }
+
+                        taxonNames.set(n, aS);
+
+                    }
+
+                    readingState = false;
+
+                }
+
+            }
+
+
+        }
+
+        readingState = true;
+
+        while (readingState) {
+
+            String aLine = fileInput.readLine();
+            StringTokenizer sT = new StringTokenizer(aLine);
+
+            while (sT.hasMoreTokens()) {
+
+                String tT = sT.nextToken();
+
+                if (tT.toLowerCase().startsWith("st_quartets;")) {
+
+                    readingState = false;
+
+                }
+
+            }
+
+        }
+
+        readingState = true;
+
+        while (readingState) {
+
+            String aLine = fileInput.readLine();
+            StringTokenizer sT = new StringTokenizer(aLine);
+
+            while (sT.hasMoreTokens()) {
+
+                String tT = sT.nextToken();
+
+                if (tT.toUpperCase().startsWith("MATRIX")) {
+
+                    boolean quartetState = true;
+
+                    while (quartetState) {
+
+                        String bLine = fileInput.readLine();
+
+                        if (bLine.startsWith(";")) {
+
+                            quartetState = false;
+
+                        } else {
+
+                            StringTokenizer bT = new StringTokenizer(bLine);
+
+                            String label = bT.nextToken();
+                            double w = Double.parseDouble(bT.nextToken());
+                            int x = Integer.parseInt(bT.nextToken());
+                            int y = Integer.parseInt(bT.nextToken());
+                            String sC = bT.nextToken();
+                            int u = Integer.parseInt(bT.nextToken());
+                            String cS = bT.nextToken();
+                            int v = Integer.parseInt(cS.substring(0, cS.length() - 1));
+
+                            if (x != y && x != u && x != v && y != u && y != v && u != v) {
+
+                                qW.setWeight(new Quartet(x, y, u, v), w);
+                            }
+                        }
+                    }
+
+                    readingState = false;
+                }
+            }
+        }
+
         qWs.add(qW);
     }
 

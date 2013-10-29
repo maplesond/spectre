@@ -15,6 +15,8 @@
  */
 package uk.ac.uea.cmp.phygen.tools.chopper.loader;
 
+import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeighting;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 
 import java.io.BufferedReader;
@@ -32,7 +34,7 @@ public class QWeightLoader extends AbstractLoader {
     public void load(String fileName, double weight) throws IOException {
 
         this.weights.add(weight);
-        QuartetWeights qW = new QuartetWeights();
+        QuartetWeights qW = null;
 
         /**
          *
@@ -193,7 +195,7 @@ public class QWeightLoader extends AbstractLoader {
                  * Set it, just as it is written
                  *
                  */
-                qW.setWeight(a, b, c, d, w1, w2, w3);
+                qW.setWeight(new Quartet(a, b, c, d), new QuartetWeighting(w1, w2, w3));
 
             } else if (theFirst.equalsIgnoreCase("taxon")) {
 
@@ -271,18 +273,14 @@ public class QWeightLoader extends AbstractLoader {
                 for (int n = 0; n < N; n++) {
 
                     taxonNames.add(new String(""));
-
                 }
 
-                qW.ensureCapacity(N);
-                qW.initialize();
-
+                qW = new QuartetWeights(N);
             }
-
         }
 
 
-        if (qW.getSize() != qW.over4(N)) {
+        if (qW.size() != Quartet.over4(N)) {
 
             throw new IOException("Wrong number of quartets in file!");
         }

@@ -17,10 +17,13 @@ package uk.ac.uea.cmp.phygen.tools.chopper;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.ListIterator;
 
 /**
@@ -31,8 +34,8 @@ public class Tree implements Node {
 
     private static Logger log = LoggerFactory.getLogger(Tree.class);
 
-    private LinkedList<Node> branches;
-    private LinkedList<Double> weights;
+    private List<Node> branches;
+    private List<Double> weights;
 
     /**
      * The source is assumed to be something like
@@ -51,8 +54,8 @@ public class Tree implements Node {
 
         int level = 0;
         int start = 0;
-        branches = new LinkedList<>();
-        weights = new LinkedList<>();
+        branches = new ArrayList<>();
+        weights = new ArrayList<>();
 
         //flag used to indicate whether the root has degree 2
         //used to get the weights in unweighted trees right
@@ -165,43 +168,46 @@ public class Tree implements Node {
 
     }
 
-    public void index(LinkedList<String> taxonNames) {
+    @Override
+    public void index(List<String> taxonNames) {
 
         for(Node node : branches) {
             node.index(taxonNames);
         }
     }
 
-    public void harvestNames(LinkedList<String> taxonNames) {
+    @Override
+    public void harvestNames(List<String> taxonNames) {
 
         for(Node node : branches) {
             node.harvestNames(taxonNames);
         }
     }
 
-    public void harvest(LinkedList<Integer> taxa) {
+    @Override
+    public void harvest(List<Integer> taxa) {
 
         for(Node node : branches) {
             node.harvest(taxa);
         }
     }
 
-    public void split(QuartetWeights qW, LinkedList<Integer> remainder) {
+    /**
+     * We take all splits (those here, and those in the branches) and add their weights to the quartets. Weights are
+     * defined regardless, so... = 1 for no weights
+     * @param qW
+     * @param remainder
+     * @return
+     */
+    public QuartetWeights split(QuartetWeights qW, List<Integer> remainder) {
 
-        // so...
-        // we take all splits (those here, and those in the branches)
-        // and add their weights to the quartets. Weights are defined regardless, so... = 1 for no weights
+        for(int i = 0; i < this.branches.size(); i++) {
 
-        ListIterator lI = branches.listIterator();
-        ListIterator wI = weights.listIterator();
+            List<Integer> setA = new ArrayList<>();
+            List<Integer> setB = new ArrayList<>(remainder);
 
-        while (lI.hasNext()) {
-
-            LinkedList<Integer> setA = new LinkedList<>();
-            LinkedList<Integer> setB = (LinkedList<Integer>) remainder.clone();
-
-            Node branch = (Node) lI.next();
-            double w = ((Double) wI.next()).doubleValue();
+            Node branch = branches.get(i);
+            double w = this.weights.get(i);
 
             branch.harvest(setA);
 
@@ -237,7 +243,7 @@ public class Tree implements Node {
                                 int b1 = 1 + setB.get(iB1);
                                 int b2 = 1 + setB.get(iB2);
 
-                                qW.incrementWeight(a1, a2, b1, b2, w);
+                                qW.incrementWeight(new Quartet(a1, a2, b1, b2), w);
                             }
                         }
                     }
@@ -283,30 +289,24 @@ public class Tree implements Node {
                 ((Tree) branch).split(qW, setB);
             }
         }
+
+        return qW;
     }
 
 
     public QuartetWeights quartetize(int N) {
 
-        QuartetWeights qW = new QuartetWeights();
-
-        qW.ensureCapacity(N);
-
-        // this gives values for non-supported quartets in this tree...
-
-        qW.initialize();
+        QuartetWeights qW = new QuartetWeights(Quartet.over4(N));
 
         this.split(qW, new LinkedList<Integer>());
 
         return qW;
     }
 
-    public void rename(LinkedList<String> oldTaxa, LinkedList<String> newTaxa) {
+    public void rename(List<String> oldTaxa, List<String> newTaxa) {
 
-        ListIterator lI = branches.listIterator();
-
-        while (lI.hasNext()) {
-            ((Node) lI.next()).rename(oldTaxa, newTaxa);
+        for(Node node : branches) {
+            node.rename(oldTaxa, newTaxa);
         }
     }
 

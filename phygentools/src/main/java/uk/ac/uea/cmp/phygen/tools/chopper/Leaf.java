@@ -16,6 +16,7 @@
 package uk.ac.uea.cmp.phygen.tools.chopper;
 
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Created by IntelliJ IDEA. User: Analysis Date: 2004-jul-11 Time: 20:05:18 To
@@ -23,39 +24,38 @@ import java.util.LinkedList;
  */
 public class Leaf implements Node {
 
-    public Leaf(String source) {
+    private String taxonName;
+    private int taxonID;
 
+    public Leaf(String source) {
         taxonName = source;
     }
 
-    public void index(LinkedList<String> taxonNames) {
+    @Override
+    public void index(List<String> taxonNames) {
+        taxonID = taxonNames.indexOf(taxonName);          }
 
-        taxonID = taxonNames.indexOf(taxonName);
-    }
-
-    public void harvestNames(LinkedList<String> taxonNames) {
-
+    @Override
+    public void harvestNames(List<String> taxonNames) {
         if (!taxonNames.contains(taxonName)) {
             taxonNames.add(taxonName);
         }
     }
 
-    public void harvest(LinkedList<Integer> taxa) {
-
+    @Override
+    public void harvest(List<Integer> taxa) {
         taxa.add(new Integer(taxonID));
     }
 
+    @Override
     public boolean isTree() {
-
         return false;
     }
 
-    public void rename(LinkedList<String> oldTaxa, LinkedList<String> newTaxa) {
-
-        int i = oldTaxa.indexOf(taxonName);
-        taxonName = newTaxa.get(i);
+    @Override
+    public void rename(List<String> oldTaxa, List<String> newTaxa) {
+        taxonName = newTaxa.get(oldTaxa.indexOf(taxonName));
     }
 
-    String taxonName;
-    int taxonID;
+
 }

@@ -2,7 +2,9 @@ package uk.ac.uea.cmp.phygen.tools.chopper.loader;
 
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.ListIterator;
 
 /**
@@ -14,16 +16,16 @@ import java.util.ListIterator;
  */
 public abstract class AbstractLoader implements Source {
 
-    protected LinkedList<QuartetWeights> qWs;
-    protected LinkedList<Double> weights;
-    protected LinkedList<String> taxonNames;
+    protected List<QuartetWeights> qWs;
+    protected List<Double> weights;
+    protected List<String> taxonNames;
     protected int index;
 
     protected AbstractLoader() {
-        this(new LinkedList<QuartetWeights>(), new LinkedList<Double>(), new LinkedList<String>(), 0);
+        this(new ArrayList<QuartetWeights>(), new ArrayList<Double>(), new ArrayList<String>(), 0);
     }
 
-    protected AbstractLoader(LinkedList<QuartetWeights> qWs, LinkedList<Double> weights, LinkedList<String> taxonNames,
+    protected AbstractLoader(List<QuartetWeights> qWs, List<Double> weights, List<String> taxonNames,
                              int index) {
         this.qWs = qWs;
         this.weights = weights;
@@ -32,18 +34,21 @@ public abstract class AbstractLoader implements Source {
     }
 
     @Override
-    public LinkedList<QuartetWeights> getQuartetWeights() {
+    public List<QuartetWeights> getQuartetWeights() {
         return qWs;
     }
 
     @Override
-    public LinkedList<Double> getWeights() {
+    public List<Double> getWeights() {
         return weights;
     }
 
     @Override
-    public LinkedList<String> getTaxonNames() {
-        return taxonNames;
+    public List<List<String>> getTaxonNames() {
+
+        List<List<String>> result = new ArrayList<>();
+        result.add(taxonNames);
+        return result;
     }
 
     public int getIndex() {
@@ -56,11 +61,9 @@ public abstract class AbstractLoader implements Source {
 
 
     @Override
-    public void harvestNames(LinkedList<String> newTaxonNames) {
+    public void harvestNames(List<String> newTaxonNames) {
 
-        ListIterator lI = taxonNames.listIterator();
-        while (lI.hasNext()) {
-            String taxonName = (String) lI.next();
+        for(String taxonName : this.taxonNames) {
             if (!newTaxonNames.contains(taxonName)) {
                 newTaxonNames.add(taxonName);
             }
@@ -68,7 +71,7 @@ public abstract class AbstractLoader implements Source {
     }
 
     @Override
-    public void translate(LinkedList<String> newTaxonNames) {
+    public void translate(List<String> newTaxonNames) {
         qWs.set(0, qWs.get(0).translate(taxonNames, newTaxonNames));
     }
 

@@ -19,6 +19,7 @@ import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Created by IntelliJ IDEA. User: Analysis Date: 2004-jul-12 Time: 00:35:38 To
@@ -32,21 +33,21 @@ public interface Source {
     public void process();
 
     // these are the qWs
-    public LinkedList<QuartetWeights> getQuartetWeights();
+    public List<QuartetWeights> getQuartetWeights();
 
     // list of weights of qWs
-    public LinkedList<Double> getWeights();
+    public List<Double> getWeights();
 
     public double getWSum();
 
     // note: translate BEFORE processing
-    public void translate(LinkedList<String> taxonNames);
+    public void translate(List<String> taxonNames);
 
     // straightforward union of taxon names, stored in the input, so clone if necessary
-    public void harvestNames(LinkedList<String> taxonNames);
+    public void harvestNames(List<String> taxonNames);
 
     // name list for each
-    public LinkedList<String> getTaxonNames();
+    public List<List<String>> getTaxonNames();
 
     public boolean hasMoreSets();
 

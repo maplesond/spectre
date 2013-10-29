@@ -4,7 +4,9 @@ import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 import uk.ac.uea.cmp.phygen.tools.chopper.Node;
 import uk.ac.uea.cmp.phygen.tools.chopper.Tree;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.ListIterator;
 
 /**
@@ -17,15 +19,15 @@ import java.util.ListIterator;
 public abstract class AbstractTreeLoader extends AbstractLoader {
 
     protected boolean branchLengths, treeWeights;
-    protected LinkedList<Tree> trees;
+    protected List<Tree> trees;
 
     protected AbstractTreeLoader() {
-        this(new LinkedList<QuartetWeights>(), new LinkedList<Double>(), new LinkedList<String>(), 0,
-                false, false, new LinkedList<Tree>());
+        this(new ArrayList<QuartetWeights>(), new ArrayList<Double>(), new ArrayList<String>(), 0,
+                false, false, new ArrayList<Tree>());
     }
 
-    protected AbstractTreeLoader(LinkedList<QuartetWeights> qWs, LinkedList<Double> weights, LinkedList<String> taxonNames,
-                                 int index, boolean branchLengths, boolean treeWeights, LinkedList<Tree> trees) {
+    protected AbstractTreeLoader(List<QuartetWeights> qWs, List<Double> weights, List<String> taxonNames,
+                                 int index, boolean branchLengths, boolean treeWeights, List<Tree> trees) {
         super(qWs, weights, taxonNames, index);
         this.branchLengths = branchLengths;
         this.treeWeights = treeWeights;
@@ -40,49 +42,44 @@ public abstract class AbstractTreeLoader extends AbstractLoader {
         return treeWeights;
     }
 
-    public LinkedList<Tree> getTrees() {
+    public List<Tree> getTrees() {
         return trees;
     }
 
     @Override
     public void process() {
 
-        ListIterator<Tree> lI = trees.listIterator();
-
-        LinkedList<QuartetWeights> qWs = new LinkedList<>();
-
-        while (lI.hasNext()) {
-            qWs.add(lI.next().quartetize(taxonNames.size()));
+        for(Tree tree : this.trees) {
+            this.qWs.add(tree.quartetize(taxonNames.size()));
         }
     }
 
     @Override
-    public void harvestNames(LinkedList<String> newTaxonNames) {
-        ListIterator lI = trees.listIterator();
-        while (lI.hasNext()) {
-            ((Node) lI.next()).harvestNames(newTaxonNames);
+    public void harvestNames(List<String> newTaxonNames) {
+        for(Tree tree : this.trees) {
+            tree.harvestNames(newTaxonNames);
         }
     }
 
     @Override
-    public LinkedList<String> getTaxonNames() {
-        LinkedList<String> result = new LinkedList<>();
-        ListIterator lI = trees.listIterator();
-        while (lI.hasNext()) {
-            LinkedList<String> treeNames = new LinkedList<>();
-            ((Node) lI.next()).harvestNames(treeNames);
-            result.addAll(treeNames);
+    public List<List<String>> getTaxonNames() {
+
+        List<List<String>> result = new ArrayList<>();
+
+        for(Tree tree : this.trees) {
+            List<String> treeNames = new ArrayList<>();
+            tree.harvestNames(treeNames);
+            result.add(treeNames);
         }
 
         return result;
     }
 
     @Override
-    public void translate(LinkedList<String> newTaxonNames) {
+    public void translate(List<String> newTaxonNames) {
         taxonNames = newTaxonNames;
-        ListIterator lI = trees.listIterator();
-        while (lI.hasNext()) {
-            ((Node) lI.next()).index(taxonNames);
+        for(Tree tree : this.trees) {
+            tree.index(taxonNames);
         }
     }
 

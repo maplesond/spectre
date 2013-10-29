@@ -16,6 +16,7 @@
 
 package uk.ac.uea.cmp.phygen.tools.chopper;
 
+import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 
 import java.io.File;
@@ -79,8 +80,7 @@ public class ChoppedTree {
 
         for (int n = 0; n < N; n++) {
 
-            out.write("taxon:   " + nF.format(n + 1) + "   name: " + ((String) taxonNames.get(n)) + ";\n");
-
+            out.write("taxon:   " + nF.format(n + 1) + "   name: " + taxonNames.get(n) + ";\n");
         }
 
         for (int iA = 0; iA < N - 3; iA++) {
@@ -98,8 +98,8 @@ public class ChoppedTree {
 
                         out.write("quartet: " + nF.format(a) + " " + nF.format(b) + " " + nF.format(c) + " " + nF.format(d)
                                 + " weights: "
-                                + quartetWeights.getWeight(a, b, c, d) + " " + quartetWeights.getWeight(a, c, b, d)
-                                + " " + quartetWeights.getWeight(a, d, b, c) + ";\n");
+                                + quartetWeights.getWeight(new Quartet(a, b, c, d)) + " " + quartetWeights.getWeight(new Quartet(a, c, b, d))
+                                + " " + quartetWeights.getWeight(new Quartet(a, d, b, c)) + ";\n");
 
                     }
                 }
@@ -124,7 +124,7 @@ public class ChoppedTree {
 
         for (int n = 0; n < N; n++) {
 
-            out.write("taxon:   " + nF.format(n + 1) + "   name: " + ((String) taxonNames.get(n)) + ";\n");
+            out.write("taxon:   " + nF.format(n + 1) + "   name: " + taxonNames.get(n) + ";\n");
 
         }
 
@@ -141,7 +141,7 @@ public class ChoppedTree {
                         int c = iC + 1;
                         int d = iD + 1;
 
-                        if (summer.getWeight(a, b, c, d) > 0.0) {
+                        if (summer.getWeight(new Quartet(a, b, c, d)) > 0.0) {
 
                             out.write("quartet: " + nF.format(a) + " " + nF.format(b) + " " + nF.format(c) + " " + nF.format(d)
                                     + " weights: "

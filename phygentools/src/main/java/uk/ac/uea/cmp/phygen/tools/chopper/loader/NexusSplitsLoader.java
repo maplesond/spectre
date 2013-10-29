@@ -15,6 +15,7 @@
  */
 package uk.ac.uea.cmp.phygen.tools.chopper.loader;
 
+import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 
 import java.io.BufferedReader;
@@ -30,10 +31,10 @@ import java.util.StringTokenizer;
 public class NexusSplitsLoader extends AbstractLoader {
 
     @Override
-    public void load(String fileName, double weight) {
+    public void load(String fileName, double weight) throws IOException {
 
         this.weights.add(weight);
-        QuartetWeights qW = new QuartetWeights();
+        QuartetWeights qW = null;
 
         /**
          *
@@ -42,233 +43,198 @@ public class NexusSplitsLoader extends AbstractLoader {
          */
         int N = 0;
 
-        try {
+        /**
+         *
+         * File reader
+         *
+         */
+        BufferedReader fileInput = new BufferedReader(new FileReader(fileName));
 
-            /**
-             *
-             * File reader
-             *
-             */
-            BufferedReader fileInput = new BufferedReader(new FileReader(fileName));
+        /**
+         *
+         * Keep on reading and tokenizing until... a token is found
+         * beginning with "ntax=" parse its remainder for the number of
+         * taxa.
+         *
+         * Keep on reading until a token is found "TAXLABELS". Then read N
+         * lines which will be the taxon names. We assume there are n choose
+         * 4 quartets.
+         *
+         * Keep on reading and tokenizing until "st_splits;" is found. Then
+         * proceed to "MATRIX". Then read the quartet lines until a line
+         * starts with ";".
+         *
+         *
+         *
+         */
+        boolean readingState = true;
 
-            /**
-             *
-             * Keep on reading and tokenizing until... a token is found
-             * beginning with "ntax=" parse its remainder for the number of
-             * taxa.
-             *
-             * Keep on reading until a token is found "TAXLABELS". Then read N
-             * lines which will be the taxon names. We assume there are n choose
-             * 4 quartets.
-             *
-             * Keep on reading and tokenizing until "st_splits;" is found. Then
-             * proceed to "MATRIX". Then read the quartet lines until a line
-             * starts with ";".
-             *
-             *
-             *
-             */
-            boolean readingState = true;
+        while (readingState) {
 
-            while (readingState) {
+            String aLine = fileInput.readLine();
+            StringTokenizer sT = new StringTokenizer(aLine);
 
-                String aLine = fileInput.readLine();
-                StringTokenizer sT = new StringTokenizer(aLine);
+            while (sT.hasMoreTokens()) {
 
-                while (sT.hasMoreTokens()) {
+                String tT = sT.nextToken();
 
-                    String tT = sT.nextToken();
+                if (tT.toLowerCase().startsWith("ntax=")) {
 
-                    if (tT.toLowerCase().startsWith("ntax=")) {
+                    N = Integer.parseInt(tT.substring(5, tT.length() - 1));
 
-                        N = Integer.parseInt(tT.substring(5, tT.length() - 1));
+                    for (int n = 0; n < N; n++) {
 
-                        for (int n = 0; n < N; n++) {
-
-                            taxonNames.add(new String(""));
-
-                        }
-
-                        qW.ensureCapacity(N);
-                        qW.setSize(QuartetWeights.over4(N));
-                        qW.initialize();
-
-                        readingState = false;
-
+                        taxonNames.add(new String(""));
                     }
 
+                    qW = new QuartetWeights(Quartet.over4(N));
+
+                    readingState = false;
                 }
-
             }
+        }
 
-            readingState = true;
+        readingState = true;
 
-            while (readingState) {
+        while (readingState) {
 
-                String aLine = fileInput.readLine();
-                StringTokenizer sT = new StringTokenizer(aLine);
+            String aLine = fileInput.readLine();
+            StringTokenizer sT = new StringTokenizer(aLine);
 
-                while (sT.hasMoreTokens()) {
+            while (sT.hasMoreTokens()) {
 
-                    String tT = sT.nextToken();
+                String tT = sT.nextToken();
 
-                    if (tT.toUpperCase().startsWith("TAXLABELS")) {
+                if (tT.toUpperCase().startsWith("TAXLABELS")) {
 
-                        for (int n = 0; n < N; n++) {
+                    for (int n = 0; n < N; n++) {
 
-                            StringTokenizer aST = new StringTokenizer(fileInput.readLine().trim());
+                        StringTokenizer aST = new StringTokenizer(fileInput.readLine().trim());
 
-                            String aS = aST.nextToken();
+                        String aS = aST.nextToken();
 
-                            if (aST.hasMoreTokens()) {
+                        if (aST.hasMoreTokens()) {
 
-                                aS = aST.nextToken();
+                            aS = aST.nextToken();
+                        }
 
+                        taxonNames.set(n, aS);
+                    }
+
+                    readingState = false;
+                }
+            }
+        }
+
+        readingState = true;
+
+        while (readingState) {
+
+            String aLine = fileInput.readLine();
+            StringTokenizer sT = new StringTokenizer(aLine);
+
+            while (sT.hasMoreTokens()) {
+
+                String tT = sT.nextToken();
+
+                if (tT.toLowerCase().startsWith("st_splits;") || tT.toLowerCase().startsWith("splits;")) {
+
+                    readingState = false;
+                }
+            }
+        }
+
+        readingState = true;
+
+        while (readingState) {
+
+            String aLine = fileInput.readLine();
+            StringTokenizer sT = new StringTokenizer(aLine);
+
+            while (sT.hasMoreTokens()) {
+
+                String tT = sT.nextToken();
+
+                if (tT.toUpperCase().startsWith("MATRIX")) {
+
+                    boolean splitState = true;
+
+                    while (splitState) {
+
+                        String bLine = fileInput.readLine().trim();
+
+                        if (bLine.startsWith(";")) {
+
+                            splitState = false;
+
+                        } else {
+
+                            // BEGIN reading a split line
+
+                            if (bLine.endsWith(",")) {
+
+                                bLine = bLine.substring(0, bLine.length() - 1);
                             }
-
-                            taxonNames.set(n, aS);
-
-                        }
-
-                        readingState = false;
-
-                    }
-
-                }
-
-
-            }
-
-            readingState = true;
-
-            while (readingState) {
-
-                String aLine = fileInput.readLine();
-                StringTokenizer sT = new StringTokenizer(aLine);
-
-                while (sT.hasMoreTokens()) {
-
-                    String tT = sT.nextToken();
-
-                    if (tT.toLowerCase().startsWith("st_splits;") || tT.toLowerCase().startsWith("splits;")) {
-
-                        readingState = false;
-
-                    }
-
-                }
-
-            }
-
-            readingState = true;
-
-            while (readingState) {
-
-                String aLine = fileInput.readLine();
-                StringTokenizer sT = new StringTokenizer(aLine);
-
-                while (sT.hasMoreTokens()) {
-
-                    String tT = sT.nextToken();
-
-                    if (tT.toUpperCase().startsWith("MATRIX")) {
-
-                        boolean splitState = true;
-
-                        while (splitState) {
-
-                            String bLine = fileInput.readLine().trim();
-
-                            if (bLine.startsWith(";")) {
-
-                                splitState = false;
-
-                            } else {
-
-                                // BEGIN reading a split line
-
-                                if (bLine.endsWith(",")) {
-
-                                    bLine = bLine.substring(0, bLine.length() - 1);
-                                }
 
 //                                System.out.println("bline: \"" + bLine + "\"");
 
-                                StringTokenizer bT = new StringTokenizer(bLine);
+                            StringTokenizer bT = new StringTokenizer(bLine);
 //                                
-                                if (bT.nextToken().startsWith("[")) {
-                                    bT.nextToken();
-                                    bT.nextToken();
-                                }
-                                double w = Double.parseDouble(bT.nextToken());
+                            if (bT.nextToken().startsWith("[")) {
+                                bT.nextToken();
+                                bT.nextToken();
+                            }
+                            double w = Double.parseDouble(bT.nextToken());
 
-                                LinkedList<Integer> setA = new LinkedList<>();
-                                LinkedList<Integer> setB = new LinkedList<>();
+                            LinkedList<Integer> setA = new LinkedList<>();
+                            LinkedList<Integer> setB = new LinkedList<>();
 
-                                while (bT.hasMoreTokens()) {
+                            while (bT.hasMoreTokens()) {
 
-                                    setA.add(new Integer(Integer.parseInt(bT.nextToken())));
-
-                                }
-
-                                for (int n = 0; n < N; n++) {
-
-                                    if (!setA.contains(new Integer(n + 1))) {
-
-                                        setB.add(new Integer(n + 1));
-
-                                    }
-
-                                }
-
-                                if (setA.size() > 1 && setB.size() > 1) {
-
-                                    // we have a non-trivial split!
-                                    // which we must have, for trivial splits match no quartets...
-
-                                    // so, for all quartets in here, add the weight to their value
-
-                                    for (int iA1 = 0; iA1 < setA.size() - 1; iA1++) {
-
-                                        for (int iA2 = iA1 + 1; iA2 < setA.size(); iA2++) {
-
-                                            int a1 = ((Integer) setA.get(iA1)).intValue();
-                                            int a2 = ((Integer) setA.get(iA2)).intValue();
-
-                                            for (int iB1 = 0; iB1 < setB.size() - 1; iB1++) {
-
-                                                for (int iB2 = iB1 + 1; iB2 < setB.size(); iB2++) {
-
-                                                    int b1 = ((Integer) setB.get(iB1)).intValue();
-                                                    int b2 = ((Integer) setB.get(iB2)).intValue();
-
-                                                    qW.setWeight(a1, a2, b1, b2, qW.getWeight(a1, a2, b1, b2) + w);
-
-                                                }
-
-                                            }
-
-                                        }
-
-                                    }
-
-                                }
-
-                                // END reading a split line
-
+                                setA.add(new Integer(Integer.parseInt(bT.nextToken())));
                             }
 
+                            for (int n = 0; n < N; n++) {
+
+                                if (!setA.contains(new Integer(n + 1))) {
+
+                                    setB.add(new Integer(n + 1));
+                                }
+                            }
+
+                            if (setA.size() > 1 && setB.size() > 1) {
+
+                                // we have a non-trivial split!
+                                // which we must have, for trivial splits match no quartets...
+
+                                // so, for all quartets in here, add the weight to their value
+
+                                for (int iA1 = 0; iA1 < setA.size() - 1; iA1++) {
+
+                                    for (int iA2 = iA1 + 1; iA2 < setA.size(); iA2++) {
+
+                                        int a1 = ((Integer) setA.get(iA1)).intValue();
+                                        int a2 = ((Integer) setA.get(iA2)).intValue();
+
+                                        for (int iB1 = 0; iB1 < setB.size() - 1; iB1++) {
+
+                                            for (int iB2 = iB1 + 1; iB2 < setB.size(); iB2++) {
+
+                                                int b1 = ((Integer) setB.get(iB1)).intValue();
+                                                int b2 = ((Integer) setB.get(iB2)).intValue();
+
+                                                qW.incrementWeight(new Quartet(a1, a2, b1, b2), w);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
-
-                        readingState = false;
-
                     }
 
+                    readingState = false;
                 }
-
             }
-
-        } catch (IOException e) {
         }
 
         qWs.add(qW);

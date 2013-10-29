@@ -22,6 +22,8 @@ import org.apache.commons.io.FileUtils;
 import org.kohsuke.MetaInfServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeighting;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 import uk.ac.uea.cmp.phygen.tools.PhygenTool;
 import uk.ac.uea.cmp.phygen.tools.chopper.loader.LoaderType;
@@ -29,10 +31,7 @@ import uk.ac.uea.cmp.phygen.tools.chopper.loader.Source;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.StringTokenizer;
+import java.util.*;
 
 /**
  * This class chops forests down into little pieces of woods input is a file of newick trees output is a quartet weights
@@ -177,10 +176,7 @@ public class Chopper extends PhygenTool {
 
     protected ChoppedTree doOneType(File inputFile, LoaderType type, double weight, ChoppedTree choppedTree) throws IOException {
 
-        if (choppedTree == null)
-            choppedTree = new ChoppedTree();
-
-        LinkedList<String> taxonNames = choppedTree.getTaxonNames();
+        List<String> taxonNames = choppedTree.getTaxonNames();
         QuartetWeights qW = choppedTree.getQuartetWeights();
         QuartetWeights summer = choppedTree.getSummer();
 
@@ -188,15 +184,16 @@ public class Chopper extends PhygenTool {
 
         // I'm sure it should be possible to tidy this up further.
         loader.load(inputFile.getPath(), weight);
-        LinkedList<String> taxonNamesOld = (LinkedList<String>) taxonNames.clone();
+        List<String> taxonNamesOld = new ArrayList<>(taxonNames);
         loader.harvestNames(taxonNames);
         loader.translate(taxonNames);
+
+
         qW = qW.translate(taxonNamesOld, taxonNames);
         summer = summer.translate(taxonNamesOld, taxonNames);
 
 
         // crucial, drop now the list stuff
-
         while (loader.hasMoreSets()) {
 
             double aW = loader.getNextWeight();
@@ -206,56 +203,10 @@ public class Chopper extends PhygenTool {
             System.gc();
         }
 
-        sum(summer, taxonNames, loader);
+        summer.sum(taxonNames, loader.getTaxonNames(), loader.getWeights());
 
         return choppedTree;
     }
 
 
-    public static void sum(QuartetWeights summer, LinkedList<String> taxonNames, Source loader) {
-
-        // so... we go through taxonNames, which is the metalist
-        // check every quartet defined for it
-        // take the taxonList for the objects in loader, and their corresponding weights
-        // if a quartet is defined for that list, add its weight to the corresponding summer position
-        // summer must have been translated according to the metalist
-
-        ListIterator lI = loader.getTaxonNames().listIterator();
-        ListIterator wI = loader.getWeights().listIterator();
-
-        while (lI.hasNext()) {
-
-            double w = ((Double) wI.next()).doubleValue();
-            LinkedList lesserNames = (LinkedList) lI.next();
-
-            // course through all quartets of taxonNames
-            // if taxonNames (quartet entries) are contained in lesserNames
-            // add w to summer (quartet)
-
-            int N = taxonNames.size();
-
-            for (int a = 0; a < N - 3; a++) {
-                for (int b = a + 1; b < N - 2; b++) {
-                    for (int c = b + 1; c < N - 1; c++) {
-                        for (int d = c + 1; d < N; d++) {
-                            String sA = taxonNames.get(a);
-                            String sB = taxonNames.get(b);
-                            String sC = taxonNames.get(c);
-                            String sD = taxonNames.get(d);
-
-                            if (lesserNames.contains(sA)
-                                    && lesserNames.contains(sB)
-                                    && lesserNames.contains(sC)
-                                    && lesserNames.contains(sD)) {
-
-                                double oldW = summer.getWeight(a + 1, b + 1, c + 1, d + 1);
-
-                                summer.setWeight(a + 1, b + 1, c + 1, d + 1, oldW + w, oldW + w, oldW + w);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
 }
