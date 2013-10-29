@@ -14,7 +14,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.phygen.core.ui.cli;
+package uk.ac.uea.cmp.phygen.tools;
 
 import org.apache.commons.cli.*;
 
@@ -31,6 +31,11 @@ public abstract class PhygenTool {
     protected abstract Options createInternalOptions();
 
     protected abstract void execute(CommandLine commandLine) throws IOException;
+
+    public abstract String getName();
+    public abstract boolean acceptsIdentifier(String identifier);
+    public abstract String getDescription();
+
 
     public Options createOptions() {
         Options options = this.createInternalOptions();

@@ -19,11 +19,12 @@ package uk.ac.uea.cmp.phygen.tools.rdg;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
+import org.kohsuke.MetaInfServices;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phygen.core.ds.distance.RandomDistanceGenerator;
 import uk.ac.uea.cmp.phygen.core.io.PhygenWriter;
 import uk.ac.uea.cmp.phygen.core.io.PhygenWriterFactory;
-import uk.ac.uea.cmp.phygen.core.ui.cli.PhygenTool;
+import uk.ac.uea.cmp.phygen.tools.PhygenTool;
 import uk.ac.uea.cmp.phygen.core.util.Time;
 
 import java.io.File;
@@ -33,6 +34,7 @@ import java.io.IOException;
  * Created with IntelliJ IDEA. User: Dan Date: 14/05/13 Time: 21:27 To change this template use File | Settings | File
  * Templates.
  */
+@MetaInfServices
 public class RandomDistanceGeneratorTool extends PhygenTool {
 
     private static final String OPT_PREFIX = "prefix";
@@ -94,5 +96,21 @@ public class RandomDistanceGeneratorTool extends PhygenTool {
         }
 
 
+    }
+
+    @Override
+    public String getName() {
+        return "rdg";
+    }
+
+    @Override
+    public boolean acceptsIdentifier(String identifier) {
+        return identifier.equalsIgnoreCase(this.getName()) ||
+                identifier.equalsIgnoreCase(this.getClass().getCanonicalName());
+    }
+
+    @Override
+    public String getDescription() {
+        return "Creates a random distance matricies of a given size";
     }
 }

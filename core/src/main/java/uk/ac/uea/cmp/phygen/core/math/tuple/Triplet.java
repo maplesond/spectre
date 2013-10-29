@@ -116,6 +116,6 @@ public class Triplet<T extends Number> {
         if (position == 3) {
             c = newN;
         }
-
     }
+
 }

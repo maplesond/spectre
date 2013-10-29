@@ -33,15 +33,15 @@ public class QuartetWeights {
     /**
      * The heart of the data structure
      */
-    private List<Triplet<Double>> data;
+    private List<TripletFP> data;
     /**
      * Number of actual quartets
      */
-    private int theSize;
+    private int size;
 
     public QuartetWeights() {
 
-        theSize = 0;
+        size = 0;
     }
 
     /**
@@ -49,84 +49,31 @@ public class QuartetWeights {
      */
     public static int over4(int n) {
 
-        if (n > 4) {
-
-            return n * (n - 1) * (n - 2) * (n - 3) / 24;
-
-        } else if (n == 4) {
-
-            return 1;
-
-        } else {
-
-            return 0;
-
-        }
-
+        return n > 4 ?
+                n * (n - 1) * (n - 2) * (n - 3) / 24 :
+                n == 4 ? 1 : 0;
     }
 
     public static int over3(int n) {
 
-        if (n > 3) {
-
-            return n * (n - 1) * (n - 2) / 6;
-
-        } else if (n == 3) {
-
-            return 1;
-
-        } else {
-
-            return 0;
-
-        }
-
+        return n > 3 ?
+                n * (n - 1) * (n - 2) / 6 :
+                n == 3 ? 1 : 0;
     }
 
     public static int over2(int n) {
 
-        if (n > 2) {
-
-            return n * (n - 1) / 2;
-
-        } else if (n == 2) {
-
-            return 1;
-
-        } else {
-
-            return 0;
-
-        }
-
+        return n > 2 ?
+                n * (n - 1) / 2 :
+                n == 2 ? 1 : 0;
     }
 
     public static int over1(int n) {
 
-        if (n > 1) {
-
-            return n;
-
-        } else if (n == 1) {
-
-            return 1;
-
-        } else {
-
-            return 0;
-
-        }
-
+        return n > 0 ? n : 0;
     }
 
-    /**
-     * Check if filled...
-     */
-    public int getSize() {
 
-        return theSize;
-
-    }
 
     /**
      * Ensure capacity...
@@ -134,7 +81,6 @@ public class QuartetWeights {
     public void ensureCapacity(int N) {
 
         data = new ArrayList<>(over4(N));
-
     }
 
     public void initialize() {
@@ -142,15 +88,21 @@ public class QuartetWeights {
         int N = data.size();
 
         for (int n = 0; n < N; n++) {
-            data.set(n, new Triplet<Double>(0.0, 0.0, 0.0));
+            data.set(n, new TripletFP(0.0, 0.0, 0.0));
         }
 
     }
 
-    public void setSize(int theNewSize) {
 
-        theSize = theNewSize;
+    /**
+     * Check if filled...
+     */
+    public int getSize() {
+        return size;
+    }
 
+    public void setSize(int size) {
+        this.size = size;
     }
 
     /**
@@ -435,7 +387,7 @@ public class QuartetWeights {
 
         }
 
-        Triplet<Double> w = new Triplet<Double>(r1, r2, r3);
+        TripletFP w = new TripletFP(r1, r2, r3);
 
         /**
          *
@@ -444,8 +396,15 @@ public class QuartetWeights {
          */
         data.set(over4(x - 1) + over3(y - 1) + over2(u - 1) + over1(v - 1), w);
 
-        theSize++;
+        size++;
 
+    }
+
+    /**
+     * setWeight sets a weight
+     */
+    public void incrementWeight(int a, int b, int c, int d, double increment) {
+        this.setWeight(a, b, c, d, this.getWeight(a, b, c, d) + increment);
     }
 
     /**
@@ -463,7 +422,6 @@ public class QuartetWeights {
          * Create size-ordered quadruple x, y, u, v from a, b, c, d
          *
          */
-        log.debug("set weight of quartet: " + a + " " + b + " " + c + " " + d + " : " + data.size());
         int x = a;
         int y = b;
         int u = c;
@@ -518,7 +476,7 @@ public class QuartetWeights {
 
         }
 //try{
-        Triplet<Double> w = data.get(over4(x - 1) + over3(y - 1) + over2(u - 1) + over1(v - 1));
+        TripletFP w = data.get(over4(x - 1) + over3(y - 1) + over2(u - 1) + over1(v - 1));
 
         /**
          *
@@ -539,230 +497,113 @@ public class QuartetWeights {
         if (((x == a || x == b) && (y == a || y == b)) || ((u == a || u == b) && (v == a || v == b))) {
 
             w.setA(newW);
-
-        } else if (((x == a || x == b) && (u == a || u == b)) || ((y == a || y == b) && (v == a || v == b))) {
+        }
+        else if (((x == a || x == b) && (u == a || u == b)) || ((y == a || y == b) && (v == a || v == b))) {
 
             w.setB(newW);
-
-        } else if (((x == a || x == b) && (v == a || v == b)) || ((u == a || u == b) && (y == a || y == b))) {
+        }
+        else if (((x == a || x == b) && (v == a || v == b)) || ((u == a || u == b) && (y == a || y == b))) {
 
             w.setC(newW);
-
         }
 
         data.set(over4(x - 1) + over3(y - 1) + over2(u - 1) + over1(v - 1), w);
     }
-    /*
-     * catch(Exception e){ e.printStackTrace(); }
-     *
-     * }
-     *
-     * /**
-     *
-     * Normalizing
-     *
-     */
+
+
+
+
+
+    public static class TripletFP extends Triplet<Double> {
+
+        public TripletFP(double a, double b, double c) {
+            super(a,b,c);
+        }
+
+        public boolean allNonZero() {
+            return this.getA() != 0 && this.getB() != 0 && this.getC() != 0;
+        }
+
+        private double logNormValue(double value) {
+            if (value < 0.0) {
+                throw new IllegalStateException("Error: Quartet file contains negative weight!");
+            }
+
+            return value == 0.0 ? -15.0 : Math.log(value);
+        }
+
+
+        public void normalise(boolean log, boolean useMax) {
+
+            // lowest weight must be nonnegative
+            double newA = this.getA();
+            double newB = this.getB();
+            double newC = this.getC();
+
+            if (log) {
+                newA = logNormValue(this.getA());
+                newB = logNormValue(this.getB());
+                newC = logNormValue(this.getC());
+            }
+
+            if (useMax) {
+                double min = Math.min(Math.min(newA, newB), newC);
+
+                this.setA(newA - min);
+                this.setB(newB - min);
+                this.setC(newC - min);
+            }
+            else {
+                double max = Math.max(Math.max(newA, newB), newC);
+
+                this.setA(max - newA);
+                this.setB(max - newB);
+                this.setC(max - newC);
+            }
+        }
+
+        public void divide(TripletFP other) {
+
+            if (this.allNonZero()) {
+                this.setA(this.getA() / other.getA());
+                this.setB(this.getB() / other.getB());
+                this.setC(this.getC() / other.getC());
+            }
+        }
+
+        /**
+         * just a potentially weighted mean with this, quartets supported by few trees will be weak, although if the
+         * trees are strong, they may be too
+         * @param other
+         * @param weight
+         */
+        public void weightedSum(TripletFP other, double weight) {
+
+            this.setA(this.getA() + weight * other.getA());
+            this.setB(this.getB() + weight * other.getB());
+            this.setC(this.getC() + weight * other.getC());
+        }
+    }
 
     public void normalize(boolean useMax) {
 
-        if (useMax) {
-
-            for (int n = 0; n < data.size(); n++) {
-
-                Triplet<Double> t = data.get(n);
-
-                double min = Math.min(t.getA(), Math.min(t.getB(), t.getC()));
-
-                double q1 = t.getA() - min;
-                double q2 = t.getB() - min;
-                double q3 = t.getC() - min;
-
-//                q1 = q1 / (q1 + q2 + q3);
-//                q2 = q2 / (q1 + q2 + q3);
-//                q3 = q3 / (q1 + q2 + q3);
-
-                t.setA(q1);
-                t.setB(q2);
-                t.setC(q3);
-
-                data.set(n, t);
-            }
-
-        } else {
-
-            for (int n = 0; n < data.size(); n++) {
-
-                Triplet<Double> t = data.get(n);
-
-                double max = Math.max(t.getA(), Math.max(t.getB(), t.getC()));
-
-                double q1 = max - t.getA();
-                double q2 = max - t.getB();
-                double q3 = max - t.getC();
-
-//                q1 = q1 / (q1 + q2 + q3);
-//                q2 = q2 / (q1 + q2 + q3);
-//                q3 = q3 / (q1 + q2 + q3);
-
-                t.setA(q1);
-                t.setB(q2);
-                t.setC(q3);
-
-                data.set(n, t);
-            }
+        for (int n = 0; n < data.size(); n++) {
+            data.get(n).normalise(false, useMax);
         }
     }
 
-    /**
-     * Log-Normalizing
-     */
     public void logNormalize(boolean useMax) {
 
-        if (useMax) {
-
-            for (int n = 0; n < data.size(); n++) {
-
-                Triplet<Double> t = data.get(n);
-
-                // lowest weight must be nonnegative
-
-                double q1 = t.getA().doubleValue();
-                double q2 = t.getB().doubleValue();
-                double q3 = t.getC().doubleValue();
-
-                if (q1 < 0.0) {
-
-                    log.error("Error: Quartet file contains negative weight!");
-
-                    System.exit(1);
-
-                } else if (q1 == 0.0) {
-
-                    q1 = -15.0;
-
-                } else {
-
-                    q1 = Math.log(q1);
-
-                }
-
-                if (q2 < 0.0) {
-
-                    log.error("Error: Quartet file contains negative weight!");
-
-                    System.exit(1);
-
-                } else if (q2 == 0.0) {
-
-                    q2 = -15.0;
-
-                } else {
-
-                    q2 = Math.log(q2);
-
-                }
-
-                if (q3 < 0.0) {
-
-                    log.error("Error: Quartet file contains negative weight!");
-
-                    System.exit(1);
-
-                } else if (q3 == 0.0) {
-
-                    q3 = -15.0;
-
-                } else {
-
-                    q3 = Math.log(q3);
-
-                }
-
-                double min = Math.min(Math.min(q1, q2), q3);
-
-                t.setA(q1 - min);
-                t.setB(q2 - min);
-                t.setC(q3 - min);
-
-                data.set(n, t);
-
-            }
-
-        } else {
-
-            for (int n = 0; n < data.size(); n++) {
-
-                Triplet<Double> t = data.get(n);
-
-                double q1 = t.getA().doubleValue();
-                double q2 = t.getB().doubleValue();
-                double q3 = t.getC().doubleValue();
-
-                if (q1 < 0.0) {
-
-                    log.error("Error: Quartet file contains negative weight!");
-
-                    System.exit(1);
-
-                } else if (q1 == 0.0) {
-
-                    q1 = -15.0;
-
-                } else {
-
-                    q1 = Math.log(q1);
-
-                }
-
-                if (q2 < 0.0) {
-
-                    log.error("Error: Quartet file contains negative weight!");
-
-                    System.exit(1);
-
-                } else if (q2 == 0.0) {
-
-                    q2 = -15.0;
-
-                } else {
-
-                    q2 = Math.log(q2);
-
-                }
-
-                if (q3 < 0.0) {
-
-                    log.error("Error: Quartet file contains negative weight!");
-
-                    System.exit(1);
-
-                } else if (q3 == 0.0) {
-
-                    q3 = -15.0;
-
-                } else {
-
-                    q3 = Math.log(q3);
-
-                }
-
-                double max = Math.max(Math.max(q1, q2), q3);
-
-                t.setA(max - q1);
-                t.setB(max - q2);
-                t.setC(max - q3);
-
-                data.set(n, t);
-            }
+        for (int n = 0; n < data.size(); n++) {
+            data.get(n).normalise(true, useMax);
         }
     }
 
-    public List<Triplet<Double>> getData() {
+    public List<TripletFP> getData() {
         return data;
     }
 
-    public void setData(List<Triplet<Double>> newData) {
-
+    public void setData(List<TripletFP> newData) {
         data = newData;
     }
 
@@ -852,4 +693,25 @@ public class QuartetWeights {
             return score;
         }
     }
+
+
+    public void divide(QuartetWeights summer) {
+
+        for (int n = 0; n < this.data.size(); n++) {
+            this.data.get(n).divide(summer.getData().get(n));
+        }
+    }
+
+    /**
+     * note: this now simply computes a weighted sum. This is the part that may be done in any number of ways here,
+     * take weighted sum of every quartet where the quartet is nonzero
+     */
+    public void add(QuartetWeights aW, double w) {
+
+        for (int n = 0; n < this.data.size(); n++) {
+            this.data.get(n).weightedSum(aW.getData().get(n), w);
+        }
+    }
+
+
 }

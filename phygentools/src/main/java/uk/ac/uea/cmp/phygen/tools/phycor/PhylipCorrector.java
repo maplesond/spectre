@@ -20,7 +20,8 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.io.FileUtils;
-import uk.ac.uea.cmp.phygen.core.ui.cli.PhygenTool;
+import org.kohsuke.MetaInfServices;
+import uk.ac.uea.cmp.phygen.tools.PhygenTool;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,6 +32,7 @@ import java.util.List;
  * Created with IntelliJ IDEA. User: Dan Date: 15/05/13 Time: 22:10 To change this template use File | Settings | File
  * Templates.
  */
+@MetaInfServices
 public class PhylipCorrector extends PhygenTool {
 
     private static final String OPT_INPUT = "input";
@@ -116,5 +118,21 @@ public class PhylipCorrector extends PhygenTool {
 
             i++;
         }
+    }
+
+    @Override
+    public String getName() {
+        return "pc";
+    }
+
+    @Override
+    public boolean acceptsIdentifier(String identifier) {
+        return identifier.equalsIgnoreCase(this.getName()) ||
+                identifier.equalsIgnoreCase(this.getClass().getCanonicalName());
+    }
+
+    @Override
+    public String getDescription() {
+        return "Corrects a broken phylip file";
     }
 }

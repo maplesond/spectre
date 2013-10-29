@@ -20,12 +20,13 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.io.FilenameUtils;
+import org.kohsuke.MetaInfServices;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phygen.core.io.PhygenReader;
 import uk.ac.uea.cmp.phygen.core.io.PhygenReaderFactory;
 import uk.ac.uea.cmp.phygen.core.io.PhygenWriter;
 import uk.ac.uea.cmp.phygen.core.io.PhygenWriterFactory;
-import uk.ac.uea.cmp.phygen.core.ui.cli.PhygenTool;
+import uk.ac.uea.cmp.phygen.tools.PhygenTool;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,6 +34,7 @@ import java.io.IOException;
 /**
  * Converts phylip to nexus and vice versa
  */
+@MetaInfServices
 public class Convertor extends PhygenTool {
 
     private static final String OPT_INPUT = "input";
@@ -66,6 +68,22 @@ public class Convertor extends PhygenTool {
         String distancesFileType = commandLine.hasOption(OPT_DISTANCES_FILE_TYPE) ? commandLine.getOptionValue(OPT_DISTANCES_FILE_TYPE) : null;
 
         this.execute(inputFile, outputFile, distancesFileType);
+    }
+
+    @Override
+    public String getName() {
+        return "convertor";
+    }
+
+    @Override
+    public boolean acceptsIdentifier(String identifier) {
+        return identifier.equalsIgnoreCase(this.getName()) ||
+                identifier.equalsIgnoreCase(this.getClass().getCanonicalName());
+    }
+
+    @Override
+    public String getDescription() {
+        return "Converts phylip to nexus format and vice versa.";
     }
 
     public void execute(File inputFile, File outputFile) throws IOException {

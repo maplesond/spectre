@@ -2,7 +2,6 @@ package uk.ac.uea.cmp.phygen.tools.chopper.loader;
 
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 import uk.ac.uea.cmp.phygen.tools.chopper.Node;
-import uk.ac.uea.cmp.phygen.tools.chopper.Traverser;
 import uk.ac.uea.cmp.phygen.tools.chopper.Tree;
 
 import java.util.LinkedList;
@@ -47,7 +46,14 @@ public abstract class AbstractTreeLoader extends AbstractLoader {
 
     @Override
     public void process() {
-        qWs = Traverser.traverse(trees, taxonNames.size());
+
+        ListIterator<Tree> lI = trees.listIterator();
+
+        LinkedList<QuartetWeights> qWs = new LinkedList<>();
+
+        while (lI.hasNext()) {
+            qWs.add(lI.next().quartetize(taxonNames.size()));
+        }
     }
 
     @Override
@@ -94,7 +100,7 @@ public abstract class AbstractTreeLoader extends AbstractLoader {
 
     @Override
     public QuartetWeights getNextQuartetWeights() {
-        return Traverser.quartetize(trees.get(index++), taxonNames.size());
+        return trees.get(index++).quartetize(taxonNames.size());
     }
 
     @Override

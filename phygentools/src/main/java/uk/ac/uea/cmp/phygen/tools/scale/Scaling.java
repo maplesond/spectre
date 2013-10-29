@@ -20,11 +20,12 @@ import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.kohsuke.MetaInfServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.math.optimise.*;
 import uk.ac.uea.cmp.phygen.core.math.tuple.Key;
-import uk.ac.uea.cmp.phygen.core.ui.cli.PhygenTool;
+import uk.ac.uea.cmp.phygen.tools.PhygenTool;
 import uk.ac.uea.cmp.phygen.tools.chopper.Chopper;
 import uk.ac.uea.cmp.phygen.tools.chopper.loader.LoaderType;
 
@@ -36,6 +37,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+@MetaInfServices
 public class Scaling extends PhygenTool {
 
     private static Logger log = LoggerFactory.getLogger(Scaling.class);
@@ -90,6 +92,22 @@ public class Scaling extends PhygenTool {
         } catch (OptimiserException oe) {
             throw new IOException(oe);
         }
+    }
+
+    @Override
+    public String getName() {
+        return "scaler";
+    }
+
+    @Override
+    public boolean acceptsIdentifier(String identifier) {
+        return identifier.equalsIgnoreCase(this.getName()) ||
+                identifier.equalsIgnoreCase(this.getClass().getCanonicalName());
+    }
+
+    @Override
+    public String getDescription() {
+        return "Scales input trees to a given range based on their quartet weights (uses \"chopper\" to get the quartet weights from the trees)";
     }
 
     public void execute(File inputFile, File outputPrefix, Mode mode, Optimiser optimiser) throws OptimiserException, IOException {

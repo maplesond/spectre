@@ -31,18 +31,21 @@ public class Tree implements Node {
 
     private static Logger log = LoggerFactory.getLogger(Tree.class);
 
-    public Tree(String source, boolean branchLengths) throws IOException {
+    private LinkedList<Node> branches;
+    private LinkedList<Double> weights;
 
-        /*
-         *
-         * the source is assumed to be something like
-         *
-         * (A:0.5, B:0.5):0.1, C:0.2, (D:0.1, E:324)
-         *
-         * this should be parsed so that three branches and corresponding
-         * weights are added
-         *
-         */
+    /**
+     * The source is assumed to be something like
+     *
+     * (A:0.5, B:0.5):0.1, C:0.2, (D:0.1, E:324)
+     *
+     * this should be parsed so that three branches and corresponding
+     * weights are added
+     * @param source
+     * @param branchLengths
+     * @throws IOException
+     */
+    public Tree(String source, boolean branchLengths) throws IOException {
 
         source = source.trim();
 
@@ -108,7 +111,6 @@ public class Tree implements Node {
 
                 } else if ((!subSource.startsWith("(")) && (!subSource.endsWith(")"))) {
 
-                    //System.out.println("Found taxon: " + subSource);
                     branches.add(new Leaf(subSource));
 
                 } else {
@@ -165,38 +167,23 @@ public class Tree implements Node {
 
     public void index(LinkedList<String> taxonNames) {
 
-        ListIterator lI = branches.listIterator();
-
-        while (lI.hasNext()) {
-
-            ((Node) lI.next()).index(taxonNames);
-
+        for(Node node : branches) {
+            node.index(taxonNames);
         }
-
     }
 
     public void harvestNames(LinkedList<String> taxonNames) {
 
-        ListIterator lI = branches.listIterator();
-
-        while (lI.hasNext()) {
-
-            ((Node) lI.next()).harvestNames(taxonNames);
-
+        for(Node node : branches) {
+            node.harvestNames(taxonNames);
         }
-
     }
 
     public void harvest(LinkedList<Integer> taxa) {
 
-        ListIterator lI = branches.listIterator();
-
-        while (lI.hasNext()) {
-
-            ((Node) lI.next()).harvest(taxa);
-
+        for(Node node : branches) {
+            node.harvest(taxa);
         }
-
     }
 
     public void split(QuartetWeights qW, LinkedList<Integer> remainder) {
@@ -225,11 +212,8 @@ public class Tree implements Node {
                 Node otherBranch = (Node) lJ.next();
 
                 if (branch != otherBranch) {
-
                     otherBranch.harvest(setB);
-
                 }
-
             }
 
             if (setA.size() > 1 && setB.size() > 1) {
@@ -253,7 +237,7 @@ public class Tree implements Node {
                                 int b1 = 1 + setB.get(iB1);
                                 int b2 = 1 + setB.get(iB2);
 
-                                qW.setWeight(a1, a2, b1, b2, qW.getWeight(a1, a2, b1, b2) + w);
+                                qW.incrementWeight(a1, a2, b1, b2, w);
                             }
                         }
                     }
@@ -296,10 +280,25 @@ public class Tree implements Node {
             // and recurse if possible
 
             if (branch.isTree()) {
-
                 ((Tree) branch).split(qW, setB);
             }
         }
+    }
+
+
+    public QuartetWeights quartetize(int N) {
+
+        QuartetWeights qW = new QuartetWeights();
+
+        qW.ensureCapacity(N);
+
+        // this gives values for non-supported quartets in this tree...
+
+        qW.initialize();
+
+        this.split(qW, new LinkedList<Integer>());
+
+        return qW;
     }
 
     public void rename(LinkedList<String> oldTaxa, LinkedList<String> newTaxa) {
@@ -314,9 +313,6 @@ public class Tree implements Node {
     public boolean isTree() {
 
         return true;
-
     }
 
-    LinkedList<Node> branches;
-    LinkedList<Double> weights;
 }

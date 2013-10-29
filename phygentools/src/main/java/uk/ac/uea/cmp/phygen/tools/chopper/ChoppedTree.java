@@ -57,7 +57,7 @@ public class ChoppedTree {
     }
 
     public void divide() {
-        Combiner.divide(quartetWeights, summer);
+        quartetWeights.divide(summer);
     }
 
     public void save(File outputPrefix) throws IOException {

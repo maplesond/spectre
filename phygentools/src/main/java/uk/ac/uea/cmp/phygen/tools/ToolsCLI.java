@@ -17,7 +17,9 @@
 package uk.ac.uea.cmp.phygen.tools;
 
 import org.apache.commons.cli.*;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import uk.ac.uea.cmp.phygen.core.ui.cli.CommandLineHelper;
 
 /**
  * Created with IntelliJ IDEA.
@@ -28,18 +30,21 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class ToolsCLI {
 
-    private static CommandLine buildCmdLine(String[] args) throws ParseException {
+    public static final String OPT_HELP = "help";
 
-        // Create the available options
-        Options options = ToolsOptions.createOptions();
+    @SuppressWarnings("static-access")
+    private static Options createOptions() {
 
-        // Parse the actual arguments
-        CommandLineParser parser = new PosixParser();
+        // add t option
+        return new Options().addOption(new Option("?", OPT_HELP, false, "Print this message."));
+    }
 
-        // parse the command line arguments
-        CommandLine cmdLine = parser.parse(options, args, true);
-
-        return cmdLine;
+    private static void printHelp() {
+        CommandLineHelper.printHelp(
+                createOptions(),
+                "phygentools.jar",
+                "Miscellaneous Phylogenetic Tools",
+                "A collection of miscellaneous tools: " + ToolsFactory.getInstance().listToolsDescriptions());
     }
 
 
@@ -47,18 +52,21 @@ public class ToolsCLI {
 
         try {
             // Process the command line
-            CommandLine cmdLine = buildCmdLine(args);
+            CommandLine cmdLine = new PosixParser().parse(createOptions(), args, true);
 
-            ToolsOptions toolsOptions = new ToolsOptions(cmdLine);
-
-            // If help was requested output that and finish before starting Spring
-            if (toolsOptions.doHelp()) {
-                toolsOptions.printUsage();
+            if (cmdLine.getArgList().isEmpty() || cmdLine.getArgs()[0].equalsIgnoreCase(OPT_HELP)) {
+                printHelp();
             }
-            // Otherwise run NetMake proper
             else {
-                // Execute the requested simulation
-                toolsOptions.getMode().execute(cmdLine.getArgs());
+                // Required arguments
+                PhygenTool phygenTool = ToolsFactory.getInstance().createOptimiserInstance(cmdLine.getArgs()[0]);
+
+                if (phygenTool == null) {
+                    throw new ParseException("Requested tool not found: " + cmdLine.getOptionValue(cmdLine.getArgs()[0]));
+                }
+                else {
+                    phygenTool.execute(ArrayUtils.subarray(cmdLine.getArgs(), 1, cmdLine.getArgs().length));
+                }
             }
         } catch (Exception e) {
             System.err.println(e.getMessage());
