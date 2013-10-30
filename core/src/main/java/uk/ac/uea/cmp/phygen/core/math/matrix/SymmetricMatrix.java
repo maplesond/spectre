@@ -15,6 +15,7 @@
  */
 package uk.ac.uea.cmp.phygen.core.math.matrix;
 
+import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 
 /**
@@ -23,23 +24,23 @@ import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
  */
 public class SymmetricMatrix {
 
+    private int size;
+    private double[] diagonal;
+    private double[] triangle;
+
     public SymmetricMatrix(int size) {
 
         this.size = size;
 
         diagonal = new double[size];
-        triangle = new double[QuartetWeights.over2(size)];
+        triangle = new double[Quartet.over2(size)];
 
         for (int n = 0; n < size; n++) {
-
             diagonal[n] = 0.0;
-
         }
 
-        for (int n = 0; n < QuartetWeights.over2(size); n++) {
-
+        for (int n = 0; n < Quartet.over2(size); n++) {
             triangle[n] = 0.0;
-
         }
 
     }
@@ -51,36 +52,23 @@ public class SymmetricMatrix {
     public void setElementAt(int i, int j, double newW) {
 
         if (i > j) {
-
-            triangle[QuartetWeights.over2(i) + QuartetWeights.over1(j)] = newW;
-
-        } else if (j > i) {
-
-            triangle[QuartetWeights.over2(j) + QuartetWeights.over1(i)] = newW;
-
-        } else {
-
-            diagonal[i] = newW;
-
+            triangle[Quartet.over2(i) + Quartet.over1(j)] = newW;
         }
-
+        else if (j > i) {
+            triangle[Quartet.over2(j) + Quartet.over1(i)] = newW;
+        }
+        else {
+            diagonal[i] = newW;
+        }
     }
 
     public double getElementAt(int i, int j) {
 
-        if (i > j) {
-
-            return triangle[QuartetWeights.over2(i) + QuartetWeights.over1(j)];
-
-        } else if (j > i) {
-
-            return triangle[QuartetWeights.over2(j) + QuartetWeights.over1(i)];
-
-        } else {
-
-            return diagonal[i];
-
-        }
+        return i > j ?
+                    triangle[Quartet.over2(i) + Quartet.over1(j)] :
+                    j > i ?
+                        triangle[Quartet.over2(j) + Quartet.over1(i)] :
+                        diagonal[i];
 
     }
 
@@ -96,8 +84,4 @@ public class SymmetricMatrix {
 
         return w;
     }
-
-    int size;
-    double[] diagonal;
-    double[] triangle;
 }

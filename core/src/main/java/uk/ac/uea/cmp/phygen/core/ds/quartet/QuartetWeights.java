@@ -24,16 +24,26 @@ import java.util.List;
  */
 public class QuartetWeights extends ArrayList<QuartetWeighting> {
 
+    public QuartetWeights() {
+        this(0);
+    }
+
+    public QuartetWeights(final int size) {
+        super(size);
+
+        for(int i = 0; i < size; i++) {
+            this.add(new QuartetWeighting());
+        }
+    }
 
     /**
      * getWeight gets a weight
      */
     public double getWeight(Quartet quartet) {
 
-        // Get the triplet for this quartet
-        QuartetWeighting w = this.get(quartet.getIndex());
-
         Quartet sortedQuartet = quartet.createSortedQuartet();
+
+        QuartetWeighting w = this.get(sortedQuartet.getIndex());
 
         return sortedQuartet.selectWeight(quartet, w);
     }
@@ -88,7 +98,7 @@ public class QuartetWeights extends ArrayList<QuartetWeighting> {
         }
     }
 
-    public QuartetWeights translate(LinkedList<String> taxonNamesOld, LinkedList<String> taxonNamesNew) {
+    public QuartetWeights translate(List<String> taxonNamesOld, List<String> taxonNamesNew) {
 
         int NNew = taxonNamesNew.size();
         int NOld = taxonNamesOld.size();
@@ -189,5 +199,51 @@ public class QuartetWeights extends ArrayList<QuartetWeighting> {
         }
     }
 
+    /**
+     * So... we go through taxonNames, which is the metalist check every quartet defined for it take the taxonList for
+     * the objects in loader, and their corresponding weights if a quartet is defined for that list, add its weight to
+     * the corresponding summer position summer must have been translated according to the metalist
+     * @param taxonNames
+     * @param metaTaxonNames
+     * @param weights
+     */
+    public void sum(List<String> taxonNames, List<List<String>> metaTaxonNames, List<Double> weights) {
 
+        for(int i = 0; i < metaTaxonNames.size(); i++) {
+
+            double w = weights.get(i);
+            List<String> lesserNames = metaTaxonNames.get(i);
+
+            // course through all quartets of taxonNames
+            // if taxonNames (quartet entries) are contained in lesserNames
+            // add w to summer (quartet)
+
+            int N = taxonNames.size();
+
+            for (int a = 0; a < N - 3; a++) {
+                for (int b = a + 1; b < N - 2; b++) {
+                    for (int c = b + 1; c < N - 1; c++) {
+                        for (int d = c + 1; d < N; d++) {
+                            String sA = taxonNames.get(a);
+                            String sB = taxonNames.get(b);
+                            String sC = taxonNames.get(c);
+                            String sD = taxonNames.get(d);
+
+                            if (lesserNames.contains(sA)
+                                    && lesserNames.contains(sB)
+                                    && lesserNames.contains(sC)
+                                    && lesserNames.contains(sD)) {
+
+                                Quartet q = new Quartet(a + 1, b + 1, c + 1, d + 1);
+
+                                double oldW = this.getWeight(q);
+
+                                this.setWeight(q, new QuartetWeighting(oldW + w, oldW + w, oldW + w));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

@@ -31,7 +31,6 @@ public class BitMatrix {
         this.rows = rows;
         this.columns = columns;
         data = new boolean[rows][columns];
-
     }
 
     public BitMatrix(boolean[][] newData, int rows, int columns) {
@@ -39,35 +38,16 @@ public class BitMatrix {
         this.rows = rows;
         this.columns = columns;
         data = newData;
-
     }
 
-    public double elementAt(int row, int column) {
+    public boolean elementAt(int row, int column) {
 
-        if (data[row][column]) {
-
-            return 1.0;
-
-        } else {
-
-            return 0.0;
-
-        }
-
+        return data[row][column];
     }
 
-    public void setElementAt(int row, int column, int value) {
+    public void setElementAt(int row, int column, boolean value) {
 
-        if (value == 1) {
-
-            data[row][column] = true;
-
-        } else {
-
-            data[row][column] = false;
-
-        }
-
+        data[row][column] = value;
     }
 
     public BitMatrix cut(LinkedList P) {
@@ -81,18 +61,13 @@ public class BitMatrix {
             if (P.contains(new Integer(c))) {
 
                 for (int r = 0; r < rows; r++) {
-
                     newData[r][q] = data[r][c];
-
                 }
 
                 q++;
-
             }
-
         }
 
         return new BitMatrix(newData, rows, P.size());
-
     }
 }
