@@ -71,7 +71,7 @@ public class Chopper extends PhygenTool {
         File inputFile = new File(commandLine.getOptionValue(OPT_INPUT_FILE));
         File outputFile = new File(commandLine.getOptionValue(OPT_OUTPUT_FILE));
 
-        // Ensures that requests to uk.ac.uea.cmp.phygen.superq.chopper are upper case and have colons replaced
+        // Ensures that requests to Chopper are upper case and have colons replaced
         // with underscores to reflect enum Type.
         LoaderType type = LoaderType.valueOf(commandLine.getOptionValue(OPT_TYPE).toUpperCase().replace(':', '_'));
 

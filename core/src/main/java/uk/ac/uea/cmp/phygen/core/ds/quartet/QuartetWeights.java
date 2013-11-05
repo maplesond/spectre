@@ -103,7 +103,12 @@ public class QuartetWeights extends ArrayList<QuartetWeighting> {
         int NNew = taxonNamesNew.size();
         int NOld = taxonNamesOld.size();
 
-        this.ensureCapacity(NNew);
+        int newSize = Quartet.over4(NNew);
+        this.ensureCapacity(newSize);
+
+        for(int i = 0; i < newSize; i++) {
+            this.add(new QuartetWeighting());
+        }
 
         for (int iA = 0; iA < NOld - 3; iA++) {
 
@@ -123,9 +128,9 @@ public class QuartetWeights extends ArrayList<QuartetWeighting> {
                         int nC = taxonNamesNew.indexOf(taxonNamesOld.get(iC)) + 1;
                         int nD = taxonNamesNew.indexOf(taxonNamesOld.get(iD)) + 1;
 
-                        this.setWeight(new Quartet(nA, nB, nC, nD), getWeight(new Quartet(a, b, c, d)));
-                        this.setWeight(new Quartet(nA, nC, nB, nD), getWeight(new Quartet(a, c, b, d)));
-                        this.setWeight(new Quartet(nA, nD, nB, nC), getWeight(new Quartet(a, d, b, c)));
+                        this.setWeight(new Quartet(nA, nB, nC, nD), this.getWeight(new Quartet(a, b, c, d)));
+                        this.setWeight(new Quartet(nA, nC, nB, nD), this.getWeight(new Quartet(a, c, b, d)));
+                        this.setWeight(new Quartet(nA, nD, nB, nC), this.getWeight(new Quartet(a, d, b, c)));
                     }
                 }
             }
