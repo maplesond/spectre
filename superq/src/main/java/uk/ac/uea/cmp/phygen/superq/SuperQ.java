@@ -139,7 +139,7 @@ public class SuperQ extends RunnableTool {
             Chopper.run(new File(file), new File(tmppath + "qw"), LoaderType.valueOf(type.toUpperCase()));
 
             rt.gc();
-            log.debug("FREE MEM - after running uk.ac.uea.cmp.phygen.superq.chopper: " + rt.freeMemory());
+            log.debug("FREE MEM - after running Chopper: " + rt.freeMemory());
 
             this.continueRun();
 
@@ -153,7 +153,7 @@ public class SuperQ extends RunnableTool {
             );
 
             rt.gc();
-            log.debug("FREE MEM - after running uk.ac.uea.cmp.phygen.superq.qnet: " + rt.freeMemory());
+            log.debug("FREE MEM - after running Q-Net: " + rt.freeMemory());
 
             this.continueRun();
 
