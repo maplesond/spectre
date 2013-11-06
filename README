@@ -38,9 +38,15 @@ ui - User interface - Supporting classes to help with both command line interfac
 util - Miscellaneous utilities - Anything we might conceivably want to reuse that doesn’t fit elsewhere.
 
 
-Netmake:
+FlatNJ: 
 --------
 
+Constructs a flat split system from quardruples.
+
+
+
+Netmake:
+--------
 
 Creates a compatible split system and a circular ordering from a distance matrix and either a single weighting or a hybrid weighting configuration.
 
@@ -71,7 +77,7 @@ Constructs a circular split system from a set of quartets.
 SuperQ:
 -------
 
-Constructs a circular split system from a set of partial trees.
+Constructs a circular split system from a set of weighted or unweighted partial trees by using quartets.
 
 
 
