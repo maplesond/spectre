@@ -54,10 +54,10 @@ public class RandomNeighbourNetFits {
     public void process() throws IOException {
 
         // Create an appropriate phygen reader based on the file extension
-        PhygenReader phygenReader = PhygenReaderFactory.create(FilenameUtils.getExtension(this.inputFile.getName()));
+        PhygenReader phygenReader = PhygenReaderFactory.getInstance().create(FilenameUtils.getExtension(this.inputFile.getName()));
 
         // Load a distance matrix from the input file
-        DistanceMatrix distanceMatrix = phygenReader.read(this.inputFile);
+        DistanceMatrix distanceMatrix = phygenReader.readDistanceMatrix(this.inputFile);
 
         // Generate input files from distance matrix
         List<File> generatedFiles = this.generateInputFiles();

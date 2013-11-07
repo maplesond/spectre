@@ -26,7 +26,6 @@ import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
 import java.io.File;
 
 import static junit.framework.TestCase.assertFalse;
-import static junit.framework.TestCase.assertTrue;
 
 /**
  * Created with IntelliJ IDEA.

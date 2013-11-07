@@ -79,7 +79,6 @@ public class ChoppedTree {
         nF.setMaximumIntegerDigits(3);
 
         for (int n = 0; n < N; n++) {
-
             out.write("taxon:   " + nF.format(n + 1) + "   name: " + taxonNames.get(n) + ";\n");
         }
 
@@ -117,9 +116,7 @@ public class ChoppedTree {
         nF.setMaximumIntegerDigits(3);
 
         for (int n = 0; n < N; n++) {
-
             out.write("taxon:   " + nF.format(n + 1) + "   name: " + taxonNames.get(n) + ";\n");
-
         }
 
         for (int a = 1; a <= N - 3; a++) {

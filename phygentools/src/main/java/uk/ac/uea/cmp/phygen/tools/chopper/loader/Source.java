@@ -18,7 +18,6 @@ package uk.ac.uea.cmp.phygen.tools.chopper.loader;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 
 import java.io.IOException;
-import java.util.LinkedList;
 import java.util.List;
 
 /**

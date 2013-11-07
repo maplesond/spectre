@@ -316,6 +316,14 @@ public class DistanceMatrix {
     }
 
     /**
+     * Returns a handle on the underlying matrix
+     * @return
+     */
+    public double[][] getMatrix() {
+        return this.matrix;
+    }
+
+    /**
      * Retrieves a single row of the distance matrix in string form.
      *
      * @param row The index of the row to return.

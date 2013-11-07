@@ -77,11 +77,9 @@ public class TreeLoader extends AbstractTreeLoader {
                 if (treeWeights) {
 
                     String wS = aLine.substring(endColon + 1).trim();
-                    //System.out.println("WS:" + wS);
                     weights.add(new Double(Double.parseDouble(wS) * weight));
 
                 } else {
-                    //System.out.println("ELSE");
                     weights.add(new Double(weight));
                 }
 

@@ -16,6 +16,7 @@
 package uk.ac.uea.cmp.phygen.qnet.holders;
 
 import uk.ac.uea.cmp.phygen.core.ds.TaxonList;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 
 import java.util.List;
@@ -132,7 +133,7 @@ public class THolder {
                                         int yC = C.get(xC);
 
                                         count++;
-                                        weight += theQuartetWeights.getWeight(yA1, yB, yA2, yC);
+                                        weight += theQuartetWeights.getWeight(new Quartet(yA1, yB, yA2, yC));
 
 
                                     }

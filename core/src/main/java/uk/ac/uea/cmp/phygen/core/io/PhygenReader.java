@@ -16,9 +16,11 @@
 package uk.ac.uea.cmp.phygen.core.io;
 
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
+import uk.ac.uea.cmp.phygen.core.ds.tree.NewickTree;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -29,5 +31,28 @@ import java.io.IOException;
  */
 public interface PhygenReader {
 
-    DistanceMatrix read(File input) throws IOException;
+    /**
+     * Loads a distance matrix from a file
+     *
+     * @param input
+     * @return
+     * @throws IOException
+     */
+    DistanceMatrix readDistanceMatrix(File input) throws IOException;
+
+    List<NewickTree> readTrees(File input) throws IOException;
+
+    List<NewickTree> readTrees(File input, double weight) throws IOException;
+
+
+    String[] commonFileExtensions();
+
+    String getIdentifier();
+
+    boolean acceptsIdentifier(String identifier);
+
+    boolean acceptsDataType(PhygenDataType phygenDataType);
+
+    boolean acceptsDataTypes(List<PhygenDataType> phygenDataTypeList);
+
 }

@@ -21,10 +21,13 @@ package uk.ac.uea.cmp.phygen.core.io.nexus;
  */
 
 import org.apache.commons.io.FileUtils;
+import org.kohsuke.MetaInfServices;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phygen.core.ds.split.CircularOrdering;
 import uk.ac.uea.cmp.phygen.core.ds.split.SplitBlock;
-import uk.ac.uea.cmp.phygen.core.io.PhygenReader;
+import uk.ac.uea.cmp.phygen.core.ds.tree.NewickTree;
+import uk.ac.uea.cmp.phygen.core.io.AbstractPhygenReader;
+import uk.ac.uea.cmp.phygen.core.io.PhygenDataType;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -42,7 +45,8 @@ import java.util.StringTokenizer;
  *
  * @author Dan
  */
-public class NexusReader implements PhygenReader {
+@MetaInfServices(uk.ac.uea.cmp.phygen.core.io.PhygenReader.class)
+public class NexusReader extends AbstractPhygenReader {
 
     /**
      * Reads the file specified by this reader and converts the data into a set
@@ -53,7 +57,7 @@ public class NexusReader implements PhygenReader {
      * @throws ParseException Thrown if there were any syntax issues when
      *                        parsing the file.
      */
-    public DistanceMatrix read(File file) throws IOException {
+    public DistanceMatrix readDistanceMatrix(File file) throws IOException {
 
         if (file == null) {
             throw new NullPointerException("Must specify a nexus file to read");
@@ -190,6 +194,35 @@ public class NexusReader implements PhygenReader {
 
         return distanceMatrix;
     }
+
+    @Override
+    public List<NewickTree> readTrees(File input, double weight) throws IOException {
+        throw new UnsupportedOperationException("Haven't got around to implementing this yet");
+    }
+
+    @Override
+    public String[] commonFileExtensions() {
+        return new String[]{"nex", "nxs", "nexus"};
+    }
+
+    @Override
+    public String getIdentifier() {
+        return "NEXUS";
+    }
+
+    @Override
+    public boolean acceptsDataType(PhygenDataType phygenDataType) {
+
+        if (phygenDataType == PhygenDataType.DISTANCE_MATRIX)
+            return true;
+        else if (phygenDataType == PhygenDataType.TREE)
+            return true;
+
+        return false;
+    }
+
+
+
 
     private String getIdentifierFromMatrixLine(String aLine) {
         int endIdx = aLine.indexOf(" ");

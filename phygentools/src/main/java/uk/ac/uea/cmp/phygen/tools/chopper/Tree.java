@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
+import uk.ac.uea.cmp.phygen.core.ds.tree.Node;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -132,24 +133,14 @@ public class Tree implements Node {
             int indexColon = subSource.lastIndexOf(':');
             String wS = subSource.substring(indexColon + 1);
 
-            if (subSource.lastIndexOf(')') != -1) {
-
-                subSource = subSource.substring(0, subSource.lastIndexOf(')') + 1).trim();
-
-            } else {
-
-                subSource = subSource.substring(0, indexColon).trim();
-
-            }
+            subSource = subSource.lastIndexOf(')') != -1 ?
+                    subSource.substring(0, subSource.lastIndexOf(')') + 1).trim() :
+                    subSource.substring(0, indexColon).trim();
 
             weights.add(new Double(Double.parseDouble(wS.trim())));
 
         } else {
-            if (degree2root) {
-                weights.add(new Double(0.5));
-            } else {
-                weights.add(new Double(1.0));
-            }
+            weights.add(degree2root ? 0.5 : 1.0);
         }
 
         if (subSource.startsWith("(") && subSource.endsWith(")")) {
@@ -162,7 +153,7 @@ public class Tree implements Node {
 
         } else {
 
-            throw new IOException("QNet.Chopper: Syntax error in Newick string: wrong number of brackets!");
+            throw new IOException("Syntax error in Newick string: wrong number of brackets!");
 
         }
 
@@ -250,42 +241,8 @@ public class Tree implements Node {
                 }
             }
 
-            /*
-             * else if (setA.size () == 1 && setB.size () > 2) {
-             *
-             * // this is a trivial split
-             *
-             * for (int iA = 0; iA < setA.size (); iA++) {
-             *
-             * int a = 1 + ((Integer) setA.get (iA)).intValue ();
-             *
-             * for (int iB1 = 0; iB1 < setB.size () - 2; iB1++) {
-             *
-             * for (int iB2 = iB1 + 1; iB2 < setB.size () - 1; iB2++) {
-             *
-             * for (int iB3 = iB2 + 1; iB3 < setB.size (); iB3++) {
-             *
-             * int b1 = 1 + ((Integer) setB.get (iB1)).intValue (); int b2 = 1 +
-             * ((Integer) setB.get (iB2)).intValue (); int b3 = 1 + ((Integer)
-             * setB.get (iB3)).intValue ();
-             *
-             * qW.setWeight (a, b1, b2, b3, qW.getWeight (a, b1, b2, b3) + w);
-             * qW.setWeight (a, b2, b1, b3, qW.getWeight (a, b2, b1, b3) + w);
-             * qW.setWeight (a, b3, b1, b2, qW.getWeight (a, b3, b1, b2) + w);
-             *
-             * }
-             *
-             * }
-             *
-             * }
-             *
-             * }
-             *
-             * }
-             */
             // and recurse if possible
-
-            if (branch.isTree()) {
+            if (branch.internalNode()) {
                 ((Tree) branch).split(qW, setB);
             }
         }
@@ -310,7 +267,7 @@ public class Tree implements Node {
         }
     }
 
-    public boolean isTree() {
+    public boolean internalNode() {
 
         return true;
     }

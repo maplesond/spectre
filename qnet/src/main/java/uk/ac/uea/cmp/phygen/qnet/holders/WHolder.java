@@ -16,6 +16,7 @@
 package uk.ac.uea.cmp.phygen.qnet.holders;
 
 import uk.ac.uea.cmp.phygen.core.ds.TaxonList;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 import uk.ac.uea.cmp.phygen.core.math.tuple.Triplet;
 
@@ -25,10 +26,10 @@ public class WHolder {
 
     public WHolder(List<TaxonList> theLists, int N, QuartetWeights theQuartetWeights) {
 
-        counts = new Triplet[QuartetWeights.over4(N)];
-        weights = new Triplet[QuartetWeights.over4(N)];
+        counts = new Triplet[Quartet.over4(N)];
+        weights = new Triplet[Quartet.over4(N)];
 
-        for (int n = 0; n < QuartetWeights.over4(N); n++) {
+        for (int n = 0; n < Quartet.over4(N); n++) {
 
             counts[n] = new Triplet<Integer>(0, 0, 0);
             weights[n] = new Triplet<Double>(0.0, 0.0, 0.0);
@@ -109,10 +110,10 @@ public class WHolder {
 
                             // if on the same path, no quartets meet the conditions
 
-                            counts[QuartetWeights.over4(l - 1) + QuartetWeights.over3(k - 1)
-                                    + QuartetWeights.over2(j - 1) + QuartetWeights.over1(i - 1)] = new Triplet<Integer>(0, 0, 0);
-                            weights[QuartetWeights.over4(l - 1) + QuartetWeights.over3(k - 1)
-                                    + QuartetWeights.over2(j - 1) + QuartetWeights.over1(i - 1)] = new Triplet<Double>(0.0, 0.0, 0.0);
+                            counts[Quartet.over4(l - 1) + Quartet.over3(k - 1)
+                                    + Quartet.over2(j - 1) + Quartet.over1(i - 1)] = new Triplet<Integer>(0, 0, 0);
+                            weights[Quartet.over4(l - 1) + Quartet.over3(k - 1)
+                                    + Quartet.over2(j - 1) + Quartet.over1(i - 1)] = new Triplet<Double>(0.0, 0.0, 0.0);
 
                             continue;
 
@@ -151,11 +152,11 @@ public class WHolder {
                                         int yD = D.get(xD);
 
                                         count1++;
-                                        weight1 += theQuartetWeights.getWeight(yA, yB, yC, yD);
+                                        weight1 += theQuartetWeights.getWeight(new Quartet(yA, yB, yC, yD));
                                         count2++;
-                                        weight2 += theQuartetWeights.getWeight(yA, yC, yB, yD);
+                                        weight2 += theQuartetWeights.getWeight(new Quartet(yA, yC, yB, yD));
                                         count3++;
-                                        weight3 += theQuartetWeights.getWeight(yA, yD, yB, yC);
+                                        weight3 += theQuartetWeights.getWeight(new Quartet(yA, yD, yB, yC));
 
                                     }
 
@@ -165,10 +166,10 @@ public class WHolder {
 
                         }
 
-                        counts[QuartetWeights.over4(l - 1) + QuartetWeights.over3(k - 1)
-                                + QuartetWeights.over2(j - 1) + QuartetWeights.over1(i - 1)] = new Triplet<Integer>(count1, count2, count3);
-                        weights[QuartetWeights.over4(l - 1) + QuartetWeights.over3(k - 1)
-                                + QuartetWeights.over2(j - 1) + QuartetWeights.over1(i - 1)] = new Triplet<Double>(weight1, weight2, weight3);
+                        counts[Quartet.over4(l - 1) + Quartet.over3(k - 1)
+                                + Quartet.over2(j - 1) + Quartet.over1(i - 1)] = new Triplet<>(count1, count2, count3);
+                        weights[Quartet.over4(l - 1) + Quartet.over3(k - 1)
+                                + Quartet.over2(j - 1) + Quartet.over1(i - 1)] = new Triplet<>(weight1, weight2, weight3);
 
                     }
 
@@ -270,8 +271,8 @@ public class WHolder {
 
         }
 
-        return counts[QuartetWeights.over4(x - 1) + QuartetWeights.over3(y - 1)
-                + QuartetWeights.over2(u - 1) + QuartetWeights.over1(v - 1)].get(position);
+        return counts[Quartet.over4(x - 1) + Quartet.over3(y - 1)
+                + Quartet.over2(u - 1) + Quartet.over1(v - 1)].get(position);
 
     }
 
@@ -365,13 +366,13 @@ public class WHolder {
 
         }
 
-        Triplet<Integer> iT = counts[QuartetWeights.over4(x - 1) + QuartetWeights.over3(y - 1)
-                + QuartetWeights.over2(u - 1) + QuartetWeights.over1(v - 1)];
+        Triplet<Integer> iT = counts[Quartet.over4(x - 1) + Quartet.over3(y - 1)
+                + Quartet.over2(u - 1) + Quartet.over1(v - 1)];
 
         iT.set(position, newN);
 
-        counts[QuartetWeights.over4(x - 1) + QuartetWeights.over3(y - 1)
-                + QuartetWeights.over2(u - 1) + QuartetWeights.over1(v - 1)] = iT;
+        counts[Quartet.over4(x - 1) + Quartet.over3(y - 1)
+                + Quartet.over2(u - 1) + Quartet.over1(v - 1)] = iT;
 
     }
 
@@ -465,8 +466,8 @@ public class WHolder {
 
         }
 
-        return weights[QuartetWeights.over4(x - 1) + QuartetWeights.over3(y - 1)
-                + QuartetWeights.over2(u - 1) + QuartetWeights.over1(v - 1)].get(position);
+        return weights[Quartet.over4(x - 1) + Quartet.over3(y - 1)
+                + Quartet.over2(u - 1) + Quartet.over1(v - 1)].get(position);
 
     }
 
@@ -560,13 +561,13 @@ public class WHolder {
 
         }
 
-        Triplet t = weights[QuartetWeights.over4(x - 1) + QuartetWeights.over3(y - 1)
-                + QuartetWeights.over2(u - 1) + QuartetWeights.over1(v - 1)];
+        Triplet t = weights[Quartet.over4(x - 1) + Quartet.over3(y - 1)
+                + Quartet.over2(u - 1) + Quartet.over1(v - 1)];
 
         t.set(position, newW);
 
-        weights[QuartetWeights.over4(x - 1) + QuartetWeights.over3(y - 1)
-                + QuartetWeights.over2(u - 1) + QuartetWeights.over1(v - 1)] = t;
+        weights[Quartet.over4(x - 1) + Quartet.over3(y - 1)
+                + Quartet.over2(u - 1) + Quartet.over1(v - 1)] = t;
 
     }
 

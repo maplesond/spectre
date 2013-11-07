@@ -27,6 +27,7 @@ import org.apache.log4j.PropertyConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
+import uk.ac.uea.cmp.phygen.core.io.PhygenDataType;
 import uk.ac.uea.cmp.phygen.core.io.PhygenReader;
 import uk.ac.uea.cmp.phygen.core.io.PhygenReaderFactory;
 import uk.ac.uea.cmp.phygen.core.ui.cli.CommandLineHelper;
@@ -65,7 +66,9 @@ public class NetMakeCLI {
                 .withDescription("The file containing the distance matrix to input.").create("i");
 
         Option optInputType = OptionBuilder.withArgName("string").withLongOpt(OPT_INPUT_TYPE).hasArg()
-                .withDescription("The file type of the input file: " + PhygenReaderFactory.toListString() + ".").create("t");
+                .withDescription("The file type of the input file: " +
+                        PhygenReaderFactory.getInstance().getPhygenReadersAsString(PhygenDataType.DISTANCE_MATRIX) + ".")
+                .create("t");
 
         Option optOutputDir = OptionBuilder.withArgName("file").withLongOpt(OPT_OUTPUT_DIR).hasArg()
                 .withDescription("The directory to put output from this job.").create("o");
@@ -137,11 +140,15 @@ public class NetMakeCLI {
             log.info("NetMake: Loading distance matrix from: " + input.getAbsolutePath());
 
             // Load distanceMatrix from input file based on file type
-            PhygenReader phygenReader = inputType != null ?
-                    PhygenReaderFactory.valueOf(inputType).create() :
-                    PhygenReaderFactory.create(FilenameUtils.getExtension(input.getName()));
+            // Get a handle on the phygen factory
+            PhygenReaderFactory factory = PhygenReaderFactory.getInstance();
 
-            DistanceMatrix distanceMatrix = phygenReader.read(input);
+            // Setup appropriate reader to input file based on file type
+            PhygenReader phygenReader = factory.create(inputType != null ?
+                    inputType :
+                    FilenameUtils.getExtension(input.getName()));
+
+            DistanceMatrix distanceMatrix = phygenReader.readDistanceMatrix(input);
 
             log.info("NetMake: Loaded distance matrix.  Found " + distanceMatrix.size() + " taxa.");
 

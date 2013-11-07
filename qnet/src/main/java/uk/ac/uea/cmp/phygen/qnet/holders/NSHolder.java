@@ -16,6 +16,7 @@
 package uk.ac.uea.cmp.phygen.qnet.holders;
 
 import uk.ac.uea.cmp.phygen.core.ds.TaxonList;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 
 import java.util.List;
@@ -25,10 +26,10 @@ public class NSHolder {
 
     public NSHolder(List<TaxonList> theLists, int N, QuartetWeights theQuartetWeights) {
 
-        counts = new Integer[QuartetWeights.over2(N)];
-        weights = new Double[QuartetWeights.over2(N)];
+        counts = new Integer[Quartet.over2(N)];
+        weights = new Double[Quartet.over2(N)];
 
-        for (int n = 0; n < QuartetWeights.over2(N); n++) {
+        for (int n = 0; n < Quartet.over2(N); n++) {
 
             counts[n] = new Integer(0);
             weights[n] = new Double(0.0);
@@ -80,8 +81,8 @@ public class NSHolder {
 
                     // if on the same path, no quartets meet the conditions
 
-                    counts[QuartetWeights.over2(j - 1) + QuartetWeights.over1(i - 1)] = new Integer(0);
-                    weights[QuartetWeights.over2(j - 1) + QuartetWeights.over1(i - 1)] = new Double(0.0);
+                    counts[Quartet.over2(j - 1) + Quartet.over1(i - 1)] = new Integer(0);
+                    weights[Quartet.over2(j - 1) + Quartet.over1(i - 1)] = new Double(0.0);
 
                     continue;
 
@@ -117,30 +118,23 @@ public class NSHolder {
 
                                             // this is a unique, suitable quartet
 
-                                            int yA = ((Integer) A.get(xA)).intValue();
-                                            int yB = ((Integer) B.get(xB)).intValue();
-                                            int yC = ((Integer) C.get(xC)).intValue();
-                                            int yD = ((Integer) D.get(xD)).intValue();
+                                            int yA = A.get(xA);
+                                            int yB = B.get(xB);
+                                            int yC = C.get(xC);
+                                            int yD = D.get(xD);
 
                                             count++;
-                                            weight += theQuartetWeights.getWeight(yA, yB, yC, yD);
-
+                                            weight += theQuartetWeights.getWeight(new Quartet(yA, yB, yC, yD));
                                         }
-
                                     }
-
                                 }
-
                             }
-
                         }
-
                     }
-
                 }
 
-                counts[QuartetWeights.over2(j - 1) + QuartetWeights.over1(i - 1)] = new Integer(count);
-                weights[QuartetWeights.over2(j - 1) + QuartetWeights.over1(i - 1)] = new Double(weight);
+                counts[Quartet.over2(j - 1) + Quartet.over1(i - 1)] = new Integer(count);
+                weights[Quartet.over2(j - 1) + Quartet.over1(i - 1)] = new Double(weight);
 
             }
 
@@ -153,7 +147,7 @@ public class NSHolder {
         int x = Math.max(i, j);
         int y = Math.min(i, j);
 
-        return counts[QuartetWeights.over2(x - 1) + QuartetWeights.over1(y - 1)].intValue();
+        return counts[Quartet.over2(x - 1) + Quartet.over1(y - 1)].intValue();
 
     }
 
@@ -162,7 +156,7 @@ public class NSHolder {
         int x = Math.max(i, j);
         int y = Math.min(i, j);
 
-        counts[QuartetWeights.over2(x - 1) + QuartetWeights.over1(y - 1)] = new Integer(newN);
+        counts[Quartet.over2(x - 1) + Quartet.over1(y - 1)] = new Integer(newN);
 
     }
 
@@ -171,7 +165,7 @@ public class NSHolder {
         int x = Math.max(i, j);
         int y = Math.min(i, j);
 
-        return weights[QuartetWeights.over2(x - 1) + QuartetWeights.over1(y - 1)].doubleValue();
+        return weights[Quartet.over2(x - 1) + Quartet.over1(y - 1)].doubleValue();
 
     }
 
@@ -180,7 +174,7 @@ public class NSHolder {
         int x = Math.max(i, j);
         int y = Math.min(i, j);
 
-        weights[QuartetWeights.over2(x - 1) + QuartetWeights.over1(y - 1)] = new Double(newS);
+        weights[Quartet.over2(x - 1) + Quartet.over1(y - 1)] = new Double(newS);
 
     }
 

@@ -38,7 +38,7 @@ public class NexusReaderTest {
 
         File testFile = FileUtils.toFile(NexusReaderTest.class.getResource("/bees.nex"));
 
-        DistanceMatrix distanceMatrix = new NexusReader().read(testFile);
+        DistanceMatrix distanceMatrix = new NexusReader().readDistanceMatrix(testFile);
 
         assertTrue(distanceMatrix.size() == 6);
     }
@@ -48,7 +48,7 @@ public class NexusReaderTest {
 
         File testFile = FileUtils.toFile(NexusReaderTest.class.getResource("/triangular.nex"));
 
-        DistanceMatrix distanceMatrix = new NexusReader().read(testFile);
+        DistanceMatrix distanceMatrix = new NexusReader().readDistanceMatrix(testFile);
 
         assertTrue(distanceMatrix.size() == 5);
     }

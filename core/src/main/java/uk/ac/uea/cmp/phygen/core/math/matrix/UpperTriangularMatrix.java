@@ -16,7 +16,6 @@
 package uk.ac.uea.cmp.phygen.core.math.matrix;
 
 import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 
 /**
  * Created by IntelliJ IDEA. User: Analysis Date: 2004-jul-11 Time: 19:08:50 To

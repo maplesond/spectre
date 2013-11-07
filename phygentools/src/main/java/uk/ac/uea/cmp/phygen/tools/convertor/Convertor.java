@@ -22,10 +22,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.io.FilenameUtils;
 import org.kohsuke.MetaInfServices;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
-import uk.ac.uea.cmp.phygen.core.io.PhygenReader;
-import uk.ac.uea.cmp.phygen.core.io.PhygenReaderFactory;
-import uk.ac.uea.cmp.phygen.core.io.PhygenWriter;
-import uk.ac.uea.cmp.phygen.core.io.PhygenWriterFactory;
+import uk.ac.uea.cmp.phygen.core.io.*;
 import uk.ac.uea.cmp.phygen.tools.PhygenTool;
 
 import java.io.File;
@@ -54,7 +51,8 @@ public class Convertor extends PhygenTool {
                 .withDescription("The converted file.").create("o"));
 
         options.addOption(OptionBuilder.withArgName("string").withLongOpt(OPT_DISTANCES_FILE_TYPE).hasArg()
-                .withDescription("The file type of the input distance data file: [NEXUS, PHYLIP].  Use this if your input file has a non-standard extension.").create("t"));
+                .withDescription("The file type of the input distance data file: " + PhygenReaderFactory.getInstance().getPhygenReaders(PhygenDataType.DISTANCE_MATRIX) +
+                        ".  Use this if your input file has a non-standard extension.").create("t"));
 
 
         return options;
@@ -92,13 +90,16 @@ public class Convertor extends PhygenTool {
 
     public void execute(File inputFile, File outputFile, String distancesFileType) throws IOException {
 
+        // Get a handle on the phygen factory
+        PhygenReaderFactory factory = PhygenReaderFactory.getInstance();
+
         // Setup appropriate reader to input file based on file type
-        PhygenReader phygenReader = distancesFileType != null ?
-                PhygenReaderFactory.valueOf(distancesFileType).create() :
-                PhygenReaderFactory.create(FilenameUtils.getExtension(inputFile.getName()));
+        PhygenReader phygenReader = factory.create(distancesFileType != null ?
+                distancesFileType :
+                FilenameUtils.getExtension(inputFile.getName()));
 
         // Load file
-        DistanceMatrix distanceMatrix = phygenReader.read(inputFile);
+        DistanceMatrix distanceMatrix = phygenReader.readDistanceMatrix(inputFile);
 
         // Setup appropriate writer for output file
         PhygenWriter phygenWriter = phygenReader.getClass().getSimpleName().equals("NexusReader") ?

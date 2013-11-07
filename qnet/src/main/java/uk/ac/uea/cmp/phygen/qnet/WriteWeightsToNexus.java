@@ -18,6 +18,7 @@ package uk.ac.uea.cmp.phygen.qnet;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import uk.ac.uea.cmp.phygen.core.ds.TaxonList;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetIndex;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 
@@ -76,11 +77,11 @@ public class WriteWeightsToNexus {
                         int cL = ((Integer) c.get(l - 1)).intValue();
 
                         quartetIndices[n] = new QuartetIndex(i, j, k, l);
-                        f[n] = theQuartetWeights.getWeight(cI, cJ, cK, cL);
+                        f[n] = theQuartetWeights.getWeight(new Quartet(cI, cJ, cK, cL));
                         n++;
 
                         quartetIndices[n] = new QuartetIndex(i, l, j, k);
-                        f[n] = theQuartetWeights.getWeight(cI, cL, cJ, cK);
+                        f[n] = theQuartetWeights.getWeight(new Quartet(cI, cL, cJ, cK));
                         n++;
                     }
                 }

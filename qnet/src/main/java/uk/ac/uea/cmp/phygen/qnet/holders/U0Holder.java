@@ -16,6 +16,7 @@
 package uk.ac.uea.cmp.phygen.qnet.holders;
 
 import uk.ac.uea.cmp.phygen.core.ds.TaxonList;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 
 import java.util.List;
@@ -24,10 +25,10 @@ public class U0Holder {
 
     public U0Holder(List<TaxonList> theLists, int N, QuartetWeights theQuartetWeights) {
 
-        counts = new Integer[QuartetWeights.over2(N)];
-        weights = new Double[QuartetWeights.over2(N)];
+        counts = new Integer[Quartet.over2(N)];
+        weights = new Double[Quartet.over2(N)];
 
-        for (int n = 0; n < QuartetWeights.over2(N); n++) {
+        for (int n = 0; n < Quartet.over2(N); n++) {
 
             counts[n] = new Integer(0);
             weights[n] = new Double(0.0);
@@ -79,8 +80,8 @@ public class U0Holder {
 
                     // if on the same path, no quartets meet the conditions
 
-                    counts[QuartetWeights.over2(j - 1) + QuartetWeights.over1(i - 1)] = new Integer(0);
-                    weights[QuartetWeights.over2(j - 1) + QuartetWeights.over1(i - 1)] = new Double(0.0);
+                    counts[Quartet.over2(j - 1) + Quartet.over1(i - 1)] = new Integer(0);
+                    weights[Quartet.over2(j - 1) + Quartet.over1(i - 1)] = new Double(0.0);
 
                     continue;
 
@@ -113,12 +114,12 @@ public class U0Holder {
                                 int yB2 = B.get(xB2);
 
                                 count++;
-                                weight += theQuartetWeights.getWeight(yA1, yB1, yA2, yB2);
+                                weight += theQuartetWeights.getWeight(new Quartet(yA1, yB1, yA2, yB2));
 
                                 // hope this does not mean doing stuff twice
 
                                 count++;
-                                weight += theQuartetWeights.getWeight(yA2, yB2, yA1, yB1);
+                                weight += theQuartetWeights.getWeight(new Quartet(yA2, yB2, yA1, yB1));
 
                             }
 
@@ -128,8 +129,8 @@ public class U0Holder {
 
                 }
 
-                counts[QuartetWeights.over2(j - 1) + QuartetWeights.over1(i - 1)] = new Integer(count);
-                weights[QuartetWeights.over2(j - 1) + QuartetWeights.over1(i - 1)] = new Double(weight);
+                counts[Quartet.over2(j - 1) + Quartet.over1(i - 1)] = new Integer(count);
+                weights[Quartet.over2(j - 1) + Quartet.over1(i - 1)] = new Double(weight);
 
             }
 
@@ -142,7 +143,7 @@ public class U0Holder {
         int x = Math.max(i, j);
         int y = Math.min(i, j);
 
-        return counts[QuartetWeights.over2(x - 1) + QuartetWeights.over1(y - 1)].intValue();
+        return counts[Quartet.over2(x - 1) + Quartet.over1(y - 1)].intValue();
 
     }
 
@@ -151,7 +152,7 @@ public class U0Holder {
         int x = Math.max(i, j);
         int y = Math.min(i, j);
 
-        counts[QuartetWeights.over2(x - 1) + QuartetWeights.over1(y - 1)] = new Integer(newN);
+        counts[Quartet.over2(x - 1) + Quartet.over1(y - 1)] = new Integer(newN);
 
     }
 
@@ -160,7 +161,7 @@ public class U0Holder {
         int x = Math.max(i, j);
         int y = Math.min(i, j);
 
-        return weights[QuartetWeights.over2(x - 1) + QuartetWeights.over1(y - 1)].doubleValue();
+        return weights[Quartet.over2(x - 1) + Quartet.over1(y - 1)].doubleValue();
 
     }
 
@@ -169,7 +170,7 @@ public class U0Holder {
         int x = Math.max(i, j);
         int y = Math.min(i, j);
 
-        weights[QuartetWeights.over2(x - 1) + QuartetWeights.over1(y - 1)] = new Double(newU);
+        weights[Quartet.over2(x - 1) + Quartet.over1(y - 1)] = new Double(newU);
 
     }
 

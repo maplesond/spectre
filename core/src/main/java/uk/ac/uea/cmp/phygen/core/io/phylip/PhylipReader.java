@@ -16,8 +16,11 @@
 package uk.ac.uea.cmp.phygen.core.io.phylip;
 
 import org.apache.commons.io.FileUtils;
+import org.kohsuke.MetaInfServices;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
-import uk.ac.uea.cmp.phygen.core.io.PhygenReader;
+import uk.ac.uea.cmp.phygen.core.ds.tree.NewickTree;
+import uk.ac.uea.cmp.phygen.core.io.AbstractPhygenReader;
+import uk.ac.uea.cmp.phygen.core.io.PhygenDataType;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,7 +33,8 @@ import java.util.List;
  * Time: 13:18
  * To change this template use File | Settings | File Templates.
  */
-public class PhylipReader implements PhygenReader {
+@MetaInfServices(uk.ac.uea.cmp.phygen.core.io.PhygenReader.class)
+public class PhylipReader extends AbstractPhygenReader {
 
     /**
      * Reads the file specified by this reader and converts it the data into a set
@@ -39,7 +43,7 @@ public class PhylipReader implements PhygenReader {
      * @return The distance matrix, with associated taxa set.
      * @throws IOException Thrown if there were any problems accessing the file.
      */
-    public DistanceMatrix read(File file) throws IOException {
+    public DistanceMatrix readDistanceMatrix(File file) throws IOException {
 
         // Validation before reading
         if (file == null) {
@@ -59,6 +63,30 @@ public class PhylipReader implements PhygenReader {
 
         // Execute Parseing code.
         return alternativeParser(inLines);
+    }
+
+    @Override
+    public List<NewickTree> readTrees(File input, double weight) throws IOException {
+        throw new UnsupportedOperationException("A Phylip file will not contain trees.");
+    }
+
+    @Override
+    public String[] commonFileExtensions() {
+        return new String[]{"phy", "phylip"};
+    }
+
+    @Override
+    public String getIdentifier() {
+        return "PHYLIP";
+    }
+
+    @Override
+    public boolean acceptsDataType(PhygenDataType phygenDataType) {
+
+        if (phygenDataType == PhygenDataType.DISTANCE_MATRIX)
+            return true;
+
+        return false;
     }
 
 

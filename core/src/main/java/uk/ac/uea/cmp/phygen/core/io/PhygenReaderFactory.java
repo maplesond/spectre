@@ -16,11 +16,12 @@
 package uk.ac.uea.cmp.phygen.core.io;
 
 import org.apache.commons.lang3.StringUtils;
-import uk.ac.uea.cmp.phygen.core.io.nexus.NexusReader;
-import uk.ac.uea.cmp.phygen.core.io.phylip.PhylipReader;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ServiceLoader;
 
 /**
  * Created with IntelliJ IDEA.
@@ -29,60 +30,93 @@ import java.util.List;
  * Time: 17:21
  * To change this template use File | Settings | File Templates.
  */
-public enum PhygenReaderFactory {
+public class PhygenReaderFactory {
 
-    NEXUS {
-        @Override
-        public PhygenReader create() {
-            return new NexusReader();
+    private static PhygenReaderFactory instance;
+    private ServiceLoader<PhygenReader> loader;
+
+    public PhygenReaderFactory() {
+        this.loader = ServiceLoader.load(PhygenReader.class);
+    }
+
+    public static synchronized PhygenReaderFactory getInstance() {
+        if (instance == null) {
+            instance = new PhygenReaderFactory();
         }
+        return instance;
+    }
 
-        @Override
-        public String[] getValidExtensions() {
-            return new String[]{"nex", "nxs", "nexus"};
-        }
-    },
-    PHYLIP {
-        @Override
-        public PhygenReader create() {
-            return new PhylipReader();
-        }
+    public PhygenReader create(String name) throws IOException {
 
-        @Override
-        public String[] getValidExtensions() {
-            return new String[]{"phy", "phylip"};
-        }
-    };
+        for (PhygenReader phygenReader : loader) {
 
-    public abstract PhygenReader create();
-
-    public abstract String[] getValidExtensions();
-
-    public static PhygenReader create(String fileExtension) {
-
-        for (PhygenReaderFactory prf : PhygenReaderFactory.values()) {
-
-            for (String ext : prf.getValidExtensions()) {
-                if (ext.equalsIgnoreCase(fileExtension)) {
-                    return prf.create();
-                }
+            if (phygenReader.acceptsIdentifier(name)) {
+                return phygenReader;
             }
         }
 
         return null;
     }
 
-    public String getPrimaryExtension() {
-        return this.getValidExtensions()[0];
+
+    /**
+     * Goes through all phygen readers found on the classpath and joins all their identifiers into a string
+     *
+     * @return
+     */
+    public String getPhygenReadersAsString() {
+
+        return this.getPhygenReadersAsString(new ArrayList<PhygenDataType>());
     }
 
-    public static String toListString() {
-        List<String> list = new ArrayList<>();
+    public String getPhygenReadersAsString(PhygenDataType phygenDataType) {
 
-        for (PhygenReaderFactory prf : PhygenReaderFactory.values()) {
-            list.add(prf.toString());
+        List<PhygenDataType> phygenDataTypeList = new ArrayList<>();
+        phygenDataTypeList.add(phygenDataType);
+        return this.getPhygenReadersAsString(phygenDataTypeList);
+    }
+
+
+    public String getPhygenReadersAsString(List<PhygenDataType> phygenDataTypes) {
+
+        List<String> typeStrings = new ArrayList<String>();
+
+        for (PhygenReader phygenReader : this.getPhygenReaders(phygenDataTypes)) {
+            typeStrings.add(phygenReader.getIdentifier());
         }
 
-        return "[" + StringUtils.join(list, ", ") + "]";
+        return "[" + StringUtils.join(typeStrings, ", ") + "]";
+    }
+
+
+    public List<PhygenReader> getPhygenReaders() {
+        return getPhygenReaders(new ArrayList<PhygenDataType>());
+    }
+
+    public List<PhygenReader> getPhygenReaders(PhygenDataType phygenDataType) {
+
+        List<PhygenDataType> phygenDataTypes = new ArrayList<>();
+
+        if (phygenDataType != null) {
+            phygenDataTypes.add(phygenDataType);
+        }
+
+        return this.getPhygenReaders(phygenDataTypes);
+    }
+
+    public List<PhygenReader> getPhygenReaders(List<PhygenDataType> phygenDataTypeList) {
+
+        Iterator<PhygenReader> it = loader.iterator();
+
+        List<PhygenReader> phygenReaderList = new ArrayList<>();
+
+        while (it.hasNext()) {
+            PhygenReader phygenReader = it.next();
+            if (phygenReader.acceptsDataTypes(phygenDataTypeList)) {
+                phygenReaderList.add(phygenReader);
+            }
+        }
+
+        return phygenReaderList;
     }
 }

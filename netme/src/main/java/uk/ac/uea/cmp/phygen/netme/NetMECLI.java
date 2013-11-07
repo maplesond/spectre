@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phygen.core.ds.split.CircularOrdering;
+import uk.ac.uea.cmp.phygen.core.io.PhygenDataType;
 import uk.ac.uea.cmp.phygen.core.io.PhygenReader;
 import uk.ac.uea.cmp.phygen.core.io.PhygenReaderFactory;
 import uk.ac.uea.cmp.phygen.core.io.nexus.NexusReader;
@@ -59,7 +60,9 @@ public class NetMECLI {
                 .withDescription("The file containing the distance data.").create("i");
 
         Option optDistancesFileType = OptionBuilder.withArgName("string").withLongOpt(OPT_DISTANCES_FILE_TYPE).hasArg()
-                .withDescription("The file type of the distance data file: [NEXUS, PHYLIP].").create("t");
+                .withDescription("The file type of the distance data file: " +
+                        PhygenReaderFactory.getInstance().getPhygenReaders(PhygenDataType.DISTANCE_MATRIX) + ".")
+                .create("t");
 
         Option optCircularOrderingFile = OptionBuilder.withArgName("file").withLongOpt(OPT_CIRCULAR_ORDERING_FILE).hasArg()
                 .withDescription("The nexus file containing the circular ordering.").create("j");
@@ -117,12 +120,15 @@ public class NetMECLI {
 
             log.info("NetME: Loading distance matrix from: " + distancesFile.getAbsolutePath());
 
-            // Load distanceMatrix from input file based on file type
-            PhygenReader phygenReader = distancesFileType != null ?
-                    PhygenReaderFactory.valueOf(distancesFileType).create() :
-                    PhygenReaderFactory.create(FilenameUtils.getExtension(distancesFile.getName()));
+            // Get a handle on the phygen factory
+            PhygenReaderFactory factory = PhygenReaderFactory.getInstance();
 
-            DistanceMatrix distanceMatrix = phygenReader.read(distancesFile);
+            // Setup appropriate reader to input file based on file type
+            PhygenReader phygenReader = factory.create(distancesFileType != null ?
+                    distancesFileType :
+                    FilenameUtils.getExtension(distancesFile.getName()));
+
+            DistanceMatrix distanceMatrix = phygenReader.readDistanceMatrix(distancesFile);
 
             log.info("NetME: Distance Matrix Loaded from file: " + distancesFile.getAbsolutePath());
 

@@ -1,13 +1,10 @@
 package uk.ac.uea.cmp.phygen.tools.chopper.loader;
 
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
-import uk.ac.uea.cmp.phygen.tools.chopper.Node;
 import uk.ac.uea.cmp.phygen.tools.chopper.Tree;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.ListIterator;
 
 /**
  * Created with IntelliJ IDEA.

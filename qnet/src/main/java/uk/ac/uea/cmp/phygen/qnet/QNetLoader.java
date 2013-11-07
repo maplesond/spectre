@@ -18,6 +18,8 @@ package uk.ac.uea.cmp.phygen.qnet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.ds.TaxonList;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeighting;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 
 import java.io.BufferedReader;
@@ -201,7 +203,7 @@ public class QNetLoader {
                  * Set it, just as it is written
                  *
                  */
-                theQuartetWeights.setWeight(a, b, c, d, w1, w2, w3);
+                theQuartetWeights.setWeight(new Quartet(a, b, c, d), new QuartetWeighting(w1, w2, w3));
 
             } else if (theFirst.equalsIgnoreCase("taxon")) {
 
@@ -291,7 +293,7 @@ public class QNetLoader {
         }
 
 
-        if (theQuartetWeights.getSize() != theQuartetWeights.over4(N)) {
+        if (theQuartetWeights.size() != Quartet.over4(N)) {
 
             throw new IOException("QNet: Wrong number of quartets in file!");
         }
@@ -382,9 +384,7 @@ public class QNetLoader {
 
                     }
 
-                    theQuartetWeights.ensureCapacity(N);
-                    theQuartetWeights.setSize(theQuartetWeights.over4(N));
-                    theQuartetWeights.initialize();
+                    theQuartetWeights = new QuartetWeights(N);
                     useMax = true;
 
                     readingState = false;
@@ -493,7 +493,7 @@ public class QNetLoader {
 
                             if (x != y && x != u && x != v && y != u && y != v && u != v) {
 
-                                theQuartetWeights.setWeight(x, y, u, v, weight);
+                                theQuartetWeights.setWeight(new Quartet(x, y, u, v), weight);
 
                             }
 

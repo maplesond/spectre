@@ -15,7 +15,8 @@
  */
 package uk.ac.uea.cmp.phygen.tools.chopper;
 
-import java.util.LinkedList;
+import uk.ac.uea.cmp.phygen.core.ds.tree.Node;
+
 import java.util.List;
 
 /**
@@ -48,7 +49,7 @@ public class Leaf implements Node {
     }
 
     @Override
-    public boolean isTree() {
+    public boolean internalNode() {
         return false;
     }
 

@@ -38,7 +38,7 @@ public class PhylipReaderTest {
 
         File testFile = FileUtils.toFile(PhylipReaderTest.class.getResource("/colors.phy"));
 
-        DistanceMatrix distanceMatrix = new PhylipReader().read(testFile);
+        DistanceMatrix distanceMatrix = new PhylipReader().readDistanceMatrix(testFile);
 
         assertTrue(distanceMatrix.size() == 10);
     }
@@ -48,7 +48,7 @@ public class PhylipReaderTest {
 
         File testFile = FileUtils.toFile(PhylipReaderTest.class.getResource("/multi-line.phy"));
 
-        DistanceMatrix distanceMatrix = new PhylipReader().read(testFile);
+        DistanceMatrix distanceMatrix = new PhylipReader().readDistanceMatrix(testFile);
 
         assertTrue(distanceMatrix.size() == 25);
     }

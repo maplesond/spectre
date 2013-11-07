@@ -2,7 +2,7 @@
  * Phylogenetics Tool suite
  * Copyright (C) 2013  UEA CMP Phylogenetics Group
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
@@ -13,26 +13,18 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package uk.ac.uea.cmp.phygen.tools.chopper;
 
-import java.util.LinkedList;
-import java.util.List;
+package uk.ac.uea.cmp.phygen.core.io;
 
 /**
- * A node is either a tree or a leaf
- *
- * @author IntelliJ IDEA
- * @since Date: 2004-jul-11 Time: 20:04:56
+ * Created with IntelliJ IDEA.
+ * User: dan
+ * Date: 06/11/13
+ * Time: 20:10
+ * To change this template use File | Settings | File Templates.
  */
-public interface Node {
+public enum PhygenDataType {
 
-    void index(List<String> taxonNames);
-
-    void harvestNames(List<String> taxonNames);
-
-    void harvest(List<Integer> taxa);
-
-    boolean isTree();
-
-    void rename(List<String> oldTaxa, List<String> newTaxa);
+    DISTANCE_MATRIX,
+    TREE;
 }

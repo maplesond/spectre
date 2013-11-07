@@ -15,8 +15,9 @@
  */
 package uk.ac.uea.cmp.phygen.core.ds.quartet;
 
+import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
+
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -24,15 +25,59 @@ import java.util.List;
  */
 public class QuartetWeights extends ArrayList<QuartetWeighting> {
 
+    /**
+     * Creates an empty list of QuartetWeightings
+     */
     public QuartetWeights() {
         this(0);
     }
 
+    /**
+     * Creates a list of QuartetWeightings of specified size
+     * @param size
+     */
     public QuartetWeights(final int size) {
         super(size);
 
         for(int i = 0; i < size; i++) {
             this.add(new QuartetWeighting());
+        }
+    }
+
+    /**
+     * Creates a list of QuartetWeightings from a distance matrix
+     * @param distanceMatrix
+     */
+    public QuartetWeights(DistanceMatrix distanceMatrix) {
+
+        this(Quartet.over4(distanceMatrix.getNbTaxa()));
+
+        final int N = distanceMatrix.getNbTaxa();
+
+        double[][] D = distanceMatrix.getMatrix();
+
+        for (int a = 0; a < N - 3; a++) {
+
+            for (int b = a + 1; b < N - 2; b++) {
+
+                for (int c = b + 1; c < N - 1; c++) {
+
+                    for (int d = c + 1; d < N; d++) {
+
+                        double w1, w2, w3;
+
+                        w1 = (D[a][c] + D[b][c] + D[a][d] + D[b][d] + -2 * D[a][b] - 2 * D[c][d]) / 4.0;
+                        w2 = (D[a][b] + D[c][b] + D[a][d] + D[c][d] + -2 * D[a][c] - 2 * D[b][d]) / 4.0;
+                        w3 = (D[a][c] + D[d][c] + D[a][b] + D[d][b] + -2 * D[a][d] - 2 * D[c][b]) / 4.0;
+
+                        double min = Math.min(w1, Math.min(w2, w3));
+
+                        this.setWeight(new Quartet(a + 1, b + 1, c + 1, d + 1), w1 - min);
+                        this.setWeight(new Quartet(a + 1, c + 1, b + 1, d + 1), w2 - min);
+                        this.setWeight(new Quartet(a + 1, d + 1, b + 1, c + 1), w3 - min);
+                    }
+                }
+            }
         }
     }
 
