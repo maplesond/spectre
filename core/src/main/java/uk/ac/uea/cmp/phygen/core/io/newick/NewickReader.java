@@ -17,7 +17,7 @@
 package uk.ac.uea.cmp.phygen.core.io.newick;
 
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
-import uk.ac.uea.cmp.phygen.core.ds.tree.NewickTree;
+import uk.ac.uea.cmp.phygen.core.ds.tree.newick.NewickTree;
 import uk.ac.uea.cmp.phygen.core.io.AbstractPhygenReader;
 import uk.ac.uea.cmp.phygen.core.io.PhygenDataType;
 
@@ -29,11 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created with IntelliJ IDEA.
- * User: dan
- * Date: 06/11/13
- * Time: 21:50
- * To change this template use File | Settings | File Templates.
+ * Can read files that contain newick trees, one per line.
  */
 public class NewickReader extends AbstractPhygenReader {
 

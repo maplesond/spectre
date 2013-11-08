@@ -225,11 +225,11 @@ public class Scorer {
     }
 
     /**
-     * Transforms given weight. Used in case there will be need to filter or
+     * Transforms given length. Used in case there will be need to filter or
      * score weights.
      *
-     * @param w initial weight
-     * @return transformed weight.
+     * @param w initial length
+     * @return transformed length.
      */
     protected double transformWeight(double w) {
         return w;

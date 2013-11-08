@@ -28,7 +28,7 @@ import java.io.IOException;
 
 /**
  * Used to handle streaming data to Nexus format file from SplitSystem objects
- * and other splits and weight data. Can create nexus files designed to
+ * and other splits and length data. Can create nexus files designed to
  * represent a network, tree or weighted tree.
  * <p/>
  * Adapted Version
@@ -59,7 +59,7 @@ public class NexusWriter implements PhygenWriter {
             throw new NullPointerException("Must specify a split system to write.");
         }
 
-        //For network, we consider a full split system and determine its splits by its weight (non-zero ones)
+        //For network, we consider a full split system and determine its splits by its length (non-zero ones)
         //this is not dependent on ss, what ever ss is?
         int n = ss.getNbTaxa();
 

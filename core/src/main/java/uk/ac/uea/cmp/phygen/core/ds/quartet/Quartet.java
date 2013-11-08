@@ -225,7 +225,7 @@ public class Quartet implements Comparable {
          */
         /**
          *
-         * The first weight of the stored triplet
+         * The first length of the stored triplet
          *
          */
         double r1 = 0;
@@ -250,7 +250,7 @@ public class Quartet implements Comparable {
          */
         /**
          *
-         * The second weight of the stored triplet
+         * The second length of the stored triplet
          *
          */
         double r2 = 0;
@@ -275,7 +275,7 @@ public class Quartet implements Comparable {
          */
         /**
          *
-         * The third weight of the stored triplet
+         * The third length of the stored triplet
          *
          */
         double r3 = 0;
@@ -314,7 +314,7 @@ public class Quartet implements Comparable {
          */
         /**
          *
-         * The first weight of the stored triplet
+         * The first length of the stored triplet
          *
          */
         if (((x == a || x == b) && (y == a || y == b)) || ((u == a || u == b) && (v == a || v == b))) {

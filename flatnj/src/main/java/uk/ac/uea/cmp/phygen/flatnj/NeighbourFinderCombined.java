@@ -21,8 +21,8 @@ import uk.ac.uea.cmp.phygen.flatnj.ds.QuadrupleSystem;
 
 /**
  * Finds {@linkplain Neighbours} by combing two criteria. First finds pairs of taxa
- * whose agglomeration would result loosing least weight. Then, from these pairs
- * selects one that maximizes the remaining weight.
+ * whose agglomeration would result loosing least length. Then, from these pairs
+ * selects one that maximizes the remaining length.
  *
  * @author balvociute
  */

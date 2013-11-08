@@ -90,7 +90,7 @@ public class FitWeight {
         tmpdata.fixed = new boolean[psequ.nActive];
         init_fixed(tmpdata.fixed);
 
-        //Create object to store the indices of the splits with negative weight.
+        //Create object to store the indices of the splits with negative length.
         tmpdata.negweights = new TreeSet(new SplitWeight(0.0, 0));
 
         //Allocate memory for other arrays in tmpdata.
@@ -100,7 +100,7 @@ public class FitWeight {
         tmpdata.tempsplit2 = new double[psequ.nActive];
         tmpdata.grad = new double[psequ.nActive];
 
-        //Score of the objective function at the optimal weight vector
+        //Score of the objective function at the optimal length vector
         //found by the NNLS algorithm
         double score = 0.0;
 
@@ -166,10 +166,10 @@ public class FitWeight {
                 }
 
                 //Store the indices of the splits that currently have
-                //negative weight.
+                //negative length.
                 collect_negative_splits(tmpdata.curx, tmpdata.negweights);
 
-                //Sometimes we get a lot of splits with negative weight.
+                //Sometimes we get a lot of splits with negative length.
                 //Then we fix the worst among them to be 0 and re-compute
                 //the unconstained optimum restricted to the splits that
                 //are not fixed.
@@ -317,7 +317,7 @@ public class FitWeight {
 
     /**
      * Parameters
-     * fixed --> array of flags, a flag is true iff the weight
+     * fixed --> array of flags, a flag is true iff the length
      * of the corresponding split is fixed to 0.0.
      * Initially no split weights are fixed.
      */
@@ -334,7 +334,7 @@ public class FitWeight {
 
     /**
      * Parameters
-     * x       --> resulting weight vector
+     * x       --> resulting length vector
      * tmpdata --> object containing temporary data used by the algorithm.
      * The main purpose is to avoid the re-allocation of memory
      * by providing arrays that can be used throughout.
@@ -452,7 +452,7 @@ public class FitWeight {
             }
         }
 
-        //Next we compute the weight of the splits that
+        //Next we compute the length of the splits that
         //correspond to an unbounded face on the right
         //side of the arrangement
         for (i = 0; i < psequ.ntaxa; i++) {
@@ -468,7 +468,7 @@ public class FitWeight {
             }
         }
 
-        //Finally we progagate the weight of the
+        //Finally we progagate the length of the
         //rightmost splits through the arrangement
         for (i = psequ.nswaps - 1; i >= 0; i--) {
             if (arrdata.arr[i][3] >= 0) {
@@ -529,7 +529,7 @@ public class FitWeight {
         int leftmost = 0;
         int beforeleftmost = 0;
 
-        //temporary variable used to compute the weight of a split
+        //temporary variable used to compute the length of a split
         double weight = 0.0;
 
         //Process vertices of the arrangement from right to left.
@@ -686,7 +686,7 @@ public class FitWeight {
 
         //ncalls++;
 
-        //first collect weight of splits to the
+        //first collect length of splits to the
         //right of a swap
         for (i = psequ.nswaps - 1; i >= 0; i--) {
             if (psequ.active[i]) {
@@ -726,7 +726,7 @@ public class FitWeight {
         int leftmost = 0;
         int beforeleftmost = 0;
 
-        //next collect weight of splits to the
+        //next collect length of splits to the
         //left of a swap
         for (i = 0; i < psequ.nswaps; i++) {
             tempdist[i] = 0.0;
@@ -971,12 +971,12 @@ public class FitWeight {
         }
     }
 
-    //This method collects the splits with negative weight
+    //This method collects the splits with negative length
 
     /**
      * Parameters
      * curx       --> vector of split weights
-     * negweights --> collection for storing the indices of the splits with negative weight
+     * negweights --> collection for storing the indices of the splits with negative length
      */
     private static void collect_negative_splits(double[] curx, SortedSet negweights) {
         int i = 0;
@@ -991,14 +991,14 @@ public class FitWeight {
     }
 
     //This method filters the set of those splits with
-    //negative weight in the current solution. The worst
+    //negative length in the current solution. The worst
     //are fixed to 0.0.
 
     /**
      * Parameters
-     * negweights --> collection for storing the indices of the splits with negative weight
+     * negweights --> collection for storing the indices of the splits with negative length
      * curx       --> vector of split weights
-     * fixed      --> array of flags indicating which splits have a weight fixed to 0.0
+     * fixed      --> array of flags indicating which splits have a length fixed to 0.0
      */
     private static boolean remove_worst_splits(SortedSet negweights, double[] curx, boolean[] fixed) {
         int nnegweights = negweights.size();
@@ -1025,7 +1025,7 @@ public class FitWeight {
     /**
      * Parameters
      * x     --> input vector
-     * fixed --> array of flags indicating which splits have a weight fixed to 0.0
+     * fixed --> array of flags indicating which splits have a length fixed to 0.0
      */
     private static void set_to_zero(double[] x, boolean[] fixed) {
         int i = 0;

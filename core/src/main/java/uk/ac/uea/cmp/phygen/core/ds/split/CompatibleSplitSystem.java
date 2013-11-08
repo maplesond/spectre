@@ -50,7 +50,7 @@ public class CompatibleSplitSystem extends CircularSplitSystem {
     }
 
     /**
-     * Deletes all splits and adds the splits to the list that have a positive weight
+     * Deletes all splits and adds the splits to the list that have a positive length
      *
      * @param treeWeights
      */

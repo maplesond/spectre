@@ -20,7 +20,7 @@ package uk.ac.uea.cmp.phygen.flatnj.fdraw;
 import java.util.Comparator;
 
 //This class is used to store the weights
-//of those splits that have negative weight
+//of those splits that have negative length
 public class Split implements Comparator {
 
     public double weight = 0.0;

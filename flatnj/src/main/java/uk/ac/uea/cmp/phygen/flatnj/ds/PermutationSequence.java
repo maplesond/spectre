@@ -39,7 +39,7 @@ public class PermutationSequence {
 
     //If the permutation sequence is for a set of taxa then we record which
     //swaps correspond to an active split. Used when filtering out splits with
-    //small weight etc.
+    //small length etc.
     private boolean[] active = null;
 
     private String[] taxaNames = null;

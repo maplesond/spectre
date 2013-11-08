@@ -92,7 +92,7 @@ public class SubTree implements Node {
                 // we have a non-trivial split!
                 // which we must have, for trivial splits match no quartets...
 
-                // so, for all quartets in here, add the weight to their value
+                // so, for all quartets in here, add the length to their value
 
                 for (int iA1 = 0; iA1 < setA.size() - 1; iA1++) {
 

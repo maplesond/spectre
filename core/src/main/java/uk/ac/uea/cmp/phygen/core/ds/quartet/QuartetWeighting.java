@@ -25,7 +25,7 @@ public class QuartetWeighting extends Triplet<Double> {
 
     private double logNormValue(double value) {
         if (value < 0.0) {
-            throw new IllegalStateException("Error: Quartet file contains negative weight!");
+            throw new IllegalStateException("Error: Quartet file contains negative length!");
         }
 
         return value == 0.0 ? -15.0 : Math.log(value);
@@ -34,7 +34,7 @@ public class QuartetWeighting extends Triplet<Double> {
 
     public void normalise(boolean log, boolean useMax) {
 
-        // lowest weight must be nonnegative
+        // lowest length must be nonnegative
         double newA = this.getA();
         double newB = this.getB();
         double newC = this.getC();

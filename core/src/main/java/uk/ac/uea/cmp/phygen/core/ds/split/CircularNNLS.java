@@ -73,10 +73,10 @@ public class CircularNNLS {
     }
 
     /**
-     * Fill the weight matrix
+     * Fill the length matrix
      *
      * @param ntax  the number of taxa
-     * @param W     the weight matrix
+     * @param W     the length matrix
      * @param d     the distance matrix
      * @param power the power
      */
@@ -290,7 +290,7 @@ public class CircularNNLS {
      * method is used for optimization.
      *
      * @param d the distance matrix
-     * @param W the weight matrix
+     * @param W the length matrix
      * @param x the split weights
      */
     void runActiveConjugate(int ntax, double[][] d, double[][] W, double[][] x) {

@@ -43,7 +43,7 @@ public class NexusDistancesLoader extends AbstractLoader {
         // Add quartetweights to list
         this.qWs.add(qw);
 
-        // Add this weight to list
+        // Add this length to list
         this.weights.add(weight);
     }
 

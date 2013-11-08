@@ -23,7 +23,7 @@ import uk.ac.uea.cmp.phygen.flatnj.ds.QuadrupleSystem;
 import uk.ac.uea.cmp.phygen.flatnj.ds.SplitSystem;
 
 /**
- * Separates neighbors by maximizing weight of the {@linkplain PermutationSequence}
+ * Separates neighbors by maximizing length of the {@linkplain PermutationSequence}
  * in each iteration of {@linkplain Neighbours} separation.
  *
  * @author balvociute

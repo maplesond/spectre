@@ -162,6 +162,15 @@
             <version>1.2</version>
         </dependency>
 
+
+        <!-- Parsing -->
+
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>antlr4-runtime</artifactId>
+            <version>4.1</version>
+        </dependency>
+
     </dependencies>
 
 

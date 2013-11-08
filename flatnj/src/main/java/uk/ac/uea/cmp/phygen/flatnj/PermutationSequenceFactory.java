@@ -89,9 +89,9 @@ public class PermutationSequenceFactory {
         int[] swaps = new int[6];
 
         //We choose a permutation sequence/flat split system that maximizes
-        //the total weight of those splits of the quartet that can be represented.
+        //the total length of those splits of the quartet that can be represented.
         //Since every flat split system on four elements can represent 6 out of
-        //7 possible splits we first find a split in the quartet of minimal weight.
+        //7 possible splits we first find a split in the quartet of minimal length.
         for (int i = 1; i < 7; i++) {
             if (weights[i] < weights[j]) {
                 j = i;

@@ -116,7 +116,7 @@ public class CircularSplitSystem extends SplitSystem {
 
 
     /**
-     * Calculates the weights of this full circular split system.  The weight determines
+     * Calculates the weights of this full circular split system.  The length determines
      * which splits will be returned.
      *
      * @return Split weights matrix

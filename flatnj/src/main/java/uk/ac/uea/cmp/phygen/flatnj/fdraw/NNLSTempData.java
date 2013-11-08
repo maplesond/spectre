@@ -48,7 +48,7 @@ public class NNLSTempData {
     public double[] b = null;
 
     //This array is used to temporary store the
-    //current weight of the splits
+    //current length of the splits
     public double[] tempx = null;
 
     //This array is used to store the product of
@@ -90,14 +90,14 @@ public class NNLSTempData {
     public double[] grad = null;
 
     //This array contains a flag for each split
-    //indicating wheter the weight of this split
+    //indicating wheter the length of this split
     //should be fixed to 0. This is used in the
     //active set method for NNLS due to Lawson
     //and Hanson.
     public boolean[] fixed = null;
 
     //This set contains the indices of those
-    //splits that currently have negative weight.
+    //splits that currently have negative length.
     public SortedSet negweights = null;
 
 }

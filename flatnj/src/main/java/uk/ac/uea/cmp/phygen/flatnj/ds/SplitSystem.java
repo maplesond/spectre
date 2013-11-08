@@ -214,7 +214,7 @@ public class SplitSystem {
         }
     }
 
-    //This method prints information about the splits that have positive weight on the screen
+    //This method prints information about the splits that have positive length on the screen
     public void printPositiveSplits() {
         int i = 0;
         int j = 0;

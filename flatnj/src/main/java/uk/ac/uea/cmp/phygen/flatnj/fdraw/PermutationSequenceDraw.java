@@ -60,7 +60,7 @@ public class PermutationSequenceDraw {
     //that is indexed in the swap vs the rest
     int[] swaps = null;
     //We record which swaps correspond to an active split.
-    //Used when filtering out splits with small weight etc.
+    //Used when filtering out splits with small length etc.
     boolean[] active = null;
     //This array keeps track of those classes of taxa that
     //are not distinguished by the active splits.
@@ -542,7 +542,7 @@ public class PermutationSequenceDraw {
     }
 
     //This method filters the splits by labeling
-    //those with a weight below the given threshold
+    //those with a length below the given threshold
     //inactive.
     public void set_active(double thold) {
         if (active == null) {

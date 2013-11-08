@@ -16,7 +16,7 @@
 package uk.ac.uea.cmp.phygen.core.io;
 
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
-import uk.ac.uea.cmp.phygen.core.ds.tree.NewickTree;
+import uk.ac.uea.cmp.phygen.core.ds.tree.newick.NewickTree;
 
 import java.io.File;
 import java.io.IOException;

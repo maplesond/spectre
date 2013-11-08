@@ -103,9 +103,9 @@ public class GreedyMEWeighting extends Weighting {
     }
 
     /*
-     * method to calculate a split weight
+     * method to calculate a split length
      * input is an arrayList of splits representing the tree topology,
-     * the relevant distanceMatrix d and the number of the split, the weight is calculated for
+     * the relevant distanceMatrix d and the number of the split, the length is calculated for
      */
     private double calculateEdges(double P_0, EdgeAdjacents aEdgeAdjacents, boolean external) {
 
@@ -398,7 +398,7 @@ public class GreedyMEWeighting extends Weighting {
 
             edgeWeights.add(calculateEdges(P.get(i), aEdgeAdjacents, external));
 
-            log.debug("    Calculated edge weight for " + i + ": " + edgeWeights.get(i));
+            log.debug("    Calculated edge length for " + i + ": " + edgeWeights.get(i));
         }
 
         log.debug("  Calculated Edge Weights");

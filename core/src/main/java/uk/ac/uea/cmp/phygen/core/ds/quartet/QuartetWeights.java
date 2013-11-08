@@ -82,7 +82,7 @@ public class QuartetWeights extends ArrayList<QuartetWeighting> {
     }
 
     /**
-     * getWeight gets a weight
+     * getWeight gets a length
      */
     public double getWeight(Quartet quartet) {
 
@@ -106,14 +106,14 @@ public class QuartetWeights extends ArrayList<QuartetWeighting> {
     }
 
     /**
-     * setWeight sets a weight
+     * setWeight sets a length
      */
     public void incrementWeight(Quartet q, double increment) {
         this.setWeight(q, this.getWeight(q) + increment);
     }
 
     /**
-     * setWeight sets a weight
+     * setWeight sets a length
      */
     public void setWeight(Quartet q, double newW) {
 
@@ -251,7 +251,7 @@ public class QuartetWeights extends ArrayList<QuartetWeighting> {
 
     /**
      * So... we go through taxonNames, which is the metalist check every quartet defined for it take the taxonList for
-     * the objects in loader, and their corresponding weights if a quartet is defined for that list, add its weight to
+     * the objects in loader, and their corresponding weights if a quartet is defined for that list, add its length to
      * the corresponding summer position summer must have been translated according to the metalist
      * @param taxonNames
      * @param metaTaxonNames

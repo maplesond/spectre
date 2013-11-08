@@ -133,9 +133,9 @@ public class Chopper extends PhygenTool {
                 LoaderType t = LoaderType.valueOfDescriptiveName(sT.nextToken());
 
                 // line may be:
-                // (at each step, load (with dummy weight if need be))
+                // (at each step, load (with dummy length if need be))
 
-                // newick file, set of trees: if weight is given, multiply with newick weights
+                // newick file, set of trees: if length is given, multiply with newick weights
                 if (sT.hasMoreTokens()) {
 
                     String sourceFileName = sT.nextToken();

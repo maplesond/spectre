@@ -53,7 +53,7 @@ public class FlatNJ {
     private static NexusReader reader;
 
     /**
-     * Split weight estimator
+     * Split length estimator
      */
     private static WeightCalculator wCalculator;
 
@@ -114,7 +114,7 @@ public class FlatNJ {
 
         // Options with arguments
         options.addOption(OptionBuilder.withArgName("double").withLongOpt(OPT_THRESHOLD).hasArg()
-                .withDescription("Filtering threshold, i.e. minimal weight ratio allowed for two incompatible splits. Default value (" + DEFAULT_THRESHOLD + ")").create("t"));
+                .withDescription("Filtering threshold, i.e. minimal length ratio allowed for two incompatible splits. Default value (" + DEFAULT_THRESHOLD + ")").create("t"));
 
         options.addOption(OptionBuilder.withArgName("boolean").withLongOpt(OPT_FILTER)
                 .withDescription("Filter the split system").create("f"));

@@ -19,7 +19,7 @@ package uk.ac.uea.cmp.phygen.tools.scale;
 import uk.ac.uea.cmp.phygen.core.math.tuple.Key;
 
 /**
- * this class is used to store the 3-dimensional weight vector that is used to
+ * this class is used to store the 3-dimensional length vector that is used to
  * describe for a 4-set the weights of the quartets
  */
 public class WeightVector {

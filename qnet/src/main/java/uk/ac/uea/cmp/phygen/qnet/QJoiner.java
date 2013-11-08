@@ -200,7 +200,7 @@ class QJoiner {
                 bS += (" " + bJ.get(e));
             }
 
-            log.debug("Iteration step " + (N - n + 1) + ": joining" + aS + " and" + bS + ", average weight: " + quote);
+            log.debug("Iteration step " + (N - n + 1) + ": joining" + aS + " and" + bS + ", average length: " + quote);
 
             /**
              *

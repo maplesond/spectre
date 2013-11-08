@@ -66,7 +66,7 @@ public class QuadrupleSystem implements Cloneable {
 //        }
     }
 
-    //This method computes the total weight of the quadruples in the system.
+    //This method computes the total length of the quadruples in the system.
     public double computeTotalWeight() {
         double total = 0.0;
 
@@ -112,7 +112,7 @@ public class QuadrupleSystem implements Cloneable {
         return quadruples[i];
     }
 
-    //This method computes the total weight of those quartet splits
+    //This method computes the total length of those quartet splits
     //that are also in the restriction of the given split system.
     public double getFitRestriction(int a, int b, int c, int d, SplitSystem ss) {
         double fit = 0.0;
@@ -132,7 +132,7 @@ public class QuadrupleSystem implements Cloneable {
         return fit;
     }
 
-    //Returns weight for the quadruple split a|bcd. a does not have to be
+    //Returns length for the quadruple split a|bcd. a does not have to be
     //smaller than b/c/d
     public double get1Vs3Weight(int a, int b, int c, int d) {
         Quadruple q = getQuadrupleUnsorted(a, b, c, d);
@@ -144,7 +144,7 @@ public class QuadrupleSystem implements Cloneable {
         return 0;
     }
 
-    //This method returns the weight of the quadruple split ab|cd
+    //This method returns the length of the quadruple split ab|cd
     //for the specified quadruple. We know a < b.
     public double get2Vs2Weight(int a, int b, int c, int d) {
         Quadruple q = getQuadrupleUnsorted(a, b, c, d);
@@ -156,7 +156,7 @@ public class QuadrupleSystem implements Cloneable {
         return 0;
     }
 
-    //This method returns the weight array of the quartet formed
+    //This method returns the length array of the quartet formed
     //by the four taxa.
     public double[] getWeightArray(int a, int b, int c, int d) {
         Quadruple q = getQuadrupleUnsorted(a, b, c, d);
@@ -185,7 +185,7 @@ public class QuadrupleSystem implements Cloneable {
         return q;
     }
 
-    //makes all quadruple split weight that are bigger than certain treshol
+    //makes all quadruple split length that are bigger than certain treshol
     //equal to 1 and all that are not bigger -- 0.
     public void unifyAll() {
         double treshold = 0.0;
@@ -497,7 +497,7 @@ public class QuadrupleSystem implements Cloneable {
         return true;
     }
 
-    //computes quadruple split weight matrix times its transpose
+    //computes quadruple split length matrix times its transpose
     public double computeWxWT() {
         double wwT = 0;
         for (int i = 0; i < quadruples.length; i++) {
