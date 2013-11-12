@@ -16,12 +16,16 @@
 
 package uk.ac.uea.cmp.phygen.core.ds.tree;
 
+import org.antlr.v4.runtime.RecognitionException;
+import org.apache.log4j.BasicConfigurator;
+import org.junit.Before;
 import org.junit.Test;
 import uk.ac.uea.cmp.phygen.core.ds.tree.newick.NewickTree;
 
 import java.io.IOException;
 
 import static junit.framework.Assert.assertTrue;
+import static junit.framework.TestCase.assertFalse;
 
 /**
  * Created with IntelliJ IDEA.
@@ -32,36 +36,94 @@ import static junit.framework.Assert.assertTrue;
  */
 public class NewickTreeTest {
 
-
-
-       /*    (A,B,(C,D));                           leaf nodes are named
-            (A,B,(C,D)E)F;                         all nodes are named
-            (:0.1,:0.2,(:0.3,:0.4):0.5);           all but root node have a distance to parent
-            (:0.1,:0.2,(:0.3,:0.4):0.5):0.0;       all have a distance to parent
-            (A:0.1,B:0.2,(C:0.3,D:0.4):0.5);       distances and leaf names (popular)
-    (A:0.1,B:0.2,(C:0.3,D:0.4)E:0.5)F;     distances and all names
-            ((B:0.2,(C:0.3,D:0.4)E:0.5)F:0.1)A;    a tree rooted on a leaf node (rare)    */
+    @Before
+    public void setup() {
+        //BasicConfigurator.configure();
+    }
 
     @Test
-    public void noNamedNodes() throws IOException {
+    public void testNoNamedNodes() throws IOException {
 
-        String source = "(,,(,));";
+        NewickTree tree = new NewickTree("(,,(,));");
 
-        new NewickTree(source);
+        assertFalse(tree.hasNonLeafNames());
+    }
+
+
+    @Test
+    public void testNamedLeafNodes() throws IOException {
+
+        NewickTree newickTree = new NewickTree("(A,B,(C,D));");
+
+        assertFalse(newickTree.hasNonLeafNames());
+    }
+
+
+    @Test
+    public void testAllNamedNodes() throws IOException {
+        NewickTree tree = new NewickTree("(A,B,(C,D)E)F;");
+
+        assertTrue(tree.hasNonLeafNames());
+    }
+
+    @Test
+    public void testAllButRootHaveDistance() throws IOException {
+        NewickTree tree = new NewickTree("(:0.1,:0.2,(:0.3,:0.4):0.5);");
+
+        assertTrue(tree.allHaveLengths());
+    }
+
+    @Test
+    public void testAllHaveDistance() throws IOException {
+        NewickTree tree = new NewickTree("(:0.1,:0.2,(:0.3,:0.4):0.5):0.0;");
+
+        assertTrue(tree.allHaveLengths());
+    }
+
+    @Test
+    public void testDistancesAndLeafNames() throws IOException {
+        new NewickTree("(A:0.1,B:0.2,(C:0.3,D:0.4):0.5);");
 
         assertTrue(true);
     }
 
-
-
     @Test
-    public void sevenTree() throws IOException {
-
-        String source = "(((1:1,2:1):1,((3:1,4:1):1,(5:1):1):1):1,(6:1,7:1):1);5";
-
-        new NewickTree(source);
+    public void testDistancesAndNames() throws IOException {
+        new NewickTree("(A:0.1,B:0.2,(C:0.3,D:0.4)E:0.5)F;");
 
         assertTrue(true);
+    }
 
+    @Test
+    public void testTreeRootedOnLeafNode() throws IOException {
+        new NewickTree("((B:0.2,(C:0.3,D:0.4)E:0.5)F:0.1)A;");
+
+        assertTrue(true);
+    }
+
+    @Test(expected=RuntimeException.class)
+    public void testBadTokens() throws IOException {
+        new NewickTree("giblets***dff2;");
+    }
+
+    @Test(expected=RuntimeException.class)
+    public void testBadSyntax() throws IOException {
+        new NewickTree(")))(((;");
+    }
+
+    @Test
+    public void testWeight() throws IOException {
+        NewickTree tree = new NewickTree("(:0.1,(:0.3,:0.4):0.5);5.0");
+
+        assertTrue(tree.isBinary());
+    }
+
+    @Test
+    public void sevenTaxaTreeWithWeight() throws IOException {
+
+        NewickTree tree = new NewickTree("(((A:1.0,B:1.0):1,((C:1,D:1):1,E:1):1):1,(F:1,G:1):1);2.");
+
+        assertTrue(tree.getScalingFactor() == 2.0);
+        assertTrue(tree.isBinary());
     }
 }

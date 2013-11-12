@@ -19,6 +19,12 @@ package uk.ac.uea.cmp.phygen.core.ds.tree.newick;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
+import uk.ac.uea.cmp.phygen.core.ds.tree.newick.parser.NewickTreeErrorListener;
+import uk.ac.uea.cmp.phygen.core.ds.tree.newick.parser.NewickTreeErrorStrategy;
+import uk.ac.uea.cmp.phygen.core.ds.tree.newick.parser.NewickTreePopulator;
+import uk.ac.uea.cmp.phygen.core.ds.tree.newick.parser.NewickTreeLexer;
+import uk.ac.uea.cmp.phygen.core.ds.tree.newick.parser.NewickTreeParser;
+
 
 import java.io.IOException;
 
@@ -49,21 +55,63 @@ public class NewickTree extends NewickNode {
 
     public void parseNewick(String source, double scalingFactor) throws IOException {
 
+        // Make sure we have something to work with
         if (source == null)
             return;
 
+        // Parse should handle this but let's make it easy for it
         String trimmedSource = source.trim();
 
+        // Convert source into a character stream
         CharStream in = new ANTLRInputStream(trimmedSource);
+
+        // Setup lexer
         NewickTreeLexer lexer = new NewickTreeLexer(in);
+        lexer.removeErrorListeners();
+        lexer.addErrorListener(new NewickTreeErrorListener());
+
+        // Do the lexing
         CommonTokenStream tokens = new CommonTokenStream(lexer);
+
+        // Setup parser
         NewickTreeParser parser = new NewickTreeParser(tokens);
-        parser.addParseListener(new NewickTreePopulator(this));
+        parser.removeParseListeners();
+        parser.removeErrorListeners();
+        parser.addParseListener(new NewickTreePopulator(this, true));
+        parser.addErrorListener(new NewickTreeErrorListener());
+        parser.setErrorHandler(new NewickTreeErrorStrategy());
+
+        // Do the parsing
         parser.parse();
 
         // This NewickTree should be nicely populated now
 
         //TODO apply scaling factor  ???
+    }
+
+
+    @Override
+    public boolean isBinary() {
+
+        if (this.branches.isEmpty())
+            return true;
+
+        if (this.branches.size() != 1)
+            return false;
+
+        return this.getFirstBranch().isBinary();
+    }
+
+    @Override
+    public boolean allHaveLengths() {
+
+        if (this.branches.isEmpty())
+            return true;
+
+        if (this.branches.size() != 1)
+            return false;
+
+        return this.getFirstBranch().allHaveLengths();
     }
 
 }

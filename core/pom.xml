@@ -16,6 +16,9 @@
 
     <name>Phylogenetics Tool Suite: Core functionality</name>
 
+    <properties>
+        <antlr-version>4.1</antlr-version>
+    </properties>
 
     <!-- If you have gurobi installed then comment out this block.  This essentially excludes all gurobi java files
          from being compiled.  As it stands gurobi do not make freely available their jar file (even though it only
@@ -43,6 +46,22 @@
                     <workingDirectory>target</workingDirectory>
                     <argLine>-Djava.library.path=/usr/local/lib/jni:/usr/lib/jni</argLine>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.antlr</groupId>
+                <artifactId>antlr4-maven-plugin</artifactId>
+                <version>${antlr-version}</version>
+                <configuration>
+                    <outputDirectory>${basedir}/src/main/java/uk/ac/uea/cmp/phygen/core/ds/tree/newick/parser</outputDirectory>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>antlr4</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
 
         </plugins>
@@ -168,7 +187,17 @@
         <dependency>
             <groupId>org.antlr</groupId>
             <artifactId>antlr4-runtime</artifactId>
-            <version>4.1</version>
+            <version>${antlr-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>antlr4</artifactId>
+            <version>${antlr-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>antlr4-maven-plugin</artifactId>
+            <version>${antlr-version}</version>
         </dependency>
 
     </dependencies>

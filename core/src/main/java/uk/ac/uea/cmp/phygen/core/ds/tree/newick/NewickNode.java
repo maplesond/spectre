@@ -26,14 +26,16 @@ import java.util.List;
  * Time: 00:08
  * To change this template use File | Settings | File Templates.
  */
-abstract class NewickNode {
+public abstract class NewickNode {
 
     protected String name;
+    protected NewickNode parent;
     protected List<NewickNode> branches;
     protected double length;
 
     protected NewickNode() {
         this.name = "";
+        this.parent = null;
         this.branches = new ArrayList<>();
         this.length = 0.0;
     }
@@ -60,6 +62,11 @@ abstract class NewickNode {
         return this.branches.isEmpty();
     }
 
+
+    public List<String> getNames() {
+
+    }
+
     public boolean isBinary() {
 
         if (this.isLeaf())
@@ -69,6 +76,42 @@ abstract class NewickNode {
             return false;
 
         return this.getFirstBranch().isBinary() && this.getSecondBranch().isBinary();
+    }
+
+    public boolean hasNonLeafNames() {
+
+        if (!this.isLeaf() && (this.name != null && !this.name.isEmpty()))
+            return true;
+
+        for(NewickNode node : this.branches) {
+            if (node.hasNonLeafNames())
+                return true;
+        }
+
+        return false;
+    }
+
+    public boolean allHaveLengths() {
+
+        for(NewickNode node : this.branches) {
+            if (!node.allHaveLengths(true))
+                return false;
+        }
+
+        return true;
+    }
+
+    protected boolean allHaveLengths(boolean atRoot) {
+
+        if (this.length == 0.0)
+            return false;
+
+        for(NewickNode node : this.branches) {
+            if (!node.allHaveLengths(false))
+                return false;
+        }
+
+        return true;
     }
 
     public List<NewickNode> getBranches() {
@@ -83,15 +126,24 @@ abstract class NewickNode {
         return this.length;
     }
 
-    void setName(String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
-    void setBranches(List<NewickNode> branches) {
-        this.branches = branches;
+    public NewickNode getParent() {
+        return parent;
     }
 
-    void setLength(double length) {
+    public void setParent(NewickNode parent) {
+        this.parent = parent;
+    }
+
+    public void setLength(double length) {
         this.length = length;
+    }
+
+    public void addBranch(NewickNode branch) {
+        branch.setParent(this);
+        this.branches.add(branch);
     }
 }
