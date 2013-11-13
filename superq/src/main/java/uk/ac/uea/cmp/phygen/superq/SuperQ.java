@@ -158,7 +158,7 @@ public class SuperQ extends RunnableTool {
 
             //System.out.println("output path: " + this.output_file.getPath());
             String filterTempFile = tmppath + "unfiltered-split-system.nex";
-            String weightsOutputPath = this.options.getFilter() != null ? filterTempFile : this.options.getOutputFile().getPath();
+            File weightsOutput = this.options.getFilter() != null ? new File(filterTempFile) : this.options.getOutputFile();
 
             double[] solution = computedWeights.getX();
 
@@ -189,7 +189,7 @@ public class SuperQ extends RunnableTool {
             }
 
             notifyUser("SUPERQ - Saving weights to file");
-            qnet.writeWeights(weightsOutputPath, solution, null, 0);
+            qnet.writeWeights(weightsOutput, solution, null, 0);
 
 
             rt.gc();

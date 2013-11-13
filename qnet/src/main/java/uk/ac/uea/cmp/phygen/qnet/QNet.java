@@ -15,6 +15,7 @@
  */
 package uk.ac.uea.cmp.phygen.qnet;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -83,6 +84,8 @@ public class QNet {
      */
     private boolean useMax;
 
+
+
     public QNet() {
 
         this.theQuartetWeights = new QuartetWeights();
@@ -94,12 +97,10 @@ public class QNet {
 
 
     public int getN() {
-
         return N;
     }
 
     public void setN(int newN) {
-
         this.N = newN;
     }
 
@@ -814,7 +815,7 @@ public class QNet {
     //standard ... 0
     //minimum  ... 1
     //maximum  ... 2
-    public void writeWeights(String outputName, double[] y, double[] x, int mode) {
+    public void writeWeights(File output, double[] y, double[] x, int mode) throws IOException {
 
         Taxa c = taxaSets.get(0);
 
@@ -984,15 +985,7 @@ public class QNet {
 
         nexusString += ";\nEND;";
 
-        try {
-
-            FileWriter fileOutput = new FileWriter(outputName);
-
-            fileOutput.write(nexusString);
-
-            fileOutput.close();
-        } catch (IOException e) {
-        }
-
+        // Write to file
+        FileUtils.writeStringToFile(output, nexusString);
     }
 }

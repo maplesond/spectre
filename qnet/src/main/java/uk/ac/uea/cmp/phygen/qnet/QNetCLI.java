@@ -36,30 +36,30 @@ public class QNetCLI {
     private static Logger logger = LoggerFactory.getLogger(QNetCLI.class);
 
     private static final String OPT_INPUT = "input";
+    private static final String OPT_OUTPUT = "output";
     private static final String OPT_LOG = "log";
     private static final String OPT_TOLERANCE = "tolerance";
     private static final String OPT_OPTIMISER = "optimiser";
 
     private static Options createOptions() {
 
-        Option optLog = new Option("l", OPT_LOG, false, "Linear if false, Log if true");
-
-        Option optInput = OptionBuilder.withArgName("file").withLongOpt(OPT_INPUT).isRequired().hasArg()
-                .withDescription("The file containing the distance data to input.").create("i");
-
-        Option optTolerance = OptionBuilder.withArgName("double").withLongOpt(OPT_TOLERANCE).hasArg()
-                .withDescription("The tolerance").create("t");
-
-        Option optOptimiser = OptionBuilder.withArgName("string").withLongOpt(OPT_OPTIMISER).hasArg()
-                .withDescription("If specified, uses optimisation: " + OptimiserFactory.getInstance().listOperationalOptimisers()).create("p");
-
         // create Options object
         Options options = new Options();
         options.addOption(CommandLineHelper.HELP_OPTION);
-        options.addOption(optInput);
-        options.addOption(optLog);
-        options.addOption(optTolerance);
-        options.addOption(optOptimiser);
+
+        options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_INPUT).isRequired().hasArg()
+                .withDescription("The file containing the distance data to input.").create("i"));
+
+        options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_OUTPUT).isRequired().hasArg()
+                .withDescription("The nexus file that will contain output.").create("o"));
+
+        options.addOption(new Option("l", OPT_LOG, false, "Linear if false, Log if true"));
+
+        options.addOption(OptionBuilder.withArgName("double").withLongOpt(OPT_TOLERANCE).hasArg()
+                .withDescription("The tolerance").create("t"));
+
+        options.addOption(OptionBuilder.withArgName("string").withLongOpt(OPT_OPTIMISER).hasArg()
+                .withDescription("If specified, uses optimisation: " + OptimiserFactory.getInstance().listOperationalOptimisers()).create("p"));
 
         return options;
     }
@@ -83,6 +83,9 @@ public class QNetCLI {
 
             // Required arguments
             File input = new File(commandLine.getOptionValue(OPT_INPUT));
+            File output = new File(commandLine.getOptionValue(OPT_OUTPUT));
+
+            // Options
             boolean log = commandLine.hasOption(OPT_LOG);
             double tolerance = commandLine.hasOption(OPT_TOLERANCE) ? Double.parseDouble(commandLine.getOptionValue(OPT_TOLERANCE)) : -1.0;
             Optimiser optimiser = commandLine.hasOption(OPT_OPTIMISER) ?
@@ -90,11 +93,13 @@ public class QNetCLI {
                     null;
 
             // Run QNet
-            new QNet().execute(input, log, tolerance, optimiser);
+            QNet qnet = new QNet();
+            ComputedWeights weights = qnet.execute(input, log, tolerance, optimiser);
 
-            // Now what??? Presumably there is some output created?!
-
-        } catch (Exception e) {
+            // Output results in nexus file
+            qnet.writeWeights(output, weights.getX(), null, 0);
+        }
+        catch (Exception e) {
             logger.error(e.getMessage(), e);
             System.exit(1);
         }
