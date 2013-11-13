@@ -16,7 +16,6 @@
 package uk.ac.uea.cmp.phygen.qnet.holders;
 
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
-import uk.ac.uea.cmp.phygen.core.ds.TaxonList;
 
 import java.util.ArrayList;
 import java.util.List;
