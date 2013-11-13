@@ -126,4 +126,18 @@ public class NewickTreeTest {
         assertTrue(tree.getScalingFactor() == 2.0);
         assertTrue(tree.isBinary());
     }
+
+
+    @Test
+    public void sevenNumberTaxaTree() throws IOException {
+
+        NewickTree tree = new NewickTree("(((\"1\":1,\"2\":1):1,((\"3\":1,\"4\":1):1,\"5\":1):1):1,(\"6\":1,\"7\":1):1);");
+
+        String taxa = tree.getTaxa().toString();
+
+        assertTrue(tree.isBinary());
+        assertTrue(taxa.equals("[1,2,3,4,5,6,7]"));
+    }
+
+
 }

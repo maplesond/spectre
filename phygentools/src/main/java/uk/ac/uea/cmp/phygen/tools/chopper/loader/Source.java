@@ -15,8 +15,10 @@
  */
 package uk.ac.uea.cmp.phygen.tools.chopper.loader;
 
+import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -26,7 +28,7 @@ import java.util.List;
  */
 public interface Source {
 
-    public void load(String fileName, double weight) throws IOException;
+    public void load(File file, double weight) throws IOException;
 
     // make sure qWs exist
     public void process();
@@ -40,13 +42,19 @@ public interface Source {
     public double getWSum();
 
     // note: translate BEFORE processing
-    public void translate(List<String> taxonNames);
+    public void translate(Taxa taxa);
 
-    // straightforward union of taxon names, stored in the input, so clone if necessary
-    public void harvestNames(List<String> taxonNames);
+    /**
+     * straightforward union of taxon names, stored in the input, so clone if necessary
+     * @return
+     */
+    public void addTaxa(Taxa taxa);
 
-    // name list for each
-    public List<List<String>> getTaxonNames();
+    /**
+     * Gets the taxa list for each source in the input
+     * @return
+     */
+    public List<Taxa> findTaxaSets();
 
     public boolean hasMoreSets();
 

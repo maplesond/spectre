@@ -20,6 +20,7 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.TaxonList;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetIndex;
@@ -39,32 +40,13 @@ public class WeightsComputeNNLSInformative {
 
     private static Logger log = LoggerFactory.getLogger(WeightsComputeNNLSInformative.class);
 
-    public static class ComputedWeights {
-
-        private double[] x;
-        private SymmetricMatrix EtE;
-
-        public ComputedWeights(double[] x, SymmetricMatrix etE) {
-            this.x = x;
-            EtE = etE;
-        }
-
-        public double[] getX() {
-            return x;
-        }
-
-        public SymmetricMatrix getEtE() {
-            return EtE;
-        }
-    }
-
     public static ComputedWeights computeWeights(QNet parent, String infoName, double tolerance, Optimiser optimiser) throws QNetException, IOException, OptimiserException {
 
         // This method is probably going to take a while so start a timer.
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
 
-        List<TaxonList> theLists = parent.getTheLists();
+        List<Taxa> taxaSets = parent.getTaxaSets();
         QuartetWeights theQuartetWeights = parent.getWeights();
         int N = parent.getN();
 
@@ -73,7 +55,7 @@ public class WeightsComputeNNLSInformative {
         // we have theQuartetWeighst weights
         // we have...
 
-        TaxonList c = theLists.get(0);
+        Taxa c = taxaSets.get(0);
 
         // ... the cyclic ordering
 
@@ -130,10 +112,10 @@ public class WeightsComputeNNLSInformative {
 
                     for (int l = k + 1; l < N + 1; l++) {
 
-                        int cI = c.get(i - 1);
-                        int cJ = c.get(j - 1);
-                        int cK = c.get(k - 1);
-                        int cL = c.get(l - 1);
+                        int cI = c.get(i - 1).getId();
+                        int cJ = c.get(j - 1).getId();
+                        int cK = c.get(k - 1).getId();
+                        int cL = c.get(l - 1).getId();
 
                         quartetIndices[n] = new QuartetIndex(i, j, k, l);
                         f[n] = theQuartetWeights.getWeight(new Quartet(cI, cJ, cK, cL));
@@ -745,10 +727,10 @@ public class WeightsComputeNNLSInformative {
 
                         if (l == 2) {
 
-                            int cA = c.get(p);
-                            int cB = c.get(p + 1);
-                            int cC = c.get(i - 1);
-                            int cD = c.get(j - 1);
+                            int cA = c.get(p).getId();
+                            int cB = c.get(p + 1).getId();
+                            int cC = c.get(i - 1).getId();
+                            int cD = c.get(j - 1).getId();
 
                             double aW = theQuartetWeights.getWeight(new Quartet(cA, cB, cC, cD));
 
@@ -756,10 +738,10 @@ public class WeightsComputeNNLSInformative {
                         }
                         else if (l == 3) {
 
-                            int cA = c.get(p);
-                            int cB = c.get(p + 2);
-                            int cC = c.get(i - 1);
-                            int cD = c.get(j - 1);
+                            int cA = c.get(p).getId();
+                            int cB = c.get(p + 2).getId();
+                            int cC = c.get(i - 1).getId();
+                            int cD = c.get(j - 1).getId();
 
                             double aW = theQuartetWeights.getWeight(new Quartet(cA, cB, cC, cD));
 
@@ -768,10 +750,10 @@ public class WeightsComputeNNLSInformative {
                         }
                         else {
 
-                            int cA = ((Integer) c.get(p)).intValue();
-                            int cB = ((Integer) c.get(p + l - 1)).intValue();
-                            int cC = ((Integer) c.get(i - 1)).intValue();
-                            int cD = ((Integer) c.get(j - 1)).intValue();
+                            int cA = c.get(p).getId();
+                            int cB = c.get(p + l - 1).getId();
+                            int cC = c.get(i - 1).getId();
+                            int cD = c.get(j - 1).getId();
 
                             double aW = theQuartetWeights.getWeight(new Quartet(cA, cB, cC, cD));
 
@@ -785,10 +767,10 @@ public class WeightsComputeNNLSInformative {
 
                         if (l == 2) {
 
-                            int cA = ((Integer) c.get(p)).intValue();
-                            int cB = ((Integer) c.get(p + 1)).intValue();
-                            int cC = ((Integer) c.get(i - 1)).intValue();
-                            int cD = ((Integer) c.get(j - 1)).intValue();
+                            int cA = c.get(p).getId();
+                            int cB = c.get(p + 1).getId();
+                            int cC = c.get(i - 1).getId();
+                            int cD = c.get(j - 1).getId();
 
                             double aW = theQuartetWeights.getWeight(new Quartet(cA, cB, cC, cD));
 
@@ -796,10 +778,10 @@ public class WeightsComputeNNLSInformative {
                         }
                         else if (l == 3) {
 
-                            int cA = ((Integer) c.get(p)).intValue();
-                            int cB = ((Integer) c.get(p + 2)).intValue();
-                            int cC = ((Integer) c.get(i - 1)).intValue();
-                            int cD = ((Integer) c.get(j - 1)).intValue();
+                            int cA = c.get(p).getId();
+                            int cB = c.get(p + 2).getId();
+                            int cC = c.get(i - 1).getId();
+                            int cD = c.get(j - 1).getId();
 
                             double aW = theQuartetWeights.getWeight(new Quartet(cA, cB, cC, cD));
 
@@ -808,10 +790,10 @@ public class WeightsComputeNNLSInformative {
                         }
                         else {
 
-                            int cA = ((Integer) c.get(p)).intValue();
-                            int cB = ((Integer) c.get(p + l - 1)).intValue();
-                            int cC = ((Integer) c.get(i - 1)).intValue();
-                            int cD = ((Integer) c.get(j - 1)).intValue();
+                            int cA = c.get(p).getId();
+                            int cB = c.get(p + l - 1).getId();
+                            int cC = c.get(i - 1).getId();
+                            int cD = c.get(j - 1).getId();
 
                             double aW = theQuartetWeights.getWeight(new Quartet(cA, cB, cC, cD));
 
@@ -828,10 +810,10 @@ public class WeightsComputeNNLSInformative {
 
                         if (l == 2) {
 
-                            int cA = ((Integer) c.get(p)).intValue();
-                            int cB = ((Integer) c.get(p + 1)).intValue();
-                            int cC = ((Integer) c.get(i - 1)).intValue();
-                            int cD = ((Integer) c.get(j - 1)).intValue();
+                            int cA = c.get(p).getId();
+                            int cB = c.get(p + 1).getId();
+                            int cC = c.get(i - 1).getId();
+                            int cD = c.get(j - 1).getId();
 
                             double aW = theQuartetWeights.getWeight(new Quartet(cA, cB, cC, cD));
 
@@ -839,10 +821,10 @@ public class WeightsComputeNNLSInformative {
 
                         } else if (l == 3) {
 
-                            int cA = ((Integer) c.get(p)).intValue();
-                            int cB = ((Integer) c.get(p + 2)).intValue();
-                            int cC = ((Integer) c.get(i - 1)).intValue();
-                            int cD = ((Integer) c.get(j - 1)).intValue();
+                            int cA = c.get(p).getId();
+                            int cB = c.get(p + 2).getId();
+                            int cC = c.get(i - 1).getId();
+                            int cD = c.get(j - 1).getId();
 
                             double aW = theQuartetWeights.getWeight(new Quartet(cA, cB, cC, cD));
 
@@ -851,10 +833,10 @@ public class WeightsComputeNNLSInformative {
 
                         } else {
 
-                            int cA = ((Integer) c.get(p)).intValue();
-                            int cB = ((Integer) c.get(p + l - 1)).intValue();
-                            int cC = ((Integer) c.get(i - 1)).intValue();
-                            int cD = ((Integer) c.get(j - 1)).intValue();
+                            int cA = c.get(p).getId();
+                            int cB = c.get(p + l - 1).getId();
+                            int cC = c.get(i - 1).getId();
+                            int cD = c.get(j - 1).getId();
 
                             double aW = theQuartetWeights.getWeight(new Quartet(cA, cB, cC, cD));
 

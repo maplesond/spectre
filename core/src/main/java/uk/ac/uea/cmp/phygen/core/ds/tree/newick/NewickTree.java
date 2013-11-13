@@ -19,11 +19,10 @@ package uk.ac.uea.cmp.phygen.core.ds.tree.newick;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
-import uk.ac.uea.cmp.phygen.core.ds.tree.newick.parser.NewickTreeErrorListener;
-import uk.ac.uea.cmp.phygen.core.ds.tree.newick.parser.NewickTreeErrorStrategy;
-import uk.ac.uea.cmp.phygen.core.ds.tree.newick.parser.NewickTreePopulator;
-import uk.ac.uea.cmp.phygen.core.ds.tree.newick.parser.NewickTreeLexer;
-import uk.ac.uea.cmp.phygen.core.ds.tree.newick.parser.NewickTreeParser;
+import uk.ac.uea.cmp.phygen.core.ds.Taxa;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
+import uk.ac.uea.cmp.phygen.core.ds.tree.newick.parser.*;
 
 
 import java.io.IOException;
@@ -113,5 +112,15 @@ public class NewickTree extends NewickNode {
 
         return this.getFirstBranch().allHaveLengths();
     }
+
+    public QuartetWeights createQuartets() {
+
+        QuartetWeights qW = new QuartetWeights(Quartet.over4(this.getNbTaxa()));
+
+        this.split(qW, new Taxa());
+
+        return qW;
+    }
+
 
 }

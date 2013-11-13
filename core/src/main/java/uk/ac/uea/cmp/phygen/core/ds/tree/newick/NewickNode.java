@@ -16,8 +16,14 @@
 
 package uk.ac.uea.cmp.phygen.core.ds.tree.newick;
 
+import uk.ac.uea.cmp.phygen.core.ds.Taxa;
+import uk.ac.uea.cmp.phygen.core.ds.Taxon;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 
 /**
  * Created with IntelliJ IDEA.
@@ -28,13 +34,13 @@ import java.util.List;
  */
 public abstract class NewickNode {
 
-    protected String name;
+    protected Taxon taxon;
     protected NewickNode parent;
     protected List<NewickNode> branches;
     protected double length;
 
     protected NewickNode() {
-        this.name = "";
+        this.taxon = null;
         this.parent = null;
         this.branches = new ArrayList<>();
         this.length = 0.0;
@@ -62,9 +68,35 @@ public abstract class NewickNode {
         return this.branches.isEmpty();
     }
 
+    /**
+     * Walks the tree and returns the taxa list.  May throw an IllegalArgumentException if there are duplicate taxa
+     * @return
+     */
+    public Taxa getTaxa() {
+        Taxa taxa = new Taxa();
 
-    public List<String> getNames() {
+        if (this.taxon != null && !this.taxon.isEmpty())
+            taxa.add(this.taxon);
 
+        for(NewickNode node : branches) {
+            node.getTaxa(taxa);
+        }
+
+        return taxa;
+    }
+
+    public int getNbTaxa() {
+        return this.getTaxa().size();
+    }
+
+    protected void getTaxa(Taxa taxa) {
+        if (this.taxon != null && !this.taxon.isEmpty()) {
+            taxa.add(this.taxon);
+        }
+
+        for(NewickNode node : branches) {
+            node.getTaxa(taxa);
+        }
     }
 
     public boolean isBinary() {
@@ -80,7 +112,7 @@ public abstract class NewickNode {
 
     public boolean hasNonLeafNames() {
 
-        if (!this.isLeaf() && (this.name != null && !this.name.isEmpty()))
+        if (!this.isLeaf() && (this.taxon != null && !this.taxon.isEmpty()))
             return true;
 
         for(NewickNode node : this.branches) {
@@ -107,27 +139,49 @@ public abstract class NewickNode {
             return false;
 
         for(NewickNode node : this.branches) {
-            if (!node.allHaveLengths(false))
+            if (!node.allHaveLengths(false)) {
                 return false;
+            }
         }
 
         return true;
     }
 
+    public void setIndiciesToExternalTaxaList(Taxa externalTaxaList) {
+        if (this.taxon != null && !this.taxon.getName().isEmpty()) {
+            this.taxon.setId(externalTaxaList.indexOf(this.taxon));
+        }
+
+        for(NewickNode node : this.branches) {
+            node.setIndiciesToExternalTaxaList(externalTaxaList);
+        }
+    }
+
+    /*public void rename(TaxaSet oldTaxa, TaxaSet newTaxa) {
+
+        if (this.taxon != null && oldTaxa.contains(this.taxon)) {
+            this.name = newTaxa.get(oldTaxa.indexOf(this.name));
+        }
+
+        for(NewickNode node : branches) {
+            node.rename(oldTaxa, newTaxa);
+        }
+    }*/
+
     public List<NewickNode> getBranches() {
         return this.branches;
     }
 
-    public String getName() {
-        return this.name;
+    public Taxon getTaxon() {
+        return this.taxon;
     }
 
     public double getLength() {
         return this.length;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setTaxon(Taxon taxon) {
+        this.taxon = taxon;
     }
 
     public NewickNode getParent() {
@@ -145,5 +199,71 @@ public abstract class NewickNode {
     public void addBranch(NewickNode branch) {
         branch.setParent(this);
         this.branches.add(branch);
+    }
+
+    /**
+     * We take all splits (those here, and those in the branches) and add their weights to the quartets. Weights are
+     * defined regardless, so... = 1 for no weights
+     * @param qW The quartet weights to update
+     * @param remainder The taxa that are not found in this node
+     * @return Calculated quartet weights for this node
+     */
+    protected QuartetWeights split(QuartetWeights qW, Taxa remainder) {
+
+        for(int i = 0; i < this.branches.size(); i++) {
+
+
+            NewickNode branch = this.branches.get(i);
+            double w = branch.getLength();
+
+            Taxa setA = branch.getTaxa();
+            Taxa setB = new Taxa(remainder);
+
+            ListIterator<NewickNode> lJ = branches.listIterator();
+
+            while (lJ.hasNext()) {
+
+                NewickNode otherBranch = lJ.next();
+
+                if (branch != otherBranch) {
+                    setB.addAll(otherBranch.getTaxa());
+                }
+            }
+
+            if (setA.size() > 1 && setB.size() > 1) {
+
+                // we have a non-trivial split!
+                // which we must have, for trivial splits match no quartets...
+
+                // so, for all quartets in here, add the length to their value
+
+                for (int iA1 = 0; iA1 < setA.size() - 1; iA1++) {
+
+                    for (int iA2 = iA1 + 1; iA2 < setA.size(); iA2++) {
+
+                        int a1 = 1 + setA.get(iA1).getId();
+                        int a2 = 1 + setA.get(iA2).getId();
+
+                        for (int iB1 = 0; iB1 < setB.size() - 1; iB1++) {
+
+                            for (int iB2 = iB1 + 1; iB2 < setB.size(); iB2++) {
+
+                                int b1 = 1 + setB.get(iB1).getId();
+                                int b2 = 1 + setB.get(iB2).getId();
+
+                                qW.incrementWeight(new Quartet(a1, a2, b1, b2), w);
+                            }
+                        }
+                    }
+                }
+            }
+
+            // and recurse if possible
+            if (branch.hasChildren()) {
+                branch.split(qW, setB);
+            }
+        }
+
+        return qW;
     }
 }

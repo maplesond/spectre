@@ -15,9 +15,12 @@
  */
 package uk.ac.uea.cmp.phygen.tools.chopper.loader;
 
-import uk.ac.uea.cmp.phygen.tools.chopper.Tree;
+import uk.ac.uea.cmp.phygen.core.ds.Taxa;
+import uk.ac.uea.cmp.phygen.core.ds.Taxon;
+import uk.ac.uea.cmp.phygen.core.ds.tree.newick.NewickTree;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.LinkedList;
@@ -30,15 +33,15 @@ import java.util.StringTokenizer;
 public class TreeFileLoader extends AbstractTreeLoader {
 
     @Override
-    public void load(String fileName, double weight) throws IOException {
+    public void load(File file, double weight) throws IOException {
 
         index = 0;
 
-        taxonNames = new LinkedList<>();
+        taxonNames = new Taxa();
         trees = new LinkedList<>();
         weights = new LinkedList<>();
 
-        BufferedReader in = new BufferedReader(new FileReader(fileName));
+        BufferedReader in = new BufferedReader(new FileReader(file));
 
         String aLine = in.readLine();
 
@@ -99,7 +102,7 @@ public class TreeFileLoader extends AbstractTreeLoader {
 
                     }
 
-                    taxonNames.add(second.trim().substring(0, second.trim().length() - 1));
+                    taxonNames.add(new Taxon(second.trim().substring(0, second.trim().length() - 1)));
                 }
             }
 
@@ -109,7 +112,6 @@ public class TreeFileLoader extends AbstractTreeLoader {
             }
         }
 
-        branchLengths = false;
         treeWeights = false;
 
         // now, we will read tree lines until we find an end
@@ -129,23 +131,16 @@ public class TreeFileLoader extends AbstractTreeLoader {
 
             }
 
-            if (aLine.trim().indexOf('(') != -1 && aLine.trim().endsWith(");")) {
+            if (aLine.indexOf('(') != -1 && aLine.endsWith(");")) {
 
                 // we have a tree line here
 
                 weights.add(weight);
 
-                aLine = aLine.substring(aLine.indexOf('('), aLine.lastIndexOf(')') + 1).trim();
 
-                if (aLine.indexOf(":") != -1) {
+                NewickTree aTree = new NewickTree(aLine);
 
-                    branchLengths = true;
-
-                }
-
-                Tree aTree = new Tree(aLine.substring(1, aLine.length() - 1), branchLengths);
-
-                LinkedList<String> numberNames = new LinkedList<>();
+                /*LinkedList<String> numberNames = new LinkedList<>();
 
                 for (int n = 0; n < taxonNames.size(); n++) {
 
@@ -153,18 +148,15 @@ public class TreeFileLoader extends AbstractTreeLoader {
 
                 }
 
-                aTree.rename(numberNames, taxonNames);
+                aTree.rename(numberNames, taxonNames);*/
 
                 trees.add(aTree);
-
             }
 
             aLine = in.readLine();
-
         }
 
         in.close();
-
     }
 
 }

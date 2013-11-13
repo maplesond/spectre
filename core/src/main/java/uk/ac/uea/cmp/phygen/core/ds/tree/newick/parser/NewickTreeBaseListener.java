@@ -1,7 +1,5 @@
-// Generated from NewickTree.g4 by ANTLR 4.1
-
+// Generated from uk/ac/uea/cmp/phygen/core/ds/tree/newick/parser/NewickTree.g4 by ANTLR 4.1
 package uk.ac.uea.cmp.phygen.core.ds.tree.newick.parser;
-
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.NotNull;
@@ -19,6 +17,19 @@ public class NewickTreeBaseListener implements NewickTreeListener {
 	 * <p/>
 	 * The default implementation does nothing.
 	 */
+	@Override public void enterWeight(@NotNull NewickTreeParser.WeightContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 * <p/>
+	 * The default implementation does nothing.
+	 */
+	@Override public void exitWeight(@NotNull NewickTreeParser.WeightContext ctx) { }
+
+	/**
+	 * {@inheritDoc}
+	 * <p/>
+	 * The default implementation does nothing.
+	 */
 	@Override public void enterSubtree(@NotNull NewickTreeParser.SubtreeContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -26,6 +37,32 @@ public class NewickTreeBaseListener implements NewickTreeListener {
 	 * The default implementation does nothing.
 	 */
 	@Override public void exitSubtree(@NotNull NewickTreeParser.SubtreeContext ctx) { }
+
+	/**
+	 * {@inheritDoc}
+	 * <p/>
+	 * The default implementation does nothing.
+	 */
+	@Override public void enterName(@NotNull NewickTreeParser.NameContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 * <p/>
+	 * The default implementation does nothing.
+	 */
+	@Override public void exitName(@NotNull NewickTreeParser.NameContext ctx) { }
+
+	/**
+	 * {@inheritDoc}
+	 * <p/>
+	 * The default implementation does nothing.
+	 */
+	@Override public void enterLength(@NotNull NewickTreeParser.LengthContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 * <p/>
+	 * The default implementation does nothing.
+	 */
+	@Override public void exitLength(@NotNull NewickTreeParser.LengthContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

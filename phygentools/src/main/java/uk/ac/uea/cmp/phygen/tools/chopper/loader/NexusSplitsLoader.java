@@ -15,10 +15,12 @@
  */
 package uk.ac.uea.cmp.phygen.tools.chopper.loader;
 
+import uk.ac.uea.cmp.phygen.core.ds.Taxon;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.LinkedList;
@@ -31,7 +33,7 @@ import java.util.StringTokenizer;
 public class NexusSplitsLoader extends AbstractLoader {
 
     @Override
-    public void load(String fileName, double weight) throws IOException {
+    public void load(File file, double weight) throws IOException {
 
         this.weights.add(weight);
         QuartetWeights qW = null;
@@ -48,7 +50,7 @@ public class NexusSplitsLoader extends AbstractLoader {
          * File reader
          *
          */
-        BufferedReader fileInput = new BufferedReader(new FileReader(fileName));
+        BufferedReader fileInput = new BufferedReader(new FileReader(file));
 
         /**
          *
@@ -84,7 +86,7 @@ public class NexusSplitsLoader extends AbstractLoader {
 
                     for (int n = 0; n < N; n++) {
 
-                        taxonNames.add(new String(""));
+                        taxonNames.add(new Taxon(""));
                     }
 
                     qW = new QuartetWeights(Quartet.over4(N));
@@ -118,7 +120,7 @@ public class NexusSplitsLoader extends AbstractLoader {
                             aS = aST.nextToken();
                         }
 
-                        taxonNames.set(n, aS);
+                        taxonNames.set(n, new Taxon(aS));
                     }
 
                     readingState = false;
@@ -191,14 +193,14 @@ public class NexusSplitsLoader extends AbstractLoader {
 
                             while (bT.hasMoreTokens()) {
 
-                                setA.add(new Integer(Integer.parseInt(bT.nextToken())));
+                                setA.add(Integer.parseInt(bT.nextToken()));
                             }
 
                             for (int n = 0; n < N; n++) {
 
                                 if (!setA.contains(new Integer(n + 1))) {
 
-                                    setB.add(new Integer(n + 1));
+                                    setB.add(n + 1);
                                 }
                             }
 
@@ -213,15 +215,15 @@ public class NexusSplitsLoader extends AbstractLoader {
 
                                     for (int iA2 = iA1 + 1; iA2 < setA.size(); iA2++) {
 
-                                        int a1 = ((Integer) setA.get(iA1)).intValue();
-                                        int a2 = ((Integer) setA.get(iA2)).intValue();
+                                        int a1 = setA.get(iA1);
+                                        int a2 = setA.get(iA2);
 
                                         for (int iB1 = 0; iB1 < setB.size() - 1; iB1++) {
 
                                             for (int iB2 = iB1 + 1; iB2 < setB.size(); iB2++) {
 
-                                                int b1 = ((Integer) setB.get(iB1)).intValue();
-                                                int b2 = ((Integer) setB.get(iB2)).intValue();
+                                                int b1 = setB.get(iB1);
+                                                int b2 = setB.get(iB2);
 
                                                 qW.incrementWeight(new Quartet(a1, a2, b1, b2), w);
                                             }

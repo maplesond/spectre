@@ -15,6 +15,7 @@
  */
 package uk.ac.uea.cmp.phygen.qnet.holders;
 
+import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.TaxonList;
 
 import java.util.ArrayList;
@@ -22,52 +23,41 @@ import java.util.List;
 
 public class ZHolder {
 
-    public ZHolder(List<TaxonList> theLists, int N) {
+    private ArrayList<Integer> sizes;
 
-        sizes = new ArrayList();
+    public ZHolder(List<Taxa> taxaSets, int N) {
+
+        sizes = new ArrayList<>();
 
         for (int i = 1; i < N + 1; i++) {
-
-            sizes.add(new Integer(z(theLists, i)));
-
+            sizes.add(z(taxaSets, i));
         }
-
-
     }
 
     public int getZ(int i) {
 
         return ((Integer) sizes.get(i - 1)).intValue();
-
     }
 
     public void setZ(int i, int newZ) {
 
         sizes.set(i - 1, new Integer(newZ));
-
     }
 
-    ArrayList sizes;
 
-    int z(List<TaxonList> theLists, int i) {
 
-        for (int n = 0; n < theLists.size(); n++) {
+    int z(List<Taxa> taxaSets, int i) {
 
-            TaxonList tL = theLists.get(n);
+        for (Taxa tL : taxaSets) {
 
             if (tL.contains(i)) {
 
-                if (i == tL.left()) {
-
+                if (i == tL.first().getId()) {
                     return tL.size();
-
                 }
-
             }
-
         }
 
         return 0;
-
     }
 }

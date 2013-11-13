@@ -53,7 +53,7 @@
                 <artifactId>antlr4-maven-plugin</artifactId>
                 <version>${antlr-version}</version>
                 <configuration>
-                    <outputDirectory>${basedir}/src/main/java/uk/ac/uea/cmp/phygen/core/ds/tree/newick/parser</outputDirectory>
+                    <outputDirectory>${basedir}/src/main/java</outputDirectory>
                 </configuration>
                 <executions>
                     <execution>

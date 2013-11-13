@@ -16,6 +16,7 @@
 
 package uk.ac.uea.cmp.phygen.tools.chopper;
 
+import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 
@@ -31,22 +32,22 @@ import java.util.LinkedList;
  */
 public class ChoppedTree {
 
-    private LinkedList<String> taxonNames;
+    private Taxa taxa;
     private QuartetWeights quartetWeights;
     private QuartetWeights summer;
 
     public ChoppedTree() {
-        this(new LinkedList<String>(), new QuartetWeights(), new QuartetWeights());
+        this(new Taxa(), new QuartetWeights(), new QuartetWeights());
     }
 
-    public ChoppedTree(LinkedList<String> taxonNames, QuartetWeights quartetWeights, QuartetWeights summer) {
-        this.taxonNames = taxonNames;
+    public ChoppedTree(Taxa taxa, QuartetWeights quartetWeights, QuartetWeights summer) {
+        this.taxa = taxa;
         this.quartetWeights = quartetWeights;
         this.summer = summer;
     }
 
-    public LinkedList<String> getTaxonNames() {
-        return taxonNames;
+    public Taxa getTaxa() {
+        return taxa;
     }
 
     public QuartetWeights getQuartetWeights() {
@@ -68,7 +69,7 @@ public class ChoppedTree {
 
     public void saveQuartets(File outputFile) throws IOException {
 
-        int N = taxonNames.size();
+        int N = taxa.size();
 
         FileWriter out = new FileWriter(outputFile);
 
@@ -79,7 +80,7 @@ public class ChoppedTree {
         nF.setMaximumIntegerDigits(3);
 
         for (int n = 0; n < N; n++) {
-            out.write("taxon:   " + nF.format(n + 1) + "   name: " + taxonNames.get(n) + ";\n");
+            out.write("taxon:   " + nF.format(n + 1) + "   name: " + taxa.get(n).getName() + ";\n");
         }
 
         for (int a = 1; a <= N - 3; a++) {
@@ -105,7 +106,7 @@ public class ChoppedTree {
 
     public void saveInformation(File outputFile) throws IOException {
 
-        int N = taxonNames.size();
+        int N = taxa.size();
 
         FileWriter out = new FileWriter(outputFile + ".info");
 
@@ -116,7 +117,7 @@ public class ChoppedTree {
         nF.setMaximumIntegerDigits(3);
 
         for (int n = 0; n < N; n++) {
-            out.write("taxon:   " + nF.format(n + 1) + "   name: " + taxonNames.get(n) + ";\n");
+            out.write("taxon:   " + nF.format(n + 1) + "   name: " + taxa.get(n) + ";\n");
         }
 
         for (int a = 1; a <= N - 3; a++) {

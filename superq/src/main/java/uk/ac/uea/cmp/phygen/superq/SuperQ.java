@@ -27,9 +27,9 @@ import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
 import uk.ac.uea.cmp.phygen.core.math.optimise.Problem;
 import uk.ac.uea.cmp.phygen.core.ui.gui.RunnableTool;
 import uk.ac.uea.cmp.phygen.core.ui.gui.StatusTracker;
+import uk.ac.uea.cmp.phygen.qnet.ComputedWeights;
 import uk.ac.uea.cmp.phygen.qnet.QNet;
 import uk.ac.uea.cmp.phygen.qnet.WeightsComputeNNLSInformative;
-import uk.ac.uea.cmp.phygen.qnet.WriteWeightsToNexus;
 import uk.ac.uea.cmp.phygen.tools.chopper.Chopper;
 import uk.ac.uea.cmp.phygen.tools.chopper.loader.LoaderType;
 import uk.ac.uea.cmp.phygen.tools.scale.Scaling;
@@ -145,7 +145,7 @@ public class SuperQ extends RunnableTool {
 
             notifyUser("QNET - Calculating the circular ordering - Using " + primarySolverName);
             QNet qnet = new QNet();
-            WeightsComputeNNLSInformative.ComputedWeights computedWeights = qnet.execute(
+            ComputedWeights computedWeights = qnet.execute(
                     new File(tmppath + "qw"),
                     false,
                     -1.0,
@@ -190,14 +190,14 @@ public class SuperQ extends RunnableTool {
             }
 
             notifyUser("SUPERQ - Saving weights to file");
-            WriteWeightsToNexus.writeWeights(qnet, weightsOutputPath, solution, null, 0);
+            qnet.writeWeights(weightsOutputPath, solution, null, 0);
 
 
             rt.gc();
             log.debug("FREE MEM - after computing weights: " + rt.freeMemory());
 
             if (this.options.getFilter() != null) {
-                notifyUser("FILTER - filtering splits");
+                notifyUser("SUPERQ - filtering splits");
 
                 this.filter(new File(filterTempFile), this.options.getOutputFile(), this.options.getFilter());
             }

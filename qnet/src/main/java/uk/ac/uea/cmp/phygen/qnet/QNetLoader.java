@@ -17,6 +17,8 @@ package uk.ac.uea.cmp.phygen.qnet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.ac.uea.cmp.phygen.core.ds.Taxa;
+import uk.ac.uea.cmp.phygen.core.ds.Taxon;
 import uk.ac.uea.cmp.phygen.core.ds.TaxonList;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeighting;
@@ -39,9 +41,9 @@ public class QNetLoader {
 
         QuartetWeights theQuartetWeights = qnet.getWeights();
 
-        List<String> taxonNames = qnet.getTaxonNames();
+        Taxa allTaxa = qnet.getAllTaxa();
 
-        List<TaxonList> theLists = qnet.getTheLists();
+        List<Taxa> taxaSets = qnet.getTaxaSets();
 
         /**
          *
@@ -234,7 +236,7 @@ public class QNetLoader {
                     taxonname = taxonname + lineTokenizer.nextToken();
                 }
 
-                taxonNames.set(theNumber - 1, taxonname);
+                allTaxa.set(theNumber - 1, new Taxon(taxonname));
 
             } else if (theFirst.equalsIgnoreCase("description")) {
                 /**
@@ -280,16 +282,13 @@ public class QNetLoader {
 
                 for (int n = 0; n < N; n++) {
 
-                    taxonNames.add(new String(""));
-
-                    theLists.add(new TaxonList(n + 1));
-
+                    Taxon newTaxon = new Taxon("", n+1);
+                    allTaxa.add(newTaxon);
+                    taxaSets.add(new Taxa(newTaxon));
                 }
 
                 theQuartetWeights.ensureCapacity(N);
-
             }
-
         }
 
 
@@ -301,13 +300,9 @@ public class QNetLoader {
         qnet.setN(N);
 
         if (logNormalize) {
-
             theQuartetWeights.logNormalize(useMax);
-
         } else {
-
             theQuartetWeights.normalize(useMax);
-
         }
 
         // parameter is now obsolete
@@ -322,9 +317,9 @@ public class QNetLoader {
 
         QuartetWeights theQuartetWeights = parent.getWeights();
 
-        List<String> taxonNames = parent.getTaxonNames();
+        Taxa allTaxa = parent.getAllTaxa();
 
-        List<TaxonList> theLists = parent.getTheLists();
+        List<Taxa> taxaSets = parent.getTaxaSets();
 
         /**
          *
@@ -377,11 +372,9 @@ public class QNetLoader {
                     N = Integer.parseInt(tT.substring(5, tT.length() - 1));
 
                     for (int n = 0; n < N; n++) {
-
-                        taxonNames.add(new String(""));
-
-                        theLists.add(new TaxonList(n + 1));
-
+                        Taxon newTaxon = new Taxon("", n+1);
+                        allTaxa.add(newTaxon);
+                        taxaSets.add(new Taxa(newTaxon));
                     }
 
                     theQuartetWeights = new QuartetWeights(N);
@@ -417,20 +410,14 @@ public class QNetLoader {
                         while (aT.hasMoreTokens()) {
 
                             aS = aT.nextToken();
-
                         }
 
-                        taxonNames.set(n, aS);
-
+                        allTaxa.set(n, new Taxon(aS));
                     }
 
                     readingState = false;
-
                 }
-
             }
-
-
         }
 
         readingState = true;
@@ -448,11 +435,8 @@ public class QNetLoader {
                 if (tT.toLowerCase().startsWith("st_quartets;")) {
 
                     readingState = false;
-
                 }
-
             }
-
         }
 
         readingState = true;
@@ -496,17 +480,12 @@ public class QNetLoader {
                                 theQuartetWeights.setWeight(new Quartet(x, y, u, v), weight);
 
                             }
-
                         }
-
                     }
 
                     readingState = false;
-
                 }
-
             }
-
         }
 
         log.info("done.");
@@ -515,13 +494,9 @@ public class QNetLoader {
         parent.setUseMax(useMax);
 
         if (logNormalize) {
-
             theQuartetWeights.logNormalize(useMax);
-
         } else {
-
             theQuartetWeights.normalize(useMax);
-
         }
 
     }

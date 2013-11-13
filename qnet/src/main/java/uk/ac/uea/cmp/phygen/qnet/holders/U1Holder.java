@@ -15,6 +15,7 @@
  */
 package uk.ac.uea.cmp.phygen.qnet.holders;
 
+import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.TaxonList;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
@@ -23,7 +24,7 @@ import java.util.List;
 
 public class U1Holder {
 
-    public U1Holder(List<TaxonList> theLists, int N, QuartetWeights theQuartetWeights) {
+    public U1Holder(List<Taxa> taxaSets, int N, QuartetWeights theQuartetWeights) {
 
         counts = new Integer[Quartet.over2(N)];
         weights = new Double[Quartet.over2(N)];
@@ -50,9 +51,9 @@ public class U1Holder {
 
                 int a = -1, b = -1;
 
-                for (int m = 0; m < theLists.size(); m++) {
+                for (int m = 0; m < taxaSets.size(); m++) {
 
-                    TaxonList tL = theLists.get(m);
+                    Taxa tL = taxaSets.get(m);
 
                     if (tL.contains(i)) {
 
@@ -63,9 +64,9 @@ public class U1Holder {
 
                 }
 
-                for (int m = 0; m < theLists.size(); m++) {
+                for (int m = 0; m < taxaSets.size(); m++) {
 
-                    TaxonList tL = theLists.get(m);
+                    Taxa tL = taxaSets.get(m);
 
                     if (tL.contains(j)) {
 
@@ -93,8 +94,8 @@ public class U1Holder {
                 int count = 0;
                 double weight = 0.0;
 
-                TaxonList A = theLists.get(a);
-                TaxonList B = theLists.get(b);
+                Taxa A = taxaSets.get(a);
+                Taxa B = taxaSets.get(b);
 
                 // we now have two non-same lists
 
@@ -108,10 +109,10 @@ public class U1Holder {
 
                                 // this is a unique, suitable quartet
 
-                                int yA1 = A.get(xA1);
-                                int yA2 = A.get(xA2);
-                                int yB1 = B.get(xB1);
-                                int yB2 = B.get(xB2);
+                                int yA1 = A.get(xA1).getId();
+                                int yA2 = A.get(xA2).getId();
+                                int yB1 = B.get(xB1).getId();
+                                int yB2 = B.get(xB2).getId();
 
                                 count++;
                                 weight += theQuartetWeights.getWeight(new Quartet(yA1, yB2, yA2, yB1));
@@ -127,11 +128,8 @@ public class U1Holder {
 
                 counts[Quartet.over2(j - 1) + Quartet.over1(i - 1)] = new Integer(count);
                 weights[Quartet.over2(j - 1) + Quartet.over1(i - 1)] = new Double(weight);
-
             }
-
         }
-
     }
 
     public int getN(int i, int j) {
@@ -140,7 +138,6 @@ public class U1Holder {
         int y = Math.min(i, j);
 
         return counts[Quartet.over2(x - 1) + Quartet.over1(y - 1)].intValue();
-
     }
 
     public void setN(int i, int j, int newN) {
@@ -149,7 +146,6 @@ public class U1Holder {
         int y = Math.min(i, j);
 
         counts[Quartet.over2(x - 1) + Quartet.over1(y - 1)] = new Integer(newN);
-
     }
 
     public double getU(int i, int j) {
@@ -158,7 +154,6 @@ public class U1Holder {
         int y = Math.min(i, j);
 
         return weights[Quartet.over2(x - 1) + Quartet.over1(y - 1)].doubleValue();
-
     }
 
     public void setU(int i, int j, double newU) {
@@ -167,7 +162,6 @@ public class U1Holder {
         int y = Math.min(i, j);
 
         weights[Quartet.over2(x - 1) + Quartet.over1(y - 1)] = new Double(newU);
-
     }
 
     Integer[] counts;

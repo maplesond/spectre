@@ -1,7 +1,8 @@
 package uk.ac.uea.cmp.phygen.tools.chopper.loader;
 
+import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
-import uk.ac.uea.cmp.phygen.tools.chopper.Tree;
+import uk.ac.uea.cmp.phygen.core.ds.tree.newick.NewickTree;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,15 +17,15 @@ import java.util.List;
 public abstract class AbstractTreeLoader extends AbstractLoader {
 
     protected boolean branchLengths, treeWeights;
-    protected List<Tree> trees;
+    protected List<NewickTree> trees;
 
     protected AbstractTreeLoader() {
-        this(new ArrayList<QuartetWeights>(), new ArrayList<Double>(), new ArrayList<String>(), 0,
-                false, false, new ArrayList<Tree>());
+        this(new ArrayList<QuartetWeights>(), new ArrayList<Double>(), new Taxa(), 0,
+                false, false, new ArrayList<NewickTree>());
     }
 
-    protected AbstractTreeLoader(List<QuartetWeights> qWs, List<Double> weights, List<String> taxonNames,
-                                 int index, boolean branchLengths, boolean treeWeights, List<Tree> trees) {
+    protected AbstractTreeLoader(List<QuartetWeights> qWs, List<Double> weights, Taxa taxonNames,
+                                 int index, boolean branchLengths, boolean treeWeights, List<NewickTree> trees) {
         super(qWs, weights, taxonNames, index);
         this.branchLengths = branchLengths;
         this.treeWeights = treeWeights;
@@ -39,44 +40,42 @@ public abstract class AbstractTreeLoader extends AbstractLoader {
         return treeWeights;
     }
 
-    public List<Tree> getTrees() {
+    public List<NewickTree> getTrees() {
         return trees;
     }
 
     @Override
     public void process() {
 
-        for(Tree tree : this.trees) {
-            this.qWs.add(tree.quartetize(taxonNames.size()));
+        for(NewickTree tree : this.trees) {
+            this.qWs.add(tree.createQuartets());
         }
     }
 
     @Override
-    public void harvestNames(List<String> newTaxonNames) {
-        for(Tree tree : this.trees) {
-            tree.harvestNames(newTaxonNames);
-        }
-    }
+    public List<Taxa> findTaxaSets() {
 
-    @Override
-    public List<List<String>> getTaxonNames() {
+        List<Taxa> result = new ArrayList<>();
 
-        List<List<String>> result = new ArrayList<>();
-
-        for(Tree tree : this.trees) {
-            List<String> treeNames = new ArrayList<>();
-            tree.harvestNames(treeNames);
-            result.add(treeNames);
+        for(NewickTree tree : this.trees) {
+            result.add(tree.getTaxa());
         }
 
         return result;
     }
 
     @Override
-    public void translate(List<String> newTaxonNames) {
+    public void addTaxa(Taxa taxaSuperSet) {
+        for(NewickTree tree : this.trees) {
+            taxaSuperSet.addAll(tree.getTaxa());
+        }
+    }
+
+    @Override
+    public void translate(Taxa newTaxonNames) {
         taxonNames = newTaxonNames;
-        for(Tree tree : this.trees) {
-            tree.index(taxonNames);
+        for(NewickTree tree : this.trees) {
+            tree.setIndiciesToExternalTaxaList(taxonNames);
         }
     }
 
@@ -94,7 +93,7 @@ public abstract class AbstractTreeLoader extends AbstractLoader {
 
     @Override
     public QuartetWeights getNextQuartetWeights() {
-        return trees.get(index++).quartetize(taxonNames.size());
+        return trees.get(index++).createQuartets();
     }
 
     @Override

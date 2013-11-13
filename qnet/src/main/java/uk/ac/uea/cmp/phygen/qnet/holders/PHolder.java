@@ -15,7 +15,9 @@
  */
 package uk.ac.uea.cmp.phygen.qnet.holders;
 
+import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.TaxonList;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
 
 /**
  * PHolder class
@@ -30,82 +32,6 @@ public class PHolder {
     public PHolder() {
 
         theSize = 0;
-
-    }
-
-    /**
-     * Local overs
-     */
-    public static int over4(int n) {
-
-        if (n > 4) {
-
-            return n * (n - 1) * (n - 2) * (n - 3) / 24;
-
-        } else if (n == 4) {
-
-            return 1;
-
-        } else {
-
-            return 0;
-
-        }
-
-    }
-
-    public static int over3(int n) {
-
-        if (n > 3) {
-
-            return n * (n - 1) * (n - 2) / 6;
-
-        } else if (n == 3) {
-
-            return 1;
-
-        } else {
-
-            return 0;
-
-        }
-
-    }
-
-    public static int over2(int n) {
-
-        if (n > 2) {
-
-            return n * (n - 1) / 2;
-
-        } else if (n == 2) {
-
-            return 1;
-
-        } else {
-
-            return 0;
-
-        }
-
-    }
-
-    public static int over1(int n) {
-
-        if (n > 1) {
-
-            return n;
-
-        } else if (n == 1) {
-
-            return 1;
-
-        } else {
-
-            return 0;
-
-        }
-
     }
 
     /**
@@ -122,7 +48,7 @@ public class PHolder {
      */
     public void ensureCapacity(int N) {
 
-        data = new PHContent[over4(N)];
+        data = new PHContent[Quartet.over4(N)];
         cSize = N;
 
     }
@@ -163,13 +89,13 @@ public class PHolder {
 
             // we work with out of d - n, a, b, c
 
-            return data[over1(d - cSize - 1) + over2(a - 1) + over3(b - 1) + over4(c - 1)].getOuterP();
+            return data[Quartet.over1(d - cSize - 1) + Quartet.over2(a - 1) + Quartet.over3(b - 1) + Quartet.over4(c - 1)].getOuterP();
 
         } else {
 
             // we work with in of a, b, c, d
 
-            return data[over1(a - 1) + over2(b - 1) + over3(c - 1) + over4(d - 1)].getInnerP();
+            return data[Quartet.over1(a - 1) + Quartet.over2(b - 1) + Quartet.over3(c - 1) + Quartet.over4(d - 1)].getInnerP();
 
         }
 
@@ -189,7 +115,7 @@ public class PHolder {
 //            System.out.println ("outer q " + a + " " + b + " " + c + " " + d + " gets " + data[over4 (d - cSize - 1) + over3 (a - 1) + over2 (b - 1) + over1 (c - 1)].getOuterQ ());
 //            System.out.println ("inner q " + a + " " + b + " " + c + " " + d + " gets " + data[over4 (d - cSize - 1) + over3 (a - 1) + over2 (b - 1) + over1 (c - 1)].getInnerQ ());
 
-            return data[over1(d - cSize - 1) + over2(a - 1) + over3(b - 1) + over4(c - 1)].getOuterQ();
+            return data[Quartet.over1(d - cSize - 1) + Quartet.over2(a - 1) + Quartet.over3(b - 1) + Quartet.over4(c - 1)].getOuterQ();
 
         } else {
 
@@ -198,13 +124,13 @@ public class PHolder {
 //            System.out.println ("outer q " + a + " " + b + " " + c + " " + d + " gets " + data[over4 (a - 1) + over3 (b - 1) + over2 (c - 1) + over1 (d - 1)].getOuterQ ());
 //            System.out.println ("inner q " + a + " " + b + " " + c + " " + d + " gets " + data[over4 (a - 1) + over3 (b - 1) + over2 (c - 1) + over1 (d - 1)].getInnerQ ());
 
-            return data[over1(a - 1) + over2(b - 1) + over3(c - 1) + over4(d - 1)].getInnerQ();
+            return data[Quartet.over1(a - 1) + Quartet.over2(b - 1) + Quartet.over3(c - 1) + Quartet.over4(d - 1)].getInnerQ();
 
         }
 
     }
 
-    public boolean getR(int a, int b, int c, int d, TaxonList cT) {
+    public boolean getR(int a, int b, int c, int d, Taxa cT) {
 
         if (d > cT.size()) {
 
@@ -220,10 +146,10 @@ public class PHolder {
         // this is an ugly hack
         // we seek mapped a < b < c < d
 
-        a = ((Integer) cT.get(a - 1)).intValue();
-        b = ((Integer) cT.get(b - 1)).intValue();
-        c = ((Integer) cT.get(c - 1)).intValue();
-        d = ((Integer) cT.get(d - 1)).intValue();
+        a = cT.get(a - 1).getId();
+        b = cT.get(b - 1).getId();
+        c = cT.get(c - 1).getId();
+        d = cT.get(d - 1).getId();
 
         int m;
 
@@ -232,7 +158,6 @@ public class PHolder {
             m = d;
             d = c;
             c = m;
-
         }
 
         if (b > d) {
@@ -240,7 +165,6 @@ public class PHolder {
             m = d;
             d = b;
             b = m;
-
         }
 
         if (a > d) {
@@ -248,7 +172,6 @@ public class PHolder {
             m = d;
             d = a;
             a = m;
-
         }
 
         if (b > c) {
@@ -256,7 +179,6 @@ public class PHolder {
             m = c;
             c = b;
             b = m;
-
         }
 
         if (a > c) {
@@ -264,7 +186,6 @@ public class PHolder {
             m = c;
             c = a;
             a = m;
-
         }
 
         if (a > b) {
@@ -272,7 +193,6 @@ public class PHolder {
             m = b;
             b = a;
             a = m;
-
         }
 
         // now we have size-order and proper mapping
@@ -286,13 +206,13 @@ public class PHolder {
 
             // we work with out of d - n, a, b, c
 
-            return data[over1(d - cSize - 1) + over2(a - 1) + over3(b - 1) + over4(c - 1)].getR();
+            return data[Quartet.over1(d - cSize - 1) + Quartet.over2(a - 1) + Quartet.over3(b - 1) + Quartet.over4(c - 1)].getR();
 
         } else {
 
             // we work with in of a, b, c, d
 
-            return data[over1(a - 1) + over2(b - 1) + over3(c - 1) + over4(d - 1)].getR();
+            return data[Quartet.over1(a - 1) + Quartet.over2(b - 1) + Quartet.over3(c - 1) + Quartet.over4(d - 1)].getR();
 
         }
 
@@ -309,13 +229,13 @@ public class PHolder {
 
             // we work with out of d - n, a, b, c
 
-            data[over1(d - cSize - 1) + over2(a - 1) + over3(b - 1) + over4(c - 1)].setOuterP(newW);
+            data[Quartet.over1(d - cSize - 1) + Quartet.over2(a - 1) + Quartet.over3(b - 1) + Quartet.over4(c - 1)].setOuterP(newW);
 
         } else {
 
             // we work with in of a, b, c, d
 
-            data[over1(a - 1) + over2(b - 1) + over3(c - 1) + over4(d - 1)].setInnerP(newW);
+            data[Quartet.over1(a - 1) + Quartet.over2(b - 1) + Quartet.over3(c - 1) + Quartet.over4(d - 1)].setInnerP(newW);
 
         }
 
@@ -332,13 +252,13 @@ public class PHolder {
 
             // we work with out of d - n, a, b, c
 
-            data[over1(d - cSize - 1) + over2(a - 1) + over3(b - 1) + over4(c - 1)].setOuterQ(newW);
+            data[Quartet.over1(d - cSize - 1) + Quartet.over2(a - 1) + Quartet.over3(b - 1) + Quartet.over4(c - 1)].setOuterQ(newW);
 
         } else {
 
             // we work with in of a, b, c, d
 
-            data[over1(a - 1) + over2(b - 1) + over3(c - 1) + over4(d - 1)].setInnerQ(newW);
+            data[Quartet.over1(a - 1) + Quartet.over2(b - 1) + Quartet.over3(c - 1) + Quartet.over4(d - 1)].setInnerQ(newW);
 
         }
 
@@ -355,13 +275,13 @@ public class PHolder {
 
             // we work with out of d - n, a, b, c
 
-            data[over1(d - cSize - 1) + over2(a - 1) + over3(b - 1) + over4(c - 1)].setR(newW);
+            data[Quartet.over1(d - cSize - 1) + Quartet.over2(a - 1) + Quartet.over3(b - 1) + Quartet.over4(c - 1)].setR(newW);
 
         } else {
 
             // we work with in of a, b, c, d
 
-            data[over1(a - 1) + over2(b - 1) + over3(c - 1) + over4(d - 1)].setR(newW);
+            data[Quartet.over1(a - 1) + Quartet.over2(b - 1) + Quartet.over3(c - 1) + Quartet.over4(d - 1)].setR(newW);
 
         }
 

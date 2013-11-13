@@ -15,10 +15,12 @@
  */
 package uk.ac.uea.cmp.phygen.tools.chopper.loader;
 
+import uk.ac.uea.cmp.phygen.core.ds.Taxon;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.StringTokenizer;
@@ -30,7 +32,7 @@ import java.util.StringTokenizer;
 public class NexusQuartetLoader extends AbstractLoader {
 
     @Override
-    public void load(String fileName, double weight) throws IOException {
+    public void load(File file, double weight) throws IOException {
 
         this.weights.add(weight);
         QuartetWeights qW = null;
@@ -47,7 +49,7 @@ public class NexusQuartetLoader extends AbstractLoader {
          * File reader
          *
          */
-        BufferedReader fileInput = new BufferedReader(new FileReader(fileName));
+        BufferedReader fileInput = new BufferedReader(new FileReader(file));
 
         /**
          *
@@ -83,7 +85,7 @@ public class NexusQuartetLoader extends AbstractLoader {
 
                     for (int n = 0; n < N; n++) {
 
-                        taxonNames.add(new String(""));
+                        taxonNames.add(new Taxon(""));
 
                     }
 
@@ -122,7 +124,7 @@ public class NexusQuartetLoader extends AbstractLoader {
 
                         }
 
-                        taxonNames.set(n, aS);
+                        taxonNames.set(n, new Taxon(aS));
 
                     }
 

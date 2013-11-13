@@ -29,13 +29,13 @@ import java.io.IOException;
  */
 public class NexusDistancesLoader extends AbstractLoader {
 
-    public void load(String fileName, double weight) throws IOException {
+    public void load(File file, double weight) throws IOException {
 
         // Create a nexus loader
         PhygenReader reader = new NexusReader();
 
         // Load distance matrix from file
-        DistanceMatrix distanceMatrix = reader.readDistanceMatrix(new File(fileName));
+        DistanceMatrix distanceMatrix = reader.readDistanceMatrix(file);
 
         // Create QuartetWeightings from distance matrix
         QuartetWeights qw = new QuartetWeights(distanceMatrix);

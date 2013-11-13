@@ -14,14 +14,42 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.phygen.core.ds.tree;
+package uk.ac.uea.cmp.phygen.core.ds;
 
 /**
  * Created with IntelliJ IDEA.
  * User: dan
- * Date: 06/11/13
- * Time: 23:20
+ * Date: 12/11/13
+ * Time: 23:09
  * To change this template use File | Settings | File Templates.
  */
-public class Branch {
+public class Quadruple {
+
+    private Taxon q1;
+    private Taxon q2;
+    private Taxon q3;
+    private Taxon q4;
+
+    public Quadruple(Taxon q1, Taxon q2, Taxon q3, Taxon q4) {
+        this.q1 = q1;
+        this.q2 = q2;
+        this.q3 = q3;
+        this.q4 = q4;
+    }
+
+    public Taxon getQ1() {
+        return q1;
+    }
+
+    public Taxon getQ2() {
+        return q2;
+    }
+
+    public Taxon getQ3() {
+        return q3;
+    }
+
+    public Taxon getQ4() {
+        return q4;
+    }
 }

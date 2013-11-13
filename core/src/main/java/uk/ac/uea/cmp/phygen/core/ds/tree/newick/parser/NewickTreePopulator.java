@@ -22,6 +22,7 @@ import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.ac.uea.cmp.phygen.core.ds.Taxon;
 import uk.ac.uea.cmp.phygen.core.ds.tree.newick.NewickSubTree;
 import uk.ac.uea.cmp.phygen.core.ds.tree.newick.NewickTree;
 import uk.ac.uea.cmp.phygen.core.ds.tree.newick.NewickNode;
@@ -73,14 +74,23 @@ public class NewickTreePopulator implements NewickTreeListener {
     @Override
     public void exitLeaf(@NotNull NewickTreeParser.LeafContext ctx) {
 
-        if (ctx.NAME() != null) {
+    }
 
-            String name = ctx.NAME().getSymbol().getText();
+    @Override
+    public void enterWeight(@NotNull NewickTreeParser.WeightContext ctx) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void exitWeight(@NotNull NewickTreeParser.WeightContext ctx) {
+        if (ctx.REAL() != null && !ctx.REAL().getSymbol().getText().isEmpty()) {
+
+            double scalingFactor = Double.parseDouble(ctx.REAL().getText());
 
             if (verbose && log.isDebugEnabled())
-                log.debug("Name: " + name);
+                log.debug("Scaling factor: " + scalingFactor);
 
-            this.currentNode.setName(name);
+            tree.setScalingFactor(scalingFactor);
         }
     }
 
@@ -92,6 +102,46 @@ public class NewickTreePopulator implements NewickTreeListener {
     @Override
     public void exitSubtree(@NotNull NewickTreeParser.SubtreeContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void enterName(@NotNull NewickTreeParser.NameContext ctx) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void exitName(@NotNull NewickTreeParser.NameContext ctx) {
+        if (ctx.WORD() != null) {
+
+            String name = ctx.WORD().getText();
+
+            if (name.startsWith("\"") && name.endsWith("\"")) {
+                name = name.substring(1, name.length() - 1);
+            }
+
+            if (verbose && log.isDebugEnabled())
+                log.debug("Name: " + name);
+
+            this.currentNode.setTaxon(new Taxon(name));
+        }
+    }
+
+    @Override
+    public void enterLength(@NotNull NewickTreeParser.LengthContext ctx) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void exitLength(@NotNull NewickTreeParser.LengthContext ctx) {
+        if (ctx.REAL() != null && !ctx.REAL().getText().isEmpty()) {
+
+            double length = Double.parseDouble(ctx.REAL().getText());
+
+            if (verbose && log.isDebugEnabled())
+                log.debug("Length: " + length);
+
+            this.currentNode.setLength(length);
+        }
     }
 
     @Override
@@ -108,16 +158,6 @@ public class NewickTreePopulator implements NewickTreeListener {
     @Override
     public void exitBranch(@NotNull NewickTreeParser.BranchContext ctx) {
 
-        if (ctx.LENGTH() != null) {
-
-            double length = Double.parseDouble(ctx.LENGTH().getSymbol().getText().substring(1));
-
-            if (verbose && log.isDebugEnabled())
-                log.debug("Length: " + length);
-
-            this.currentNode.setLength(length);
-        }
-
         this.currentNode = this.currentNode.getParent();
         this.depth--;
 
@@ -132,52 +172,36 @@ public class NewickTreePopulator implements NewickTreeListener {
 
     @Override
     public void exitParse(@NotNull NewickTreeParser.ParseContext ctx) {
-        if (ctx.REAL() != null) {
 
-            double scalingFactor = Double.parseDouble(ctx.REAL().getText());
-
-            if (verbose && log.isDebugEnabled())
-                log.debug("Scaling factor: " + scalingFactor);
-
-            tree.setScalingFactor(scalingFactor);
-        }
     }
 
     @Override
     public void enterInternal(@NotNull NewickTreeParser.InternalContext ctx) {
-        //To change body of implemented methods use File | Settings | File Templates.
+
     }
 
     @Override
     public void exitInternal(@NotNull NewickTreeParser.InternalContext ctx) {
-        if (ctx.NAME() != null) {
 
-            String name = ctx.NAME().getSymbol().getText();
-
-            if (verbose && log.isDebugEnabled())
-                log.debug("Name: " + name);
-
-            this.currentNode.setName(name);
-        }
     }
 
     @Override
     public void visitTerminal(@NotNull TerminalNode node) {
-        //To change body of implemented methods use File | Settings | File Templates.
+
     }
 
     @Override
     public void visitErrorNode(@NotNull ErrorNode node) {
-        //To change body of implemented methods use File | Settings | File Templates.
+
     }
 
     @Override
     public void enterEveryRule(@NotNull ParserRuleContext ctx) {
-        //To change body of implemented methods use File | Settings | File Templates.
+
     }
 
     @Override
     public void exitEveryRule(@NotNull ParserRuleContext ctx) {
-        //To change body of implemented methods use File | Settings | File Templates.
+
     }
 }

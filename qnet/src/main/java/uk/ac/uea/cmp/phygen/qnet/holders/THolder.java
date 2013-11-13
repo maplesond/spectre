@@ -15,6 +15,7 @@
  */
 package uk.ac.uea.cmp.phygen.qnet.holders;
 
+import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.TaxonList;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
@@ -23,7 +24,7 @@ import java.util.List;
 
 public class THolder {
 
-    public THolder(List<TaxonList> theLists, int N, QuartetWeights theQuartetWeights) {
+    public THolder(List<Taxa> taxaSets, int N, QuartetWeights theQuartetWeights) {
 
         counts = new Integer[N][N][N];
         weights = new Double[N][N][N];
@@ -52,9 +53,9 @@ public class THolder {
 
                 int a = -1, b = -1;
 
-                for (int m = 0; m < theLists.size(); m++) {
+                for (int m = 0; m < taxaSets.size(); m++) {
 
-                    TaxonList tL = theLists.get(m);
+                    Taxa tL = taxaSets.get(m);
 
                     if (tL.contains(i)) {
 
@@ -65,9 +66,9 @@ public class THolder {
 
                 }
 
-                for (int m = 0; m < theLists.size(); m++) {
+                for (int m = 0; m < taxaSets.size(); m++) {
 
-                    TaxonList tL = theLists.get(m);
+                    Taxa tL = taxaSets.get(m);
 
                     if (tL.contains(j)) {
 
@@ -86,8 +87,8 @@ public class THolder {
 
                 }
 
-                TaxonList A = theLists.get(a);
-                TaxonList B = theLists.get(b);
+                Taxa A = taxaSets.get(a);
+                Taxa B = taxaSets.get(b);
 
                 for (int k = 1; k < N + 1; k++) {
 
@@ -95,9 +96,9 @@ public class THolder {
 
                     // and we must have that k is not on the path of i, j
 
-                    for (int m = 0; m < theLists.size(); m++) {
+                    for (int m = 0; m < taxaSets.size(); m++) {
 
-                        TaxonList tL = (TaxonList) theLists.get(m);
+                        Taxa tL = taxaSets.get(m);
 
                         if (tL.contains(k)) {
 
@@ -115,7 +116,7 @@ public class THolder {
                         int count = 0;
                         double weight = 0.0;
 
-                        TaxonList C = theLists.get(c);
+                        Taxa C = taxaSets.get(c);
 
                         for (int xA1 = 0; xA1 < A.size() - 1; xA1++) {
 
@@ -127,58 +128,40 @@ public class THolder {
 
                                         // this is a unique, suitable quartet
 
-                                        int yA1 = A.get(xA1);
-                                        int yA2 = A.get(xA2);
-                                        int yB = B.get(xB);
-                                        int yC = C.get(xC);
+                                        int yA1 = A.get(xA1).getId();
+                                        int yA2 = A.get(xA2).getId();
+                                        int yB = B.get(xB).getId();
+                                        int yC = C.get(xC).getId();
 
                                         count++;
                                         weight += theQuartetWeights.getWeight(new Quartet(yA1, yB, yA2, yC));
-
-
                                     }
-
                                 }
-
                             }
-
                         }
 
                         counts[i - 1][j - 1][k - 1] = new Integer(count);
                         weights[i - 1][j - 1][k - 1] = new Double(weight);
-
                     }
-
                 }
-
             }
-
         }
-
     }
 
     public int getN(int i, int j, int k) {
-
         return counts[i - 1][j - 1][k - 1].intValue();
-
     }
 
     public void setN(int i, int j, int k, int newN) {
-
         counts[i - 1][j - 1][k - 1] = new Integer(newN);
-
     }
 
     public double getT(int i, int j, int k) {
-
         return weights[i - 1][j - 1][k - 1].doubleValue();
-
     }
 
     public void setT(int i, int j, int k, double newT) {
-
         weights[i - 1][j - 1][k - 1] = new Double(newT);
-
     }
 
     Integer[][][] counts;

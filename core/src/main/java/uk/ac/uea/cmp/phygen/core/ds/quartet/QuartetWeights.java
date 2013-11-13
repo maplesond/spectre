@@ -15,6 +15,8 @@
  */
 package uk.ac.uea.cmp.phygen.core.ds.quartet;
 
+import uk.ac.uea.cmp.phygen.core.ds.Quadruple;
+import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 
 import java.util.ArrayList;
@@ -143,10 +145,10 @@ public class QuartetWeights extends ArrayList<QuartetWeighting> {
         }
     }
 
-    public QuartetWeights translate(List<String> taxonNamesOld, List<String> taxonNamesNew) {
+    public QuartetWeights translate(Taxa oldTaxa, Taxa newTaxa) {
 
-        int NNew = taxonNamesNew.size();
-        int NOld = taxonNamesOld.size();
+        int NNew = newTaxa.size();
+        int NOld = oldTaxa.size();
 
         int newSize = Quartet.over4(NNew);
         this.ensureCapacity(newSize);
@@ -168,10 +170,10 @@ public class QuartetWeights extends ArrayList<QuartetWeighting> {
                         int c = iC + 1;
                         int d = iD + 1;
 
-                        int nA = taxonNamesNew.indexOf(taxonNamesOld.get(iA)) + 1;
-                        int nB = taxonNamesNew.indexOf(taxonNamesOld.get(iB)) + 1;
-                        int nC = taxonNamesNew.indexOf(taxonNamesOld.get(iC)) + 1;
-                        int nD = taxonNamesNew.indexOf(taxonNamesOld.get(iD)) + 1;
+                        int nA = newTaxa.indexOf(oldTaxa.get(iA)) + 1;
+                        int nB = newTaxa.indexOf(oldTaxa.get(iB)) + 1;
+                        int nC = newTaxa.indexOf(oldTaxa.get(iC)) + 1;
+                        int nD = newTaxa.indexOf(oldTaxa.get(iD)) + 1;
 
                         this.setWeight(new Quartet(nA, nB, nC, nD), this.getWeight(new Quartet(a, b, c, d)));
                         this.setWeight(new Quartet(nA, nC, nB, nD), this.getWeight(new Quartet(a, c, b, d)));
@@ -253,42 +255,36 @@ public class QuartetWeights extends ArrayList<QuartetWeighting> {
      * So... we go through taxonNames, which is the metalist check every quartet defined for it take the taxonList for
      * the objects in loader, and their corresponding weights if a quartet is defined for that list, add its length to
      * the corresponding summer position summer must have been translated according to the metalist
-     * @param taxonNames
-     * @param metaTaxonNames
+     * @param taxa
+     * @param metaTaxa
      * @param weights
      */
-    public void sum(List<String> taxonNames, List<List<String>> metaTaxonNames, List<Double> weights) {
+    public void sum(Taxa taxa, List<Taxa> metaTaxa, List<Double> weights) {
 
-        for(int i = 0; i < metaTaxonNames.size(); i++) {
+        for(int i = 0; i < metaTaxa.size(); i++) {
 
             double w = weights.get(i);
-            List<String> lesserNames = metaTaxonNames.get(i);
+            Taxa lesserNames = metaTaxa.get(i);
 
             // course through all quartets of taxonNames
             // if taxonNames (quartet entries) are contained in lesserNames
             // add w to summer (quartet)
 
-            int N = taxonNames.size();
+            int N = taxa.size();
 
             for (int a = 0; a < N - 3; a++) {
                 for (int b = a + 1; b < N - 2; b++) {
                     for (int c = b + 1; c < N - 1; c++) {
                         for (int d = c + 1; d < N; d++) {
-                            String sA = taxonNames.get(a);
-                            String sB = taxonNames.get(b);
-                            String sC = taxonNames.get(c);
-                            String sD = taxonNames.get(d);
+                            Quadruple quad = taxa.getQuadruple(a, b, c, d);
 
-                            if (lesserNames.contains(sA)
-                                    && lesserNames.contains(sB)
-                                    && lesserNames.contains(sC)
-                                    && lesserNames.contains(sD)) {
+                            if (lesserNames.contains(quad)) {
 
-                                Quartet q = new Quartet(a + 1, b + 1, c + 1, d + 1);
+                                Quartet quartet = new Quartet(a + 1, b + 1, c + 1, d + 1);
 
-                                double oldW = this.getWeight(q);
+                                double oldW = this.getWeight(quartet);
 
-                                this.setWeight(q, new QuartetWeighting(oldW + w, oldW + w, oldW + w));
+                                this.setWeight(quartet, new QuartetWeighting(oldW + w, oldW + w, oldW + w));
                             }
                         }
                     }

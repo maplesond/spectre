@@ -22,6 +22,7 @@ import org.apache.commons.io.FileUtils;
 import org.kohsuke.MetaInfServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 import uk.ac.uea.cmp.phygen.tools.PhygenTool;
 import uk.ac.uea.cmp.phygen.tools.chopper.loader.LoaderType;
@@ -29,7 +30,6 @@ import uk.ac.uea.cmp.phygen.tools.chopper.loader.Source;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -176,21 +176,21 @@ public class Chopper extends PhygenTool {
 
     protected ChoppedTree doOneType(File inputFile, LoaderType type, double weight, ChoppedTree choppedTree) throws IOException {
 
-        List<String> taxonNames = choppedTree.getTaxonNames();
+        Taxa taxonNames = choppedTree.getTaxa();
         QuartetWeights qW = choppedTree.getQuartetWeights();
         QuartetWeights summer = choppedTree.getSummer();
 
         Source loader = type.getLoader();
 
         // I'm sure it should be possible to tidy this up further.
-        loader.load(inputFile.getPath(), weight);
-        List<String> taxonNamesOld = new ArrayList<>(taxonNames);
-        loader.harvestNames(taxonNames);
+        loader.load(inputFile, weight);
+        Taxa oldTaxa = new Taxa(taxonNames);
+        loader.addTaxa(taxonNames);
         loader.translate(taxonNames);
 
 
-        qW = qW.translate(taxonNamesOld, taxonNames);
-        summer = summer.translate(taxonNamesOld, taxonNames);
+        qW = qW.translate(oldTaxa, taxonNames);
+        summer = summer.translate(oldTaxa, taxonNames);
 
 
         // crucial, drop now the list stuff
@@ -203,7 +203,7 @@ public class Chopper extends PhygenTool {
             System.gc();
         }
 
-        summer.sum(taxonNames, loader.getTaxonNames(), loader.getWeights());
+        summer.sum(taxonNames, loader.findTaxaSets(), loader.getWeights());
 
         return choppedTree;
     }

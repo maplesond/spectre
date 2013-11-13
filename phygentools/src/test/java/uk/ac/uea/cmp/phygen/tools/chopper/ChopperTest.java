@@ -24,6 +24,7 @@ import uk.ac.uea.cmp.phygen.tools.chopper.loader.LoaderType;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import static junit.framework.TestCase.assertTrue;
 
@@ -48,6 +49,10 @@ public class ChopperTest {
 
         new Chopper().execute(treeFile, quartetFile, LoaderType.NEWICK);
 
-        assertTrue(true);
+        assertTrue(quartetFile.exists());
+
+        List<String> lines = FileUtils.readLines(quartetFile);
+
+        assertTrue(lines.size() == 45);
     }
 }

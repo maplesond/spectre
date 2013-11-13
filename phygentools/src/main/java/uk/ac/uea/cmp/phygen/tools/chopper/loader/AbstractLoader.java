@@ -1,5 +1,7 @@
 package uk.ac.uea.cmp.phygen.tools.chopper.loader;
 
+import uk.ac.uea.cmp.phygen.core.ds.Taxa;
+import uk.ac.uea.cmp.phygen.core.ds.Taxon;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 
 import java.util.ArrayList;
@@ -16,14 +18,14 @@ public abstract class AbstractLoader implements Source {
 
     protected List<QuartetWeights> qWs;
     protected List<Double> weights;
-    protected List<String> taxonNames;
+    protected Taxa taxonNames;
     protected int index;
 
     protected AbstractLoader() {
-        this(new ArrayList<QuartetWeights>(), new ArrayList<Double>(), new ArrayList<String>(), 0);
+        this(new ArrayList<QuartetWeights>(), new ArrayList<Double>(), new Taxa(), 0);
     }
 
-    protected AbstractLoader(List<QuartetWeights> qWs, List<Double> weights, List<String> taxonNames,
+    protected AbstractLoader(List<QuartetWeights> qWs, List<Double> weights, Taxa taxonNames,
                              int index) {
         this.qWs = qWs;
         this.weights = weights;
@@ -42,9 +44,14 @@ public abstract class AbstractLoader implements Source {
     }
 
     @Override
-    public List<List<String>> getTaxonNames() {
+    public void addTaxa(Taxa taxa) {
+        this.taxonNames.addAll(taxa);
+    }
 
-        List<List<String>> result = new ArrayList<>();
+    @Override
+    public List<Taxa> findTaxaSets() {
+
+        List<Taxa> result = new ArrayList<>();
         result.add(taxonNames);
         return result;
     }
@@ -57,19 +64,8 @@ public abstract class AbstractLoader implements Source {
     public void process() {
     }
 
-
     @Override
-    public void harvestNames(List<String> newTaxonNames) {
-
-        for(String taxonName : this.taxonNames) {
-            if (!newTaxonNames.contains(taxonName)) {
-                newTaxonNames.add(taxonName);
-            }
-        }
-    }
-
-    @Override
-    public void translate(List<String> newTaxonNames) {
+    public void translate(Taxa newTaxonNames) {
         qWs.set(0, qWs.get(0).translate(taxonNames, newTaxonNames));
     }
 
