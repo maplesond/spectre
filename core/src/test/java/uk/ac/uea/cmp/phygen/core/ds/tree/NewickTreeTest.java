@@ -16,8 +16,6 @@
 
 package uk.ac.uea.cmp.phygen.core.ds.tree;
 
-import org.antlr.v4.runtime.RecognitionException;
-import org.apache.log4j.BasicConfigurator;
 import org.junit.Before;
 import org.junit.Test;
 import uk.ac.uea.cmp.phygen.core.ds.tree.newick.NewickTree;

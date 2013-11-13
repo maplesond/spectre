@@ -23,9 +23,9 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.ds.Taxon;
+import uk.ac.uea.cmp.phygen.core.ds.tree.newick.NewickNode;
 import uk.ac.uea.cmp.phygen.core.ds.tree.newick.NewickSubTree;
 import uk.ac.uea.cmp.phygen.core.ds.tree.newick.NewickTree;
-import uk.ac.uea.cmp.phygen.core.ds.tree.newick.NewickNode;
 
 /**
  * Created with IntelliJ IDEA.

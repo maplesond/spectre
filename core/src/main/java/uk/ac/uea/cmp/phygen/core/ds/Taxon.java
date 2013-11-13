@@ -16,8 +16,6 @@
 
 package uk.ac.uea.cmp.phygen.core.ds;
 
-import org.apache.commons.lang3.tuple.MutablePair;
-
 /**
  * Created with IntelliJ IDEA.
  * User: dan

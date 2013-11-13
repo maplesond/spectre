@@ -24,7 +24,6 @@ import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 import uk.ac.uea.cmp.phygen.core.ds.tree.newick.parser.*;
 
-
 import java.io.IOException;
 
 /**

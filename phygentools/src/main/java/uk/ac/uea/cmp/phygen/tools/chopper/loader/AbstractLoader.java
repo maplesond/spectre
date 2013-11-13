@@ -1,7 +1,6 @@
 package uk.ac.uea.cmp.phygen.tools.chopper.loader;
 
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
-import uk.ac.uea.cmp.phygen.core.ds.Taxon;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 
 import java.util.ArrayList;

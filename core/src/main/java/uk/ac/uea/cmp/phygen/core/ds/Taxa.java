@@ -15,7 +15,6 @@
  */
 package uk.ac.uea.cmp.phygen.core.ds;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
