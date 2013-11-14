@@ -209,4 +209,8 @@ public class NexusQuartetLoader extends AbstractLoader {
         qWs.add(qW);
     }
 
+    @Override
+    public String getName() {
+        return "nexus:st_quartets";
+    }
 }

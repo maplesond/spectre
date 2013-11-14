@@ -30,7 +30,6 @@ import uk.ac.uea.cmp.phygen.core.ui.gui.StatusTracker;
 import uk.ac.uea.cmp.phygen.qnet.ComputedWeights;
 import uk.ac.uea.cmp.phygen.qnet.QNet;
 import uk.ac.uea.cmp.phygen.tools.chopper.Chopper;
-import uk.ac.uea.cmp.phygen.tools.chopper.loader.LoaderType;
 import uk.ac.uea.cmp.phygen.tools.scale.Scaling;
 
 import java.io.File;

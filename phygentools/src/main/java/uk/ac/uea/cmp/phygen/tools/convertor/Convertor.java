@@ -74,12 +74,6 @@ public class Convertor extends PhygenTool {
     }
 
     @Override
-    public boolean acceptsIdentifier(String identifier) {
-        return identifier.equalsIgnoreCase(this.getName()) ||
-                identifier.equalsIgnoreCase(this.getClass().getCanonicalName());
-    }
-
-    @Override
     public String getDescription() {
         return "Converts phylip to nexus format and vice versa.";
     }

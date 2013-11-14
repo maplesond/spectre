@@ -292,4 +292,8 @@ public class QWeightLoader extends AbstractLoader {
         this.qWs.add(qW);
     }
 
+    @Override
+    public String getName() {
+        return "qweights";
+    }
 }

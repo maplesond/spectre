@@ -24,8 +24,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
+import uk.ac.uea.cmp.phygen.core.util.SpiFactory;
 import uk.ac.uea.cmp.phygen.tools.PhygenTool;
-import uk.ac.uea.cmp.phygen.tools.chopper.loader.LoaderType;
 import uk.ac.uea.cmp.phygen.tools.chopper.loader.Source;
 
 import java.io.File;
@@ -44,7 +44,14 @@ public class Chopper extends PhygenTool {
 
     private static final String OPT_INPUT_FILE = "input";
     private static final String OPT_OUTPUT_FILE = "output";
-    private static final String OPT_TYPE = "type";
+    private static final String OPT_SOURCE = "source";
+
+    private SpiFactory<Source> sourceFactory;
+
+    public Chopper() {
+        this.sourceFactory = new SpiFactory<>();
+    }
+
 
 
     @Override
@@ -54,13 +61,13 @@ public class Chopper extends PhygenTool {
         Options options = new Options();
 
         options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_OUTPUT_FILE).hasArg()
-                .withDescription("The output file, which will contain the quartets").create("o"));
+                .withDescription("The output file, which will contain the quartets and their weights").create("o"));
 
         options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_INPUT_FILE).hasArg()
-                .withDescription("The input file containing the tree to chop").create("i"));
+                .withDescription("The input file containing the tree(s) to chop").create("i"));
 
-        options.addOption(OptionBuilder.withArgName("string").withLongOpt(OPT_TYPE).hasArg()
-                .withDescription("The output file type: " + LoaderType.listTypes()).create("t"));
+        options.addOption(OptionBuilder.withArgName("string").withLongOpt(OPT_SOURCE).hasArg()
+                .withDescription("The type of source that will be input: " + this.sourceFactory.listServicesAsString()).create("s"));
 
         return options;
     }
@@ -71,22 +78,14 @@ public class Chopper extends PhygenTool {
         File inputFile = new File(commandLine.getOptionValue(OPT_INPUT_FILE));
         File outputFile = new File(commandLine.getOptionValue(OPT_OUTPUT_FILE));
 
-        // Ensures that requests to Chopper are upper case and have colons replaced
-        // with underscores to reflect enum Type.
-        LoaderType type = LoaderType.valueOf(commandLine.getOptionValue(OPT_TYPE).toUpperCase().replace(':', '_'));
+        String source = commandLine.getOptionValue(OPT_SOURCE);
 
-        execute(inputFile, outputFile, type);
+        this.execute(inputFile, outputFile, source);
     }
 
     @Override
     public String getName() {
         return "chopper";
-    }
-
-    @Override
-    public boolean acceptsIdentifier(String identifier) {
-        return identifier.equalsIgnoreCase(this.getName()) ||
-                identifier.equalsIgnoreCase(this.getClass().getCanonicalName());
     }
 
 
@@ -100,21 +99,21 @@ public class Chopper extends PhygenTool {
      *
      * @param inputFile
      * @param outputFile
-     * @param type
+     * @param source
      */
-    public void execute(File inputFile, File outputFile, LoaderType type) throws IOException {
+    public void execute(File inputFile, File outputFile, String source) throws IOException {
 
-        ChoppedTree choppedTree = type == LoaderType.SCRIPT ?
+        ChoppedTree choppedTree = source.equalsIgnoreCase("SCRIPT") ?
                 doScript(inputFile) :
-                doOneType(inputFile, type, 1.0);
+                doOneType(inputFile, source, 1.0);
 
         choppedTree.divide();
         choppedTree.save(outputFile);
     }
 
 
-    public static void run(File inputFile, File outputFile, LoaderType type) throws IOException {
-        new Chopper().execute(inputFile, outputFile, type);
+    public static void run(File inputFile, File outputFile, String source) throws IOException {
+        new Chopper().execute(inputFile, outputFile, source.trim());
     }
 
 
@@ -130,7 +129,8 @@ public class Chopper extends PhygenTool {
 
             if (sT.hasMoreTokens()) {
 
-                LoaderType t = LoaderType.valueOfDescriptiveName(sT.nextToken());
+                // Create an instance of the specified source
+                String source = sT.nextToken();
 
                 // line may be:
                 // (at each step, load (with dummy length if need be))
@@ -155,7 +155,7 @@ public class Chopper extends PhygenTool {
                             Double.parseDouble(sT.nextToken()) :
                             1.0;
 
-                    choppedTree = doOneType(sourceFile, t, weight, choppedTree);
+                    choppedTree = doOneType(sourceFile, source, weight, choppedTree);
 
                 } else {
 
@@ -170,23 +170,24 @@ public class Chopper extends PhygenTool {
     }
 
 
-    protected ChoppedTree doOneType(File inputFile, LoaderType type, double weight) throws IOException {
-        return doOneType(inputFile, type, weight, new ChoppedTree());
+    protected ChoppedTree doOneType(File inputFile, String sourceName, double weight) throws IOException {
+        return doOneType(inputFile, sourceName, weight, new ChoppedTree());
     }
 
-    protected ChoppedTree doOneType(File inputFile, LoaderType type, double weight, ChoppedTree choppedTree) throws IOException {
+    protected ChoppedTree doOneType(File inputFile, String sourceName, double weight, ChoppedTree choppedTree) throws IOException {
 
         Taxa taxonNames = choppedTree.getTaxa();
         QuartetWeights qW = choppedTree.getQuartetWeights();
         QuartetWeights summer = choppedTree.getSummer();
 
-        Source loader = type.getLoader();
+        // Create a new instance of the source
+        Source source = this.sourceFactory.create(sourceName);
 
         // I'm sure it should be possible to tidy this up further.
-        loader.load(inputFile, weight);
+        source.load(inputFile, weight);
         Taxa oldTaxa = new Taxa(taxonNames);
-        loader.addTaxa(taxonNames);
-        loader.translate(taxonNames);
+        source.addTaxa(taxonNames);
+        source.translate(taxonNames);
 
 
         qW = qW.translate(oldTaxa, taxonNames);
@@ -194,16 +195,16 @@ public class Chopper extends PhygenTool {
 
 
         // crucial, drop now the list stuff
-        while (loader.hasMoreSets()) {
+        while (source.hasMoreSets()) {
 
-            double aW = loader.getNextWeight();
-            QuartetWeights aQW = loader.getNextQuartetWeights();
+            double aW = source.getNextWeight();
+            QuartetWeights aQW = source.getNextQuartetWeights();
             qW.add(aQW, aW);
 
             System.gc();
         }
 
-        summer.sum(taxonNames, loader.findTaxaSets(), loader.getWeights());
+        summer.sum(taxonNames, source.findTaxaSets(), source.getWeights());
 
         return choppedTree;
     }

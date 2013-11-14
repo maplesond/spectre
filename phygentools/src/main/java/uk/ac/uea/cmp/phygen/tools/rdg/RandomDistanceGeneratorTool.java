@@ -103,11 +103,6 @@ public class RandomDistanceGeneratorTool extends PhygenTool {
         return "rdg";
     }
 
-    @Override
-    public boolean acceptsIdentifier(String identifier) {
-        return identifier.equalsIgnoreCase(this.getName()) ||
-                identifier.equalsIgnoreCase(this.getClass().getCanonicalName());
-    }
 
     @Override
     public String getDescription() {

@@ -17,6 +17,7 @@
 package uk.ac.uea.cmp.phygen.tools;
 
 import org.apache.commons.cli.*;
+import uk.ac.uea.cmp.phygen.core.util.Service;
 
 import java.io.IOException;
 
@@ -24,7 +25,7 @@ import java.io.IOException;
  * Created with IntelliJ IDEA. User: Dan Date: 14/05/13 Time: 21:28 To change this template use File | Settings | File
  * Templates.
  */
-public abstract class PhygenTool {
+public abstract class PhygenTool implements Service {
 
     public static final String OPT_HELP = "help";
 
@@ -32,8 +33,6 @@ public abstract class PhygenTool {
 
     protected abstract void execute(CommandLine commandLine) throws IOException;
 
-    public abstract String getName();
-    public abstract boolean acceptsIdentifier(String identifier);
     public abstract String getDescription();
 
 

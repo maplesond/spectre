@@ -159,4 +159,8 @@ public class TreeFileLoader extends AbstractTreeLoader {
         in.close();
     }
 
+    @Override
+    public String getName() {
+        return "nexus:trees";
+    }
 }

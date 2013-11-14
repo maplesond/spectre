@@ -47,4 +47,8 @@ public class NexusDistancesLoader extends AbstractLoader {
         this.weights.add(weight);
     }
 
+    @Override
+    public String getName() {
+        return "nexus:distances";
+    }
 }

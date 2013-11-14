@@ -242,4 +242,8 @@ public class NexusSplitsLoader extends AbstractLoader {
         qWs.add(qW);
     }
 
+    @Override
+    public String getName() {
+        return "nexus:st_splits";
+    }
 }

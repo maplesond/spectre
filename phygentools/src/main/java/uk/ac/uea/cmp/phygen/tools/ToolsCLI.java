@@ -20,6 +20,7 @@ import org.apache.commons.cli.*;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import uk.ac.uea.cmp.phygen.core.ui.cli.CommandLineHelper;
+import uk.ac.uea.cmp.phygen.core.util.SpiFactory;
 
 /**
  * Created with IntelliJ IDEA.
@@ -31,6 +32,7 @@ import uk.ac.uea.cmp.phygen.core.ui.cli.CommandLineHelper;
 public class ToolsCLI {
 
     public static final String OPT_HELP = "help";
+    private static SpiFactory<PhygenTool> phygenToolFactory;
 
     @SuppressWarnings("static-access")
     private static Options createOptions() {
@@ -44,13 +46,16 @@ public class ToolsCLI {
                 createOptions(),
                 "phygentools.jar",
                 "Miscellaneous Phylogenetic Tools",
-                "A collection of miscellaneous tools: " + ToolsFactory.getInstance().listToolsDescriptions());
+                "A collection of tools: " + phygenToolFactory.listServicesAsString());
     }
 
 
     public static void main(String[] args) {
 
         try {
+            // First try to create the phygen tool factory, this gives us access to all the available tools
+            phygenToolFactory = new SpiFactory<>();
+
             // Process the command line
             CommandLine cmdLine = new PosixParser().parse(createOptions(), args, true);
 
@@ -59,7 +64,7 @@ public class ToolsCLI {
             }
             else {
                 // Required arguments
-                PhygenTool phygenTool = ToolsFactory.getInstance().createOptimiserInstance(cmdLine.getArgs()[0]);
+                PhygenTool phygenTool = phygenToolFactory.create(cmdLine.getArgs()[0]);
 
                 if (phygenTool == null) {
                     throw new ParseException("Requested tool not found: " + cmdLine.getOptionValue(cmdLine.getArgs()[0]));
@@ -71,7 +76,7 @@ public class ToolsCLI {
         } catch (Exception e) {
             System.err.println(e.getMessage());
             System.err.println(StringUtils.join(e.getStackTrace(), "\n"));
-            System.exit(6);
+            System.exit(1);
         }
     }
 

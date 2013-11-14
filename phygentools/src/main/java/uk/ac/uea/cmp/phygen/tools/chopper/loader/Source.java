@@ -17,6 +17,7 @@ package uk.ac.uea.cmp.phygen.tools.chopper.loader;
 
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
+import uk.ac.uea.cmp.phygen.core.util.Service;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,7 +27,7 @@ import java.util.List;
  * Created by IntelliJ IDEA. User: Analysis Date: 2004-jul-12 Time: 00:35:38 To
  * change this template use Options | File Templates.
  */
-public interface Source {
+public interface Source extends Service {
 
     public void load(File file, double weight) throws IOException;
 

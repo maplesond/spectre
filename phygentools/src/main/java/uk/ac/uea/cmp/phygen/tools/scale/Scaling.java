@@ -27,7 +27,6 @@ import uk.ac.uea.cmp.phygen.core.math.optimise.*;
 import uk.ac.uea.cmp.phygen.core.math.tuple.Key;
 import uk.ac.uea.cmp.phygen.tools.PhygenTool;
 import uk.ac.uea.cmp.phygen.tools.chopper.Chopper;
-import uk.ac.uea.cmp.phygen.tools.chopper.loader.LoaderType;
 
 import java.io.File;
 import java.io.FileReader;
@@ -100,12 +99,6 @@ public class Scaling extends PhygenTool {
     }
 
     @Override
-    public boolean acceptsIdentifier(String identifier) {
-        return identifier.equalsIgnoreCase(this.getName()) ||
-                identifier.equalsIgnoreCase(this.getClass().getCanonicalName());
-    }
-
-    @Override
     public String getDescription() {
         return "Scales input trees to a given range based on their quartet weights (uses \"chopper\" to get the quartet weights from the trees)";
     }
@@ -124,7 +117,7 @@ public class Scaling extends PhygenTool {
                 Chopper.run(
                         new File(outputPrefix.getPath() + (i + 1) + ".tre"),
                         new File(outputPrefix.getPath() + (i + 1) + ".qua"),
-                        LoaderType.NEWICK);
+                        "NEWICK");
             }
 
         } else if (mode == Mode.SCRIPT) {
@@ -256,8 +249,7 @@ public class Scaling extends PhygenTool {
             Chopper.run(
                     new File(filename.substring(0, filename.lastIndexOf(File.separator) + 1) + (line.substring(line.indexOf(' '))).trim()),
                     new File(path + prefix + (ntrees) + ".qua"),
-                    LoaderType.valueOf(line.substring(0, line.indexOf(' ')).replaceAll(":","_").toUpperCase())
-            );
+                    line.substring(0, line.indexOf(' ')));
         }
 
         return ntrees;

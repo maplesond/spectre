@@ -24,7 +24,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Extracts QNet input from file
+ * Extracts Newick trees from file
  *
  * @author sarah
  */
@@ -46,5 +46,10 @@ public class TreeLoader extends AbstractTreeLoader {
             weights.add(tree.getScalingFactor() * weight);
             trees.add(tree);
         }
+    }
+
+    @Override
+    public String getName() {
+        return "newick";
     }
 }

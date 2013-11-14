@@ -125,11 +125,6 @@ public class PhylipCorrector extends PhygenTool {
         return "pc";
     }
 
-    @Override
-    public boolean acceptsIdentifier(String identifier) {
-        return identifier.equalsIgnoreCase(this.getName()) ||
-                identifier.equalsIgnoreCase(this.getClass().getCanonicalName());
-    }
 
     @Override
     public String getDescription() {
