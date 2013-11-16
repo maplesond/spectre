@@ -46,7 +46,7 @@ public class ChopperTest {
         File treeFile = FileUtils.toFile(ChopperTest.class.getResource("/chopper/7-taxa.tre"));
         File quartetFile = temp.newFile();
 
-        new Chopper().execute(treeFile, quartetFile, LoaderType.NEWICK);
+        new Chopper().execute(treeFile, quartetFile, "newick");
 
         assertTrue(quartetFile.exists());
 

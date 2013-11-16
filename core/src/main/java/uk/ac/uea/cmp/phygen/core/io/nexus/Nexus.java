@@ -16,8 +16,11 @@
 
 package uk.ac.uea.cmp.phygen.core.io.nexus;
 
+import uk.ac.uea.cmp.phygen.core.ds.Taxa;
+import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phygen.core.ds.split.SplitBlock;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -29,26 +32,48 @@ import java.util.List;
  * Time: 23:03
  * To change this template use File | Settings | File Templates.
  */
-public class NexusData {
+public class Nexus {
 
-    private List<String> taxa;
+    private Taxa taxa;
+    private DistanceMatrix distanceMatrix;
     private List<SplitBlock> splits;
     private List<Double> weights;
     private List<Integer> cycle;
 
-    public NexusData() {
-        this(new LinkedList<String>(), new LinkedList<Integer>(), new LinkedList<SplitBlock>(), new LinkedList<Double>());
+    public Nexus() {
+        this.taxa = new Taxa();
+        this.distanceMatrix = null;
+        this.cycle = new ArrayList<>();
+        this.splits = new ArrayList<>();
+        this.weights = new ArrayList<>();
     }
 
-    public NexusData(List<String> taxa, List<Integer> cycle, List<SplitBlock> splits, List<Double> weights) {
+    public void setTaxa(Taxa taxa) {
         this.taxa = taxa;
-        this.cycle = cycle;
+    }
+
+    public void setSplits(List<SplitBlock> splits) {
         this.splits = splits;
+    }
+
+    public void setWeights(List<Double> weights) {
         this.weights = weights;
     }
 
-    public List<String> getTaxa() {
+    public void setCycle(List<Integer> cycle) {
+        this.cycle = cycle;
+    }
+
+    public Taxa getTaxa() {
         return taxa;
+    }
+
+    public DistanceMatrix getDistanceMatrix() {
+        return distanceMatrix;
+    }
+
+    public void setDistanceMatrix(DistanceMatrix distanceMatrix) {
+        this.distanceMatrix = distanceMatrix;
     }
 
     public List<Integer> getCycle() {
@@ -68,7 +93,7 @@ public class NexusData {
     }
 
     public String getTaxonAt(final int i) {
-        return this.taxa.get(i);
+        return this.taxa.get(i).getName();
     }
 
     public int getCycleAt(final int i) {
@@ -91,7 +116,7 @@ public class NexusData {
         return this.weights.get(i);
     }
 
-    public NexusData filter(double threshold) {
+    public Nexus filter(double threshold) {
 
         int N = this.getNbTaxa();
 
@@ -145,7 +170,7 @@ public class NexusData {
             }
         }
 
-        List<String> taxaCopy = new LinkedList<>();
+        Taxa taxaCopy = new Taxa();
         List<Integer> cycleCopy = new LinkedList<>();
         List<SplitBlock> filteredSplits = new LinkedList<>();
         List<Double> filteredWeights = new LinkedList<>();
@@ -175,6 +200,13 @@ public class NexusData {
             filteredSplits.add(new SplitBlock(new int[]{i + 1}));
         }
 
-        return new NexusData(taxaCopy, cycleCopy, filteredSplits, filteredWeights);
+        Nexus nexus = new Nexus();
+        nexus.setTaxa(taxaCopy);
+        nexus.setDistanceMatrix(null);
+        nexus.setCycle(cycleCopy);
+        nexus.setSplits(filteredSplits);
+        nexus.setWeights(filteredWeights);
+
+        return nexus;
     }
 }

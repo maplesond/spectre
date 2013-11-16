@@ -14,18 +14,18 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.phygen.core.ds.tree.newick.parser;
+package uk.ac.uea.cmp.phygen.core.util;
 
 import org.antlr.v4.runtime.*;
 
 /**
  * Created with IntelliJ IDEA.
  * User: dan
- * Date: 11/11/13
- * Time: 20:41
+ * Date: 15/11/13
+ * Time: 19:15
  * To change this template use File | Settings | File Templates.
  */
-public class NewickTreeErrorStrategy extends DefaultErrorStrategy {
+public class DefaultParsingErrorStrategy extends DefaultErrorStrategy {
 
     @Override
     public void reportError(Parser recognizer, RecognitionException e) {
@@ -36,10 +36,10 @@ public class NewickTreeErrorStrategy extends DefaultErrorStrategy {
             return; // don't report spurious errors
         }
         beginErrorCondition(recognizer);
-        if ( e instanceof NoViableAltException ) {
+        if ( e instanceof NoViableAltException) {
             reportNoViableAlternative(recognizer, (NoViableAltException) e);
         }
-        else if ( e instanceof InputMismatchException ) {
+        else if ( e instanceof InputMismatchException) {
             reportInputMismatch(recognizer, (InputMismatchException)e);
         }
         else if ( e instanceof FailedPredicateException ) {

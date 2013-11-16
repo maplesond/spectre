@@ -54,7 +54,7 @@ public class ToolsCLI {
 
         try {
             // First try to create the phygen tool factory, this gives us access to all the available tools
-            phygenToolFactory = new SpiFactory<>();
+            phygenToolFactory = new SpiFactory<>(PhygenTool.class);
 
             // Process the command line
             CommandLine cmdLine = new PosixParser().parse(createOptions(), args, true);

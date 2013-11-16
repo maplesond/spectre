@@ -22,6 +22,7 @@ import uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser;
 import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
 
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -40,8 +41,8 @@ public class SpiFactory<T extends Service> {
     private Class<T> clazz;
 
     @SuppressWarnings("unchecked")
-    public SpiFactory() {
-        Class<T> clazz = (Class<T>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+    public SpiFactory(Class<T> clazz) {
+        this.clazz = clazz;
         this.loader = ServiceLoader.load(clazz);
     }
 

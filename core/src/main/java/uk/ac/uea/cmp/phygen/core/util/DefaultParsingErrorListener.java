@@ -14,7 +14,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.phygen.core.ds.tree.newick.parser;
+package uk.ac.uea.cmp.phygen.core.util;
 
 import org.antlr.v4.runtime.ANTLRErrorListener;
 import org.antlr.v4.runtime.Parser;
@@ -30,11 +30,11 @@ import java.util.BitSet;
 /**
  * Created with IntelliJ IDEA.
  * User: dan
- * Date: 11/11/13
- * Time: 20:15
+ * Date: 15/11/13
+ * Time: 19:14
  * To change this template use File | Settings | File Templates.
  */
-public class NewickTreeErrorListener implements ANTLRErrorListener {
+public class DefaultParsingErrorListener implements ANTLRErrorListener {
 
 
     /**
@@ -48,7 +48,7 @@ public class NewickTreeErrorListener implements ANTLRErrorListener {
      */
     @Override
     public void syntaxError(Recognizer<?, ?> recognizer, @Nullable Object offendingSymbol, int line, int charPositionInLine, String msg, @Nullable RecognitionException e) {
-        throw new RuntimeException(msg, e);
+        throw new RuntimeException("Line: " + line + "; Char: " + charPositionInLine + "; Message: " + msg, e);
     }
 
 

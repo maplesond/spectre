@@ -1,0 +1,18 @@
+#nexus
+
+
+BEGIN Taxa;
+DIMENSIONS ntax=10;
+TAXLABELS
+[1] red-purple
+[2] red
+[3] yellow
+[4] yellowish
+[5] greenish
+[6] green
+[7] blue
+[8] purple-blue
+[9] purple
+[10] purple-reddish
+;
+END; [Taxa]

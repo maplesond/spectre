@@ -16,6 +16,7 @@
 package uk.ac.uea.cmp.phygen.tools.chopper.loader;
 
 import org.apache.commons.io.FileUtils;
+import org.kohsuke.MetaInfServices;
 import uk.ac.uea.cmp.phygen.core.ds.tree.newick.NewickTree;
 
 import java.io.File;
@@ -28,6 +29,7 @@ import java.util.List;
  *
  * @author sarah
  */
+@MetaInfServices(uk.ac.uea.cmp.phygen.tools.chopper.loader.Source.class)
 public class TreeLoader extends AbstractTreeLoader {
 
     @Override

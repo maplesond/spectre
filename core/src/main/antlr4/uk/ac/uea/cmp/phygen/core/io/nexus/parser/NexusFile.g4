@@ -10,33 +10,32 @@ options
 // TOKENS
 // ----------------------------------------------------------------------
 
-REAL : ('-')? DIGIT+ '.' DIGIT*   // match 1. 39. 3.14159 etc...
-     | ('-')? DIGIT* '.' DIGIT+
-     | ('-')? DIGIT+
-     ;
-
-INT  : ('-')? DIGIT+;
-
-POSITIVE_INT : [1-9] DIGIT*;
-
-NUMERIC : INT | REAL;
+NUMERIC :
+      ('-')? DIGIT+ '.' DIGIT*   // match 1. 39. 3.14159 etc...
+    | ('-')? DIGIT* '.' DIGIT+
+    | ('-')? DIGIT+
+    ;
 
 fragment DIGIT : [0-9];     // match single digit
+fragment NZ_DIGIT : [1-9];
 fragment LETTER : [a-zA-Z];
 LETTER_US : [a-zA-Z_];
 
 // A String must consist of either lower or uppercase A-z characters, nothing fancy.  So we don't allow numbers or whitespace.
-WORD : LETTER+
-     | '"' DIGIT+ '"'
-     | '"' LETTER+ '"';
+//WORD : LETTER+
+//     | '"' DIGIT+ '"'
+//     | '"' LETTER+ '"';
+
+BOOLEAN : 'no' | 'yes' | 'false' | 'true';
 
 // A token satisfing the regular expression [_\w]+[\d\w\._]*. Note that an single
 //  _ is considered a valid identifier. In most contexts a single _ means a
 //  "don't care identifier", simmilar to the _ meaning in prolog.
-IDENTIFIER : LETTER_US (LETTER_US | DIGIT | '.')*;
+IDENTIFIER : (LETTER_US | DIGIT | '.' | '-' )+;
 
-// We're going to ignore all white space characters
-WS : [ \t\r\n]+ -> skip;
+// We're going to ignore all excessive spaces and tabs and disregard newline characters completely
+WS : [ \t]+ -> skip;
+NL : [\r\n] -> skip;
 
 // Ignore anything between and including the square brackets
 COMMENT : '[' .*? ']' -> skip;
@@ -57,18 +56,19 @@ blocks  : // Empty
         | block blocks
         ;
 
-block   : begin block_declaration ';' end;
+block   : begin block_declaration end ';';
 
 begin   : 'begin' | 'BEGIN';
 
 end     : 'end' | 'END' | 'endblock' | 'ENDBLOCK';
 
-
+// we haven't implemented everything yet
 block_declaration :
       block_taxa
   //| block_characters
   //| block_unaligned
     | block_distances
+    | block_splits
   //| block_data
   //| block_codons
   //| block_sets
@@ -88,11 +88,12 @@ block_declaration :
 
 block_taxa :
     taxa_header ';'
-    dimensions ntax ';'
+    dimensions_taxa
     taxlabels;
 
 taxa_header : 'taxa' | 'Taxa' | 'TAXA';
 
+dimensions_taxa : dimensions ntax ';';
 
 
 
@@ -117,13 +118,14 @@ dimensions_distances :
 
 nchar :
     // Empty
-    | 'nchar' '=' POSITIVE_INT
+    | 'nchar' '=' NUMERIC
     ;
 
 format_distances :
     // Empty
-    | 'format' format_distances_list ';'
+    | format format_distances_list ';'
     ;
+
 
 format_distances_list :
     // Empty
@@ -154,9 +156,82 @@ diagonal :
 
 
 // ----------------------------------------------------------------------
-// TREES
+// SPLITS
 // ----------------------------------------------------------------------
 
+block_splits :
+    splits_block_header ';'
+    dimensions_splits
+    format_splits
+    properties_splits
+    cycle
+    matrix_header matrix_data ';';
+
+splits_block_header : 'splits' | 'Splits' | 'SPLITS';
+
+dimensions_splits :
+    // Empty
+    | dimensions ntax nsplits ';'
+    ;
+
+nsplits : 'nsplits' '=' NUMERIC;
+
+format_splits :
+    // Empty
+    | format format_splits_list ';'
+    ;
+
+format_splits_list :
+    // Empty
+    | format_splits_item format_splits_list
+    ;
+
+format_splits_item : format_splits_name '=' BOOLEAN;
+
+format_splits_name :
+      'labels'
+    | 'weights'
+    | 'confidences'
+    | 'intervals'
+    ;
+
+properties_splits :
+    // Empty
+    | properties properties_splits_list ';'
+    ;
+
+properties_splits_list :
+    // Empty
+    | properties_splits_item properties_splits_list
+    ;
+
+properties_splits_item : properties_splits_name ('=' BOOLEAN)?;
+
+properties_splits_name :
+      'fit'
+    | 'cyclic'
+    ;
+
+cycle :
+    // Empty
+    | cycle_header cycle_item_list ';'
+    ;
+
+cycle_header : 'cycle' | 'CYCLE';
+
+cycle_item_list :
+    // Empty
+    | cycle_item cycle_item_list
+    ;
+
+cycle_item : NUMERIC;
+
+
+
+
+// ----------------------------------------------------------------------
+// TREES
+// ----------------------------------------------------------------------
 
 
 block_trees : tree_block_header ';' translate newick_tree;
@@ -227,17 +302,13 @@ matrix_header : 'matrix' | 'MATRIX';
 
 matrix_data :
     // Empty
-    | IDENTIFIER matrix_entry_list matrix_data_rest
-    ;
-
-matrix_data_rest :
-    // Empty
-    | '\n' matrix_data
+    | IDENTIFIER matrix_entry_list matrix_data
+    | '\'' IDENTIFIER '\'' matrix_entry_list matrix_data
     ;
 
 matrix_entry_list :
     // Empty
-    | WORD matrix_entry_list
+    | NUMERIC matrix_entry_list
     | '(' state_composed_word state_composed_list ')' matrix_entry_list
     | '{' state_composed_word state_composed_list '}' matrix_entry_list
     ;
@@ -248,8 +319,8 @@ state_composed_word :
     ;
 
 state_complex_word :
-      POSITIVE_INT
-    | WORD
+      NUMERIC
+    //| WORD
     ;
 
 state_composed_list :
@@ -267,9 +338,12 @@ state_composed_list :
 
 dimensions  : 'dimensions' | 'DIMENSIONS';
 
+format : 'format' | 'FORMAT';
+
 identifier_list :
     // Empty
     | IDENTIFIER identifier_list
+    | '\'' IDENTIFIER '\'' identifier_list
     ;
 
 labels :
@@ -281,7 +355,7 @@ labels :
 // Any character except any of the following: \n\s()[]{}<>/\,;:=*^'"
 missing : 'missing' '=' LETTER_US;
 
-ntax : 'ntax' '=' POSITIVE_INT;
+ntax : 'ntax' '=' NUMERIC;
 
 newtaxa :
       'newtaxa' ntax
@@ -293,8 +367,10 @@ newtaxa_optional :
     | newtaxa
     ;
 
+properties : 'properties' | 'PROPERTIES';
+
 reference :
-    POSITIVE_INT
+    NUMERIC
   | IDENTIFIER
   ;
 
@@ -303,7 +379,10 @@ star :
     | '*'
     ;
 
-taxlabels : taxlabels_header IDENTIFIER identifier_list ';';
+taxlabels :
+      taxlabels_header IDENTIFIER identifier_list ';'
+    | taxlabels_header '\'' IDENTIFIER '\'' identifier_list ';'
+    ;
 
 taxlabels_optional :
     // Empty

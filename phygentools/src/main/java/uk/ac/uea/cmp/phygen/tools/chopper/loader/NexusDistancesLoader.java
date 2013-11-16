@@ -15,6 +15,7 @@
  */
 package uk.ac.uea.cmp.phygen.tools.chopper.loader;
 
+import org.kohsuke.MetaInfServices;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 import uk.ac.uea.cmp.phygen.core.io.PhygenReader;
@@ -27,6 +28,7 @@ import java.io.IOException;
  * Created by IntelliJ IDEA. User: Analysis Date: 2004-jul-11 Time: 23:09:07 To
  * change this template use Options | File Templates.
  */
+@MetaInfServices(uk.ac.uea.cmp.phygen.tools.chopper.loader.Source.class)
 public class NexusDistancesLoader extends AbstractLoader {
 
     public void load(File file, double weight) throws IOException {

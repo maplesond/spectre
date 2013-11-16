@@ -23,6 +23,8 @@ import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 import uk.ac.uea.cmp.phygen.core.ds.tree.newick.parser.*;
+import uk.ac.uea.cmp.phygen.core.util.DefaultParsingErrorListener;
+import uk.ac.uea.cmp.phygen.core.util.DefaultParsingErrorStrategy;
 
 import java.io.IOException;
 
@@ -66,7 +68,7 @@ public class NewickTree extends NewickNode {
         // Setup lexer
         NewickTreeLexer lexer = new NewickTreeLexer(in);
         lexer.removeErrorListeners();
-        lexer.addErrorListener(new NewickTreeErrorListener());
+        lexer.addErrorListener(new DefaultParsingErrorListener());
 
         // Do the lexing
         CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -76,8 +78,8 @@ public class NewickTree extends NewickNode {
         parser.removeParseListeners();
         parser.removeErrorListeners();
         parser.addParseListener(new NewickTreePopulator(this, true));
-        parser.addErrorListener(new NewickTreeErrorListener());
-        parser.setErrorHandler(new NewickTreeErrorStrategy());
+        parser.addErrorListener(new DefaultParsingErrorListener());
+        parser.setErrorHandler(new DefaultParsingErrorStrategy());
 
         // Do the parsing
         parser.parse();

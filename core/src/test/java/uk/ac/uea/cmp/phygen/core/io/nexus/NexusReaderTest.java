@@ -52,4 +52,37 @@ public class NexusReaderTest {
 
         assertTrue(distanceMatrix.size() == 5);
     }
+
+    @Test
+    public void testTaxaParser() throws IOException {
+
+        File testFile = FileUtils.toFile(NexusReaderTest.class.getResource("/triangular.nex"));
+
+        Nexus nexus = new NexusReader().parse(testFile);
+
+        assertTrue(nexus.getTaxa().size() == 5);
+        assertTrue(nexus.getDistanceMatrix().size() == 5);
+        assertTrue(nexus.getDistanceMatrix().getDistance(3, 1) == 2.0);
+        assertTrue(nexus.getDistanceMatrix().getDistance(1, 3) == 2.0);
+    }
+
+    @Test
+    public void testTaxaColorsWithoutComments() throws IOException {
+
+        File testFile = FileUtils.toFile(NexusReaderTest.class.getResource("/colors-nocomments.nex"));
+
+        Nexus nexus = new NexusReader().parse(testFile);
+
+        assertTrue(nexus.getTaxa().size() == 10);
+    }
+
+    @Test
+    public void testTaxaColorsWithComments() throws IOException {
+
+        File testFile = FileUtils.toFile(NexusReaderTest.class.getResource("/colors-withcomments.nex"));
+
+        Nexus nexus = new NexusReader().parse(testFile);
+
+        assertTrue(nexus.getTaxa().size() == 10);
+    }
 }

@@ -20,19 +20,26 @@ package uk.ac.uea.cmp.phygen.core.io.nexus;
  * and open the template in the editor.
  */
 
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CommonTokenStream;
 import org.apache.commons.io.FileUtils;
 import org.kohsuke.MetaInfServices;
+import uk.ac.uea.cmp.phygen.core.ds.Taxa;
+import uk.ac.uea.cmp.phygen.core.ds.Taxon;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phygen.core.ds.split.CircularOrdering;
 import uk.ac.uea.cmp.phygen.core.ds.split.SplitBlock;
 import uk.ac.uea.cmp.phygen.core.ds.tree.newick.NewickTree;
 import uk.ac.uea.cmp.phygen.core.io.AbstractPhygenReader;
 import uk.ac.uea.cmp.phygen.core.io.PhygenDataType;
+import uk.ac.uea.cmp.phygen.core.io.nexus.parser.NexusFileLexer;
+import uk.ac.uea.cmp.phygen.core.io.nexus.parser.NexusFileParser;
+import uk.ac.uea.cmp.phygen.core.io.nexus.parser.NexusFilePopulator;
+import uk.ac.uea.cmp.phygen.core.util.DefaultParsingErrorListener;
+import uk.ac.uea.cmp.phygen.core.util.DefaultParsingErrorStrategy;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -47,6 +54,43 @@ import java.util.StringTokenizer;
  */
 @MetaInfServices(uk.ac.uea.cmp.phygen.core.io.PhygenReader.class)
 public class NexusReader extends AbstractPhygenReader {
+
+
+    public Nexus parse(File file) throws IOException {
+
+        // Convert source into a character stream
+        CharStream in = new ANTLRInputStream(new FileInputStream(file));
+
+        // Setup lexer
+        NexusFileLexer lexer = new NexusFileLexer(in);
+        lexer.removeErrorListeners();
+        lexer.addErrorListener(new DefaultParsingErrorListener());
+
+        // Do the lexing
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+
+        // The results of parsing go in here
+        Nexus nexus = new Nexus();
+
+        // Setup parser
+        NexusFileParser parser = new NexusFileParser(tokens);
+        parser.removeParseListeners();
+        parser.removeErrorListeners();
+        parser.addParseListener(new NexusFilePopulator(nexus, true));
+        parser.addErrorListener(new DefaultParsingErrorListener());
+        parser.setErrorHandler(new DefaultParsingErrorStrategy());
+
+        // Do the parsing
+        try {
+            parser.parse();
+        }
+        catch(RuntimeException e) {
+            throw new IOException(e);
+        }
+
+        // Return the populated Nexus object
+        return nexus;
+    }
 
     /**
      * Reads the file specified by this reader and converts the data into a set
@@ -374,9 +418,9 @@ public class NexusReader extends AbstractPhygenReader {
         return new CircularOrdering(circOrdering);
     }
 
-    public NexusData readNexusData(File inFile) throws IOException {
+    public Nexus readNexusData(File inFile) throws IOException {
 
-        List<String> taxonNames = new LinkedList<>();
+        Taxa taxonNames = new Taxa();
         List<SplitBlock> splits = new LinkedList<>();
         List<Double> weights = new LinkedList<>();
         List<Integer> cycle = new LinkedList<>();
@@ -414,7 +458,7 @@ public class NexusReader extends AbstractPhygenReader {
                     N = Integer.parseInt(tT.substring(5, tT.length() - 1));
 
                     for (int n = 0; n < N; n++) {
-                        taxonNames.add(new String(""));
+                        taxonNames.add(new Taxon(""));
                     }
 
                     readingState = false;
@@ -438,7 +482,7 @@ public class NexusReader extends AbstractPhygenReader {
                     for (int n = 0; n < N; n++) {
 
                         String aS = fileInput.readLine();
-                        taxonNames.set(n, aS);
+                        taxonNames.set(n, new Taxon(aS));
                     }
 
                     readingState = false;
@@ -549,7 +593,14 @@ public class NexusReader extends AbstractPhygenReader {
             }
         }
 
-        return new NexusData(taxonNames, cycle, splits, weights);
+        Nexus nexus = new Nexus();
+        nexus.setTaxa(taxonNames);
+        nexus.setDistanceMatrix(null);
+        nexus.setCycle(cycle);
+        nexus.setSplits(splits);
+        nexus.setWeights(weights);
+
+        return nexus;
     }
 
     protected boolean isPropertyGroup(String line, String propertyGroup) {

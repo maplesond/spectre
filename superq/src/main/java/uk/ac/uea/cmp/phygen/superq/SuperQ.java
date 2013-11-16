@@ -19,7 +19,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.uea.cmp.phygen.core.io.nexus.NexusData;
+import uk.ac.uea.cmp.phygen.core.io.nexus.Nexus;
 import uk.ac.uea.cmp.phygen.core.io.nexus.NexusReader;
 import uk.ac.uea.cmp.phygen.core.io.nexus.NexusWriter;
 import uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser;
@@ -134,7 +134,7 @@ public class SuperQ extends RunnableTool {
             }
 
             notifyUser("CHOPPER - Breaking input trees into quartets");
-            Chopper.run(new File(file), new File(tmppath + "qw"), LoaderType.valueOf(type.toUpperCase()));
+            Chopper.run(new File(file), new File(tmppath + "qw"), type.toUpperCase());
 
             rt.gc();
             log.debug("FREE MEM - after running Chopper: " + rt.freeMemory());
@@ -255,10 +255,10 @@ public class SuperQ extends RunnableTool {
     protected void filter(File inFile, File outFile, double threshold) throws IOException {
 
         // Load
-        NexusData raw = new NexusReader().readNexusData(inFile);
+        Nexus raw = new NexusReader().readNexusData(inFile);
 
         // Filter
-        NexusData filtered = raw.filter(threshold);
+        Nexus filtered = raw.filter(threshold);
 
         // Save
         new NexusWriter().writeNexusData(outFile, filtered);

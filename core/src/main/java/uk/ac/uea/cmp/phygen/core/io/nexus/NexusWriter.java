@@ -17,6 +17,7 @@ package uk.ac.uea.cmp.phygen.core.io.nexus;
 
 
 import org.apache.commons.io.FileUtils;
+import uk.ac.uea.cmp.phygen.core.ds.Taxon;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phygen.core.ds.split.Split;
 import uk.ac.uea.cmp.phygen.core.ds.split.SplitBlock;
@@ -146,7 +147,7 @@ public class NexusWriter implements PhygenWriter {
         FileUtils.writeStringToFile(file, fileContent.toString());
     }
 
-    public void writeNexusData(File outFile, NexusData nexusData) throws IOException {
+    public void writeNexusData(File outFile, Nexus nexusData) throws IOException {
 
 
         StringBuilder nexusString = new StringBuilder();
@@ -155,8 +156,8 @@ public class NexusWriter implements PhygenWriter {
 
         nexusString.append("#NEXUS\nBEGIN taxa;\nDIMENSIONS ntax=").append(N).append(";\nTAXLABELS\n");
 
-        for (String taxon : nexusData.getTaxa()) {
-            nexusString.append(taxon).append("\n");
+        for (Taxon taxon : nexusData.getTaxa()) {
+            nexusString.append(taxon.getName()).append("\n");
         }
 
         nexusString.append(";\nEND;\n\nBEGIN st_splits;\nDIMENSIONS ntax=" + N + " nsplits=").append(nexusData.getNbSplits()).append(";\n");

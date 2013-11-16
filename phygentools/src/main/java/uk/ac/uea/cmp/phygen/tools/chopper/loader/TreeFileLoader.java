@@ -15,6 +15,7 @@
  */
 package uk.ac.uea.cmp.phygen.tools.chopper.loader;
 
+import org.kohsuke.MetaInfServices;
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.Taxon;
 import uk.ac.uea.cmp.phygen.core.ds.tree.newick.NewickTree;
@@ -30,6 +31,7 @@ import java.util.StringTokenizer;
  * Created by IntelliJ IDEA. User: Analysis Date: 2004-jul-12 Time: 00:03:05 To
  * change this template use Options | File Templates.
  */
+@MetaInfServices(uk.ac.uea.cmp.phygen.tools.chopper.loader.Source.class)
 public class TreeFileLoader extends AbstractTreeLoader {
 
     @Override

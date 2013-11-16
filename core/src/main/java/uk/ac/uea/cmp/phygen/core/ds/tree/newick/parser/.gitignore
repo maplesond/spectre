@@ -1,1 +1,4 @@
-/*.java
+/NewickTreeLexer.java
+/NewickTreeParser.java
+/NewickTreeListener.java
+/NewickTreeBaseListener.java

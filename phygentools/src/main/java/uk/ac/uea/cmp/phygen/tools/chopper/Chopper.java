@@ -49,7 +49,7 @@ public class Chopper extends PhygenTool {
     private SpiFactory<Source> sourceFactory;
 
     public Chopper() {
-        this.sourceFactory = new SpiFactory<>();
+        this.sourceFactory = new SpiFactory<>(Source.class);
     }
 
 
