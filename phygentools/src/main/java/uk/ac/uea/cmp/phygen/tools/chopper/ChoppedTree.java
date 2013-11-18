@@ -19,6 +19,7 @@ package uk.ac.uea.cmp.phygen.tools.chopper;
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
+import uk.ac.uea.cmp.phygen.tools.chopper.loader.Source;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -147,4 +148,29 @@ public class ChoppedTree {
         out.close();
     }
 
+    public ChoppedTree addSource(File inputFile, Source source, double weight) throws IOException {
+
+        // Save current taxa
+        Taxa oldTaxa = new Taxa(this.taxa);
+
+
+        // I'm sure it should be possible to tidy this up further.
+        source.load(inputFile, weight);
+
+        source.addTaxa(this.taxa);
+        source.translate(this.taxa);
+
+        this.quartetWeights = this.quartetWeights.translate(oldTaxa, this.taxa);
+        this.summer = this.summer.translate(oldTaxa, this.taxa);
+
+
+        // crucial, drop now the list stuff
+        while (source.hasMoreSets()) {
+            this.quartetWeights.add(source.getNextQuartetWeights(), source.getNextWeight());
+        }
+
+        this.summer.sum(this.taxa, source.findTaxaSets(), source.getWeights());
+
+        return this;
+    }
 }

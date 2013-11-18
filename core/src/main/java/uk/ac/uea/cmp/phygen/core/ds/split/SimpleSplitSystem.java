@@ -55,6 +55,7 @@ public class SimpleSplitSystem implements SplitSystem {
         return taxa;
     }
 
+    @Override
     public List<Split> getSplits() {
         return splits;
     }
@@ -63,6 +64,7 @@ public class SimpleSplitSystem implements SplitSystem {
         this.splits = splits;
     }
 
+    @Override
     public Taxa getTaxa() {
         return this.taxa;
     }
@@ -71,6 +73,7 @@ public class SimpleSplitSystem implements SplitSystem {
         this.taxa = taxa;
     }
 
+    @Override
     public int getNbTaxa() {
         return this.taxa.size();
     }

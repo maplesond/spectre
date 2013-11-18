@@ -141,4 +141,5 @@ public class Split {
     public boolean onExternalEdge() {
         return this.aSide.size() == 1 || this.bSide.size() == 1;
     }
+
 }

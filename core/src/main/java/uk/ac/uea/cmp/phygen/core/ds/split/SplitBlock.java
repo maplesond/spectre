@@ -162,4 +162,15 @@ public class SplitBlock implements Comparable<SplitBlock> {
     public boolean retainAll(SplitBlock o) {
         return this.elements.retainAll(o.elements);
     }
+
+    public int[] toArray() {
+
+        int[] arr = new int[this.elements.size()];
+
+        for(int i = 0; i < this.elements.size(); i++) {
+            arr[i] = this.elements.get(i);
+        }
+
+        return arr;
+    }
 }

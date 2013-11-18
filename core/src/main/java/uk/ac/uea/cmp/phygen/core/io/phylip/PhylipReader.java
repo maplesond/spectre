@@ -18,6 +18,7 @@ package uk.ac.uea.cmp.phygen.core.io.phylip;
 import org.apache.commons.io.FileUtils;
 import org.kohsuke.MetaInfServices;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
+import uk.ac.uea.cmp.phygen.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.phygen.core.ds.tree.newick.NewickTree;
 import uk.ac.uea.cmp.phygen.core.io.AbstractPhygenReader;
 import uk.ac.uea.cmp.phygen.core.io.PhygenDataType;
@@ -68,6 +69,11 @@ public class PhylipReader extends AbstractPhygenReader {
     @Override
     public List<NewickTree> readTrees(File input, double weight) throws IOException {
         throw new UnsupportedOperationException("A Phylip file will not contain trees.");
+    }
+
+    @Override
+    public SplitSystem readSplitSystem(File file) throws IOException {
+        throw new UnsupportedOperationException("A Phylip file will not contain a split system.");
     }
 
     @Override

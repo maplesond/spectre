@@ -105,7 +105,7 @@ public class Chopper extends PhygenTool {
 
         ChoppedTree choppedTree = source.equalsIgnoreCase("SCRIPT") ?
                 doScript(inputFile) :
-                doOneType(inputFile, source, 1.0);
+                new ChoppedTree().addSource(inputFile, this.sourceFactory.create(source), 1.0);
 
         choppedTree.divide();
         choppedTree.save(outputFile);
@@ -119,47 +119,49 @@ public class Chopper extends PhygenTool {
 
     protected ChoppedTree doScript(File inputFile) throws IOException {
 
-        ChoppedTree choppedTree = null;
+        // Create an empty tree
+        ChoppedTree choppedTree = new ChoppedTree();
 
+        // Load the script
         List<String> lines = FileUtils.readLines(inputFile);
 
+        // Execute each line of the script
         for (String line : lines) {
 
-            StringTokenizer sT = new StringTokenizer(line);
+            StringTokenizer sT = new StringTokenizer(line.trim());
 
             if (sT.hasMoreTokens()) {
 
-                // Create an instance of the specified source
-                String source = sT.nextToken();
+                // The first token should specify the source
+                String sourceName = sT.nextToken();
 
-                // line may be:
-                // (at each step, load (with dummy length if need be))
-
-                // newick file, set of trees: if length is given, multiply with newick weights
+                // The second token should be the file to load
                 if (sT.hasMoreTokens()) {
 
                     String sourceFileName = sT.nextToken();
                     File sourceFile = new File(sourceFileName);
 
-                    if (!sourceFile.isAbsolute()) {
-
-                        // if no path, give it the path of the script file
-                        if (inputFile.getParent() != null) {
-
-                            // a path was given to the script file
-                            sourceFile = new File(inputFile.getParent(), sourceFileName);
-                        }
+                    // If relative path was given, assume we are using the script's relative path rather than relative to
+                    // the current working directory
+                    if (!sourceFile.isAbsolute() && inputFile.getParent() != null) {
+                        sourceFile = new File(inputFile.getParent(), sourceFileName);
                     }
 
+                    // The third token is optional, but if present we multiply all weights in the tree of this file by
+                    // the given amount
                     double weight = sT.hasMoreTokens() ?
                             Double.parseDouble(sT.nextToken()) :
                             1.0;
 
-                    choppedTree = doOneType(sourceFile, source, weight, choppedTree);
+                    // Create a source loader
+                    Source source = this.sourceFactory.create(sourceName);
+
+                    // Execute chopper for this file.
+                    choppedTree.addSource(sourceFile, source, weight);
 
                 } else {
 
-                    log.warn("Chopper: Script line lacking file name!");
+                    log.warn("Script line specified source (" + sourceName + ") but is lacking file name!  Ignoring line.");
                 }
             }
 
@@ -168,46 +170,5 @@ public class Chopper extends PhygenTool {
 
         return choppedTree;
     }
-
-
-    protected ChoppedTree doOneType(File inputFile, String sourceName, double weight) throws IOException {
-        return doOneType(inputFile, sourceName, weight, new ChoppedTree());
-    }
-
-    protected ChoppedTree doOneType(File inputFile, String sourceName, double weight, ChoppedTree choppedTree) throws IOException {
-
-        Taxa taxonNames = choppedTree.getTaxa();
-        QuartetWeights qW = choppedTree.getQuartetWeights();
-        QuartetWeights summer = choppedTree.getSummer();
-
-        // Create a new instance of the source
-        Source source = this.sourceFactory.create(sourceName);
-
-        // I'm sure it should be possible to tidy this up further.
-        source.load(inputFile, weight);
-        Taxa oldTaxa = new Taxa(taxonNames);
-        source.addTaxa(taxonNames);
-        source.translate(taxonNames);
-
-
-        qW = qW.translate(oldTaxa, taxonNames);
-        summer = summer.translate(oldTaxa, taxonNames);
-
-
-        // crucial, drop now the list stuff
-        while (source.hasMoreSets()) {
-
-            double aW = source.getNextWeight();
-            QuartetWeights aQW = source.getNextQuartetWeights();
-            qW.add(aQW, aW);
-
-            System.gc();
-        }
-
-        summer.sum(taxonNames, source.findTaxaSets(), source.getWeights());
-
-        return choppedTree;
-    }
-
 
 }

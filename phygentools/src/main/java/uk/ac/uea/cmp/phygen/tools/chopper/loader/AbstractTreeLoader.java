@@ -98,7 +98,7 @@ public abstract class AbstractTreeLoader extends AbstractLoader {
 
     @Override
     public double getNextWeight() {
-        return weights.get(index);
+        return weights.get(index-1);
     }
 
     @Override

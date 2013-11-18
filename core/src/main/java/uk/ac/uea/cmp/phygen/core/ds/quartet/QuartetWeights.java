@@ -18,6 +18,7 @@ package uk.ac.uea.cmp.phygen.core.ds.quartet;
 import uk.ac.uea.cmp.phygen.core.ds.Quadruple;
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
+import uk.ac.uea.cmp.phygen.core.ds.split.Split;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -286,6 +287,44 @@ public class QuartetWeights extends ArrayList<QuartetWeighting> {
 
                                 this.setWeight(quartet, new QuartetWeighting(oldW + w, oldW + w, oldW + w));
                             }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+    public void addSplit(Split split) {
+
+        // We don't bother with trivial splits as trivial splits match no quartets
+        if (!split.onExternalEdge()) {
+
+            // so, for all quartets in here, add the length to their value
+
+            final int aSize = split.getASide().size();
+            final int bSize = split.getBSide().size();
+
+            // I think it will work out a little faster doing things this way... if that turns out not to be true consider
+            // optimising this.
+            int[] setA = split.getASide().toArray();
+            int[] setB = split.getBSide().toArray();
+
+            for (int iA1 = 0; iA1 < aSize - 1; iA1++) {
+
+                for (int iA2 = iA1 + 1; iA2 < aSize; iA2++) {
+
+                    int a1 = setA[iA1];
+                    int a2 = setA[iA2];
+
+                    for (int iB1 = 0; iB1 < bSize - 1; iB1++) {
+
+                        for (int iB2 = iB1 + 1; iB2 < bSize; iB2++) {
+
+                            int b1 = setB[iB1];
+                            int b2 = setB[iB2];
+
+                            this.incrementWeight(new Quartet(a1, a2, b1, b2), split.getWeight());
                         }
                     }
                 }

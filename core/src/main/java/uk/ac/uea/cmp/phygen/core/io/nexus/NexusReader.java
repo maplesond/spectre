@@ -102,6 +102,7 @@ public class NexusReader extends AbstractPhygenReader {
      * @throws ParseException Thrown if there were any syntax issues when
      *                        parsing the file.
      */
+    @Override
     public DistanceMatrix readDistanceMatrix(File file) throws IOException {
         return this.parse(file).getDistanceMatrix();
     }
@@ -110,6 +111,11 @@ public class NexusReader extends AbstractPhygenReader {
     @Override
     public List<NewickTree> readTrees(File input, double weight) throws IOException {
         throw new UnsupportedOperationException("Haven't got around to implementing this yet");
+    }
+
+    @Override
+    public SplitSystem readSplitSystem(File file) throws IOException {
+        return this.parse(file).getSplitSystem();
     }
 
     @Override

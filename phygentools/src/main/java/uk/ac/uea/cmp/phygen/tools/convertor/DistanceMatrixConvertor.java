@@ -32,7 +32,7 @@ import java.io.IOException;
  * Converts phylip to nexus and vice versa
  */
 @MetaInfServices
-public class Convertor extends PhygenTool {
+public class DistanceMatrixConvertor extends PhygenTool {
 
     private static final String OPT_INPUT = "input";
     private static final String OPT_OUTPUT = "output";
@@ -45,7 +45,7 @@ public class Convertor extends PhygenTool {
         Options options = new Options();
 
         options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_INPUT).hasArg().isRequired()
-                .withDescription("The file to convert, must be either nexus or phylip format.").create("i"));
+                .withDescription("The file with distance matrix to convert, must be either nexus or phylip format.").create("i"));
 
         options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_OUTPUT).hasArg().isRequired()
                 .withDescription("The converted file.").create("o"));
@@ -75,7 +75,7 @@ public class Convertor extends PhygenTool {
 
     @Override
     public String getDescription() {
-        return "Converts phylip to nexus format and vice versa.";
+        return "Converts a distance matrix from phylip to nexus format and vice versa.";
     }
 
     public void execute(File inputFile, File outputFile) throws IOException {

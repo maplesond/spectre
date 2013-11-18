@@ -33,14 +33,14 @@ public class NexusDistancesLoader extends AbstractLoader {
 
     public void load(File file, double weight) throws IOException {
 
-        // Create a nexus loader
-        PhygenReader reader = new NexusReader();
-
         // Load distance matrix from file
-        DistanceMatrix distanceMatrix = reader.readDistanceMatrix(file);
+        DistanceMatrix distanceMatrix = new NexusReader().readDistanceMatrix(file);
 
         // Create QuartetWeightings from distance matrix
         QuartetWeights qw = new QuartetWeights(distanceMatrix);
+
+        // Add distance matricies taxa
+        this.taxonNames = distanceMatrix.getTaxaSet();
 
         // Add quartetweights to list
         this.qWs.add(qw);

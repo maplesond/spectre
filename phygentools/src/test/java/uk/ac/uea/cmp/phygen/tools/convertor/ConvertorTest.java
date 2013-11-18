@@ -44,7 +44,7 @@ public class ConvertorTest {
         File inputFile = FileUtils.toFile(ConvertorTest.class.getResource("/bees.nex"));
         File outputFile = temp.newFile();
 
-        new Convertor().execute(inputFile, outputFile);
+        new DistanceMatrixConvertor().execute(inputFile, outputFile);
 
         assertTrue(true);
     }
@@ -55,7 +55,7 @@ public class ConvertorTest {
         File inputFile = FileUtils.toFile(ConvertorTest.class.getResource("/colors.phy"));
         File outputFile = temp.newFile();
 
-        new Convertor().execute(inputFile, outputFile);
+        new DistanceMatrixConvertor().execute(inputFile, outputFile);
 
         assertTrue(true);
     }

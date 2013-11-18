@@ -16,6 +16,8 @@
 
 package uk.ac.uea.cmp.phygen.core.ds.split;
 
+import uk.ac.uea.cmp.phygen.core.ds.Taxa;
+
 import java.util.List;
 
 /**
@@ -28,9 +30,19 @@ import java.util.List;
 public interface SplitSystem {
 
 
+    // **** Taxa methods ****
+
+    int getNbTaxa();
+
+    Taxa getTaxa();
+
+
+
     // **** Standard split methods ****
 
     int getNbSplits();
+
+    List<Split> getSplits();
 
     Split getSplitAt(final int i);
 
