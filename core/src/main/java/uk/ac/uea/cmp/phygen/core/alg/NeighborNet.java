@@ -19,7 +19,7 @@ package uk.ac.uea.cmp.phygen.core.alg;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phygen.core.ds.split.CircularOrdering;
 import uk.ac.uea.cmp.phygen.core.ds.split.CircularSplitSystem;
-import uk.ac.uea.cmp.phygen.core.ds.split.SplitSystem;
+import uk.ac.uea.cmp.phygen.core.ds.split.SimpleSplitSystem;
 
 import java.util.Arrays;
 import java.util.Stack;
@@ -38,7 +38,7 @@ public class NeighborNet {
      * @param distanceMatrix The Distance matrix to process
      * @return The computed split system
      */
-    public SplitSystem createCircularSplitSystem(final DistanceMatrix distanceMatrix){
+    public SimpleSplitSystem createCircularSplitSystem(final DistanceMatrix distanceMatrix){
 
         return new CircularSplitSystem(distanceMatrix, this.computeCircularOrdering(distanceMatrix));
     }

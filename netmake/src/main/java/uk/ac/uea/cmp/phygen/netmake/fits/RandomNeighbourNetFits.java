@@ -21,7 +21,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
-import uk.ac.uea.cmp.phygen.core.ds.split.SplitSystem;
+import uk.ac.uea.cmp.phygen.core.ds.split.SimpleSplitSystem;
 import uk.ac.uea.cmp.phygen.core.io.PhygenReader;
 import uk.ac.uea.cmp.phygen.core.io.PhygenReaderFactory;
 import uk.ac.uea.cmp.phygen.core.io.nexus.NexusWriter;
@@ -106,7 +106,7 @@ public class RandomNeighbourNetFits {
      * @param aNetwork
      * @return
      */
-    protected double getFitStatistic(DistanceMatrix distanceMatrix, SplitSystem aNetwork) {
+    protected double getFitStatistic(DistanceMatrix distanceMatrix, SimpleSplitSystem aNetwork) {
         /*double fit = 0.;
         int t = distanceMatrix.size();
         double sum1 = 0.;

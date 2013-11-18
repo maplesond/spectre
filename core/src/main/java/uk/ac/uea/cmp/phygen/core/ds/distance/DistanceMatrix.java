@@ -15,6 +15,8 @@
  */
 package uk.ac.uea.cmp.phygen.core.ds.distance;
 
+import uk.ac.uea.cmp.phygen.core.ds.Taxa;
+import uk.ac.uea.cmp.phygen.core.ds.Taxon;
 import uk.ac.uea.cmp.phygen.core.math.Statistics;
 
 import java.util.Arrays;
@@ -25,7 +27,7 @@ import java.util.LinkedHashSet;
  */
 public class DistanceMatrix {
 
-    private final String[] taxa;
+    private final Taxa taxa;
     private final double[][] matrix;
     private final int nbTaxa;
 
@@ -50,6 +52,17 @@ public class DistanceMatrix {
         this(taxa, 0.0);
     }
 
+    /**
+     * Creates a new DistanceMatrix object using a taxa set.  Will validate the taxa set
+     * to ensure there's data to work with, and that there are no duplicated elements.
+     * The distances matrix is initialised so that all elements are 0.0.
+     *
+     * @param taxa The taxa set.
+     */
+    public DistanceMatrix(final Taxa taxa) {
+        this(taxa, 0.0);
+    }
+
 
     /**
      * Creates a new DistanceMatrix object of specified size with the default taxa values and all distances set to
@@ -71,10 +84,22 @@ public class DistanceMatrix {
      * @param val  The value to initalise all elements of the distance matrix with.
      */
     public DistanceMatrix(final String[] taxa, final double val) {
+        this(new Taxa(taxa), val);
+    }
+
+    /**
+     * Creates a new DistanceMatrix object using a taxa set.  Will validate the taxa set
+     * to ensure there's data to work with, and that there are no duplicated elements.
+     * The distances matrix is initialised so that all elements are set to val.
+     *
+     * @param taxa The taxa set.
+     * @param val  The value to initalise all elements of the distance matrix with.
+     */
+    public DistanceMatrix(final Taxa taxa, final double val) {
         validateTaxa(taxa);
 
         this.taxa = taxa;
-        this.nbTaxa = taxa.length;
+        this.nbTaxa = taxa.size();
         this.matrix = new double[this.nbTaxa][this.nbTaxa];
 
         this.fill(val);
@@ -87,7 +112,7 @@ public class DistanceMatrix {
      * @param copy The copy to duplicate in this object.
      */
     public DistanceMatrix(final DistanceMatrix copy) {
-        this.taxa = copyTaxa(copy.taxa);
+        this.taxa = new Taxa(copy.taxa);
         this.matrix = copyDistances(copy.matrix);
         this.nbTaxa = copy.nbTaxa;
 
@@ -101,7 +126,7 @@ public class DistanceMatrix {
      * @param distances
      */
     public DistanceMatrix(final String[] taxa, double[][] distances) {
-        this.taxa = copyTaxa(taxa);
+        this.taxa = new Taxa(taxa);
         this.matrix = copyDistances(distances);
         this.nbTaxa = taxa.length;
 
@@ -158,17 +183,17 @@ public class DistanceMatrix {
      *
      * @param taxa The taxa set to validate.
      */
-    protected final void validateTaxa(final String[] taxa) {
+    protected final void validateTaxa(final Taxa taxa) {
         // Ensure we have some taxa to work with.
-        if (taxa == null || taxa.length == 0) {
+        if (taxa == null || taxa.isEmpty()) {
             throw new NullPointerException("Must specify taxa");
         }
 
         // Ensure no duplicated elements in the taxa set.
-        LinkedHashSet<String> tCheck = new LinkedHashSet<String>(Arrays.asList(taxa));
+        /*LinkedHashSet<String> tCheck = new LinkedHashSet<String>(taxa);
         if (tCheck.size() != taxa.length) {
             throw new IllegalArgumentException("Provided taxa set contains duplicated elements.");
-        }
+        } */
     }
 
     /**
@@ -202,7 +227,7 @@ public class DistanceMatrix {
         validateTaxa(this.taxa);
         validateDistances(this.matrix);
 
-        if (this.taxa.length != this.matrix.length && this.taxa.length == this.nbTaxa)
+        if (this.taxa.size() != this.matrix.length && this.taxa.size() == this.nbTaxa)
             throw new IllegalArgumentException("Distance matrix is not the same size as the taxa set.");
     }
 
@@ -211,7 +236,7 @@ public class DistanceMatrix {
         if (d instanceof DistanceMatrix) {
             DistanceMatrix dd = (DistanceMatrix) d;
 
-            if (!Arrays.equals(taxa, dd.taxa))
+            if (taxa.equals(dd.taxa))
                 return false;
 
             for (int i = 0; i < nbTaxa; i++) {
@@ -228,7 +253,7 @@ public class DistanceMatrix {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 79 * hash + Arrays.deepHashCode(this.taxa);
+        hash = 79 * hash + this.taxa.hashCode();
         hash = 79 * hash + Arrays.deepHashCode(this.matrix);
         return hash;
     }
@@ -246,7 +271,7 @@ public class DistanceMatrix {
      *
      * @return The set of taxa.
      */
-    public String[] getTaxaSet() {
+    public Taxa getTaxaSet() {
         return this.taxa;
     }
 
@@ -257,7 +282,7 @@ public class DistanceMatrix {
      * @return The taxa
      */
     public String getTaxa(final int i) {
-        return this.taxa[i];
+        return this.taxa.get(i).getName();
     }
 
     /**
@@ -267,7 +292,7 @@ public class DistanceMatrix {
      * @param taxa The String representation of the taxa to set.
      */
     public void setTaxa(final int i, String taxa) {
-        this.taxa[i] = taxa;
+        this.taxa.set(i, new Taxon(taxa));
     }
 
     /**
@@ -402,7 +427,7 @@ public class DistanceMatrix {
         sb.append("[");
         for (int i = 0; i < nbTaxa; i++) {
             sb.append("\"");
-            sb.append(taxa[i]);
+            sb.append(taxa.get(i));
             sb.append("\"");
 
             if (i != nbTaxa - 1)

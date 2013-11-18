@@ -101,4 +101,14 @@ public class CircularOrdering {
         return new CircularOrdering(circOrdering);
     }
 
+    public static CircularOrdering createFromList(List<Integer> circularOrdering) {
+        int[] co = new int[circularOrdering.size()];
+        int i = 0;
+        for(Integer coi : circularOrdering) {
+            co[i++] = coi;
+        }
+
+        return new CircularOrdering(co);
+    }
+
 }

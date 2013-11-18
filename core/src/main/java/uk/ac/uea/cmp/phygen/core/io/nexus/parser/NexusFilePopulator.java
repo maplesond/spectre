@@ -24,10 +24,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.Taxon;
-import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
+import uk.ac.uea.cmp.phygen.core.ds.split.SplitBlock;
 import uk.ac.uea.cmp.phygen.core.io.nexus.Nexus;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -45,6 +46,7 @@ public class NexusFilePopulator implements NexusFileListener {
     private boolean verbose;
 
     private DistanceMatrixBuilder distanceMatrixBuilder;
+    private NexusSplitSystemBuilder splitSystemBuilder;
 
 
 
@@ -52,6 +54,7 @@ public class NexusFilePopulator implements NexusFileListener {
         this.nexus = nexus;
         this.verbose = verbose;
         this.distanceMatrixBuilder = new DistanceMatrixBuilder();
+        this.splitSystemBuilder = new NexusSplitSystemBuilder();
     }
 
     @Override
@@ -72,6 +75,21 @@ public class NexusFilePopulator implements NexusFileListener {
     @Override
     public void exitTree_definition(@NotNull NexusFileParser.Tree_definitionContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void enterConfidences_splits(@NotNull NexusFileParser.Confidences_splitsContext ctx) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void exitConfidences_splits(@NotNull NexusFileParser.Confidences_splitsContext ctx) {
+        this.splitSystemBuilder.setHasConfidences(
+                ctx.boolean_option() == null ?
+                        true :
+                        ctx.boolean_option().getText().equalsIgnoreCase("true") ||
+                                ctx.boolean_option().getText().equalsIgnoreCase("yes")
+        );
     }
 
     @Override
@@ -183,16 +201,6 @@ public class NexusFilePopulator implements NexusFileListener {
     }
 
     @Override
-    public void enterFormat_splits_name(@NotNull NexusFileParser.Format_splits_nameContext ctx) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void exitFormat_splits_name(@NotNull NexusFileParser.Format_splits_nameContext ctx) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
     public void enterState_composed_word(@NotNull NexusFileParser.State_composed_wordContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -229,7 +237,8 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitNsplits(@NotNull NexusFileParser.NsplitsContext ctx) {
-        //To change body of implemented methods use File | Settings | File Templates.
+
+
     }
 
     @Override
@@ -243,13 +252,72 @@ public class NexusFilePopulator implements NexusFileListener {
     }
 
     @Override
+    public void enterWeights_splits(@NotNull NexusFileParser.Weights_splitsContext ctx) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void exitWeights_splits(@NotNull NexusFileParser.Weights_splitsContext ctx) {
+        this.splitSystemBuilder.setWeighted(
+                ctx.boolean_option() == null ?
+                        true :
+                        ctx.boolean_option().getText().equalsIgnoreCase("true") ||
+                                ctx.boolean_option().getText().equalsIgnoreCase("yes")
+        );
+    }
+
+    @Override
+    public void enterMatrix_splits_data(@NotNull NexusFileParser.Matrix_splits_dataContext ctx) {
+
+
+    }
+
+    @Override
+    public void exitMatrix_splits_data(@NotNull NexusFileParser.Matrix_splits_dataContext ctx) {
+
+        if (ctx.NUMERIC() != null) {
+
+            double weight = Double.parseDouble(ctx.NUMERIC().getText());
+
+            NexusFileParser.Matrix_splits_listContext ctxList = ctx.matrix_splits_list();
+
+            List<Integer> setA = new LinkedList<>();
+
+            while (ctxList != null) {
+
+                if (ctxList.NUMERIC() != null) {
+
+                    int val = Integer.parseInt(ctxList.NUMERIC().getText());
+
+                    setA.add(val);
+                }
+
+                ctxList = ctxList.matrix_splits_list();
+            }
+
+            this.splitSystemBuilder.addSplit(new SplitBlock(setA), weight);
+        }
+    }
+
+    @Override
     public void enterProperties_splits_item(@NotNull NexusFileParser.Properties_splits_itemContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
     public void exitProperties_splits_item(@NotNull NexusFileParser.Properties_splits_itemContext ctx) {
-        //To change body of implemented methods use File | Settings | File Templates.
+
+        if (ctx.properties_splits_name() != null) {
+
+            String valStr = ctx.NUMERIC() != null ? ctx.NUMERIC().getText() : null;
+
+            if (ctx.properties_splits_name().getText().equalsIgnoreCase("cyclic")) {
+                this.splitSystemBuilder.setCyclic(true);
+            }
+            else if (ctx.properties_splits_name().getText().equalsIgnoreCase("fit")) {
+                this.splitSystemBuilder.setFit(Double.parseDouble(valStr));
+            }
+        }
     }
 
     @Override
@@ -303,6 +371,16 @@ public class NexusFilePopulator implements NexusFileListener {
     }
 
     @Override
+    public void enterLabels_header(@NotNull NexusFileParser.Labels_headerContext ctx) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void exitLabels_header(@NotNull NexusFileParser.Labels_headerContext ctx) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
     public void enterLabels(@NotNull NexusFileParser.LabelsContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -334,6 +412,20 @@ public class NexusFilePopulator implements NexusFileListener {
                 this.distanceMatrixBuilder.setNbChars(Integer.parseInt(ctxNchar.NUMERIC().getText()));
             }
         }
+    }
+
+    @Override
+    public void enterLabels_splits(@NotNull NexusFileParser.Labels_splitsContext ctx) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void exitLabels_splits(@NotNull NexusFileParser.Labels_splitsContext ctx) {
+        this.splitSystemBuilder.setHasLabels(
+                ctx.labels_option() == null ?
+                        ctx.labels_header().getText().equalsIgnoreCase("labels") :
+                        ctx.labels_option().getText().equalsIgnoreCase("true") ||
+                                ctx.labels_option().getText().equalsIgnoreCase("yes"));
     }
 
     @Override
@@ -373,7 +465,22 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitDimensions_splits(@NotNull NexusFileParser.Dimensions_splitsContext ctx) {
-        //To change body of implemented methods use File | Settings | File Templates.
+
+        if (this.nexus.getTaxa() != null) {
+            this.splitSystemBuilder.setTaxa(this.nexus.getTaxa());
+        }
+
+        if (ctx.ntax() != null) {
+            if (ctx.ntax().NUMERIC() != null) {
+                this.splitSystemBuilder.setExpectedNbTaxa(Integer.parseInt(ctx.ntax().NUMERIC().getText()));
+            }
+        }
+
+        if (ctx.nsplits() != null) {
+            if (ctx.nsplits().NUMERIC() != null) {
+                this.splitSystemBuilder.setExpectedNbSplits(Integer.parseInt(ctx.nsplits().NUMERIC().getText()));
+            }
+        }
     }
 
     @Override
@@ -399,8 +506,22 @@ public class NexusFilePopulator implements NexusFileListener {
                     this.distanceMatrixBuilder.setDiagonal(diagonal.equals("diagonal"));
                 }
                 else if (ctxFormatItem.labels() != null) {
-                    String labels = ctxFormatItem.labels().getText();
-                    this.distanceMatrixBuilder.setLabels(labels.equals("labels"));
+
+                    if (ctxFormatItem.labels().labels_option() != null) {
+                        String labelStr = ctxFormatItem.labels().labels_option().getText();
+
+                        if (labelStr.equalsIgnoreCase("yes") || labelStr.equalsIgnoreCase("true")) {
+                            this.distanceMatrixBuilder.setLabels(DistanceMatrixBuilder.Labels.LEFT);
+                        }
+
+                        this.distanceMatrixBuilder.setLabels(DistanceMatrixBuilder.Labels.valueOf(labelStr.toUpperCase()));
+                    }
+                    else if (ctxFormatItem.labels().labels_header().getText().equalsIgnoreCase("nolabels")) {
+                        this.distanceMatrixBuilder.setLabels(DistanceMatrixBuilder.Labels.NONE);
+                    }
+                    else {
+                        this.distanceMatrixBuilder.setLabels(DistanceMatrixBuilder.Labels.LEFT);
+                    }
                 }
                 else if (ctxFormatItem.missing() != null) {
                     // Not sure what to do with this.. leave it for now.
@@ -436,11 +557,21 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void enterFormat_splits_list(@NotNull NexusFileParser.Format_splits_listContext ctx) {
-        //To change body of implemented methods use File | Settings | File Templates.
+
     }
 
     @Override
     public void exitFormat_splits_list(@NotNull NexusFileParser.Format_splits_listContext ctx) {
+
+    }
+
+    @Override
+    public void enterConfidences_header(@NotNull NexusFileParser.Confidences_headerContext ctx) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void exitConfidences_header(@NotNull NexusFileParser.Confidences_headerContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
@@ -501,7 +632,8 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitBlock_splits(@NotNull NexusFileParser.Block_splitsContext ctx) {
-        //To change body of implemented methods use File | Settings | File Templates.
+
+        this.nexus.setSplitSystem(this.splitSystemBuilder.createSplitSystem());
     }
 
     @Override
@@ -521,7 +653,22 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitFormat_splits_item(@NotNull NexusFileParser.Format_splits_itemContext ctx) {
+
+    }
+
+    @Override
+    public void enterIntervals_splits(@NotNull NexusFileParser.Intervals_splitsContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void exitIntervals_splits(@NotNull NexusFileParser.Intervals_splitsContext ctx) {
+        this.splitSystemBuilder.setHasIntervals(
+                ctx.boolean_option() == null ?
+                    true :
+                    ctx.boolean_option().getText().equalsIgnoreCase("true") ||
+                            ctx.boolean_option().getText().equalsIgnoreCase("yes")
+        );
     }
 
     @Override
@@ -551,6 +698,16 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitBlock(@NotNull NexusFileParser.BlockContext ctx) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void enterMatrix_splits_list(@NotNull NexusFileParser.Matrix_splits_listContext ctx) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void exitMatrix_splits_list(@NotNull NexusFileParser.Matrix_splits_listContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
@@ -625,6 +782,16 @@ public class NexusFilePopulator implements NexusFileListener {
     }
 
     @Override
+    public void enterBoolean_option(@NotNull NexusFileParser.Boolean_optionContext ctx) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void exitBoolean_option(@NotNull NexusFileParser.Boolean_optionContext ctx) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
     public void enterTree_header(@NotNull NexusFileParser.Tree_headerContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -695,12 +862,32 @@ public class NexusFilePopulator implements NexusFileListener {
     }
 
     @Override
+    public void enterLabels_option(@NotNull NexusFileParser.Labels_optionContext ctx) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void exitLabels_option(@NotNull NexusFileParser.Labels_optionContext ctx) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
     public void enterStar(@NotNull NexusFileParser.StarContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
     public void exitStar(@NotNull NexusFileParser.StarContext ctx) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void enterIntervals_header(@NotNull NexusFileParser.Intervals_headerContext ctx) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void exitIntervals_header(@NotNull NexusFileParser.Intervals_headerContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
@@ -721,7 +908,10 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitCycle_item(@NotNull NexusFileParser.Cycle_itemContext ctx) {
-        //To change body of implemented methods use File | Settings | File Templates.
+
+        if (ctx.NUMERIC() != null) {
+            this.splitSystemBuilder.addCycleItem(Integer.parseInt(ctx.NUMERIC().getText()));
+        }
     }
 
     @Override
@@ -761,6 +951,16 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitNtax(@NotNull NexusFileParser.NtaxContext ctx) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void enterWeights_header(@NotNull NexusFileParser.Weights_headerContext ctx) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void exitWeights_header(@NotNull NexusFileParser.Weights_headerContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 

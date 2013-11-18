@@ -6,6 +6,7 @@ options
   language = Java;
 }
 
+
 // ----------------------------------------------------------------------
 // TOKENS
 // ----------------------------------------------------------------------
@@ -25,8 +26,6 @@ LETTER_US : [a-zA-Z_];
 //WORD : LETTER+
 //     | '"' DIGIT+ '"'
 //     | '"' LETTER+ '"';
-
-BOOLEAN : 'no' | 'yes' | 'false' | 'true';
 
 // A token satisfing the regular expression [_\w]+[\d\w\._]*. Note that an single
 //  _ is considered a valid identifier. In most contexts a single _ means a
@@ -153,6 +152,20 @@ diagonal :
     | 'nodiagonal'
     ;
 
+labels : labels_header ('=' labels_option)?;
+
+labels_header :
+      'labels'
+    | 'nolabels';
+
+labels_option :
+      'no'
+    | 'yes'
+    | 'false'
+    | 'true'
+    | 'left'
+    | 'right';
+
 
 
 // ----------------------------------------------------------------------
@@ -165,7 +178,7 @@ block_splits :
     format_splits
     properties_splits
     cycle
-    matrix_header matrix_data ';';
+    matrix_header matrix_splits_data ';';
 
 splits_block_header : 'splits' | 'Splits' | 'SPLITS';
 
@@ -186,17 +199,29 @@ format_splits_list :
     | format_splits_item format_splits_list
     ;
 
-format_splits_item : format_splits_name '=' BOOLEAN;
-
-format_splits_name :
-      'labels'
-    | 'weights'
-    | 'confidences'
-    | 'intervals'
+format_splits_item :
+      labels_splits
+    | weights_splits
+    | confidences_splits
+    | intervals_splits
     ;
 
+labels_splits : labels_header ('=' labels_option)?;
+
+weights_splits : weights_header '=' boolean_option;
+
+weights_header : 'weights';
+
+confidences_splits : confidences_header '=' boolean_option;
+
+confidences_header : 'confidences';
+
+intervals_splits : intervals_header '=' boolean_option;
+
+intervals_header : 'intervals';
+
+
 properties_splits :
-    // Empty
     | properties properties_splits_list ';'
     ;
 
@@ -205,7 +230,7 @@ properties_splits_list :
     | properties_splits_item properties_splits_list
     ;
 
-properties_splits_item : properties_splits_name ('=' BOOLEAN)?;
+properties_splits_item : properties_splits_name ('=' NUMERIC)?;
 
 properties_splits_name :
       'fit'
@@ -226,7 +251,15 @@ cycle_item_list :
 
 cycle_item : NUMERIC;
 
+matrix_splits_data :
+    // Empty
+    |  NUMERIC matrix_splits_list ',' matrix_splits_data
+    ;
 
+matrix_splits_list :
+    // Empty
+    | NUMERIC matrix_splits_list
+    ;
 
 
 // ----------------------------------------------------------------------
@@ -335,6 +368,7 @@ state_composed_list :
 // MISC RULES
 // ----------------------------------------------------------------------
 
+boolean_option : 'no' | 'yes' | 'false' | 'true';
 
 dimensions  : 'dimensions' | 'DIMENSIONS';
 
@@ -344,11 +378,6 @@ identifier_list :
     // Empty
     | IDENTIFIER identifier_list
     | '\'' IDENTIFIER '\'' identifier_list
-    ;
-
-labels :
-      'labels'
-    | 'nolabels'
     ;
 
 // Might be that this is not expressive enough... original description:

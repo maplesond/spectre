@@ -26,5 +26,7 @@ package uk.ac.uea.cmp.phygen.core.io;
 public enum PhygenDataType {
 
     DISTANCE_MATRIX,
-    TREE;
+    TREE,
+    CIRCULAR_ORDERING,
+    SPLITS;
 }

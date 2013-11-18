@@ -85,4 +85,14 @@ public class NexusReaderTest {
 
         assertTrue(nexus.getTaxa().size() == 10);
     }
+
+    @Test
+    public void testTaxaColorsNetwork() throws IOException {
+
+        File testFile = FileUtils.toFile(NexusReaderTest.class.getResource("/colors-network.nex"));
+
+        Nexus nexus = new NexusReader().parse(testFile);
+
+        assertTrue(nexus.getTaxa().size() == 10);
+    }
 }

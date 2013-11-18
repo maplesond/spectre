@@ -22,7 +22,7 @@ import org.junit.rules.TemporaryFolder;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phygen.core.ds.split.CircularOrdering;
 import uk.ac.uea.cmp.phygen.core.ds.split.CircularSplitSystem;
-import uk.ac.uea.cmp.phygen.core.ds.split.SplitSystem;
+import uk.ac.uea.cmp.phygen.core.ds.split.SimpleSplitSystem;
 
 import java.io.File;
 import java.io.IOException;
@@ -52,7 +52,7 @@ public class NexusWriterTest {
 
         DistanceMatrix distanceMatrix = new DistanceMatrix(5);
 
-        SplitSystem ss = new CircularSplitSystem(distanceMatrix, CircularOrdering.createTrivialOrdering(5));
+        SimpleSplitSystem ss = new CircularSplitSystem(distanceMatrix, CircularOrdering.createTrivialOrdering(5));
 
         new NexusWriter().writeSplitSystem(outputFile, ss);
 
@@ -74,7 +74,7 @@ public class NexusWriterTest {
 
         DistanceMatrix distanceMatrix = new DistanceMatrix(5);
 
-        SplitSystem ss = new CircularSplitSystem(distanceMatrix, CircularOrdering.createTrivialOrdering(5));
+        SimpleSplitSystem ss = new CircularSplitSystem(distanceMatrix, CircularOrdering.createTrivialOrdering(5));
 
 
         /*new NexusWriter().writeTree(outputFile, ss, ss.calculateTreeWeighting(distanceMatrix));

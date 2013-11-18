@@ -15,6 +15,7 @@
  */
 package uk.ac.uea.cmp.phygen.core.ds.split;
 
+import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 
 import java.util.ArrayList;
@@ -27,12 +28,12 @@ import java.util.List;
  * Time: 19:08
  * To change this template use File | Settings | File Templates.
  */
-public class CircularSplitSystem extends SplitSystem {
+public class CircularSplitSystem extends SimpleSplitSystem {
 
     private CircularOrdering circularOrdering;
 
-    public CircularSplitSystem(List<Split> splits, CircularOrdering circularOrdering) {
-        super(circularOrdering.size(), splits);
+    public CircularSplitSystem(Taxa taxa, List<Split> splits, CircularOrdering circularOrdering) {
+        super(taxa, splits);
         this.circularOrdering = circularOrdering;
     }
 
@@ -65,10 +66,17 @@ public class CircularSplitSystem extends SplitSystem {
         this.circularOrdering = circularOrdering;
     }
 
+
+    @Override
+    public boolean isCircular() {
+        return false;
+    }
+
     public void setCircularOrdering(CircularOrdering circularOrdering) {
         this.circularOrdering = circularOrdering;
     }
 
+    @Override
     public CircularOrdering getCircularOrdering() {
         return circularOrdering;
     }

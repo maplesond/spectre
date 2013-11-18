@@ -16,40 +16,47 @@
 
 package uk.ac.uea.cmp.phygen.core.ds.split;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
  * User: dan
  * Date: 18/11/13
- * Time: 13:11
+ * Time: 13:39
  * To change this template use File | Settings | File Templates.
  */
-public interface SplitSystem {
+public class SplitUtils {
+
+    public static List<Split> createWeightedSplitList(List<SplitBlock> splitBlocks, List<Double> weights, final int nbTaxa) {
+
+        if (splitBlocks.size() != weights.size())
+            throw new IllegalArgumentException("Split blocks and weights are of different lengths.");
+
+        List<Split> splits = new ArrayList<>();
+
+        int i = 0;
+        for(SplitBlock splitBlock : splitBlocks) {
+            splits.add(new Split(splitBlock, nbTaxa, weights.get(i++)));
+        }
+
+        return splits;
+    }
 
 
-    // **** Standard split methods ****
+    public static double sumOfWeights(List<Split> splits) {
 
-    int getNbSplits();
+        double sum = 0.0;
 
-    Split getSplitAt(final int i);
+        for (Split split : splits) {
+            sum += split.getWeight();
+        }
 
+        return sum;
+    }
 
+    public static double meanOfWeights(List<Split> splits) {
 
-    // **** Methods related to split weights ****
-
-    boolean isWeighted();
-
-    double getWeightAt(final int i);
-
-    List<Split> filterByWeight(double threshold);
-
-
-    // **** Methods related to circular ordering ****
-
-    boolean isCircular();
-
-    CircularOrdering getCircularOrdering();
-
-
+        return sumOfWeights(splits) / (double) splits.size();
+    }
 }

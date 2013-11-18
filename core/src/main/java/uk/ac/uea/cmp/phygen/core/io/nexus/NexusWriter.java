@@ -19,6 +19,7 @@ package uk.ac.uea.cmp.phygen.core.io.nexus;
 import org.apache.commons.io.FileUtils;
 import uk.ac.uea.cmp.phygen.core.ds.Taxon;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
+import uk.ac.uea.cmp.phygen.core.ds.split.SimpleSplitSystem;
 import uk.ac.uea.cmp.phygen.core.ds.split.Split;
 import uk.ac.uea.cmp.phygen.core.ds.split.SplitBlock;
 import uk.ac.uea.cmp.phygen.core.ds.split.SplitSystem;
@@ -46,7 +47,7 @@ public class NexusWriter implements PhygenWriter {
      *                             data to the file.
      */
     @Override
-    public void writeSplitSystem(File file, SplitSystem ss) throws IOException {
+    public void writeSplitSystem(File file, SimpleSplitSystem ss) throws IOException {
 
         if (file == null) {
             throw new NullPointerException("Must specify a nexus file to write.");
@@ -78,8 +79,8 @@ public class NexusWriter implements PhygenWriter {
         outputString.append("#nexus\n\n\nBEGIN Taxa;\nDIMENSIONS ntax=").append(n).append(";\nTAXLABELS\n");
 
         int idx = 1;
-        for (String taxa : ss.getTaxa()) {
-            outputString.append("[").append(idx++).append("] '").append(taxa).append("'\n");
+        for (Taxon taxa : ss.getTaxa()) {
+            outputString.append("[").append(idx++).append("] '").append(taxa.getName()).append("'\n");
         }
 
         outputString.append(";\nEND; [Taxa]\n\nBEGIN Splits;\nDIMENSIONS ntax=").append(n).append(" nsplits=").append(numberOfSplits).append(";\nFORMAT ").append("labels=no weights=yes confidences=no intervals").append("=no;\nPROPERTIES fit=-1.0 cyclic;\nCYCLE");
@@ -150,6 +151,9 @@ public class NexusWriter implements PhygenWriter {
     public void writeNexusData(File outFile, Nexus nexusData) throws IOException {
 
 
+        SplitSystem ss = nexusData.getSplitSystem();
+
+
         StringBuilder nexusString = new StringBuilder();
 
         final int N = nexusData.getNbTaxa();
@@ -160,7 +164,7 @@ public class NexusWriter implements PhygenWriter {
             nexusString.append(taxon.getName()).append("\n");
         }
 
-        nexusString.append(";\nEND;\n\nBEGIN st_splits;\nDIMENSIONS ntax=" + N + " nsplits=").append(nexusData.getNbSplits()).append(";\n");
+        nexusString.append(";\nEND;\n\nBEGIN st_splits;\nDIMENSIONS ntax=" + N + " nsplits=").append(ss.getNbSplits()).append(";\n");
         nexusString.append("FORMAT\nlabels\nweights\n;\nPROPERTIES\nFIT=100\nweakly compatible\ncyclic\n;\nCYCLE");
 
         for (int n = 0; n < N; n++) {
@@ -169,12 +173,13 @@ public class NexusWriter implements PhygenWriter {
 
         nexusString.append(";\nMATRIX\n");
 
-        for (int n = 0; n < nexusData.getNbSplits(); n++) {
+
+        for (int n = 0; n < ss.getNbSplits(); n++) {
 
             // Add one for splitstree...
-            nexusString.append(n + 1).append("   ").append(nexusData.getWeightAt(n)).append("  ");
+            nexusString.append(n + 1).append("   ").append(ss.getWeightAt(n)).append("  ");
 
-            SplitBlock aSplit = nexusData.getSplitAt(n);
+            SplitBlock aSplit = ss.getSplitAt(n).getASide();
 
             for (int p = 0; p < aSplit.size(); p++) {
 

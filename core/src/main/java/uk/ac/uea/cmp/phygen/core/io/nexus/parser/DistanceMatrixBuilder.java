@@ -31,6 +31,12 @@ import java.util.List;
  */
 public class DistanceMatrixBuilder {
 
+    public static enum Labels {
+        NONE,
+        LEFT,
+        RIGHT
+    }
+
     public static enum Triangle {
         BOTH {
             @Override
@@ -68,7 +74,7 @@ public class DistanceMatrixBuilder {
     private Triangle triangle;
     private boolean diagonal;
     private boolean interleave;
-    private boolean labels;
+    private Labels labels;
     private List<List<Double>> rows;
 
     public DistanceMatrixBuilder() {
@@ -77,7 +83,7 @@ public class DistanceMatrixBuilder {
         this.triangle = null;
         this.diagonal = false;
         this.interleave = false;
-        this.labels = false;
+        this.labels = Labels.NONE;
         this.rows = new ArrayList<>();
     }
 
@@ -165,11 +171,11 @@ public class DistanceMatrixBuilder {
         this.interleave = interleave;
     }
 
-    public boolean isLabels() {
+    public Labels getLabels() {
         return labels;
     }
 
-    public void setLabels(boolean labels) {
+    public void setLabels(Labels labels) {
         this.labels = labels;
     }
 

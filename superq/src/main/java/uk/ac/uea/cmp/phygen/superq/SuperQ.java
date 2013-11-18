@@ -19,6 +19,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.ac.uea.cmp.phygen.core.ds.split.Split;
 import uk.ac.uea.cmp.phygen.core.io.nexus.Nexus;
 import uk.ac.uea.cmp.phygen.core.io.nexus.NexusReader;
 import uk.ac.uea.cmp.phygen.core.io.nexus.NexusWriter;
@@ -34,6 +35,7 @@ import uk.ac.uea.cmp.phygen.tools.scale.Scaling;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 public class SuperQ extends RunnableTool {
 
@@ -258,10 +260,10 @@ public class SuperQ extends RunnableTool {
         Nexus raw = new NexusReader().readNexusData(inFile);
 
         // Filter
-        Nexus filtered = raw.filter(threshold);
+        List<Split> filtered = raw.getSplitSystem().filterByWeight(threshold);
 
         // Save
-        new NexusWriter().writeNexusData(outFile, filtered);
+        new NexusWriter().writeNexusData(outFile, null);
     }
 
     private void notifyUser(String message) {

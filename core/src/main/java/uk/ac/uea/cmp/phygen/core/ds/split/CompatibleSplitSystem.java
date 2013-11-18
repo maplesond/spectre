@@ -15,6 +15,7 @@
  */
 package uk.ac.uea.cmp.phygen.core.ds.split;
 
+import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 
 import java.util.ArrayList;
@@ -27,13 +28,11 @@ public class CompatibleSplitSystem extends CircularSplitSystem {
 
     public CompatibleSplitSystem(List<Split> splits, DistanceMatrix distanceMatrix, CircularOrdering circularOrdering) {
 
-        super(splits, circularOrdering);
+        super(distanceMatrix.getTaxaSet(), splits, circularOrdering);
 
         if (circularOrdering.size() != distanceMatrix.size()) {
             throw new IllegalArgumentException("Distance matrix and circular ordering are not the same size");
         }
-
-        this.setTaxa(distanceMatrix.getTaxaSet());
 
         //this.setSplitWeights(this.calculateSplitWeighting(distanceMatrix, circularOrdering));
 
@@ -42,9 +41,7 @@ public class CompatibleSplitSystem extends CircularSplitSystem {
 
     public CompatibleSplitSystem(CompatibleSplitSystem unweightedSplitSystem, TreeSplitWeights treeWeights) {
 
-        super(unweightedSplitSystem.copySplits(), unweightedSplitSystem.getCircularOrdering().copy());
-
-        this.setTaxa(unweightedSplitSystem.getTaxa().clone());
+        super(new Taxa(unweightedSplitSystem.getTaxa()), unweightedSplitSystem.copySplits(), unweightedSplitSystem.getCircularOrdering().copy());
 
         reweight(treeWeights);
     }

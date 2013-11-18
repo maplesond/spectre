@@ -51,6 +51,16 @@ public class Taxa extends ArrayList<Taxon> {
         this.add(taxon);
     }
 
+    public Taxa(final String[] taxa) {
+
+        this.names = new HashSet<>();
+        this.duplicatesAllowed = false;
+
+        for(String taxon : taxa) {
+            this.add(new Taxon(taxon));
+        }
+    }
+
     /**
      * Copy constructor
      * @param taxa
@@ -60,6 +70,25 @@ public class Taxa extends ArrayList<Taxon> {
         this.duplicatesAllowed = taxa.isDuplicatesAllowed();
         this.names = new HashSet<>();
     }
+
+
+    @Override
+    public boolean equals(Object o) {
+
+        Taxa other = (Taxa)o;
+
+        if (other.size() != this.size())
+            return false;
+
+        for(int i = 0; i < this.size(); i++) {
+
+            if (!this.get(i).equals(other.get(i)))
+                return false;
+        }
+
+        return true;
+    }
+
 
     /**
      * Will try to add a new taxon to the end of the list.  Throws an IllegalArgumentException if this
@@ -173,6 +202,17 @@ public class Taxa extends ArrayList<Taxon> {
 
     public boolean isDuplicatesAllowed() {
         return duplicatesAllowed;
+    }
+
+    public static Taxa createTrivialTaxaSet(int expectedNbTaxa) {
+
+        Taxa t = new Taxa();
+
+        for(int i = 0; i < expectedNbTaxa; i++) {
+            t.add(new Taxon(new String(Character.toString((char)(i + 65)))));
+        }
+
+        return t;
     }
 
     public static enum Direction {

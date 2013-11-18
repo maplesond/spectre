@@ -106,7 +106,7 @@ public class SplitBlock implements Comparable<SplitBlock> {
         StringBuilder sb = new StringBuilder();
 
         for (Integer i : this.elements) {
-            sb.append(i + 1);
+            sb.append(i);
             sb.append(" ");
         }
 

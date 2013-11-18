@@ -18,11 +18,11 @@ package uk.ac.uea.cmp.phygen.core.io.nexus;
 
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
-import uk.ac.uea.cmp.phygen.core.ds.split.SplitBlock;
+import uk.ac.uea.cmp.phygen.core.ds.split.SimpleSplitSystem;
+import uk.ac.uea.cmp.phygen.core.ds.split.Split;
+import uk.ac.uea.cmp.phygen.core.ds.split.SplitSystem;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -36,28 +36,18 @@ public class Nexus {
 
     private Taxa taxa;
     private DistanceMatrix distanceMatrix;
-    private List<SplitBlock> splits;
-    private List<Double> weights;
+    private SplitSystem splitSystem;
     private List<Integer> cycle;
 
     public Nexus() {
         this.taxa = new Taxa();
         this.distanceMatrix = null;
         this.cycle = new ArrayList<>();
-        this.splits = new ArrayList<>();
-        this.weights = new ArrayList<>();
+        this.splitSystem = null;
     }
 
     public void setTaxa(Taxa taxa) {
         this.taxa = taxa;
-    }
-
-    public void setSplits(List<SplitBlock> splits) {
-        this.splits = splits;
-    }
-
-    public void setWeights(List<Double> weights) {
-        this.weights = weights;
     }
 
     public void setCycle(List<Integer> cycle) {
@@ -80,13 +70,14 @@ public class Nexus {
         return cycle;
     }
 
-    public List<SplitBlock> getSplits() {
-        return splits;
+    public void setSplitSystem(SplitSystem splitSystem) {
+        this.splitSystem = splitSystem;
     }
 
-    public List<Double> getWeights() {
-        return weights;
+    public SplitSystem getSplitSystem() {
+        return splitSystem;
     }
+
 
     public int getNbTaxa() {
         return this.taxa.size();
@@ -100,23 +91,8 @@ public class Nexus {
         return this.cycle.get(i);
     }
 
-    public int getNbSplits() {
-        return this.splits.size();
-    }
 
-    public SplitBlock getSplitAt(final int i) {
-        return this.splits.get(i);
-    }
-
-    public int getNbWeights() {
-        return this.weights.size();
-    }
-
-    public double getWeightAt(final int i) {
-        return this.weights.get(i);
-    }
-
-    public Nexus filter(double threshold) {
+    /*public Nexus filter(double threshold) {
 
         int N = this.getNbTaxa();
 
@@ -204,9 +180,8 @@ public class Nexus {
         nexus.setTaxa(taxaCopy);
         nexus.setDistanceMatrix(null);
         nexus.setCycle(cycleCopy);
-        nexus.setSplits(filteredSplits);
-        nexus.setWeights(filteredWeights);
+        nexus.setSplitSystem(new WeightedSplitSystem(filteredSplits, filteredWeights));
 
         return nexus;
-    }
+    }    */
 }
