@@ -18,13 +18,14 @@ package uk.ac.uea.cmp.phygen.tools.chopper.loader;
 import org.kohsuke.MetaInfServices;
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.Taxon;
+import uk.ac.uea.cmp.phygen.core.ds.network.QuartetNetwork;
+import uk.ac.uea.cmp.phygen.core.ds.network.QuartetNetworkList;
 import uk.ac.uea.cmp.phygen.core.ds.tree.newick.NewickTree;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.LinkedList;
 import java.util.StringTokenizer;
 
 /**
@@ -32,16 +33,14 @@ import java.util.StringTokenizer;
  * change this template use Options | File Templates.
  */
 @MetaInfServices(uk.ac.uea.cmp.phygen.tools.chopper.loader.Source.class)
-public class TreeFileLoader extends AbstractTreeLoader {
+public class TreeFileLoader implements Source {
 
     @Override
-    public void load(File file, double weight) throws IOException {
+    public QuartetNetworkList load(File file, double weight) throws IOException {
 
-        index = 0;
+        QuartetNetworkList sourceDataList = new QuartetNetworkList();
 
-        taxonNames = new Taxa();
-        trees = new LinkedList<>();
-        weights = new LinkedList<>();
+        Taxa taxa = new Taxa();
 
         BufferedReader in = new BufferedReader(new FileReader(file));
 
@@ -104,7 +103,7 @@ public class TreeFileLoader extends AbstractTreeLoader {
 
                     }
 
-                    taxonNames.add(new Taxon(second.trim().substring(0, second.trim().length() - 1)));
+                    taxa.add(new Taxon(second.trim().substring(0, second.trim().length() - 1)));
                 }
             }
 
@@ -114,7 +113,6 @@ public class TreeFileLoader extends AbstractTreeLoader {
             }
         }
 
-        treeWeights = false;
 
         // now, we will read tree lines until we find an end
 
@@ -127,38 +125,25 @@ public class TreeFileLoader extends AbstractTreeLoader {
             aLine = aLine.trim();
 
             if (aLine.toUpperCase().startsWith("END")) {
-
                 readingTrees = false;
                 break;
-
             }
 
             if (aLine.indexOf('(') != -1 && aLine.endsWith(");")) {
 
-                // we have a tree line here
-
-                weights.add(weight);
-
-
+                // We have a tree line here, so parse it and create the tree
                 NewickTree aTree = new NewickTree(aLine);
 
-                /*LinkedList<String> numberNames = new LinkedList<>();
-
-                for (int n = 0; n < taxonNames.size(); n++) {
-
-                    numberNames.add(new String((n + 1) + ""));
-
-                }
-
-                aTree.rename(numberNames, taxonNames);*/
-
-                trees.add(aTree);
+                // Create quartets from the tree and add to the list (taxa should be the same for each tree)
+                sourceDataList.add(new QuartetNetwork(taxa, weight, aTree.createQuartets()));
             }
 
             aLine = in.readLine();
         }
 
         in.close();
+
+        return sourceDataList;
     }
 
     @Override

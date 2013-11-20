@@ -297,7 +297,7 @@ public class JOptimizer extends AbstractOptimiser {
 
 
     /**
-     * Apache should always be operational, as it's an open source java library available via maven
+     * Apache should always be operational, as it's an open loader java library available via maven
      *
      * @return
      */

@@ -21,6 +21,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
+import uk.ac.uea.cmp.phygen.core.ds.network.QuartetNetworkAgglomerator;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetIndex;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
@@ -39,15 +40,16 @@ public class WeightsComputeNNLSInformative {
 
     private static Logger log = LoggerFactory.getLogger(WeightsComputeNNLSInformative.class);
 
-    public static ComputedWeights computeWeights(QNet parent, String infoName, double tolerance, Optimiser optimiser) throws QNetException, IOException, OptimiserException {
+    public static ComputedWeights computeWeights(QuartetNetworkAgglomerator quartetNetworkAgglomerator,
+                                                 double tolerance, Optimiser optimiser) throws QNetException, IOException, OptimiserException {
 
         // This method is probably going to take a while so start a timer.
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
 
-        List<Taxa> taxaSets = parent.getTaxaSets();
-        QuartetWeights theQuartetWeights = parent.getWeights();
-        int N = parent.getN();
+        List<Taxa> taxaSets = null; //quartetNetworkAgglomerator.getTaxaSets();
+        QuartetWeights theQuartetWeights = quartetNetworkAgglomerator.getQuartetWeights();
+        int N = quartetNetworkAgglomerator.getTaxa().size();
 
         // we have N taxa
 
@@ -161,7 +163,8 @@ public class WeightsComputeNNLSInformative {
 
         // load r values
 
-        load(pHolder, infoName);
+        //TODO Loading info  rewrite to get from agglomerator
+        //load(pHolder, file.getAbsolutePath());
 
         // fill upp pHolder by provided loop
 
@@ -1593,7 +1596,7 @@ public class WeightsComputeNNLSInformative {
         return x;
     }
 
-
+    // Loading info  rewrite to get from agglomerator
     private static void load(PHolder pHolder, String fileName) throws IOException {
 
         int N = 0;

@@ -16,38 +16,29 @@
 package uk.ac.uea.cmp.phygen.tools.chopper.loader;
 
 import org.kohsuke.MetaInfServices;
-import uk.ac.uea.cmp.phygen.core.ds.Taxon;
+import uk.ac.uea.cmp.phygen.core.ds.network.QuartetNetwork;
+import uk.ac.uea.cmp.phygen.core.ds.network.QuartetNetworkList;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 import uk.ac.uea.cmp.phygen.core.ds.split.Split;
 import uk.ac.uea.cmp.phygen.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.phygen.core.io.nexus.NexusReader;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.util.LinkedList;
-import java.util.StringTokenizer;
 
 /**
  * Created by IntelliJ IDEA. User: Analysis Date: 2004-jul-11 Time: 23:09:07 To
  * change this template use Options | File Templates.
  */
 @MetaInfServices(uk.ac.uea.cmp.phygen.tools.chopper.loader.Source.class)
-public class NexusSplitsLoader extends AbstractLoader {
+public class NexusSplitsLoader implements Source {
 
     @Override
-    public void load(File file, double weight) throws IOException {
+    public QuartetNetworkList load(File file, double weight) throws IOException {
 
         // Load the split system from the nexus file
         SplitSystem splitSystem = new NexusReader().readSplitSystem(file);
-
-        // Retrive the taxa from the split system
-        this.taxonNames = splitSystem.getTaxa();
-
-        // Just set the weight
-        this.weights.add(weight);
 
         // Initialise the quartet weights to the right size, which depends on the number of taxa present in the split system
         QuartetWeights qW = new QuartetWeights(Quartet.over4(splitSystem.getNbTaxa()));
@@ -57,8 +48,7 @@ public class NexusSplitsLoader extends AbstractLoader {
             qW.addSplit(split);
         }
 
-        // Add this quartet weighting to the list
-        qWs.add(qW);
+        return new QuartetNetworkList(new QuartetNetwork(splitSystem.getTaxa(), weight, qW));
     }
 
     @Override

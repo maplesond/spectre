@@ -19,6 +19,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.ac.uea.cmp.phygen.core.ds.network.QuartetNetworkAgglomerator;
+import uk.ac.uea.cmp.phygen.core.ds.split.CircularOrdering;
 import uk.ac.uea.cmp.phygen.core.ds.split.Split;
 import uk.ac.uea.cmp.phygen.core.io.nexus.Nexus;
 import uk.ac.uea.cmp.phygen.core.io.nexus.NexusReader;
@@ -97,10 +99,6 @@ public class SuperQ extends RunnableTool {
                     "Internal NNLS method" :
                     this.options.getPrimarySolver().getIdentifier();
 
-            //System.out.println("path to output file: " + path);
-            //System.out.println("temporary path: " + tmppath);
-
-
             this.continueRun();
 
             if (this.options.isScaleInputTree()) {
@@ -136,7 +134,7 @@ public class SuperQ extends RunnableTool {
             }
 
             notifyUser("CHOPPER - Breaking input trees into quartets");
-            Chopper.run(new File(file), new File(tmppath + "qw"), type.toUpperCase());
+            QuartetNetworkAgglomerator quartetNetworkAgglomerator = new Chopper().execute(new File(file), type.toUpperCase());
 
             rt.gc();
             log.debug("FREE MEM - after running Chopper: " + rt.freeMemory());
@@ -145,19 +143,17 @@ public class SuperQ extends RunnableTool {
 
             notifyUser("QNET - Calculating the circular ordering - Using " + primarySolverName);
             QNet qnet = new QNet();
-            ComputedWeights computedWeights = qnet.execute(
-                    new File(tmppath + "qw"),
-                    false,
+            CircularOrdering circularOrdering = qnet.computeCircularOrdering(quartetNetworkAgglomerator);
+            ComputedWeights computedWeights = qnet.computedWeights(
+                    quartetNetworkAgglomerator,
                     -1.0,
-                    this.options.getPrimarySolver()
-            );
+                    this.options.getPrimarySolver());
 
             rt.gc();
             log.debug("FREE MEM - after running Q-Net: " + rt.freeMemory());
 
             this.continueRun();
 
-            //System.out.println("output path: " + this.output_file.getPath());
             String filterTempFile = tmppath + "unfiltered-split-system.nex";
             File weightsOutput = this.options.getFilter() != null ? new File(filterTempFile) : this.options.getOutputFile();
 
@@ -173,7 +169,7 @@ public class SuperQ extends RunnableTool {
                 try {
 
                     // Create problem from the computer weights
-                    Problem problem = this.options.getSecondaryProblem().compileProblem(qnet.getN(), computedWeights.getX(), computedWeights.getEtE().toArray());
+                    Problem problem = this.options.getSecondaryProblem().compileProblem(circularOrdering.size(), computedWeights.getX(), computedWeights.getEtE().toArray());
 
                     // Run the secondary optimisation step
                     double[] solution2 = this.options.getSecondaryProblem().getName() == "MINIMA" ?
@@ -190,7 +186,7 @@ public class SuperQ extends RunnableTool {
             }
 
             notifyUser("SUPERQ - Saving weights to file");
-            qnet.writeWeights(weightsOutput, solution, null, 0);
+            qnet.writeWeights(weightsOutput, solution, null, 0, quartetNetworkAgglomerator);
 
 
             rt.gc();

@@ -54,4 +54,19 @@ public class ChopperTest {
 
         assertTrue(lines.size() == 45);
     }
+
+    @Test
+    public void singleTreeScript() throws IOException {
+
+        File treeFile = FileUtils.toFile(ChopperTest.class.getResource("/chopper/in.script"));
+        File quartetFile = temp.newFile();
+
+        new Chopper().execute(treeFile, quartetFile, "script");
+
+        assertTrue(quartetFile.exists());
+
+        List<String> lines = FileUtils.readLines(quartetFile);
+
+        assertTrue(lines.size() == 45);
+    }
 }

@@ -31,8 +31,8 @@ public class WHolder {
 
         for (int n = 0; n < Quartet.over4(N); n++) {
 
-            counts[n] = new Triplet<Integer>(0, 0, 0);
-            weights[n] = new Triplet<Double>(0.0, 0.0, 0.0);
+            counts[n] = new Triplet<>(0, 0, 0);
+            weights[n] = new Triplet<>(0.0, 0.0, 0.0);
         }
 
         // now, we store everything properly

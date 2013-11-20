@@ -2,7 +2,7 @@
  * Phylogenetics Tool suite
  * Copyright (C) 2013  UEA CMP Phylogenetics Group
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
@@ -13,13 +13,13 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package uk.ac.uea.cmp.phygen.tools.chopper.loader;
+
+package uk.ac.uea.cmp.phygen.qnet.loader;
 
 import org.kohsuke.MetaInfServices;
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.Taxon;
-import uk.ac.uea.cmp.phygen.core.ds.network.QuartetNetwork;
-import uk.ac.uea.cmp.phygen.core.ds.network.QuartetNetworkList;
+import uk.ac.uea.cmp.phygen.core.ds.network.QuartetNetworkAgglomerator;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 
@@ -32,25 +32,29 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 /**
- * Created by IntelliJ IDEA. User: Analysis Date: 2004-jul-11 Time: 23:09:07 To
- * change this template use Options | File Templates.
+ * Created with IntelliJ IDEA.
+ * User: dan
+ * Date: 20/11/13
+ * Time: 00:19
+ * To change this template use File | Settings | File Templates.
  */
-@MetaInfServices(uk.ac.uea.cmp.phygen.tools.chopper.loader.Source.class)
+@MetaInfServices
 public class NexusQuartetLoader implements Source {
 
     @Override
-    public QuartetNetworkList load(File file, double weight) throws IOException {
+    public QuartetNetworkAgglomerator load(File file, boolean logNormalize) throws IOException {
 
-        List<Double> weights = new ArrayList<>();
-
-        Taxa taxa = new Taxa();
-        QuartetWeights qW = null;
+        QuartetWeights theQuartetWeights = new QuartetWeights();
+        Taxa allTaxa = new Taxa();
+        List<Taxa> taxaSets = new ArrayList<>();
 
         /**
          *
          * Code for reading a file and initializing properly
          *
          */
+        boolean useMax = true;
+
         int N = 0;
 
         /**
@@ -93,12 +97,13 @@ public class NexusQuartetLoader implements Source {
                     N = Integer.parseInt(tT.substring(5, tT.length() - 1));
 
                     for (int n = 0; n < N; n++) {
-
-                        taxa.add(new Taxon(""));
-
+                        Taxon newTaxon = new Taxon("", n+1);
+                        allTaxa.add(newTaxon);
+                        taxaSets.add(new Taxa(newTaxon));
                     }
 
-                    qW = new QuartetWeights(Quartet.over4(N));
+                    theQuartetWeights = new QuartetWeights(N);
+                    useMax = true;
 
                     readingState = false;
 
@@ -123,27 +128,21 @@ public class NexusQuartetLoader implements Source {
 
                     for (int n = 0; n < N; n++) {
 
-                        StringTokenizer aST = new StringTokenizer(fileInput.readLine().trim());
+                        StringTokenizer aT = new StringTokenizer(fileInput.readLine());
 
-                        String aS = aST.nextToken();
+                        String aS = aT.nextToken();
 
-                        if (aST.hasMoreTokens()) {
+                        while (aT.hasMoreTokens()) {
 
-                            aS = aST.nextToken();
-
+                            aS = aT.nextToken();
                         }
 
-                        taxa.set(n, new Taxon(aS));
-
+                        allTaxa.set(n, new Taxon(aS));
                     }
 
                     readingState = false;
-
                 }
-
             }
-
-
         }
 
         readingState = true;
@@ -160,11 +159,8 @@ public class NexusQuartetLoader implements Source {
                 if (tT.toLowerCase().startsWith("st_quartets;")) {
 
                     readingState = false;
-
                 }
-
             }
-
         }
 
         readingState = true;
@@ -195,7 +191,7 @@ public class NexusQuartetLoader implements Source {
                             StringTokenizer bT = new StringTokenizer(bLine);
 
                             String label = bT.nextToken();
-                            double w = Double.parseDouble(bT.nextToken());
+                            double weight = Double.parseDouble(bT.nextToken());
                             int x = Integer.parseInt(bT.nextToken());
                             int y = Integer.parseInt(bT.nextToken());
                             String sC = bT.nextToken();
@@ -205,7 +201,8 @@ public class NexusQuartetLoader implements Source {
 
                             if (x != y && x != u && x != v && y != u && y != v && u != v) {
 
-                                qW.setWeight(new Quartet(x, y, u, v), w);
+                                theQuartetWeights.setWeight(new Quartet(x, y, u, v), weight);
+
                             }
                         }
                     }
@@ -215,11 +212,17 @@ public class NexusQuartetLoader implements Source {
             }
         }
 
-        return new QuartetNetworkList(new QuartetNetwork(taxa, weight, qW));
+        if (logNormalize) {
+            theQuartetWeights.logNormalize(useMax);
+        } else {
+            theQuartetWeights.normalize(useMax);
+        }
+
+        return null; //new QuartetNetworkList(new QuartetNetwork(allTaxa, 1.0, theQuartetWeights));
     }
 
     @Override
     public String getName() {
-        return "nexus:st_quartets";
+        return "nexus";
     }
 }

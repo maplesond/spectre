@@ -20,7 +20,6 @@ import uk.ac.uea.cmp.phygen.core.ds.Taxon;
 import uk.ac.uea.cmp.phygen.core.math.Statistics;
 
 import java.util.Arrays;
-import java.util.LinkedHashSet;
 
 /**
  * Immutable class representing the distances between each taxa provided

@@ -72,7 +72,7 @@ public abstract class NewickNode {
      * Walks the tree and returns the taxa list.  May throw an IllegalArgumentException if there are duplicate taxa
      * @return
      */
-    public Taxa getTaxa() {
+    public Taxa findAllTaxa() {
         Taxa taxa = new Taxa();
 
         if (this.taxon != null && !this.taxon.isEmpty())
@@ -86,7 +86,7 @@ public abstract class NewickNode {
     }
 
     public int getNbTaxa() {
-        return this.getTaxa().size();
+        return this.findAllTaxa().size();
     }
 
     protected void getTaxa(Taxa taxa) {
@@ -212,11 +212,10 @@ public abstract class NewickNode {
 
         for(int i = 0; i < this.branches.size(); i++) {
 
-
             NewickNode branch = this.branches.get(i);
             double w = branch.getLength();
 
-            Taxa setA = branch.getTaxa();
+            Taxa setA = branch.findAllTaxa();
             Taxa setB = new Taxa(remainder);
 
             ListIterator<NewickNode> lJ = branches.listIterator();
@@ -226,7 +225,7 @@ public abstract class NewickNode {
                 NewickNode otherBranch = lJ.next();
 
                 if (branch != otherBranch) {
-                    setB.addAll(otherBranch.getTaxa());
+                    setB.addAll(otherBranch.findAllTaxa());
                 }
             }
 

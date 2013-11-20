@@ -58,6 +58,16 @@ public class NexusFilePopulator implements NexusFileListener {
     }
 
     @Override
+    public void enterQuartets_block_header(@NotNull NexusFileParser.Quartets_block_headerContext ctx) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void exitQuartets_block_header(@NotNull NexusFileParser.Quartets_block_headerContext ctx) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
     public void enterCycle_item_list(@NotNull NexusFileParser.Cycle_item_listContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -139,6 +149,16 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitTriangle_option(@NotNull NexusFileParser.Triangle_optionContext ctx) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void enterMatrix_quartets_data(@NotNull NexusFileParser.Matrix_quartets_dataContext ctx) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void exitMatrix_quartets_data(@NotNull NexusFileParser.Matrix_quartets_dataContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
@@ -566,6 +586,16 @@ public class NexusFilePopulator implements NexusFileListener {
     }
 
     @Override
+    public void enterY_quartet(@NotNull NexusFileParser.Y_quartetContext ctx) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void exitY_quartet(@NotNull NexusFileParser.Y_quartetContext ctx) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
     public void enterConfidences_header(@NotNull NexusFileParser.Confidences_headerContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -582,6 +612,16 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitProperties_splits(@NotNull NexusFileParser.Properties_splitsContext ctx) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void enterX_quartet(@NotNull NexusFileParser.X_quartetContext ctx) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void exitX_quartet(@NotNull NexusFileParser.X_quartetContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
@@ -647,6 +687,16 @@ public class NexusFilePopulator implements NexusFileListener {
     }
 
     @Override
+    public void enterWeight_quartet(@NotNull NexusFileParser.Weight_quartetContext ctx) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void exitWeight_quartet(@NotNull NexusFileParser.Weight_quartetContext ctx) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
     public void enterFormat_splits_item(@NotNull NexusFileParser.Format_splits_itemContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -669,6 +719,16 @@ public class NexusFilePopulator implements NexusFileListener {
                     ctx.boolean_option().getText().equalsIgnoreCase("true") ||
                             ctx.boolean_option().getText().equalsIgnoreCase("yes")
         );
+    }
+
+    @Override
+    public void enterBlock_quartets(@NotNull NexusFileParser.Block_quartetsContext ctx) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void exitBlock_quartets(@NotNull NexusFileParser.Block_quartetsContext ctx) {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
@@ -722,6 +782,16 @@ public class NexusFilePopulator implements NexusFileListener {
     }
 
     @Override
+    public void enterV_quartet(@NotNull NexusFileParser.V_quartetContext ctx) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void exitV_quartet(@NotNull NexusFileParser.V_quartetContext ctx) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
     public void enterFormat_distances_list(@NotNull NexusFileParser.Format_distances_listContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -738,6 +808,16 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitFormat_splits(@NotNull NexusFileParser.Format_splitsContext ctx) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void enterCs_quartet(@NotNull NexusFileParser.Cs_quartetContext ctx) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void exitCs_quartet(@NotNull NexusFileParser.Cs_quartetContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
@@ -925,6 +1005,16 @@ public class NexusFilePopulator implements NexusFileListener {
     }
 
     @Override
+    public void enterU_quartet(@NotNull NexusFileParser.U_quartetContext ctx) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void exitU_quartet(@NotNull NexusFileParser.U_quartetContext ctx) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
     public void enterBlock_trees(@NotNull NexusFileParser.Block_treesContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -971,6 +1061,16 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitTriangle(@NotNull NexusFileParser.TriangleContext ctx) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void enterMatrix_quartet(@NotNull NexusFileParser.Matrix_quartetContext ctx) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void exitMatrix_quartet(@NotNull NexusFileParser.Matrix_quartetContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
@@ -1042,6 +1142,26 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitState_composed_list(@NotNull NexusFileParser.State_composed_listContext ctx) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void enterSc_quartet(@NotNull NexusFileParser.Sc_quartetContext ctx) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void exitSc_quartet(@NotNull NexusFileParser.Sc_quartetContext ctx) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void enterLabel_quartet(@NotNull NexusFileParser.Label_quartetContext ctx) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void exitLabel_quartet(@NotNull NexusFileParser.Label_quartetContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 

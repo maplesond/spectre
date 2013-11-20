@@ -16,7 +16,10 @@
 package uk.ac.uea.cmp.phygen.tools.chopper.loader;
 
 import org.kohsuke.MetaInfServices;
+import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.Taxon;
+import uk.ac.uea.cmp.phygen.core.ds.network.QuartetNetwork;
+import uk.ac.uea.cmp.phygen.core.ds.network.QuartetNetworkList;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeighting;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
@@ -32,13 +35,13 @@ import java.util.StringTokenizer;
  * change this template use Options | File Templates.
  */
 @MetaInfServices(uk.ac.uea.cmp.phygen.tools.chopper.loader.Source.class)
-public class QWeightLoader extends AbstractLoader {
+public class QWeightLoader implements Source {
 
     @Override
-    public void load(File file, double weight) throws IOException {
+    public QuartetNetworkList load(File file, double weight) throws IOException {
 
-        this.weights.add(weight);
         QuartetWeights qW = null;
+        Taxa taxa = new Taxa();
 
         /**
          *
@@ -230,7 +233,7 @@ public class QWeightLoader extends AbstractLoader {
                     taxonname = taxonname + lineTokenizer.nextToken();
                 }
 
-                taxonNames.set(theNumber - 1, new Taxon(taxonname));
+                taxa.set(theNumber - 1, new Taxon(taxonname));
 
             } else if (theFirst.equalsIgnoreCase("description")) {
                 /**
@@ -276,7 +279,7 @@ public class QWeightLoader extends AbstractLoader {
 
                 for (int n = 0; n < N; n++) {
 
-                    taxonNames.add(new Taxon(""));
+                    taxa.add(new Taxon(""));
                 }
 
                 qW = new QuartetWeights(N);
@@ -291,7 +294,7 @@ public class QWeightLoader extends AbstractLoader {
 
         qW.normalize(useMax);
 
-        this.qWs.add(qW);
+        return new QuartetNetworkList(new QuartetNetwork(taxa, weight, qW));
     }
 
     @Override

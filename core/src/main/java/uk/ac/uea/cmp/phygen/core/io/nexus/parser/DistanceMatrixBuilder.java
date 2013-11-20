@@ -18,7 +18,6 @@ package uk.ac.uea.cmp.phygen.core.io.nexus.parser;
 
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 

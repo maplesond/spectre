@@ -17,12 +17,7 @@
 package uk.ac.uea.cmp.phygen.core.util;
 
 import org.apache.commons.lang3.StringUtils;
-import uk.ac.uea.cmp.phygen.core.math.optimise.Objective;
-import uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser;
-import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;

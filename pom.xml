@@ -86,7 +86,7 @@
                 </configuration>
             </plugin>
 
-            <!-- Create source jar for all modules -->
+            <!-- Create loader jar for all modules -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>

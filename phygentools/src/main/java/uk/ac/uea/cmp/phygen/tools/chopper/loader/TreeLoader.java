@@ -17,11 +17,12 @@ package uk.ac.uea.cmp.phygen.tools.chopper.loader;
 
 import org.apache.commons.io.FileUtils;
 import org.kohsuke.MetaInfServices;
+import uk.ac.uea.cmp.phygen.core.ds.network.QuartetNetwork;
+import uk.ac.uea.cmp.phygen.core.ds.network.QuartetNetworkList;
 import uk.ac.uea.cmp.phygen.core.ds.tree.newick.NewickTree;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -30,24 +31,22 @@ import java.util.List;
  * @author sarah
  */
 @MetaInfServices(uk.ac.uea.cmp.phygen.tools.chopper.loader.Source.class)
-public class TreeLoader extends AbstractTreeLoader {
+public class TreeLoader implements Source {
 
     @Override
-    public void load(File file, double weight) throws IOException {
+    public QuartetNetworkList load(File file, double weight) throws IOException {
 
-        index = 0;
-
-        trees = new LinkedList<>();
-        weights = new LinkedList<>();
+        QuartetNetworkList sourceDataList = new QuartetNetworkList();
 
         List<String> lines = FileUtils.readLines(file);
         for(String line : lines) {
 
             NewickTree tree = new NewickTree(line);
 
-            weights.add(tree.getScalingFactor() * weight);
-            trees.add(tree);
+            sourceDataList.add(new QuartetNetwork(tree.getTaxa(), tree.getScalingFactor() * weight, tree.createQuartets()));
         }
+
+        return sourceDataList;
     }
 
     @Override

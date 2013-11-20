@@ -23,13 +23,9 @@ package uk.ac.uea.cmp.phygen.core.io.nexus;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.apache.commons.io.FileUtils;
 import org.kohsuke.MetaInfServices;
-import uk.ac.uea.cmp.phygen.core.ds.Taxa;
-import uk.ac.uea.cmp.phygen.core.ds.Taxon;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phygen.core.ds.split.CircularOrdering;
-import uk.ac.uea.cmp.phygen.core.ds.split.SplitBlock;
 import uk.ac.uea.cmp.phygen.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.phygen.core.ds.tree.newick.NewickTree;
 import uk.ac.uea.cmp.phygen.core.io.AbstractPhygenReader;
@@ -40,12 +36,11 @@ import uk.ac.uea.cmp.phygen.core.io.nexus.parser.NexusFilePopulator;
 import uk.ac.uea.cmp.phygen.core.util.DefaultParsingErrorListener;
 import uk.ac.uea.cmp.phygen.core.util.DefaultParsingErrorStrategy;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.StringTokenizer;
 
 /**
  * Used to handle streaming of Nexus format files into memory, and convertion of
@@ -59,7 +54,7 @@ public class NexusReader extends AbstractPhygenReader {
 
     public Nexus parse(File file) throws IOException {
 
-        // Convert source into a character stream
+        // Convert loader into a character stream
         CharStream in = new ANTLRInputStream(new FileInputStream(file));
 
         // Setup lexer

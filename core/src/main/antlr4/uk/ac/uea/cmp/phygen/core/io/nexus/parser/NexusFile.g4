@@ -68,6 +68,7 @@ block_declaration :
   //| block_unaligned
     | block_distances
     | block_splits
+    | block_quartets
   //| block_data
   //| block_codons
   //| block_sets
@@ -260,6 +261,41 @@ matrix_splits_list :
     // Empty
     | NUMERIC matrix_splits_list
     ;
+
+
+// ----------------------------------------------------------------------
+// QUARTETS
+// ----------------------------------------------------------------------
+
+block_quartets :
+    quartets_block_header ';'
+    matrix_header matrix_quartets_data ';';
+
+quartets_block_header : 'quartets' | 'Quartets' | 'QUARTETS';
+
+matrix_quartets_data :
+    // Empty
+    | matrix_quartet ',' matrix_splits_data
+    ;
+
+matrix_quartet : label_quartet weight_quartet x_quartet y_quartet sc_quartet u_quartet cs_quartet v_quartet;
+
+label_quartet : IDENTIFIER;
+
+weight_quartet : NUMERIC;
+
+x_quartet : NUMERIC;
+
+y_quartet : NUMERIC;
+
+u_quartet : NUMERIC;
+
+v_quartet : NUMERIC;
+
+sc_quartet : IDENTIFIER;
+
+cs_quartet: IDENTIFIER;
+
 
 
 // ----------------------------------------------------------------------

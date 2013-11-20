@@ -2,7 +2,7 @@
  * Phylogenetics Tool suite
  * Copyright (C) 2013  UEA CMP Phylogenetics Group
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
@@ -13,20 +13,23 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package uk.ac.uea.cmp.phygen.tools.chopper.loader;
 
-import uk.ac.uea.cmp.phygen.core.ds.network.QuartetNetworkList;
+package uk.ac.uea.cmp.phygen.qnet.loader;
+
+import uk.ac.uea.cmp.phygen.core.ds.network.QuartetNetworkAgglomerator;
 import uk.ac.uea.cmp.phygen.core.util.Service;
 
 import java.io.File;
 import java.io.IOException;
 
 /**
- * Created by IntelliJ IDEA. User: Analysis Date: 2004-jul-12 Time: 00:35:38 To
- * change this template use Options | File Templates.
+ * Created with IntelliJ IDEA.
+ * User: dan
+ * Date: 20/11/13
+ * Time: 00:15
+ * To change this template use File | Settings | File Templates.
  */
 public interface Source extends Service {
 
-    public QuartetNetworkList load(File file, double weight) throws IOException;
-
+    QuartetNetworkAgglomerator load(File file, boolean logNormalise) throws IOException;
 }

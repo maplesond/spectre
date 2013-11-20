@@ -22,8 +22,8 @@ import org.apache.commons.io.FileUtils;
 import org.kohsuke.MetaInfServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.uea.cmp.phygen.core.ds.Taxa;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
+import uk.ac.uea.cmp.phygen.core.ds.network.QuartetNetwork;
+import uk.ac.uea.cmp.phygen.core.ds.network.QuartetNetworkAgglomerator;
 import uk.ac.uea.cmp.phygen.core.util.SpiFactory;
 import uk.ac.uea.cmp.phygen.tools.PhygenTool;
 import uk.ac.uea.cmp.phygen.tools.chopper.loader.Source;
@@ -40,10 +40,15 @@ import java.util.StringTokenizer;
 @MetaInfServices
 public class Chopper extends PhygenTool {
 
+    private static final String DEFAULT_OUTPUT_PREFIX = "chopper";
+    private static final File DEFAULT_OUTPUT_DIR = new File("").getParentFile();
+
+
     private static Logger log = LoggerFactory.getLogger(Chopper.class);
 
     private static final String OPT_INPUT_FILE = "input";
-    private static final String OPT_OUTPUT_FILE = "output";
+    private static final String OPT_OUTPUT_DIR = "output";
+    private static final String OPT_OUTPUT_PREFIX = "prefix";
     private static final String OPT_SOURCE = "source";
 
     private SpiFactory<Source> sourceFactory;
@@ -60,8 +65,11 @@ public class Chopper extends PhygenTool {
         // Create Options object
         Options options = new Options();
 
-        options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_OUTPUT_FILE).hasArg()
-                .withDescription("The output file, which will contain the quartets and their weights").create("o"));
+        options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_OUTPUT_DIR).hasArg()
+                .withDescription("The directory, which will contain output from chopper").create("o"));
+
+        options.addOption(OptionBuilder.withArgName("string").withLongOpt(OPT_OUTPUT_PREFIX).hasArg()
+                .withDescription("The prefix for the output files.  Default: " + DEFAULT_OUTPUT_PREFIX).create("p"));
 
         options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_INPUT_FILE).hasArg()
                 .withDescription("The input file containing the tree(s) to chop").create("i"));
@@ -76,11 +84,19 @@ public class Chopper extends PhygenTool {
     protected void execute(CommandLine commandLine) throws IOException {
 
         File inputFile = new File(commandLine.getOptionValue(OPT_INPUT_FILE));
-        File outputFile = new File(commandLine.getOptionValue(OPT_OUTPUT_FILE));
+
+        File outputDir = commandLine.hasOption(OPT_OUTPUT_DIR) ?
+                new File(commandLine.getOptionValue(OPT_OUTPUT_DIR)) :
+                DEFAULT_OUTPUT_DIR;
+
+        String prefix = commandLine.hasOption(OPT_OUTPUT_PREFIX) ?
+                commandLine.getOptionValue(OPT_OUTPUT_PREFIX) :
+                DEFAULT_OUTPUT_PREFIX;
 
         String source = commandLine.getOptionValue(OPT_SOURCE);
 
-        this.execute(inputFile, outputFile, source);
+        // Create the quartets from the input and save to file
+        this.execute(inputFile, source.trim(), outputDir, prefix);
     }
 
     @Override
@@ -95,32 +111,46 @@ public class Chopper extends PhygenTool {
     }
 
     /**
-     * Executes Chopper programmatically.
+     * Executes Chopper programmatically.  Loads input from file and saves output to file.
      *
      * @param inputFile
-     * @param outputFile
      * @param source
      */
-    public void execute(File inputFile, File outputFile, String source) throws IOException {
+    public QuartetNetwork execute(File inputFile, String source, File outputDir, String outputPrefix) throws IOException {
 
-        ChoppedTree choppedTree = source.equalsIgnoreCase("SCRIPT") ?
+        QuartetNetworkAgglomerator quartetNetworkAgglomerator = this.execute(inputFile, source);
+
+        quartetNetworkAgglomerator.saveInformation(new File(outputDir, outputPrefix + ".info"));
+
+        QuartetNetwork quartetNetwork = quartetNetworkAgglomerator.create();
+
+        quartetNetwork.saveQuartets(new File(outputDir, outputPrefix + ".qw"));
+
+        return quartetNetwork;
+    }
+
+    public QuartetNetworkAgglomerator execute(File inputFile, String source) throws IOException {
+
+        QuartetNetworkAgglomerator quartetNetworkAgglomerator = source.equalsIgnoreCase("SCRIPT") ?
                 doScript(inputFile) :
-                new ChoppedTree().addSource(inputFile, this.sourceFactory.create(source), 1.0);
+                new QuartetNetworkAgglomerator().addSource(this.sourceFactory.create(source).load(inputFile, 1.0));
 
-        choppedTree.divide();
-        choppedTree.save(outputFile);
+        quartetNetworkAgglomerator.divide();
+
+        return quartetNetworkAgglomerator;
     }
 
 
-    public static void run(File inputFile, File outputFile, String source) throws IOException {
-        new Chopper().execute(inputFile, outputFile, source.trim());
+    public static void run(File inputFile, String source, File outputDir, String outputPrefix) throws IOException {
+
+        new Chopper().execute(inputFile, source, outputDir, outputPrefix);
     }
 
 
-    protected ChoppedTree doScript(File inputFile) throws IOException {
+    protected QuartetNetworkAgglomerator doScript(File inputFile) throws IOException {
 
         // Create an empty tree
-        ChoppedTree choppedTree = new ChoppedTree();
+        QuartetNetworkAgglomerator choppedTree = new QuartetNetworkAgglomerator();
 
         // Load the script
         List<String> lines = FileUtils.readLines(inputFile);
@@ -132,7 +162,7 @@ public class Chopper extends PhygenTool {
 
             if (sT.hasMoreTokens()) {
 
-                // The first token should specify the source
+                // The first token should specify the loader
                 String sourceName = sT.nextToken();
 
                 // The second token should be the file to load
@@ -153,11 +183,11 @@ public class Chopper extends PhygenTool {
                             Double.parseDouble(sT.nextToken()) :
                             1.0;
 
-                    // Create a source loader
+                    // Create a loader loader
                     Source source = this.sourceFactory.create(sourceName);
 
                     // Execute chopper for this file.
-                    choppedTree.addSource(sourceFile, source, weight);
+                    choppedTree.addSource(source.load(sourceFile, weight));
 
                 } else {
 

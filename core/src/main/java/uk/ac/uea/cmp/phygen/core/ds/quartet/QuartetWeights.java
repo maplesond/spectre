@@ -146,7 +146,7 @@ public class QuartetWeights extends ArrayList<QuartetWeighting> {
         }
     }
 
-    public QuartetWeights translate(Taxa oldTaxa, Taxa newTaxa) {
+    public void translate(Taxa oldTaxa, Taxa newTaxa) {
 
         int NNew = newTaxa.size();
         int NOld = oldTaxa.size();
@@ -183,8 +183,6 @@ public class QuartetWeights extends ArrayList<QuartetWeighting> {
                 }
             }
         }
-
-        return this;
     }
 
 

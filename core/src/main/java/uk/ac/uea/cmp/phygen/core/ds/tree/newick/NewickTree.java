@@ -22,7 +22,9 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
-import uk.ac.uea.cmp.phygen.core.ds.tree.newick.parser.*;
+import uk.ac.uea.cmp.phygen.core.ds.tree.newick.parser.NewickTreeLexer;
+import uk.ac.uea.cmp.phygen.core.ds.tree.newick.parser.NewickTreeParser;
+import uk.ac.uea.cmp.phygen.core.ds.tree.newick.parser.NewickTreePopulator;
 import uk.ac.uea.cmp.phygen.core.util.DefaultParsingErrorListener;
 import uk.ac.uea.cmp.phygen.core.util.DefaultParsingErrorStrategy;
 
@@ -38,10 +40,12 @@ import java.io.IOException;
 public class NewickTree extends NewickNode {
 
     private double scalingFactor;
+    private Taxa taxa;
 
     public NewickTree(String source) throws IOException {
         super();
         this.scalingFactor = 1.0;
+        this.taxa = new Taxa();
         this.parseNewick(source, scalingFactor);
     }
 
@@ -62,7 +66,7 @@ public class NewickTree extends NewickNode {
         // Parse should handle this but let's make it easy for it
         String trimmedSource = source.trim();
 
-        // Convert source into a character stream
+        // Convert loader into a character stream
         CharStream in = new ANTLRInputStream(trimmedSource);
 
         // Setup lexer
@@ -84,7 +88,8 @@ public class NewickTree extends NewickNode {
         // Do the parsing
         parser.parse();
 
-        // This NewickTree should be nicely populated now
+        // This NewickTree should be nicely populated now.  Store some convenience methods
+        this.taxa = this.findAllTaxa();
 
         //TODO apply scaling factor  ???
     }
@@ -114,11 +119,16 @@ public class NewickTree extends NewickNode {
         return this.getFirstBranch().allHaveLengths();
     }
 
+
+    public Taxa getTaxa() {
+        return this.taxa;
+    }
+
     public QuartetWeights createQuartets() {
 
-        QuartetWeights qW = new QuartetWeights(Quartet.over4(this.getNbTaxa()));
+        QuartetWeights qW = new QuartetWeights(Quartet.over4(this.taxa.size()));
 
-        this.split(qW, new Taxa());
+        this.split(qW, this.taxa);
 
         return qW;
     }

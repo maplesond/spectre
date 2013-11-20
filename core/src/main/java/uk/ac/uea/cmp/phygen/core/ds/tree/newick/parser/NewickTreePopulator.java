@@ -83,14 +83,19 @@ public class NewickTreePopulator implements NewickTreeListener {
 
     @Override
     public void exitWeight(@NotNull NewickTreeParser.WeightContext ctx) {
-        if (ctx.REAL() != null && !ctx.REAL().getSymbol().getText().isEmpty()) {
+        if (ctx.WEIGHT() != null && !ctx.WEIGHT().getSymbol().getText().isEmpty()) {
 
-            double scalingFactor = Double.parseDouble(ctx.REAL().getText());
+            String weightStr = ctx.WEIGHT().getText().substring(1);
 
-            if (verbose && log.isDebugEnabled())
-                log.debug("Scaling factor: " + scalingFactor);
+            if (!weightStr.isEmpty()) {
 
-            tree.setScalingFactor(scalingFactor);
+                double scalingFactor = Double.parseDouble(ctx.WEIGHT().getText().substring(1));
+
+                if (verbose && log.isDebugEnabled())
+                    log.debug("Scaling factor: " + scalingFactor);
+
+                tree.setScalingFactor(scalingFactor);
+            }
         }
     }
 
@@ -111,13 +116,9 @@ public class NewickTreePopulator implements NewickTreeListener {
 
     @Override
     public void exitName(@NotNull NewickTreeParser.NameContext ctx) {
+
         if (ctx.WORD() != null) {
-
             String name = ctx.WORD().getText();
-
-            if (name.startsWith("\"") && name.endsWith("\"")) {
-                name = name.substring(1, name.length() - 1);
-            }
 
             if (verbose && log.isDebugEnabled())
                 log.debug("Name: " + name);
@@ -133,14 +134,19 @@ public class NewickTreePopulator implements NewickTreeListener {
 
     @Override
     public void exitLength(@NotNull NewickTreeParser.LengthContext ctx) {
-        if (ctx.REAL() != null && !ctx.REAL().getText().isEmpty()) {
+        if (ctx.LENGTH() != null && !ctx.LENGTH().getText().isEmpty()) {
 
-            double length = Double.parseDouble(ctx.REAL().getText());
+            String lenStr = ctx.LENGTH().getText().substring(1);
 
-            if (verbose && log.isDebugEnabled())
-                log.debug("Length: " + length);
+            if (!lenStr.isEmpty()) {
 
-            this.currentNode.setLength(length);
+                double length = Double.parseDouble(lenStr);
+
+                if (verbose && log.isDebugEnabled())
+                    log.debug("Length: " + length);
+
+                this.currentNode.setLength(length);
+            }
         }
     }
 

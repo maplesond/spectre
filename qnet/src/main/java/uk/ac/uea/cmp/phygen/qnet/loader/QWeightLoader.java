@@ -2,7 +2,7 @@
  * Phylogenetics Tool suite
  * Copyright (C) 2013  UEA CMP Phylogenetics Group
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
@@ -13,43 +13,49 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package uk.ac.uea.cmp.phygen.qnet;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+package uk.ac.uea.cmp.phygen.qnet.loader;
+
+import org.kohsuke.MetaInfServices;
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.Taxon;
+import uk.ac.uea.cmp.phygen.core.ds.network.QuartetNetworkAgglomerator;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeighting;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-public class QNetLoader {
+/**
+ * Created with IntelliJ IDEA.
+ * User: dan
+ * Date: 20/11/13
+ * Time: 00:22
+ * To change this template use File | Settings | File Templates.
+ */
+@MetaInfServices
+public class QWeightLoader implements Source {
 
-    private static Logger log = LoggerFactory.getLogger(QNetLoader.class);
+    @Override
+    public QuartetNetworkAgglomerator load(File file, boolean logNormalize) throws IOException {
 
-    /**
-     * Load method
-     */
-    public static void load(QNet qnet, String fileName, boolean logNormalize) throws IOException {
+        QuartetWeights theQuartetWeights = new QuartetWeights();
 
-        QuartetWeights theQuartetWeights = qnet.getWeights();
+        Taxa allTaxa = new Taxa();
 
-        Taxa allTaxa = qnet.getAllTaxa();
-
-        List<Taxa> taxaSets = qnet.getTaxaSets();
+        List<Taxa> taxaSets = new ArrayList<>();
 
         /**
          *
          * Code for reading a file and initializing properly
          *
          */
-        //System.out.print ("QNet: Loading data... ");
         boolean useMax = true;
 
         int N = 0;
@@ -78,7 +84,7 @@ public class QNetLoader {
          * File reader
          *
          */
-        BufferedReader fileInput = new BufferedReader(new FileReader(fileName));
+        BufferedReader fileInput = new BufferedReader(new FileReader(file));
 
         /**
          *
@@ -296,207 +302,17 @@ public class QNetLoader {
             throw new IOException("QNet: Wrong number of quartets in file!");
         }
 
-        qnet.setN(N);
-
         if (logNormalize) {
             theQuartetWeights.logNormalize(useMax);
         } else {
             theQuartetWeights.normalize(useMax);
         }
 
-        // parameter is now obsolete
-
-        qnet.setUseMax(true);
-
-        //System.out.println ("done.");
-
+        return null; //new QuartetNetworkList(new QuartetNetwork(allTaxa, 1.0, theQuartetWeights));
     }
 
-    public static void loadNexus(QNet parent, String fileName, boolean logNormalize) throws IOException {
-
-        QuartetWeights theQuartetWeights = parent.getWeights();
-
-        Taxa allTaxa = parent.getAllTaxa();
-
-        List<Taxa> taxaSets = parent.getTaxaSets();
-
-        /**
-         *
-         * Code for reading a file and initializing properly
-         *
-         */
-        log.info("QNet: Loading data... ");
-
-        boolean useMax = true;
-
-        int N = 0;
-
-        /**
-         *
-         * File reader
-         *
-         */
-        BufferedReader fileInput = new BufferedReader(new FileReader(fileName));
-
-        /**
-         *
-         * Keep on reading and tokenizing until... a token is found
-         * beginning with "ntax=" parse its remainder for the number of
-         * taxa.
-         *
-         * Keep on reading until a token is found "TAXLABELS". Then read N
-         * lines which will be the taxon names. We assume there are n choose
-         * 4 quartets.
-         *
-         * Keep on reading and tokenizing until "st_quartets;" is found.
-         * Then proceed to "MATRIX". Then read the quartet lines until a
-         * line starts with ";".
-         *
-         *
-         *
-         */
-        boolean readingState = true;
-
-        while (readingState) {
-
-            String aLine = fileInput.readLine();
-            StringTokenizer sT = new StringTokenizer(aLine);
-
-            while (sT.hasMoreTokens()) {
-
-                String tT = sT.nextToken();
-
-                if (tT.toLowerCase().startsWith("ntax=")) {
-
-                    N = Integer.parseInt(tT.substring(5, tT.length() - 1));
-
-                    for (int n = 0; n < N; n++) {
-                        Taxon newTaxon = new Taxon("", n+1);
-                        allTaxa.add(newTaxon);
-                        taxaSets.add(new Taxa(newTaxon));
-                    }
-
-                    theQuartetWeights = new QuartetWeights(N);
-                    useMax = true;
-
-                    readingState = false;
-
-                }
-
-            }
-
-        }
-
-        readingState = true;
-
-        while (readingState) {
-
-            String aLine = fileInput.readLine();
-            StringTokenizer sT = new StringTokenizer(aLine);
-
-            while (sT.hasMoreTokens()) {
-
-                String tT = sT.nextToken();
-
-                if (tT.toUpperCase().startsWith("TAXLABELS")) {
-
-                    for (int n = 0; n < N; n++) {
-
-                        StringTokenizer aT = new StringTokenizer(fileInput.readLine());
-
-                        String aS = aT.nextToken();
-
-                        while (aT.hasMoreTokens()) {
-
-                            aS = aT.nextToken();
-                        }
-
-                        allTaxa.set(n, new Taxon(aS));
-                    }
-
-                    readingState = false;
-                }
-            }
-        }
-
-        readingState = true;
-
-        while (readingState) {
-
-            String aLine = fileInput.readLine();
-            log.debug(aLine);
-            StringTokenizer sT = new StringTokenizer(aLine);
-
-            while (sT.hasMoreTokens()) {
-
-                String tT = sT.nextToken();
-
-                if (tT.toLowerCase().startsWith("st_quartets;")) {
-
-                    readingState = false;
-                }
-            }
-        }
-
-        readingState = true;
-
-        while (readingState) {
-
-            String aLine = fileInput.readLine();
-            StringTokenizer sT = new StringTokenizer(aLine);
-
-            while (sT.hasMoreTokens()) {
-
-                String tT = sT.nextToken();
-
-                if (tT.toUpperCase().startsWith("MATRIX")) {
-
-                    boolean quartetState = true;
-
-                    while (quartetState) {
-
-                        String bLine = fileInput.readLine();
-
-                        if (bLine.startsWith(";")) {
-
-                            quartetState = false;
-
-                        } else {
-
-                            StringTokenizer bT = new StringTokenizer(bLine);
-
-                            String label = bT.nextToken();
-                            double weight = Double.parseDouble(bT.nextToken());
-                            int x = Integer.parseInt(bT.nextToken());
-                            int y = Integer.parseInt(bT.nextToken());
-                            String sC = bT.nextToken();
-                            int u = Integer.parseInt(bT.nextToken());
-                            String cS = bT.nextToken();
-                            int v = Integer.parseInt(cS.substring(0, cS.length() - 1));
-
-                            if (x != y && x != u && x != v && y != u && y != v && u != v) {
-
-                                theQuartetWeights.setWeight(new Quartet(x, y, u, v), weight);
-
-                            }
-                        }
-                    }
-
-                    readingState = false;
-                }
-            }
-        }
-
-        log.info("done.");
-
-        parent.setN(N);
-        parent.setUseMax(useMax);
-
-        if (logNormalize) {
-            theQuartetWeights.logNormalize(useMax);
-        } else {
-            theQuartetWeights.normalize(useMax);
-        }
-
+    @Override
+    public String getName() {
+        return "qweights";
     }
 }
