@@ -143,14 +143,14 @@ format_distances_item :
 triangle : 'triangle' '=' triangle_option;
 
 triangle_option :
-      'lower'
-    | 'upper'
-    | 'both'
+      'lower' | 'LOWER'
+    | 'upper' | 'UPPER'
+    | 'both' | 'BOTH'
     ;
 
 diagonal :
-      'diagonal'
-    | 'nodiagonal'
+      'diagonal' | 'DIAGONAL'
+    | 'nodiagonal' | 'NODIAGONAL'
     ;
 
 labels : labels_header ('=' labels_option)?;
@@ -160,12 +160,12 @@ labels_header :
     | 'nolabels';
 
 labels_option :
-      'no'
-    | 'yes'
-    | 'false'
-    | 'true'
-    | 'left'
-    | 'right';
+      'no' | 'NO'
+    | 'yes' | 'YES'
+    | 'false' | 'FALSE'
+    | 'true' | 'TRUE'
+    | 'left' | 'LEFT'
+    | 'right' | 'RIGHT';
 
 
 
@@ -271,7 +271,7 @@ block_quartets :
     quartets_block_header ';'
     matrix_header matrix_quartets_data ';';
 
-quartets_block_header : 'quartets' | 'Quartets' | 'QUARTETS';
+quartets_block_header : 'quartets' | 'Quartets' | 'QUARTETS' | 'st_quartets';
 
 matrix_quartets_data :
     // Empty

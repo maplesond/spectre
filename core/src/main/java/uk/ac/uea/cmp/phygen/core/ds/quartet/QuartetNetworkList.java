@@ -14,7 +14,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.phygen.core.ds.network;
+package uk.ac.uea.cmp.phygen.core.ds.quartet;
 
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 

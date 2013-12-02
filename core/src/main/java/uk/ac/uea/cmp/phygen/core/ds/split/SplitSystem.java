@@ -54,7 +54,7 @@ public interface SplitSystem {
 
     double getWeightAt(final int i);
 
-    List<Split> filterByWeight(double threshold);
+    SplitSystem filterByWeight(double threshold);
 
 
     // **** Methods related to circular ordering ****

@@ -55,7 +55,7 @@ public class CircularSplitSystem extends SimpleSplitSystem {
 
                     ArrayList<Integer> sb = new ArrayList<>();
                     for (int k = i + 1; k < j + 1; k++) {
-                        sb.add(circularOrdering.getAt(k));
+                        sb.add(circularOrdering.getIndexAt(k));
                     }
 
                     this.addSplit(new Split(new SplitBlock(sb), n, splitWeights.getAt(j, i)));
@@ -69,7 +69,7 @@ public class CircularSplitSystem extends SimpleSplitSystem {
 
     @Override
     public boolean isCircular() {
-        return false;
+        return true;
     }
 
     public void setCircularOrdering(CircularOrdering circularOrdering) {
@@ -89,7 +89,7 @@ public class CircularSplitSystem extends SimpleSplitSystem {
      */
     @Override
     public int getTaxaIndexAt(final int i) {
-        return this.circularOrdering.getAt(i) + 1;
+        return this.circularOrdering.getAt(i);
     }
 
 
@@ -135,7 +135,7 @@ public class CircularSplitSystem extends SimpleSplitSystem {
 
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                permutedDistances[i][j] = distanceMatrix.getDistance(circularOrdering.getAt(i), circularOrdering.getAt(j));
+                permutedDistances[i][j] = distanceMatrix.getDistance(circularOrdering.getIndexAt(i), circularOrdering.getIndexAt(j));
             }
         }
 

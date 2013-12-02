@@ -14,8 +14,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.phygen.core.io.nexus.parser;
+package uk.ac.uea.cmp.phygen.core.ds.distance;
 
+import org.apache.commons.lang3.ArrayUtils;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 
 import java.util.ArrayList;
@@ -44,6 +45,11 @@ public class DistanceMatrixBuilder {
                     distanceMatrix.setDistance(row, j, elements.get(j));
                 }
             }
+
+            @Override
+            public double[] getRow(int row, DistanceMatrix distanceMatrix) {
+                return distanceMatrix.getRow(row);
+            }
         },
         LOWER {
             @Override
@@ -52,6 +58,11 @@ public class DistanceMatrixBuilder {
                     distanceMatrix.setDistance(row, j, elements.get(j));
                     distanceMatrix.setDistance(j, row, elements.get(j));
                 }
+            }
+
+            @Override
+            public double[] getRow(int row, DistanceMatrix distanceMatrix) {
+                return ArrayUtils.subarray(distanceMatrix.getRow(row), 0, row + 1);
             }
         },
         UPPER {
@@ -62,10 +73,17 @@ public class DistanceMatrixBuilder {
                     distanceMatrix.setDistance(j + row, row, elements.get(j));
                 }
             }
+
+            @Override
+            public double[] getRow(int row, DistanceMatrix distanceMatrix) {
+                double[] data = distanceMatrix.getRow(row);
+                return ArrayUtils.subarray(data, row, data.length);
+            }
         };
 
 
         public abstract void fillRow(int row, List<Double> elements, DistanceMatrix distanceMatrix);
+        public abstract double[] getRow(int row, DistanceMatrix distanceMatrix);
     }
 
     private int nbTaxa;

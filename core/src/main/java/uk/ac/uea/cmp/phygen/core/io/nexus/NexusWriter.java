@@ -16,28 +16,42 @@
 package uk.ac.uea.cmp.phygen.core.io.nexus;
 
 
-import org.apache.commons.io.FileUtils;
-import uk.ac.uea.cmp.phygen.core.ds.Taxon;
+import org.apache.commons.lang3.StringUtils;
+import uk.ac.uea.cmp.phygen.core.ds.Alignment;
+import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phygen.core.ds.split.SimpleSplitSystem;
 import uk.ac.uea.cmp.phygen.core.ds.split.Split;
 import uk.ac.uea.cmp.phygen.core.ds.split.SplitBlock;
 import uk.ac.uea.cmp.phygen.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.phygen.core.io.PhygenWriter;
+import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrixBuilder;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 
 /**
- * Used to handle streaming data to Nexus format file from SplitSystem objects
- * and other splits and length data. Can create nexus files designed to
- * represent a network, tree or weighted tree.
- * <p/>
- * Adapted Version
- *
+ * Used to handle streaming data to Nexus format file from SplitSystem objects and other splits and length data. Can
+ * create nexus files designed to represent a network, tree or weighted tree.  The class stores file content in java's
+ * StringBuilder and the client can append content into this as they like.  This means that the whole file content is
+ * stored in memory before writing to disk.  This could be a problem on low-memory systems, or if processing large files.
+ * Consider optimising if we memory related problems are encountered.
  * @author Dan
  */
-public class NexusWriter implements PhygenWriter {
+public class NexusWriter implements PhygenWriter, Appendable {
+
+    /**
+     * Stores the file contents before writing to disk.
+     */
+    private StringBuilder fileContent;
+
+    /**
+     * Creates a new NexusWriter and ensures we have a reasonable amount of memory to work with
+     */
+    public NexusWriter() {
+        this.fileContent = new StringBuilder(2048);
+    }
+
+
 
     /**
      * Creates a network representation of the split system that was provided in
@@ -49,108 +63,69 @@ public class NexusWriter implements PhygenWriter {
     @Override
     public void writeSplitSystem(File file, SimpleSplitSystem ss) throws IOException {
 
-        if (file == null) {
-            throw new NullPointerException("Must specify a nexus file to write.");
-        }
+        // Clear out whatever was in the file content buffer before
+        this.fileContent = new StringBuilder();
 
-        if (file.exists() && !file.canWrite()) {
-            throw new IOException("Cannot overwrite existing nexus file: " + file.getPath());
-        }
+        // Construct file content
+        this.appendHeader()
+                .appendLine()
+                .append(ss.getTaxa())
+                .appendLine()
+                .append(ss);
 
-        if (ss == null) {
-            throw new NullPointerException("Must specify a split system to write.");
-        }
-
-        //For network, we consider a full split system and determine its splits by its length (non-zero ones)
-        //this is not dependent on ss, what ever ss is?
-        int n = ss.getNbTaxa();
-
-        int numberOfSplits = ss.getSplits().size();
-        int currentSplitIndex = 1;
-        StringBuilder outputString = new StringBuilder("");
-        /*double[] splitweights = new double[ss.getSplits().size()];
-
-        for (int i = 0; i < ss.getSplits().size(); i++) {
-
-            splitweights[i] = 1.0;
-
-        }*/
-
-        outputString.append("#nexus\n\n\nBEGIN Taxa;\nDIMENSIONS ntax=").append(n).append(";\nTAXLABELS\n");
-
-        int idx = 1;
-        for (Taxon taxa : ss.getTaxa()) {
-            outputString.append("[").append(idx++).append("] '").append(taxa.getName()).append("'\n");
-        }
-
-        outputString.append(";\nEND; [Taxa]\n\nBEGIN Splits;\nDIMENSIONS ntax=").append(n).append(" nsplits=").append(numberOfSplits).append(";\nFORMAT ").append("labels=no weights=yes confidences=no intervals").append("=no;\nPROPERTIES fit=-1.0 cyclic;\nCYCLE");
-
-        for (int i = 0; i < n; i++) {
-            outputString.append(" ").append(ss.getTaxaIndexAt(i));
-        }
-
-        outputString.append(";\nMATRIX\n");
-
-        for (int i = 0; i < ss.getSplits().size(); i++) {
-
-            Split s = ss.getSplits().get(i);
-            double weighting = s.getWeight();
-            SplitBlock sb = s.getASide();
-
-            if (weighting != 0.0) {
-                outputString.append("[").append(currentSplitIndex).append(", size=").append(sb.size()).append("]\t").append(weighting).append("\t");
-                outputString.append(" ").append(sb.toString());
-
-                currentSplitIndex++;
-                outputString.append(",\n");
-            }
-        }
-
-        outputString.append(";\nEND; [Splits]");
-
-        // Save
-        FileUtils.writeStringToFile(file, outputString.toString());
+        // Save to disk
+        this.write(file);
     }
 
     @Override
     public void writeDistanceMatrix(File file, DistanceMatrix distanceMatrix) throws IOException {
 
-        final int n = distanceMatrix.size();
+        // Clear out whatever was in the file content buffer before
+        this.fileContent = new StringBuilder();
 
-        StringBuilder fileContent = new StringBuilder(7 * n * n);
+        // Construct file content
+        this.appendHeader()
+            .appendLine()
+            .append(distanceMatrix.getTaxaSet())
+            .appendLine()
+            .append(distanceMatrix);
 
-        fileContent.append("#nexus\n\nBEGIN Distances;\nDIMENSIONS ntax=");
-        fileContent.append(n);
-        fileContent.append(";\nFORMAT labels=left diagonal triangle=lower;\n"
-                + "MATRIX\n");
-
-        for (int i = 1; i <= n; i++) {
-            fileContent.append("[");
-            fileContent.append(i);
-            fileContent.append("] '");
-            fileContent.append(i);
-            fileContent.append("'                     ");
-
-            for (int j = 1; j < i; j++) {
-                double dist = distanceMatrix.getDistance(i - 1, j - 1);
-
-                fileContent.append(" ");
-                fileContent.append(dist);
-            }
-
-            fileContent.append(" 0.0");
-            fileContent.append("\n");
-        }
-
-        fileContent.append(";\nEND; [DISTANCES]\n");
-
-        // Save
-        FileUtils.writeStringToFile(file, fileContent.toString());
+        // Save to disk
+        this.write(file);
     }
 
-    public void writeNexusData(File outFile, Nexus nexusData) throws IOException {
+    public void writeNexusData(File file, Nexus nexusData) throws IOException {
 
 
+        // Clear out whatever was in the file content buffer before
+        this.fileContent = new StringBuilder();
+
+        // Construct file content
+        this.appendHeader();
+
+        if (nexusData.getTaxa() != null) {
+            this.appendLine()
+                .append(nexusData.getTaxa());
+        }
+
+        if (nexusData.getDistanceMatrix() != null) {
+            this.appendLine()
+                .append(nexusData.getDistanceMatrix());
+        }
+
+        /*if (nexusData.getCycle() != null) {
+
+        }
+
+        if (nexusData.getSplitSystem() != null) {
+            this.appendLine();
+            this.append(nexusData.getSplitSystem());
+        }  */
+
+        // Save to disk
+        this.write(file);
+
+        /*
         SplitSystem ss = nexusData.getSplitSystem();
 
 
@@ -194,7 +169,145 @@ public class NexusWriter implements PhygenWriter {
 
 
         // Save
-        FileUtils.writeStringToFile(outFile, nexusString.toString());
+        FileUtils.writeStringToFile(outFile, nexusString.toString());*/
     }
 
+
+
+
+
+    /**
+     * Uses a buffer to stream file content into the specified file.
+     * @param file
+     * @throws IOException
+     */
+    public void write(File file) throws IOException {
+
+        try(BufferedWriter writer = new BufferedWriter(new FileWriter(file.getAbsoluteFile()))) {
+            writer.write(this.fileContent.toString());
+        }
+    }
+
+
+    // ****** Append methods specific to known nexus blocks ******
+
+    public NexusWriter appendHeader() {
+        this.appendLine("#NEXUS");
+        return this;
+    }
+
+    public NexusWriter append(Taxa taxa) {
+        this.appendLine("BEGIN Taxa;");
+        this.appendLine(" DIMENSIONS ntax=" + taxa.size() + ";");
+        this.appendLine(" TAXLABELS");
+
+        for (int i = 0; i < taxa.size(); i++) {
+            this.appendLine("  [" + (i + 1) + "]\t" + taxa.get(i).getName());
+        }
+
+        this.appendLine(" ;");
+        this.appendLine("END; [Taxa]");
+
+        return this;
+    }
+
+    public NexusWriter append(Alignment a) {
+        String[] id = a.getTaxaLabels();
+        String[] sequences = a.getSequences();
+
+        this.appendLine("BEGIN Characters;");
+        this.appendLine(" DIMENSIONS ntax=" + a.size() + " nchar=" + sequences[0].length() + ";");
+        this.appendLine(" FORMAT labels=LEFT interleave=NO;");
+        this.appendLine(" MATRIX");
+        for (int i = 0; i < id.length; i++) {
+            this.appendLine("  [" + (i + 1) + "]\t" + id[i] + "\t" + sequences[i]);
+        }
+        this.appendLine(";");
+        this.appendLine("END;  [Characters]");
+
+        return this;
+    }
+
+    public NexusWriter append(DistanceMatrix dm) {
+        return this.append(dm, DistanceMatrixBuilder.Triangle.BOTH);
+    }
+
+    public NexusWriter append(DistanceMatrix dm, DistanceMatrixBuilder.Triangle triangle) {
+        double[][] matrix = dm.getMatrix();
+
+        this.appendLine("BEGIN Distances;");
+        this.appendLine(" DIMENSIONS ntax=" + dm.getNbTaxa() + ";");
+        this.appendLine(" FORMAT labels=LEFT interleave=NO diagonal triangle=" + triangle.toString() + ";");
+        this.appendLine(" MATRIX");
+        for (int i = 0; i < matrix.length; i++) {
+            this.appendLine("  [" + (i + 1) + "]\t" + StringUtils.join(triangle.getRow(i, dm), " "));
+        }
+        this.appendLine(";");
+        this.appendLine("END; [Distances]");
+
+        return this;
+    }
+
+
+    public NexusWriter append(SplitSystem ss) {
+
+        this.appendLine("BEGIN Splits;");
+        this.appendLine(" DIMENSIONS ntax=" + ss.getNbTaxa() + " nsplits=" + ss.getNbSplits() + ";");
+        this.appendLine(" FORMAT labels=no weights=" + (ss.isWeighted() ? "yes" : "no") + " confidences=no intervals=no;");
+        this.appendLine(" PROPERTIES fit=-1.0" + (ss.isCircular() ? " cyclic" : ""));
+        if (ss.isCircular()) {
+            this.appendLine(" CYCLE " + ss.getCircularOrdering().toString() + ";");
+        }
+
+        this.appendLine(" MATRIX");
+        int currentSplitIndex = 1;
+
+        for (int i = 0; i < ss.getNbSplits(); i++) {
+            Split s = ss.getSplits().get(i);
+            SplitBlock sb = s.getASide();
+
+            if (!ss.isWeighted() || s.getWeight() != 0.0) {
+                this.appendLine("  [ " + currentSplitIndex++ + ", size=" + sb.size() + "]\t" + s.getWeight() + "\t" + sb.toString() + ",");
+            }
+        }
+        this.appendLine(";");
+        this.appendLine("END; [Splits]");
+        return this;
+    }
+
+
+    // ****** These extra append methods allows the client to add their own custom content to the file *******
+
+    @Override
+    public NexusWriter append(CharSequence csq) throws IOException {
+        this.fileContent.append(csq);
+        return this;
+    }
+
+    @Override
+    public NexusWriter append(CharSequence csq, int start, int end) throws IOException {
+        this.fileContent.append(csq, start, end);
+        return this;
+    }
+
+    @Override
+    public NexusWriter append(char c) throws IOException {
+        this.fileContent.append(c);
+        return this;
+    }
+
+    public NexusWriter append(String s) {
+        this.fileContent.append(s);
+        return this;
+    }
+
+    public NexusWriter appendLine(String s) {
+        this.fileContent.append(s).append("\n");
+        return this;
+    }
+
+    public NexusWriter appendLine() {
+        this.fileContent.append("\n");
+        return this;
+    }
 }

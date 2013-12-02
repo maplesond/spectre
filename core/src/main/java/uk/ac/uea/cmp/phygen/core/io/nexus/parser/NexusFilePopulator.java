@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.Taxon;
+import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrixBuilder;
 import uk.ac.uea.cmp.phygen.core.ds.split.SplitBlock;
 import uk.ac.uea.cmp.phygen.core.io.nexus.Nexus;
 
@@ -47,6 +48,7 @@ public class NexusFilePopulator implements NexusFileListener {
 
     private DistanceMatrixBuilder distanceMatrixBuilder;
     private NexusSplitSystemBuilder splitSystemBuilder;
+    private NexusQuartetNetworkBuilder quartetNetworkBuilder;
 
 
 
@@ -55,6 +57,7 @@ public class NexusFilePopulator implements NexusFileListener {
         this.verbose = verbose;
         this.distanceMatrixBuilder = new DistanceMatrixBuilder();
         this.splitSystemBuilder = new NexusSplitSystemBuilder();
+        this.quartetNetworkBuilder = new NexusQuartetNetworkBuilder();
     }
 
     @Override
@@ -1071,7 +1074,15 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitMatrix_quartet(@NotNull NexusFileParser.Matrix_quartetContext ctx) {
-        //To change body of implemented methods use File | Settings | File Templates.
+
+        int x = Integer.parseInt(ctx.x_quartet().NUMERIC().getText());
+        int y = Integer.parseInt(ctx.y_quartet().NUMERIC().getText());
+        int u = Integer.parseInt(ctx.u_quartet().NUMERIC().getText());
+        int v = Integer.parseInt(ctx.v_quartet().NUMERIC().getText());
+
+        //ctx.
+        //Quartet quartet = new Quartet();
+
     }
 
     @Override

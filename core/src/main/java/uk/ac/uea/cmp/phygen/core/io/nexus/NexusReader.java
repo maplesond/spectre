@@ -134,6 +134,8 @@ public class NexusReader extends AbstractPhygenReader {
             return true;
         else if (phygenDataType == PhygenDataType.SPLITS)
             return true;
+        else if (phygenDataType == PhygenDataType.QUARTETS)
+            return true;
 
         return false;
     }

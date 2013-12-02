@@ -30,6 +30,11 @@ public class Quartet implements Comparable {
     private int t3;
     private int t4;
 
+
+    public Quartet() {
+        this(0, 0, 0, 0);
+    }
+
     /**
      *
      * @param t1
@@ -184,7 +189,7 @@ public class Quartet implements Comparable {
      * @param other
      * @return
      */
-    public double selectWeight(Quartet other, QuartetWeighting w) {
+    public double selectWeight(Quartet other, QuartetWeights w) {
         
         double result = 0.0;
 
@@ -207,7 +212,7 @@ public class Quartet implements Comparable {
         return result;
     }
 
-    public QuartetWeighting selectWeighting(Quartet other, QuartetWeighting w) {
+    public QuartetWeights selectWeighting(Quartet other, QuartetWeights w) {
 
         int x = t1, y = t2, u = t3, v = t4;
         int a = other.t1, b = other.t2, c = other.t3, d = other.t4;
@@ -293,40 +298,26 @@ public class Quartet implements Comparable {
             r3 = w.getC();
         }
 
-        return new QuartetWeighting(r1, r2, r3);
+        return new QuartetWeights(r1, r2, r3);
     }
 
-    public void updateWeighting(Quartet other, QuartetWeighting w, double newW) {
+    /**
+     * Investigate which topology of a, b, c, d that the topologies of x, y, u, v correspond to, and set weights accordingly
+     * See if xy|uv is ab|cd (w1), ac|bd (w2), or ad|bc (w3)
+     * The first length of the stored triplet
+     */
+    public void updateWeighting(Quartet other, QuartetWeights w, double newW) {
 
         int x = t1, y = t2, u = t3, v = t4;
         int a = other.t1, b = other.t2, c = other.t3, d = other.t4;
 
-        /**
-         *
-         * Investigate which topology of a, b, c, d that the topologies of x, y,
-         * u, v correspond to, and set weights accordingly
-         *
-         */
-        /**
-         *
-         * See if xy|uv is ab|cd (w1), ac|bd (w2), or ad|bc (w3)
-         *
-         */
-        /**
-         *
-         * The first length of the stored triplet
-         *
-         */
         if (((x == a || x == b) && (y == a || y == b)) || ((u == a || u == b) && (v == a || v == b))) {
-
             w.setA(newW);
         }
         else if (((x == a || x == b) && (u == a || u == b)) || ((y == a || y == b) && (v == a || v == b))) {
-
             w.setB(newW);
         }
         else if (((x == a || x == b) && (v == a || v == b)) || ((u == a || u == b) && (y == a || y == b))) {
-
             w.setC(newW);
         }
     }

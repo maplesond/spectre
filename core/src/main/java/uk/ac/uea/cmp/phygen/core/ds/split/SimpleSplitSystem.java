@@ -240,7 +240,7 @@ public class SimpleSplitSystem implements SplitSystem {
 
 
     @Override
-    public List<Split> filterByWeight(double threshold) {
+    public SplitSystem filterByWeight(double threshold) {
 
         int N = this.getNbTaxa();
 
@@ -269,14 +269,7 @@ public class SimpleSplitSystem implements SplitSystem {
                         tempList.retainAll(setA);
 
                         if (tempList.size() != 0 && tempList.size() != Math.min(setA.size(), setB.size())) {
-
-                            // conflicting
-
-                            double w = this.getWeightAt(j);
-
-                            if (w > maxWeight) {
-                                maxWeight = w;
-                            }
+                            maxWeight = Math.max(this.getWeightAt(j), maxWeight);
                         }
                     }
                 }
@@ -308,7 +301,10 @@ public class SimpleSplitSystem implements SplitSystem {
             filteredSplits.add(new Split(new SplitBlock(new int[]{i + 1}), this.getNbTaxa(), mw));
         }
 
-        return filteredSplits;
+        // Overwrites the current set of splits with the filtered splits
+        this.splits = filteredSplits;
+
+        return this;
     }
 
     @Override

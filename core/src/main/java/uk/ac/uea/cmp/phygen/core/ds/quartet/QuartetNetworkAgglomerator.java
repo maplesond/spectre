@@ -14,11 +14,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.phygen.core.ds.network;
+package uk.ac.uea.cmp.phygen.core.ds.quartet;
 
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -32,14 +30,14 @@ import java.text.NumberFormat;
 public class QuartetNetworkAgglomerator {
 
     private Taxa taxa;
-    private QuartetWeights quartetWeights;
-    private QuartetWeights summer;
+    private QuartetWeightsList quartetWeights;
+    private QuartetWeightsList summer;
 
     public QuartetNetworkAgglomerator() {
-        this(new Taxa(), new QuartetWeights(), new QuartetWeights());
+        this(new Taxa(), new QuartetWeightsList(), new QuartetWeightsList());
     }
 
-    public QuartetNetworkAgglomerator(Taxa taxa, QuartetWeights quartetWeights, QuartetWeights summer) {
+    public QuartetNetworkAgglomerator(Taxa taxa, QuartetWeightsList quartetWeights, QuartetWeightsList summer) {
         this.taxa = taxa;
         this.quartetWeights = quartetWeights;
         this.summer = summer;
@@ -49,11 +47,11 @@ public class QuartetNetworkAgglomerator {
         return taxa;
     }
 
-    public QuartetWeights getQuartetWeights() {
+    public QuartetWeightsList getQuartetWeights() {
         return quartetWeights;
     }
 
-    public QuartetWeights getSummer() {
+    public QuartetWeightsList getSummer() {
         return summer;
     }
 
@@ -75,7 +73,7 @@ public class QuartetNetworkAgglomerator {
         nF.setMaximumIntegerDigits(3);
 
         for (int n = 0; n < N; n++) {
-            out.write("taxon:   " + nF.format(n + 1) + "   name: " + taxa.get(n) + ";\n");
+            out.write("taxon:   " + nF.format(n + 1) + "   name: " + taxa.get(n).getName() + ";\n");
         }
 
         for (int a = 1; a <= N - 3; a++) {
@@ -122,7 +120,6 @@ public class QuartetNetworkAgglomerator {
         this.quartetWeights.translate(oldTaxa, this.taxa);
         this.summer.translate(oldTaxa, this.taxa);
 
-        // crucial, drop now the list stuff
         for (QuartetNetwork data : dataSets) {
             this.quartetWeights.add(data.getQuartetWeights(), data.getWeight());
         }

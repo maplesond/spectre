@@ -14,20 +14,35 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.phygen.core.io;
+package uk.ac.uea.cmp.phygen.core.ds.quartet;
 
 /**
  * Created with IntelliJ IDEA.
  * User: dan
- * Date: 06/11/13
- * Time: 20:10
+ * Date: 01/12/13
+ * Time: 22:05
  * To change this template use File | Settings | File Templates.
  */
-public enum PhygenDataType {
+public class WeightedQuartet {
 
-    DISTANCE_MATRIX,
-    TREE,
-    CIRCULAR_ORDERING,
-    SPLITS,
-    QUARTETS;
+    private Quartet quartetIndicies;
+    private QuartetWeights quartetWeighting;
+
+    public WeightedQuartet() {
+        this.quartetIndicies = new Quartet();
+        this.quartetWeighting = new QuartetWeights();
+    }
+
+    public WeightedQuartet(Quartet quartetIndicies, QuartetWeights quartetWeighting) {
+        this.quartetIndicies = quartetIndicies;
+        this.quartetWeighting = quartetWeighting;
+    }
+
+    public Quartet getQuartetIndicies() {
+        return quartetIndicies;
+    }
+
+    public QuartetWeights getQuartetWeighting() {
+        return quartetWeighting;
+    }
 }

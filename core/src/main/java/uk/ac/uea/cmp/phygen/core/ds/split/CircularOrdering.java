@@ -15,16 +15,16 @@
  */
 package uk.ac.uea.cmp.phygen.core.ds.split;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 /**
- * Created with IntelliJ IDEA.
- * User: Dan
- * Date: 01/05/13
- * Time: 21:26
- * To change this template use File | Settings | File Templates.
+ * Manages a simple int array to represent a 1-based circular ordering of taxa in a split system.  Can use getIndexAt to
+ * return a 0-based taxa index at a particular location in the array.
+ * @author Dan
  */
 public class CircularOrdering {
 
@@ -40,6 +40,10 @@ public class CircularOrdering {
 
     public int getAt(final int i) {
         return this.co[i];
+    }
+
+    public int getIndexAt(final int i) {
+        return this.co[i] - 1;
     }
 
     public CircularOrdering invertOrdering() {
@@ -69,8 +73,8 @@ public class CircularOrdering {
 
         int[] ordering = new int[size];
 
-        for (int i = 1; i < size; i++) {
-            ordering[i] = i;
+        for (int i = 0; i < size; i++) {
+            ordering[i] = i + 1;
         }
 
         return new CircularOrdering(ordering);
@@ -109,6 +113,29 @@ public class CircularOrdering {
         }
 
         return new CircularOrdering(co);
+    }
+
+    @Override
+    public String toString() {
+
+        if (this.co == null || this.co.length == 0) {
+            return "";
+        }
+        else if (this.co.length == 1) {
+            return Integer.toString(this.co[0]);
+        }
+        else {
+
+            StringBuilder sb = new StringBuilder();
+
+            sb.append(this.co[0]);
+
+            for(int i = 1; i < this.co.length; i++) {
+               sb.append(' ').append(this.co[i]);
+            }
+
+            return sb.toString();
+        }
     }
 
 }

@@ -21,7 +21,8 @@ import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystem;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeightsList;
 import uk.ac.uea.cmp.phygen.core.ds.tree.newick.parser.NewickTreeLexer;
 import uk.ac.uea.cmp.phygen.core.ds.tree.newick.parser.NewickTreeParser;
 import uk.ac.uea.cmp.phygen.core.ds.tree.newick.parser.NewickTreePopulator;
@@ -124,9 +125,9 @@ public class NewickTree extends NewickNode {
         return this.taxa;
     }
 
-    public QuartetWeights createQuartets() {
+    public QuartetWeightsList createQuartets() {
 
-        QuartetWeights qW = new QuartetWeights(Quartet.over4(this.taxa.size()));
+        QuartetWeightsList qW = new QuartetWeightsList(Quartet.over4(this.taxa.size()));
 
         this.split(qW, this.taxa);
 

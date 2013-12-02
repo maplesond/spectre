@@ -14,11 +14,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.phygen.core.ds.network;
+package uk.ac.uea.cmp.phygen.core.ds.quartet;
 
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -36,9 +34,13 @@ public class QuartetNetwork {
 
     private Taxa taxa;
     private double weight;
-    private QuartetWeights quartetWeights;
+    private QuartetWeightsList quartetWeights;
 
-    public QuartetNetwork(Taxa taxa, double weight, QuartetWeights quartetWeights) {
+    public QuartetNetwork() {
+        this(new Taxa(), 1.0, new QuartetWeightsList());
+    }
+
+    public QuartetNetwork(Taxa taxa, double weight, QuartetWeightsList quartetWeights) {
         this.taxa = taxa;
         this.weight = weight;
         this.quartetWeights = quartetWeights;
@@ -60,11 +62,11 @@ public class QuartetNetwork {
         this.weight = weight;
     }
 
-    public QuartetWeights getQuartetWeights() {
+    public QuartetWeightsList getQuartetWeights() {
         return quartetWeights;
     }
 
-    public void setQuartetWeights(QuartetWeights quartetWeights) {
+    public void setQuartetWeights(QuartetWeightsList quartetWeights) {
         this.quartetWeights = quartetWeights;
     }
 

@@ -47,12 +47,11 @@ public class NexusWriterTest {
     public void testWriteNetwork() throws IOException {
 
         File outputDir = temp.newFolder("networkTest");
-
         File outputFile = new File(outputDir, "network.nex");
 
-        DistanceMatrix distanceMatrix = new DistanceMatrix(5);
+        final int size = 5;
 
-        SimpleSplitSystem ss = new CircularSplitSystem(distanceMatrix, CircularOrdering.createTrivialOrdering(5));
+        SimpleSplitSystem ss = new CircularSplitSystem(new DistanceMatrix(size), CircularOrdering.createTrivialOrdering(size));
 
         new NexusWriter().writeSplitSystem(outputFile, ss);
 
@@ -62,19 +61,18 @@ public class NexusWriterTest {
         List<String> lines = FileUtils.readLines(outputFile);
 
         // Check we have the number of lines we were expecting
-        assertTrue(lines.size() == 22);
+        assertTrue(lines.size() == 21);
     }
 
     @Test
     public void testWriteTree() throws IOException {
 
         File outputDir = temp.newFolder("treeTest");
-
         File outputFile = new File(outputDir, "tree.nex");
 
-        DistanceMatrix distanceMatrix = new DistanceMatrix(5);
+        final int size = 5;
 
-        SimpleSplitSystem ss = new CircularSplitSystem(distanceMatrix, CircularOrdering.createTrivialOrdering(5));
+        SimpleSplitSystem ss = new CircularSplitSystem(new DistanceMatrix(size), CircularOrdering.createTrivialOrdering(size));
 
 
         /*new NexusWriter().writeTree(outputFile, ss, ss.calculateTreeWeighting(distanceMatrix));
