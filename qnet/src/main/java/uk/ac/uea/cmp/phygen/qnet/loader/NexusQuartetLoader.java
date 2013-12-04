@@ -19,9 +19,9 @@ package uk.ac.uea.cmp.phygen.qnet.loader;
 import org.kohsuke.MetaInfServices;
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.Taxon;
-import uk.ac.uea.cmp.phygen.core.ds.network.QuartetNetworkAgglomerator;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetNetworkAgglomerator;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.WeightedQuartetMap;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -44,7 +44,7 @@ public class NexusQuartetLoader implements Source {
     @Override
     public QuartetNetworkAgglomerator load(File file, boolean logNormalize) throws IOException {
 
-        QuartetWeights theQuartetWeights = new QuartetWeights();
+        WeightedQuartetMap theQuartetWeights = new WeightedQuartetMap();
         Taxa allTaxa = new Taxa();
         List<Taxa> taxaSets = new ArrayList<>();
 
@@ -102,15 +102,12 @@ public class NexusQuartetLoader implements Source {
                         taxaSets.add(new Taxa(newTaxon));
                     }
 
-                    theQuartetWeights = new QuartetWeights(N);
+                    theQuartetWeights = new WeightedQuartetMap();
                     useMax = true;
 
                     readingState = false;
-
                 }
-
             }
-
         }
 
         readingState = true;

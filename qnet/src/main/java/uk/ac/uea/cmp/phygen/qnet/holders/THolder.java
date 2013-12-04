@@ -17,13 +17,13 @@ package uk.ac.uea.cmp.phygen.qnet.holders;
 
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.WeightedQuartetMap;
 
 import java.util.List;
 
 public class THolder {
 
-    public THolder(List<Taxa> taxaSets, int N, QuartetWeights theQuartetWeights) {
+    public THolder(List<Taxa> taxaSets, int N, WeightedQuartetMap theQuartetWeights) {
 
         counts = new Integer[N][N][N];
         weights = new Double[N][N][N];
@@ -36,11 +36,8 @@ public class THolder {
 
                     counts[n1 - 1][n2 - 1][n3 - 1] = new Integer(0);
                     weights[n1 - 1][n2 - 1][n3 - 1] = new Double(0.0);
-
                 }
-
             }
-
         }
 
         for (int i = 1; i < N + 1; i++) {
@@ -60,9 +57,7 @@ public class THolder {
 
                         a = m;
                         break;
-
                     }
-
                 }
 
                 for (int m = 0; m < taxaSets.size(); m++) {
@@ -73,9 +68,7 @@ public class THolder {
 
                         b = m;
                         break;
-
                     }
-
                 }
 
                 if (a == b) {
@@ -83,7 +76,6 @@ public class THolder {
                     // if on the same path, no quartets meet the conditions
 
                     continue;
-
                 }
 
                 Taxa A = taxaSets.get(a);
@@ -103,9 +95,7 @@ public class THolder {
 
                             c = m;
                             break;
-
                         }
-
                     }
 
                     if (c != a && c != b) {

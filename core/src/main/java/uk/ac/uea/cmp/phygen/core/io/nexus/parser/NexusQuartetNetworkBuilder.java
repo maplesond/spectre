@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetNetwork;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.WeightedQuartet;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.WeightedQuartetMap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,14 +39,14 @@ public class NexusQuartetNetworkBuilder {
     private int expectedNbTaxa;
     private Taxa taxa;
     private double weight;
-    private List<WeightedQuartet> weightedQuartets;
+    private WeightedQuartetMap weightedQuartets;
 
 
     public NexusQuartetNetworkBuilder() {
         this.expectedNbTaxa = 0;
         this.taxa = null;
         this.weight = 1.0;
-        this.weightedQuartets = new ArrayList<>();
+        this.weightedQuartets = new WeightedQuartetMap();
     }
 
 
@@ -59,10 +59,6 @@ public class NexusQuartetNetworkBuilder {
         }
 
         return new QuartetNetwork(this.taxa, this.weight, null); //this.weightedQuartets);
-    }
-
-    public void addWeightedQuartet(WeightedQuartet weightedQuartet) {
-        this.weightedQuartets.add(weightedQuartet);
     }
 
     public int getExpectedNbTaxa() {

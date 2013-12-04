@@ -20,11 +20,8 @@ import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.kohsuke.MetaInfServices;
-import uk.ac.uea.cmp.phygen.core.ds.Taxa;
-import uk.ac.uea.cmp.phygen.core.ds.Taxon;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.*;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.WeightedQuartet;
 import uk.ac.uea.cmp.phygen.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.phygen.core.ds.tree.newick.NewickTree;
 import uk.ac.uea.cmp.phygen.core.io.AbstractPhygenReader;
@@ -37,7 +34,6 @@ import uk.ac.uea.cmp.phygen.core.util.DefaultParsingErrorStrategy;
 
 import java.io.*;
 import java.util.List;
-import java.util.StringTokenizer;
 
 /**
  * Created with IntelliJ IDEA.

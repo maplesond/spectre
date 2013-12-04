@@ -16,7 +16,7 @@
 
 package uk.ac.uea.cmp.phygen.qnet.loader;
 
-import uk.ac.uea.cmp.phygen.core.ds.network.QuartetNetworkAgglomerator;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetNetworkAgglomerator;
 import uk.ac.uea.cmp.phygen.core.util.Service;
 
 import java.io.File;

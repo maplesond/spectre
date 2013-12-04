@@ -21,10 +21,9 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
-import uk.ac.uea.cmp.phygen.core.ds.network.QuartetNetworkAgglomerator;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetNetworkAgglomerator;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetIndex;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.WeightedQuartetMap;
 import uk.ac.uea.cmp.phygen.core.math.matrix.SymmetricMatrix;
 import uk.ac.uea.cmp.phygen.core.math.matrix.UpperTriangularMatrix;
 import uk.ac.uea.cmp.phygen.core.math.optimise.*;
@@ -48,7 +47,7 @@ public class WeightsComputeNNLSInformative {
         stopWatch.start();
 
         List<Taxa> taxaSets = null; //quartetNetworkAgglomerator.getTaxaSets();
-        QuartetWeights theQuartetWeights = quartetNetworkAgglomerator.getQuartetWeights();
+        WeightedQuartetMap theQuartetWeights = quartetNetworkAgglomerator.getQuartetWeights();
         int N = quartetNetworkAgglomerator.getTaxa().size();
 
         // we have N taxa
@@ -100,8 +99,9 @@ public class WeightsComputeNNLSInformative {
         // of quartet indices
         // simultaneously we fill a list of quartet weights that correspond to these
 
-        double[] f = new double[N * (N - 1) * (N - 2) * (N - 3) / 12];
-        QuartetIndex[] quartetIndices = new QuartetIndex[N * (N - 1) * (N - 2) * (N - 3) / 12];
+        /*final int size = N * (N - 1) * (N - 2) * (N - 3) / 12;
+        double[] f = new double[size];
+        QuartetIndex[] quartetIndices = new QuartetIndex[size];
 
         n = 0;
 
@@ -125,14 +125,10 @@ public class WeightsComputeNNLSInformative {
                         quartetIndices[n] = new QuartetIndex(i, l, j, k);
                         f[n] = theQuartetWeights.getWeight(new Quartet(cI, cL, cJ, cK));
                         n++;
-
                     }
-
                 }
-
             }
-
-        }
+        }   */
 
 
         // HERE: Define matrices EtE and Etf

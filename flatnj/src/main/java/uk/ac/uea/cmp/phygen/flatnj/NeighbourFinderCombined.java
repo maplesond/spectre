@@ -42,9 +42,7 @@ public class NeighbourFinderCombined implements NeighbourFinder {
         for (int i1 = 0; i1 < nTaxa - 1; i1++) {
             for (int i2 = i1 + 1; i2 < nTaxa; i2++) {
                 if (scores[taxa[i1]][taxa[i2]][0] < 0) {
-                    System.out.println(taxa.length);
-                    System.out.println(scores[taxa[i1]][taxa[i2]][0]);
-                    System.exit(1);
+                    throw new IllegalStateException("Score was less than 0.  Taxa Length: " + taxa.length + "; Score: " + scores[taxa[i1]][taxa[i2]][0]);
                 }
                 minSoFar = (minSoFar == null || minSoFar > scores[taxa[i1]][taxa[i2]][0]) ? scores[taxa[i1]][taxa[i2]][0] : minSoFar;
                 atAll++;

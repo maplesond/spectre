@@ -44,13 +44,14 @@ public class ChopperTest {
     public void simpleTest() throws IOException {
 
         File treeFile = FileUtils.toFile(ChopperTest.class.getResource("/chopper/7-taxa.tre"));
-        File quartetFile = temp.newFile();
+        File outputDir = temp.newFolder();
 
-        new Chopper().execute(treeFile, quartetFile, "newick");
+        Chopper chopper = new Chopper();
+        chopper.execute(treeFile, "newick", outputDir, "simpleTest");
 
-        assertTrue(quartetFile.exists());
+        assertTrue(chopper.getQuartetFile().exists());
 
-        List<String> lines = FileUtils.readLines(quartetFile);
+        List<String> lines = FileUtils.readLines(chopper.getQuartetFile());
 
         assertTrue(lines.size() == 45);
     }
@@ -59,13 +60,14 @@ public class ChopperTest {
     public void singleTreeScript() throws IOException {
 
         File treeFile = FileUtils.toFile(ChopperTest.class.getResource("/chopper/in.script"));
-        File quartetFile = temp.newFile();
+        File outputDir = temp.newFolder();
 
-        new Chopper().execute(treeFile, quartetFile, "script");
+        Chopper chopper = new Chopper();
+        chopper.execute(treeFile, "script", outputDir, "singleTreeScript");
 
-        assertTrue(quartetFile.exists());
+        assertTrue(chopper.getQuartetFile().exists());
 
-        List<String> lines = FileUtils.readLines(quartetFile);
+        List<String> lines = FileUtils.readLines(chopper.getQuartetFile());
 
         assertTrue(lines.size() == 45);
     }

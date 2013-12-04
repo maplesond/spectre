@@ -198,7 +198,7 @@ public class SuperQCLI {
         }
 
         if (commandLine.hasOption(OPT_FILTER)) {
-            sqOpts.setFilter(Double.parseDouble(commandLine.getOptionValue("filter")));
+            sqOpts.setFilter(Double.parseDouble(commandLine.getOptionValue("filterNexus")));
         }
 
         if (commandLine.hasOption(OPT_VERBOSE)) {

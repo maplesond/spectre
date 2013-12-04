@@ -22,10 +22,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
-import uk.ac.uea.cmp.phygen.core.ds.network.QuartetNetworkAgglomerator;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetIndex;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetNetworkAgglomerator;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.WeightedQuartetMap;
 import uk.ac.uea.cmp.phygen.core.ds.split.CircularOrdering;
 import uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser;
 import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
@@ -89,7 +87,7 @@ public class QNet {
         Taxa allTaxa = quartetNetworks.getTaxa();
         int N = allTaxa.size();
         List<Taxa> taxaSets = null; //quartetNetworks.getTaxaSets();
-        QuartetWeights theQuartetWeights = quartetNetworks.getQuartetWeights();
+        WeightedQuartetMap theQuartetWeights = quartetNetworks.getQuartetWeights();
 
         double c = 0.5;
 
@@ -756,7 +754,7 @@ public class QNet {
 
         Taxa c = null; //quartetNetworkAgglomerator.getTaxa().get(0);
         int N = quartetNetworkAgglomerator.getTaxa().size();
-        QuartetWeights theQuartetWeights = quartetNetworkAgglomerator.getQuartetWeights();
+        WeightedQuartetMap theQuartetWeights = quartetNetworkAgglomerator.getQuartetWeights();
         Taxa allTaxa = quartetNetworkAgglomerator.getTaxa();
 
         Pair<Integer, Integer>[] splitIndices = new Pair[N * (N - 1) / 2 - N];
@@ -771,14 +769,15 @@ public class QNet {
                 if (m != 1 || j != N) {
 
                     // valid split
-                    splitIndices[n] = new ImmutablePair<Integer, Integer>(m, j);
+                    splitIndices[n] = new ImmutablePair<>(m, j);
                     n++;
                 }
             }
         }
 
-        double[] f = new double[N * (N - 1) * (N - 2) * (N - 3) / 12];
-        QuartetIndex[] quartetIndices = new QuartetIndex[N * (N - 1) * (N - 2) * (N - 3) / 12];
+        /*final int size = N * (N - 1) * (N - 2) * (N - 3) / 12;
+        double[] f = new double[size];
+        QuartetIndex[] quartetIndices = new QuartetIndex[size];
 
         n = 0;
 
@@ -805,7 +804,7 @@ public class QNet {
                     }
                 }
             }
-        }
+        }     */
 
         int noSplits = N * (N - 1) / 2 - N;
         boolean[] splitExists = new boolean[noSplits];

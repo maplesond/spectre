@@ -66,7 +66,7 @@ public class QuartetNetworkList extends ArrayList<QuartetNetwork> {
 
     public void translateTaxaIndicies(Taxa superTaxaSet) {
         for(QuartetNetwork data : this) {
-            data.setTaxaIndecies(superTaxaSet);
+            data.setTaxaIndicies(superTaxaSet);
         }
     }
 

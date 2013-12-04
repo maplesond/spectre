@@ -19,9 +19,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.uea.cmp.phygen.core.ds.network.QuartetNetworkAgglomerator;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetNetworkAgglomerator;
 import uk.ac.uea.cmp.phygen.core.ds.split.CircularOrdering;
-import uk.ac.uea.cmp.phygen.core.ds.split.Split;
 import uk.ac.uea.cmp.phygen.core.io.nexus.Nexus;
 import uk.ac.uea.cmp.phygen.core.io.nexus.NexusReader;
 import uk.ac.uea.cmp.phygen.core.io.nexus.NexusWriter;
@@ -37,7 +36,6 @@ import uk.ac.uea.cmp.phygen.tools.scale.Scaling;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 public class SuperQ extends RunnableTool {
 
@@ -154,9 +152,6 @@ public class SuperQ extends RunnableTool {
 
             this.continueRun();
 
-            String filterTempFile = tmppath + "unfiltered-split-system.nex";
-            File weightsOutput = this.options.getFilter() != null ? new File(filterTempFile) : this.options.getOutputFile();
-
             double[] solution = computedWeights.getX();
 
             if (this.options.getSecondaryProblem() == null || this.options.getSecondarySolver() == null) {
@@ -185,6 +180,9 @@ public class SuperQ extends RunnableTool {
                 }
             }
 
+            String filterTempFile = tmppath + "unfiltered-split-system.nex";
+            File weightsOutput = this.options.getFilter() != null ? new File(filterTempFile) : this.options.getOutputFile();
+
             notifyUser("SUPERQ - Saving weights to file");
             qnet.writeWeights(weightsOutput, solution, null, 0, quartetNetworkAgglomerator);
 
@@ -193,9 +191,9 @@ public class SuperQ extends RunnableTool {
             log.debug("FREE MEM - after computing weights: " + rt.freeMemory());
 
             if (this.options.getFilter() != null) {
-                notifyUser("SUPERQ - filtering splits");
+                notifyUser("SUPERQ - filtering out bottom " + this.options.getFilter() * 100.0 + " % of splits");
 
-                this.filter(new File(filterTempFile), this.options.getOutputFile(), this.options.getFilter());
+                this.filterNexus(new File(filterTempFile), this.options.getOutputFile(), this.options.getFilter());
             }
 
             notifyUser("CLEANUP - Removing temporary files in " + tmpdir.toString());
@@ -250,16 +248,16 @@ public class SuperQ extends RunnableTool {
         return solution;
     }
 
-    protected void filter(File inFile, File outFile, double threshold) throws IOException {
+    protected void filterNexus(File inFile, File outFile, double threshold) throws IOException {
 
         // Load
         Nexus raw = new NexusReader().readNexusData(inFile);
 
         // Filter
-        List<Split> filtered = raw.getSplitSystem().filterByWeight(threshold);
+        raw.getSplitSystem().filterByWeight(threshold);
 
         // Save
-        new NexusWriter().writeNexusData(outFile, null);
+        new NexusWriter().writeNexusData(outFile, raw);
     }
 
     private void notifyUser(String message) {

@@ -23,13 +23,8 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.ds.Taxon;
-import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrixBuilder;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.*;
-import uk.ac.uea.cmp.phygen.core.io.nexus.Nexus;
-import uk.ac.uea.cmp.phygen.core.io.nexus.parser.NexusQuartetNetworkBuilder;
-import uk.ac.uea.cmp.phygen.core.io.nexus.parser.NexusSplitSystemBuilder;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,7 +46,7 @@ public class QWeightPopulator implements QWeightListener {
     }
 
     private QuartetNetwork quartetNetwork;
-    private List<WeightedQuartet> weightedQuartets;
+    private WeightedQuartetMap weightedQuartets;
 
     private int expectedTaxa;
     private Sense sense;
@@ -59,7 +54,7 @@ public class QWeightPopulator implements QWeightListener {
 
     public QWeightPopulator(QuartetNetwork quartetNetwork, boolean logNormalise) {
         this.quartetNetwork = quartetNetwork;
-        this.weightedQuartets = new ArrayList<>();
+        this.weightedQuartets = new WeightedQuartetMap();
         this.expectedTaxa = 0;
         this.sense = Sense.MAX;
         this.logNormalise = logNormalise;
@@ -202,7 +197,7 @@ public class QWeightPopulator implements QWeightListener {
         }
 
         final int expectedQuartets = Quartet.over4(this.expectedTaxa);
-        final int actualQuartets = this.quartetNetwork.getQuartetWeights().size();
+        final int actualQuartets = this.quartetNetwork.getQuartets().size();
 
         if (actualQuartets != expectedQuartets) {
 
@@ -212,10 +207,10 @@ public class QWeightPopulator implements QWeightListener {
 
         // Normalise if useMax
         if (this.logNormalise) {
-            this.quartetNetwork.getQuartetWeights().logNormalize(sense == Sense.MAX);
+            this.quartetNetwork.getQuartets().logNormalize(sense == Sense.MAX);
         }
         else {
-            this.quartetNetwork.getQuartetWeights().normalize(sense == Sense.MAX);
+            this.quartetNetwork.getQuartets().normalize(sense == Sense.MAX);
         }
     }
 
@@ -239,7 +234,7 @@ public class QWeightPopulator implements QWeightListener {
         Quartet quartet = new Quartet(a, b, c, d);
         QuartetWeights weights = new QuartetWeights(w1, w2, w3);
 
-        this.quartetNetwork.getQuartetWeights().setWeight(quartet, weights);
+        this.quartetNetwork.getQuartets().put(quartet, weights);
     }
 
     @Override

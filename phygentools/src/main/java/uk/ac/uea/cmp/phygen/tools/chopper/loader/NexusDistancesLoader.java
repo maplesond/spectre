@@ -17,9 +17,9 @@ package uk.ac.uea.cmp.phygen.tools.chopper.loader;
 
 import org.kohsuke.MetaInfServices;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
-import uk.ac.uea.cmp.phygen.core.ds.network.QuartetNetwork;
-import uk.ac.uea.cmp.phygen.core.ds.network.QuartetNetworkList;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetNetwork;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetNetworkList;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.WeightedQuartetMap;
 import uk.ac.uea.cmp.phygen.core.io.nexus.NexusReader;
 
 import java.io.File;
@@ -38,8 +38,9 @@ public class NexusDistancesLoader implements Source {
         DistanceMatrix distanceMatrix = new NexusReader().readDistanceMatrix(file);
 
         // Create QuartetWeightings from distance matrix
-        QuartetWeights qw = new QuartetWeights(distanceMatrix);
+        WeightedQuartetMap qw = new WeightedQuartetMap(distanceMatrix);
 
+        // Create a single quartet network based on these quartet weight and add to the list
         return new QuartetNetworkList(new QuartetNetwork(distanceMatrix.getTaxaSet(), weight, qw));
     }
 

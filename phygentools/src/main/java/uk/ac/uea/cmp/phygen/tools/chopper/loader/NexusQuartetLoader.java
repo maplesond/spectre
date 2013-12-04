@@ -18,10 +18,7 @@ package uk.ac.uea.cmp.phygen.tools.chopper.loader;
 import org.kohsuke.MetaInfServices;
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.Taxon;
-import uk.ac.uea.cmp.phygen.core.ds.network.QuartetNetwork;
-import uk.ac.uea.cmp.phygen.core.ds.network.QuartetNetworkList;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.*;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -44,7 +41,7 @@ public class NexusQuartetLoader implements Source {
         List<Double> weights = new ArrayList<>();
 
         Taxa taxa = new Taxa();
-        QuartetWeights qW = null;
+        WeightedQuartetMap qW = null;
 
         /**
          *
@@ -98,7 +95,7 @@ public class NexusQuartetLoader implements Source {
 
                     }
 
-                    qW = new QuartetWeights(Quartet.over4(N));
+                    qW = new WeightedQuartetMap();
 
                     readingState = false;
 
@@ -201,7 +198,7 @@ public class NexusQuartetLoader implements Source {
                             String sC = bT.nextToken();
                             int u = Integer.parseInt(bT.nextToken());
                             String cS = bT.nextToken();
-                            int v = Integer.parseInt(cS.substring(0, cS.length() - 1));
+                            int v = Integer.parseInt(sC.substring(0, cS.length() - 1));
 
                             if (x != y && x != u && x != v && y != u && y != v && u != v) {
 

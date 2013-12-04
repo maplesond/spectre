@@ -16,10 +16,7 @@
 package uk.ac.uea.cmp.phygen.tools.chopper.loader;
 
 import org.kohsuke.MetaInfServices;
-import uk.ac.uea.cmp.phygen.core.ds.network.QuartetNetwork;
-import uk.ac.uea.cmp.phygen.core.ds.network.QuartetNetworkList;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.*;
 import uk.ac.uea.cmp.phygen.core.ds.split.Split;
 import uk.ac.uea.cmp.phygen.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.phygen.core.io.nexus.NexusReader;
@@ -41,7 +38,7 @@ public class NexusSplitsLoader implements Source {
         SplitSystem splitSystem = new NexusReader().readSplitSystem(file);
 
         // Initialise the quartet weights to the right size, which depends on the number of taxa present in the split system
-        QuartetWeights qW = new QuartetWeights(Quartet.over4(splitSystem.getNbTaxa()));
+        WeightedQuartetMap qW = new WeightedQuartetMap();
 
         // Add each split to the quartet weights
         for(Split split : splitSystem.getSplits()) {

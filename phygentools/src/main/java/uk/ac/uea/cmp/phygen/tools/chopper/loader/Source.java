@@ -15,7 +15,7 @@
  */
 package uk.ac.uea.cmp.phygen.tools.chopper.loader;
 
-import uk.ac.uea.cmp.phygen.core.ds.network.QuartetNetworkList;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetNetworkList;
 import uk.ac.uea.cmp.phygen.core.util.Service;
 
 import java.io.File;
@@ -28,5 +28,4 @@ import java.io.IOException;
 public interface Source extends Service {
 
     public QuartetNetworkList load(File file, double weight) throws IOException;
-
 }

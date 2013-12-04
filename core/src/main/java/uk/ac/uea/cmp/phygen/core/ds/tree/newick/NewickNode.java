@@ -19,8 +19,7 @@ package uk.ac.uea.cmp.phygen.core.ds.tree.newick;
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.Taxon;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystem;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeightsList;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.WeightedQuartetMap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -209,7 +208,7 @@ public abstract class NewickNode {
      * @param remainder The taxa that are not found in this node
      * @return Calculated quartet weights for this node
      */
-    protected QuartetWeightsList split(QuartetWeightsList qW, Taxa remainder) {
+    protected WeightedQuartetMap split(WeightedQuartetMap qW, Taxa remainder) {
 
         for(int i = 0; i < this.branches.size(); i++) {
 

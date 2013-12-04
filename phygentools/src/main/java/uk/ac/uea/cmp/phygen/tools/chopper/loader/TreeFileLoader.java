@@ -18,8 +18,8 @@ package uk.ac.uea.cmp.phygen.tools.chopper.loader;
 import org.kohsuke.MetaInfServices;
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.Taxon;
-import uk.ac.uea.cmp.phygen.core.ds.network.QuartetNetwork;
-import uk.ac.uea.cmp.phygen.core.ds.network.QuartetNetworkList;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetNetwork;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetNetworkList;
 import uk.ac.uea.cmp.phygen.core.ds.tree.newick.NewickTree;
 
 import java.io.BufferedReader;
@@ -44,7 +44,7 @@ public class TreeFileLoader implements Source {
 
         BufferedReader in = new BufferedReader(new FileReader(file));
 
-        String aLine = in.readLine();
+        String line = in.readLine();
 
         // read until translate block
 
@@ -52,7 +52,7 @@ public class TreeFileLoader implements Source {
 
         while (readingState) {
 
-            StringTokenizer sT = new StringTokenizer(aLine);
+            StringTokenizer sT = new StringTokenizer(line);
 
             while (sT.hasMoreTokens()) {
 
@@ -62,26 +62,21 @@ public class TreeFileLoader implements Source {
 
                     readingState = false;
                     break;
-
                 }
-
             }
 
             if (readingState) {
-
-                aLine = in.readLine();
-
+                line = in.readLine();
             }
-
         }
 
         // we have found translation
 
-        aLine = in.readLine();
+        line = in.readLine();
 
-        while (!readingState && aLine != null) {
+        while (!readingState && line != null) {
 
-            StringTokenizer sT = new StringTokenizer(aLine);
+            StringTokenizer sT = new StringTokenizer(line);
 
             String first = sT.nextToken();
 
@@ -109,36 +104,36 @@ public class TreeFileLoader implements Source {
 
             if (!readingState) {
 
-                aLine = in.readLine();
+                line = in.readLine();
             }
         }
 
 
         // now, we will read tree lines until we find an end
 
-        aLine = in.readLine();
+        line = in.readLine();
 
         boolean readingTrees = true;
 
-        while (readingTrees && aLine != null) {
+        while (readingTrees && line != null) {
 
-            aLine = aLine.trim();
+            line = line.trim();
 
-            if (aLine.toUpperCase().startsWith("END")) {
+            if (line.toUpperCase().startsWith("END")) {
                 readingTrees = false;
                 break;
             }
 
-            if (aLine.indexOf('(') != -1 && aLine.endsWith(");")) {
+            if (line.indexOf('(') != -1 && line.endsWith(");")) {
 
                 // We have a tree line here, so parse it and create the tree
-                NewickTree aTree = new NewickTree(aLine);
+                NewickTree aTree = new NewickTree(line);
 
                 // Create quartets from the tree and add to the list (taxa should be the same for each tree)
                 sourceDataList.add(new QuartetNetwork(taxa, weight, aTree.createQuartets()));
             }
 
-            aLine = in.readLine();
+            line = in.readLine();
         }
 
         in.close();

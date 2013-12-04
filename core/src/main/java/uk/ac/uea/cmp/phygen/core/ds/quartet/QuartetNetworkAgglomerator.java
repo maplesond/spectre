@@ -30,14 +30,14 @@ import java.text.NumberFormat;
 public class QuartetNetworkAgglomerator {
 
     private Taxa taxa;
-    private QuartetWeightsList quartetWeights;
-    private QuartetWeightsList summer;
+    private WeightedQuartetMap quartetWeights;
+    private WeightedQuartetMap summer;
 
     public QuartetNetworkAgglomerator() {
-        this(new Taxa(), new QuartetWeightsList(), new QuartetWeightsList());
+        this(new Taxa(), new WeightedQuartetMap(), new WeightedQuartetMap());
     }
 
-    public QuartetNetworkAgglomerator(Taxa taxa, QuartetWeightsList quartetWeights, QuartetWeightsList summer) {
+    public QuartetNetworkAgglomerator(Taxa taxa, WeightedQuartetMap quartetWeights, WeightedQuartetMap summer) {
         this.taxa = taxa;
         this.quartetWeights = quartetWeights;
         this.summer = summer;
@@ -47,11 +47,11 @@ public class QuartetNetworkAgglomerator {
         return taxa;
     }
 
-    public QuartetWeightsList getQuartetWeights() {
+    public WeightedQuartetMap getQuartetWeights() {
         return quartetWeights;
     }
 
-    public QuartetWeightsList getSummer() {
+    public WeightedQuartetMap getSummer() {
         return summer;
     }
 
@@ -121,7 +121,7 @@ public class QuartetNetworkAgglomerator {
         this.summer.translate(oldTaxa, this.taxa);
 
         for (QuartetNetwork data : dataSets) {
-            this.quartetWeights.add(data.getQuartetWeights(), data.getWeight());
+            this.quartetWeights.add(data.getQuartets(), data.getWeight());
         }
 
         this.summer.sum(this.taxa, dataSets.getTaxaSets(), dataSets.getWeights());

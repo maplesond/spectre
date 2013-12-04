@@ -15,6 +15,7 @@
  */
 package uk.ac.uea.cmp.phygen.core.ds.quartet;
 
+import java.text.NumberFormat;
 import java.util.Arrays;
 
 /**
@@ -23,59 +24,63 @@ import java.util.Arrays;
  */
 public class Quartet implements Comparable {
 
-    //indices of the four taxa
-    //increasingly sorted
-    private int t1;
-    private int t2;
-    private int t3;
-    private int t4;
+    protected int a;
+    protected int b;
+    protected int c;
+    protected int d;
 
 
-    public Quartet() {
-        this(0, 0, 0, 0);
-    }
+    public Quartet(int a, int b, int c, int d) {
 
-    /**
-     *
-     * @param t1
-     * @param t2
-     * @param t3
-     * @param t4
-     */
-    public Quartet(int t1, int t2, int t3, int t4) {
+        if (!areDistinct(a, b, c, d)) {
+            throw new IllegalArgumentException("Each taxa id must be distinct");
+        }
 
-        this.t1 = t1;
-        this.t2 = t2;
-        this.t3 = t3;
-        this.t4 = t4;
+        this.a = a;
+        this.b = b;
+        this.c = c;
+        this.d = d;
     }
 
     public Quartet(int[] elements) {
+
         if (elements.length != 4)
             throw new IllegalArgumentException("Array must be of length 4");
 
-        this.t1 = elements[0];
-        this.t2 = elements[1];
-        this.t3 = elements[2];
-        this.t4 = elements[3];
+        this.a = elements[0];
+        this.b = elements[1];
+        this.c = elements[2];
+        this.d = elements[3];
     }
 
-    public int getT1() {
-        return t1;
+    public int getA() {
+        return a;
     }
 
-    public int getT2() {
-        return t2;
+    public int getB() {
+        return b;
     }
 
-    public int getT3() {
-        return t3;
+    public int getC() {
+        return c;
     }
 
-    public int getT4() {
-        return t4;
+    public int getD() {
+        return d;
     }
 
+
+    /**
+     * This method checks whether or not for given taxa are distinct. The assumption is that a <= b <= c <= d holds.
+     * @param a
+     * @param b
+     * @param c
+     * @param d
+     * @return
+     */
+    public boolean areDistinct(int a, int b, int c, int d) {
+        return !(((a == b) || (b == c)) || (c == d));
+    }
 
 
     public boolean equals(Object obj) {
@@ -87,7 +92,7 @@ public class Quartet implements Comparable {
         }
 
         Quartet tmp = (Quartet) obj;
-        if ((tmp.t1 == this.t1) && (tmp.t2 == this.t2) && (tmp.t3 == this.t3) && (tmp.t4 == this.t4)) {
+        if ((tmp.a == this.a) && (tmp.b == this.b) && (tmp.c == this.c) && (tmp.d == this.d)) {
             return true;
         } else {
             return false;
@@ -95,7 +100,7 @@ public class Quartet implements Comparable {
     }
 
     public int hashCode() {
-        return 151 * (151 * ((151 * t1) + t2) + t3) + t4;
+        return 151 * (151 * ((151 * a) + b) + c) + d;
     }
 
     @Override
@@ -107,20 +112,20 @@ public class Quartet implements Comparable {
         int x1 = -1;
         int x2 = -1;
 
-        if (this.t1 != k2.t1) {
-            x1 = this.t1;
-            x2 = k2.t1;
+        if (this.a != k2.a) {
+            x1 = this.a;
+            x2 = k2.a;
         } else {
-            if (this.t2 != k2.t2) {
-                x1 = this.t2;
-                x2 = k2.t2;
+            if (this.b != k2.b) {
+                x1 = this.b;
+                x2 = k2.b;
             } else {
-                if (this.t3 != k2.t3) {
-                    x1 = this.t3;
-                    x2 = k2.t3;
+                if (this.c != k2.c) {
+                    x1 = this.c;
+                    x2 = k2.c;
                 } else {
-                    x1 = this.t4;
-                    x2 = k2.t4;
+                    x1 = this.d;
+                    x2 = k2.d;
                 }
             }
         }
@@ -135,22 +140,26 @@ public class Quartet implements Comparable {
         }
     }
 
+    /**
+     * Sorts the quartet with smallest index first, largest last
+     * @return
+     */
     public Quartet createSortedQuartet() {
-        //create array to store the elements
-        int[] a = {t1, t2, t3, t4};
 
-        Arrays.sort(a);
+        int[] array = {this.a, this.b, this.c, this.d};
 
-        return new Quartet(a[0], a[1], a[2], a[3]);
+        Arrays.sort(array);
+
+        return new Quartet(array[0], array[1], array[2], array[3]);
     }
 
     /**
-     * Using the indicies in the quartet it is possible to work out where in a list of quartets in a quartet system that
+     * Using the indices in the quartet it is possible to work out where in a list of quartets in a quartet system that
      * this particular quartet should be placed
      * @return
      */
     public int getIndex() {
-        return over4(t1 - 1) + over3(t2 - 1) + over2(t3 - 1) + over1(t4 - 1);
+        return over4(a - 1) + over3(b - 1) + over2(c - 1) + over1(d - 1);
     }
 
 
@@ -183,143 +192,14 @@ public class Quartet implements Comparable {
         return n > 0 ? n : 0;
     }
 
-    /**
-     * Determine which quartet to take. Use the unordered numbers, they
-     * match one ordering or other
-     * @param other
-     * @return
-     */
-    public double selectWeight(Quartet other, QuartetWeights w) {
-        
-        double result = 0.0;
 
-        if (((other.t1 == t1 || other.t1 == t2) && (other.t2 == t1 || other.t2 == t2)) ||
-                ((other.t3 == t1 || other.t3 == t2) && (other.t4 == t1 || other.t4 == t2))) {
-
-            result = w.getA();
-        }
-        else if (((other.t1 == t1 || other.t1 ==  t3) && (other.t2 == t1 || other.t2 ==  t3)) ||
-                ((other.t3 == t1 || other.t3 ==  t3) && (other.t4 == t1 || other.t4 ==  t3))) {
-
-            result = w.getB();
-        }
-        else if (((other.t1 == t1 || other.t1 ==  t4) && (other.t2 == t1 || other.t2 ==  t4)) ||
-                ((other.t3 == t1 || other.t3 ==  t4) && (other.t4 == t1 || other.t4 ==  t4))) {
-
-            result = w.getC();
-        }
-        
-        return result;
+    @Override
+    public String toString() {
+        return "quartet: " + a + " " + b + " " + c + " " + d;
     }
 
-    public QuartetWeights selectWeighting(Quartet other, QuartetWeights w) {
-
-        int x = t1, y = t2, u = t3, v = t4;
-        int a = other.t1, b = other.t2, c = other.t3, d = other.t4;
-
-        /**
-         *
-         * Investigate which topology of a, b, c, d that the topologies of x, y,
-         * u, v correspond to, and set weights accordingly
-         *
-         */
-        /**
-         *
-         * See if xy|uv is ab|cd (w1), ac|bd (w2), or ad|bc (w3)
-         *
-         */
-        /**
-         *
-         * The first length of the stored triplet
-         *
-         */
-        double r1 = 0;
-
-        if (((x == a || x == b) && (y == a || y == b)) || ((u == a || u == b) && (v == a || v == b))) {
-
-            r1 = w.getA();
-        }
-        else if (((x == a || x == c) && (y == a || y == c)) || ((u == a || u == c) && (v == a || v == c))) {
-
-            r1 = w.getB();
-        }
-        else if (((x == a || x == d) && (y == a || y == d)) || ((u == a || u == d) && (v == a || v == d))) {
-
-            r1 = w.getC();
-        }
-
-        /**
-         *
-         * See if xu|yv is ab|cd (w1), ac|bd (w2), or ad|bc (w3)
-         *
-         */
-        /**
-         *
-         * The second length of the stored triplet
-         *
-         */
-        double r2 = 0;
-
-        if (((x == a || x == b) && (u == a || u == b)) || ((y == a || y == b) && (v == a || v == b))) {
-
-            r2 = w.getA();
-        }
-        else if (((x == a || x == c) && (u == a || u == c)) || ((y == a || y == c) && (v == a || v == c))) {
-
-            r2 = w.getB();
-        }
-        else if (((x == a || x == d) && (u == a || u == d)) || ((y == a || y == d) && (v == a || v == d))) {
-
-            r2 = w.getC();
-        }
-
-        /**
-         *
-         * See if xv|uy is ab|cd (w1), ac|bd (w2), or ad|bc (w3)
-         *
-         */
-        /**
-         *
-         * The third length of the stored triplet
-         *
-         */
-        double r3 = 0;
-
-        if (((x == a || x == b) && (v == a || v == b)) || ((u == a || u == b) && (y == a || y == b))) {
-
-            r3 = w.getA();
-        }
-        else if (((x == a || x == c) && (v == a || v == c)) || ((u == a || u == c) && (y == a || y == c))) {
-
-            r3 = w.getB();
-        }
-        else if (((x == a || x == d) && (v == a || v == d)) || ((u == a || u == d) && (y == a || y == d))) {
-
-            r3 = w.getC();
-        }
-
-        return new QuartetWeights(r1, r2, r3);
+    public String toString(NumberFormat quartetFormat) {
+        return "quartet: " + quartetFormat.format(a) + " " + quartetFormat.format(b) + " " + quartetFormat.format(c) + " "
+                + quartetFormat.format(d);
     }
-
-    /**
-     * Investigate which topology of a, b, c, d that the topologies of x, y, u, v correspond to, and set weights accordingly
-     * See if xy|uv is ab|cd (w1), ac|bd (w2), or ad|bc (w3)
-     * The first length of the stored triplet
-     */
-    public void updateWeighting(Quartet other, QuartetWeights w, double newW) {
-
-        int x = t1, y = t2, u = t3, v = t4;
-        int a = other.t1, b = other.t2, c = other.t3, d = other.t4;
-
-        if (((x == a || x == b) && (y == a || y == b)) || ((u == a || u == b) && (v == a || v == b))) {
-            w.setA(newW);
-        }
-        else if (((x == a || x == b) && (u == a || u == b)) || ((y == a || y == b) && (v == a || v == b))) {
-            w.setB(newW);
-        }
-        else if (((x == a || x == b) && (v == a || v == b)) || ((u == a || u == b) && (y == a || y == b))) {
-            w.setC(newW);
-        }
-    }
-
 }

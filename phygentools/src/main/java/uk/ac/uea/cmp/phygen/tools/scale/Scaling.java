@@ -23,6 +23,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.MetaInfServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetNetwork;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
+import uk.ac.uea.cmp.phygen.core.ds.tree.newick.NewickTree;
 import uk.ac.uea.cmp.phygen.core.math.optimise.*;
 import uk.ac.uea.cmp.phygen.core.math.tuple.Key;
 import uk.ac.uea.cmp.phygen.tools.PhygenTool;
@@ -87,7 +90,7 @@ public class Scaling extends PhygenTool {
         }
 
         try {
-            execute(inputFile, outputPrefix, mode, optimiser);
+            this.execute(inputFile, outputPrefix, mode, optimiser);
         } catch (OptimiserException oe) {
             throw new IOException(oe);
         }
@@ -105,37 +108,17 @@ public class Scaling extends PhygenTool {
 
     public void execute(File inputFile, File outputPrefix, Mode mode, Optimiser optimiser) throws OptimiserException, IOException {
 
-        int ntrees = -1;
+        // Split each tree found in the input into a separate quartet network and save network to file
+        int ntrees = this.createQuartetFiles(inputFile, outputPrefix, mode);
 
-        if (mode == Mode.NEWICK) {
-            //store input trees in separate files and
-            //get number of input trees
-            ntrees = separateTrees(inputFile.getPath(), outputPrefix.getPath());
-
-            //turn trees into collections of quartets
-            for (int i = 0; i < ntrees; i++) {
-                Chopper.run(
-                        new File(outputPrefix.getPath() + (i + 1) + ".tre"),
-                        new File(outputPrefix.getPath() + (i + 1) + ".qua"),
-                        "NEWICK");
-            }
-
-        } else if (mode == Mode.SCRIPT) {
-            //turn trees into collections of quartets and
-            //get number of input trees
-            ntrees = computeQuartetFilesScript(inputFile.getPath(), outputPrefix.getName(), outputPrefix.getParent());
-        }
-
-        //call of method that computes the matrix
-        //of coefficients
-        double[][] h = getMatrix(outputPrefix.getPath(), ntrees);
+        // Computes the matrix of coefficients
+        double[][] h = computerMatrix(outputPrefix.getPath(), ntrees);
 
         // Create the problem from the coefficients and run the solver to get the optimal solution
         Solution solution = this.optimise(optimiser, h);
 
-        //Updates quartet weights and writes them into a file
-        //for each input tree one quartet file is generated
-        Matrix.updateQuartetWeights(outputPrefix.getParent(), outputPrefix.getName(), solution.getVariableValues());
+        // Updates quartet weights and writes them into a file for each input tree one quartet file is generated
+        updateQuartetWeights(outputPrefix.getParent(), outputPrefix.getName(), solution.getVariableValues());
     }
 
     private Solution optimise(Optimiser optimiser, double[][] h) throws OptimiserException {
@@ -200,56 +183,51 @@ public class Scaling extends PhygenTool {
     }
 
     /**
-     * ********************************************
-     * Code for generating the quartet files
-     * *********************************************
+     * Generating the quartet files
+     * @param inputFile
+     * @param outputPrefix
+     * @param mode
+     * @return
+     * @throws IOException
      */
-    //read the trees from newick file line by line
-    //and write them each in a separate file
-    //parameters:
-    //filename --> name of file with trees in Newick format
-    //prefix   --> common prefix used for output files
-    public static int separateTrees(String filename, String prefix) throws IOException {
-
-        List<String> lines = FileUtils.readLines(new File(filename));
-
-        //number of trees -- to be determined
-        int ntrees = 0;
-
-        for (String line : lines) {
-
-            ntrees++;
-            line = line.trim();
-            FileUtils.writeStringToFile(new File(prefix + ntrees + ".tre"), line);
-        }
-
-        return ntrees;
-    }
-
-
-    //turn each tree file into a quartet file
-    //parameters:
-    //filename --> name of script file
-    //prefix   --> prefix of temporary files
-    //path     --> path to folder that contains the script file
-    //             and the input files
-    public static int computeQuartetFilesScript(String filename, String prefix, String path) throws IOException {
+    protected int createQuartetFiles(File inputFile, File outputPrefix, Mode mode) throws IOException {
 
         //number of trees to be determined
         int ntrees = 0;
 
-        //file handle for script file
-        List<String> lines = FileUtils.readLines(new File(filename));
+        // Get all the input from the file
+        List<String> lines = FileUtils.readLines(inputFile);
 
-        for (String line : lines) {
+        // Turn trees into collections of quartets
+        for (int i = 0; i < ntrees; i++) {
 
-            ntrees++;
-            line = line.trim();
+            String line = lines.get(i).trim();
 
-            Chopper.run(
-                    new File(filename.substring(0, filename.lastIndexOf(File.separator) + 1) + (line.substring(line.indexOf(' '))).trim()),
-                    new File(path + prefix + (ntrees) + ".qua"),
-                    line.substring(0, line.indexOf(' ')));
+            if (!line.isEmpty()) {
+
+                ntrees++;
+
+                if (mode == Mode.NEWICK) {
+
+                    NewickTree tree = new NewickTree(lines.get(i));
+
+                    QuartetNetwork quartetNetwork = new Chopper().execute(tree).create();
+
+                    quartetNetwork.saveQuartets(new File(outputPrefix.getParentFile(), outputPrefix.getName() + ntrees + ".qua"));
+                }
+                else if (mode == Mode.SCRIPT) {
+
+                    String[] typeAndName = line.split(" ");
+                    String type = typeAndName[0];
+                    String name = typeAndName[1];
+
+                    Chopper.run(
+                            new File(inputFile.getParentFile(), name),
+                            type,
+                            outputPrefix.getParentFile(),
+                            outputPrefix.getName() + ntrees + ".qua");
+                }
+            }
         }
 
         return ntrees;
@@ -260,21 +238,19 @@ public class Scaling extends PhygenTool {
      * Code for computing the matrix of coefficients
      * *********************************************
      */
-    //extract the three weights from a line
-    //in the quartet file
-    //parameter:
-    //line --> string containing the line in the quartet file
-    private static WeightVector extractWeights(String line) {
+
+    /**
+     * Extract the three weights from a line in the quartet file
+     * @param line string containing the line in the quartet file
+     * @return
+     */
+    protected QuartetWeights extractWeights(String line) {
+
         //auxiliary variable used to store indices in the input string
         int indx = 0;
 
         //subtring of input line
         String part = null;
-
-        //extracted weights
-        double w1 = 0.0;
-        double w2 = 0.0;
-        double w3 = 0.0;
 
         indx = line.indexOf(';');
         part = line.substring(34, indx);
@@ -282,15 +258,15 @@ public class Scaling extends PhygenTool {
         //part now contains the part with the three weights
         //System.out.println("Part: " + part);
         indx = part.indexOf(' ');
-        w1 = Double.parseDouble((part.substring(0, indx)).trim());
+        double w1 = Double.parseDouble((part.substring(0, indx)).trim());
         part = (part.substring(indx)).trim();
         //System.out.println("Part: " + part);
         indx = part.indexOf(' ');
-        w2 = Double.parseDouble((part.substring(0, indx)).trim());
+        double w2 = Double.parseDouble((part.substring(0, indx)).trim());
         part = (part.substring(indx)).trim();
-        w3 = Double.parseDouble(part);
+        double w3 = Double.parseDouble(part);
 
-        return new WeightVector(w1, w2, w3);
+        return new QuartetWeights(w1, w2, w3);
     }
 
     //store the quartets associated with a tree in
@@ -298,13 +274,13 @@ public class Scaling extends PhygenTool {
     //parameters:
     //lnr   --> file handle
     //ntaxa --> number of taxa in tree
-    private static HashMap<Key, WeightVector> getQuartets(LineNumberReader lnr, int ntaxa) {
+    protected HashMap<Key, QuartetWeights> getQuartets(LineNumberReader lnr, int ntaxa) {
         //upper bound on the number of different 4-subsets
         //used to set initial capacity of HashMap
         int size = ntaxa * (ntaxa - 1) * (ntaxa - 2) * (ntaxa - 3) / (3 * 4);
 
         //new TreeSet for the quartets
-        HashMap<Key, WeightVector> quart = new HashMap<>(size);
+        HashMap<Key, QuartetWeights> quart = new HashMap<>(size);
 
         //loop variables
         int t1 = 0;
@@ -342,7 +318,7 @@ public class Scaling extends PhygenTool {
     //              increasingly by indices of taxa
     //taxalistj --> array with taxanames for tree j sorted
     //              increasingly by indices of taxa
-    private static int[] translateIndices(String[] taxalisti, String[] taxalistj) {
+    protected int[] translateIndices(String[] taxalisti, String[] taxalistj) {
         //loop variables
         int k = 0;
         int l = 0;
@@ -373,7 +349,7 @@ public class Scaling extends PhygenTool {
     //parameters:
     //lnr   --> file handle
     //ntaxa --> number of taxa
-    private static String[] getTaxaList(LineNumberReader lnr, int ntaxa) {
+    protected String[] getTaxaList(LineNumberReader lnr, int ntaxa) {
         //array to store taxanames
         String[] taxalist = new String[ntaxa];
 
@@ -408,7 +384,13 @@ public class Scaling extends PhygenTool {
     //quartet file
     //parameter:
     //lnr  -->  file handle
-    private static int getNTaxa(LineNumberReader lnr) {
+
+    /**
+     *
+     * @param lnr
+     * @return
+     */
+    protected int getNTaxa(LineNumberReader lnr) {
         String line = null;
 
         try {
@@ -421,15 +403,18 @@ public class Scaling extends PhygenTool {
         return Integer.parseInt(line.substring(12, indx));
     }
 
-    //computes the contribution of tree number j
-    //to the diagonal element at position (i,i)
-    //parameters:
-    //prefix --> common prefix of filenames with input
-    //itree  --> index of tree for which we compute the
-    //           the diagonal element
-    //ntaxai --> number of taxa in tree with with index i
-    //jtree  --> the other tree
-    private static double sumUpDiagonal(String prefix, int itree, int ntaxai,
+    /**
+     * Computes the contribution of tree number j to the diagonal element at position (i,i)
+     * @param prefix common prefix of filenames with input
+     * @param itree index of tree for which we compute the diagonal element
+     * @param ntaxai number of taxa in tree with with index i
+     * @param taxalisti
+     * @param quarti
+     * @param jtree the other tree
+     * @return
+     * @throws IOException
+     */
+    protected double sumUpDiagonal(String prefix, int itree, int ntaxai,
                                         String[] taxalisti, HashMap quarti, int jtree) throws IOException {
         //auxilliary variable to store intermediate
         //results when summing up the values for the
@@ -468,8 +453,8 @@ public class Scaling extends PhygenTool {
         //auxiliary variables used to store the weights of the
         //quartets associated with the current line and, if
         //it exists, in tree i
-        WeightVector wvj = null;
-        WeightVector wvi = null;
+        QuartetWeights wvj = null;
+        QuartetWeights wvi = null;
 
         //Now loop over the taxa so that we get all
         //4-subsets lexicographically ordered
@@ -488,7 +473,7 @@ public class Scaling extends PhygenTool {
                         //System.out.println("other quartets on: " + (transind[t1]+1) + " " + (transind[t2]+1) + " " + (transind[t3]+1) + " " + (transind[t4]+1));
                         //need to sort indices after translation, done in
                         //constructor of Key
-                        wvi = (WeightVector) quarti.get(new Key(transind[t1], transind[t2], transind[t3], transind[t4]));
+                        wvi = (QuartetWeights) quarti.get(new Key(transind[t1], transind[t2], transind[t3], transind[t4]));
                         if (wvi != null) {
                             //wvi.printWeights();
                             wvi.permute(transind[t1], transind[t2], transind[t3], transind[t4]);
@@ -509,16 +494,18 @@ public class Scaling extends PhygenTool {
         return part;
     }
 
-    //computes the diagonal elements of the
-    //coefficient matrix.
-    //parameters:
-    //prefix --> common prefix of filenames with input
-    //itree  --> index of tree for which we compute the
-    //           the diagonal element
-    //ntrees --> total number of trees in input
-    private static double computeDiagonalElement(String prefix, int itree, int ntrees) throws IOException {
+    /**
+     * Computes the diagonal elements of the coefficient matrix
+     * @param prefix common prefix of filenames with input
+     * @param itree index of tree for which we compute the diagonal element
+     * @param ntrees total number of trees in input
+     * @return
+     * @throws IOException
+     */
+    protected double computeDiagonalElement(String prefix, int itree, int ntrees) throws IOException {
         //loop variable
         int j = 0;
+
         //auxilliary variable to store intermediate
         //results when summing up the values for the
         //coefficient
@@ -553,18 +540,18 @@ public class Scaling extends PhygenTool {
         return coeff;
     }
 
-    //computes entry at position (i,j), i<j
-    //parameters:
-    //prefix --> common prefix of file names with input
-    //itree  --> index of first tree
-    //jtree  --> index of second tree
-    private static double computeOffDiagonalElement(String prefix, int itree, int jtree) throws IOException {
+    /**
+     * Computes entry at position (i,j), i<j
+     * @param prefix common prefix of file names with input
+     * @param itree index of first tree
+     * @param jtree index of second tree
+     * @return
+     * @throws IOException
+     */
+    protected double computeOffDiagonalElement(String prefix, int itree, int jtree) throws IOException {
+
         //auxiliary variable used to store intermediate results
         double coeff = 0.0;
-
-        //loop variables
-        int k = 0;
-        int l = 0;
 
         //open file for each tree
         LineNumberReader lnri = new LineNumberReader(new FileReader(prefix + (itree + 1) + ".qua"));
@@ -573,17 +560,14 @@ public class Scaling extends PhygenTool {
         //read out the number of taxa in each tree
         int ntaxai = getNTaxa(lnri);
         int ntaxaj = getNTaxa(lnrj);
-        //System.out.println("ntaxai: " + ntaxai);
 
         //read list of taxa and store them in an array
         String[] taxalisti = getTaxaList(lnri, ntaxai);
         String[] taxalistj = getTaxaList(lnrj, ntaxaj);
-        //printStringArray(taxalisti);
 
         //create a hash map describing the set of
         //quartets for tree i
         HashMap quarti = getQuartets(lnri, ntaxai);
-        //System.out.println("hash map constructed. size: " + quarti.size());
 
         //close file for the tree with index i
         lnri.close();
@@ -592,15 +576,8 @@ public class Scaling extends PhygenTool {
         //in tree j to the indeices of those taxa in tree
         //number i
         int[] transind = translateIndices(taxalisti, taxalistj);
-        //printIntArray(transind);
 
         //find common quartets and sum up the products of weights
-
-        //loop variables
-        int t1 = 0;
-        int t2 = 0;
-        int t3 = 0;
-        int t4 = 0;
 
         //auxiliary variable used to store the
         //currently read line
@@ -609,27 +586,26 @@ public class Scaling extends PhygenTool {
         //auxiliary variables used to store the weights of the
         //quartets associated with the current line and, if
         //it exists, in tree i
-        WeightVector wvj = null;
-        WeightVector wvi = null;
+        QuartetWeights wvj = null;
+        QuartetWeights wvi = null;
 
         //Now loop over the taxa so that we get all
         //4-subsets lexicographically ordered
-        for (t1 = 0; t1 < (ntaxaj - 3); t1++) {
-            for (t2 = t1 + 1; t2 < (ntaxaj - 2); t2++) {
-                for (t3 = t2 + 1; t3 < (ntaxaj - 1); t3++) {
-                    for (t4 = t3 + 1; t4 < ntaxaj; t4++) {
+        for (int t1 = 0; t1 < (ntaxaj - 3); t1++) {
+            for (int t2 = t1 + 1; t2 < (ntaxaj - 2); t2++) {
+                for (int t3 = t2 + 1; t3 < (ntaxaj - 1); t3++) {
+                    for (int t4 = t3 + 1; t4 < ntaxaj; t4++) {
                         try {
                             line = lnrj.readLine();
                         } catch (IOException exception) {
                             log.error("Error while reading from file");
                         }
-                        //System.out.println("quartets on: " + (t1+1) + " " + (t2+1) + " " + (t3+1) + " " + (t4+1));
+
                         wvj = extractWeights(line);
-                        //wvj.printWeights();
-                        //System.out.println("other quartets on: " + (transind[t1]+1) + " " + (transind[t2]+1) + " " + (transind[t3]+1) + " " + (transind[t4]+1));
+
                         //need to sort indices after translation, best in
                         //constructor of Key
-                        wvi = (WeightVector) quarti.get(new Key(transind[t1], transind[t2], transind[t3], transind[t4]));
+                        wvi = (QuartetWeights) quarti.get(new Key(transind[t1], transind[t2], transind[t3], transind[t4]));
                         if (wvi != null) {
                             //wvi.printWeights();
                             wvi.permute(transind[t1], transind[t2], transind[t3], transind[t4]);
@@ -647,42 +623,35 @@ public class Scaling extends PhygenTool {
         return (-coeff);
     }
 
-    //public method to be called later from within the
-    //program to compute the matrix of coefficients
-    public static double[][] getMatrix(String prefix, int ntrees) throws IOException {
-        Runtime rt = Runtime.getRuntime();
+    /**
+     * Compute the matrix of coefficients
+     * @param prefix
+     * @param ntrees
+     * @return
+     * @throws IOException
+     */
+    protected double[][] computerMatrix(String prefix, int ntrees) throws IOException {
 
-        //loop variables
-        int i = 0;
-        int j = 0;
-
-        //matrix of coefficients to be computed
+        // Matrix of coefficients to be computed
         double[][] h = new double[ntrees][ntrees];
 
-        //compute diagonal elements of coefficient
-        //matrix
-        for (i = 0; i < ntrees; i++) {
-            //System.out.println("Compute matrix entry (" + (i + 1) + "," + (i + 1) + ")");
+        // Compute diagonal elements of coefficient matrix
+        for (int i = 0; i < ntrees; i++) {
             h[i][i] = computeDiagonalElement(prefix, i, ntrees);
-            rt.gc();
-            //System.out.println("free memory: " + rt.freeMemory());
         }
-        //compute non-diagonal elements of coefficient
-        //matrix
-        for (i = 0; i < (ntrees - 1); i++) {
-            for (j = i + 1; j < ntrees; j++) {
-                //System.out.println("Compute matrix entry (" + (i + 1) + "," + (j + 1) + ")");
+
+        // Compute non-diagonal elements of coefficient matrix
+        for (int i = 0; i < (ntrees - 1); i++) {
+            for (int j = i + 1; j < ntrees; j++) {
                 h[i][j] = computeOffDiagonalElement(prefix, i, j);
                 h[j][i] = h[i][j];
-                rt.gc();
-                //System.out.println("free memory: " + rt.freeMemory());
             }
         }
 
         return h;
     }
 
-    public static String getNewInput(String input) {
+    protected String getNewInput(String input) {
         String path = "";
 //        String filename = "";
         String prefix = "";
@@ -716,5 +685,84 @@ public class Scaling extends PhygenTool {
 
             return "[" + StringUtils.join(typeStrings, ", ") + "]";
         }
+    }
+
+
+    /**
+     * Updates the quartet weights in the new input files (scales the weights before they are processed by Chopper)
+     * @param path
+     * @param prefix
+     * @param w
+     * @throws IOException
+     */
+    protected void updateQuartetWeights(String path, String prefix, double[] w) throws IOException {
+
+        //open Quartet file
+        for (int i = 0; i < w.length; i++) {
+
+            //Opens a quartet file
+            List<String> lnr = FileUtils.readLines(new File(path + prefix + (i + 1) + ".qua"));
+
+            //ArrayLists to store the weights and quartets from the quartet file
+            ArrayList<double[]> weights = new ArrayList<>();
+            ArrayList<String> quartets = new ArrayList<>();
+            int t = 0;
+
+            //Read every line of file to extract quartets and quartet weights
+            for (int p = 0; p < lnr.size(); p++) {
+                String aLine = lnr.get(p);
+                if (aLine.isEmpty() == false) {
+
+                    if (aLine.startsWith("quartet:")) {
+                        int wIdx = aLine.indexOf("weights:");
+                        String quartet = aLine.substring(8, wIdx).trim();
+                        quartets.add(quartet);
+                        String weight = aLine.substring(wIdx + 8, aLine.lastIndexOf(";")).trim();
+                        double[] qweights = new double[3];
+                        String[] help = new String[3];
+                        help = weight.split(" ");
+                        for (int h = 0; h < 3; h++) {
+                            qweights[h] = Double.parseDouble(help[h]) * w[i];
+                        }
+                        weights.add(qweights);
+                        t++;
+                    }
+                }
+            }
+
+
+            StringBuffer buffer = new StringBuffer();
+            for (int s = 0; s < (lnr.size() - t); s++) {
+                buffer.append(lnr.get(s) + "\n");
+            }
+            for (int s = 0; s < weights.size(); s++) {
+                double[] help = weights.get(s);
+                buffer.append("quartet: " + quartets.get(s) + " weights:");
+                for (int z = 0; z < 3; z++) {
+                    buffer.append(" " + help[z]);
+                }
+                buffer.append(";\n");
+            }
+            FileUtils.writeStringToFile(new File(path + prefix + (i + 1) + ".qua"), buffer.toString());
+        }
+
+        makeScript(path, prefix, w);
+    }
+
+    /**
+     * Creates script for the scaled/updated quartet file as new input for chopper
+     * @param path
+     * @param prefix
+     * @param w
+     * @throws IOException
+     */
+    protected void makeScript(String path, String prefix, double[] w) throws IOException {
+
+        String content = "";
+        for (int i = 0; i < w.length; i++) {
+            content += "qweights " + prefix + (i + 1) + ".qua\n";
+        }
+
+        FileUtils.writeStringToFile(new File(path + prefix + ".script"), content);
     }
 }

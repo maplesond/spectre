@@ -17,14 +17,14 @@ package uk.ac.uea.cmp.phygen.qnet.holders;
 
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.WeightedQuartetMap;
 import uk.ac.uea.cmp.phygen.core.math.tuple.Triplet;
 
 import java.util.List;
 
 public class WHolder {
 
-    public WHolder(List<Taxa> taxaSets, int N, QuartetWeights theQuartetWeights) {
+    public WHolder(List<Taxa> taxaSets, int N, WeightedQuartetMap theQuartetWeights) {
 
         counts = new Triplet[Quartet.over4(N)];
         weights = new Triplet[Quartet.over4(N)];

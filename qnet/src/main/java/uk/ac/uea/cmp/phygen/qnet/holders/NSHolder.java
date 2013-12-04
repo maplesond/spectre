@@ -17,7 +17,7 @@ package uk.ac.uea.cmp.phygen.qnet.holders;
 
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.WeightedQuartetMap;
 
 import java.util.List;
 
@@ -27,7 +27,7 @@ public class NSHolder {
     private Integer[] counts;
     private Double[] weights;
 
-    public NSHolder(List<Taxa> taxaSets, int N, QuartetWeights theQuartetWeights) {
+    public NSHolder(List<Taxa> taxaSets, int N, WeightedQuartetMap theQuartetWeights) {
 
         counts = new Integer[Quartet.over2(N)];
         weights = new Double[Quartet.over2(N)];

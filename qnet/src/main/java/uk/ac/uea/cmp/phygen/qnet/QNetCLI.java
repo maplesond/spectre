@@ -48,7 +48,7 @@ public class QNetCLI {
         options.addOption(CommandLineHelper.HELP_OPTION);
 
         options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_INPUT).isRequired().hasArg()
-                .withDescription("The file containing the distance data to input.").create("i"));
+                .withDescription("The file containing the taxa to input.").create("i"));
 
         options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_OUTPUT).isRequired().hasArg()
                 .withDescription("The nexus file that will contain output.").create("o"));
@@ -69,7 +69,7 @@ public class QNetCLI {
 
         // Parse command line args
         CommandLine commandLine = CommandLineHelper.startApp(createOptions(), "qnet-<version>", "Q-NET",
-                "Stephan's Circular Ordering Generator", args);
+                "Creates a Circular Weighted Split Network from a set of taxa", args);
 
         // If we didn't return a command line object then just return.  Probably the user requested help or
         // input invalid args
@@ -97,7 +97,7 @@ public class QNetCLI {
             ComputedWeights weights = qnet.execute(input, log, tolerance, optimiser);
 
             // Output results in nexus file
-            qnet.writeWeights(output, weights.getX(), null, 0);
+            //TODO qnet.writeWeights(output, weights.getX(), null, 0);
         }
         catch (Exception e) {
             logger.error(e.getMessage(), e);

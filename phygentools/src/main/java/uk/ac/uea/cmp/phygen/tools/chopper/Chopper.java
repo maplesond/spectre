@@ -22,14 +22,17 @@ import org.apache.commons.io.FileUtils;
 import org.kohsuke.MetaInfServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.uea.cmp.phygen.core.ds.network.QuartetNetwork;
-import uk.ac.uea.cmp.phygen.core.ds.network.QuartetNetworkAgglomerator;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetNetwork;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetNetworkAgglomerator;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetNetworkList;
+import uk.ac.uea.cmp.phygen.core.ds.tree.newick.NewickTree;
 import uk.ac.uea.cmp.phygen.core.util.SpiFactory;
 import uk.ac.uea.cmp.phygen.tools.PhygenTool;
 import uk.ac.uea.cmp.phygen.tools.chopper.loader.Source;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -52,6 +55,11 @@ public class Chopper extends PhygenTool {
     private static final String OPT_SOURCE = "source";
 
     private SpiFactory<Source> sourceFactory;
+
+
+    // These variables get set after execution.  Helps the client get a handle on the output.
+    private File quartetFile;
+    private File infoFile;
 
     public Chopper() {
         this.sourceFactory = new SpiFactory<>(Source.class);
@@ -110,6 +118,14 @@ public class Chopper extends PhygenTool {
         return "Chopper extracts quartet weights from trees";
     }
 
+    public File getInfoFile() {
+        return this.infoFile;
+    }
+
+    public File getQuartetFile() {
+        return this.quartetFile;
+    }
+
     /**
      * Executes Chopper programmatically.  Loads input from file and saves output to file.
      *
@@ -118,13 +134,16 @@ public class Chopper extends PhygenTool {
      */
     public QuartetNetwork execute(File inputFile, String source, File outputDir, String outputPrefix) throws IOException {
 
+        this.infoFile = new File(outputDir, outputPrefix + ".info");
+        this.quartetFile = new File(outputDir, outputPrefix + ".qw");
+
         QuartetNetworkAgglomerator quartetNetworkAgglomerator = this.execute(inputFile, source);
 
-        quartetNetworkAgglomerator.saveInformation(new File(outputDir, outputPrefix + ".info"));
+        quartetNetworkAgglomerator.saveInformation(this.infoFile);
 
         QuartetNetwork quartetNetwork = quartetNetworkAgglomerator.create();
 
-        quartetNetwork.saveQuartets(new File(outputDir, outputPrefix + ".qw"));
+        quartetNetwork.saveQuartets(this.quartetFile);
 
         return quartetNetwork;
     }
@@ -132,8 +151,21 @@ public class Chopper extends PhygenTool {
     public QuartetNetworkAgglomerator execute(File inputFile, String source) throws IOException {
 
         QuartetNetworkAgglomerator quartetNetworkAgglomerator = source.equalsIgnoreCase("SCRIPT") ?
-                doScript(inputFile) :
+                runScript(inputFile) :
                 new QuartetNetworkAgglomerator().addSource(this.sourceFactory.create(source).load(inputFile, 1.0));
+
+        quartetNetworkAgglomerator.divide();
+
+        return quartetNetworkAgglomerator;
+    }
+
+
+    public QuartetNetworkAgglomerator execute(NewickTree newickTree) throws IOException {
+
+        QuartetNetworkList sourceDataList = new QuartetNetworkList(new QuartetNetwork(
+                newickTree.getTaxa(), newickTree.getScalingFactor(), newickTree.createQuartets()));
+
+        QuartetNetworkAgglomerator quartetNetworkAgglomerator = new QuartetNetworkAgglomerator().addSource(sourceDataList);
 
         quartetNetworkAgglomerator.divide();
 
@@ -147,7 +179,7 @@ public class Chopper extends PhygenTool {
     }
 
 
-    protected QuartetNetworkAgglomerator doScript(File inputFile) throws IOException {
+    protected QuartetNetworkAgglomerator runScript(File inputFile) throws IOException {
 
         // Create an empty tree
         QuartetNetworkAgglomerator choppedTree = new QuartetNetworkAgglomerator();
@@ -183,10 +215,10 @@ public class Chopper extends PhygenTool {
                             Double.parseDouble(sT.nextToken()) :
                             1.0;
 
-                    // Create a loader loader
+                    // Create a source loader
                     Source source = this.sourceFactory.create(sourceName);
 
-                    // Execute chopper for this file.
+                    // Load source and execute chopper, agglomerate results
                     choppedTree.addSource(source.load(sourceFile, weight));
 
                 } else {
