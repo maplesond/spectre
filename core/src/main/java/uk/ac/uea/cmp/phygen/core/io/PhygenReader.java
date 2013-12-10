@@ -15,6 +15,7 @@
  */
 package uk.ac.uea.cmp.phygen.core.io;
 
+import uk.ac.uea.cmp.phygen.core.ds.Alignment;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phygen.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.phygen.core.ds.tree.newick.NewickTree;
@@ -46,6 +47,8 @@ public interface PhygenReader {
     List<NewickTree> readTrees(File input, double weight) throws IOException;
 
     SplitSystem readSplitSystem(File file) throws IOException;
+
+    Alignment readAlignment(File file) throws IOException;
 
     String[] commonFileExtensions();
 

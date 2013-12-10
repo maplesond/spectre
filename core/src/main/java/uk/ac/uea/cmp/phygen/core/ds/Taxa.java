@@ -215,6 +215,14 @@ public class Taxa extends ArrayList<Taxon> {
         return t;
     }
 
+    public void setDefaultIndicies() {
+        int i = 0;
+        for(Taxon taxon : this) {
+            taxon.setId(i++);
+        }
+
+    }
+
     public static enum Direction {
         FORWARD,
         BACKWARD

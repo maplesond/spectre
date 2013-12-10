@@ -55,7 +55,7 @@ public class QuartetNetwork {
         if (this.quartets.size() != expectedNbQuartets) {
             throw new IllegalArgumentException("Found unexpected number of quartets.  Something went wrong creating the " +
                     "quartet hash.  There were " + taxa.size() + " taxa in the distance matrix, which should correspond to " + expectedNbQuartets +
-                    "quartets in the hash.  Instead we found " + this.quartets.size() + " quartets in the hash.");
+                    " quartets in the hash.  Instead we found " + this.quartets.size() + " quartets in the hash.");
         }
     }
 

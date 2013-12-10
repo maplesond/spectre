@@ -15,12 +15,15 @@
  */
 package uk.ac.uea.cmp.phygen.core.ds.quartet;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 import java.text.NumberFormat;
 import java.util.Arrays;
 
 /**
  * Objects of this class are used as keys in the hashmap that associates sorts 4-tuples of taxa with the corresponding
- * weights of the three quartets
+ * weights of the three quartets.  Assumes the quartets are sorted when created.  If not, the sort method is available
+ * to sort the indices.
  */
 public class Quartet implements Comparable {
 
@@ -32,14 +35,14 @@ public class Quartet implements Comparable {
 
     public Quartet(int a, int b, int c, int d) {
 
-        if (!areDistinct(a, b, c, d)) {
-            throw new IllegalArgumentException("Each taxa id must be distinct");
-        }
-
         this.a = a;
         this.b = b;
         this.c = c;
         this.d = d;
+
+        if (!areDistinct()) {
+            throw new IllegalArgumentException("Each taxa id must be distinct");
+        }
     }
 
     public Quartet(int[] elements) {
@@ -51,6 +54,25 @@ public class Quartet implements Comparable {
         this.b = elements[1];
         this.c = elements[2];
         this.d = elements[3];
+
+        if (!areDistinct()) {
+            throw new IllegalArgumentException("Each taxa id must be distinct");
+        }
+    }
+
+    /**
+     * Copy constructor.
+     *
+     * Note: We do not reuse the other constructor here as we already know that the other quartet must be distinct.  Therefore
+     * we can save some time here by just directly copying the variables.
+     * @param q
+     */
+    public Quartet(Quartet q) {
+
+        this.a = q.a;
+        this.b = q.b;
+        this.c = q.c;
+        this.d = q.d;
     }
 
     public int getA() {
@@ -78,11 +100,29 @@ public class Quartet implements Comparable {
      * @param d
      * @return
      */
-    public boolean areDistinct(int a, int b, int c, int d) {
-        return !(((a == b) || (b == c)) || (c == d));
+    public static boolean areDistinct(int a, int b, int c, int d) {
+        return !(a == b || b == c || c == d || a == c || b == d || a == d);
+    }
+
+    public boolean areDistinct() {
+
+        return areDistinct(a, b, c, d);
+    }
+
+    public void sort() {
+
+        int[] array = new int[]{a, b, c, d};
+
+        Arrays.sort(array);
+
+        this.a = array[0];
+        this.b = array[1];
+        this.c = array[2];
+        this.d = array[3];
     }
 
 
+    @Override
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;
@@ -92,13 +132,22 @@ public class Quartet implements Comparable {
         }
 
         Quartet tmp = (Quartet) obj;
-        if ((tmp.a == this.a) && (tmp.b == this.b) && (tmp.c == this.c) && (tmp.d == this.d)) {
-            return true;
-        } else {
-            return false;
-        }
+        return this.equals(tmp);
     }
 
+    public boolean equals(Quartet other) {
+
+        if (this == other) {
+            return true;
+        }
+        if (other == null) {
+            return false;
+        }
+
+        return ((other.a == this.a) && (other.b == this.b) && (other.c == this.c) && (other.d == this.d));
+    }
+
+    @Override
     public int hashCode() {
         return 151 * (151 * ((151 * a) + b) + c) + d;
     }
@@ -140,18 +189,6 @@ public class Quartet implements Comparable {
         }
     }
 
-    /**
-     * Sorts the quartet with smallest index first, largest last
-     * @return
-     */
-    public Quartet createSortedQuartet() {
-
-        int[] array = {this.a, this.b, this.c, this.d};
-
-        Arrays.sort(array);
-
-        return new Quartet(array[0], array[1], array[2], array[3]);
-    }
 
     /**
      * Using the indices in the quartet it is possible to work out where in a list of quartets in a quartet system that
@@ -201,5 +238,14 @@ public class Quartet implements Comparable {
     public String toString(NumberFormat quartetFormat) {
         return "quartet: " + quartetFormat.format(a) + " " + quartetFormat.format(b) + " " + quartetFormat.format(c) + " "
                 + quartetFormat.format(d);
+    }
+
+    public Quartet createSortedQuartet() {
+
+        Quartet newQuartet = new Quartet(this);
+
+        newQuartet.sort();
+
+        return newQuartet;
     }
 }

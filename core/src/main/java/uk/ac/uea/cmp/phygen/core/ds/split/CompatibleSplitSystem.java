@@ -91,11 +91,8 @@ public class CompatibleSplitSystem extends CircularSplitSystem {
         int n = distanceMatrix.size();
         double[][] permutedDistances = new double[n][n];
         boolean[][] flag = new boolean[n][n];
-        int[] permutationInvert = new int[n];
 
-        for (int i = 0; i < n; i++) {
-            permutationInvert[circularOrdering.getAt(i)] = i;
-        }
+        CircularOrdering permutationInvert = circularOrdering.invertOrdering();
 
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
@@ -105,7 +102,7 @@ public class CompatibleSplitSystem extends CircularSplitSystem {
 
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                permutedDistances[i][j] = distanceMatrix.getDistance(circularOrdering.getAt(i), circularOrdering.getAt(j));
+                permutedDistances[i][j] = distanceMatrix.getDistance(circularOrdering.getIndexAt(i), circularOrdering.getIndexAt(j));
             }
         }
 
@@ -113,8 +110,8 @@ public class CompatibleSplitSystem extends CircularSplitSystem {
 
             SplitBlock sb = this.getSplitAt(i).getASide();
 
-            int k = permutationInvert[sb.get(0)];
-            int l = permutationInvert[sb.get(sb.size() - 1)];
+            int k = permutationInvert.getIndexAt(sb.get(0));
+            int l = permutationInvert.getIndexAt(sb.get(sb.size() - 1));
 
             if (k == 0) {
                 flag[n - 1][l] = true;

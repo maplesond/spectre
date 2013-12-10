@@ -34,10 +34,6 @@ import java.util.List;
  */
 public class NewickReader extends AbstractPhygenReader {
 
-    @Override
-    public DistanceMatrix readDistanceMatrix(File input) throws IOException {
-        throw new UnsupportedOperationException("A Newick format file will not contain a distance matrix.");
-    }
 
     @Override
     public List<NewickTree> readTrees(File input, double weight) throws IOException {
@@ -65,10 +61,6 @@ public class NewickReader extends AbstractPhygenReader {
         return trees;
     }
 
-    @Override
-    public SplitSystem readSplitSystem(File file) throws IOException {
-        throw new UnsupportedOperationException("A Newick format file will not contain a split system.");
-    }
 
     @Override
     public String[] commonFileExtensions() {

@@ -41,9 +41,25 @@ public class ChopperTest {
 
 
     @Test
-    public void simpleTest() throws IOException {
+    public void sevenTaxa() throws IOException {
 
         File treeFile = FileUtils.toFile(ChopperTest.class.getResource("/chopper/7-taxa.tre"));
+        File outputDir = temp.newFolder();
+
+        Chopper chopper = new Chopper();
+        chopper.execute(treeFile, "newick", outputDir, "simpleTest");
+
+        assertTrue(chopper.getQuartetFile().exists());
+
+        List<String> lines = FileUtils.readLines(chopper.getQuartetFile());
+
+        assertTrue(lines.size() == 45);
+    }
+
+    @Test
+    public void sevenTaxaDeg2() throws IOException {
+
+        File treeFile = FileUtils.toFile(ChopperTest.class.getResource("/chopper/7-taxa-deg2.tre"));
         File outputDir = temp.newFolder();
 
         Chopper chopper = new Chopper();
@@ -69,6 +85,6 @@ public class ChopperTest {
 
         List<String> lines = FileUtils.readLines(chopper.getQuartetFile());
 
-        assertTrue(lines.size() == 45);
+        assertTrue(lines.size() == 35995);
     }
 }

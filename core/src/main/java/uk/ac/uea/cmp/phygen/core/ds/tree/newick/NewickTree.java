@@ -90,6 +90,9 @@ public class NewickTree extends NewickNode {
         // This NewickTree should be nicely populated now.  Store some convenience methods
         this.taxa = this.findAllTaxa();
 
+        // Set default indicies to taxa
+        this.taxa.setDefaultIndicies();
+
         //TODO apply scaling factor  ???
     }
 
@@ -127,7 +130,7 @@ public class NewickTree extends NewickNode {
 
         WeightedQuartetMap qW = new WeightedQuartetMap();
 
-        this.split(qW, this.taxa);
+        this.split(qW, new Taxa());
 
         return qW;
     }

@@ -16,19 +16,24 @@
 
 package uk.ac.uea.cmp.phygen.core.io;
 
-/**
- * Created with IntelliJ IDEA.
- * User: dan
- * Date: 06/11/13
- * Time: 20:10
- * To change this template use File | Settings | File Templates.
- */
-public enum PhygenDataType {
+import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
+import uk.ac.uea.cmp.phygen.core.ds.split.SimpleSplitSystem;
 
-    DISTANCE_MATRIX,
-    ALIGNMENT,
-    TREE,
-    CIRCULAR_ORDERING,
-    SPLITS,
-    QUARTETS;
+import java.io.File;
+import java.io.IOException;
+
+/**
+ * Created by dan on 10/12/13.
+ */
+public class AbstractPhygenWriter implements PhygenWriter {
+
+    @Override
+    public void writeSplitSystem(File outFile, SimpleSplitSystem splitSystem) throws IOException {
+        throw new UnsupportedOperationException(this.getClass().getCanonicalName() + " does not support writing of split systems.");
+    }
+
+    @Override
+    public void writeDistanceMatrix(File outFile, DistanceMatrix distanceMatrix) throws IOException {
+        throw new UnsupportedOperationException(this.getClass().getCanonicalName() + " does not support writing of distance matrices.");
+    }
 }

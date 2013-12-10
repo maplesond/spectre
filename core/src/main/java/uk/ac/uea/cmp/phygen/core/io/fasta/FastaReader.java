@@ -13,31 +13,39 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package uk.ac.uea.cmp.phygen.core.io;
+package uk.ac.uea.cmp.phygen.core.io.fasta;
 
+import org.kohsuke.MetaInfServices;
 import uk.ac.uea.cmp.phygen.core.ds.Alignment;
+import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
+import uk.ac.uea.cmp.phygen.core.ds.split.SplitSystem;
+import uk.ac.uea.cmp.phygen.core.ds.tree.newick.NewickTree;
+import uk.ac.uea.cmp.phygen.core.io.AbstractPhygenReader;
+import uk.ac.uea.cmp.phygen.core.io.PhygenDataType;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
- * @author balvociute
+ * @author balvociute + maplesond
  */
-public class FastaReader {
+@MetaInfServices(uk.ac.uea.cmp.phygen.core.io.PhygenReader.class)
+public class FastaReader extends AbstractPhygenReader {
+
     private Map<String, String> aln;
     private BufferedReader bufferedReader;
 
-    public Alignment readAlignment(String alignmentFilePath) throws IOException {
-        File alignmentFile = new File(alignmentFilePath);
+    public Alignment readAlignment(File file) throws IOException {
 
-        aln = new LinkedHashMap<>();
+        this.aln = new LinkedHashMap<>();
 
         //Open alignment file
-        FileReader fileReader = new FileReader(alignmentFile);
+        FileReader fileReader = new FileReader(file);
         bufferedReader = new BufferedReader(fileReader);
 
         /* file reading is done in method readAlignmentFile which is
@@ -58,11 +66,29 @@ public class FastaReader {
             if (line.startsWith(">")) {
                 id = line.substring(1);
             } else if (id != null) {
-                String sequence = ((String) (aln.get(id) != null ? aln.get(id) : "")).concat(line);
+                String sequence = (aln.get(id) != null ? aln.get(id) : "").concat(line);
                 aln.put(id, sequence);
             }
         }
 
     }
 
+
+    @Override
+    public String[] commonFileExtensions() {
+        return new String[]{"fa", "fasta"};
+    }
+
+    @Override
+    public String getIdentifier() {
+        return "FASTA";
+    }
+
+    @Override
+    public boolean acceptsDataType(PhygenDataType phygenDataType) {
+        if (phygenDataType == PhygenDataType.ALIGNMENT)
+            return true;
+
+        return false;
+    }
 }

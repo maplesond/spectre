@@ -73,12 +73,14 @@ public abstract class NewickNode {
      * @return
      */
     public Taxa findAllTaxa() {
+
         Taxa taxa = new Taxa();
 
-        if (this.taxon != null && !this.taxon.isEmpty())
+        if (this.taxon != null && !this.taxon.isEmpty()) {
             taxa.add(this.taxon);
+        }
 
-        for(NewickNode node : branches) {
+        for(NewickNode node : this.branches) {
             node.getTaxa(taxa);
         }
 
@@ -94,7 +96,7 @@ public abstract class NewickNode {
             taxa.add(this.taxon);
         }
 
-        for(NewickNode node : branches) {
+        for(NewickNode node : this.branches) {
             node.getTaxa(taxa);
         }
     }
@@ -218,11 +220,7 @@ public abstract class NewickNode {
             Taxa setA = branch.findAllTaxa();
             Taxa setB = new Taxa(remainder);
 
-            ListIterator<NewickNode> lJ = branches.listIterator();
-
-            while (lJ.hasNext()) {
-
-                NewickNode otherBranch = lJ.next();
+            for(NewickNode otherBranch : this.branches) {
 
                 if (branch != otherBranch) {
                     setB.addAll(otherBranch.findAllTaxa());

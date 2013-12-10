@@ -230,7 +230,7 @@ public class NetMake {
         treeSplits.removeRow(treeSplits.rows() - 1);
 
         // Create ordering
-        CircularOrdering permutation = createCircularOrdering();
+        CircularOrdering permutation = this.createCircularOrdering();
         organiseSplits(treeSplits, permutation);
 
         // Set tree split system
@@ -475,9 +475,8 @@ public class NetMake {
         }
         int[] permutation = new int[help.size()];
         for (int i = 0; i < help.size(); i++) {
-            permutation[i] = help.get(i);
+            permutation[i] = help.get(i) + 1;
         }
-
 
         return new CircularOrdering(permutation);
     }

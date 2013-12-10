@@ -24,6 +24,7 @@ import uk.ac.uea.cmp.phygen.core.ds.split.SimpleSplitSystem;
 import uk.ac.uea.cmp.phygen.core.ds.split.Split;
 import uk.ac.uea.cmp.phygen.core.ds.split.SplitBlock;
 import uk.ac.uea.cmp.phygen.core.ds.split.SplitSystem;
+import uk.ac.uea.cmp.phygen.core.io.AbstractPhygenWriter;
 import uk.ac.uea.cmp.phygen.core.io.PhygenWriter;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrixBuilder;
 
@@ -37,7 +38,7 @@ import java.io.*;
  * Consider optimising if we memory related problems are encountered.
  * @author Dan
  */
-public class NexusWriter implements PhygenWriter, Appendable {
+public class NexusWriter extends AbstractPhygenWriter implements Appendable {
 
     /**
      * Stores the file contents before writing to disk.

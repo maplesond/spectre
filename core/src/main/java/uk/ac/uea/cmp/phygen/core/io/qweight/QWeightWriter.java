@@ -14,21 +14,14 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.phygen.core.io;
+package uk.ac.uea.cmp.phygen.core.io.qweight;
+
+import uk.ac.uea.cmp.phygen.core.io.AbstractPhygenWriter;
 
 /**
- * Created with IntelliJ IDEA.
- * User: dan
- * Date: 06/11/13
- * Time: 20:10
- * To change this template use File | Settings | File Templates.
+ * Created by dan on 10/12/13.
  */
-public enum PhygenDataType {
+public class QWeightWriter extends AbstractPhygenWriter {
 
-    DISTANCE_MATRIX,
-    ALIGNMENT,
-    TREE,
-    CIRCULAR_ORDERING,
-    SPLITS,
-    QUARTETS;
+
 }

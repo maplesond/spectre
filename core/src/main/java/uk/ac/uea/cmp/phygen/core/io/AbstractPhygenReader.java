@@ -16,6 +16,9 @@
 
 package uk.ac.uea.cmp.phygen.core.io;
 
+import uk.ac.uea.cmp.phygen.core.ds.Alignment;
+import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
+import uk.ac.uea.cmp.phygen.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.phygen.core.ds.tree.newick.NewickTree;
 
 import java.io.File;
@@ -37,6 +40,25 @@ public abstract class AbstractPhygenReader implements PhygenReader {
         return this.readTrees(input, 1.0);
     }
 
+    @Override
+    public List<NewickTree> readTrees(File input, double weight) throws IOException {
+        throw new UnsupportedOperationException(this.getClass().getCanonicalName() + " does not support reading of trees.");
+    }
+
+    @Override
+    public DistanceMatrix readDistanceMatrix(File input) throws IOException {
+        throw new UnsupportedOperationException(this.getClass().getCanonicalName() + " does not support reading of distance matrices.");
+    }
+
+    @Override
+    public SplitSystem readSplitSystem(File file) throws IOException {
+        throw new UnsupportedOperationException(this.getClass().getCanonicalName() + " does not support reading of split systems.");
+    }
+
+    @Override
+    public Alignment readAlignment(File file) throws IOException {
+        throw new UnsupportedOperationException(this.getClass().getCanonicalName() + " does not support reading of alignments.");
+    }
 
     @Override
     public boolean acceptsIdentifier(String id) {

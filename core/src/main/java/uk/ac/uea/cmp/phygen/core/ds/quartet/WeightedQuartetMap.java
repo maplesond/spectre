@@ -67,15 +67,15 @@ public class WeightedQuartetMap extends HashMap<Quartet, QuartetWeights> {
 
     public void put(Quartet quartet, double weight) {
 
-        Quartet sortedQuartet = quartet.createSortedQuartet();
+        Quartet sorted = quartet.createSortedQuartet();
 
-        QuartetWeights weights = this.get(sortedQuartet);
+        QuartetWeights weights = this.get(sorted);
 
         if (weights != null) {
-            weights.update(sortedQuartet, quartet, weight);
+            weights.update(sorted, quartet, weight);
         }
         else {
-            super.put(sortedQuartet, new QuartetWeights(sortedQuartet, quartet, weight));
+            super.put(sorted, new QuartetWeights(sorted, quartet, weight));
         }
     }
 
@@ -88,9 +88,9 @@ public class WeightedQuartetMap extends HashMap<Quartet, QuartetWeights> {
     @Override
     public QuartetWeights put(Quartet quartet, QuartetWeights weights) {
 
-        Quartet sortedQuartet = quartet.createSortedQuartet();
+        Quartet sorted = quartet.createSortedQuartet();
 
-        super.put(sortedQuartet, weights);
+        super.put(sorted, weights);
 
         return weights;
     }
@@ -101,32 +101,43 @@ public class WeightedQuartetMap extends HashMap<Quartet, QuartetWeights> {
      */
     public void incrementWeight(Quartet q, double increment) {
 
-        Quartet sortedQuartet = q.createSortedQuartet();
+        Quartet sorted = q.createSortedQuartet();
 
-        this.setWeight(q, this.get(sortedQuartet).selectWeight(sortedQuartet, q) + increment);
+        if (this.containsKey(sorted)) {
+            this.setWeight(sorted, this.get(sorted).selectWeight(sorted, q) + increment);
+        }
+        else {
+            this.put(sorted, increment);
+        }
     }
 
     /**
      * setWeight sets a length
      */
-    public void setWeight(Quartet q, double newW) {
+    public void setWeight(Quartet q, double weight) {
 
-        Quartet sortedQuartet = q.createSortedQuartet();
+        Quartet sorted = q.createSortedQuartet();
 
-        this.get(sortedQuartet).update(sortedQuartet, q, newW);
+        if (this.containsKey(sorted)) {
+            this.get(sorted).update(sorted, q, weight);
+        }
+        else {
+            this.put(sorted, weight);
+        }
     }
 
 
     /**
      * getWeight gets the length of a specific quartet
      */
-    public double getWeight(Quartet quartet) {
+    public double getWeight(Quartet q) {
 
-        Quartet sortedQuartet = quartet.createSortedQuartet();
+        Quartet sorted = q.createSortedQuartet();
 
-        QuartetWeights w = this.get(sortedQuartet);
+        if (!this.containsKey(sorted))
+            throw new IllegalArgumentException("Could not find quartet in hash: " + sorted.toString());
 
-        return w.selectWeight(sortedQuartet, quartet);
+        return this.get(sorted).selectWeight(sorted, q);
     }
 
 
@@ -153,10 +164,13 @@ public class WeightedQuartetMap extends HashMap<Quartet, QuartetWeights> {
                         int nC = newTaxa.indexOf(oldTaxa.get(iC)) + 1;
                         int nD = newTaxa.indexOf(oldTaxa.get(iD)) + 1;
 
-                        // TODO so something to handle non-existance in hash
-                        this.setWeight(new Quartet(nA, nB, nC, nD), this.getWeight(new Quartet(a, b, c, d)));
-                        this.setWeight(new Quartet(nA, nC, nB, nD), this.getWeight(new Quartet(a, c, b, d)));
-                        this.setWeight(new Quartet(nA, nD, nB, nC), this.getWeight(new Quartet(a, d, b, c)));
+                        Quartet q1 = new Quartet(a, b, c, d);
+                        Quartet q2 = new Quartet(a, c, b, d);
+                        Quartet q3 = new Quartet(a, d, b, c);
+
+                        this.setWeight(new Quartet(nA, nB, nC, nD), this.containsKey(q1) ? this.getWeight(q1) : 0.0);
+                        this.setWeight(new Quartet(nA, nC, nB, nD), this.containsKey(q2) ? this.getWeight(q2) : 0.0);
+                        this.setWeight(new Quartet(nA, nD, nB, nC), this.containsKey(q3) ? this.getWeight(q3) : 0.0);
                     }
                 }
             }
@@ -184,10 +198,10 @@ public class WeightedQuartetMap extends HashMap<Quartet, QuartetWeights> {
      * note: this now simply computes a weighted sum. This is the part that may be done in any number of ways here,
      * take weighted sum of every quartet where the quartet is nonzero
      */
-    public void add(WeightedQuartetMap summer, double w) {
+    public void weighedAdd(WeightedQuartetMap otherMap, double w) {
 
-        for (Quartet q : this.keySet()) {
-            this.get(q).weightedIncrement(summer.get(q), w);
+        for (Quartet q : otherMap.keySet()) {
+            this.incrementWeight(q, otherMap.getWeight(q) * w);
         }
     }
 
@@ -232,16 +246,26 @@ public class WeightedQuartetMap extends HashMap<Quartet, QuartetWeights> {
 
                             if (lesserNames.contains(quad)) {
 
-                                Quartet quartet = new Quartet(a + 1, b + 1, c + 1, d + 1);
+                                Quartet q = new Quartet(a + 1, b + 1, c + 1, d + 1);
 
-                                double oldW = this.getWeight(quartet);
-
-                                this.put(quartet, new QuartetWeights(oldW + w, oldW + w, oldW + w));
+                                this.scaleWeight(new Quartet(a + 1, b + 1, c + 1, d + 1), w);
                             }
                         }
                     }
                 }
             }
+        }
+    }
+
+    public void scaleWeight(Quartet quartet, double weight) {
+
+        Quartet sorted = quartet.createSortedQuartet();
+
+        if (this.containsKey(sorted)) {
+            this.setWeight(sorted, this.getWeight(sorted) * weight);
+        }
+        else {
+            this.setWeight(sorted, weight);
         }
     }
 

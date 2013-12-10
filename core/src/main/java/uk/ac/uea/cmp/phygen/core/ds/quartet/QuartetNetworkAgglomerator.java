@@ -114,14 +114,14 @@ public class QuartetNetworkAgglomerator {
 
         // I don't like doing this much, but this method goes back through all the data sets and updates the Taxa indicies
         // with so they match our new master taxa list
-        dataSets.translateTaxaIndicies(this.taxa);
+        //dataSets.translateTaxaIndicies(this.taxa);
 
         // Convert the taxa sets in the current quartet weights and the summer
         this.quartetWeights.translate(oldTaxa, this.taxa);
         this.summer.translate(oldTaxa, this.taxa);
 
         for (QuartetNetwork data : dataSets) {
-            this.quartetWeights.add(data.getQuartets(), data.getWeight());
+            this.quartetWeights.weighedAdd(data.getQuartets(), data.getWeight());
         }
 
         this.summer.sum(this.taxa, dataSets.getTaxaSets(), dataSets.getWeights());

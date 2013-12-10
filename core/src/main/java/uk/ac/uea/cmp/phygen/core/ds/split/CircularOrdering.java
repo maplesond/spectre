@@ -52,7 +52,7 @@ public class CircularOrdering {
         int[] permutationInvert = new int[n];
 
         for (int i = 0; i < n; i++) {
-            permutationInvert[this.co[i]] = i;
+            permutationInvert[this.co[i] - 1] = i + 1;
         }
 
         return new CircularOrdering(permutationInvert);
@@ -138,4 +138,7 @@ public class CircularOrdering {
         }
     }
 
+    public int[] toArray() {
+        return this.co;
+    }
 }
