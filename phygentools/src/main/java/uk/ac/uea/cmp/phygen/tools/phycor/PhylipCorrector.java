@@ -20,6 +20,7 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.MetaInfServices;
 import uk.ac.uea.cmp.phygen.tools.PhygenTool;
 
@@ -129,5 +130,16 @@ public class PhylipCorrector extends PhygenTool {
     @Override
     public String getDescription() {
         return "Corrects a broken phylip file";
+    }
+
+    public static void main(String[] args) {
+
+        try {
+            new PhylipCorrector().execute(args);
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            System.err.println(StringUtils.join(e.getStackTrace(), "\n"));
+            System.exit(1);
+        }
     }
 }

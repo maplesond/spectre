@@ -20,6 +20,7 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.MetaInfServices;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phygen.core.io.*;
@@ -51,9 +52,9 @@ public class DistanceMatrixConvertor extends PhygenTool {
                 .withDescription("The converted file.").create("o"));
 
         options.addOption(OptionBuilder.withArgName("string").withLongOpt(OPT_DISTANCES_FILE_TYPE).hasArg()
-                .withDescription("The file type of the input distance data file: " + PhygenReaderFactory.getInstance().getPhygenReaders(PhygenDataType.DISTANCE_MATRIX) +
-                        ".  Use this if your input file has a non-standard extension.").create("t"));
-
+                .withDescription("The file type of the input distance data file: [" +
+                        StringUtils.join(PhygenReaderFactory.getInstance().getPhygenReaders(PhygenDataType.DISTANCE_MATRIX), ", ") +
+                        "].  Use this if your input file has a non-standard extension.").create("t"));
 
         return options;
     }
@@ -102,5 +103,16 @@ public class DistanceMatrixConvertor extends PhygenTool {
 
         // Write distance matrix out
         phygenWriter.writeDistanceMatrix(outputFile, distanceMatrix);
+    }
+
+    public static void main(String[] args) {
+
+        try {
+            new DistanceMatrixConvertor().execute(args);
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            System.err.println(StringUtils.join(e.getStackTrace(), "\n"));
+            System.exit(1);
+        }
     }
 }

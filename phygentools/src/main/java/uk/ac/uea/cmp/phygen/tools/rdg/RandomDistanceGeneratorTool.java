@@ -19,6 +19,7 @@ package uk.ac.uea.cmp.phygen.tools.rdg;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
+import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.MetaInfServices;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phygen.core.ds.distance.RandomDistanceGenerator;
@@ -40,6 +41,9 @@ public class RandomDistanceGeneratorTool extends PhygenTool {
     private static final String OPT_PREFIX = "prefix";
     private static final String OPT_OUTPUT_DIR = "output";
     private static final String OPT_OUTPUT_TYPE = "output_type";
+    private static final String OPT_SAMPLES = "samples";
+    private static final String OPT_NB_TAXA = "taxa";
+
 
 
     @Override
@@ -48,10 +52,10 @@ public class RandomDistanceGeneratorTool extends PhygenTool {
         // Create Options object
         Options options = new Options();
 
-        options.addOption(OptionBuilder.withArgName("integer").hasArg().isRequired()
+        options.addOption(OptionBuilder.withArgName("integer").withLongOpt(OPT_NB_TAXA).hasArg().isRequired()
                 .withDescription("The number of taxa for the new distance matrix").create("n"));
 
-        options.addOption(OptionBuilder.withArgName("integer").hasArg()
+        options.addOption(OptionBuilder.withArgName("integer").withLongOpt(OPT_SAMPLES).hasArg()
                 .withDescription("The number of samples to generate").create("s"));
 
         options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_OUTPUT_DIR).hasArg()
@@ -107,5 +111,16 @@ public class RandomDistanceGeneratorTool extends PhygenTool {
     @Override
     public String getDescription() {
         return "Creates a random distance matricies of a given size";
+    }
+
+    public static void main(String[] args) {
+
+        try {
+            new RandomDistanceGeneratorTool().execute(args);
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            System.err.println(StringUtils.join(e.getStackTrace(), "\n"));
+            System.exit(1);
+        }
     }
 }

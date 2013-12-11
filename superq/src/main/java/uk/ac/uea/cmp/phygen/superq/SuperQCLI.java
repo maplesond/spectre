@@ -47,43 +47,12 @@ public class SuperQCLI {
     private static String OPT_VERBOSE = "verbose";
 
 
-    private static void configureLogging() {
-        // Setup logging
-        File propsFile = new File("logging.properties");
 
-        if (!propsFile.exists()) {
-            BasicConfigurator.configure();
-        } else {
-            PropertyConfigurator.configure(propsFile.getPath());
-        }
-    }
 
     public static void main(String args[]) {
 
-        configureLogging();
+        SuperQ.configureLogging();
 
-
-        // If there are no args we assume that we're in GUI mode
-        try {
-            if (args.length == 0) {
-
-                log.info("Running in GUI mode");
-
-                java.awt.EventQueue.invokeLater(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        new SuperQGUI().setVisible(true);
-                    }
-                });
-                return;
-            }
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            System.exit(1);
-        }
-
-        // Else we're in command line mode so process the args
         Options cmdLineOptions = createOptions();
         SuperQOptions sqOpts = null;
         try {

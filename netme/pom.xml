@@ -47,21 +47,41 @@
                 </executions>
             </plugin>
 
-            <!-- Creates a jar file containing the sources -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>appassembler-maven-plugin</artifactId>
+                <version>1.6</version>
+
+                <configuration>
+                    <programs>
+                        <program>
+                            <mainClass>uk.ac.uea.cmp.phygen.netme.NetMECLI</mainClass>
+                            <id>netme</id>
+                        </program>
+                    </programs>
+                </configuration>
+            </plugin>
+
+            <!-- Makes sure output is executable -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>2.2.1</version>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.7</version>
                 <executions>
                     <execution>
-                        <id>attach-sources</id>
+                        <id>add-execute-perms</id>
+                        <phase>package</phase>
                         <goals>
-                            <goal>jar</goal>
+                            <goal>run</goal>
                         </goals>
+                        <configuration>
+                            <target>
+                                <chmod file="${project.basedir}/../build/bin/*" perm="755"/>
+                            </target>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
-
         </plugins>
     </build>
 

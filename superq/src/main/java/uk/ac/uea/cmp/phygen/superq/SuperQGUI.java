@@ -427,4 +427,32 @@ public class SuperQGUI extends JFrame implements ToolHost {
     private javax.swing.JTextField txtInput;
     private javax.swing.JTextField txtSave;
     // End of variables declaration//GEN-END:variables
+
+
+
+    public static void main(String args[]) {
+
+        SuperQ.configureLogging();
+
+
+        // If there are no args we assume that we're in GUI mode
+        try {
+            if (args.length == 0) {
+
+                log.info("Running in GUI mode");
+
+                java.awt.EventQueue.invokeLater(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        new SuperQGUI().setVisible(true);
+                    }
+                });
+                return;
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            System.exit(1);
+        }
+    }
 }

@@ -55,7 +55,7 @@ public abstract class PhygenTool implements Service {
         try {
             CommandLine commandLine = this.parse(args);
 
-            if (commandLine.hasOption(OPT_HELP)) {
+            if (commandLine.hasOption(OPT_HELP) || commandLine.getArgs().length == 0) {
                 printUsage();
             } else {
                 this.execute(commandLine);

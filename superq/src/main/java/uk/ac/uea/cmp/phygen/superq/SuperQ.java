@@ -17,6 +17,8 @@ package uk.ac.uea.cmp.phygen.superq;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.time.StopWatch;
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.PropertyConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetNetworkAgglomerator;
@@ -263,5 +265,16 @@ public class SuperQ extends RunnableTool {
     private void notifyUser(String message) {
         log.info(message);
         this.trackerInitUnknownRuntime(message);
+    }
+
+    public static void configureLogging() {
+        // Setup logging
+        File propsFile = new File("logging.properties");
+
+        if (!propsFile.exists()) {
+            BasicConfigurator.configure();
+        } else {
+            PropertyConfigurator.configure(propsFile.getPath());
+        }
     }
 }

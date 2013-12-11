@@ -765,4 +765,15 @@ public class Scaling extends PhygenTool {
 
         FileUtils.writeStringToFile(new File(path + prefix + ".script"), content);
     }
+
+    public static void main(String[] args) {
+
+        try {
+            new Scaling().execute(args);
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            System.err.println(StringUtils.join(e.getStackTrace(), "\n"));
+            System.exit(1);
+        }
+    }
 }
