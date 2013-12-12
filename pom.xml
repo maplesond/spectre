@@ -15,6 +15,10 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java-version>1.7</java-version>
         <slf4j-version>1.6.1</slf4j-version>
+        <dist-name>${project.parent.artifactId}-${project.parent.version}</dist-name>
+        <dist-dir>${project.basedir}/../build/dist</dist-dir>
+        <build-dir>${project.basedir}/../build/${dist-name}</build-dir>
+        <doc-dir>${project.basedir}/../doc</doc-dir>
     </properties>
 
     <!-- Licensing -->
@@ -85,7 +89,7 @@
                     </configuration>
                 </plugin>
 
-                <!-- Unit testing setup (ignores integration tests) -->
+                <!-- Unit testing setup (no integration tests) -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
@@ -97,20 +101,28 @@
                     </configuration>
                 </plugin>
 
-                <!-- Create loader jar for all modules -->
+                <!-- Integration tests -->
                 <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-source-plugin</artifactId>
-                    <version>2.2.1</version>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>2.13</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.apache.maven.surefire</groupId>
+                            <artifactId>surefire-junit47</artifactId>
+                            <version>2.13</version>
+                        </dependency>
+                    </dependencies>
                     <executions>
                         <execution>
-                            <id>attach-sources</id>
+                            <id>failsafe-integration-tests</id>
+                            <phase>integration-test</phase>
                             <goals>
-                                <goal>jar</goal>
+                                <goal>integration-test</goal>
                             </goals>
                         </execution>
                     </executions>
                 </plugin>
+
 
                 <!-- Creates scripts for all platforms that allow the user to easily execute this tool -->
                 <plugin>
@@ -129,7 +141,7 @@
 
                     <configuration>
 
-                        <assembleDirectory>${project.basedir}/../build</assembleDirectory>
+                        <assembleDirectory>${build-dir}</assembleDirectory>
 
                         <licenseHeaderFile>${project.basedir}/../license-header.txt</licenseHeaderFile>
 
@@ -142,6 +154,49 @@
             </plugins>
 
         </pluginManagement>
+
+        <plugins>
+
+            <!-- Creates a jar file containing the sources -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.2.1</version>
+                <executions>
+                    <execution>
+                        <id>create-sources-jar</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${build-dir}/support_jars</outputDirectory>
+                        </configuration>
+
+                    </execution>
+                </executions>
+            </plugin>
+
+
+            <!-- Creates javadoc -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.9.1</version>
+                <executions>
+                    <execution>
+                        <id>create-javadoc-jar</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <jarOutputDirectory>${build-dir}/support_jars</jarOutputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
 
     </build>
 
@@ -159,6 +214,11 @@
     </dependencies>
 
     <modules>
+
+        <!-- Execute this first to clean any mess in the main folder -->
+        <module>clean</module>
+
+        <!-- Run through the child projects -->
         <module>core</module>
         <module>phygentools</module>
         <module>netmake</module>
@@ -170,6 +230,9 @@
         <!-- Uncomment this if you have gurobi installed, and have the gurobi jar installed in the local maven repo.
              QNet currently is designed to work only with gurobi so this is commented out as well for the moment. -->
         <module>gurobi</module>
+
+        <!-- This gets executed last because it creates the distribution and the manual -->
+        <module>dist</module>
 
     </modules>
 
