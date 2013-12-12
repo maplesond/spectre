@@ -82,29 +82,6 @@ public class SimpleSplitSystem implements SplitSystem {
         return this.taxa.get(i).getName();
     }
 
-    /**
-     * This returns the index of the taxa in a 1-based system
-     *
-     * @param i
-     * @return
-     */
-    public int getTaxaIndexAt(int i) {
-        return i + 1;
-    }
-
-
-    public int[] invertOrdering() {
-
-        int nbTaxa = this.getNbTaxa();
-        int[] permutationInvert = new int[nbTaxa];
-
-        for (int i = 0; i < nbTaxa; i++) {
-            permutationInvert[i] = i;
-        }
-
-        return permutationInvert;
-    }
-
 
     /**
      * Calculate the summed distanceMatrix between elements on the A side and B side for every split

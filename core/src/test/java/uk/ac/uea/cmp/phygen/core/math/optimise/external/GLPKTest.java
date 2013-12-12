@@ -1,5 +1,6 @@
 package uk.ac.uea.cmp.phygen.core.math.optimise.external;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser;
@@ -7,6 +8,9 @@ import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
 import uk.ac.uea.cmp.phygen.core.math.optimise.Problem;
 import uk.ac.uea.cmp.phygen.core.math.optimise.Solution;
 import uk.ac.uea.cmp.phygen.core.math.optimise.test.Problems;
+
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
@@ -21,6 +25,23 @@ import static org.junit.Assume.assumeTrue;
 public class GLPKTest {
 
     private Optimiser glpk = null;
+
+    private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+    private final ByteArrayOutputStream errContent = new ByteArrayOutputStream();
+
+
+    @Before
+    public void setUpStreams() {
+        System.setOut(new PrintStream(outContent));
+        System.setErr(new PrintStream(errContent));
+    }
+
+    @After
+    public void cleanUpStreams() {
+        System.setOut(null);
+        System.setErr(null);
+    }
+
 
     @Before
     public void setup() {

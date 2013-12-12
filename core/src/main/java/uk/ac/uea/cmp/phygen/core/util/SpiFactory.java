@@ -45,7 +45,7 @@ public class SpiFactory<T extends Service> {
      * This default method accepts an identifier if it equals the service's name, or if it matches the class names.
      * @param identifier
      * @param service
-     * @return
+     * @return Whether the service accepts the given identifier
      */
     protected boolean acceptsIdentifier(String identifier, T service) {
        return   identifier.equalsIgnoreCase(service.getName()) ||
@@ -56,7 +56,7 @@ public class SpiFactory<T extends Service> {
     /**
      * Creates a new instance of the service with the specified name if it can be found, otherwise return null
      * @param name
-     * @return
+     * @return A new service
      */
     public T create(String name) {
 
@@ -74,7 +74,7 @@ public class SpiFactory<T extends Service> {
      * Goes through all requested services found on the classpath and returns a list as a string, surrounded with square
      * brackets
      *
-     * @return
+     * @return A list of services represented in a string.
      */
     public String listServicesAsString() {
 
@@ -86,7 +86,7 @@ public class SpiFactory<T extends Service> {
 
     /**
      * Returns a list of a strings describing all the classes that are available
-     * @return
+     * @return A list of services, each service is represented by a string.
      */
     public List<String> listServices() {
 
@@ -103,7 +103,7 @@ public class SpiFactory<T extends Service> {
 
     /**
      * Returns a list of the requested services
-     * @return
+     * @return A list of services
      */
     public List<T> getServices() {
 

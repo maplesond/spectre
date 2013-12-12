@@ -70,7 +70,7 @@ public abstract class NewickNode {
 
     /**
      * Walks the tree and returns the taxa list.  May throw an IllegalArgumentException if there are duplicate taxa
-     * @return
+     * @return The taxa found from this node.
      */
     public Taxa findAllTaxa() {
 

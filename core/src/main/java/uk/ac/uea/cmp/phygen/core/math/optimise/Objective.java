@@ -34,7 +34,7 @@ public class Objective {
 
     /**
      * Returns what type of objective this is.
-     * @return
+     * @return The objective type.
      */
     public ObjectiveType getType() {
         return this.expression == null ?
@@ -46,7 +46,7 @@ public class Objective {
 
     /**
      * Returns whether to try and minimise or maximise this objective
-     * @return
+     * @return The objective direction
      */
     public ObjectiveDirection getDirection() {
         return this.direction;

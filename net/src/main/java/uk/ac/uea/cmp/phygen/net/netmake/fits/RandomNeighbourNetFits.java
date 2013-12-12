@@ -69,9 +69,6 @@ public class RandomNeighbourNetFits {
         writeSummary(new File(this.outputDir, "Summary.txt"), fitList); // writes summary to file
     }
 
-    /**
-     * @return
-     */
     protected List<File> generateInputFiles() throws IOException {
 
         log.info("Generating input files ...");
@@ -101,11 +98,6 @@ public class RandomNeighbourNetFits {
         return generatedFiles;
     }
 
-    /**
-     * @param distanceMatrix
-     * @param aNetwork
-     * @return
-     */
     protected double getFitStatistic(DistanceMatrix distanceMatrix, SimpleSplitSystem aNetwork) {
         /*double fit = 0.;
         int t = distanceMatrix.size();

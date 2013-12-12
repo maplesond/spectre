@@ -62,7 +62,7 @@ public class PhygenReaderFactory {
     /**
      * Goes through all phygen readers found on the classpath and joins all their identifiers into a string
      *
-     * @return
+     * @return The phygen readers as a string.
      */
     public String getPhygenReadersAsString() {
 

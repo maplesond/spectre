@@ -223,7 +223,7 @@ public class Tableau<E> {
      */
     public ArrayList<E> copyRow(int row) {
         ArrayList<E> oldrow = components.get(row);
-        ArrayList<E> newrow = new ArrayList<E>();
+        ArrayList<E> newrow = new ArrayList<>();
         newrow.addAll((ArrayList<E>) oldrow.clone());
         return newrow;
     }

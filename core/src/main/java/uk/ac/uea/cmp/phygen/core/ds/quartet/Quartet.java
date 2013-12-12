@@ -98,7 +98,7 @@ public class Quartet implements Comparable {
      * @param b
      * @param c
      * @param d
-     * @return
+     * @return True, if all taxa ids are distinct, false otherwise.
      */
     public static boolean areDistinct(int a, int b, int c, int d) {
         return !(a == b || b == c || c == d || a == c || b == d || a == d);
@@ -193,7 +193,7 @@ public class Quartet implements Comparable {
     /**
      * Using the indices in the quartet it is possible to work out where in a list of quartets in a quartet system that
      * this particular quartet should be placed
-     * @return
+     * @return The index to use for this quartet.
      */
     public int getIndex() {
         return over4(a - 1) + over3(b - 1) + over2(c - 1) + over1(d - 1);

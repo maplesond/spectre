@@ -9,10 +9,10 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>netmake</artifactId>
+    <artifactId>net</artifactId>
     <version>1.0</version>
 
-    <name>Phylogenetics Tool Suite: Network Maker</name>
+    <name>Phylogenetics Tool Suite: Network Tools</name>
 
     <build>
 

@@ -21,9 +21,9 @@ package uk.ac.uea.cmp.phygen.net.netmake.weighting;
  * The inner vertices are lower weighted then the outer ones.
  * The weighting follows an adjusted parabola function.
  *
+ * Sarah Bastkowski, 2010: <I>Algorithmen zum Finden von Bäumen in Neighbor Net Netzwerken</I>
+ *
  * @author Sarah Bastkowski
- * @see S. Bastkowski, 2010:
- *      <I>Algorithmen zum Finden von Bäumen in Neighbor Net Netzwerken</I>
  */
 public class ParabolaWeighting extends Weighting {
 

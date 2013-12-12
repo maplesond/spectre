@@ -24,15 +24,18 @@ import java.util.List;
 
 public class WHolder {
 
+    private Triplet<Integer>[] counts;
+    private Triplet<Double>[] weights;
+
     public WHolder(List<Taxa> taxaSets, int N, WeightedQuartetMap theQuartetWeights) {
 
-        counts = new Triplet[Quartet.over4(N)];
-        weights = new Triplet[Quartet.over4(N)];
+        this.counts = new Triplet[Quartet.over4(N)];
+        this.weights = new Triplet[Quartet.over4(N)];
 
         for (int n = 0; n < Quartet.over4(N); n++) {
 
-            counts[n] = new Triplet<>(0, 0, 0);
-            weights[n] = new Triplet<>(0.0, 0.0, 0.0);
+            this.counts[n] = new Triplet<>(0, 0, 0);
+            this.weights[n] = new Triplet<>(0.0, 0.0, 0.0);
         }
 
         // now, we store everything properly
@@ -571,6 +574,5 @@ public class WHolder {
 
     }
 
-    Triplet<Integer>[] counts;
-    Triplet<Double>[] weights;
+
 }

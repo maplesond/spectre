@@ -145,7 +145,7 @@ public class NexusReader extends AbstractPhygenReader {
      * Pulls out the circular ordering that should be present in the split block of the nexus file (assuming this represents
      * a circular split system)
      * @param file
-     * @return
+     * @return A circular ordering
      * @throws IOException
      */
     public CircularOrdering extractCircOrdering(File file) throws IOException {
@@ -161,7 +161,7 @@ public class NexusReader extends AbstractPhygenReader {
     /**
      * Just returns everything that was found in the nexus file
      * @param inFile
-     * @return
+     * @return An object representing the contents of a nexus file.
      * @throws IOException
      */
     public Nexus readNexusData(File inFile) throws IOException {

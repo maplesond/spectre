@@ -67,7 +67,7 @@ public class Constraint {
 
     /**
      * Returns what type of constraint this is.
-     * @return
+     * @return The type of constraint this is.
      */
     public ConstraintType getType() {
         return this.expression == null ?

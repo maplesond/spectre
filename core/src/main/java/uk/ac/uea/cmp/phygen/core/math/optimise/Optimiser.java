@@ -19,18 +19,18 @@ package uk.ac.uea.cmp.phygen.core.math.optimise;
 public interface Optimiser {
 
     /**
-     * Given a problem, finds the solution      *
+     * Given a problem, finds the solution.
      *
      * @param problem
-     * @return
+     * @return A solution to the problem that was posed.
      * @throws OptimiserException
      */
     Solution optimise(Problem problem) throws OptimiserException;
 
     /**
-     * The identifier which which the user can locate this optimsier
+     * The identifier with which the user can locate this optimiser
      *
-     * @return
+     * @return An identifier that can be used to locate this optimiser
      */
     String getIdentifier();
 
@@ -38,7 +38,7 @@ public interface Optimiser {
      * Whether or not this optimiser recognises the given id.
      *
      * @param id
-     * @return
+     * @return True if this optimiser recognises the identifier, false otherwise.
      */
     boolean acceptsIdentifier(String id);
 
@@ -46,7 +46,7 @@ public interface Optimiser {
      * Whether or not this optimiser can process a certain kind of objective.  i.e. linear or quadratic objectives
      *
      * @param objectiveType
-     * @return
+     * @return True, if this optimiser can accept this objective type, false otherwise.
      */
     boolean acceptsObjectiveType(Objective.ObjectiveType objectiveType);
 
@@ -54,7 +54,7 @@ public interface Optimiser {
      * Whether or not this optimiser can process a certain kind of constraint.  i.e. linear or quadratic constraints
      *
      * @param constraintType
-     * @return
+     * @return True, if this optimiser can accept this constraint type, false otherwise.
      */
     boolean acceptsConstraintType(Constraint.ConstraintType constraintType);
 
@@ -62,7 +62,7 @@ public interface Optimiser {
     /**
      * Whether or not this optimiser can process a certain kind of variable.  i.e. continuous, float or binary
      * @param variableType
-     * @return
+     * @return True if this optimiser accepts this variable type, false otherwise.
      */
     boolean acceptsVariableType(Variable.VariableType variableType);
 
@@ -71,7 +71,7 @@ public interface Optimiser {
      * Whether or not this optimiser is currently operational.  This is useful for optimisers that are external to phygen,
      * in order to ensure the necessary links are in place so that phygen can access the functions of the optimiser.
      *
-     * @return
+     * @return True if this optimiser seems to be operational, false otherwise.
      */
     boolean isOperational();
 }

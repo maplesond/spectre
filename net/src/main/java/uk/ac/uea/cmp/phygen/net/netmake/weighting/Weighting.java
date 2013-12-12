@@ -21,9 +21,9 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * Fills and updates weighting list
  *
+ * Sarah Bastkowski, 2010: <I>Algorithmen zum Finden von Bäumen in Neighbor Net Netzwerken</I>
+ *
  * @author Sarah Bastkowski
- * @see S. Bastkowski, 2010:
- *      <I>Algorithmen zum Finden von Bäumen in Neighbor Net Netzwerken</I>
  */
 public abstract class Weighting {
     private Double[] weightingParameters;

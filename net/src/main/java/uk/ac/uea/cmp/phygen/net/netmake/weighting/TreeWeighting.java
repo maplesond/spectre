@@ -21,9 +21,9 @@ package uk.ac.uea.cmp.phygen.net.netmake.weighting;
  * original component before mergin
  * (equal to number of times the components has been choosen in selection step)
  *
+ * Sarah Bastkowski, 2010: <I>Algorithmen zum Finden von Bäumen in Neighbor Net Netzwerken</I>
+ *
  * @author Sarah Bastkowski
- * @see S. Bastkowski, 2010:
- *      <I>Algorithmen zum Finden von Bäumen in Neighbor Net Netzwerken</I>
  */
 public class TreeWeighting extends Weighting {
     private double alpha;

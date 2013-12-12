@@ -85,7 +85,7 @@ public class WeightsComputeNNLSInformative {
 
 //                    System.out.println (i + " " + j + " ");
 
-                    splitIndices[n] = new ImmutablePair<Integer, Integer>(i, j);
+                    splitIndices[n] = new ImmutablePair<>(i, j);
 
                     n++;
 
@@ -978,8 +978,8 @@ public class WeightsComputeNNLSInformative {
 
         // once that is done, we wish to solve the NNLS problem Ex -f for x.
 
-        LinkedList P = new LinkedList();
-        LinkedList Z = new LinkedList();
+        LinkedList<Integer> P = new LinkedList<>();
+        LinkedList<Integer> Z = new LinkedList<>();
 
 
         int arraySize = N * (N - 1) / 2 - N;
@@ -998,7 +998,7 @@ public class WeightsComputeNNLSInformative {
 
         for (int i = 0; i < arraySize; i++) {
 
-            Z.add(new Integer(i));
+            Z.add(i);
         }
 
         // initially, all variables are set to zero
@@ -1072,11 +1072,11 @@ public class WeightsComputeNNLSInformative {
 
             boolean allLequalZero = true;
 
-            ListIterator lI = Z.listIterator();
+            ListIterator<Integer> lI = Z.listIterator();
 
             while (lI.hasNext()) {
 
-                int i = ((Integer) lI.next()).intValue();
+                int i = lI.next();
 
                 if (w[i] > tolerance) {
 
@@ -1108,7 +1108,7 @@ public class WeightsComputeNNLSInformative {
 
                 while (lI.hasNext()) {
 
-                    int i = ((Integer) lI.next()).intValue();
+                    int i = lI.next();
 
                     if (w[i] > max) {
 
@@ -1142,11 +1142,11 @@ public class WeightsComputeNNLSInformative {
 
                 boolean isContained = false;
 
-                ListIterator hI = hypotheses.listIterator();
+                ListIterator<SolutionHypothesis> hI = hypotheses.listIterator();
 
                 while (hI.hasNext()) {
 
-                    SolutionHypothesis oH = (SolutionHypothesis) hI.next();
+                    SolutionHypothesis oH = hI.next();
 
                     if (oH.equals(sH)) {
 
@@ -1177,8 +1177,8 @@ public class WeightsComputeNNLSInformative {
 
             log.debug("Step 5");
 
-            Z.remove(new Integer(t));
-            P.add(new Integer(t));
+            Z.remove(t);
+            P.add(t);
 
             // start of inner loop
 
@@ -1198,7 +1198,7 @@ public class WeightsComputeNNLSInformative {
 
                 for (int i = 0; i < P.size(); i++) {
 
-                    log.debug(" x[" + ((Integer) P.get(i)).intValue() + "]: " + x[((Integer) P.get(i)).intValue()]);
+                    log.debug(" x[" + P.get(i) + "]: " + x[P.get(i)]);
                 }
 
                 // step 6:
@@ -1224,13 +1224,13 @@ public class WeightsComputeNNLSInformative {
 
                 for (int i = 0; i < fullSplits; i++) {
 
-                    if (P.contains(new Integer(i))) {
+                    if (P.contains(i)) {
 
                         column = 0;
 
                         for (int j = 0; j < fullSplits; j++) {
 
-                            if (P.contains(new Integer(j))) {
+                            if (P.contains(j)) {
 
                                 EtEp[row][column] = EtE.getElementAt(i, j);
 
@@ -1262,7 +1262,7 @@ public class WeightsComputeNNLSInformative {
 
                 for (int i = 0; i < fullSplits; i++) {
 
-                    if (P.contains(new Integer(i))) {
+                    if (P.contains(i)) {
 
                         aMap[mapIndex] = i;
 
@@ -1409,14 +1409,10 @@ public class WeightsComputeNNLSInformative {
 
                         for (int j = 0; j < noSplits; j++) {
 
-                            System.out.print(" " + nF.format(R.getElementAt(i, j)));
+                            log.info(" " + nF.format(R.getElementAt(i, j)));
 
                         }
-
-                        //System.out.println();
-
                     }
-
                 }
 
                 // least squares solution of z:
@@ -1430,11 +1426,9 @@ public class WeightsComputeNNLSInformative {
                     for (int j = 0; j < noSplits; j++) {
 
                         jSum += Q[j][i] * Etfp[j];
-
                     }
 
                     QtEtfp[i] = jSum;
-
                 }
 
                 // reduced row echelon whatever solver... maybe?
@@ -1444,7 +1438,6 @@ public class WeightsComputeNNLSInformative {
                 for (int i = 0; i < fullSplits; i++) {
 
                     z[i] = 0.0;
-
                 }
 
                 // ... second those that exist; wonder if I can do this?
@@ -1460,12 +1453,10 @@ public class WeightsComputeNNLSInformative {
                     for (int j = 0; j < i; j++) {
 
                         jSum += R.getElementAt(d - i, d - j) * z[aMap[d - j]];
-
                     }
 
                     z[aMap[d - i]] = (QtEtfp[d - i] - jSum) / R.getElementAt(d - i, d - i);
                     zRed[d - i] = z[aMap[d - i]];
-
                 }
 
 
@@ -1495,15 +1486,13 @@ public class WeightsComputeNNLSInformative {
 
                 while (lI.hasNext()) {
 
-                    int i = ((Integer) lI.next()).intValue();
+                    int i = lI.next();
 
                     if (z[i] <= tolerance) {
 
                         allAboveZero = false;
                         break;
-
                     }
-
                 }
 
                 if (allAboveZero) {
@@ -1511,11 +1500,9 @@ public class WeightsComputeNNLSInformative {
                     for (int i = 0; i < N * (N - 1) / 2 - N; i++) {
 
                         x[i] = z[i];
-
                     }
 
                     break;
-
                 }
 
                 // step 8:
@@ -1529,7 +1516,7 @@ public class WeightsComputeNNLSInformative {
 
                 while (lI.hasNext()) {
 
-                    int i = ((Integer) lI.next()).intValue();
+                    int i = lI.next();
 
                     if (z[i] <= tolerance) {
 
@@ -1556,7 +1543,6 @@ public class WeightsComputeNNLSInformative {
                 for (int i = 0; i < N * (N - 1) / 2 - N; i++) {
 
                     x[i] = x[i] + alpha * (z[i] - x[i]);
-
                 }
 
                 // step 11:
@@ -1566,11 +1552,11 @@ public class WeightsComputeNNLSInformative {
                 lI = P.listIterator();
 
                 while (lI.hasNext()) {
-                    int i = ((Integer) lI.next()).intValue();
+                    int i = lI.next();
 
                     if (x[i] <= tolerance) {
                         lI.remove();
-                        Z.add(new Integer(i));
+                        Z.add(i);
                     }
                 }
 
@@ -1592,7 +1578,7 @@ public class WeightsComputeNNLSInformative {
         return x;
     }
 
-    // Loading info  rewrite to get from agglomerator
+    //TODO replace this with proper QWeight loading parser... Loading info  rewrite to get from agglomerator
     private static void load(PHolder pHolder, String fileName) throws IOException {
 
         int N = 0;
@@ -1665,10 +1651,9 @@ public class WeightsComputeNNLSInformative {
                 while (!theLine.endsWith(";") && !theLine.trim().endsWith(";")) {
 
                     theLine = "description: " + fileInput.readLine();
-
                 }
-
-            } /**
+            }
+            /**
              *
              * Otherwise, it is significant...
              *
@@ -1678,9 +1663,7 @@ public class WeightsComputeNNLSInformative {
                 while (!theLine.endsWith(";") && !theLine.trim().endsWith(";")) {
 
                     theLine += fileInput.readLine();
-
                 }
-
             }
 
             theLine = theLine.trim();
@@ -1715,13 +1698,10 @@ public class WeightsComputeNNLSInformative {
                  * The coordinates, in the order written
                  *
                  */
-                int a = (new Integer(lineTokenizer.nextToken())).intValue();
-
-                int b = (new Integer(lineTokenizer.nextToken())).intValue();
-
-                int c = (new Integer(lineTokenizer.nextToken())).intValue();
-
-                int d = (new Integer(lineTokenizer.nextToken())).intValue();
+                int a = Integer.parseInt(lineTokenizer.nextToken());
+                int b = Integer.parseInt(lineTokenizer.nextToken());
+                int c = Integer.parseInt(lineTokenizer.nextToken());
+                int d = Integer.parseInt(lineTokenizer.nextToken());
 
                 /**
                  *
@@ -1735,11 +1715,9 @@ public class WeightsComputeNNLSInformative {
                  * The weights, in the order written
                  *
                  */
-                int w1 = (new Integer(lineTokenizer.nextToken())).intValue();
-
-                int w2 = (new Integer(lineTokenizer.nextToken())).intValue();
-
-                int w3 = (new Integer(lineTokenizer.nextToken())).intValue();
+                int w1 = Integer.parseInt(lineTokenizer.nextToken());
+                int w2 = Integer.parseInt(lineTokenizer.nextToken());
+                int w3 = Integer.parseInt(lineTokenizer.nextToken());
 
                 /**
                  *
@@ -1763,7 +1741,7 @@ public class WeightsComputeNNLSInformative {
                  * Having read a taxon line, add the taxon
                  *
                  */
-                int theNumber = (new Integer(lineTokenizer.nextToken())).intValue();
+                int theNumber = Integer.parseInt(lineTokenizer.nextToken());
 
                 /**
                  *
@@ -1811,7 +1789,7 @@ public class WeightsComputeNNLSInformative {
                  */
                 String theSecond = lineTokenizer.nextToken();
 
-                N = (new Integer(theSecond)).intValue();
+                N = Integer.parseInt(theSecond);
 
                 numberKnown = true;
             }
@@ -1821,10 +1799,10 @@ public class WeightsComputeNNLSInformative {
 
     protected static class SolutionHypothesis {
 
-        private LinkedList P;
+        private LinkedList<Integer> P;
         private int n;
 
-        public SolutionHypothesis(LinkedList p, int n) {
+        public SolutionHypothesis(LinkedList<Integer> p, int n) {
             this.P = p;
             this.n = n;
         }

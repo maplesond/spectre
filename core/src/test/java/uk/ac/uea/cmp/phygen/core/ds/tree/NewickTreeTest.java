@@ -22,8 +22,9 @@ import uk.ac.uea.cmp.phygen.core.ds.tree.newick.NewickTree;
 
 import java.io.IOException;
 
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.TestCase.assertFalse;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 
 /**
  * Created with IntelliJ IDEA.

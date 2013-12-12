@@ -187,7 +187,7 @@ public class Scaling extends PhygenTool {
      * @param inputFile
      * @param outputPrefix
      * @param mode
-     * @return
+     * @return Number of trees.
      * @throws IOException
      */
     protected int createQuartetFiles(File inputFile, File outputPrefix, Mode mode) throws IOException {
@@ -233,6 +233,9 @@ public class Scaling extends PhygenTool {
         return ntrees;
     }
 
+
+
+
     /**
      * ********************************************
      * Code for computing the matrix of coefficients
@@ -242,7 +245,7 @@ public class Scaling extends PhygenTool {
     /**
      * Extract the three weights from a line in the quartet file
      * @param line string containing the line in the quartet file
-     * @return
+     * @return The quartet weights.
      */
     protected QuartetWeights extractWeights(String line) {
 
@@ -269,11 +272,12 @@ public class Scaling extends PhygenTool {
         return new QuartetWeights(w1, w2, w3);
     }
 
-    //store the quartets associated with a tree in
-    //in a HashMap
-    //parameters:
-    //lnr   --> file handle
-    //ntaxa --> number of taxa in tree
+    /**
+     * Store the quartets associated with a tree in a HashMap
+     * @param lnr file handle
+     * @param ntaxa number of taxa in tree
+     * @return A hashmap of Keys to Quartet Weights.
+     */
     protected HashMap<Key, QuartetWeights> getQuartets(LineNumberReader lnr, int ntaxa) {
         //upper bound on the number of different 4-subsets
         //used to set initial capacity of HashMap
@@ -311,13 +315,12 @@ public class Scaling extends PhygenTool {
         return quart;
     }
 
-    //computes an array in which at position k
-    //we find the index of taxon k in tree i
-    //parameters:
-    //taxalisti --> array with taxanames for tree i sorted
-    //              increasingly by indices of taxa
-    //taxalistj --> array with taxanames for tree j sorted
-    //              increasingly by indices of taxa
+    /**
+     * Computes an array in which at position k we find the index of taxon k in tree i
+     * @param taxalisti array with taxanames for tree i sorted increasingly by indices of taxa
+     * @param taxalistj array with taxanames for tree j sorted increasingly by indices of taxa
+     * @return Translated taxa indicies
+     */
     protected int[] translateIndices(String[] taxalisti, String[] taxalistj) {
         //loop variables
         int k = 0;
@@ -343,12 +346,13 @@ public class Scaling extends PhygenTool {
     }
 
 
-    //read the list of taxa from a quartet file
-    //Recall that the taxa are written in separate
-    //lines (line 2 up to line (ntaxa+1))
-    //parameters:
-    //lnr   --> file handle
-    //ntaxa --> number of taxa
+    /**
+     * Read the list of taxa from a quartet file.  Recall that the taxa are written in separate lines (line 2 up to line
+     * (ntaxa+1))
+     * @param lnr file handle
+     * @param ntaxa number of taxa
+     * @return List of taxa
+     */
     protected String[] getTaxaList(LineNumberReader lnr, int ntaxa) {
         //array to store taxanames
         String[] taxalist = new String[ntaxa];
@@ -380,16 +384,6 @@ public class Scaling extends PhygenTool {
         return taxalist;
     }
 
-    //read the number of taxa from first line of
-    //quartet file
-    //parameter:
-    //lnr  -->  file handle
-
-    /**
-     *
-     * @param lnr
-     * @return
-     */
     protected int getNTaxa(LineNumberReader lnr) {
         String line = null;
 
@@ -411,7 +405,7 @@ public class Scaling extends PhygenTool {
      * @param taxalisti
      * @param quarti
      * @param jtree the other tree
-     * @return
+     * @return Sum of the diagonals
      * @throws IOException
      */
     protected double sumUpDiagonal(String prefix, int itree, int ntaxai,
@@ -499,7 +493,7 @@ public class Scaling extends PhygenTool {
      * @param prefix common prefix of filenames with input
      * @param itree index of tree for which we compute the diagonal element
      * @param ntrees total number of trees in input
-     * @return
+     * @return Value of the diagonal element
      * @throws IOException
      */
     protected double computeDiagonalElement(String prefix, int itree, int ntrees) throws IOException {
@@ -545,7 +539,7 @@ public class Scaling extends PhygenTool {
      * @param prefix common prefix of file names with input
      * @param itree index of first tree
      * @param jtree index of second tree
-     * @return
+     * @return Value of the off diagonal element
      * @throws IOException
      */
     protected double computeOffDiagonalElement(String prefix, int itree, int jtree) throws IOException {
@@ -627,7 +621,7 @@ public class Scaling extends PhygenTool {
      * Compute the matrix of coefficients
      * @param prefix
      * @param ntrees
-     * @return
+     * @return A matrix of coefficients.
      * @throws IOException
      */
     protected double[][] computerMatrix(String prefix, int ntrees) throws IOException {

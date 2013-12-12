@@ -310,7 +310,7 @@ public class NetME {
      *
      * @param usedInterval
      * @param split
-     * @return
+     * @return A tableau
      */
     private Tableau<Integer> treeExtration(final int nbTaxa, int usedInterval, int split, Tableau<Integer> interval, double[][] tableP,
                                            Tableau<Double> val, Tableau<Integer> tree, TreeSplitWeights treeWeights) {

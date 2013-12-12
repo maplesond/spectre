@@ -310,7 +310,7 @@ public class DistanceMatrix {
      *
      * @param row
      * @param col
-     * @return
+     * @return The distance at [row][col]
      */
     public double getDistance(final int row, final int col) {
         return matrix[row][col];
@@ -322,7 +322,7 @@ public class DistanceMatrix {
      * @param row
      * @param col
      * @param incValue
-     * @return
+     * @return The value at [row][col] after incrementation.
      */
     public double incrementDistance(final int row, final int col, final double incValue) {
         matrix[row][col] += incValue;
@@ -341,7 +341,7 @@ public class DistanceMatrix {
 
     /**
      * Returns a handle on the underlying matrix
-     * @return
+     * @return The actual matrix wrapper by this instance.
      */
     public double[][] getMatrix() {
         return this.matrix;

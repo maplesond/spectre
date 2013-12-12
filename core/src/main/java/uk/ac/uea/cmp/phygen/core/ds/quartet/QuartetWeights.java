@@ -124,8 +124,9 @@ public class QuartetWeights extends Triplet<Double> {
     /**
      * Determine which quartet to take. Use the unordered numbers, they
      * match one ordering or other
+     * @param q1
      * @param q2
-     * @return
+     * @return The weight determined by considering q1 and q2
      */
     public double selectWeight(Quartet q1, Quartet q2) {
 

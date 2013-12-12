@@ -81,17 +81,6 @@ public class CircularSplitSystem extends SimpleSplitSystem {
         return circularOrdering;
     }
 
-    /**
-     * Returns the value of the permutation at the specified position.
-     *
-     * @param i index of the value to be returned.
-     * @return value of the permutation at i
-     */
-    @Override
-    public int getTaxaIndexAt(final int i) {
-        return this.circularOrdering.getAt(i);
-    }
-
 
     /**
      * Generates a distance matrix based on the weights within this splitsystem.

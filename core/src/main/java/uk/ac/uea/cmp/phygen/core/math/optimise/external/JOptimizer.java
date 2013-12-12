@@ -299,7 +299,7 @@ public class JOptimizer extends AbstractOptimiser {
     /**
      * Apache should always be operational, as it's an open loader java library available via maven
      *
-     * @return
+     * @return Always true.
      */
     @Override
     public boolean isOperational() {

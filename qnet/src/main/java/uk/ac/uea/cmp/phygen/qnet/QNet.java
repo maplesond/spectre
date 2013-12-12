@@ -757,7 +757,7 @@ public class QNet {
         WeightedQuartetMap theQuartetWeights = quartetNetworkAgglomerator.getQuartetWeights();
         Taxa allTaxa = quartetNetworkAgglomerator.getTaxa();
 
-        Pair<Integer, Integer>[] splitIndices = new Pair[N * (N - 1) / 2 - N];
+        Pair<Integer, Integer>[] splitIndices = new ImmutablePair[N * (N - 1) / 2 - N];
 
         int n = 0;
         int m;

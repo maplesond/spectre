@@ -73,7 +73,7 @@ public class OptimiserFactory {
      * Goes through all optimisers found on the classpath and checks to see if they are operational.  Returns a list as
      * a string of all operational optimisers
      *
-     * @return
+     * @return A list of operational optimisers represented as a string
      */
     public String listOperationalOptimisersAsString() {
 
@@ -84,7 +84,7 @@ public class OptimiserFactory {
      * Goes through all optimisers found on the classpath and checks to see if they are operational.  Returns a list as
      * a string of all operational optimisers
      *
-     * @return
+     * @return A list of operational optimisers represented as a string
      */
     public String listOperationalOptimisersAsString(Objective.ObjectiveType objectiveType) {
 

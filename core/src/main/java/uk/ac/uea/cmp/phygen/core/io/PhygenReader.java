@@ -36,8 +36,8 @@ public interface PhygenReader {
     /**
      * Loads a distance matrix from a file
      *
-     * @param input
-     * @return
+     * @param input The file to read
+     * @return A distance matrix
      * @throws IOException
      */
     DistanceMatrix readDistanceMatrix(File input) throws IOException;

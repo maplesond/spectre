@@ -324,7 +324,7 @@ public class GreedyMEWeighting extends Weighting {
      *
      * @param C
      * @param nbTaxa
-     * @return
+     * @return Matrix Inversion Result
      */
     private InversionResult matrixInversion(final int[] C, final int nbTaxa) {
 
@@ -352,7 +352,7 @@ public class GreedyMEWeighting extends Weighting {
      * @param gamma
      * @param d
      * @param v
-     * @return
+     * @return W
      */
     private double[] calcW(final int zero, final int nbTaxa, final double k, final int[] C, final double gamma, final double[] d, final int[] v) {
 

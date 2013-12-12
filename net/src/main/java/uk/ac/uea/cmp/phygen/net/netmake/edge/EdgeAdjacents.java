@@ -65,7 +65,8 @@ public class EdgeAdjacents {
      *
      * @param splitsASide The split list
      * @param k           The index of particular split we are dealing with
-     * @param P
+     * @param sdlOriginal
+     * @param nbTaxa
      * @return A new EdgeAdjacents object containing C, pTemp and C_alpha values.
      */
     public static EdgeAdjacents retrieveAdjacents(Tableau<Integer> splitsASide, int k, SummedDistanceList sdlOriginal, int nbTaxa) {

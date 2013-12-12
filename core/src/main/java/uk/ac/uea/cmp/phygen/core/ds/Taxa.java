@@ -160,7 +160,7 @@ public class Taxa extends ArrayList<Taxon> {
      * Overwrites the taxon at a specific position in the list with the one provided.
      * @param index
      * @param taxon
-     * @return
+     * @return The taxon that's been set.
      */
     @Override
     public Taxon set(int index, Taxon taxon) {
