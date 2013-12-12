@@ -77,7 +77,7 @@
                         </goals>
                         <configuration>
                             <target>
-                                <chmod file="${build-dir}/bin/*" perm="755"/>
+                                <chmod file="${build-dir}/bin/qnet" perm="755"/>
                             </target>
                         </configuration>
                     </execution>

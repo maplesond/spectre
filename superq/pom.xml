@@ -82,7 +82,8 @@
                         </goals>
                         <configuration>
                             <target>
-                                <chmod file="${build-dir}/bin/*" perm="755"/>
+                                <chmod file="${build-dir}/bin/superq" perm="755"/>
+                                <chmod file="${build-dir}/bin/superq-gui" perm="755"/>
                             </target>
                         </configuration>
                     </execution>
