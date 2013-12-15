@@ -53,10 +53,10 @@ public class QNetCLI {
         options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_OUTPUT).isRequired().hasArg()
                 .withDescription("The nexus file that will contain output.").create("o"));
 
-        options.addOption(new Option("l", OPT_LOG, false, "Linear if false, Log if true"));
+        options.addOption(new Option("l", OPT_LOG, false, "If false, normalises quartets linearly, if true normalises quartets using natural log"));
 
         options.addOption(OptionBuilder.withArgName("double").withLongOpt(OPT_TOLERANCE).hasArg()
-                .withDescription("The tolerance").create("t"));
+                .withDescription("The tolerance to use when computing edge weights").create("t"));
 
         options.addOption(OptionBuilder.withArgName("string").withLongOpt(OPT_OPTIMISER).hasArg()
                 .withDescription("If specified, uses optimisation: " + OptimiserFactory.getInstance().listOperationalOptimisers()).create("p"));
@@ -95,8 +95,8 @@ public class QNetCLI {
             // Run QNet
             QNetResult result = new QNet().execute(input, log, tolerance, optimiser);
 
-            // Output results in nexus file
-            //TODO qnet.writeWeights(output, weights.getX(), null, 0);
+            // Output results in nexus file in standard mode
+            result.writeWeights(output, null, 0);
         }
         catch (Exception e) {
             logger.error(e.getMessage(), e);
