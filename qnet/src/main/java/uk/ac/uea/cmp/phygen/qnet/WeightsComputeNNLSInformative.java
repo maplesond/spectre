@@ -40,7 +40,7 @@ public class WeightsComputeNNLSInformative {
     private static Logger log = LoggerFactory.getLogger(WeightsComputeNNLSInformative.class);
 
     public static ComputedWeights computeWeights(QuartetSystem quartetNetwork,
-                                                 double tolerance, Optimiser optimiser) throws QNetException, IOException, OptimiserException {
+                                                 double tolerance, Optimiser optimiser) throws QNetException, OptimiserException {
 
         // This method is probably going to take a while so start a timer.
         StopWatch stopWatch = new StopWatch();
@@ -422,15 +422,10 @@ public class WeightsComputeNNLSInformative {
                                         + pHolder.getQ(iA, iB, iC, iC + iD));
 
                             }
-
                         }
-
                     }
-
                 }
-
             }
-
         }
 
         // old version

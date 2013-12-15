@@ -29,10 +29,17 @@ import java.util.List;
  */
 public class WeightedQuartetMap extends HashMap<Quartet, QuartetWeights> {
 
+    /**
+     * Creates an empty weighted quartet map
+     */
     public WeightedQuartetMap() {
         super();
     }
 
+    /**
+     * Creates a weighted quartet map from a distance matrix
+     * @param distanceMatrix The distance matrix to conver to quartets
+     */
     public WeightedQuartetMap(DistanceMatrix distanceMatrix) {
 
         final int N = distanceMatrix.getNbTaxa();
@@ -64,6 +71,11 @@ public class WeightedQuartetMap extends HashMap<Quartet, QuartetWeights> {
         }
     }
 
+    /**
+     * Adds a weighted quartet into the hash map.
+     * @param quartet
+     * @param weight
+     */
     public void put(Quartet quartet, double weight) {
 
         Quartet sorted = quartet.createSortedQuartet();
@@ -111,7 +123,7 @@ public class WeightedQuartetMap extends HashMap<Quartet, QuartetWeights> {
     }
 
     /**
-     * setWeight sets a length
+     * Sets an edge weight for a quartet
      */
     public void setWeight(Quartet q, double weight) {
 
@@ -127,16 +139,15 @@ public class WeightedQuartetMap extends HashMap<Quartet, QuartetWeights> {
 
 
     /**
-     * getWeight gets the length of a specific quartet
+     * Gets the length of a specific quartet.  If the quartet is not in the hash then simply return 0.0.
+     * @param q The quartet to find in the hash.
+     * @return The weight of the specified quartet if found in the hash, 0.0 otherwise.
      */
     public double getWeight(Quartet q) {
 
         Quartet sorted = q.createSortedQuartet();
 
-        if (!this.containsKey(sorted))
-            throw new IllegalArgumentException("Could not find quartet in hash: " + sorted.toString());
-
-        return this.get(sorted).selectWeight(sorted, q);
+        return this.containsKey(sorted) ? this.get(sorted).selectWeight(sorted, q) : 0.0;
     }
 
 
@@ -176,7 +187,11 @@ public class WeightedQuartetMap extends HashMap<Quartet, QuartetWeights> {
         }
     }
 
-
+    /**
+     * Normalises all the quartet weights in this hash map
+     * @param logscale Normalise using natural log scale, or not
+     * @param useMax Use max or min
+     */
     public void normalize(boolean logscale, boolean useMax) {
 
         for (QuartetWeights quartetWeights : this.values()) {
@@ -211,9 +226,9 @@ public class WeightedQuartetMap extends HashMap<Quartet, QuartetWeights> {
     /**
      * Course through all quartets of taxonNames, if taxonNames (quartet entries) are contained in lesserNames add w to
      * summer (quartet)
-     * @param taxa
-     * @param lesserNames
-     * @param weight
+     * @param taxa A superset of taxon names
+     * @param lesserNames A subset of taxon names
+     * @param weight The weight to apply
      */
     public void sum(Taxa taxa, Taxa lesserNames, double weight) {
 
@@ -226,9 +241,6 @@ public class WeightedQuartetMap extends HashMap<Quartet, QuartetWeights> {
                         Quadruple quad = taxa.getQuadruple(a, b, c, d);
 
                         if (lesserNames.contains(quad)) {
-
-                            Quartet q = new Quartet(a + 1, b + 1, c + 1, d + 1);
-
                             this.scaleWeight(new Quartet(a + 1, b + 1, c + 1, d + 1), weight);
                         }
                     }

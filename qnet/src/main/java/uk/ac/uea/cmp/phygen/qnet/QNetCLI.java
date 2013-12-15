@@ -93,8 +93,7 @@ public class QNetCLI {
                     null;
 
             // Run QNet
-            QNet qnet = new QNet();
-            ComputedWeights weights = qnet.execute(input, log, tolerance, optimiser);
+            QNetResult result = new QNet().execute(input, log, tolerance, optimiser);
 
             // Output results in nexus file
             //TODO qnet.writeWeights(output, weights.getX(), null, 0);

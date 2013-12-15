@@ -49,9 +49,23 @@ public class QNet {
     private static Logger log = LoggerFactory.getLogger(QNet.class);
 
 
-
-
-    public ComputedWeights execute(File input, boolean logNormalise, double tolerance, Optimiser optimiser) throws IOException, QNetException, OptimiserException {
+    /**
+     * Runs QNet from input file, which might contain trees, distance matrices or quartet systems, converts the input
+     * into a quartet network, normalises the quartet weights, then calculates the circular ordering and computes
+     * edge weights.
+     * @param input The file containing trees, distance matrices or quartet systems, will parse as appropriate based on
+     *              the file extension.
+     * @param logNormalise Whether to normalise the quartet weights by natural log, or not.
+     * @param tolerance The tolerance to apply when computing weights
+     * @param optimiser The optimiser to use when computing weights
+     * @return The QNet results, which contains a quartet system, a set of computed weights and the quartet system
+     * that was used to calculate these things.
+     * @throws IOException Thrown if there was an issue loading the input file.
+     * @throws QNetException Thrown if there were any unexpected issues with the QNET algorithm implementation
+     * @throws OptimiserException Thrown if there was an issue running the optimiser when computing weights
+     */
+    public QNetResult execute(File input, boolean logNormalise, double tolerance, Optimiser optimiser)
+            throws IOException, QNetException, OptimiserException {
 
         String ext = FilenameUtils.getExtension(input.getName());
 
@@ -61,35 +75,64 @@ public class QNet {
         // Normalise the values in the network
         quartetNetwork.normaliseQuartets(logNormalise);
 
-        // Create agglomerator (will only contain a single network!! TODO check this!)
-        QuartetSystemCombiner qnetAgglomerator = new QuartetSystemCombiner();
-        qnetAgglomerator.combine(quartetNetwork);
+        // Create combiner (will only contain a single network!! TODO check this!)
+        QuartetSystemCombiner combinedQuartetSystem = new QuartetSystemCombiner().combine(quartetNetwork);
 
-        // Order the taxa
-        this.computeCircularOrdering(qnetAgglomerator);
-
-        ComputedWeights solution = this.computedWeights(quartetNetwork, tolerance, optimiser);
-
-        return solution;
-    }
-
-    public ComputedWeights computedWeights(QuartetSystem quartetNetworks, double tolerance, Optimiser optimiser)
-            throws OptimiserException, QNetException, IOException {
-
-        return WeightsComputeNNLSInformative.computeWeights(quartetNetworks, tolerance, optimiser);
+        return this.execute(combinedQuartetSystem, tolerance, optimiser);
     }
 
     /**
-     * Computes a circular ordering from a quartet network agglomeration
-     * @param quartetNetworkAgglomerator
+     * Runs QNet from a combined quartet system.  Calculates the circular ordering and compute edge weights.
+     * @param combinedQuartetSystem The combined split system to process
+     * @param tolerance The tolerance to apply when computing weights
+     * @param optimiser The optimiser to use when computing weights
+     * @return The QNet results, which contains a quartet system derived from the combined quartet system that was input,
+     * a set of computed weights and the quartet system that was used to calculate these things.
+     * @throws QNetException Thrown if there were any unexpected issues with the QNET algorithm implementation
+     * @throws OptimiserException Thrown if there was an issue running the optimiser when computing weights
+     */
+    public QNetResult execute(QuartetSystemCombiner combinedQuartetSystem, double tolerance, Optimiser optimiser)
+            throws OptimiserException, QNetException {
+
+        // Order the taxa
+        CircularOrdering circularOrdering = this.computeCircularOrdering(combinedQuartetSystem);
+
+        // Create the actual quartet system from the combiner
+        QuartetSystem quartetSystem = combinedQuartetSystem.create();
+
+        // Compute the weights
+        ComputedWeights solution = this.computedWeights(quartetSystem, tolerance, optimiser);
+
+        return new QNetResult(circularOrdering, solution, quartetSystem);
+    }
+
+
+    /**
+     * Computers edge weights from a quartet system
+     * @param quartetSystem The quartet system
+     * @param tolerance The tolerance to apply when computing weights
+     * @param optimiser The optimiser to use when computing weights
+     * @return A set of computer edge weights
+     * @throws QNetException Thrown if there were any unexpected issues with the QNET algorithm implementation
+     * @throws OptimiserException Thrown if there was an issue running the optimiser when computing weights
+     */
+    public ComputedWeights computedWeights(QuartetSystem quartetSystem, double tolerance, Optimiser optimiser)
+            throws OptimiserException, QNetException {
+
+        return WeightsComputeNNLSInformative.computeWeights(quartetSystem, tolerance, optimiser);
+    }
+
+    /**
+     * Computes a circular ordering from a combination of quartet systems
+     * @param combinedQuartetSystem The combined split system to process
      * @return A circular ordering
      */
-    public CircularOrdering computeCircularOrdering(QuartetSystemCombiner quartetNetworkAgglomerator) {
+    public CircularOrdering computeCircularOrdering(QuartetSystemCombiner combinedQuartetSystem) throws QNetException {
 
-        Taxa allTaxa = quartetNetworkAgglomerator.getTaxa();
+        Taxa allTaxa = combinedQuartetSystem.getTaxa();
         int N = allTaxa.size();
-        List<Taxa> taxaSets = quartetNetworkAgglomerator.getOriginalTaxaSets();
-        WeightedQuartetMap theQuartetWeights = quartetNetworkAgglomerator.getQuartetWeights();
+        List<Taxa> taxaSets = combinedQuartetSystem.getOriginalTaxaSets();
+        WeightedQuartetMap theQuartetWeights = combinedQuartetSystem.getQuartetWeights();
 
         double c = 0.5;
 
@@ -271,7 +314,7 @@ public class QNet {
 
             if (y < 0) {
 
-                log.error("QNet: Error: y < 0 while ordering; please report this!");
+                throw new QNetException("QNet: Error: y < 0 while ordering; please report this!");
             }
 
 
@@ -748,181 +791,4 @@ public class QNet {
 
 
 
-    //mode tells the method whether we want to write
-    //standard ... 0
-    //minimum  ... 1
-    //maximum  ... 2
-    public void writeWeights(File output, double[] y, double[] x, int mode, QuartetSystem quartetNetwork, CircularOrdering c) throws IOException {
-
-        //Taxa c = null; //quartetNetworkAgglomerator.getTaxa().get(0);
-        int N = quartetNetwork.getTaxa().size();
-        WeightedQuartetMap theQuartetWeights = quartetNetwork.getQuartets();
-        Taxa allTaxa = quartetNetwork.getTaxa();
-
-        Pair<Integer, Integer>[] splitIndices = new ImmutablePair[N * (N - 1) / 2 - N];
-
-        int n = 0;
-        int m;
-
-        for (m = 1; m < N - 1; m++) {
-
-            for (int j = m + 2; j < N + 1; j++) {
-
-                if (m != 1 || j != N) {
-
-                    // valid split
-                    splitIndices[n] = new ImmutablePair<>(m, j);
-                    n++;
-                }
-            }
-        }
-
-        /*final int size = N * (N - 1) * (N - 2) * (N - 3) / 12;
-        double[] f = new double[size];
-        QuartetIndex[] quartetIndices = new QuartetIndex[size];
-
-        n = 0;
-
-        for (int i = 1; i < N - 2; i++) {
-
-            for (int j = i + 1; j < N - 1; j++) {
-
-                for (int k = j + 1; k < N; k++) {
-
-                    for (int l = k + 1; l < N + 1; l++) {
-
-                        int cI = c.get(i - 1).getId();
-                        int cJ = c.get(j - 1).getId();
-                        int cK = c.get(k - 1).getId();
-                        int cL = c.get(l - 1).getId();
-
-                        quartetIndices[n] = new QuartetIndex(i, j, k, l);
-                        f[n] = theQuartetWeights.getWeight(new Quartet(cI, cJ, cK, cL));
-                        n++;
-
-                        quartetIndices[n] = new QuartetIndex(i, l, j, k);
-                        f[n] = theQuartetWeights.getWeight(new Quartet(cI, cL, cJ, cK));
-                        n++;
-                    }
-                }
-            }
-        }     */
-
-        int noSplits = N * (N - 1) / 2 - N;
-        boolean[] splitExists = new boolean[noSplits];
-
-        int existingSplits = 0;
-        // stuff to print _all_ splits
-
-        for (int i = 0; i < noSplits; i++) {
-
-            if (mode == 0)//standard
-            {
-                if (y[i] > 0.0) {
-                    splitExists[i] = true;
-                    existingSplits++;
-                } else {
-                    splitExists[i] = false;
-                }
-            } else if (mode == 1)//minimum
-            {
-                if ((y[i] > 0.0) && (y[i] < x[i])) {
-                    splitExists[i] = true;
-                    existingSplits++;
-                } else {
-                    splitExists[i] = false;
-
-                }
-            } else if (mode == 2)//maximum
-            {
-                if (y[i] > x[i]) {
-                    splitExists[i] = true;
-                    existingSplits++;
-                } else {
-                    splitExists[i] = false;
-                }
-            }
-
-        }
-        // print
-
-        String nexusString = new String();
-
-        nexusString += "#NEXUS\nBEGIN taxa;\nDIMENSIONS ntax=" + N + ";\nTAXLABELS\n";
-
-        for (int i = 0; i < N; i++) {
-
-            nexusString += allTaxa.get(i) + "\n";
-        }
-
-        nexusString += ";\nEND;\n\nBEGIN st_splits;\nDIMENSIONS ntax=" + N + " nsplits=" + (existingSplits + N) + ";\n";
-        nexusString += "FORMAT\nlabels\nweights\n;\nPROPERTIES\nweakly compatible\ncyclic\n;\nCYCLE";
-
-        for (int i = 0; i < N; i++) {
-
-            nexusString += " " + c.getAt(i);
-        }
-
-        nexusString += ";\nMATRIX\n";
-
-        int s = 0;
-
-        int wn = 0;
-        double ws = 0.0;
-
-        for (int i = 0; i < N * (N - 1) / 2 - N; i++) {
-
-            if (splitExists[i]) {
-
-                // this split exists
-
-                s++;
-
-                nexusString += "" + (s) + "   " + y[i] + "  ";
-
-                wn++;
-                ws += y[i];
-
-                Pair<Integer, Integer> sI = splitIndices[i];
-
-                for (int p = sI.getLeft() + 1; p < sI.getRight() + 1; p++) {
-
-                    nexusString += " " + c.getAt(p - 1);
-                }
-
-                nexusString += ",\n";
-            }
-        }
-
-        double mw = 1.0;
-        if (wn > 0) {
-            mw = ws / ((double) wn);
-        }
-
-        for (int i = 0; i < N; i++) {
-
-            s++;
-
-            nexusString += "" + (s) + "   " + mw + "  ";
-
-            nexusString += " " + (i + 1);
-
-            nexusString += ",\n";
-        }
-
-        s = 0;
-
-        wn = 0;
-        ws = 0.0;
-
-        mw = 1.0;
-        if (wn > 0) {
-            mw = ws / ((double) wn);
-        }
-
-        nexusString += ";\nEND;";
-
-        // Write to file
-        FileUtils.writeStringToFile(output, nexusString);
-    }
 }

@@ -38,8 +38,7 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * This class chops forests down into little pieces of woods input is a file of newick trees output is a quartet weights
- * file
+ * This class creates a single combined quartet system from a number of trees.
  */
 @MetaInfServices
 public class Chopper extends PhygenTool {
@@ -135,13 +134,13 @@ public class Chopper extends PhygenTool {
     }
 
     /**
-     * Loads Quartet Networks from file, scales them, then agglomerates them and writes the agglomerated network to file.
+     * Loads Quartet Networks from file, scales them, then combines them and writes the combined network to file.
      * @param inputFile The file containing the quartet networks .
      * @param source The type of file.
      * @param optimiser The optimiser to use for scaling the quartet networks.
      * @param outputDir The output directory in which the files will be saved.
      * @param outputPrefix The prefix to be applied to all the output files.
-     * @return An agglomeration of quartet networks
+     * @return A combination of quartet networks
      * @throws IOException Thrown if there was an issue loading files.
      * @throws OptimiserException Thrown if there was a problem scaling the quartet networks.
      */
@@ -164,10 +163,10 @@ public class Chopper extends PhygenTool {
 
 
     /**
-     * Loads Quartet Networks from file, then agglomerates them
+     * Loads Quartet Networks from file, then combines them
      * @param inputFile The file containing the quartet networks
      * @param source The type of file
-     * @return An agglomeration of quartet networks
+     * @return A combination of quartet networks
      * @throws IOException Thrown if there was an issue loading files.
      */
     public QuartetSystemCombiner execute(File inputFile, String source)
@@ -177,11 +176,11 @@ public class Chopper extends PhygenTool {
     }
 
     /**
-     * Loads Quartet Networks from file, scales them, then agglomerates them
+     * Loads Quartet Networks from file, scales them, then combines them
      * @param inputFile The file containing the quartet networks
      * @param source The type of file
      * @param optimiser The optimiser to use for scaling the quartet networks.
-     * @return An agglomeration of quartet networks
+     * @return A combination of quartet networks
      * @throws IOException Thrown if there was an issue loading files.
      * @throws OptimiserException Thrown if there was a problem scaling the quartet networks.
      */
@@ -193,10 +192,10 @@ public class Chopper extends PhygenTool {
 
 
     /**
-     * Scales a list of quartet networks and then agglomerates them
+     * Scales a list of quartet networks and then combines them
      * @param qnets A list of quartet networks
      * @param optimiser The optimiser with which the qnet scaling will be performed.
-     * @return An agglomeration of quartet networks
+     * @return A combination of quartet networks
      * @throws OptimiserException Thrown if there was an issue scaling the quartet networks
      */
     public QuartetSystemCombiner execute(QuartetSystemList qnets, Optimiser optimiser)
@@ -211,22 +210,22 @@ public class Chopper extends PhygenTool {
     }
 
     /**
-     * Core execution routine for chopper.  Takes in a list of quartet networks and agglomerates them.
+     * Core execution routine for chopper.  Takes in a list of quartet networks and combines them.
      * @param qnets A list of quartet networks
-     * @return An agglomeration of quartet networks
+     * @return A combination of quartet networks
      */
     public QuartetSystemCombiner execute(QuartetSystemList qnets) {
 
-        // Agglomerates networks
-        QuartetSystemCombiner quagg = new QuartetSystemCombiner();
+        // Combines networks
+        QuartetSystemCombiner combiner = new QuartetSystemCombiner();
         for(QuartetSystem qnet : qnets) {
-            quagg.combine(qnet);
+            combiner.combine(qnet);
         }
 
         // Divides the quartet weights in the agglomerated network by ???
-        quagg.divide();
+        combiner.divide();
 
-        return quagg;
+        return combiner;
     }
 
 
