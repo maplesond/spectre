@@ -51,18 +51,6 @@ public class NexusSplitsLoader extends AbstractQLoader {
     }
 
     @Override
-    public QuartetSystemList load(File file, double weight) throws IOException {
-
-        QuartetSystemList qnets = new QuartetSystemList(this.load(file));
-
-        // Sets the weight
-        qnets.get(0).setWeight(weight);
-
-        // Create a single quartet network based on these quartet weight and add to the list
-        return qnets;
-    }
-
-    @Override
     public String getName() {
         return "nexus:st_splits";
     }

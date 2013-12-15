@@ -46,19 +46,6 @@ public class NexusDistancesLoader extends AbstractQLoader {
     }
 
     @Override
-    public QuartetSystemList load(File file, double weight) throws IOException {
-
-        // Loads the file
-        QuartetSystemList qnets = new QuartetSystemList(this.load(file));
-
-        // Sets the weight
-        qnets.get(0).setWeight(weight);
-
-        // Create a single quartet network based on these quartet weight and add to the list
-        return qnets;
-    }
-
-    @Override
     public String getName() {
         return "nexus:distances";
     }
