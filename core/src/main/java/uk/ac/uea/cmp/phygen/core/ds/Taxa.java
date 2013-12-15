@@ -256,6 +256,16 @@ public class Taxa extends ArrayList<Taxon> {
         return this.size() > 0 ? this.get(size() - 1) : null;
     }
 
+    public String[] getNames() {
+        String[] nameArray = new String[this.size()];
+
+        for(int i = 0; i < this.size(); i++) {
+            nameArray[i] = this.get(i).getName();
+        }
+
+        return nameArray;
+    }
+
     @Override
     public String toString() {
 

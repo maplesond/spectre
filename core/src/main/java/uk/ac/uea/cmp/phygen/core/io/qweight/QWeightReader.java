@@ -45,12 +45,7 @@ import java.util.List;
 @MetaInfServices(uk.ac.uea.cmp.phygen.core.io.PhygenReader.class)
 public class QWeightReader extends AbstractPhygenReader {
 
-
     public QuartetNetwork parse(File file) throws IOException {
-        return this.parse(file, false);
-    }
-
-    public QuartetNetwork parse(File file, boolean logNormalize) throws IOException {
 
         // Convert loader into a character stream
         CharStream in = new ANTLRInputStream(new FileInputStream(file));
@@ -70,7 +65,7 @@ public class QWeightReader extends AbstractPhygenReader {
         QWeightParser parser = new QWeightParser(tokens);
         parser.removeParseListeners();
         parser.removeErrorListeners();
-        parser.addParseListener(new QWeightPopulator(quartetNetwork, logNormalize));
+        parser.addParseListener(new QWeightPopulator(quartetNetwork));
         parser.addErrorListener(new DefaultParsingErrorListener());
         parser.setErrorHandler(new DefaultParsingErrorStrategy());
 
@@ -86,6 +81,11 @@ public class QWeightReader extends AbstractPhygenReader {
         return quartetNetwork;
     }
 
+
+    @Override
+    public QuartetNetwork readQuartets(File file) throws IOException {
+        return this.parse(file);
+    }
 
     @Override
     public String[] commonFileExtensions() {
@@ -105,22 +105,4 @@ public class QWeightReader extends AbstractPhygenReader {
         return false;
     }
 
-
-
-    // ****** Unsuppported ******
-
-    @Override
-    public DistanceMatrix readDistanceMatrix(File input) throws IOException {
-        throw new UnsupportedOperationException("");
-    }
-
-    @Override
-    public List<NewickTree> readTrees(File input, double weight) throws IOException {
-        throw new UnsupportedOperationException("");
-    }
-
-    @Override
-    public SplitSystem readSplitSystem(File file) throws IOException {
-        throw new UnsupportedOperationException("");
-    }
 }

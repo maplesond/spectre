@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package uk.ac.uea.cmp.phygen.tools.chopper.loader;
+package uk.ac.uea.cmp.phygen.core.ds.quartet.load;
 
 import org.apache.commons.io.FileUtils;
 import org.kohsuke.MetaInfServices;
@@ -30,8 +30,13 @@ import java.util.List;
  *
  * @author sarah
  */
-@MetaInfServices(uk.ac.uea.cmp.phygen.tools.chopper.loader.Source.class)
-public class TreeLoader implements Source {
+@MetaInfServices(QLoader.class)
+public class TreeLoader implements QLoader {
+
+    @Override
+    public QuartetNetwork load(File file) throws IOException {
+        throw new UnsupportedOperationException("Not implemented yet.");
+    }
 
     @Override
     public QuartetNetworkList load(File file, double weight) throws IOException {

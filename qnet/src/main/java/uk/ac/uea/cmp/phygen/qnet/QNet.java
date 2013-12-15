@@ -22,14 +22,15 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetNetwork;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetNetworkAgglomerator;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.WeightedQuartetMap;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.load.QLoader;
 import uk.ac.uea.cmp.phygen.core.ds.split.CircularOrdering;
 import uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser;
 import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
 import uk.ac.uea.cmp.phygen.core.util.SpiFactory;
 import uk.ac.uea.cmp.phygen.qnet.holders.*;
-import uk.ac.uea.cmp.phygen.qnet.loader.Source;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,14 +48,6 @@ public class QNet {
 
     private static Logger log = LoggerFactory.getLogger(QNet.class);
 
-    private SpiFactory<Source> sourceFactory;
-
-
-
-    public QNet() {
-
-        this.sourceFactory = new SpiFactory<>(Source.class);
-    }
 
 
 
@@ -62,32 +55,41 @@ public class QNet {
 
         String ext = FilenameUtils.getExtension(input.getName());
 
-        QuartetNetworkAgglomerator quartetNetworks = this.sourceFactory.create(ext).load(input, logNormalise);
+        // Load the quartet network
+        QuartetNetwork quartetNetwork = new SpiFactory<>(QLoader.class).create(ext).load(input, 1.0).get(0);
+
+        // Normalise the values in the network
+        quartetNetwork.normaliseQuartets(logNormalise);
+
+        // Create agglomerator (will only contain a single network!! TODO check this!)
+        QuartetNetworkAgglomerator qnetAgglomerator = new QuartetNetworkAgglomerator();
+        qnetAgglomerator.agglomerate(quartetNetwork);
 
         // Order the taxa
-        this.computeCircularOrdering(quartetNetworks);
+        this.computeCircularOrdering(qnetAgglomerator);
 
-        ComputedWeights solution = this.computedWeights(quartetNetworks, tolerance, optimiser);
+        ComputedWeights solution = this.computedWeights(quartetNetwork, tolerance, optimiser);
 
         return solution;
     }
 
-    public ComputedWeights computedWeights(QuartetNetworkAgglomerator quartetNetworks, double tolerance, Optimiser optimiser)
+    public ComputedWeights computedWeights(QuartetNetwork quartetNetworks, double tolerance, Optimiser optimiser)
             throws OptimiserException, QNetException, IOException {
 
         return WeightsComputeNNLSInformative.computeWeights(quartetNetworks, tolerance, optimiser);
     }
 
     /**
-     * Run method
-     * @param quartetNetworks
+     * Computes a circular ordering from a quartet network agglomeration
+     * @param quartetNetworkAgglomerator
+     * @return A circular ordering
      */
-    public CircularOrdering computeCircularOrdering(QuartetNetworkAgglomerator quartetNetworks) {
+    public CircularOrdering computeCircularOrdering(QuartetNetworkAgglomerator quartetNetworkAgglomerator) {
 
-        Taxa allTaxa = quartetNetworks.getTaxa();
+        Taxa allTaxa = quartetNetworkAgglomerator.getTaxa();
         int N = allTaxa.size();
-        List<Taxa> taxaSets = null; //quartetNetworks.getTaxaSets();
-        WeightedQuartetMap theQuartetWeights = quartetNetworks.getQuartetWeights();
+        List<Taxa> taxaSets = quartetNetworkAgglomerator.getOriginalTaxaSets();
+        WeightedQuartetMap theQuartetWeights = quartetNetworkAgglomerator.getQuartetWeights();
 
         double c = 0.5;
 
@@ -750,12 +752,12 @@ public class QNet {
     //standard ... 0
     //minimum  ... 1
     //maximum  ... 2
-    public void writeWeights(File output, double[] y, double[] x, int mode, QuartetNetworkAgglomerator quartetNetworkAgglomerator) throws IOException {
+    public void writeWeights(File output, double[] y, double[] x, int mode, QuartetNetwork quartetNetwork, CircularOrdering c) throws IOException {
 
-        Taxa c = null; //quartetNetworkAgglomerator.getTaxa().get(0);
-        int N = quartetNetworkAgglomerator.getTaxa().size();
-        WeightedQuartetMap theQuartetWeights = quartetNetworkAgglomerator.getQuartetWeights();
-        Taxa allTaxa = quartetNetworkAgglomerator.getTaxa();
+        //Taxa c = null; //quartetNetworkAgglomerator.getTaxa().get(0);
+        int N = quartetNetwork.getTaxa().size();
+        WeightedQuartetMap theQuartetWeights = quartetNetwork.getQuartets();
+        Taxa allTaxa = quartetNetwork.getTaxa();
 
         Pair<Integer, Integer>[] splitIndices = new ImmutablePair[N * (N - 1) / 2 - N];
 
@@ -858,7 +860,7 @@ public class QNet {
 
         for (int i = 0; i < N; i++) {
 
-            nexusString += " " + c.get(i);
+            nexusString += " " + c.getAt(i);
         }
 
         nexusString += ";\nMATRIX\n";
@@ -885,14 +887,11 @@ public class QNet {
 
                 for (int p = sI.getLeft() + 1; p < sI.getRight() + 1; p++) {
 
-                    nexusString += " " + c.get(p - 1);
-
+                    nexusString += " " + c.getAt(p - 1);
                 }
 
                 nexusString += ",\n";
-
             }
-
         }
 
         double mw = 1.0;
@@ -909,7 +908,6 @@ public class QNet {
             nexusString += " " + (i + 1);
 
             nexusString += ",\n";
-
         }
 
         s = 0;

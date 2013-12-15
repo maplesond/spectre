@@ -16,8 +16,6 @@
 package uk.ac.uea.cmp.phygen.tools.chopper;
 
 import org.apache.commons.cli.*;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.MetaInfServices;
 import org.slf4j.Logger;
@@ -25,16 +23,17 @@ import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetNetwork;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetNetworkAgglomerator;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetNetworkList;
-import uk.ac.uea.cmp.phygen.core.ds.tree.newick.NewickTree;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.load.QLoader;
+import uk.ac.uea.cmp.phygen.core.io.qweight.QWeightWriter;
+import uk.ac.uea.cmp.phygen.core.math.optimise.Objective;
+import uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser;
+import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
+import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserFactory;
 import uk.ac.uea.cmp.phygen.core.util.SpiFactory;
 import uk.ac.uea.cmp.phygen.tools.PhygenTool;
-import uk.ac.uea.cmp.phygen.tools.chopper.loader.Source;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.StringTokenizer;
 
 /**
  * This class chops forests down into little pieces of woods input is a file of newick trees output is a quartet weights
@@ -52,18 +51,12 @@ public class Chopper extends PhygenTool {
     private static final String OPT_INPUT_FILE = "input";
     private static final String OPT_OUTPUT_DIR = "output";
     private static final String OPT_OUTPUT_PREFIX = "prefix";
-    private static final String OPT_SOURCE = "source";
-
-    private SpiFactory<Source> sourceFactory;
-
+    private static final String OPT_TYPE = "type";
+    private static final String OPT_OPTIMISER = "optimiser";
 
     // These variables get set after execution.  Helps the client get a handle on the output.
     private File quartetFile;
     private File infoFile;
-
-    public Chopper() {
-        this.sourceFactory = new SpiFactory<>(Source.class);
-    }
 
 
 
@@ -82,8 +75,11 @@ public class Chopper extends PhygenTool {
         options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_INPUT_FILE).hasArg()
                 .withDescription("The input file containing the tree(s) to chop").create("i"));
 
-        options.addOption(OptionBuilder.withArgName("string").withLongOpt(OPT_SOURCE).hasArg()
-                .withDescription("The type of source that will be input: " + this.sourceFactory.listServicesAsString()).create("s"));
+        options.addOption(OptionBuilder.withArgName("string").withLongOpt(OPT_TYPE).hasArg()
+                .withDescription("The type of source that will be input: " + new SpiFactory<>(QLoader.class).listServicesAsString()).create("t"));
+
+        options.addOption(OptionBuilder.withArgName("string").withLongOpt(OPT_OPTIMISER).hasArg()
+                .withDescription("The optimiser to use: " + OptimiserFactory.getInstance().listOperationalOptimisers()).create("p"));
 
         return options;
     }
@@ -101,10 +97,20 @@ public class Chopper extends PhygenTool {
                 commandLine.getOptionValue(OPT_OUTPUT_PREFIX) :
                 DEFAULT_OUTPUT_PREFIX;
 
-        String source = commandLine.getOptionValue(OPT_SOURCE);
+        String source = commandLine.getOptionValue(OPT_TYPE);
 
-        // Create the quartets from the input and save to file
-        this.execute(inputFile, source.trim(), outputDir, prefix);
+        try {
+            Optimiser optimiser = commandLine.hasOption(OPT_OPTIMISER) ?
+                    OptimiserFactory.getInstance().createOptimiserInstance(
+                            commandLine.getOptionValue(OPT_OPTIMISER), Objective.ObjectiveType.QUADRATIC) :
+                    null;
+
+            // Create the quartets from the input and save to file
+            this.execute(inputFile, source.trim(), optimiser, outputDir, prefix);
+        }
+        catch (OptimiserException oe) {
+            throw new IOException(oe);
+        }
     }
 
     @Override
@@ -127,113 +133,105 @@ public class Chopper extends PhygenTool {
     }
 
     /**
-     * Executes Chopper programmatically.  Loads input from file and saves output to file.
-     *
-     * @param inputFile
-     * @param source
+     * Loads Quartet Networks from file, scales them, then agglomerates them and writes the agglomerated network to file.
+     * @param inputFile The file containing the quartet networks .
+     * @param source The type of file.
+     * @param optimiser The optimiser to use for scaling the quartet networks.
+     * @param outputDir The output directory in which the files will be saved.
+     * @param outputPrefix The prefix to be applied to all the output files.
+     * @return An agglomeration of quartet networks
+     * @throws IOException Thrown if there was an issue loading files.
+     * @throws OptimiserException Thrown if there was a problem scaling the quartet networks.
      */
-    public QuartetNetwork execute(File inputFile, String source, File outputDir, String outputPrefix) throws IOException {
+    public QuartetNetwork execute(File inputFile, String source, Optimiser optimiser, File outputDir, String outputPrefix) throws IOException, OptimiserException {
 
         this.infoFile = new File(outputDir, outputPrefix + ".info");
         this.quartetFile = new File(outputDir, outputPrefix + ".qw");
 
-        QuartetNetworkAgglomerator quartetNetworkAgglomerator = this.execute(inputFile, source);
+        QuartetNetworkAgglomerator quartetNetworkAgglomerator = this.execute(inputFile, source, optimiser);
 
         quartetNetworkAgglomerator.saveInformation(this.infoFile);
 
         QuartetNetwork quartetNetwork = quartetNetworkAgglomerator.create();
 
-        quartetNetwork.saveQuartets(this.quartetFile);
+        // Write to disk
+        new QWeightWriter().writeQuartets(this.quartetFile, quartetNetwork);
 
         return quartetNetwork;
     }
 
-    public QuartetNetworkAgglomerator execute(File inputFile, String source) throws IOException {
 
-        QuartetNetworkAgglomerator quartetNetworkAgglomerator = source.equalsIgnoreCase("SCRIPT") ?
-                runScript(inputFile) :
-                new QuartetNetworkAgglomerator().addSource(this.sourceFactory.create(source).load(inputFile, 1.0));
+    /**
+     * Loads Quartet Networks from file, then agglomerates them
+     * @param inputFile The file containing the quartet networks
+     * @param source The type of file
+     * @return An agglomeration of quartet networks
+     * @throws IOException Thrown if there was an issue loading files.
+     */
+    public QuartetNetworkAgglomerator execute(File inputFile, String source)
+            throws IOException {
 
-        quartetNetworkAgglomerator.divide();
+        return this.execute(new QuartetNetworkList(inputFile, source));
+    }
 
-        return quartetNetworkAgglomerator;
+    /**
+     * Loads Quartet Networks from file, scales them, then agglomerates them
+     * @param inputFile The file containing the quartet networks
+     * @param source The type of file
+     * @param optimiser The optimiser to use for scaling the quartet networks.
+     * @return An agglomeration of quartet networks
+     * @throws IOException Thrown if there was an issue loading files.
+     * @throws OptimiserException Thrown if there was a problem scaling the quartet networks.
+     */
+    public QuartetNetworkAgglomerator execute(File inputFile, String source, Optimiser optimiser)
+            throws IOException, OptimiserException {
+
+        return this.execute(new QuartetNetworkList(inputFile, source), optimiser);
     }
 
 
-    public QuartetNetworkAgglomerator execute(NewickTree newickTree) throws IOException {
+    /**
+     * Scales a list of quartet networks and then agglomerates them
+     * @param qnets A list of quartet networks
+     * @param optimiser The optimiser with which the qnet scaling will be performed.
+     * @return An agglomeration of quartet networks
+     * @throws OptimiserException Thrown if there was an issue scaling the quartet networks
+     */
+    public QuartetNetworkAgglomerator execute(QuartetNetworkList qnets, Optimiser optimiser)
+            throws OptimiserException {
 
-        QuartetNetworkList sourceDataList = new QuartetNetworkList(new QuartetNetwork(
-                newickTree.getTaxa(), newickTree.getScalingFactor(), newickTree.createQuartets()));
-
-        QuartetNetworkAgglomerator quartetNetworkAgglomerator = new QuartetNetworkAgglomerator().addSource(sourceDataList);
-
-        quartetNetworkAgglomerator.divide();
-
-        return quartetNetworkAgglomerator;
-    }
-
-
-    public static void run(File inputFile, String source, File outputDir, String outputPrefix) throws IOException {
-
-        new Chopper().execute(inputFile, source, outputDir, outputPrefix);
-    }
-
-
-    protected QuartetNetworkAgglomerator runScript(File inputFile) throws IOException {
-
-        // Create an empty tree
-        QuartetNetworkAgglomerator choppedTree = new QuartetNetworkAgglomerator();
-
-        // Load the script
-        List<String> lines = FileUtils.readLines(inputFile);
-
-        // Execute each line of the script
-        for (String line : lines) {
-
-            StringTokenizer sT = new StringTokenizer(line.trim());
-
-            if (sT.hasMoreTokens()) {
-
-                // The first token should specify the loader
-                String sourceName = sT.nextToken();
-
-                // The second token should be the file to load
-                if (sT.hasMoreTokens()) {
-
-                    String sourceFileName = sT.nextToken();
-                    File sourceFile = new File(sourceFileName);
-
-                    // If relative path was given, assume we are using the script's relative path rather than relative to
-                    // the current working directory
-                    if (!sourceFile.isAbsolute() && inputFile.getParent() != null) {
-                        sourceFile = new File(inputFile.getParent(), sourceFileName);
-                    }
-
-                    // The third token is optional, but if present we multiply all weights in the tree of this file by
-                    // the given amount
-                    double weight = sT.hasMoreTokens() ?
-                            Double.parseDouble(sT.nextToken()) :
-                            1.0;
-
-                    // Create a source loader
-                    Source source = this.sourceFactory.create(sourceName);
-
-                    // Load source and execute chopper, agglomerate results
-                    choppedTree.addSource(source.load(sourceFile, weight));
-
-                } else {
-
-                    log.warn("Script line specified source (" + sourceName + ") but is lacking file name!  Ignoring line.");
-                }
-            }
-
-            System.gc();
+        // Scale the qnets only if an optimiser is provided
+        if (optimiser != null) {
+            qnets.scaleWeights(optimiser);
         }
 
-        return choppedTree;
+        return this.execute(qnets);
+    }
+
+    /**
+     * Core execution routine for chopper.  Takes in a list of quartet networks and agglomerates them.
+     * @param qnets A list of quartet networks
+     * @return An agglomeration of quartet networks
+     */
+    public QuartetNetworkAgglomerator execute(QuartetNetworkList qnets) {
+
+        // Agglomerates networks
+        QuartetNetworkAgglomerator quagg = new QuartetNetworkAgglomerator();
+        for(QuartetNetwork qnet : qnets) {
+            quagg.agglomerate(qnet);
+        }
+
+        // Divides the quartet weights in the agglomerated network by ???
+        quagg.divide();
+
+        return quagg;
     }
 
 
+    /**
+     * Main entry point for Chopper
+     * @param args
+     */
     public static void main(String[] args) {
 
         try {

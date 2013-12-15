@@ -44,8 +44,8 @@ public class ToolsCLI {
     private static void printHelp() {
         CommandLineHelper.printHelp(
                 createOptions(),
-                "phygentools.jar",
-                "Miscellaneous Phylogenetic Tools",
+                "phygentools",
+                "Miscellaneous Phylogenetic Tools\n" +
                 "A collection of tools: " + phygenToolFactory.listServicesAsString());
     }
 

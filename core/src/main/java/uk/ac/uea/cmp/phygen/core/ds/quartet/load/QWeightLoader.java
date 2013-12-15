@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package uk.ac.uea.cmp.phygen.tools.chopper.loader;
+package uk.ac.uea.cmp.phygen.core.ds.quartet.load;
 
 import org.kohsuke.MetaInfServices;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.*;
@@ -26,20 +26,16 @@ import java.io.IOException;
  * Created by IntelliJ IDEA. User: Analysis Date: 2004-jul-11 Time: 23:09:07 To
  * change this template use Options | File Templates.
  */
-@MetaInfServices(uk.ac.uea.cmp.phygen.tools.chopper.loader.Source.class)
-public class QWeightLoader implements Source {
+@MetaInfServices(QLoader.class)
+public class QWeightLoader extends AbstractQLoader {
 
     @Override
-    public QuartetNetworkList load(File file, double weight) throws IOException {
+    public QuartetNetwork load(File file) throws IOException {
 
-        QWeightReader qWeightReader = new QWeightReader();
-
-        QuartetNetwork quartetNetwork = qWeightReader.parse(file);
-
-        quartetNetwork.setWeight(weight);
-
-        return new QuartetNetworkList(quartetNetwork);
+        // Load the quartet network from the qweight file
+        return new QWeightReader().parse(file);
     }
+
 
     @Override
     public String getName() {

@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package uk.ac.uea.cmp.phygen.tools.chopper.loader;
+package uk.ac.uea.cmp.phygen.core.ds.quartet.load;
 
 import org.kohsuke.MetaInfServices;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.*;
@@ -28,11 +28,11 @@ import java.io.IOException;
  * Created by IntelliJ IDEA. User: Analysis Date: 2004-jul-11 Time: 23:09:07 To
  * change this template use Options | File Templates.
  */
-@MetaInfServices(uk.ac.uea.cmp.phygen.tools.chopper.loader.Source.class)
-public class NexusSplitsLoader implements Source {
+@MetaInfServices(QLoader.class)
+public class NexusSplitsLoader extends AbstractQLoader {
 
     @Override
-    public QuartetNetworkList load(File file, double weight) throws IOException {
+    public QuartetNetwork load(File file) throws IOException {
 
         // Load the split system from the nexus file
         SplitSystem splitSystem = new NexusReader().readSplitSystem(file);
@@ -45,7 +45,19 @@ public class NexusSplitsLoader implements Source {
             qW.addSplit(split);
         }
 
-        return new QuartetNetworkList(new QuartetNetwork(splitSystem.getTaxa(), weight, qW));
+        return new QuartetNetwork(splitSystem.getTaxa(), 1.0, qW);
+    }
+
+    @Override
+    public QuartetNetworkList load(File file, double weight) throws IOException {
+
+        QuartetNetworkList qnets = new QuartetNetworkList(this.load(file));
+
+        // Sets the weight
+        qnets.get(0).setWeight(weight);
+
+        // Create a single quartet network based on these quartet weight and add to the list
+        return qnets;
     }
 
     @Override

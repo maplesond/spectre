@@ -17,6 +17,7 @@ package uk.ac.uea.cmp.phygen.core.io;
 
 import uk.ac.uea.cmp.phygen.core.ds.Alignment;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetNetwork;
 import uk.ac.uea.cmp.phygen.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.phygen.core.ds.tree.newick.NewickTree;
 
@@ -42,22 +43,66 @@ public interface PhygenReader {
      */
     DistanceMatrix readDistanceMatrix(File input) throws IOException;
 
-    List<NewickTree> readTrees(File input) throws IOException;
+    /**
+     * Loads a list of Newick Trees from a file
+     * @param file The file to read
+     * @return A list of NewickTrees
+     * @throws IOException
+     */
+    List<NewickTree> readTrees(File file) throws IOException;
 
-    List<NewickTree> readTrees(File input, double weight) throws IOException;
+    List<NewickTree> readTrees(File file, double weight) throws IOException;
 
+    /**
+     * Loads a split system from a file
+     * @param file The file to read
+     * @return A split system
+     * @throws IOException
+     */
     SplitSystem readSplitSystem(File file) throws IOException;
+
+    /**
+     * Loads a quartet network from a file
+     * @param file The file to read
+     * @return A quartet network
+     * @throws IOException
+     */
+    QuartetNetwork readQuartets(File file) throws IOException;
+
 
     Alignment readAlignment(File file) throws IOException;
 
+    /**
+     * Commonly used file extensions for this type of reader.
+     * @return An array of strings representing commonly used file extensions for this reader.
+     */
     String[] commonFileExtensions();
 
+    /**
+     * An identifier with which the client.
+     * @return An identifier for this PhygenReader.
+     */
     String getIdentifier();
 
+    /**
+     * Whether or not this phygen reader accepts the given identifier.
+     * @param identifier The phygen reader identifier.
+     * @return True if this PhygenReader recognises the identifier, false otherwise.
+     */
     boolean acceptsIdentifier(String identifier);
 
+    /**
+     * Whether or not this PhygenReader can handle the specified data type.
+     * @param phygenDataType The data type.
+     * @return True, if this PhygenReader can load the specified data type, false otherwise.
+     */
     boolean acceptsDataType(PhygenDataType phygenDataType);
 
+    /**
+     * Whether or not this PhygenReader can handle the list of specified data types.
+     * @param phygenDataTypeList A list of data types.
+     * @return True, if this PhygenReader can load ALL the specified data types, false otherwise.
+     */
     boolean acceptsDataTypes(List<PhygenDataType> phygenDataTypeList);
 
 }

@@ -16,8 +16,20 @@
 
 package uk.ac.uea.cmp.phygen.core.ds.quartet;
 
+import org.apache.commons.io.FileUtils;
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.load.QLoader;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.scale.ScalingMatrix;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.scale.ScalingOptimiser;
+import uk.ac.uea.cmp.phygen.core.ds.tree.newick.NewickTree;
+import uk.ac.uea.cmp.phygen.core.io.qweight.QWeightWriter;
+import uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser;
+import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
+import uk.ac.uea.cmp.phygen.core.math.optimise.Solution;
+import uk.ac.uea.cmp.phygen.core.util.SpiFactory;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,14 +42,48 @@ import java.util.List;
  */
 public class QuartetNetworkList extends ArrayList<QuartetNetwork> {
 
-
+    /**
+     * Creates an empty quartet network list.
+     */
     public QuartetNetworkList() {
         super();
     }
 
+    /**
+     * Creates a list of quartet networks initalised with a single element
+     * @param initialElement
+     */
     public QuartetNetworkList(QuartetNetwork initialElement) {
         super();
         this.add(initialElement);
+    }
+
+    /**
+     * Creates a list of quartet networks, converted from a list of NewickTrees.
+     * @param trees A list of newick trees
+     */
+    public QuartetNetworkList(List<NewickTree> trees) {
+
+        super();
+
+        for(NewickTree newickTree : trees) {
+            this.add(new QuartetNetwork(newickTree.getTaxa(), newickTree.getScalingFactor(), newickTree.createQuartets()));
+        }
+    }
+
+    /**
+     * Creates a list of quartet networks from a file source
+     * @param inputFile The file to load
+     * @param source The type of file to load
+     * @throws IOException Thrown if there were any issues loading the file.
+     */
+    public QuartetNetworkList(File inputFile, String source) throws IOException {
+
+        super();
+
+        for(QuartetNetwork qnet : new SpiFactory<>(QLoader.class).create(source).load(inputFile, 1.0)) {
+            this.add(qnet);
+        }
     }
 
     public Taxa combineTaxaSets() {
@@ -80,4 +126,67 @@ public class QuartetNetworkList extends ArrayList<QuartetNetwork> {
 
         return weights;
     }
+
+
+    public QuartetNetworkList scaleWeights(Optimiser optimiser) throws OptimiserException {
+
+        // Computes the matrix of coefficients
+        ScalingMatrix matrix = new ScalingMatrix(this);
+
+        // Create the problem from the coefficients and run the solver to get the optimal solution
+        Solution solution = new ScalingOptimiser(optimiser).optimise(matrix.getMatrix());
+
+        // Updates quartet weights
+        this.scaleWeights(solution.getVariableValues());
+
+        // Just return this as a convenience to the client.
+        return this;
+    }
+
+
+    /**
+     * Updates the quartet weights in the new input files (scales the weights before they are processed by Chopper)
+     * @param w The weights to apply to the quartet networks.
+     * @throws IOException
+     */
+    public void scaleWeights(double[] w) {
+
+        if (this.size() != w.length)
+            throw new IllegalArgumentException("This quartet network list and the weight list are different sizes");
+
+        // Loop through each quartet network and update it
+        for (int i = 0; i < w.length; i++) {
+
+            QuartetNetwork qnet = this.get(i);
+
+            double weight = w[i];
+
+            for(QuartetWeights weights : qnet.getQuartets().values()) {
+                weights.multiply(weight);
+            }
+        }
+    }
+
+    public void saveNetworks(File outputPrefix) throws IOException {
+
+        File outputDir = outputPrefix.getParentFile();
+        String prefix = outputPrefix.getName();
+
+        for(int i = 1; i <= this.size(); i++) {
+
+            File outputFile = new File(outputDir, prefix + i + ".qua");
+
+            new QWeightWriter().writeQuartets(outputFile, this.get(i));
+        }
+
+        // Write a script file to easily load all these files later
+        List<String> lines = new ArrayList<>();
+        for (int i = 0; i < this.size(); i++) {
+            lines.add("qweights " + prefix + (i + 1) + ".qua\n");
+        }
+
+        FileUtils.writeLines(new File(outputDir, prefix + ".script"), lines);
+    }
+
+
 }

@@ -20,23 +20,10 @@
         <antlr-version>4.1</antlr-version>
     </properties>
 
-    <!-- If you have gurobi installed then comment out this block.  This essentially excludes all gurobi java files
-         from being compiled.  As it stands gurobi do not make freely available their jar file (even though it only
-         contains JNI stubs), so we have to exclude these files by default as we cannot assume the user will have
-         gurobi installed. -->
+
     <build>
 
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
-                <configuration>
-                    <excludes>
-                        <exclude>**/gurobi/*.java</exclude>
-                    </excludes>
-                </configuration>
-            </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

@@ -36,7 +36,6 @@ public class WeightedQuartetMap extends HashMap<Quartet, QuartetWeights> {
     public WeightedQuartetMap(DistanceMatrix distanceMatrix) {
 
         final int N = distanceMatrix.getNbTaxa();
-        final int expectedNbQuartets = Quartet.over4(N);
 
         double[][] D = distanceMatrix.getMatrix();
 
@@ -178,20 +177,12 @@ public class WeightedQuartetMap extends HashMap<Quartet, QuartetWeights> {
     }
 
 
-    public void normalize(boolean useMax) {
+    public void normalize(boolean logscale, boolean useMax) {
 
         for (QuartetWeights quartetWeights : this.values()) {
-            quartetWeights.normalise(false, useMax);
+            quartetWeights.normalise(logscale, useMax);
         }
     }
-
-    public void logNormalize(boolean useMax) {
-
-        for (QuartetWeights quartetWeights : this.values()) {
-            quartetWeights.normalise(true, useMax);
-        }
-    }
-
 
 
     /**
@@ -218,43 +209,33 @@ public class WeightedQuartetMap extends HashMap<Quartet, QuartetWeights> {
     }
 
     /**
-     * So... we go through taxonNames, which is the metalist check every quartet defined for it take the taxonList for
-     * the objects in loader, and their corresponding weights if a quartet is defined for that list, add its length to
-     * the corresponding summer position summer must have been translated according to the metalist
+     * Course through all quartets of taxonNames, if taxonNames (quartet entries) are contained in lesserNames add w to
+     * summer (quartet)
      * @param taxa
-     * @param metaTaxa
-     * @param weights
+     * @param lesserNames
+     * @param weight
      */
-    public void sum(Taxa taxa, List<Taxa> metaTaxa, List<Double> weights) {
+    public void sum(Taxa taxa, Taxa lesserNames, double weight) {
 
-        for(int i = 0; i < metaTaxa.size(); i++) {
+        int N = taxa.size();
 
-            double w = weights.get(i);
-            Taxa lesserNames = metaTaxa.get(i);
+        for (int a = 0; a < N - 3; a++) {
+            for (int b = a + 1; b < N - 2; b++) {
+                for (int c = b + 1; c < N - 1; c++) {
+                    for (int d = c + 1; d < N; d++) {
+                        Quadruple quad = taxa.getQuadruple(a, b, c, d);
 
-            // course through all quartets of taxonNames
-            // if taxonNames (quartet entries) are contained in lesserNames
-            // add w to summer (quartet)
+                        if (lesserNames.contains(quad)) {
 
-            int N = taxa.size();
+                            Quartet q = new Quartet(a + 1, b + 1, c + 1, d + 1);
 
-            for (int a = 0; a < N - 3; a++) {
-                for (int b = a + 1; b < N - 2; b++) {
-                    for (int c = b + 1; c < N - 1; c++) {
-                        for (int d = c + 1; d < N; d++) {
-                            Quadruple quad = taxa.getQuadruple(a, b, c, d);
-
-                            if (lesserNames.contains(quad)) {
-
-                                Quartet q = new Quartet(a + 1, b + 1, c + 1, d + 1);
-
-                                this.scaleWeight(new Quartet(a + 1, b + 1, c + 1, d + 1), w);
-                            }
+                            this.scaleWeight(new Quartet(a + 1, b + 1, c + 1, d + 1), weight);
                         }
                     }
                 }
             }
         }
+
     }
 
     public void scaleWeight(Quartet quartet, double weight) {

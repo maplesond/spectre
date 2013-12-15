@@ -26,30 +26,30 @@ import java.io.PrintWriter;
  */
 public class CommandLineHelper {
 
-    public static final int DEFAULT_WIDTH = 120;
-    public static final String DEFAULT_FOOTER = "Created by the Computational Biology lab by the University of East Anglia, " +
-            "UK, as part of the Phylogenetics Tool Suite";
+    public static final int DEFAULT_WIDTH = 100;
+    public static final String DEFAULT_FOOTER = "Created in collaboration by the University of East Anglia (UEA), The " +
+            "Genome Analysis Centre (TGAC) and the University of Griefswald, as part of the Phylogenetics Tool Suite";
 
     public static final String OPT_HELP = "help";
     public static final Option HELP_OPTION = new Option("?", OPT_HELP, false, "Print this message.");
 
 
-    public static void printHelp(Options options, String jarName, String projectName, String description) {
+    public static void printHelp(Options options, String exeName, String description) {
         new HelpFormatter().printHelp(
                 CommandLineHelper.DEFAULT_WIDTH,
-                "java -jar " + jarName + ".jar",
-                "Phylogenetics Tool Suite: " + projectName + "\n" + description,
+                exeName,
+                description,
                 options,
                 CommandLineHelper.DEFAULT_FOOTER,
                 true);
 
     }
 
-    public static void printUsage(Options options, String className) {
+    public static void printUsage(Options options, String exeName) {
         new HelpFormatter().printUsage(
                 new PrintWriter(System.err),
                 HelpFormatter.DEFAULT_WIDTH,
-                className,
+                exeName,
                 options);
     }
 
@@ -60,14 +60,14 @@ public class CommandLineHelper {
         return options;
     }
 
-    public static CommandLine startApp(Options options, String jarName, String projectName, String description, String[] args) {
+    public static CommandLine startApp(Options options, String exeName, String description, String[] args) {
 
         try {
             // Test for help first
             CommandLine helpCl = new PosixParser().parse(createHelpOptions(), args, true);
 
             if (helpCl.hasOption(OPT_HELP) || helpCl.getArgList().isEmpty()) {
-                CommandLineHelper.printHelp(options, jarName, projectName, description);
+                CommandLineHelper.printHelp(options, exeName, description);
                 return null;
             }
 
@@ -75,7 +75,7 @@ public class CommandLineHelper {
             return new PosixParser().parse(options, args);
         } catch (ParseException p) {
             System.err.println(p.getMessage());
-            CommandLineHelper.printUsage(options, projectName);
+            CommandLineHelper.printUsage(options, exeName);
             return null;
         }
     }

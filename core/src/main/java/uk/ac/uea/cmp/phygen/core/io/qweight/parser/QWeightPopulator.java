@@ -40,24 +40,15 @@ public class QWeightPopulator implements QWeightListener {
 
     private static Logger log = LoggerFactory.getLogger(QWeightPopulator.class);
 
-    private static enum Sense {
-        MIN,
-        MAX
-    }
-
     private QuartetNetwork quartetNetwork;
     private WeightedQuartetMap weightedQuartets;
 
     private int expectedTaxa;
-    private Sense sense;
-    private boolean logNormalise;
 
-    public QWeightPopulator(QuartetNetwork quartetNetwork, boolean logNormalise) {
+    public QWeightPopulator(QuartetNetwork quartetNetwork) {
         this.quartetNetwork = quartetNetwork;
         this.weightedQuartets = new WeightedQuartetMap();
         this.expectedTaxa = 0;
-        this.sense = Sense.MAX;
-        this.logNormalise = logNormalise;
     }
 
     @Override
@@ -147,7 +138,7 @@ public class QWeightPopulator implements QWeightListener {
 
     @Override
     public void exitSense_option(@NotNull QWeightParser.Sense_optionContext ctx) {
-        this.sense = Sense.valueOf(ctx.getText().toUpperCase());
+        this.quartetNetwork.setSense(QuartetNetwork.Sense.valueOf(ctx.getText().toUpperCase()));
     }
 
     @Override
@@ -203,14 +194,6 @@ public class QWeightPopulator implements QWeightListener {
 
             log.warn("Found the unexpected number of quartets in file.  Was expecting: " + expectedQuartets + " (calculated " +
                      " from " + this.expectedTaxa + " taxa); found: " + actualQuartets);
-        }
-
-        // Normalise if useMax
-        if (this.logNormalise) {
-            this.quartetNetwork.getQuartets().logNormalize(sense == Sense.MAX);
-        }
-        else {
-            this.quartetNetwork.getQuartets().normalize(sense == Sense.MAX);
         }
     }
 

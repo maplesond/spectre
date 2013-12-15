@@ -68,7 +68,7 @@ public class QNetCLI {
     public static void main(String[] args) {
 
         // Parse command line args
-        CommandLine commandLine = CommandLineHelper.startApp(createOptions(), "qnet-<version>", "Q-NET",
+        CommandLine commandLine = CommandLineHelper.startApp(createOptions(), "qnet",
                 "Creates a Circular Weighted Split Network from a set of taxa", args);
 
         // If we didn't return a command line object then just return.  Probably the user requested help or

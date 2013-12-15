@@ -101,40 +101,10 @@ public class SuperQ extends RunnableTool {
 
             this.continueRun();
 
-            if (this.options.isScaleInputTree()) {
-                //Optional scaling of input trees
-                //can just be applied to newick or script format
-                if (!(this.options.getInputFileFormat() == SuperQOptions.InputFormat.NEWICK
-                        || this.options.getInputFileFormat() == SuperQOptions.InputFormat.SCRIPT)) {
-                    throw new Exception("Scale function can only be applied if the input format is newick or script!");
-                } else {
-                    notifyUser("SCALING - Scaling input trees - Using: " + primarySolverName);
-
-                    int cutIdx1 = file.lastIndexOf(File.separator);
-                    int cutIdx2 = file.lastIndexOf(".");
-                    file = tmppath + "scaled" + file.substring(cutIdx1 + 1, cutIdx2) + ".script";
-
-
-                    //The uk.ac.uea.cmp.phygen.tools.scale method gets the input file and produces a scaled quartet file for each of the input trees
-                    //uk.ac.uea.cmp.phygen.tools.scale function gets the format type, input file and a prefix to name the scaled quartet files
-                    Scaling.run(
-                            this.options.getInputFile(),
-                            new File(file),
-                            Scaling.Mode.valueOf(this.options.getInputFileFormat().toString().toUpperCase()),
-                            this.options.getPrimarySolver());
-
-                    type = "script";
-
-
-                    rt.gc();
-                    log.debug("FREE MEM - after scaling: " + rt.freeMemory());
-
-                    this.continueRun();
-                }
-            }
-
-            notifyUser("CHOPPER - Breaking input trees into quartets");
-            QuartetNetworkAgglomerator quartetNetworkAgglomerator = new Chopper().execute(new File(file), type.toUpperCase());
+            notifyUser("CHOPPER - Breaking input trees into quartets.  " +
+                    (this.options.isScaleInputTree() ? "(Scaling input)" : ""));
+            QuartetNetworkAgglomerator quartetNetworkAgglomerator =  new Chopper().execute(new File(file), type.toUpperCase(),
+                            this.options.isScaleInputTree() ? this.options.getPrimarySolver() : null);
 
             rt.gc();
             log.debug("FREE MEM - after running Chopper: " + rt.freeMemory());
@@ -145,7 +115,7 @@ public class SuperQ extends RunnableTool {
             QNet qnet = new QNet();
             CircularOrdering circularOrdering = qnet.computeCircularOrdering(quartetNetworkAgglomerator);
             ComputedWeights computedWeights = qnet.computedWeights(
-                    quartetNetworkAgglomerator,
+                    quartetNetworkAgglomerator.create(),
                     -1.0,
                     this.options.getPrimarySolver());
 
@@ -161,12 +131,14 @@ public class SuperQ extends RunnableTool {
             } else {
 
                 Optimiser secondarySolver = this.options.getSecondarySolver();
-                notifyUser("SECONDARY OPTIMISATION - Requested " + secondarySolver.toString() + " solver with " + this.options.getSecondaryProblem() + " objective.");
+                notifyUser("SECONDARY OPTIMISATION - Requested " + secondarySolver.toString() + " solver with " +
+                        this.options.getSecondaryProblem() + " objective.");
 
                 try {
 
                     // Create problem from the computer weights
-                    Problem problem = this.options.getSecondaryProblem().compileProblem(circularOrdering.size(), computedWeights.getX(), computedWeights.getEtE().toArray());
+                    Problem problem = this.options.getSecondaryProblem().compileProblem(circularOrdering.size(),
+                            computedWeights.getX(), computedWeights.getEtE().toArray());
 
                     // Run the secondary optimisation step
                     double[] solution2 = this.options.getSecondaryProblem().getName() == "MINIMA" ?
@@ -186,7 +158,7 @@ public class SuperQ extends RunnableTool {
             File weightsOutput = this.options.getFilter() != null ? new File(filterTempFile) : this.options.getOutputFile();
 
             notifyUser("SUPERQ - Saving weights to file");
-            qnet.writeWeights(weightsOutput, solution, null, 0, quartetNetworkAgglomerator);
+            qnet.writeWeights(weightsOutput, solution, null, 0, quartetNetworkAgglomerator.create(), circularOrdering);
 
 
             rt.gc();
@@ -207,7 +179,7 @@ public class SuperQ extends RunnableTool {
 
             // Print run time on screen
             stopWatch.stop();
-            log.info("SUPERQ - Completed Successfully - Total run time (H:M:S:MS): " + stopWatch.toString());
+            log.info("SUPERQ - Completed Successfully - Total run time: " + stopWatch.toString());
 
         } catch (Exception e) {
             log.error(e.getMessage(), e);

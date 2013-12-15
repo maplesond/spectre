@@ -20,6 +20,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,13 +42,13 @@ public class ChopperTest {
 
 
     @Test
-    public void sevenTaxa() throws IOException {
+    public void sevenTaxa() throws IOException, OptimiserException {
 
         File treeFile = FileUtils.toFile(ChopperTest.class.getResource("/chopper/7-taxa.tre"));
         File outputDir = temp.newFolder();
 
         Chopper chopper = new Chopper();
-        chopper.execute(treeFile, "newick", outputDir, "simpleTest");
+        chopper.execute(treeFile, "newick", null, outputDir, "simpleTest");
 
         assertTrue(chopper.getQuartetFile().exists());
 
@@ -57,13 +58,13 @@ public class ChopperTest {
     }
 
     @Test
-    public void sevenTaxaDeg2() throws IOException {
+    public void sevenTaxaDeg2() throws IOException, OptimiserException {
 
         File treeFile = FileUtils.toFile(ChopperTest.class.getResource("/chopper/7-taxa-deg2.tre"));
         File outputDir = temp.newFolder();
 
         Chopper chopper = new Chopper();
-        chopper.execute(treeFile, "newick", outputDir, "simpleTest");
+        chopper.execute(treeFile, "newick", null, outputDir, "simpleTest");
 
         assertTrue(chopper.getQuartetFile().exists());
 
@@ -73,13 +74,13 @@ public class ChopperTest {
     }
 
     @Test
-    public void singleTreeScript() throws IOException {
+    public void singleTreeScript() throws IOException, OptimiserException {
 
         File treeFile = FileUtils.toFile(ChopperTest.class.getResource("/chopper/in.script"));
         File outputDir = temp.newFolder();
 
         Chopper chopper = new Chopper();
-        chopper.execute(treeFile, "script", outputDir, "singleTreeScript");
+        chopper.execute(treeFile, "script", null, outputDir, "singleTreeScript");
 
         assertTrue(chopper.getQuartetFile().exists());
 

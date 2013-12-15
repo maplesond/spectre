@@ -188,7 +188,7 @@ public class QuartetWeights extends Triplet<Double> {
         return Math.pow(this.getA(), 2.0) + Math.pow(this.getB(), 2.0) + Math.pow(this.getC(), 2.0);
     }
 
-    public void permute(int t1, int t2, int t3, int t4) {
+    public QuartetWeights permute(int t1, int t2, int t3, int t4) {
 
         // Sort taxa ascending
         int[] ta = Key.sortElements(t1, t2, t3, t4);
@@ -326,14 +326,19 @@ public class QuartetWeights extends Triplet<Double> {
         }
 
         // Reset the state
-        this.setA(newA);
-        this.setB(newB);
-        this.setC(newC);
+        //this.setA(newA);
+        //this.setB(newB);
+        //this.setC(newC);
+        return new QuartetWeights(newA, newB, newC);
     }
 
+    /**
+     * Simply divides these weights by those in the provided QuartetWeights
+     * @param other
+     */
     public void divide(QuartetWeights other) {
 
-        if (this.allNonZero()) {
+        if (other.allNonZero()) {
             this.setA(this.getA() / other.getA());
             this.setB(this.getB() / other.getB());
             this.setC(this.getC() / other.getC());
@@ -362,5 +367,11 @@ public class QuartetWeights extends Triplet<Double> {
     @Override
     public String toString() {
         return "weights: " + this.getA() + " " + this.getB() + " " + this.getC();
+    }
+
+    public void multiply(double weight) {
+        this.setA(this.getA() * weight);
+        this.setB(this.getB() * weight);
+        this.setC(this.getC() * weight);
     }
 }

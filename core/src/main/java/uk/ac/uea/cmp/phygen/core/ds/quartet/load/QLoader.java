@@ -13,8 +13,9 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package uk.ac.uea.cmp.phygen.tools.chopper.loader;
+package uk.ac.uea.cmp.phygen.core.ds.quartet.load;
 
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetNetwork;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetNetworkList;
 import uk.ac.uea.cmp.phygen.core.util.Service;
 
@@ -25,7 +26,22 @@ import java.io.IOException;
  * Created by IntelliJ IDEA. User: Analysis Date: 2004-jul-12 Time: 00:35:38 To
  * change this template use Options | File Templates.
  */
-public interface Source extends Service {
+public interface QLoader extends Service {
 
-    public QuartetNetworkList load(File file, double weight) throws IOException;
+    /**
+     * Loads a quartet network from a file
+     * @param file The file to load
+     * @return A quartet network
+     * @throws IOException Thrown if there was a problem reading the file
+     */
+    QuartetNetwork load(File file) throws IOException;
+
+    /**
+     * Loads a list of quartet networks from a file
+     * @param file The file to load
+     * @param weight The weight to be applied to this file
+     * @return A list of quartet networks
+     * @throws IOException Thrown if there was a problem reading the file
+     */
+    QuartetNetworkList load(File file, double weight) throws IOException;
 }

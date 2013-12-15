@@ -20,6 +20,7 @@ import uk.ac.uea.cmp.phygen.core.ds.Quadruple;
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phygen.core.ds.split.Split;
+import uk.ac.uea.cmp.phygen.core.io.qweight.QWeightReader;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -37,8 +38,20 @@ import java.util.Map;
  */
 public class QuartetNetwork {
 
+    public static enum Sense {
+        MIN,
+        MAX;
+
+        @Override
+        public String toString() {
+            return this.name().toLowerCase();
+        }
+    }
+
+
     private Taxa taxa;
     private double weight;
+    private Sense sense;
     private WeightedQuartetMap quartets;
 
     public QuartetNetwork() {
@@ -48,6 +61,7 @@ public class QuartetNetwork {
     public QuartetNetwork(Taxa taxa, double weight, WeightedQuartetMap quartets) {
         this.taxa = taxa;
         this.weight = weight;
+        this.sense = Sense.MAX;
         this.quartets = quartets;
 
         final int expectedNbQuartets = Quartet.over4(taxa.size());
@@ -92,6 +106,14 @@ public class QuartetNetwork {
         this.weight = weight;
     }
 
+    public Sense getSense() {
+        return sense;
+    }
+
+    public void setSense(Sense sense) {
+        this.sense = sense;
+    }
+
     public WeightedQuartetMap getQuartets() {
         return quartets;
     }
@@ -100,30 +122,10 @@ public class QuartetNetwork {
         this.quartets = quartets;
     }
 
-    public void saveQuartets(File outputFile) throws IOException {
 
-        FileWriter out = new FileWriter(outputFile);
 
-        // Output header
-        out.write("taxanumber: " + taxa.size() + ";\n");
-        out.write("description: supernetwork quartets;\n");
-        out.write("sense: max;\n");
-
-        NumberFormat nF = NumberFormat.getIntegerInstance();
-        nF.setMinimumIntegerDigits(3);
-        nF.setMaximumIntegerDigits(3);
-
-        // Output the taxa part
-        for (int n = 0; n < taxa.size(); n++) {
-            out.write("taxon:   " + nF.format(n + 1) + "   name: " + taxa.get(n).getName() + ";\n");
-        }
-
-        // Output the quartets and weights part
-        for(Map.Entry<Quartet, QuartetWeights> qw : this.quartets.entrySet()) {
-            out.write(qw.getKey().toString(nF) + " " + qw.getValue().toString() + ";\n");
-        }
-
-        out.close();
+    public void normaliseQuartets(boolean logscale) {
+       this.quartets.normalize(logscale, sense == Sense.MAX);
     }
 
     public void setTaxaIndicies(Taxa superTaxaSet) {

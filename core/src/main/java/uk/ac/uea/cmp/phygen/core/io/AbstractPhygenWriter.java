@@ -17,6 +17,7 @@
 package uk.ac.uea.cmp.phygen.core.io;
 
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetNetwork;
 import uk.ac.uea.cmp.phygen.core.ds.split.SimpleSplitSystem;
 
 import java.io.File;
@@ -35,5 +36,10 @@ public class AbstractPhygenWriter implements PhygenWriter {
     @Override
     public void writeDistanceMatrix(File outFile, DistanceMatrix distanceMatrix) throws IOException {
         throw new UnsupportedOperationException(this.getClass().getCanonicalName() + " does not support writing of distance matrices.");
+    }
+
+    @Override
+    public void writeQuartets(File outFile, QuartetNetwork quartetNetwork) throws IOException {
+        throw new UnsupportedOperationException(this.getClass().getCanonicalName() + " does not support writing of quartets.");
     }
 }

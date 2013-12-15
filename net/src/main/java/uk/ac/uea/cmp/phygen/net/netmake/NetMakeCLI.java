@@ -104,7 +104,7 @@ public class NetMakeCLI {
 
     public static void main(String[] args) {
 
-        CommandLine commandLine = CommandLineHelper.startApp(createOptions(), "netmake-<version>", "Network Maker",
+        CommandLine commandLine = CommandLineHelper.startApp(createOptions(), "netmake",
                 "Creates networks from distance matricies", args);
 
         // If we didn't return a command line object then just return.  Probably the user requested help or

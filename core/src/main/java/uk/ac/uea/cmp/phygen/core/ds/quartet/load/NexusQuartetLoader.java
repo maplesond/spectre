@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package uk.ac.uea.cmp.phygen.tools.chopper.loader;
+package uk.ac.uea.cmp.phygen.core.ds.quartet.load;
 
 import org.kohsuke.MetaInfServices;
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
@@ -32,9 +32,15 @@ import java.util.StringTokenizer;
  * Created by IntelliJ IDEA. User: Analysis Date: 2004-jul-11 Time: 23:09:07 To
  * change this template use Options | File Templates.
  */
-@MetaInfServices(uk.ac.uea.cmp.phygen.tools.chopper.loader.Source.class)
-public class NexusQuartetLoader implements Source {
+@MetaInfServices(QLoader.class)
+public class NexusQuartetLoader extends AbstractQLoader {
 
+    @Override
+    public QuartetNetwork load(File file) throws IOException {
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
+
+    //TODO Move nexus quartet loading code into nexus reader
     @Override
     public QuartetNetworkList load(File file, double weight) throws IOException {
 

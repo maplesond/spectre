@@ -16,12 +16,46 @@
 
 package uk.ac.uea.cmp.phygen.core.io.qweight;
 
+import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetNetwork;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 import uk.ac.uea.cmp.phygen.core.io.AbstractPhygenWriter;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.NumberFormat;
+import java.util.Map;
 
 /**
  * Created by dan on 10/12/13.
  */
 public class QWeightWriter extends AbstractPhygenWriter {
 
+    @Override
+    public void writeQuartets(File outFile, QuartetNetwork quartetNetwork) throws IOException {
 
+        FileWriter out = new FileWriter(outFile);
+
+        // Output header
+        out.write("taxanumber: " + quartetNetwork.getTaxa().size() + ";\n");
+        out.write("description: supernetwork quartets;\n");
+        out.write("sense: " + quartetNetwork.getSense().toString() + ";\n");
+
+        NumberFormat nF = NumberFormat.getIntegerInstance();
+        nF.setMinimumIntegerDigits(3);
+        nF.setMaximumIntegerDigits(3);
+
+        // Output the taxa part
+        for (int n = 0; n < quartetNetwork.getTaxa().size(); n++) {
+            out.write("taxon:   " + nF.format(n + 1) + "   name: " + quartetNetwork.getTaxa().get(n).getName() + ";\n");
+        }
+
+        // Output the quartets and weights part
+        for(Map.Entry<Quartet, QuartetWeights> qw : quartetNetwork.getQuartets().entrySet()) {
+            out.write(qw.getKey().toString(nF) + " " + qw.getValue().toString() + ";\n");
+        }
+
+        out.close();
+    }
 }

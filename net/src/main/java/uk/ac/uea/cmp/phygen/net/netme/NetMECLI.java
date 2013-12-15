@@ -88,7 +88,7 @@ public class NetMECLI {
 
     public static void main(String[] args) {
 
-        CommandLine commandLine = CommandLineHelper.startApp(createOptions(), "netme-<version>", "Net-ME",
+        CommandLine commandLine = CommandLineHelper.startApp(createOptions(), "netme",
                 "Finds minimum evolution tree within a circular split system.\n" +
                         "Takes in a nexus or phylip file containing a distance matrix and a nexus file containing a circular " +
                         "ordering (this file can be obtained by, for example, running NeighborNet in SplitsTree4 and saving the " +

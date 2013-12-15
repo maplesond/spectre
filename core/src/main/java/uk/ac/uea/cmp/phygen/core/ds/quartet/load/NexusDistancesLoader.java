@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package uk.ac.uea.cmp.phygen.tools.chopper.loader;
+package uk.ac.uea.cmp.phygen.core.ds.quartet.load;
 
 import org.kohsuke.MetaInfServices;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
@@ -29,10 +29,11 @@ import java.io.IOException;
  * Created by IntelliJ IDEA. User: Analysis Date: 2004-jul-11 Time: 23:09:07 To
  * change this template use Options | File Templates.
  */
-@MetaInfServices(uk.ac.uea.cmp.phygen.tools.chopper.loader.Source.class)
-public class NexusDistancesLoader implements Source {
+@MetaInfServices(QLoader.class)
+public class NexusDistancesLoader extends AbstractQLoader {
 
-    public QuartetNetworkList load(File file, double weight) throws IOException {
+    @Override
+    public QuartetNetwork load(File file) throws IOException {
 
         // Load distance matrix from file
         DistanceMatrix distanceMatrix = new NexusReader().readDistanceMatrix(file);
@@ -40,8 +41,21 @@ public class NexusDistancesLoader implements Source {
         // Create QuartetWeightings from distance matrix
         WeightedQuartetMap qw = new WeightedQuartetMap(distanceMatrix);
 
+        // Create and return the quartet network
+        return new QuartetNetwork(distanceMatrix.getTaxaSet(), 1.0, qw);
+    }
+
+    @Override
+    public QuartetNetworkList load(File file, double weight) throws IOException {
+
+        // Loads the file
+        QuartetNetworkList qnets = new QuartetNetworkList(this.load(file));
+
+        // Sets the weight
+        qnets.get(0).setWeight(weight);
+
         // Create a single quartet network based on these quartet weight and add to the list
-        return new QuartetNetworkList(new QuartetNetwork(distanceMatrix.getTaxaSet(), weight, qw));
+        return qnets;
     }
 
     @Override

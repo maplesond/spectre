@@ -18,6 +18,7 @@ package uk.ac.uea.cmp.phygen.core.io;
 
 import uk.ac.uea.cmp.phygen.core.ds.Alignment;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetNetwork;
 import uk.ac.uea.cmp.phygen.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.phygen.core.ds.tree.newick.NewickTree;
 
@@ -58,6 +59,11 @@ public abstract class AbstractPhygenReader implements PhygenReader {
     @Override
     public Alignment readAlignment(File file) throws IOException {
         throw new UnsupportedOperationException(this.getClass().getCanonicalName() + " does not support reading of alignments.");
+    }
+
+    @Override
+    public QuartetNetwork readQuartets(File file) throws IOException {
+        throw new UnsupportedOperationException(this.getClass().getCanonicalName() + " does not support reading of quartets.");
     }
 
     @Override
