@@ -20,6 +20,10 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystem;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystemCombiner;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystemList;
+import uk.ac.uea.cmp.phygen.core.ds.tree.newick.NewickTree;
 import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
 
 import java.io.File;
@@ -37,55 +41,17 @@ import static junit.framework.TestCase.assertTrue;
  */
 public class ChopperTest {
 
-    @Rule
-    public TemporaryFolder temp = new TemporaryFolder();
-
-
     @Test
-    public void sevenTaxa() throws IOException, OptimiserException {
+    public void testSevenTaxaTree() throws IOException {
 
-        File treeFile = FileUtils.toFile(ChopperTest.class.getResource("/chopper/7-taxa.tre"));
-        File outputDir = temp.newFolder();
+        NewickTree tree = new NewickTree("(((A:1,B:1):1,((C:1,D:1):1,E:1):1):1,(F:1,G:1):1);");
 
-        Chopper chopper = new Chopper();
-        chopper.execute(treeFile, "newick", null, outputDir, "simpleTest");
+        QuartetSystemList qsl = new QuartetSystemList(new QuartetSystem(tree));
 
-        assertTrue(chopper.getQuartetFile().exists());
+        QuartetSystemCombiner qsc = new Chopper().execute(qsl);
 
-        List<String> lines = FileUtils.readLines(chopper.getQuartetFile());
+        assertTrue(true);
 
-        assertTrue(lines.size() == 45);
     }
 
-    @Test
-    public void sevenTaxaDeg2() throws IOException, OptimiserException {
-
-        File treeFile = FileUtils.toFile(ChopperTest.class.getResource("/chopper/7-taxa-deg2.tre"));
-        File outputDir = temp.newFolder();
-
-        Chopper chopper = new Chopper();
-        chopper.execute(treeFile, "newick", null, outputDir, "simpleTest");
-
-        assertTrue(chopper.getQuartetFile().exists());
-
-        List<String> lines = FileUtils.readLines(chopper.getQuartetFile());
-
-        assertTrue(lines.size() == 45);
-    }
-
-    @Test
-    public void singleTreeScript() throws IOException, OptimiserException {
-
-        File treeFile = FileUtils.toFile(ChopperTest.class.getResource("/chopper/in.script"));
-        File outputDir = temp.newFolder();
-
-        Chopper chopper = new Chopper();
-        chopper.execute(treeFile, "script", null, outputDir, "singleTreeScript");
-
-        assertTrue(chopper.getQuartetFile().exists());
-
-        List<String> lines = FileUtils.readLines(chopper.getQuartetFile());
-
-        assertTrue(lines.size() == 35995);
-    }
 }
