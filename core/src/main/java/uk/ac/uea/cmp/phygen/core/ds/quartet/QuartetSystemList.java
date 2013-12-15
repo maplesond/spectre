@@ -67,7 +67,7 @@ public class QuartetSystemList extends ArrayList<QuartetSystem> {
         super();
 
         for(NewickTree newickTree : trees) {
-            this.add(new QuartetSystem(newickTree.getTaxa(), newickTree.getScalingFactor(), newickTree.createQuartets()));
+            this.add(new QuartetSystem(newickTree));
         }
     }
 

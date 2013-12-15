@@ -18,6 +18,7 @@ package uk.ac.uea.cmp.phygen.core.ds.quartet;
 
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
+import uk.ac.uea.cmp.phygen.core.ds.tree.newick.NewickTree;
 
 /**
  * Created with IntelliJ IDEA.
@@ -78,6 +79,10 @@ public class QuartetSystem {
 
         this.taxa = distanceMatrix.getTaxaSet();
         this.weight = weight;
+    }
+
+    public QuartetSystem(NewickTree newickTree) {
+        this(newickTree.getTaxa(), newickTree.getScalingFactor(), newickTree.createQuartets());
     }
 
     public Taxa getTaxa() {
