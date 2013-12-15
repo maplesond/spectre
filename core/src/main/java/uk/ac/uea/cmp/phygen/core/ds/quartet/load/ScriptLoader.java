@@ -4,8 +4,8 @@ import org.apache.commons.io.FileUtils;
 import org.kohsuke.MetaInfServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetNetwork;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetNetworkList;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystem;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystemList;
 import uk.ac.uea.cmp.phygen.core.util.SpiFactory;
 
 import java.io.File;
@@ -28,15 +28,15 @@ public class ScriptLoader extends AbstractQLoader {
     }
 
     @Override
-    public QuartetNetwork load(File file) throws IOException {
+    public QuartetSystem load(File file) throws IOException {
         throw new UnsupportedOperationException("A script loader will return a list of quartet networks, so this method is not supported.");
     }
 
     @Override
-    public QuartetNetworkList load(File inputFile, double weight) throws IOException {
+    public QuartetSystemList load(File inputFile, double weight) throws IOException {
 
         // Create an empty tree
-        QuartetNetworkList qnets = new QuartetNetworkList();
+        QuartetSystemList qnets = new QuartetSystemList();
 
         // Load the script
         List<String> lines = FileUtils.readLines(inputFile);
@@ -72,7 +72,7 @@ public class ScriptLoader extends AbstractQLoader {
                     // Create a source loader
                     QLoader QLoader = this.sourceFactory.create(sourceName);
 
-                    // Load source and execute chopper, agglomerate results
+                    // Load source and execute chopper, combine results
                     qnets.addAll(QLoader.load(sourceFile, entryWeight));
 
                 } else {

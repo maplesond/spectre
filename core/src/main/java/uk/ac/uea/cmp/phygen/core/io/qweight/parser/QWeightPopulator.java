@@ -23,10 +23,10 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.ds.Taxon;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.*;
-
-import java.util.ArrayList;
-import java.util.List;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystem;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.WeightedQuartetMap;
 
 /**
  * Created with IntelliJ IDEA.
@@ -40,12 +40,12 @@ public class QWeightPopulator implements QWeightListener {
 
     private static Logger log = LoggerFactory.getLogger(QWeightPopulator.class);
 
-    private QuartetNetwork quartetNetwork;
+    private QuartetSystem quartetNetwork;
     private WeightedQuartetMap weightedQuartets;
 
     private int expectedTaxa;
 
-    public QWeightPopulator(QuartetNetwork quartetNetwork) {
+    public QWeightPopulator(QuartetSystem quartetNetwork) {
         this.quartetNetwork = quartetNetwork;
         this.weightedQuartets = new WeightedQuartetMap();
         this.expectedTaxa = 0;
@@ -138,7 +138,7 @@ public class QWeightPopulator implements QWeightListener {
 
     @Override
     public void exitSense_option(@NotNull QWeightParser.Sense_optionContext ctx) {
-        this.quartetNetwork.setSense(QuartetNetwork.Sense.valueOf(ctx.getText().toUpperCase()));
+        this.quartetNetwork.setSense(QuartetSystem.Sense.valueOf(ctx.getText().toUpperCase()));
     }
 
     @Override

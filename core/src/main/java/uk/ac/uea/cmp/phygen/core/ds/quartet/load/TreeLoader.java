@@ -17,8 +17,8 @@ package uk.ac.uea.cmp.phygen.core.ds.quartet.load;
 
 import org.apache.commons.io.FileUtils;
 import org.kohsuke.MetaInfServices;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetNetwork;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetNetworkList;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystem;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystemList;
 import uk.ac.uea.cmp.phygen.core.ds.tree.newick.NewickTree;
 
 import java.io.File;
@@ -34,21 +34,21 @@ import java.util.List;
 public class TreeLoader implements QLoader {
 
     @Override
-    public QuartetNetwork load(File file) throws IOException {
+    public QuartetSystem load(File file) throws IOException {
         throw new UnsupportedOperationException("Not implemented yet.");
     }
 
     @Override
-    public QuartetNetworkList load(File file, double weight) throws IOException {
+    public QuartetSystemList load(File file, double weight) throws IOException {
 
-        QuartetNetworkList sourceDataList = new QuartetNetworkList();
+        QuartetSystemList sourceDataList = new QuartetSystemList();
 
         List<String> lines = FileUtils.readLines(file);
         for(String line : lines) {
 
             NewickTree tree = new NewickTree(line);
 
-            sourceDataList.add(new QuartetNetwork(tree.getTaxa(), tree.getScalingFactor() * weight, tree.createQuartets()));
+            sourceDataList.add(new QuartetSystem(tree.getTaxa(), tree.getScalingFactor() * weight, tree.createQuartets()));
         }
 
         return sourceDataList;

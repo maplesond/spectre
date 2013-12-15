@@ -1,8 +1,8 @@
 package uk.ac.uea.cmp.phygen.core.ds.quartet.scale;
 
 import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetNetwork;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetNetworkList;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystem;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystemList;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 
 import java.io.IOException;
@@ -16,27 +16,27 @@ public class ScalingMatrix {
 
     /**
      * Compute the matrix of coefficients form a list of quartet networks
-     * @param quartetNetworkList
+     * @param quartetSystemList
      * @return A matrix of coefficients.
      * @throws IOException
      */
-    public ScalingMatrix(QuartetNetworkList quartetNetworkList) {
+    public ScalingMatrix(QuartetSystemList quartetSystemList) {
 
         // The number of quartet networks to process
-        int nbNetworks = quartetNetworkList.size();
+        int nbNetworks = quartetSystemList.size();
 
         // Matrix of coefficients to be computed
         this.matrix = new double[nbNetworks][nbNetworks];
 
         // Compute diagonal elements of coefficient matrix
         for (int i = 0; i < nbNetworks; i++) {
-            this.matrix[i][i] = this.computeDiagonalElement(quartetNetworkList, i);
+            this.matrix[i][i] = this.computeDiagonalElement(quartetSystemList, i);
         }
 
         // Compute non-diagonal elements of coefficient matrix
         for (int i = 0; i < (nbNetworks - 1); i++) {
             for (int j = i + 1; j < nbNetworks; j++) {
-                this.matrix[i][j] = computeOffDiagonalElement(quartetNetworkList.get(i), quartetNetworkList.get(j));
+                this.matrix[i][j] = computeOffDiagonalElement(quartetSystemList.get(i), quartetSystemList.get(j));
                 this.matrix[j][i] = this.matrix[i][j];
             }
         }
@@ -85,7 +85,7 @@ public class ScalingMatrix {
      * @return Sum of the diagonals
      * @throws java.io.IOException
      */
-    protected double sumUpDiagonal(QuartetNetwork qni, QuartetNetwork qnj) {
+    protected double sumUpDiagonal(QuartetSystem qni, QuartetSystem qnj) {
 
         //auxilliary variable to store intermediate
         //results when summing up the values for the
@@ -136,12 +136,12 @@ public class ScalingMatrix {
 
     /**
      * Computes the diagonal elements of the coefficient matrix
-     * @param quartetNetworkList the list of quartet networks
+     * @param quartetSystemList the list of quartet networks
      * @param i index for the quartet network of the tree for which we compute the diagonal element
      * @return Value of the diagonal element
      * @throws IOException
      */
-    protected double computeDiagonalElement(QuartetNetworkList quartetNetworkList, int i) {
+    protected double computeDiagonalElement(QuartetSystemList quartetSystemList, int i) {
 
         //auxilliary variable to store intermediate
         //results when summing up the values for the
@@ -150,9 +150,9 @@ public class ScalingMatrix {
 
 
         //loop through the trees with index j distinct from i
-        for (int j = 0; j < quartetNetworkList.size(); j++) {
+        for (int j = 0; j < quartetSystemList.size(); j++) {
             if (j != i) {
-                coeff = coeff + this.sumUpDiagonal(quartetNetworkList.get(i), quartetNetworkList.get(j));
+                coeff = coeff + this.sumUpDiagonal(quartetSystemList.get(i), quartetSystemList.get(j));
             }
         }
 
@@ -166,7 +166,7 @@ public class ScalingMatrix {
      * @return Value of the off diagonal element
      * @throws IOException
      */
-    protected double computeOffDiagonalElement(QuartetNetwork qni, QuartetNetwork qnj) {
+    protected double computeOffDiagonalElement(QuartetSystem qni, QuartetSystem qnj) {
 
         //auxiliary variable used to store intermediate results
         double coeff = 0.0;

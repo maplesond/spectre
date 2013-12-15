@@ -1,7 +1,6 @@
 package uk.ac.uea.cmp.phygen.core.ds.quartet.load;
 
-import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetNetwork;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetNetworkList;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystemList;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,10 +19,10 @@ public abstract class AbstractQLoader implements QLoader {
      * @throws IOException
      */
     @Override
-    public QuartetNetworkList load(File file, double weight) throws IOException {
+    public QuartetSystemList load(File file, double weight) throws IOException {
 
         // Loads the file and adds to list
-        QuartetNetworkList qnets = new QuartetNetworkList(this.load(file));
+        QuartetSystemList qnets = new QuartetSystemList(this.load(file));
 
         // Sets the weight
         qnets.get(0).setWeight(weight);

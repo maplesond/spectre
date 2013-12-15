@@ -17,7 +17,6 @@
 package uk.ac.uea.cmp.phygen.core.ds.distance;
 
 import org.apache.commons.lang3.ArrayUtils;
-import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 
 import java.util.ArrayList;
 import java.util.List;

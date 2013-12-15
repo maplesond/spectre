@@ -15,8 +15,8 @@
  */
 package uk.ac.uea.cmp.phygen.core.ds.quartet.load;
 
-import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetNetwork;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetNetworkList;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystem;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystemList;
 import uk.ac.uea.cmp.phygen.core.util.Service;
 
 import java.io.File;
@@ -34,7 +34,7 @@ public interface QLoader extends Service {
      * @return A quartet network
      * @throws IOException Thrown if there was a problem reading the file
      */
-    QuartetNetwork load(File file) throws IOException;
+    QuartetSystem load(File file) throws IOException;
 
     /**
      * Loads a list of quartet networks from a file
@@ -43,5 +43,5 @@ public interface QLoader extends Service {
      * @return A list of quartet networks
      * @throws IOException Thrown if there was a problem reading the file
      */
-    QuartetNetworkList load(File file, double weight) throws IOException;
+    QuartetSystemList load(File file, double weight) throws IOException;
 }

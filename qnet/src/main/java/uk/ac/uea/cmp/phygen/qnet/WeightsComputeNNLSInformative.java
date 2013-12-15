@@ -21,9 +21,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetNetwork;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetNetworkAgglomerator;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystem;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.WeightedQuartetMap;
 import uk.ac.uea.cmp.phygen.core.math.matrix.SymmetricMatrix;
 import uk.ac.uea.cmp.phygen.core.math.matrix.UpperTriangularMatrix;
@@ -40,7 +39,7 @@ public class WeightsComputeNNLSInformative {
 
     private static Logger log = LoggerFactory.getLogger(WeightsComputeNNLSInformative.class);
 
-    public static ComputedWeights computeWeights(QuartetNetwork quartetNetwork,
+    public static ComputedWeights computeWeights(QuartetSystem quartetNetwork,
                                                  double tolerance, Optimiser optimiser) throws QNetException, IOException, OptimiserException {
 
         // This method is probably going to take a while so start a timer.

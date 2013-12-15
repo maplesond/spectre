@@ -17,9 +17,6 @@ package uk.ac.uea.cmp.phygen.core.io.fasta;
 
 import org.kohsuke.MetaInfServices;
 import uk.ac.uea.cmp.phygen.core.ds.Alignment;
-import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
-import uk.ac.uea.cmp.phygen.core.ds.split.SplitSystem;
-import uk.ac.uea.cmp.phygen.core.ds.tree.newick.NewickTree;
 import uk.ac.uea.cmp.phygen.core.io.AbstractPhygenReader;
 import uk.ac.uea.cmp.phygen.core.io.PhygenDataType;
 
@@ -28,7 +25,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 /**

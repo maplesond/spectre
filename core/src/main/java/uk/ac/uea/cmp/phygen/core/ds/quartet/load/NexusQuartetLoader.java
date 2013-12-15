@@ -18,7 +18,10 @@ package uk.ac.uea.cmp.phygen.core.ds.quartet.load;
 import org.kohsuke.MetaInfServices;
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.Taxon;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.*;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystem;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystemList;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.WeightedQuartetMap;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -36,13 +39,13 @@ import java.util.StringTokenizer;
 public class NexusQuartetLoader extends AbstractQLoader {
 
     @Override
-    public QuartetNetwork load(File file) throws IOException {
+    public QuartetSystem load(File file) throws IOException {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 
     //TODO Move nexus quartet loading code into nexus reader
     @Override
-    public QuartetNetworkList load(File file, double weight) throws IOException {
+    public QuartetSystemList load(File file, double weight) throws IOException {
 
         List<Double> weights = new ArrayList<>();
 
@@ -218,7 +221,7 @@ public class NexusQuartetLoader extends AbstractQLoader {
             }
         }
 
-        return new QuartetNetworkList(new QuartetNetwork(taxa, weight, qW));
+        return new QuartetSystemList(new QuartetSystem(taxa, weight, qW));
     }
 
     @Override

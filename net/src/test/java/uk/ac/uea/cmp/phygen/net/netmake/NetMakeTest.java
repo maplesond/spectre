@@ -22,8 +22,6 @@ import org.apache.log4j.LogManager;
 import org.junit.Before;
 import org.junit.Test;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
-import uk.ac.uea.cmp.phygen.net.netmake.NetMake;
-import uk.ac.uea.cmp.phygen.net.netmake.NetMakeResult;
 import uk.ac.uea.cmp.phygen.net.netmake.weighting.GreedyMEWeighting;
 import uk.ac.uea.cmp.phygen.net.netmake.weighting.TSPWeighting;
 

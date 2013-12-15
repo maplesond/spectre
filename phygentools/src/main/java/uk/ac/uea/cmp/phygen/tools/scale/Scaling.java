@@ -18,25 +18,21 @@ package uk.ac.uea.cmp.phygen.tools.scale;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.MetaInfServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetNetworkList;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystemList;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.load.QLoader;
-import uk.ac.uea.cmp.phygen.core.ds.tree.newick.NewickTree;
-import uk.ac.uea.cmp.phygen.core.math.optimise.*;
+import uk.ac.uea.cmp.phygen.core.math.optimise.Objective;
+import uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser;
+import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
+import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserFactory;
 import uk.ac.uea.cmp.phygen.core.util.SpiFactory;
 import uk.ac.uea.cmp.phygen.tools.PhygenTool;
-import uk.ac.uea.cmp.phygen.tools.chopper.Chopper;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.scale.ScalingMatrix;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.scale.ScalingOptimiser;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 @MetaInfServices
 public class Scaling extends PhygenTool {
@@ -135,9 +131,9 @@ public class Scaling extends PhygenTool {
      * @throws OptimiserException
      * @throws IOException
      */
-    public QuartetNetworkList execute(File inputFile, String type, Optimiser optimiser) throws OptimiserException, IOException {
+    public QuartetSystemList execute(File inputFile, String type, Optimiser optimiser) throws OptimiserException, IOException {
 
-        return new QuartetNetworkList(inputFile, type).scaleWeights(optimiser);
+        return new QuartetSystemList(inputFile, type).scaleWeights(optimiser);
     }
 
 

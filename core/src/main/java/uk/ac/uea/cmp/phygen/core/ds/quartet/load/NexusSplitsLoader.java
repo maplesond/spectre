@@ -16,7 +16,9 @@
 package uk.ac.uea.cmp.phygen.core.ds.quartet.load;
 
 import org.kohsuke.MetaInfServices;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.*;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystem;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystemList;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.WeightedQuartetMap;
 import uk.ac.uea.cmp.phygen.core.ds.split.Split;
 import uk.ac.uea.cmp.phygen.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.phygen.core.io.nexus.NexusReader;
@@ -32,7 +34,7 @@ import java.io.IOException;
 public class NexusSplitsLoader extends AbstractQLoader {
 
     @Override
-    public QuartetNetwork load(File file) throws IOException {
+    public QuartetSystem load(File file) throws IOException {
 
         // Load the split system from the nexus file
         SplitSystem splitSystem = new NexusReader().readSplitSystem(file);
@@ -45,13 +47,13 @@ public class NexusSplitsLoader extends AbstractQLoader {
             qW.addSplit(split);
         }
 
-        return new QuartetNetwork(splitSystem.getTaxa(), 1.0, qW);
+        return new QuartetSystem(splitSystem.getTaxa(), 1.0, qW);
     }
 
     @Override
-    public QuartetNetworkList load(File file, double weight) throws IOException {
+    public QuartetSystemList load(File file, double weight) throws IOException {
 
-        QuartetNetworkList qnets = new QuartetNetworkList(this.load(file));
+        QuartetSystemList qnets = new QuartetSystemList(this.load(file));
 
         // Sets the weight
         qnets.get(0).setWeight(weight);

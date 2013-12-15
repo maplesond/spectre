@@ -20,15 +20,17 @@ import org.apache.commons.lang3.StringUtils;
 import uk.ac.uea.cmp.phygen.core.ds.Alignment;
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
+import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrixBuilder;
 import uk.ac.uea.cmp.phygen.core.ds.split.SimpleSplitSystem;
 import uk.ac.uea.cmp.phygen.core.ds.split.Split;
 import uk.ac.uea.cmp.phygen.core.ds.split.SplitBlock;
 import uk.ac.uea.cmp.phygen.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.phygen.core.io.AbstractPhygenWriter;
-import uk.ac.uea.cmp.phygen.core.io.PhygenWriter;
-import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrixBuilder;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
 /**
  * Used to handle streaming data to Nexus format file from SplitSystem objects and other splits and length data. Can

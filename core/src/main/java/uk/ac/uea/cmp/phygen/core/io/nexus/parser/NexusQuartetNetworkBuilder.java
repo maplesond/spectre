@@ -19,16 +19,8 @@ package uk.ac.uea.cmp.phygen.core.io.nexus.parser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
-import uk.ac.uea.cmp.phygen.core.ds.Taxon;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetNetwork;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystem;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.WeightedQuartetMap;
-
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.StringTokenizer;
 
 /**
  * Created with IntelliJ IDEA.
@@ -55,7 +47,7 @@ public class NexusQuartetNetworkBuilder {
     }
 
 
-    public QuartetNetwork createQuartetNetwork() {
+    public QuartetSystem createQuartetNetwork() {
 
         final int nbTaxa = taxa != null ? taxa.size() : expectedNbTaxa;
 
@@ -63,7 +55,7 @@ public class NexusQuartetNetworkBuilder {
             log.warn("Expected number of taxa (" + expectedNbTaxa + ") is different from the number of found taxa (" + nbTaxa + ").");
         }
 
-        return new QuartetNetwork(this.taxa, this.weight, null); //this.weightedQuartets);
+        return new QuartetSystem(this.taxa, this.weight, null); //this.weightedQuartets);
     }
 
     public int getExpectedNbTaxa() {

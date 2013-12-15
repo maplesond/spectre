@@ -15,9 +15,10 @@
  */
 package uk.ac.uea.cmp.phygen.superq;
 
-import org.apache.commons.cli.*;
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.PropertyConfigurator;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.math.optimise.Objective;
@@ -27,8 +28,6 @@ import uk.ac.uea.cmp.phygen.core.ui.cli.CommandLineHelper;
 import uk.ac.uea.cmp.phygen.superq.problems.SecondaryProblemFactory;
 
 import java.io.File;
-import java.io.OutputStream;
-import java.io.PrintWriter;
 
 public class SuperQCLI {
 

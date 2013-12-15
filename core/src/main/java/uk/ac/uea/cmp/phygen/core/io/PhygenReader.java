@@ -17,7 +17,7 @@ package uk.ac.uea.cmp.phygen.core.io;
 
 import uk.ac.uea.cmp.phygen.core.ds.Alignment;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetNetwork;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystem;
 import uk.ac.uea.cmp.phygen.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.phygen.core.ds.tree.newick.NewickTree;
 
@@ -67,7 +67,7 @@ public interface PhygenReader {
      * @return A quartet network
      * @throws IOException
      */
-    QuartetNetwork readQuartets(File file) throws IOException;
+    QuartetSystem readQuartets(File file) throws IOException;
 
 
     Alignment readAlignment(File file) throws IOException;

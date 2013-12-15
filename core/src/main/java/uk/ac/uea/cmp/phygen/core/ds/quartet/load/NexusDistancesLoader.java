@@ -17,8 +17,8 @@ package uk.ac.uea.cmp.phygen.core.ds.quartet.load;
 
 import org.kohsuke.MetaInfServices;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetNetwork;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetNetworkList;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystem;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystemList;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.WeightedQuartetMap;
 import uk.ac.uea.cmp.phygen.core.io.nexus.NexusReader;
 
@@ -33,7 +33,7 @@ import java.io.IOException;
 public class NexusDistancesLoader extends AbstractQLoader {
 
     @Override
-    public QuartetNetwork load(File file) throws IOException {
+    public QuartetSystem load(File file) throws IOException {
 
         // Load distance matrix from file
         DistanceMatrix distanceMatrix = new NexusReader().readDistanceMatrix(file);
@@ -42,14 +42,14 @@ public class NexusDistancesLoader extends AbstractQLoader {
         WeightedQuartetMap qw = new WeightedQuartetMap(distanceMatrix);
 
         // Create and return the quartet network
-        return new QuartetNetwork(distanceMatrix.getTaxaSet(), 1.0, qw);
+        return new QuartetSystem(distanceMatrix.getTaxaSet(), 1.0, qw);
     }
 
     @Override
-    public QuartetNetworkList load(File file, double weight) throws IOException {
+    public QuartetSystemList load(File file, double weight) throws IOException {
 
         // Loads the file
-        QuartetNetworkList qnets = new QuartetNetworkList(this.load(file));
+        QuartetSystemList qnets = new QuartetSystemList(this.load(file));
 
         // Sets the weight
         qnets.get(0).setWeight(weight);

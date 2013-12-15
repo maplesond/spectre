@@ -16,7 +16,7 @@
 package uk.ac.uea.cmp.phygen.core.ds.quartet.load;
 
 import org.kohsuke.MetaInfServices;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.*;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystem;
 import uk.ac.uea.cmp.phygen.core.io.qweight.QWeightReader;
 
 import java.io.File;
@@ -30,7 +30,7 @@ import java.io.IOException;
 public class QWeightLoader extends AbstractQLoader {
 
     @Override
-    public QuartetNetwork load(File file) throws IOException {
+    public QuartetSystem load(File file) throws IOException {
 
         // Load the quartet network from the qweight file
         return new QWeightReader().parse(file);

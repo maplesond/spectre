@@ -29,23 +29,23 @@ import java.util.List;
  * Created with IntelliJ IDEA. User: Dan Date: 29/07/13 Time: 22:51 To change this template use File | Settings | File
  * Templates.
  */
-public class QuartetNetworkAgglomerator {
+public class QuartetSystemCombiner {
 
-    private QuartetNetworkList originalNetworks;
+    private QuartetSystemList originalSystems;
 
     private Taxa taxa;
     private WeightedQuartetMap quartetWeights;
     private WeightedQuartetMap summer;
 
-    public QuartetNetworkAgglomerator() {
+    public QuartetSystemCombiner() {
         this(new Taxa(), new WeightedQuartetMap(), new WeightedQuartetMap());
     }
 
-    public QuartetNetworkAgglomerator(Taxa taxa, WeightedQuartetMap quartetWeights, WeightedQuartetMap summer) {
+    public QuartetSystemCombiner(Taxa taxa, WeightedQuartetMap quartetWeights, WeightedQuartetMap summer) {
         this.taxa = taxa;
         this.quartetWeights = quartetWeights;
         this.summer = summer;
-        this.originalNetworks = new QuartetNetworkList();
+        this.originalSystems = new QuartetSystemList();
     }
 
     public Taxa getTaxa() {
@@ -109,10 +109,10 @@ public class QuartetNetworkAgglomerator {
         out.close();
     }
 
-    public QuartetNetworkAgglomerator agglomerate(QuartetNetwork qnet) {
+    public QuartetSystemCombiner combine(QuartetSystem qnet) {
 
         // Keep a copy of the original datasets
-        this.originalNetworks.add(qnet);
+        this.originalSystems.add(qnet);
 
         // Save current taxa
         Taxa oldTaxa = new Taxa(this.taxa);
@@ -138,15 +138,15 @@ public class QuartetNetworkAgglomerator {
         return this;
     }
 
-    public QuartetNetwork create() {
-        return new QuartetNetwork(this.taxa, 1.0, this.quartetWeights);
+    public QuartetSystem create() {
+        return new QuartetSystem(this.taxa, 1.0, this.quartetWeights);
     }
 
     public List<Taxa> getOriginalTaxaSets() {
 
         List<Taxa> originalTaxaSets = new ArrayList<>();
 
-        for(QuartetNetwork qnet : this.originalNetworks) {
+        for(QuartetSystem qnet : this.originalSystems) {
             originalTaxaSets.add(qnet.getTaxa());
         }
 

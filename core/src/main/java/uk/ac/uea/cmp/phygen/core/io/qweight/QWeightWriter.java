@@ -17,7 +17,7 @@
 package uk.ac.uea.cmp.phygen.core.io.qweight;
 
 import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetNetwork;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystem;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 import uk.ac.uea.cmp.phygen.core.io.AbstractPhygenWriter;
 
@@ -33,7 +33,7 @@ import java.util.Map;
 public class QWeightWriter extends AbstractPhygenWriter {
 
     @Override
-    public void writeQuartets(File outFile, QuartetNetwork quartetNetwork) throws IOException {
+    public void writeQuartets(File outFile, QuartetSystem quartetNetwork) throws IOException {
 
         FileWriter out = new FileWriter(outFile);
 

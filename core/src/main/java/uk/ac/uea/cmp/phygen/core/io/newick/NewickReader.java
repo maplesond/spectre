@@ -16,8 +16,6 @@
 
 package uk.ac.uea.cmp.phygen.core.io.newick;
 
-import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
-import uk.ac.uea.cmp.phygen.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.phygen.core.ds.tree.newick.NewickTree;
 import uk.ac.uea.cmp.phygen.core.io.AbstractPhygenReader;
 import uk.ac.uea.cmp.phygen.core.io.PhygenDataType;

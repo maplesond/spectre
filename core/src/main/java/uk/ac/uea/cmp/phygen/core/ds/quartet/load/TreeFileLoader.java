@@ -18,8 +18,8 @@ package uk.ac.uea.cmp.phygen.core.ds.quartet.load;
 import org.kohsuke.MetaInfServices;
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.Taxon;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetNetwork;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetNetworkList;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystem;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystemList;
 import uk.ac.uea.cmp.phygen.core.ds.tree.newick.NewickTree;
 
 import java.io.BufferedReader;
@@ -36,14 +36,14 @@ import java.util.StringTokenizer;
 public class TreeFileLoader extends AbstractQLoader {
 
     @Override
-    public QuartetNetwork load(File file) throws IOException {
+    public QuartetSystem load(File file) throws IOException {
         throw new UnsupportedOperationException("Not implemented yet.");
     }
 
     @Override
-    public QuartetNetworkList load(File file, double weight) throws IOException {
+    public QuartetSystemList load(File file, double weight) throws IOException {
 
-        QuartetNetworkList sourceDataList = new QuartetNetworkList();
+        QuartetSystemList sourceDataList = new QuartetSystemList();
 
         Taxa taxa = new Taxa();
 
@@ -135,7 +135,7 @@ public class TreeFileLoader extends AbstractQLoader {
                 NewickTree aTree = new NewickTree(line);
 
                 // Create quartets from the tree and add to the list (taxa should be the same for each tree)
-                sourceDataList.add(new QuartetNetwork(taxa, weight, aTree.createQuartets()));
+                sourceDataList.add(new QuartetSystem(taxa, weight, aTree.createQuartets()));
             }
 
             line = in.readLine();

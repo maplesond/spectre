@@ -20,10 +20,7 @@ import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.kohsuke.MetaInfServices;
-import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.*;
-import uk.ac.uea.cmp.phygen.core.ds.split.SplitSystem;
-import uk.ac.uea.cmp.phygen.core.ds.tree.newick.NewickTree;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystem;
 import uk.ac.uea.cmp.phygen.core.io.AbstractPhygenReader;
 import uk.ac.uea.cmp.phygen.core.io.PhygenDataType;
 import uk.ac.uea.cmp.phygen.core.io.qweight.parser.QWeightLexer;
@@ -32,8 +29,9 @@ import uk.ac.uea.cmp.phygen.core.io.qweight.parser.QWeightPopulator;
 import uk.ac.uea.cmp.phygen.core.util.DefaultParsingErrorListener;
 import uk.ac.uea.cmp.phygen.core.util.DefaultParsingErrorStrategy;
 
-import java.io.*;
-import java.util.List;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 
 /**
  * Created with IntelliJ IDEA.
@@ -45,7 +43,7 @@ import java.util.List;
 @MetaInfServices(uk.ac.uea.cmp.phygen.core.io.PhygenReader.class)
 public class QWeightReader extends AbstractPhygenReader {
 
-    public QuartetNetwork parse(File file) throws IOException {
+    public QuartetSystem parse(File file) throws IOException {
 
         // Convert loader into a character stream
         CharStream in = new ANTLRInputStream(new FileInputStream(file));
@@ -59,7 +57,7 @@ public class QWeightReader extends AbstractPhygenReader {
         CommonTokenStream tokens = new CommonTokenStream(lexer);
 
         // The results of parsing go in here
-        QuartetNetwork quartetNetwork = new QuartetNetwork();
+        QuartetSystem quartetNetwork = new QuartetSystem();
 
         // Setup parser
         QWeightParser parser = new QWeightParser(tokens);
@@ -83,7 +81,7 @@ public class QWeightReader extends AbstractPhygenReader {
 
 
     @Override
-    public QuartetNetwork readQuartets(File file) throws IOException {
+    public QuartetSystem readQuartets(File file) throws IOException {
         return this.parse(file);
     }
 

@@ -22,8 +22,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetNetwork;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetNetworkAgglomerator;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystem;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystemCombiner;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.WeightedQuartetMap;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.load.QLoader;
 import uk.ac.uea.cmp.phygen.core.ds.split.CircularOrdering;
@@ -56,14 +56,14 @@ public class QNet {
         String ext = FilenameUtils.getExtension(input.getName());
 
         // Load the quartet network
-        QuartetNetwork quartetNetwork = new SpiFactory<>(QLoader.class).create(ext).load(input, 1.0).get(0);
+        QuartetSystem quartetNetwork = new SpiFactory<>(QLoader.class).create(ext).load(input, 1.0).get(0);
 
         // Normalise the values in the network
         quartetNetwork.normaliseQuartets(logNormalise);
 
         // Create agglomerator (will only contain a single network!! TODO check this!)
-        QuartetNetworkAgglomerator qnetAgglomerator = new QuartetNetworkAgglomerator();
-        qnetAgglomerator.agglomerate(quartetNetwork);
+        QuartetSystemCombiner qnetAgglomerator = new QuartetSystemCombiner();
+        qnetAgglomerator.combine(quartetNetwork);
 
         // Order the taxa
         this.computeCircularOrdering(qnetAgglomerator);
@@ -73,7 +73,7 @@ public class QNet {
         return solution;
     }
 
-    public ComputedWeights computedWeights(QuartetNetwork quartetNetworks, double tolerance, Optimiser optimiser)
+    public ComputedWeights computedWeights(QuartetSystem quartetNetworks, double tolerance, Optimiser optimiser)
             throws OptimiserException, QNetException, IOException {
 
         return WeightsComputeNNLSInformative.computeWeights(quartetNetworks, tolerance, optimiser);
@@ -84,7 +84,7 @@ public class QNet {
      * @param quartetNetworkAgglomerator
      * @return A circular ordering
      */
-    public CircularOrdering computeCircularOrdering(QuartetNetworkAgglomerator quartetNetworkAgglomerator) {
+    public CircularOrdering computeCircularOrdering(QuartetSystemCombiner quartetNetworkAgglomerator) {
 
         Taxa allTaxa = quartetNetworkAgglomerator.getTaxa();
         int N = allTaxa.size();
@@ -752,7 +752,7 @@ public class QNet {
     //standard ... 0
     //minimum  ... 1
     //maximum  ... 2
-    public void writeWeights(File output, double[] y, double[] x, int mode, QuartetNetwork quartetNetwork, CircularOrdering c) throws IOException {
+    public void writeWeights(File output, double[] y, double[] x, int mode, QuartetSystem quartetNetwork, CircularOrdering c) throws IOException {
 
         //Taxa c = null; //quartetNetworkAgglomerator.getTaxa().get(0);
         int N = quartetNetwork.getTaxa().size();

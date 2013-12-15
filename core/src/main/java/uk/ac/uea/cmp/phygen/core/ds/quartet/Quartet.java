@@ -15,8 +15,6 @@
  */
 package uk.ac.uea.cmp.phygen.core.ds.quartet;
 
-import org.apache.commons.lang3.ArrayUtils;
-
 import java.text.NumberFormat;
 import java.util.Arrays;
 

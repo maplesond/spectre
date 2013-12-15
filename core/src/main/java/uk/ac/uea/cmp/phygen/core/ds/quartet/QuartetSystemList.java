@@ -40,12 +40,12 @@ import java.util.List;
  * Time: 22:42
  * To change this template use File | Settings | File Templates.
  */
-public class QuartetNetworkList extends ArrayList<QuartetNetwork> {
+public class QuartetSystemList extends ArrayList<QuartetSystem> {
 
     /**
      * Creates an empty quartet network list.
      */
-    public QuartetNetworkList() {
+    public QuartetSystemList() {
         super();
     }
 
@@ -53,7 +53,7 @@ public class QuartetNetworkList extends ArrayList<QuartetNetwork> {
      * Creates a list of quartet networks initalised with a single element
      * @param initialElement
      */
-    public QuartetNetworkList(QuartetNetwork initialElement) {
+    public QuartetSystemList(QuartetSystem initialElement) {
         super();
         this.add(initialElement);
     }
@@ -62,12 +62,12 @@ public class QuartetNetworkList extends ArrayList<QuartetNetwork> {
      * Creates a list of quartet networks, converted from a list of NewickTrees.
      * @param trees A list of newick trees
      */
-    public QuartetNetworkList(List<NewickTree> trees) {
+    public QuartetSystemList(List<NewickTree> trees) {
 
         super();
 
         for(NewickTree newickTree : trees) {
-            this.add(new QuartetNetwork(newickTree.getTaxa(), newickTree.getScalingFactor(), newickTree.createQuartets()));
+            this.add(new QuartetSystem(newickTree.getTaxa(), newickTree.getScalingFactor(), newickTree.createQuartets()));
         }
     }
 
@@ -77,11 +77,11 @@ public class QuartetNetworkList extends ArrayList<QuartetNetwork> {
      * @param source The type of file to load
      * @throws IOException Thrown if there were any issues loading the file.
      */
-    public QuartetNetworkList(File inputFile, String source) throws IOException {
+    public QuartetSystemList(File inputFile, String source) throws IOException {
 
         super();
 
-        for(QuartetNetwork qnet : new SpiFactory<>(QLoader.class).create(source).load(inputFile, 1.0)) {
+        for(QuartetSystem qnet : new SpiFactory<>(QLoader.class).create(source).load(inputFile, 1.0)) {
             this.add(qnet);
         }
     }
@@ -90,7 +90,7 @@ public class QuartetNetworkList extends ArrayList<QuartetNetwork> {
 
         Taxa result = new Taxa();
 
-        for(QuartetNetwork data : this) {
+        for(QuartetSystem data : this) {
             result.addAll(data.getTaxa());
         }
 
@@ -102,7 +102,7 @@ public class QuartetNetworkList extends ArrayList<QuartetNetwork> {
 
         List<Taxa> result = new ArrayList<>();
 
-        for(QuartetNetwork data : this) {
+        for(QuartetSystem data : this) {
             result.add(data.getTaxa());
         }
 
@@ -111,7 +111,7 @@ public class QuartetNetworkList extends ArrayList<QuartetNetwork> {
 
 
     public void translateTaxaIndicies(Taxa superTaxaSet) {
-        for(QuartetNetwork data : this) {
+        for(QuartetSystem data : this) {
             data.setTaxaIndicies(superTaxaSet);
         }
     }
@@ -120,7 +120,7 @@ public class QuartetNetworkList extends ArrayList<QuartetNetwork> {
 
         List<Double> weights = new ArrayList<>();
 
-        for(QuartetNetwork data : this) {
+        for(QuartetSystem data : this) {
             weights.add(data.getWeight());
         }
 
@@ -128,7 +128,7 @@ public class QuartetNetworkList extends ArrayList<QuartetNetwork> {
     }
 
 
-    public QuartetNetworkList scaleWeights(Optimiser optimiser) throws OptimiserException {
+    public QuartetSystemList scaleWeights(Optimiser optimiser) throws OptimiserException {
 
         // Computes the matrix of coefficients
         ScalingMatrix matrix = new ScalingMatrix(this);
@@ -157,7 +157,7 @@ public class QuartetNetworkList extends ArrayList<QuartetNetwork> {
         // Loop through each quartet network and update it
         for (int i = 0; i < w.length; i++) {
 
-            QuartetNetwork qnet = this.get(i);
+            QuartetSystem qnet = this.get(i);
 
             double weight = w[i];
 

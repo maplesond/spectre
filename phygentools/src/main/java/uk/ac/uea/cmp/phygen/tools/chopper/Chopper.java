@@ -15,14 +15,16 @@
  */
 package uk.ac.uea.cmp.phygen.tools.chopper;
 
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.Options;
 import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.MetaInfServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetNetwork;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetNetworkAgglomerator;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetNetworkList;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystem;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystemCombiner;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystemList;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.load.QLoader;
 import uk.ac.uea.cmp.phygen.core.io.qweight.QWeightWriter;
 import uk.ac.uea.cmp.phygen.core.math.optimise.Objective;
@@ -143,16 +145,16 @@ public class Chopper extends PhygenTool {
      * @throws IOException Thrown if there was an issue loading files.
      * @throws OptimiserException Thrown if there was a problem scaling the quartet networks.
      */
-    public QuartetNetwork execute(File inputFile, String source, Optimiser optimiser, File outputDir, String outputPrefix) throws IOException, OptimiserException {
+    public QuartetSystem execute(File inputFile, String source, Optimiser optimiser, File outputDir, String outputPrefix) throws IOException, OptimiserException {
 
         this.infoFile = new File(outputDir, outputPrefix + ".info");
         this.quartetFile = new File(outputDir, outputPrefix + ".qw");
 
-        QuartetNetworkAgglomerator quartetNetworkAgglomerator = this.execute(inputFile, source, optimiser);
+        QuartetSystemCombiner quartetNetworkAgglomerator = this.execute(inputFile, source, optimiser);
 
         quartetNetworkAgglomerator.saveInformation(this.infoFile);
 
-        QuartetNetwork quartetNetwork = quartetNetworkAgglomerator.create();
+        QuartetSystem quartetNetwork = quartetNetworkAgglomerator.create();
 
         // Write to disk
         new QWeightWriter().writeQuartets(this.quartetFile, quartetNetwork);
@@ -168,10 +170,10 @@ public class Chopper extends PhygenTool {
      * @return An agglomeration of quartet networks
      * @throws IOException Thrown if there was an issue loading files.
      */
-    public QuartetNetworkAgglomerator execute(File inputFile, String source)
+    public QuartetSystemCombiner execute(File inputFile, String source)
             throws IOException {
 
-        return this.execute(new QuartetNetworkList(inputFile, source));
+        return this.execute(new QuartetSystemList(inputFile, source));
     }
 
     /**
@@ -183,10 +185,10 @@ public class Chopper extends PhygenTool {
      * @throws IOException Thrown if there was an issue loading files.
      * @throws OptimiserException Thrown if there was a problem scaling the quartet networks.
      */
-    public QuartetNetworkAgglomerator execute(File inputFile, String source, Optimiser optimiser)
+    public QuartetSystemCombiner execute(File inputFile, String source, Optimiser optimiser)
             throws IOException, OptimiserException {
 
-        return this.execute(new QuartetNetworkList(inputFile, source), optimiser);
+        return this.execute(new QuartetSystemList(inputFile, source), optimiser);
     }
 
 
@@ -197,7 +199,7 @@ public class Chopper extends PhygenTool {
      * @return An agglomeration of quartet networks
      * @throws OptimiserException Thrown if there was an issue scaling the quartet networks
      */
-    public QuartetNetworkAgglomerator execute(QuartetNetworkList qnets, Optimiser optimiser)
+    public QuartetSystemCombiner execute(QuartetSystemList qnets, Optimiser optimiser)
             throws OptimiserException {
 
         // Scale the qnets only if an optimiser is provided
@@ -213,12 +215,12 @@ public class Chopper extends PhygenTool {
      * @param qnets A list of quartet networks
      * @return An agglomeration of quartet networks
      */
-    public QuartetNetworkAgglomerator execute(QuartetNetworkList qnets) {
+    public QuartetSystemCombiner execute(QuartetSystemList qnets) {
 
         // Agglomerates networks
-        QuartetNetworkAgglomerator quagg = new QuartetNetworkAgglomerator();
-        for(QuartetNetwork qnet : qnets) {
-            quagg.agglomerate(qnet);
+        QuartetSystemCombiner quagg = new QuartetSystemCombiner();
+        for(QuartetSystem qnet : qnets) {
+            quagg.combine(qnet);
         }
 
         // Divides the quartet weights in the agglomerated network by ???

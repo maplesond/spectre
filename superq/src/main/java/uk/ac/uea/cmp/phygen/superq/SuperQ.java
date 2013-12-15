@@ -21,7 +21,7 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.PropertyConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetNetworkAgglomerator;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystemCombiner;
 import uk.ac.uea.cmp.phygen.core.ds.split.CircularOrdering;
 import uk.ac.uea.cmp.phygen.core.io.nexus.Nexus;
 import uk.ac.uea.cmp.phygen.core.io.nexus.NexusReader;
@@ -34,7 +34,6 @@ import uk.ac.uea.cmp.phygen.core.ui.gui.StatusTracker;
 import uk.ac.uea.cmp.phygen.qnet.ComputedWeights;
 import uk.ac.uea.cmp.phygen.qnet.QNet;
 import uk.ac.uea.cmp.phygen.tools.chopper.Chopper;
-import uk.ac.uea.cmp.phygen.tools.scale.Scaling;
 
 import java.io.File;
 import java.io.IOException;
@@ -103,7 +102,7 @@ public class SuperQ extends RunnableTool {
 
             notifyUser("CHOPPER - Breaking input trees into quartets.  " +
                     (this.options.isScaleInputTree() ? "(Scaling input)" : ""));
-            QuartetNetworkAgglomerator quartetNetworkAgglomerator =  new Chopper().execute(new File(file), type.toUpperCase(),
+            QuartetSystemCombiner quartetNetworkAgglomerator =  new Chopper().execute(new File(file), type.toUpperCase(),
                             this.options.isScaleInputTree() ? this.options.getPrimarySolver() : null);
 
             rt.gc();

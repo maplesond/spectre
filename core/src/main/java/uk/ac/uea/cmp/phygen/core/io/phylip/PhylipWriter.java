@@ -18,9 +18,7 @@ package uk.ac.uea.cmp.phygen.core.io.phylip;
 
 import org.apache.commons.io.FileUtils;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
-import uk.ac.uea.cmp.phygen.core.ds.split.SimpleSplitSystem;
 import uk.ac.uea.cmp.phygen.core.io.AbstractPhygenWriter;
-import uk.ac.uea.cmp.phygen.core.io.PhygenWriter;
 
 import java.io.File;
 import java.io.IOException;
