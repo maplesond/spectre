@@ -78,27 +78,17 @@
         </dependency>
 
         <dependency>
-            <groupId>joptimizer</groupId>
-            <artifactId>joptimizer</artifactId>
-            <version>3.2.0</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.commons</groupId>
-                    <artifactId>commons-lang3</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.commons</groupId>
-                    <artifactId>commons-math3</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>log4j</groupId>
-                    <artifactId>log4j</artifactId>
-                </exclusion>
-            </exclusions>
+            <groupId>colt</groupId>
+            <artifactId>colt</artifactId>
+            <version>1.2.0</version>
         </dependency>
 
 
-
+        <dependency>
+            <groupId>joptimizer</groupId>
+            <artifactId>joptimizer</artifactId>
+            <version>3.2.0</version>
+        </dependency>
 
         <!-- METAINF services -->
 

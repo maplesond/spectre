@@ -83,14 +83,14 @@ public class SuperQGUI extends JFrame implements ToolHost {
         setResizable(false);
 
         cmdInput.setText("...");
-        cmdInput.setToolTipText("Choose the Inputfile from Directory");
+        cmdInput.setToolTipText("Choose the Input");
         cmdInput.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cmdInputActionPerformed(evt);
             }
         });
 
-        txtInput.setToolTipText("Write the Directory of the Inputfile");
+        txtInput.setToolTipText("Choose the Input");
 
         cmdRun.setText("Run SUPERQ");
         cmdRun.setToolTipText("Run the SUPERQ Algorithm");
@@ -101,14 +101,14 @@ public class SuperQGUI extends JFrame implements ToolHost {
         });
 
         chkFilter.setText("Filter:");
-        chkFilter.setToolTipText("filter is set 0.00001");
+        chkFilter.setToolTipText("filter");
         chkFilter.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 chkFilterActionPerformed(evt);
             }
         });
 
-        txtSave.setToolTipText("Write the Directory of the Inputfile");
+        txtSave.setToolTipText("Choose the output file");
         txtSave.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtSaveActionPerformed(evt);
@@ -118,7 +118,7 @@ public class SuperQGUI extends JFrame implements ToolHost {
         lblSave.setText("Save to file:");
 
         cmdSave.setText("jButton1");
-        cmdSave.setToolTipText("Choose the Outputfile from Directory");
+        cmdSave.setToolTipText("Choose the output file");
         cmdSave.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cmdSaveActionPerformed(evt);
@@ -129,7 +129,7 @@ public class SuperQGUI extends JFrame implements ToolHost {
 
         cboInputFormat.setModel(new javax.swing.DefaultComboBoxModel(new String[]{"choose format of input file", "script", "newick"}));
 
-        chkScaleInput.setText("uk.ac.uea.cmp.phygen.tools.scale input");
+        chkScaleInput.setText("Scale input");
         chkScaleInput.setToolTipText("Scale input trees");
         chkScaleInput.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -344,7 +344,7 @@ public class SuperQGUI extends JFrame implements ToolHost {
         try {
             options = new SuperQOptions();
         } catch (OptimiserException oe) {
-            showErrorDialog("Error occured configuring optimiser.   Check you have selected an operational optimiser and set an appropriate objective.");
+            showErrorDialog("Error occurred configuring the optimiser.  Check you have selected an operational optimiser and set an appropriate objective.");
             return null;
         }
 
@@ -363,7 +363,7 @@ public class SuperQGUI extends JFrame implements ToolHost {
             try {
                 filter = Double.valueOf(txtFilter.getText());
             } catch (NumberFormatException e) {
-                showErrorDialog("Filter threshold must be a nonnegative real number");
+                showErrorDialog("Filter threshold must be a non-negative real number");
                 return null;
             }
             options.setFilter(filter);

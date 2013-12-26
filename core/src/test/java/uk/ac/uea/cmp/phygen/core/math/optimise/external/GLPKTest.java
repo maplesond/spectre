@@ -32,6 +32,7 @@ public class GLPKTest {
 
     @Before
     public void setUpStreams() {
+
         System.setOut(new PrintStream(outContent));
         System.setErr(new PrintStream(errContent));
     }
@@ -59,7 +60,7 @@ public class GLPKTest {
         }
 
         if (!success) {
-            System.err.println("GLPK not configured for you system... skipping GLPK tests");
+            //System.err.println("GLPK not configured for you system... skipping GLPK tests");
         }
 
         assumeTrue(success);

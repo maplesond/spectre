@@ -18,6 +18,7 @@ package uk.ac.uea.cmp.phygen.core.math.optimise.external;
 import de.xypron.linopt.Solver;
 import de.xypron.linopt.SolverGlpk;
 import org.apache.commons.math3.util.Pair;
+import org.gnu.glpk.GLPKConstants;
 import uk.ac.uea.cmp.phygen.core.math.optimise.*;
 
 import java.util.ArrayList;
@@ -197,6 +198,7 @@ public class GLPK extends AbstractOptimiser {
 
         try {
             String version = org.gnu.glpk.GLPK.glp_version();
+            int glpOn = GLPKConstants.GLP_ON;
             int i = 0;
         } catch (Throwable err) {
             // This means that GLPK isn't on the PATH env var.
