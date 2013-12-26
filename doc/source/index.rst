@@ -3,45 +3,32 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to phygen's documentation!
-==================================
 
-Quick introduction and description here
-
-
-Contents:
+Table of Contents
+=================
 
 .. toctree::
-   :maxdepth: 2
 
-
-Installation
-============
-
-Tools
-=====
-
-SuperQ
-------
-
-FlatNJ
-------
-
-NetME
------
-
-NetMake
--------
-
-QNet
-----
+   introduction
+   dependencies
+   installation
+   developing
+   tools
+   citing
+   license
+   contact
+   acknowledgements
 
 
 
-Indices and tables
-==================
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+
+Availability:
+=============
+
+Open source code available on github: https://github.com/maplesond/phygen.git
+
+License: GPL v3
+
+
 
