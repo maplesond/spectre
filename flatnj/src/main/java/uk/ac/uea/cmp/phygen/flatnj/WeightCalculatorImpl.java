@@ -16,7 +16,7 @@
 
 package uk.ac.uea.cmp.phygen.flatnj;
 
-import uk.ac.uea.cmp.phygen.core.math.optimise.*;
+import uk.ac.tgac.metaopt.*;
 import uk.ac.uea.cmp.phygen.flatnj.ds.PermutationSequence;
 import uk.ac.uea.cmp.phygen.flatnj.ds.QuadrupleSystem;
 

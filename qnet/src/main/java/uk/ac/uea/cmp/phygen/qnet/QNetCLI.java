@@ -23,9 +23,9 @@ import org.apache.commons.cli.Options;
 import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.uea.cmp.phygen.core.math.optimise.Objective;
-import uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser;
-import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserFactory;
+import uk.ac.tgac.metaopt.Objective;
+import uk.ac.tgac.metaopt.Optimiser;
+import uk.ac.tgac.metaopt.OptimiserFactory;
 import uk.ac.uea.cmp.phygen.core.ui.cli.CommandLineHelper;
 
 import java.io.File;

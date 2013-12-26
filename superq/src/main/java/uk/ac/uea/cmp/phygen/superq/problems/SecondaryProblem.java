@@ -15,8 +15,8 @@
  */
 package uk.ac.uea.cmp.phygen.superq.problems;
 
-import uk.ac.uea.cmp.phygen.core.math.optimise.Objective;
-import uk.ac.uea.cmp.phygen.core.math.optimise.Problem;
+import uk.ac.tgac.metaopt.Objective;
+import uk.ac.tgac.metaopt.Problem;
 
 /**
  * Created with IntelliJ IDEA.

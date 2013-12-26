@@ -226,9 +226,6 @@
         <module>superq</module>
         <module>flatnj</module>
 
-        <!-- Uncomment this if you have gurobi installed, and have the gurobi jar installed in the local maven repo.-->
-        <!--<module>gurobi</module>-->
-
         <!-- This gets executed last because it creates the distribution and the manual -->
         <module>dist</module>
 

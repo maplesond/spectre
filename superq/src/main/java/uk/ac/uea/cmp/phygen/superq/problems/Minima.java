@@ -16,7 +16,7 @@
 package uk.ac.uea.cmp.phygen.superq.problems;
 
 import org.kohsuke.MetaInfServices;
-import uk.ac.uea.cmp.phygen.core.math.optimise.*;
+import uk.ac.tgac.metaopt.*;
 
 import java.util.ArrayList;
 import java.util.List;

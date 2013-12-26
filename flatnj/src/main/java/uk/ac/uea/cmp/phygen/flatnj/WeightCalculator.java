@@ -16,7 +16,7 @@
 
 package uk.ac.uea.cmp.phygen.flatnj;
 
-import uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser;
+import uk.ac.tgac.metaopt.Optimiser;
 
 /**
  * Computes split weights in the resulting {@linkplain  uk.ac.uea.cmp.phygen.flatnj.ds.PermutationSequence} or

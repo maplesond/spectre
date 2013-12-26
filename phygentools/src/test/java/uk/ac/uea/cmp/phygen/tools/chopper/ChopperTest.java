@@ -16,19 +16,13 @@
 
 package uk.ac.uea.cmp.phygen.tools.chopper;
 
-import org.apache.commons.io.FileUtils;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystem;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystemCombiner;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystemList;
 import uk.ac.uea.cmp.phygen.core.ds.tree.newick.NewickTree;
-import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 import static junit.framework.TestCase.assertTrue;
 

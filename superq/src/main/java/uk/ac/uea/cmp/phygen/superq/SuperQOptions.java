@@ -17,9 +17,9 @@ package uk.ac.uea.cmp.phygen.superq;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.uea.cmp.phygen.core.math.optimise.Optimiser;
-import uk.ac.uea.cmp.phygen.core.math.optimise.OptimiserException;
-import uk.ac.uea.cmp.phygen.core.math.optimise.external.JOptimizer;
+import uk.ac.tgac.metaopt.Optimiser;
+import uk.ac.tgac.metaopt.OptimiserException;
+import uk.ac.tgac.metaopt.external.JOptimizer;
 import uk.ac.uea.cmp.phygen.superq.problems.SecondaryProblem;
 
 import java.io.File;

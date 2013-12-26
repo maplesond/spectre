@@ -1,6 +1,6 @@
 package uk.ac.uea.cmp.phygen.core.ds.quartet.scale;
 
-import uk.ac.uea.cmp.phygen.core.math.optimise.*;
+import uk.ac.tgac.metaopt.*;
 
 import java.util.ArrayList;
 import java.util.List;
