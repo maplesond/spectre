@@ -17,6 +17,7 @@ package uk.ac.uea.cmp.phygen.superq;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.ac.tgac.metaopt.Objective;
 import uk.ac.tgac.metaopt.OptimiserException;
 import uk.ac.tgac.metaopt.OptimiserFactory;
 import uk.ac.uea.cmp.phygen.core.ui.gui.JobController;
@@ -105,31 +106,23 @@ public class SuperQGUI extends JFrame implements ToolHost {
         chkScaleInput = new JCheckBox();
 
         cmdInput.setText("...");
-        cmdInput.setToolTipText("Select the input file to process");
+        cmdInput.setToolTipText(SuperQOptions.DESC_INPUT);
         cmdInput.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cmdInputActionPerformed(evt);
             }
         });
 
-        txtInput.setToolTipText("Path to the input file containing trees to process");
+        txtInput.setToolTipText(SuperQOptions.DESC_INPUT);
 
         lblInput.setText("Input file:");
+        lblInput.setToolTipText(SuperQOptions.DESC_INPUT);
 
         cboInputFormat.setModel(new DefaultComboBoxModel(new String[]{"Choose input file format:", "script", "newick"}));
+        cboInputFormat.setToolTipText(SuperQOptions.DESC_INPUT_FORMAT);
 
         chkScaleInput.setText("Scale tree weights");
-        chkScaleInput.setToolTipText("Scale weights from input trees");
-        chkScaleInput.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                chkScaleInputMouseClicked(evt);
-            }
-        });
-        chkScaleInput.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                chkScaleInputActionPerformed(evt);
-            }
-        });
+        chkScaleInput.setToolTipText(SuperQOptions.DESC_SCALE);
 
         pnlSelectInput = new JPanel();
         pnlSelectInput.setLayout(new BoxLayout(pnlSelectInput, BoxLayout.LINE_AXIS));
@@ -179,29 +172,21 @@ public class SuperQGUI extends JFrame implements ToolHost {
 
 
         cboSelectPrimarySolver.setModel(new DefaultComboBoxModel(
-                OptimiserFactory.getInstance().listOperationalOptimisers().toArray()));
-        cboSelectPrimarySolver.setToolTipText("Select primary optimiser");
-        cboSelectPrimarySolver.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cboSelectSolverActionPerformed(evt);
-            }
-        });
+                OptimiserFactory.getInstance().listOperationalOptimisers(Objective.ObjectiveType.QUADRATIC).toArray()));
+        cboSelectPrimarySolver.setToolTipText(SuperQOptions.DESC_PRIMARY_SOLVER);
 
         lblSelectPrimarySolver.setText("Select primary optimiser:");
+        lblSelectPrimarySolver.setToolTipText(SuperQOptions.DESC_PRIMARY_SOLVER);
 
         cboSelectSecondarySolver.setModel(new DefaultComboBoxModel(
                 OptimiserFactory.getInstance().listOperationalOptimisers().toArray()));
-        cboSelectSecondarySolver.setToolTipText("Select secondary optimiser");
-        cboSelectSecondarySolver.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cboSelectSolverActionPerformed(evt);
-            }
-        });
+        cboSelectSecondarySolver.setToolTipText(SuperQOptions.DESC_SECONDARY_SOLVER);
 
         lblSelectSecondarySolver.setText("Select secondary optimiser:");
+        lblSelectSecondarySolver.setToolTipText(SuperQOptions.DESC_SECONDARY_SOLVER);
 
         cboSelectSecondaryObjective.setModel(new DefaultComboBoxModel(SecondaryProblemFactory.getInstance().listObjectivesByIdentifier().toArray()));
-        cboSelectSecondaryObjective.setToolTipText("Select secondary objective");
+        cboSelectSecondaryObjective.setToolTipText(SuperQOptions.DESC_SECONDARY_OBJECTIVE);
         cboSelectSecondaryObjective.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cboSelectObjectiveActionPerformed(evt);
@@ -209,6 +194,7 @@ public class SuperQGUI extends JFrame implements ToolHost {
         });
 
         lblSelectSecondaryObjective.setText("Select secondary objective:");
+        lblSelectSecondaryObjective.setToolTipText(SuperQOptions.DESC_SECONDARY_OBJECTIVE);
 
         pnlOptimisers = new JPanel();
 
@@ -268,17 +254,13 @@ public class SuperQGUI extends JFrame implements ToolHost {
         chkFilter = new JCheckBox();
 
 
-        txtSave.setToolTipText("Choose the output file");
-        txtSave.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtSaveActionPerformed(evt);
-            }
-        });
+        txtSave.setToolTipText(SuperQOptions.DESC_OUTPUT);
 
         lblSave.setText("Save to file:");
+        lblSave.setToolTipText(SuperQOptions.DESC_OUTPUT);
 
         cmdSave.setText("...");
-        cmdSave.setToolTipText("Choose the output file");
+        cmdSave.setToolTipText(SuperQOptions.DESC_OUTPUT);
         cmdSave.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cmdSaveActionPerformed(evt);
@@ -286,13 +268,14 @@ public class SuperQGUI extends JFrame implements ToolHost {
         });
 
         chkFilter.setText("Filter:");
-        chkFilter.setToolTipText("filter");
+        chkFilter.setToolTipText(SuperQOptions.DESC_FILTER);
         chkFilter.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 chkFilterActionPerformed(evt);
             }
         });
 
+        txtFilter.setToolTipText(SuperQOptions.DESC_FILTER);
 
         pnlSelectOutput = new JPanel();
         pnlSelectOutput.setLayout(new BoxLayout(pnlSelectOutput, BoxLayout.LINE_AXIS));
@@ -360,9 +343,7 @@ public class SuperQGUI extends JFrame implements ToolHost {
         pnlControl = new JPanel();
         pnlControl.setLayout(new BoxLayout(pnlControl, BoxLayout.PAGE_AXIS));
         pnlControl.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
-        pnlControl.add(Box.createVerticalGlue());
         pnlControl.add(lblStatus, BorderLayout.LINE_START);
-        pnlControl.add(Box.createVerticalGlue());
         pnlControl.add(Box.createRigidArea(new Dimension(0, 5)));
         pnlControl.add(progStatus);
         pnlControl.add(Box.createRigidArea(new Dimension(0, 10)));
@@ -400,11 +381,6 @@ public class SuperQGUI extends JFrame implements ToolHost {
     }
 
 
-
-    private void txtSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtSaveActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtSaveActionPerformed
-
     private void cmdSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdSaveActionPerformed
         //Choose file for output
         final JFileChooser fc = new JFileChooser();
@@ -421,13 +397,6 @@ public class SuperQGUI extends JFrame implements ToolHost {
             }
         }
     }//GEN-LAST:event_cmdSaveActionPerformed
-
-    private void chkScaleInputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkScaleInputActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_chkScaleInputActionPerformed
-
-    private void chkScaleInputMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_chkScaleInputMouseClicked
-    }//GEN-LAST:event_chkScaleInputMouseClicked
 
     private void chkFilterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkFilterActionPerformed
         if (chkFilter.isSelected()) {
@@ -473,10 +442,6 @@ public class SuperQGUI extends JFrame implements ToolHost {
         }
     }//GEN-LAST:event_cboSelectObjectiveActionPerformed
 
-    private void cboSelectSolverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboSelectSolverActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_cboSelectSolverActionPerformed
-
     private SuperQOptions buildSuperQOptions() {
 
         SuperQOptions options;
@@ -512,6 +477,10 @@ public class SuperQGUI extends JFrame implements ToolHost {
         options.setSecondaryProblem((SecondaryProblem) this.cboSelectSecondaryObjective.getSelectedItem());
 
         try {
+            options.setPrimarySolver(
+                    OptimiserFactory.getInstance().createOptimiserInstance(
+                            (String) this.cboSelectPrimarySolver.getSelectedItem(), Objective.ObjectiveType.QUADRATIC));
+
             options.setSecondarySolver(
                     OptimiserFactory.getInstance().createOptimiserInstance(
                             (String) this.cboSelectSecondarySolver.getSelectedItem(), options.getSecondaryProblem().getObjectiveType()));
