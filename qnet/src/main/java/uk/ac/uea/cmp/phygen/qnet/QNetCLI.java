@@ -79,7 +79,7 @@ public class QNetCLI {
 
         try {
             // Configure logging
-            BasicConfigurator.configure();
+            QNet.configureLogging();
 
             // Required arguments
             File input = new File(commandLine.getOptionValue(OPT_INPUT));

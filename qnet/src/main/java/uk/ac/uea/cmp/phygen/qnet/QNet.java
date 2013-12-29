@@ -16,6 +16,9 @@
 package uk.ac.uea.cmp.phygen.qnet;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.time.StopWatch;
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.PropertyConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.tgac.metaopt.Optimiser;
@@ -28,7 +31,6 @@ import uk.ac.uea.cmp.phygen.core.ds.quartet.load.QLoader;
 import uk.ac.uea.cmp.phygen.core.ds.split.CircularOrdering;
 import uk.ac.uea.cmp.phygen.core.ui.gui.RunnableTool;
 import uk.ac.uea.cmp.phygen.core.ui.gui.StatusTracker;
-import uk.ac.uea.cmp.phygen.core.ui.gui.ToolRunner;
 import uk.ac.uea.cmp.phygen.core.util.SpiFactory;
 import uk.ac.uea.cmp.phygen.qnet.holders.*;
 
@@ -86,8 +88,12 @@ public class QNet extends RunnableTool {
 
         String ext = FilenameUtils.getExtension(input.getName());
 
+        notifyUser("Loading quartet system from: " + input.getName());
+
         // Load the quartet network
         QuartetSystem quartetNetwork = new SpiFactory<>(QLoader.class).create(ext).load(input, 1.0).get(0);
+
+        notifyUser("Normalising quartets " + (logNormalise ? " (using log)" : "") + ".");
 
         // Normalise the values in the network
         quartetNetwork.normaliseQuartets(logNormalise);
@@ -111,11 +117,15 @@ public class QNet extends RunnableTool {
     public QNetResult execute(QuartetSystemCombiner combinedQuartetSystem, double tolerance, Optimiser optimiser)
             throws OptimiserException, QNetException {
 
+        notifyUser("Computing circular ordering.");
+
         // Order the taxa
         CircularOrdering circularOrdering = this.computeCircularOrdering(combinedQuartetSystem);
 
         // Create the actual quartet system from the combiner
         QuartetSystem quartetSystem = combinedQuartetSystem.create();
+
+        notifyUser("Computing weights");
 
         // Compute the weights
         ComputedWeights solution = this.computedWeights(quartetSystem, tolerance, optimiser);
@@ -453,7 +463,7 @@ public class QNet extends RunnableTool {
 
                             } else {
 
-                                log.error("QNet: No y - weird; please report this!");
+                                throw new QNetException("QNet: No y - weird; please report this!");
                             }
 
                             double m1 = tH.getT(k, a, l) + tH.getT(k, b, l);
@@ -589,6 +599,57 @@ public class QNet extends RunnableTool {
         int j = X.get(1);
         int k = X.get(2);
 
+        // Determine which join to perform
+        int y = this.selectTerminationJoin(i, j, k, c, tH, u0H, u1H);
+
+
+        switch(y) {
+            case 1:
+                join(taxaSets, i, FORWARD, j, FORWARD, k, FORWARD);
+                break;
+            case 2:
+                join(taxaSets, i, FORWARD, j, FORWARD, k, BACKWARD);
+                break;
+            case 3:
+                join(taxaSets, i, FORWARD, j, BACKWARD, k, FORWARD);
+                break;
+            case 4:
+                join(taxaSets, i, FORWARD, j, BACKWARD, k, BACKWARD);
+                break;
+            case 5:
+                join(taxaSets, i, BACKWARD, j, FORWARD, k, FORWARD);
+                break;
+            case 6:
+                join(taxaSets, i, BACKWARD, j, FORWARD, k, BACKWARD);
+                break;
+            case 7:
+                join(taxaSets, i, BACKWARD, j, BACKWARD, k, FORWARD);
+                break;
+            case 8:
+                join(taxaSets, i, BACKWARD, j, BACKWARD, k, BACKWARD);
+                break;
+        }
+        // end algorithm as described by Stefan
+
+        /**
+         *
+         * Now, the lists should contain the desired circular ordering
+         *
+         */
+        log.debug("QNet done.");
+
+        Taxa rTL = taxaSets.get(0);
+
+        int[] ordering = new int[N];
+
+        for (int n = 0; n < N; n++) {
+            ordering[n] = rTL.get(n).getId() - 1;
+        }
+
+        return new CircularOrdering(ordering);
+    }
+
+    protected int selectTerminationJoin(int i, int k, int j, double c, THolder tH, U0Holder u0H, U1Holder u1H) {
         int y = -1;
         double yMax = Double.NEGATIVE_INFINITY;
 
@@ -644,105 +705,51 @@ public class QNet extends RunnableTool {
 
             y = 1;
             yMax = y1;
-
         }
 
         if (y2 > yMax) {
 
             y = 2;
             yMax = y2;
-
         }
 
         if (y3 > yMax) {
 
             y = 3;
             yMax = y3;
-
         }
 
         if (y4 > yMax) {
 
             y = 4;
             yMax = y4;
-
         }
 
         if (y5 > yMax) {
 
             y = 5;
             yMax = y5;
-
         }
 
         if (y6 > yMax) {
 
             y = 6;
             yMax = y6;
-
         }
 
         if (y7 > yMax) {
 
             y = 7;
             yMax = y7;
-
         }
 
         if (y8 > yMax) {
 
             y = 8;
             yMax = y8;
-
         }
 
-
-        // we now know which joining to perform
-
-        switch(y) {
-            case 1:
-                join(taxaSets, i, FORWARD, j, FORWARD, k, FORWARD);
-                break;
-            case 2:
-                join(taxaSets, i, FORWARD, j, FORWARD, k, BACKWARD);
-                break;
-            case 3:
-                join(taxaSets, i, FORWARD, j, BACKWARD, k, FORWARD);
-                break;
-            case 4:
-                join(taxaSets, i, FORWARD, j, BACKWARD, k, BACKWARD);
-                break;
-            case 5:
-                join(taxaSets, i, BACKWARD, j, FORWARD, k, FORWARD);
-                break;
-            case 6:
-                join(taxaSets, i, BACKWARD, j, FORWARD, k, BACKWARD);
-                break;
-            case 7:
-                join(taxaSets, i, BACKWARD, j, BACKWARD, k, FORWARD);
-                break;
-            case 8:
-                join(taxaSets, i, BACKWARD, j, BACKWARD, k, BACKWARD);
-                break;
-        }
-        // end algorithm as described by Stefan
-
-        /**
-         *
-         * Now, the lists should contain the desired circular ordering
-         *
-         */
-        log.debug("QNet done.");
-
-        Taxa rTL = taxaSets.get(0);
-
-        int[] ordering = new int[N];
-
-        for (int n = 0; n < N; n++) {
-            ordering[n] = rTL.get(n).getId() - 1;
-        }
-
-        return new CircularOrdering(ordering);
+        return y;
     }
 
     protected List<Taxa> join(List<Taxa> taxaSets, int taxon1, Taxa.Direction reversed1,
@@ -807,8 +814,77 @@ public class QNet extends RunnableTool {
     }
 
 
+    private void notifyUser(String message) {
+        log.info(message);
+        this.trackerInitUnknownRuntime(message);
+    }
+
+    public static void configureLogging() {
+        // Setup logging
+        File propsFile = new File("logging.properties");
+
+        if (!propsFile.exists()) {
+            BasicConfigurator.configure();
+            log.info("No logging configuration found.  Using default logging properties.");
+        } else {
+            PropertyConfigurator.configure(propsFile.getPath());
+            log.info("Found logging configuration: " + propsFile.getAbsoluteFile());
+        }
+    }
+
+
+    protected void validateOptions() throws IOException {
+        if (this.options == null) {
+            throw new IOException("Must specify a valid set of parameters to control superQ.");
+        }
+
+        if (this.options.getInput() == null || !this.options.getInput().exists() || this.options.getInput().isDirectory()) {
+            throw new IOException("Must specify a valid input file.");
+        }
+
+        if (this.options.getOutput() == null || this.options.getOutput().isDirectory()) {
+            throw new IOException("Must specify a valid path where to create the output file.");
+        }
+    }
+
     @Override
     public void run() {
 
+        try{
+
+            // Check we have something sensible to work with
+            validateOptions();
+
+            // Get a shortcut to runtime object for checking memory usage
+            Runtime rt = Runtime.getRuntime();
+
+            // Start timing
+            StopWatch stopWatch = new StopWatch();
+            stopWatch.start();
+
+            log.info("Starting job: " + this.options.getInput().getPath());
+
+            // Execute QNet
+            QNetResult result = this.execute(this.options.getInput(), this.options.isLogNormalise(), this.options.getTolerance(), this.options.getOptimiser());
+
+            notifyUser("QNet algorithm completed.  Saving results...");
+
+            // Output results in nexus file in standard mode
+            result.writeWeights(this.options.getOutput(), null, 0);
+
+            this.trackerFinished(true);
+
+            // Print run time on screen
+            stopWatch.stop();
+            log.info("Completed Successfully - Total run time: " + stopWatch.toString());
+
+
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            this.setErrorMessage(e.getMessage());
+            this.trackerFinished(false);
+        } finally {
+            this.notifyListener();
+        }
     }
 }

@@ -456,7 +456,7 @@ public class QNetGUI extends JFrame implements ToolHost {
     public static void main(String args[]) {
 
         // Configure logging
-        BasicConfigurator.configure();
+        QNet.configureLogging();
 
         try {
             log.info("Running in GUI mode");
