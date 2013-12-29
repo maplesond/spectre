@@ -26,6 +26,9 @@ import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystemCombiner;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.WeightedQuartetMap;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.load.QLoader;
 import uk.ac.uea.cmp.phygen.core.ds.split.CircularOrdering;
+import uk.ac.uea.cmp.phygen.core.ui.gui.RunnableTool;
+import uk.ac.uea.cmp.phygen.core.ui.gui.StatusTracker;
+import uk.ac.uea.cmp.phygen.core.ui.gui.ToolRunner;
 import uk.ac.uea.cmp.phygen.core.util.SpiFactory;
 import uk.ac.uea.cmp.phygen.qnet.holders.*;
 
@@ -41,10 +44,27 @@ import java.util.ListIterator;
  * Presently runnable holder for Stefan Gr�newalds circular ordering-generating
  * algorithm
  */
-public class QNet {
+public class QNet extends RunnableTool {
 
     private static Logger log = LoggerFactory.getLogger(QNet.class);
 
+    private QNetOptions options;
+
+    /**
+     * Default constructor for CLI use
+     */
+    public QNet() {
+    }
+
+    /**
+     * Constructor for use from the GUI
+     * @param options
+     * @param statusTracker
+     */
+    public QNet(QNetOptions options, StatusTracker statusTracker) {
+        super(statusTracker);
+        this.options = options;
+    }
 
     /**
      * Runs QNet from input file, which might contain trees, distance matrices or quartet systems, converts the input
@@ -787,5 +807,8 @@ public class QNet {
     }
 
 
+    @Override
+    public void run() {
 
+    }
 }

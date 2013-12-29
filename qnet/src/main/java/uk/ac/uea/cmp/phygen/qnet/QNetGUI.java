@@ -13,8 +13,9 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package uk.ac.uea.cmp.phygen.superq;
+package uk.ac.uea.cmp.phygen.qnet;
 
+import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.tgac.metaopt.Objective;
@@ -23,16 +24,16 @@ import uk.ac.tgac.metaopt.OptimiserFactory;
 import uk.ac.uea.cmp.phygen.core.ui.gui.JobController;
 import uk.ac.uea.cmp.phygen.core.ui.gui.StatusTracker;
 import uk.ac.uea.cmp.phygen.core.ui.gui.ToolHost;
-import uk.ac.uea.cmp.phygen.superq.problems.SecondaryProblem;
-import uk.ac.uea.cmp.phygen.superq.problems.SecondaryProblemFactory;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 
-public class SuperQGUI extends JFrame implements ToolHost {
+public class QNetGUI extends JFrame implements ToolHost {
 
-    private static Logger log = LoggerFactory.getLogger(SuperQGUI.class);
+    private static Logger log = LoggerFactory.getLogger(QNetGUI.class);
+
+    private static final String TITLE = "QNet";
 
     // ***** GUI components *****
 
@@ -41,28 +42,23 @@ public class SuperQGUI extends JFrame implements ToolHost {
     private JPanel pnlInput;
     private JPanel pnlSelectInput;
     private JPanel pnlInputOptions;
-    private JComboBox cboInputFormat;
     private JLabel lblInput;
     private JTextField txtInput;
     private JButton cmdInput;
-    private JCheckBox chkScaleInput;
+    private JCheckBox chkLogNormalise;
 
     private JPanel pnlOptimisers;
-    private JLabel lblSelectPrimarySolver;
-    private JComboBox cboSelectPrimarySolver;
-    private JLabel lblSelectSecondarySolver;
-    private JComboBox cboSelectSecondarySolver;
-    private JLabel lblSelectSecondaryObjective;
-    private JComboBox cboSelectSecondaryObjective;
+    private JLabel lblSolver;
+    private JComboBox cboSolver;
+    private JLabel lblTolerance;
+    private JTextField txtTolerance;
 
     private JPanel pnlOutput;
     private JPanel pnlSelectOutput;
-    private JPanel pnlOutputOptions;
     private JLabel lblSave;
     private JTextField txtSave;
     private JButton cmdSave;
-    private JTextField txtFilter;
-    private JCheckBox chkFilter;
+
 
     private JPanel pnlStatus;
     private JPanel pnlControlButtons;
@@ -71,28 +67,23 @@ public class SuperQGUI extends JFrame implements ToolHost {
     private JLabel lblStatus;
     private JProgressBar progStatus;
 
-    
 
-    private JDialog dialog = new JDialog(this, "SUPERQ");
-    private JFrame gui = new JFrame("SUPERQ");
+
+    private JDialog dialog = new JDialog(this, TITLE);
+    private JFrame gui = new JFrame(TITLE);
     private JobController go_control;
-    private SuperQRunner superqRunner;
+    private QNetRunner qnetRunner;
 
-    public SuperQGUI() {
+    public QNetGUI() {
         initComponents();
-        setTitle("SUPERQ");
+        setTitle(TITLE);
 
         cmdRun.setEnabled(true);
-        txtFilter.setEnabled(false);
 
-        this.superqRunner = new SuperQRunner(this);
+        this.qnetRunner = new QNetRunner(this);
 
         this.go_control = new JobController(this.cmdRun, this.cmdCancel);
         setRunningStatus(false);
-
-        // Overridden this... this should work without gurobi :s
-        // Only enable scaling if Gurobi is available
-        //this.chkScaleInput.setEnabled(Optimiser.isOperational("GUROBI"));
     }
 
     /**
@@ -103,27 +94,24 @@ public class SuperQGUI extends JFrame implements ToolHost {
         lblInput = new JLabel();
         txtInput = new JTextField();
         cmdInput = new JButton();
-        cboInputFormat = new JComboBox();
-        chkScaleInput = new JCheckBox();
+        chkLogNormalise = new JCheckBox();
 
         cmdInput.setText("...");
-        cmdInput.setToolTipText(SuperQOptions.DESC_INPUT);
+        cmdInput.setToolTipText(QNetOptions.DESC_INPUT);
         cmdInput.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cmdInputActionPerformed(evt);
             }
         });
 
-        txtInput.setToolTipText(SuperQOptions.DESC_INPUT);
+        txtInput.setPreferredSize(new Dimension(200, 25));
+        txtInput.setToolTipText(QNetOptions.DESC_INPUT);
 
         lblInput.setText("Input file:");
-        lblInput.setToolTipText(SuperQOptions.DESC_INPUT);
+        lblInput.setToolTipText(QNetOptions.DESC_INPUT);
 
-        cboInputFormat.setModel(new DefaultComboBoxModel(new String[]{"Choose input file format:", "script", "newick"}));
-        cboInputFormat.setToolTipText(SuperQOptions.DESC_INPUT_FORMAT);
-
-        chkScaleInput.setText("Scale tree weights");
-        chkScaleInput.setToolTipText(SuperQOptions.DESC_SCALE);
+        chkLogNormalise.setText("Log normalise input");
+        chkLogNormalise.setToolTipText(QNetOptions.DESC_LOG);
 
         pnlSelectInput = new JPanel();
         pnlSelectInput.setLayout(new BoxLayout(pnlSelectInput, BoxLayout.LINE_AXIS));
@@ -141,9 +129,7 @@ public class SuperQGUI extends JFrame implements ToolHost {
         pnlInputOptions.setLayout(new BoxLayout(pnlInputOptions, BoxLayout.LINE_AXIS));
         pnlInputOptions.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
         pnlInputOptions.add(Box.createHorizontalGlue());
-        pnlInputOptions.add(cboInputFormat);
-        pnlInputOptions.add(Box.createRigidArea(new Dimension(10, 0)));
-        pnlInputOptions.add(chkScaleInput);
+        pnlInputOptions.add(chkLogNormalise);
 
         pack();
 
@@ -162,40 +148,27 @@ public class SuperQGUI extends JFrame implements ToolHost {
      */
     private void initOptimiserComponents() {
 
-        cboSelectPrimarySolver = new JComboBox();
-        lblSelectPrimarySolver = new JLabel();
+        cboSolver = new JComboBox();
+        lblSolver = new JLabel();
 
-        cboSelectSecondarySolver = new JComboBox();
-        lblSelectSecondarySolver = new JLabel();
-
-        cboSelectSecondaryObjective = new JComboBox();
-        lblSelectSecondaryObjective = new JLabel();
+        txtTolerance = new JTextField();
+        lblTolerance = new JLabel();
 
 
-        cboSelectPrimarySolver.setModel(new DefaultComboBoxModel(
+        cboSolver.setModel(new DefaultComboBoxModel(
                 OptimiserFactory.getInstance().listOperationalOptimisers(Objective.ObjectiveType.QUADRATIC).toArray()));
-        cboSelectPrimarySolver.setToolTipText(SuperQOptions.DESC_PRIMARY_SOLVER);
+        cboSolver.setToolTipText(QNetOptions.DESC_OPTIMISER);
 
-        lblSelectPrimarySolver.setText("Select primary optimiser:");
-        lblSelectPrimarySolver.setToolTipText(SuperQOptions.DESC_PRIMARY_SOLVER);
+        lblSolver.setText("Select optimiser:");
+        lblSolver.setToolTipText(QNetOptions.DESC_OPTIMISER);
 
-        cboSelectSecondarySolver.setModel(new DefaultComboBoxModel(
-                OptimiserFactory.getInstance().listOperationalOptimisers().toArray()));
-        cboSelectSecondarySolver.setToolTipText(SuperQOptions.DESC_SECONDARY_SOLVER);
 
-        lblSelectSecondarySolver.setText("Select secondary optimiser:");
-        lblSelectSecondarySolver.setToolTipText(SuperQOptions.DESC_SECONDARY_SOLVER);
+        lblTolerance.setText("Set the tolerance:");
+        lblTolerance.setToolTipText(QNetOptions.DESC_TOLERANCE);
 
-        cboSelectSecondaryObjective.setModel(new DefaultComboBoxModel(SecondaryProblemFactory.getInstance().listObjectivesByIdentifier().toArray()));
-        cboSelectSecondaryObjective.setToolTipText(SuperQOptions.DESC_SECONDARY_OBJECTIVE);
-        cboSelectSecondaryObjective.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cboSelectObjectiveActionPerformed(evt);
-            }
-        });
-
-        lblSelectSecondaryObjective.setText("Select secondary objective:");
-        lblSelectSecondaryObjective.setToolTipText(SuperQOptions.DESC_SECONDARY_OBJECTIVE);
+        txtTolerance.setText("");
+        txtTolerance.setPreferredSize(new Dimension(200, 25));
+        txtTolerance.setToolTipText(QNetOptions.DESC_TOLERANCE);
 
         pnlOptimisers = new JPanel();
 
@@ -211,29 +184,23 @@ public class SuperQGUI extends JFrame implements ToolHost {
         layout.setHorizontalGroup(
                 layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-                                .addComponent(lblSelectPrimarySolver)
-                                .addComponent(lblSelectSecondarySolver)
-                                .addComponent(lblSelectSecondaryObjective)
+                                .addComponent(lblSolver)
+                                .addComponent(lblTolerance)
                         )
                         .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                .addComponent(cboSelectPrimarySolver)
-                                .addComponent(cboSelectSecondarySolver)
-                                .addComponent(cboSelectSecondaryObjective)
+                                .addComponent(cboSolver)
+                                .addComponent(txtTolerance)
                         )
         );
         layout.setVerticalGroup(
                 layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                .addComponent(lblSelectPrimarySolver)
-                                .addComponent(cboSelectPrimarySolver)
+                                .addComponent(lblSolver)
+                                .addComponent(cboSolver)
                         )
                         .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                .addComponent(lblSelectSecondarySolver)
-                                .addComponent(cboSelectSecondarySolver)
-                        )
-                        .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                .addComponent(lblSelectSecondaryObjective)
-                                .addComponent(cboSelectSecondaryObjective)
+                                .addComponent(lblTolerance)
+                                .addComponent(txtTolerance)
                         )
         );
 
@@ -251,32 +218,20 @@ public class SuperQGUI extends JFrame implements ToolHost {
         lblSave = new JLabel();
         txtSave = new JTextField();
         cmdSave = new JButton();
-        txtFilter = new JTextField();
-        chkFilter = new JCheckBox();
 
-
-        txtSave.setToolTipText(SuperQOptions.DESC_OUTPUT);
+        txtSave.setPreferredSize(new Dimension(200, 25));
+        txtSave.setToolTipText(QNetOptions.DESC_OUTPUT);
 
         lblSave.setText("Save to file:");
-        lblSave.setToolTipText(SuperQOptions.DESC_OUTPUT);
+        lblSave.setToolTipText(QNetOptions.DESC_OUTPUT);
 
         cmdSave.setText("...");
-        cmdSave.setToolTipText(SuperQOptions.DESC_OUTPUT);
+        cmdSave.setToolTipText(QNetOptions.DESC_OUTPUT);
         cmdSave.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cmdSaveActionPerformed(evt);
             }
         });
-
-        chkFilter.setText("Filter:");
-        chkFilter.setToolTipText(SuperQOptions.DESC_FILTER);
-        chkFilter.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                chkFilterActionPerformed(evt);
-            }
-        });
-
-        txtFilter.setToolTipText(SuperQOptions.DESC_FILTER);
 
         pnlSelectOutput = new JPanel();
         pnlSelectOutput.setLayout(new BoxLayout(pnlSelectOutput, BoxLayout.LINE_AXIS));
@@ -288,24 +243,11 @@ public class SuperQGUI extends JFrame implements ToolHost {
         pnlSelectOutput.add(Box.createRigidArea(new Dimension(10, 0)));
         pnlSelectOutput.add(cmdSave);
 
-        pack();
-
-        pnlOutputOptions = new JPanel();
-        pnlOutputOptions.setLayout(new BoxLayout(pnlOutputOptions, BoxLayout.LINE_AXIS));
-        pnlOutputOptions.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
-        pnlOutputOptions.add(Box.createHorizontalGlue());
-        pnlOutputOptions.add(chkFilter);
-        pnlOutputOptions.add(Box.createRigidArea(new Dimension(10, 0)));
-        pnlOutputOptions.add(txtFilter);
-
-        pack();
-
         pnlOutput = new JPanel();
         pnlOutput.setLayout(new BoxLayout(pnlOutput, BoxLayout.PAGE_AXIS));
         pnlOutput.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), "Output:"));
         pnlOutput.add(Box.createVerticalGlue());
         pnlOutput.add(pnlSelectOutput);
-        pnlOutput.add(pnlOutputOptions);
 
         pack();
     }
@@ -336,8 +278,8 @@ public class SuperQGUI extends JFrame implements ToolHost {
         // ***** Run control and feedback *****
 
         cmdRun = new JButton();
-        cmdRun.setText("Run SUPERQ");
-        cmdRun.setToolTipText("Run the SUPERQ Algorithm");
+        cmdRun.setText("Run QNet");
+        cmdRun.setToolTipText("Run the QNet Algorithm");
         cmdRun.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cmdRunActionPerformed(evt);
@@ -401,7 +343,7 @@ public class SuperQGUI extends JFrame implements ToolHost {
         final JFileChooser fc = new JFileChooser();
         if (evt.getSource() == cmdSave) {
             fc.setSelectedFile(new File("outfile"));
-            int returnVal = fc.showSaveDialog(SuperQGUI.this);
+            int returnVal = fc.showSaveDialog(QNetGUI.this);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
 
                 File file = fc.getSelectedFile();
@@ -413,14 +355,6 @@ public class SuperQGUI extends JFrame implements ToolHost {
         }
     }
 
-    private void chkFilterActionPerformed(java.awt.event.ActionEvent evt) {
-        if (chkFilter.isSelected()) {
-            txtFilter.setEnabled(true);
-        } else {
-            txtFilter.setEnabled(false);
-        }
-    }
-
     /**
      * Choose a file for input
      * @param evt
@@ -429,7 +363,7 @@ public class SuperQGUI extends JFrame implements ToolHost {
 
         final JFileChooser fc = new JFileChooser();
         if (evt.getSource() == cmdInput) {
-            int returnVal = fc.showOpenDialog(SuperQGUI.this);
+            int returnVal = fc.showOpenDialog(QNetGUI.this);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 File file = fc.getSelectedFile();
                 String z = "";
@@ -447,77 +381,49 @@ public class SuperQGUI extends JFrame implements ToolHost {
      */
     private void cmdRunActionPerformed(java.awt.event.ActionEvent evt) {
 
-        SuperQOptions options = buildSuperQOptions();
+        QNetOptions options = buildQNetOptions();
 
         if (options != null)
-            this.superqRunner.runSuperQ(options, new StatusTracker(this.progStatus, this.lblStatus));
+            this.qnetRunner.runSuperQ(options, new StatusTracker(this.progStatus, this.lblStatus));
 
     }
 
-
-    private void cboSelectObjectiveActionPerformed(java.awt.event.ActionEvent evt) {
-        SecondaryProblem newObjective = SecondaryProblemFactory.getInstance().createSecondaryObjective(this.cboSelectSecondaryObjective.getSelectedItem().toString());
-        if (newObjective == null) {
-            this.lblSelectSecondarySolver.setEnabled(false);
-            this.cboSelectSecondarySolver.setEnabled(false);
-        } else {
-            this.lblSelectSecondarySolver.setEnabled(true);
-            this.cboSelectSecondarySolver.setEnabled(true);
-        }
-    }
 
     /**
      * Setup SuperQ configuration using values specified in the GUI
      * @return SuperQ configuration
      */
-    private SuperQOptions buildSuperQOptions() {
+    private QNetOptions buildQNetOptions() {
 
-        SuperQOptions options;
-
-        try {
-            options = new SuperQOptions();
-        } catch (OptimiserException oe) {
-            showErrorDialog("Error occurred configuring the optimiser.  Check you have selected an operational optimiser and set an appropriate objective.");
-            return null;
-        }
-
-        String type = (String) cboInputFormat.getSelectedItem();
-        options.setInputFileFormat(SuperQOptions.InputFormat.valueOf(type.toUpperCase()));
+        QNetOptions options= new QNetOptions();
 
         File input_file = new File(this.txtInput.getText().replaceAll("(^\")|(\"$)", ""));
-        options.setInputFile(input_file);
+        options.setInput(input_file);
 
         File output_file = new File(this.txtSave.getText().replaceAll("(^\")|(\"$)", ""));
-        options.setOutputFile(output_file);
+        options.setOutput(output_file);
 
+        options.setLogNormalise(this.chkLogNormalise.isSelected());
 
-        if (chkFilter.isSelected()) {
-            double filter = Double.MAX_VALUE;
-            try {
-                filter = Double.valueOf(txtFilter.getText());
-            } catch (NumberFormatException e) {
-                showErrorDialog("Filter threshold must be a non-negative real number");
-                return null;
-            }
-            options.setFilter(filter);
+        double tolerance = -1.0;
+        try {
+            tolerance = Double.parseDouble(this.txtTolerance.getText());
         }
-
-        options.setSecondaryProblem((SecondaryProblem) this.cboSelectSecondaryObjective.getSelectedItem());
+        catch(Exception e) {
+            showErrorDialog("Tolerance must be a real number.");
+        }
+        options.setTolerance(tolerance);
 
         try {
-            options.setPrimarySolver(
+            options.setOptimiser(
                     OptimiserFactory.getInstance().createOptimiserInstance(
-                            (String) this.cboSelectPrimarySolver.getSelectedItem(), Objective.ObjectiveType.QUADRATIC));
+                            (String) this.cboSolver.getSelectedItem(), Objective.ObjectiveType.QUADRATIC));
 
-            options.setSecondarySolver(
-                    OptimiserFactory.getInstance().createOptimiserInstance(
-                            (String) this.cboSelectSecondarySolver.getSelectedItem(), options.getSecondaryProblem().getObjectiveType()));
         } catch (OptimiserException oe) {
-            showErrorDialog("Could not create requested optimiser: " + (String) this.cboSelectSecondarySolver.getSelectedItem());
+            showErrorDialog("Could not create requested optimiser: " + this.cboSolver.getSelectedItem());
             return null;
         }
 
-        options.setScaleInputTree(this.chkScaleInput.isEnabled() && this.chkScaleInput.isSelected());
 
         return options;
     }
@@ -531,7 +437,7 @@ public class SuperQGUI extends JFrame implements ToolHost {
     public void showErrorDialog(String message) {
         JOptionPane.showMessageDialog(this,
                 message,
-                "SuperQ Error",
+                "QNet Error",
                 JOptionPane.ERROR_MESSAGE);
     }
 
@@ -549,16 +455,17 @@ public class SuperQGUI extends JFrame implements ToolHost {
      */
     public static void main(String args[]) {
 
-        SuperQ.configureLogging();
+        // Configure logging
+        BasicConfigurator.configure();
 
         try {
             log.info("Running in GUI mode");
 
-            java.awt.EventQueue.invokeLater(new Runnable() {
+            EventQueue.invokeLater(new Runnable() {
 
                 @Override
                 public void run() {
-                    new SuperQGUI().setVisible(true);
+                    new QNetGUI().setVisible(true);
                 }
             });
             return;

@@ -48,18 +48,18 @@ public class QNetCLI {
         options.addOption(CommandLineHelper.HELP_OPTION);
 
         options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_INPUT).isRequired().hasArg()
-                .withDescription("The file containing the taxa to input.").create("i"));
+                .withDescription(QNetOptions.DESC_INPUT).create("i"));
 
         options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_OUTPUT).isRequired().hasArg()
-                .withDescription("The nexus file that will contain output.").create("o"));
+                .withDescription(QNetOptions.DESC_OUTPUT).create("o"));
 
-        options.addOption(new Option("l", OPT_LOG, false, "If false, normalises quartets linearly, if true normalises quartets using natural log"));
+        options.addOption(new Option("l", OPT_LOG, false, QNetOptions.DESC_LOG));
 
         options.addOption(OptionBuilder.withArgName("double").withLongOpt(OPT_TOLERANCE).hasArg()
-                .withDescription("The tolerance to use when computing edge weights").create("t"));
+                .withDescription(QNetOptions.DESC_TOLERANCE).create("t"));
 
         options.addOption(OptionBuilder.withArgName("string").withLongOpt(OPT_OPTIMISER).hasArg()
-                .withDescription("If specified, uses optimisation: " + OptimiserFactory.getInstance().listOperationalOptimisers()).create("p"));
+                .withDescription(QNetOptions.DESC_OPTIMISER).create("p"));
 
         return options;
     }
