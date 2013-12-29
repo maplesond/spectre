@@ -432,6 +432,7 @@ public class QNetGUI extends JFrame implements ToolHost {
         }
         catch(Exception e) {
             showErrorDialog("Tolerance must be a real number.");
+            return null;
         }
         options.setTolerance(tolerance);
 

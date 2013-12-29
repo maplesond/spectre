@@ -59,6 +59,10 @@
                             <mainClass>uk.ac.uea.cmp.phygen.qnet.QNetCLI</mainClass>
                             <id>qnet</id>
                         </program>
+                        <program>
+                            <mainClass>uk.ac.uea.cmp.phygen.qnet.QNetGUI</mainClass>
+                            <id>qnet-gui</id>
+                        </program>
                     </programs>
                 </configuration>
             </plugin>
@@ -78,6 +82,7 @@
                         <configuration>
                             <target>
                                 <chmod file="${build-dir}/bin/qnet" perm="755"/>
+                                <chmod file="${build-dir}/bin/qnet-gui" perm="755"/>
                             </target>
                         </configuration>
                     </execution>
