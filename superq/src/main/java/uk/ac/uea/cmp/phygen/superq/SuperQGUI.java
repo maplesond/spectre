@@ -36,6 +36,8 @@ public class SuperQGUI extends JFrame implements ToolHost {
 
     // ***** GUI components *****
 
+    private JPanel pnlOptions;
+
     private JPanel pnlInput;
     private JPanel pnlSelectInput;
     private JPanel pnlInputOptions;
@@ -62,7 +64,7 @@ public class SuperQGUI extends JFrame implements ToolHost {
     private JTextField txtFilter;
     private JCheckBox chkFilter;
 
-    private JPanel pnlControl;
+    private JPanel pnlStatus;
     private JPanel pnlControlButtons;
     private JButton cmdCancel;
     private JButton cmdRun;
@@ -93,11 +95,10 @@ public class SuperQGUI extends JFrame implements ToolHost {
         //this.chkScaleInput.setEnabled(Optimiser.isOperational("GUROBI"));
     }
 
-
+    /**
+     * Input options
+     */
     private void initInputComponents() {
-
-        // ***** Input setup *****
-
 
         lblInput = new JLabel();
         txtInput = new JTextField();
@@ -156,10 +157,10 @@ public class SuperQGUI extends JFrame implements ToolHost {
         pack();
     }
 
-
+    /**
+     * Optimiser options
+     */
     private void initOptimiserComponents() {
-
-        // ***** Optimiser options *****
 
         cboSelectPrimarySolver = new JComboBox();
         lblSelectPrimarySolver = new JLabel();
@@ -239,11 +240,11 @@ public class SuperQGUI extends JFrame implements ToolHost {
         pack();
     }
 
-
+    /**
+     * Output options
+     */
     private void initOutputComponents() {
 
-
-        // ***** Output setup *****
 
         pnlOutput = new JPanel(new BorderLayout());
 
@@ -309,16 +310,32 @@ public class SuperQGUI extends JFrame implements ToolHost {
         pack();
     }
 
+    /**
+     * Program status setup
+     */
+    private void initStatusComponents() {
+
+        progStatus = new JProgressBar();
+
+        lblStatus = new JLabel();
+        lblStatus.setText("Status:");
+        lblStatus.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        pnlStatus = new JPanel(new BorderLayout(0, 5));
+        pnlStatus.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
+        pnlStatus.add(lblStatus, BorderLayout.LINE_START);
+        pnlStatus.add(progStatus, BorderLayout.SOUTH);
+    }
+
+    /**
+     * Execution controls
+     */
     private void initControlComponents() {
 
 
         // ***** Run control and feedback *****
 
         cmdRun = new JButton();
-        progStatus = new JProgressBar();
-        lblStatus = new JLabel();
-        cmdCancel = new JButton();
-
         cmdRun.setText("Run SUPERQ");
         cmdRun.setToolTipText("Run the SUPERQ Algorithm");
         cmdRun.addActionListener(new java.awt.event.ActionListener() {
@@ -327,27 +344,16 @@ public class SuperQGUI extends JFrame implements ToolHost {
             }
         });
 
-        lblStatus.setText("Status:");
-        lblStatus.setAlignmentX(Component.LEFT_ALIGNMENT);
+        cmdCancel = new JButton();
         cmdCancel.setText("Cancel");
 
         pnlControlButtons = new JPanel();
         pnlControlButtons.setLayout(new BoxLayout(pnlControlButtons, BoxLayout.LINE_AXIS));
+        pnlControlButtons.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
         pnlControlButtons.add(Box.createHorizontalGlue());
         pnlControlButtons.add(cmdRun);
         pnlControlButtons.add(Box.createRigidArea(new Dimension(10, 0)));
         pnlControlButtons.add(cmdCancel);
-
-        pack();
-
-        pnlControl = new JPanel();
-        pnlControl.setLayout(new BoxLayout(pnlControl, BoxLayout.PAGE_AXIS));
-        pnlControl.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
-        pnlControl.add(lblStatus, BorderLayout.LINE_START);
-        pnlControl.add(Box.createRigidArea(new Dimension(0, 5)));
-        pnlControl.add(progStatus);
-        pnlControl.add(Box.createRigidArea(new Dimension(0, 10)));
-        pnlControl.add(pnlControlButtons, BorderLayout.PAGE_END);
 
         pack();
     }
@@ -358,7 +364,18 @@ public class SuperQGUI extends JFrame implements ToolHost {
         this.initInputComponents();
         this.initOptimiserComponents();
         this.initOutputComponents();
+        this.initStatusComponents();
         this.initControlComponents();
+
+        pnlOptions = new JPanel();
+        pnlOptions.setLayout(new BoxLayout(pnlOptions, BoxLayout.PAGE_AXIS));
+        pnlOptions.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        pnlOptions.add(pnlInput);
+        pnlOptions.add(Box.createRigidArea(new Dimension(0, 10)));
+        pnlOptions.add(pnlOptimisers);
+        pnlOptions.add(Box.createRigidArea(new Dimension(0, 10)));
+        pnlOptions.add(pnlOutput);
+
 
 
         // ***** Layout *****
@@ -368,21 +385,19 @@ public class SuperQGUI extends JFrame implements ToolHost {
 
         getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.PAGE_AXIS));
         getContentPane().add(Box.createVerticalGlue());
-        getContentPane().add(Box.createRigidArea(new Dimension(0, 10)));
-        getContentPane().add(pnlInput);
-        getContentPane().add(Box.createRigidArea(new Dimension(0, 10)));
-        getContentPane().add(pnlOptimisers);
-        getContentPane().add(Box.createRigidArea(new Dimension(0, 10)));
-        getContentPane().add(pnlOutput);
-        getContentPane().add(Box.createRigidArea(new Dimension(0, 10)));
-        getContentPane().add(pnlControl);
+        getContentPane().add(pnlOptions);
+        getContentPane().add(pnlStatus);
+        getContentPane().add(pnlControlButtons, BorderLayout.PAGE_END);
 
         pack();
     }
 
+    /**
+     * Choose file for output
+     * @param evt
+     */
+    private void cmdSaveActionPerformed(java.awt.event.ActionEvent evt) {
 
-    private void cmdSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdSaveActionPerformed
-        //Choose file for output
         final JFileChooser fc = new JFileChooser();
         if (evt.getSource() == cmdSave) {
             fc.setSelectedFile(new File("outfile"));
@@ -396,18 +411,22 @@ public class SuperQGUI extends JFrame implements ToolHost {
                 log.debug("Open command cancelled by user.");
             }
         }
-    }//GEN-LAST:event_cmdSaveActionPerformed
+    }
 
-    private void chkFilterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkFilterActionPerformed
+    private void chkFilterActionPerformed(java.awt.event.ActionEvent evt) {
         if (chkFilter.isSelected()) {
             txtFilter.setEnabled(true);
         } else {
             txtFilter.setEnabled(false);
         }
-    }//GEN-LAST:event_chkFilterActionPerformed
+    }
 
-    private void cmdInputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdInputActionPerformed
-        //Create a file chooser
+    /**
+     * Choose a file for input
+     * @param evt
+     */
+    private void cmdInputActionPerformed(java.awt.event.ActionEvent evt) {
+
         final JFileChooser fc = new JFileChooser();
         if (evt.getSource() == cmdInput) {
             int returnVal = fc.showOpenDialog(SuperQGUI.this);
@@ -420,18 +439,23 @@ public class SuperQGUI extends JFrame implements ToolHost {
                 log.debug("Open command cancelled by user.");
             }
         }
-    }//GEN-LAST:event_cmdInputActionPerformed
+    }
 
-    private void cmdRunActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmdRunActionPerformed
+    /**
+     * Start Super Q
+     * @param evt
+     */
+    private void cmdRunActionPerformed(java.awt.event.ActionEvent evt) {
 
         SuperQOptions options = buildSuperQOptions();
 
         if (options != null)
             this.superqRunner.runSuperQ(options, new StatusTracker(this.progStatus, this.lblStatus));
 
-    }//GEN-LAST:event_cmdRunActionPerformed
+    }
 
-    private void cboSelectObjectiveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboSelectObjectiveActionPerformed
+
+    private void cboSelectObjectiveActionPerformed(java.awt.event.ActionEvent evt) {
         SecondaryProblem newObjective = SecondaryProblemFactory.getInstance().createSecondaryObjective(this.cboSelectSecondaryObjective.getSelectedItem().toString());
         if (newObjective == null) {
             this.lblSelectSecondarySolver.setEnabled(false);
@@ -440,8 +464,12 @@ public class SuperQGUI extends JFrame implements ToolHost {
             this.lblSelectSecondarySolver.setEnabled(true);
             this.cboSelectSecondarySolver.setEnabled(true);
         }
-    }//GEN-LAST:event_cboSelectObjectiveActionPerformed
+    }
 
+    /**
+     * Setup SuperQ configuration using values specified in the GUI
+     * @return SuperQ configuration
+     */
     private SuperQOptions buildSuperQOptions() {
 
         SuperQOptions options;
@@ -514,29 +542,27 @@ public class SuperQGUI extends JFrame implements ToolHost {
         }
     }
 
-    
 
-
+    /**
+     * Main entry point for SuperQ when running in GUI mode.
+     * @param args Program arguments... we expect nothing to be here.
+     */
     public static void main(String args[]) {
 
         SuperQ.configureLogging();
 
-
-        // If there are no args we assume that we're in GUI mode
         try {
-            if (args.length == 0) {
+            log.info("Running in GUI mode");
 
-                log.info("Running in GUI mode");
+            java.awt.EventQueue.invokeLater(new Runnable() {
 
-                java.awt.EventQueue.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    new SuperQGUI().setVisible(true);
+                }
+            });
+            return;
 
-                    @Override
-                    public void run() {
-                        new SuperQGUI().setVisible(true);
-                    }
-                });
-                return;
-            }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             System.exit(1);
