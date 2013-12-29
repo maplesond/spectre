@@ -88,11 +88,8 @@ public class WeightsComputeNNLSInformative {
                     splitIndices[n] = new ImmutablePair<>(i, j);
 
                     n++;
-
                 }
-
             }
-
         }
 
         // then we go through relevant quartets and create a list
@@ -315,9 +312,7 @@ public class WeightsComputeNNLSInformative {
             for (int iC = iB + 1; iC < N; iC++) {
 
                 pHolder.setP(1, iB, iC, iC + 1, pHolder.getQ(1, iB, iC, iC + 1));
-
             }
-
         }
 
         for (int iB = 2; iB < N - 2; iB++) {
@@ -327,9 +322,7 @@ public class WeightsComputeNNLSInformative {
                 pHolder.setP(1, iB, iC, iC + 2, pHolder.getP(1, iB, iC + 1, iC + 2)
                         + pHolder.getP(1, iB, iC, iC + 1)
                         + pHolder.getQ(1, iB, iC, iC + 2));
-
             }
-
         }
 
         for (int iD = 3; iD < N - 2; iD++) {
@@ -342,11 +335,8 @@ public class WeightsComputeNNLSInformative {
                             + pHolder.getP(1, iB, iC, iC + iD - 1)
                             - pHolder.getP(1, iB, iC + 1, iC + iD - 1)
                             + pHolder.getQ(1, iB, iC, iC + iD));
-
                 }
-
             }
-
         }
 
         for (int iA = 2; iA < N - 1; iA++) {
@@ -358,13 +348,9 @@ public class WeightsComputeNNLSInformative {
                     if (iA + N > iC + 1) {
 
                         pHolder.setP(iA, iB, iC, iC + 1, pHolder.getQ(iA, iB, iC, iC + 1));
-
                     }
-
                 }
-
             }
-
         }
 
         for (int iA = 2; iA < N - 1; iA++) {
@@ -386,15 +372,10 @@ public class WeightsComputeNNLSInformative {
                             pHolder.setP(iA, iB, iC, iC + 2, pHolder.getP(1, 2, iA, iB)
                                     + pHolder.getP(iA, iB, iC, iC + 1)
                                     + pHolder.getQ(iA, iB, iC, iC + 2));
-
                         }
-
                     }
-
                 }
-
             }
-
         }
 
         for (int iD = 3; iD < N - 2; iD++) {
@@ -1571,224 +1552,6 @@ public class WeightsComputeNNLSInformative {
 
 
         return x;
-    }
-
-    //TODO replace this with proper QWeight loading parser... Loading info  rewrite to get from agglomerator
-    private static void load(PHolder pHolder, String fileName) throws IOException {
-
-        int N = 0;
-
-        /**
-         *
-         * Error-handling
-         *
-         */
-        /**
-         *
-         * Have the number of quartets been specified?
-         *
-         */
-        boolean numberKnown = false;
-
-        /**
-         *
-         * Have the sense been specified?
-         *
-         */
-        boolean senseKnown = false;
-
-        /**
-         *
-         * File reader
-         *
-         */
-        BufferedReader fileInput = new BufferedReader(new FileReader(fileName));
-
-        /**
-         *
-         * Lines are read one at a time, added together, parsed by
-         * semicolons, then parsed by space and colon
-         *
-         */
-        /**
-         *
-         * Input one-liner
-         *
-         */
-        String input = new String("");
-
-        /**
-         *
-         * Read while there�s reading to be done
-         *
-         */
-        while ((input = fileInput.readLine()) != null) {
-
-            /**
-             *
-             * Parse
-             *
-             * Note now that it requires lower-case
-             *
-             * Process each command
-             *
-             */
-            String theLine = input;
-
-            /**
-             *
-             * If this is a description line, we just read, we don�t bother
-             * to save the data read
-             *
-             */
-            if (theLine.trim().startsWith("description:")) {
-
-                while (!theLine.endsWith(";") && !theLine.trim().endsWith(";")) {
-
-                    theLine = "description: " + fileInput.readLine();
-                }
-            }
-            /**
-             *
-             * Otherwise, it is significant...
-             *
-             */
-            else {
-
-                while (!theLine.endsWith(";") && !theLine.trim().endsWith(";")) {
-
-                    theLine += fileInput.readLine();
-                }
-            }
-
-            theLine = theLine.trim();
-
-            theLine = theLine.substring(0, theLine.length() - 1);
-
-            /**
-             *
-             * Tokenize each line by space and colon
-             *
-             */
-            StringTokenizer lineTokenizer = new StringTokenizer(theLine, ": ");
-
-            /**
-             *
-             * Initial word
-             *
-             */
-            String theFirst = lineTokenizer.nextToken();
-
-            /**
-             *
-             * The actual switch
-             *
-             */
-            if (theFirst.equalsIgnoreCase("quartet")) {
-
-                /**
-                 *
-                 * Having read a quartet line, read in the weights
-                 *
-                 * The coordinates, in the order written
-                 *
-                 */
-                int a = Integer.parseInt(lineTokenizer.nextToken());
-                int b = Integer.parseInt(lineTokenizer.nextToken());
-                int c = Integer.parseInt(lineTokenizer.nextToken());
-                int d = Integer.parseInt(lineTokenizer.nextToken());
-
-                /**
-                 *
-                 * Skip "name" token
-                 *
-                 */
-                lineTokenizer.nextToken();
-
-                /**
-                 *
-                 * The weights, in the order written
-                 *
-                 */
-                int w1 = Integer.parseInt(lineTokenizer.nextToken());
-                int w2 = Integer.parseInt(lineTokenizer.nextToken());
-                int w3 = Integer.parseInt(lineTokenizer.nextToken());
-
-                /**
-                 *
-                 * Set it, just as it is written
-                 *
-                 */
-                if (w1 == 1) {
-
-                    pHolder.setR(a, b, c, d, true);
-
-                } else {
-
-                    pHolder.setR(a, b, c, d, false);
-
-                }
-
-            } else if (theFirst.equalsIgnoreCase("taxon")) {
-
-                /**
-                 *
-                 * Having read a taxon line, add the taxon
-                 *
-                 */
-                int theNumber = Integer.parseInt(lineTokenizer.nextToken());
-
-                /**
-                 *
-                 * Step forward
-                 *
-                 */
-                lineTokenizer.nextToken();
-
-                /**
-                 *
-                 * Take name
-                 *
-                 */
-            } else if (theFirst.equalsIgnoreCase("description")) {
-                /**
-                 *
-                 * Having read a comment, do nothing
-                 *
-                 */
-            } else if (theFirst.equalsIgnoreCase("sense")) {
-
-                /**
-                 *
-                 * Having read a sense line, set the sense accordingly
-                 *
-                 */
-                String theSecond = lineTokenizer.nextToken();
-
-                if (theSecond.equalsIgnoreCase("max")) {
-
-                    senseKnown = true;
-
-                } else if (theSecond.equalsIgnoreCase("min")) {
-
-                    senseKnown = true;
-
-                }
-
-            } else if (theFirst.equalsIgnoreCase("taxanumber")) {
-
-                /**
-                 *
-                 * Having read the number of taxa, set it accordingly
-                 *
-                 */
-                String theSecond = lineTokenizer.nextToken();
-
-                N = Integer.parseInt(theSecond);
-
-                numberKnown = true;
-            }
-        }
     }
 
 

@@ -1,6 +1,7 @@
 package uk.ac.uea.cmp.phygen.qnet;
 
 import org.apache.commons.cli.OptionBuilder;
+import uk.ac.tgac.metaopt.Objective;
 import uk.ac.tgac.metaopt.Optimiser;
 import uk.ac.tgac.metaopt.OptimiserFactory;
 
@@ -21,9 +22,10 @@ public class QNetOptions {
 
     public static final String DESC_LOG = "If false, normalises quartets linearly, if true normalises quartets using natural log";
 
-    public static final String DESC_TOLERANCE = "The tolerance to use when computing edge weights";
+    public static final String DESC_TOLERANCE = "The tolerance to use when computing edge weights using internal method.  Not used if an external optimiser is selected.";
 
-    public static final String DESC_OPTIMISER = "If specified, uses optimisation: " + OptimiserFactory.getInstance().listOperationalOptimisers();
+    public static final String DESC_OPTIMISER = "If specified, uses an external optimiser to compute weights.  If not, " +
+            "then an internal method is used instead.  Available external optimisers: " + OptimiserFactory.getInstance().listOperationalOptimisers(Objective.ObjectiveType.QUADRATIC);
 
 
     private File input;

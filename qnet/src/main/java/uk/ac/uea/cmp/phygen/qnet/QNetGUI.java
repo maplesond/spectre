@@ -27,6 +27,7 @@ import uk.ac.uea.cmp.phygen.core.ui.gui.ToolHost;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.io.File;
 
 public class QNetGUI extends JFrame implements ToolHost {
@@ -154,10 +155,17 @@ public class QNetGUI extends JFrame implements ToolHost {
         txtTolerance = new JTextField();
         lblTolerance = new JLabel();
 
+        java.util.List<String> optimisers = OptimiserFactory.getInstance().listOperationalOptimisers(Objective.ObjectiveType.QUADRATIC);
+        optimisers.add(0, "Internal");
 
         cboSolver.setModel(new DefaultComboBoxModel(
-                OptimiserFactory.getInstance().listOperationalOptimisers(Objective.ObjectiveType.QUADRATIC).toArray()));
+                optimisers.toArray()));
         cboSolver.setToolTipText(QNetOptions.DESC_OPTIMISER);
+        cboSolver.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cboSolverActionPerformed(evt);
+            }
+        });
 
         lblSolver.setText("Select optimiser:");
         lblSolver.setToolTipText(QNetOptions.DESC_OPTIMISER);
@@ -205,6 +213,17 @@ public class QNetGUI extends JFrame implements ToolHost {
         );
 
         pack();
+    }
+
+    private void cboSolverActionPerformed(ActionEvent evt) {
+
+        enableTolerance(!(((String) this.cboSolver.getSelectedItem()).equalsIgnoreCase("internal")));
+    }
+
+    private void enableTolerance(boolean enabled) {
+
+        lblTolerance.setEnabled(enabled);
+        txtTolerance.setEnabled(enabled);
     }
 
     /**
@@ -308,6 +327,8 @@ public class QNetGUI extends JFrame implements ToolHost {
         this.initOutputComponents();
         this.initStatusComponents();
         this.initControlComponents();
+
+        this.enableTolerance(false);
 
         pnlOptions = new JPanel();
         pnlOptions.setLayout(new BoxLayout(pnlOptions, BoxLayout.PAGE_AXIS));
@@ -414,16 +435,20 @@ public class QNetGUI extends JFrame implements ToolHost {
         }
         options.setTolerance(tolerance);
 
-        try {
-            options.setOptimiser(
-                    OptimiserFactory.getInstance().createOptimiserInstance(
-                            (String) this.cboSolver.getSelectedItem(), Objective.ObjectiveType.QUADRATIC));
-
-        } catch (OptimiserException oe) {
-            showErrorDialog("Could not create requested optimiser: " + this.cboSolver.getSelectedItem());
-            return null;
+        if (((String) this.cboSolver.getSelectedItem()).equalsIgnoreCase("internal")) {
+            options.setOptimiser(null);
         }
+        else {
+            try {
+                options.setOptimiser(
+                        OptimiserFactory.getInstance().createOptimiserInstance(
+                                (String) this.cboSolver.getSelectedItem(), Objective.ObjectiveType.QUADRATIC));
 
+            } catch (OptimiserException oe) {
+                showErrorDialog("Could not create requested optimiser: " + this.cboSolver.getSelectedItem());
+                return null;
+            }
+        }
 
         return options;
     }
