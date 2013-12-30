@@ -39,7 +39,8 @@ public class SuperQOptions {
     public static final String DESC_SCALE = "Whether to scale the input tree.  Default: off";
 
     public static final String DESC_PRIMARY_SOLVER = "The primary solver to use with Non-Negative Least Square (NNLS) objective.  " +
-            "If no valid solver is specified SuperQ will use its own internal NNLS solver.  Available Solvers: " +
+            "If internal solver is selected or no valid solver is specified SuperQ will use its own internal NNLS solver.  " +
+            "Otherwise the user can specify an external solver to solve the NNLS objective.  Available external solvers: " +
             OptimiserFactory.getInstance().listOperationalOptimisersAsString(Objective.ObjectiveType.QUADRATIC);
 
     public static final String DESC_SECONDARY_SOLVER = "The secondary solver to use if the NNLS solution is not unique.  Available Solvers: " +

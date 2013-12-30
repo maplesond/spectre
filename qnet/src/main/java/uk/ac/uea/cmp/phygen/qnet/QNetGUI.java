@@ -214,16 +214,6 @@ public class QNetGUI extends JFrame implements ToolHost {
         pack();
     }
 
-    private void cboSolverActionPerformed(ActionEvent evt) {
-
-        enableTolerance((((String) this.cboSolver.getSelectedItem()).equalsIgnoreCase("internal")));
-    }
-
-    private void enableTolerance(boolean enabled) {
-
-        lblTolerance.setEnabled(enabled);
-        txtTolerance.setEnabled(enabled);
-    }
 
     /**
      * Output options
@@ -406,6 +396,17 @@ public class QNetGUI extends JFrame implements ToolHost {
         if (options != null)
             this.qnetRunner.runSuperQ(options, new StatusTracker(this.progStatus, this.lblStatus));
 
+    }
+
+    private void cboSolverActionPerformed(ActionEvent evt) {
+
+        enableTolerance((((String) this.cboSolver.getSelectedItem()).equalsIgnoreCase("internal")));
+    }
+
+    private void enableTolerance(boolean enabled) {
+
+        lblTolerance.setEnabled(enabled);
+        txtTolerance.setEnabled(enabled);
     }
 
 

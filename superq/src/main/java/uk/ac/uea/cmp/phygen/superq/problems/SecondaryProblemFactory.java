@@ -17,6 +17,7 @@ package uk.ac.uea.cmp.phygen.superq.problems;
 
 
 import org.apache.commons.lang3.StringUtils;
+import uk.ac.tgac.metaopt.Objective;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,9 +62,17 @@ public class SecondaryProblemFactory {
 
     public List<SecondaryProblem> listObjectives() {
 
+        return listObjectives(null);
+    }
+
+    public List<SecondaryProblem> listObjectives(Objective.ObjectiveType objectiveType) {
+
         List<SecondaryProblem> secondaryProblems = new ArrayList<>();
 
         for (SecondaryProblem secondaryProblem : loader) {
+            if (objectiveType == null || objectiveType == Objective.ObjectiveType.QUADRATIC ||
+                    (secondaryProblem.getObjectiveType() == Objective.ObjectiveType.LINEAR &&
+                            objectiveType == Objective.ObjectiveType.LINEAR))
             secondaryProblems.add(secondaryProblem);
         }
 
@@ -72,10 +81,14 @@ public class SecondaryProblemFactory {
 
     public List<String> listObjectivesByIdentifier() {
 
-        List<SecondaryProblem> secondaryProblems = listObjectives();
+        return listObjectivesByIdentifier(null);
+    }
+
+    public List<String> listObjectivesByIdentifier(Objective.ObjectiveType objectiveType) {
+
         List<String> ids = new ArrayList<>();
 
-        for (SecondaryProblem secondaryProblem : secondaryProblems) {
+        for (SecondaryProblem secondaryProblem : listObjectives(objectiveType)) {
             ids.add(secondaryProblem.getName());
         }
 

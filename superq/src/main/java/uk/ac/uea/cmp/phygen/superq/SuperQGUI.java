@@ -18,6 +18,7 @@ package uk.ac.uea.cmp.phygen.superq;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.tgac.metaopt.Objective;
+import uk.ac.tgac.metaopt.Optimiser;
 import uk.ac.tgac.metaopt.OptimiserException;
 import uk.ac.tgac.metaopt.OptimiserFactory;
 import uk.ac.uea.cmp.phygen.core.ui.gui.JobController;
@@ -171,31 +172,36 @@ public class SuperQGUI extends JFrame implements ToolHost {
         cboSelectSecondaryObjective = new JComboBox();
         lblSelectSecondaryObjective = new JLabel();
 
+        java.util.List<String> primarySolvers = OptimiserFactory.getInstance().listOperationalOptimisers(Objective.ObjectiveType.QUADRATIC);
+        primarySolvers.add(0, "Internal");
 
-        cboSelectPrimarySolver.setModel(new DefaultComboBoxModel(
-                OptimiserFactory.getInstance().listOperationalOptimisers(Objective.ObjectiveType.QUADRATIC).toArray()));
+        cboSelectPrimarySolver.setModel(new DefaultComboBoxModel(primarySolvers.toArray()));
         cboSelectPrimarySolver.setToolTipText(SuperQOptions.DESC_PRIMARY_SOLVER);
 
         lblSelectPrimarySolver.setText("Select primary optimiser:");
         lblSelectPrimarySolver.setToolTipText(SuperQOptions.DESC_PRIMARY_SOLVER);
 
-        cboSelectSecondarySolver.setModel(new DefaultComboBoxModel(
-                OptimiserFactory.getInstance().listOperationalOptimisers().toArray()));
+        java.util.List<String> secondarySolvers = OptimiserFactory.getInstance().listOperationalOptimisers();
+        secondarySolvers.add(0, "Off");
+
+        cboSelectSecondarySolver.setModel(new DefaultComboBoxModel(secondarySolvers.toArray()));
         cboSelectSecondarySolver.setToolTipText(SuperQOptions.DESC_SECONDARY_SOLVER);
+        cboSelectSecondarySolver.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cboSelectSecondaryObjectiveActionPerformed(evt);
+            }
+        });
 
         lblSelectSecondarySolver.setText("Select secondary optimiser:");
         lblSelectSecondarySolver.setToolTipText(SuperQOptions.DESC_SECONDARY_SOLVER);
 
-        cboSelectSecondaryObjective.setModel(new DefaultComboBoxModel(SecondaryProblemFactory.getInstance().listObjectivesByIdentifier().toArray()));
+
         cboSelectSecondaryObjective.setToolTipText(SuperQOptions.DESC_SECONDARY_OBJECTIVE);
-        cboSelectSecondaryObjective.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cboSelectObjectiveActionPerformed(evt);
-            }
-        });
 
         lblSelectSecondaryObjective.setText("Select secondary objective:");
         lblSelectSecondaryObjective.setToolTipText(SuperQOptions.DESC_SECONDARY_OBJECTIVE);
+
+        this.enableSecondaryObjective(false);
 
         pnlOptimisers = new JPanel();
 
@@ -414,10 +420,32 @@ public class SuperQGUI extends JFrame implements ToolHost {
     }
 
     private void chkFilterActionPerformed(java.awt.event.ActionEvent evt) {
-        if (chkFilter.isSelected()) {
-            txtFilter.setEnabled(true);
-        } else {
-            txtFilter.setEnabled(false);
+        txtFilter.setEnabled(chkFilter.isSelected());
+    }
+
+    private void cboSelectSecondaryObjectiveActionPerformed(java.awt.event.ActionEvent evt) {
+        this.enableSecondaryObjective(!((String) this.cboSelectSecondarySolver.getSelectedItem()).equalsIgnoreCase("off"));
+
+        String secondarySolver = (String) this.cboSelectSecondarySolver.getSelectedItem();
+
+        if (!secondarySolver.equalsIgnoreCase("off")) {
+
+            Optimiser opt = null;
+            try {
+                opt = OptimiserFactory.getInstance().createOptimiserInstance(secondarySolver, null);
+            }
+            catch (OptimiserException oe) {
+                showErrorDialog("Error trying to create an instance of the selected optimiser");
+                return;
+            }
+
+            cboSelectSecondaryObjective.setModel(
+                    new DefaultComboBoxModel(
+                            SecondaryProblemFactory.getInstance().listObjectivesByIdentifier(
+                                    opt.acceptsObjectiveType(Objective.ObjectiveType.QUADRATIC) ?
+                                            Objective.ObjectiveType.QUADRATIC :
+                                            Objective.ObjectiveType.LINEAR
+                            ).toArray()));
         }
     }
 
@@ -452,18 +480,6 @@ public class SuperQGUI extends JFrame implements ToolHost {
         if (options != null)
             this.superqRunner.runSuperQ(options, new StatusTracker(this.progStatus, this.lblStatus));
 
-    }
-
-
-    private void cboSelectObjectiveActionPerformed(java.awt.event.ActionEvent evt) {
-        SecondaryProblem newObjective = SecondaryProblemFactory.getInstance().createSecondaryObjective(this.cboSelectSecondaryObjective.getSelectedItem().toString());
-        if (newObjective == null) {
-            this.lblSelectSecondarySolver.setEnabled(false);
-            this.cboSelectSecondarySolver.setEnabled(false);
-        } else {
-            this.lblSelectSecondarySolver.setEnabled(true);
-            this.cboSelectSecondarySolver.setEnabled(true);
-        }
     }
 
     /**
@@ -504,6 +520,12 @@ public class SuperQGUI extends JFrame implements ToolHost {
 
         options.setSecondaryProblem((SecondaryProblem) this.cboSelectSecondaryObjective.getSelectedItem());
 
+        if (((String) this.cboSelectPrimarySolver.getSelectedItem()).equalsIgnoreCase("internal")) {
+            options.setPrimarySolver(null);
+        }
+        if (((String) this.cboSelectSecondarySolver.getSelectedItem()).equalsIgnoreCase("off")) {
+            options.setSecondarySolver(null);
+        }
         try {
             options.setPrimarySolver(
                     OptimiserFactory.getInstance().createOptimiserInstance(
@@ -540,6 +562,13 @@ public class SuperQGUI extends JFrame implements ToolHost {
         if (this.go_control != null) {
             this.go_control.setRunning(running);
         }
+    }
+
+
+    private void enableSecondaryObjective(boolean enabled) {
+
+        lblSelectSecondaryObjective.setEnabled(enabled);
+        cboSelectSecondaryObjective.setEnabled(enabled);
     }
 
 
