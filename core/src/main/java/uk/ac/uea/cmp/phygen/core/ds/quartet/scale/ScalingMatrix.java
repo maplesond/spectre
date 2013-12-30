@@ -15,10 +15,8 @@ public class ScalingMatrix {
     private double[][] matrix;
 
     /**
-     * Compute the matrix of coefficients form a list of quartet networks
+     * Creates the matrix of coefficients form a list of quartet networks
      * @param quartetSystemList
-     * @return A matrix of coefficients.
-     * @throws IOException
      */
     public ScalingMatrix(QuartetSystemList quartetSystemList) {
 

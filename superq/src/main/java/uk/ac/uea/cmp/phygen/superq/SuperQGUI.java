@@ -41,7 +41,7 @@ public class SuperQGUI extends JFrame implements ToolHost {
     private JPanel pnlInput;
     private JPanel pnlSelectInput;
     private JPanel pnlInputOptions;
-    private JComboBox cboInputFormat;
+    private JComboBox<String> cboInputFormat;
     private JLabel lblInput;
     private JTextField txtInput;
     private JButton cmdInput;
@@ -49,11 +49,11 @@ public class SuperQGUI extends JFrame implements ToolHost {
 
     private JPanel pnlOptimisers;
     private JLabel lblSelectPrimarySolver;
-    private JComboBox cboSelectPrimarySolver;
+    private JComboBox<String> cboSelectPrimarySolver;
     private JLabel lblSelectSecondarySolver;
-    private JComboBox cboSelectSecondarySolver;
+    private JComboBox<String> cboSelectSecondarySolver;
     private JLabel lblSelectSecondaryObjective;
-    private JComboBox cboSelectSecondaryObjective;
+    private JComboBox<String> cboSelectSecondaryObjective;
 
     private JPanel pnlOutput;
     private JPanel pnlSelectOutput;

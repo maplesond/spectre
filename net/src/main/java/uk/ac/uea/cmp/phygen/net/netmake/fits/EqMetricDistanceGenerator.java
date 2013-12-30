@@ -16,7 +16,7 @@
 
 package uk.ac.uea.cmp.phygen.net.netmake.fits;
 
-import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceGenerator;
+import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrixGenerator;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phygen.core.ds.distance.RandomDistanceGenerator;
 import uk.ac.uea.cmp.phygen.core.ds.split.CompatibleSplitSystem;
@@ -31,7 +31,7 @@ import uk.ac.uea.cmp.phygen.net.netmake.weighting.TSPWeighting;
  * Time: 01:19
  * To change this template use File | Settings | File Templates.
  */
-public class EqMetricDistanceGenerator implements DistanceGenerator {
+public class EqMetricDistanceGenerator implements DistanceMatrixGenerator {
 
     @Override
     public DistanceMatrix generateDistances(final int n) {

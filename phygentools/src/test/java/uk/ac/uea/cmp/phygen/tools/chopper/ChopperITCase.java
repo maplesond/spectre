@@ -1,6 +1,7 @@
 package uk.ac.uea.cmp.phygen.tools.chopper;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -19,7 +20,6 @@ public class ChopperITCase {
 
     @Rule
     public TemporaryFolder temp = new TemporaryFolder();
-
 
     @Test
     public void sevenTaxa() throws IOException, OptimiserException {

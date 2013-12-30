@@ -22,7 +22,7 @@ package uk.ac.uea.cmp.phygen.core.ds.distance;
  * Time: 01:19
  * To change this template use File | Settings | File Templates.
  */
-public class MetricDistanceGenerator implements DistanceGenerator {
+public class MetricDistanceGenerator implements DistanceMatrixGenerator {
 
     @Override
     public DistanceMatrix generateDistances(final int n) {

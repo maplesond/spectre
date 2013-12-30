@@ -112,7 +112,6 @@ public class Scaling extends PhygenTool {
      * @param type The type of file to load
      * @param optimiser The optimiser to use for scaling
      * @param outputPrefix The location for output files to be created
-     * @return A scaled list of quartet networks.
      * @throws OptimiserException
      * @throws IOException
      */

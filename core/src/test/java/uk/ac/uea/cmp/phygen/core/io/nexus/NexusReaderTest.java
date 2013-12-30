@@ -17,11 +17,16 @@ package uk.ac.uea.cmp.phygen.core.io.nexus;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
+import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
+import uk.ac.uea.cmp.phygen.core.ds.split.CircularOrdering;
+import uk.ac.uea.cmp.phygen.core.ds.split.Split;
+import uk.ac.uea.cmp.phygen.core.ds.split.SplitSystem;
 
 import java.io.File;
 import java.io.IOException;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -94,5 +99,54 @@ public class NexusReaderTest {
         Nexus nexus = new NexusReader().parse(testFile);
 
         assertTrue(nexus.getTaxa().size() == 10);
+    }
+
+    @Test
+    public void testDistMatrix() throws IOException {
+
+        File testFile = FileUtils.toFile(NexusReaderTest.class.getResource("/distmtx.nex"));
+
+        Nexus nexus = new NexusReader().parse(testFile);
+
+        DistanceMatrix dm = nexus.getDistanceMatrix();
+
+        assertNotNull(dm);
+        assertTrue(dm.size() == 4);
+
+        double[][] mtx = dm.getMatrix();
+
+        assertTrue(mtx[2][3] == 3.0);
+    }
+
+    @Test
+    public void testBeesSplits() throws IOException {
+
+        File testFile = FileUtils.toFile(NexusReaderTest.class.getResource("/bees-splits.nex"));
+
+        Nexus nexus = new NexusReader().parse(testFile);
+
+        assertNotNull(nexus);
+
+        Taxa taxa = nexus.getTaxa();
+
+        assertNotNull(taxa);
+        assertTrue(taxa.size() == 6);
+
+        SplitSystem ss = nexus.getSplitSystem();
+
+        assertNotNull(ss);
+
+        CircularOrdering co = ss.getCircularOrdering();
+
+        assertNotNull(co);
+        assertTrue(co.size() == 6);
+        assertTrue(co.getAt(2) == 6);
+
+
+        assertTrue(ss.getNbSplits() == 9);
+        Split s = ss.getSplitAt(7);
+
+        assertNotNull(s);
+        assertTrue(s.getWeight() == 6.951241628977932E-4);
     }
 }

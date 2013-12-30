@@ -50,7 +50,7 @@ public class QNetGUI extends JFrame implements ToolHost {
 
     private JPanel pnlOptimisers;
     private JLabel lblSolver;
-    private JComboBox cboSolver;
+    private JComboBox<String> cboSolver;
     private JLabel lblTolerance;
     private JTextField txtTolerance;
 
@@ -158,8 +158,7 @@ public class QNetGUI extends JFrame implements ToolHost {
         java.util.List<String> optimisers = OptimiserFactory.getInstance().listOperationalOptimisers(Objective.ObjectiveType.QUADRATIC);
         optimisers.add(0, "Internal");
 
-        cboSolver.setModel(new DefaultComboBoxModel(
-                optimisers.toArray()));
+        cboSolver.setModel(new DefaultComboBoxModel(optimisers.toArray()));
         cboSolver.setToolTipText(QNetOptions.DESC_OPTIMISER);
         cboSolver.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

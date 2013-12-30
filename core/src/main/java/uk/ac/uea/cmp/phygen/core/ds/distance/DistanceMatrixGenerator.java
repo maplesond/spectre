@@ -16,13 +16,14 @@
 package uk.ac.uea.cmp.phygen.core.ds.distance;
 
 /**
- * Created with IntelliJ IDEA.
- * User: Dan
- * Date: 01/05/13
- * Time: 01:17
- * To change this template use File | Settings | File Templates.
+ * Distance matrix generator
  */
-public interface DistanceGenerator {
+public interface DistanceMatrixGenerator {
 
+    /**
+     * Generates a distance matrix of size 'n'
+     * @param n The size of the distance matrix to generate
+     * @return A new distance matrix of size 'n'
+     */
     DistanceMatrix generateDistances(final int n);
 }

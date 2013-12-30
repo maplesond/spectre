@@ -13,6 +13,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java-version>1.7</java-version>
         <slf4j-version>1.6.1</slf4j-version>
         <dist-name>${project.parent.artifactId}-${project.parent.version}</dist-name>
@@ -89,40 +90,6 @@
                     </configuration>
                 </plugin>
 
-                <!-- Unit testing setup (no integration tests) -->
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.14.1</version>
-                    <configuration>
-                        <excludes>
-                            <exclude>**/*IntegrationTest.java</exclude>
-                        </excludes>
-                    </configuration>
-                </plugin>
-
-                <!-- Integration tests -->
-                <plugin>
-                    <artifactId>maven-failsafe-plugin</artifactId>
-                    <version>2.13</version>
-                    <dependencies>
-                        <dependency>
-                            <groupId>org.apache.maven.surefire</groupId>
-                            <artifactId>surefire-junit47</artifactId>
-                            <version>2.13</version>
-                        </dependency>
-                    </dependencies>
-                    <executions>
-                        <execution>
-                            <id>failsafe-integration-tests</id>
-                            <phase>integration-test</phase>
-                            <goals>
-                                <goal>integration-test</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-
 
                 <!-- Creates scripts for all platforms that allow the user to easily execute this tool -->
                 <plugin>
@@ -148,6 +115,7 @@
                         <platforms>
                             <platform>all</platform>
                         </platforms>
+
                     </configuration>
                 </plugin>
 
@@ -156,6 +124,35 @@
         </pluginManagement>
 
         <plugins>
+
+            <!-- Unit testing setup (no integration tests) -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.14.1</version>
+            </plugin>
+
+            <!-- Integration tests -->
+            <plugin>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>2.14</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.maven.surefire</groupId>
+                        <artifactId>surefire-junit47</artifactId>
+                        <version>2.13</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <id>failsafe-integration-tests</id>
+                        <phase>integration-test</phase>
+                        <goals>
+                            <goal>integration-test</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 
             <!-- Creates a jar file containing the sources -->
             <plugin>
@@ -192,6 +189,7 @@
                         </goals>
                         <configuration>
                             <jarOutputDirectory>${build-dir}/support_jars</jarOutputDirectory>
+                            <quiet>true</quiet>
                         </configuration>
                     </execution>
                 </executions>

@@ -45,7 +45,5 @@ public class ChopperTest {
         QuartetSystemCombiner qsc = new Chopper().execute(qsl);
 
         assertTrue(true);
-
     }
-
 }

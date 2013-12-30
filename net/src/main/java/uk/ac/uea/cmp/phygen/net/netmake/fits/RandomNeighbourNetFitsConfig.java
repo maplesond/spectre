@@ -16,7 +16,7 @@
 
 package uk.ac.uea.cmp.phygen.net.netmake.fits;
 
-import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceGenerator;
+import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrixGenerator;
 import uk.ac.uea.cmp.phygen.core.ds.distance.MetricDistanceGenerator;
 
 /**
@@ -28,13 +28,13 @@ import uk.ac.uea.cmp.phygen.core.ds.distance.MetricDistanceGenerator;
  */
 public class RandomNeighbourNetFitsConfig {
 
-    private static final DistanceGenerator DEFAULT_DISTANCE_GENERATOR = new MetricDistanceGenerator();
+    private static final DistanceMatrixGenerator DEFAULT_DISTANCE_GENERATOR = new MetricDistanceGenerator();
     private static final int DEFAULT_MIN_N = 100;
     private static final int DEFAULT_MAX_N = 100;
     private static final int DEFAULT_STEPPING = 1;
     private static final int DEFAULT_SAMPLES_PER_STEP = 50;
 
-    private DistanceGenerator distanceGenerator;
+    private DistanceMatrixGenerator distanceGenerator;
     private int minN;
     private int maxN;
     private int stepping;
@@ -44,7 +44,7 @@ public class RandomNeighbourNetFitsConfig {
         this(DEFAULT_DISTANCE_GENERATOR, DEFAULT_MIN_N, DEFAULT_MAX_N, DEFAULT_STEPPING, DEFAULT_SAMPLES_PER_STEP);
     }
 
-    public RandomNeighbourNetFitsConfig(DistanceGenerator distanceGenerator, int minN, int maxN, int stepping, int samplesPerStep) {
+    public RandomNeighbourNetFitsConfig(DistanceMatrixGenerator distanceGenerator, int minN, int maxN, int stepping, int samplesPerStep) {
         this.distanceGenerator = distanceGenerator;
         this.minN = minN;
         this.maxN = maxN;
@@ -52,7 +52,7 @@ public class RandomNeighbourNetFitsConfig {
         this.samplesPerStep = samplesPerStep;
     }
 
-    public DistanceGenerator getDistanceGenerator() {
+    public DistanceMatrixGenerator getDistanceGenerator() {
         return distanceGenerator;
     }
 

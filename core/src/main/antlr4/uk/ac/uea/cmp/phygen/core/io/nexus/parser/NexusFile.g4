@@ -13,9 +13,15 @@ options
 
 NUMERIC :
       ('-')? DIGIT+ '.' DIGIT*   // match 1. 39. 3.14159 etc...
-    | ('-')? DIGIT* '.' DIGIT+
+    | ('-')? DIGIT* '.' DIGIT+ ('E' ('-')? DIGIT+)?
     | ('-')? DIGIT+
     ;
+
+
+// A token satisfing the regular expression [_\w]+[\d\w\._]*. Note that an single
+//  _ is considered a valid identifier. In most contexts a single _ means a
+//  "don't care identifier", simmilar to the _ meaning in prolog.
+IDENTIFIER : (LETTER_US | DIGIT | '.' | '-' )+;
 
 fragment DIGIT : [0-9];     // match single digit
 fragment NZ_DIGIT : [1-9];
@@ -26,11 +32,6 @@ LETTER_US : [a-zA-Z_];
 //WORD : LETTER+
 //     | '"' DIGIT+ '"'
 //     | '"' LETTER+ '"';
-
-// A token satisfing the regular expression [_\w]+[\d\w\._]*. Note that an single
-//  _ is considered a valid identifier. In most contexts a single _ means a
-//  "don't care identifier", simmilar to the _ meaning in prolog.
-IDENTIFIER : (LETTER_US | DIGIT | '.' | '-' )+;
 
 // We're going to ignore all excessive spaces and tabs and disregard newline characters completely
 WS : [ \t]+ -> skip;
@@ -371,8 +372,8 @@ matrix_header : 'matrix' | 'MATRIX';
 
 matrix_data :
     // Empty
-    | IDENTIFIER matrix_entry_list matrix_data
     | '\'' IDENTIFIER '\'' matrix_entry_list matrix_data
+    | IDENTIFIER matrix_entry_list matrix_data
     ;
 
 matrix_entry_list :

@@ -22,7 +22,7 @@ package uk.ac.uea.cmp.phygen.core.ds.distance;
  * Time: 01:18
  * To change this template use File | Settings | File Templates.
  */
-public class RandomDistanceGenerator implements DistanceGenerator {
+public class RandomDistanceGenerator implements DistanceMatrixGenerator {
 
     @Override
     public DistanceMatrix generateDistances(final int n) {

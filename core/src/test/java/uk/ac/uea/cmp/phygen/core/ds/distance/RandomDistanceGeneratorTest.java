@@ -38,7 +38,7 @@ public class RandomDistanceGeneratorTest {
 
     protected void testNTaxa(final int n) {
 
-        DistanceGenerator distanceGenerator = new RandomDistanceGenerator();
+        DistanceMatrixGenerator distanceGenerator = new RandomDistanceGenerator();
 
         DistanceMatrix distanceMatrix = distanceGenerator.generateDistances(n);
 
