@@ -38,10 +38,10 @@ public class SuperQCLI {
     private static String OPT_INPUT = "input";
     private static String OPT_INPUT_FORMAT = "input_format";
     private static String OPT_OUTPUT = "output";
+    private static String OPT_SCALING_SOLVER = "scaling_solver";
     private static String OPT_PRIMARY_SOLVER = "primary_solver";
     private static String OPT_SECONDARY_SOLVER = "secondary_solver";
     private static String OPT_SECONDARY_OBJECTIVE = "secondary_objective";
-    private static String OPT_SCALE = "scale";
     private static String OPT_FILTER = "filter";
     private static String OPT_HELP = "help";
     private static String OPT_VERBOSE = "verbose";
@@ -63,7 +63,6 @@ public class SuperQCLI {
 
             SuperQ.configureLogging();
             SuperQOptions sqOpts = processArgs(commandLine);
-            sqOpts.createValidateConfig();
             SuperQ superQ = new SuperQ(sqOpts);
             superQ.run();
             if (superQ.failed()) {
@@ -92,7 +91,7 @@ public class SuperQCLI {
         options.addOption("x", OPT_PRIMARY_SOLVER, true, SuperQOptions.DESC_PRIMARY_SOLVER);
         options.addOption("y", OPT_SECONDARY_SOLVER, true, SuperQOptions.DESC_SECONDARY_SOLVER);
         options.addOption("b", OPT_SECONDARY_OBJECTIVE, true, SuperQOptions.DESC_SECONDARY_OBJECTIVE);
-        options.addOption("s", OPT_SCALE, false, SuperQOptions.DESC_SCALE);
+        options.addOption("s", OPT_SCALING_SOLVER, true, SuperQOptions.DESC_SCALING_SOLVER);
         options.addOption("f", OPT_FILTER, true, SuperQOptions.DESC_FILTER);
         options.addOption("h", OPT_HELP, false, "Shows this help.");
         options.addOption("v", OPT_VERBOSE, false, "Whether to output extra information");
@@ -106,7 +105,7 @@ public class SuperQCLI {
         try {
             sqOpts = new SuperQOptions();
         } catch (OptimiserException oe) {
-            throw new ParseException("Error occured configuring optimiser.   Check you have selected an operational " +
+            throw new ParseException("Error occurred configuring optimiser.   Check you have selected an operational " +
                     "optimiser and set an appropriate objective.");
         }
 
@@ -137,6 +136,14 @@ public class SuperQCLI {
 
         try {
 
+
+            if (commandLine.hasOption(OPT_SCALING_SOLVER)) {
+                sqOpts.setScalingSolver(
+                        OptimiserFactory.getInstance().createOptimiserInstance(
+                                commandLine.getOptionValue(OPT_SCALING_SOLVER), Objective.ObjectiveType.QUADRATIC)
+                );
+            }
+
             if (commandLine.hasOption(OPT_PRIMARY_SOLVER)) {
                 sqOpts.setPrimarySolver(
                         OptimiserFactory.getInstance().createOptimiserInstance(
@@ -152,12 +159,9 @@ public class SuperQCLI {
             throw new ParseException(oe.getMessage());
         }
 
-        if (commandLine.hasOption(OPT_SCALE)) {
-            sqOpts.setScaleInputTree(true);
-        }
 
         if (commandLine.hasOption(OPT_FILTER)) {
-            sqOpts.setFilter(Double.parseDouble(commandLine.getOptionValue("filterNexus")));
+            sqOpts.setFilter(Double.parseDouble(commandLine.getOptionValue(OPT_FILTER)));
         }
 
         if (commandLine.hasOption(OPT_VERBOSE)) {

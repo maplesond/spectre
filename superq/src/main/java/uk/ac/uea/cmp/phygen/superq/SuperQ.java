@@ -102,9 +102,9 @@ public class SuperQ extends RunnableTool {
             this.continueRun();
 
             notifyUser("Converting input trees into a combined quartet system.  " +
-                    (this.options.isScaleInputTree() ? "(Scaling input - optimising with: " + this.options.getPrimarySolver() + ")" : ""));
+                    (this.options.getScalingSolver() != null ? "(Scaling input - optimising with: " + this.options.getScalingSolver() + ")" : ""));
             QuartetSystemCombiner combinedQuartetSystem =  new Chopper().execute(new File(file), type.toUpperCase(),
-                            this.options.isScaleInputTree() ? this.options.getPrimarySolver() : null);
+                            this.options.getScalingSolver());
 
             rt.gc();
             log.debug("FREE MEM - after running Chopper: " + rt.freeMemory());

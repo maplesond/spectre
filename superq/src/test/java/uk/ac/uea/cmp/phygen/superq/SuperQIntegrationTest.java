@@ -55,7 +55,7 @@ public class SuperQIntegrationTest {
                 null,
                 null,
                 null,
-                false,
+                null,
                 0.0,
                 false
         );

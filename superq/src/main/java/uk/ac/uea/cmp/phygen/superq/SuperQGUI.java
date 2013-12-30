@@ -42,13 +42,15 @@ public class SuperQGUI extends JFrame implements ToolHost {
     private JPanel pnlInput;
     private JPanel pnlSelectInput;
     private JPanel pnlInputOptions;
+    private JLabel lblInputFormat;
     private JComboBox<String> cboInputFormat;
     private JLabel lblInput;
     private JTextField txtInput;
     private JButton cmdInput;
-    private JCheckBox chkScaleInput;
 
     private JPanel pnlOptimisers;
+    private JLabel lblSelectScalingSolver;
+    private JComboBox<String> cboSelectScalingSolver;
     private JLabel lblSelectPrimarySolver;
     private JComboBox<String> cboSelectPrimarySolver;
     private JLabel lblSelectSecondarySolver;
@@ -104,8 +106,8 @@ public class SuperQGUI extends JFrame implements ToolHost {
         lblInput = new JLabel();
         txtInput = new JTextField();
         cmdInput = new JButton();
+        lblInputFormat = new JLabel();
         cboInputFormat = new JComboBox();
-        chkScaleInput = new JCheckBox();
 
         cmdInput.setText("...");
         cmdInput.setToolTipText(SuperQOptions.DESC_INPUT);
@@ -120,11 +122,11 @@ public class SuperQGUI extends JFrame implements ToolHost {
         lblInput.setText("Input file:");
         lblInput.setToolTipText(SuperQOptions.DESC_INPUT);
 
-        cboInputFormat.setModel(new DefaultComboBoxModel(new String[]{"Choose input file format:", "script", "newick"}));
-        cboInputFormat.setToolTipText(SuperQOptions.DESC_INPUT_FORMAT);
+        lblInputFormat.setText("Input format:");
+        lblInputFormat.setToolTipText(SuperQOptions.DESC_INPUT_FORMAT);
 
-        chkScaleInput.setText("Scale tree weights");
-        chkScaleInput.setToolTipText(SuperQOptions.DESC_SCALE);
+        cboInputFormat.setModel(new DefaultComboBoxModel(new String[]{"script", "newick", "nexus"}));
+        cboInputFormat.setToolTipText(SuperQOptions.DESC_INPUT_FORMAT);
 
         pnlSelectInput = new JPanel();
         pnlSelectInput.setLayout(new BoxLayout(pnlSelectInput, BoxLayout.LINE_AXIS));
@@ -142,9 +144,9 @@ public class SuperQGUI extends JFrame implements ToolHost {
         pnlInputOptions.setLayout(new BoxLayout(pnlInputOptions, BoxLayout.LINE_AXIS));
         pnlInputOptions.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
         pnlInputOptions.add(Box.createHorizontalGlue());
-        pnlInputOptions.add(cboInputFormat);
+        pnlInputOptions.add(lblInputFormat);
         pnlInputOptions.add(Box.createRigidArea(new Dimension(10, 0)));
-        pnlInputOptions.add(chkScaleInput);
+        pnlInputOptions.add(cboInputFormat);
 
         pack();
 
@@ -163,14 +165,27 @@ public class SuperQGUI extends JFrame implements ToolHost {
      */
     private void initOptimiserComponents() {
 
-        cboSelectPrimarySolver = new JComboBox();
+        cboSelectScalingSolver = new JComboBox<>();
+        lblSelectScalingSolver = new JLabel();
+
+        cboSelectPrimarySolver = new JComboBox<>();
         lblSelectPrimarySolver = new JLabel();
 
-        cboSelectSecondarySolver = new JComboBox();
+        cboSelectSecondarySolver = new JComboBox<>();
         lblSelectSecondarySolver = new JLabel();
 
-        cboSelectSecondaryObjective = new JComboBox();
+        cboSelectSecondaryObjective = new JComboBox<>();
         lblSelectSecondaryObjective = new JLabel();
+
+        java.util.List<String> scalingSolvers = OptimiserFactory.getInstance().listOperationalOptimisers(Objective.ObjectiveType.QUADRATIC);
+        scalingSolvers.add(0, "Off");
+
+        cboSelectScalingSolver.setModel(new DefaultComboBoxModel(scalingSolvers.toArray()));
+        cboSelectScalingSolver.setToolTipText(SuperQOptions.DESC_SCALING_SOLVER);
+
+        lblSelectScalingSolver.setText("Select scaling optimiser:");
+        lblSelectScalingSolver.setToolTipText(SuperQOptions.DESC_SCALING_SOLVER);
+
 
         java.util.List<String> primarySolvers = OptimiserFactory.getInstance().listOperationalOptimisers(Objective.ObjectiveType.QUADRATIC);
         primarySolvers.add(0, "Internal");
@@ -217,11 +232,13 @@ public class SuperQGUI extends JFrame implements ToolHost {
         layout.setHorizontalGroup(
                 layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+                                .addComponent(lblSelectScalingSolver)
                                 .addComponent(lblSelectPrimarySolver)
                                 .addComponent(lblSelectSecondarySolver)
                                 .addComponent(lblSelectSecondaryObjective)
                         )
                         .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                                .addComponent(cboSelectScalingSolver)
                                 .addComponent(cboSelectPrimarySolver)
                                 .addComponent(cboSelectSecondarySolver)
                                 .addComponent(cboSelectSecondaryObjective)
@@ -229,6 +246,10 @@ public class SuperQGUI extends JFrame implements ToolHost {
         );
         layout.setVerticalGroup(
                 layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                                .addComponent(lblSelectScalingSolver)
+                                .addComponent(cboSelectScalingSolver)
+                        )
                         .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                                 .addComponent(lblSelectPrimarySolver)
                                 .addComponent(cboSelectPrimarySolver)
@@ -500,49 +521,68 @@ public class SuperQGUI extends JFrame implements ToolHost {
             return null;
         }
 
-        String type = (String) cboInputFormat.getSelectedItem();
-        options.setInputFileFormat(SuperQOptions.InputFormat.valueOf(type.toUpperCase()));
+        try {
 
-        File input_file = new File(this.txtInput.getText().replaceAll("(^\")|(\"$)", ""));
-        options.setInputFile(input_file);
+            options.setInputFileFormat(SuperQOptions.InputFormat.valueOf(((String) cboInputFormat.getSelectedItem()).toUpperCase()));
 
-        File output_file = new File(this.txtSave.getText().replaceAll("(^\")|(\"$)", ""));
-        options.setOutputFile(output_file);
+            File input_file = new File(this.txtInput.getText().replaceAll("(^\")|(\"$)", ""));
+            options.setInputFile(input_file);
+
+            File output_file = new File(this.txtSave.getText().replaceAll("(^\")|(\"$)", ""));
+            options.setOutputFile(output_file);
 
 
-        if (chkFilter.isSelected()) {
-            double filter = Double.MAX_VALUE;
+            if (chkFilter.isSelected()) {
+                double filter = Double.MAX_VALUE;
+                try {
+                    filter = Double.valueOf(txtFilter.getText());
+                } catch (NumberFormatException e) {
+                    showErrorDialog("Filter threshold must be a non-negative real number");
+                    return null;
+                }
+                options.setFilter(filter);
+            }
+
+            if (this.cboSelectSecondaryObjective.isEnabled()) {
+                options.setSecondaryProblem(
+                        SecondaryProblemFactory.getInstance().createSecondaryObjective(
+                                (String)this.cboSelectSecondaryObjective.getSelectedItem()));
+            }
+
+            if (((String) this.cboSelectScalingSolver.getSelectedItem()).equalsIgnoreCase("off")) {
+                options.setScalingSolver(null);
+            }
+            if (((String) this.cboSelectPrimarySolver.getSelectedItem()).equalsIgnoreCase("internal")) {
+                options.setPrimarySolver(null);
+            }
+            if (((String) this.cboSelectSecondarySolver.getSelectedItem()).equalsIgnoreCase("off")) {
+                options.setSecondarySolver(null);
+            }
             try {
-                filter = Double.valueOf(txtFilter.getText());
-            } catch (NumberFormatException e) {
-                showErrorDialog("Filter threshold must be a non-negative real number");
+
+                options.setScalingSolver(
+                        OptimiserFactory.getInstance().createOptimiserInstance(
+                                (String) this.cboSelectScalingSolver.getSelectedItem(), Objective.ObjectiveType.QUADRATIC));
+
+                options.setPrimarySolver(
+                        OptimiserFactory.getInstance().createOptimiserInstance(
+                                (String) this.cboSelectPrimarySolver.getSelectedItem(), Objective.ObjectiveType.QUADRATIC));
+
+                if (!((String) this.cboSelectSecondarySolver.getSelectedItem()).equalsIgnoreCase("off")) {
+                    options.setSecondarySolver(
+                            OptimiserFactory.getInstance().createOptimiserInstance(
+                                    (String) this.cboSelectSecondarySolver.getSelectedItem(), options.getSecondaryProblem().getObjectiveType()));
+                }
+
+            } catch (OptimiserException oe) {
+                showErrorDialog("Could not create requested optimiser: " + (String) this.cboSelectSecondarySolver.getSelectedItem());
                 return null;
             }
-            options.setFilter(filter);
         }
-
-        options.setSecondaryProblem((SecondaryProblem) this.cboSelectSecondaryObjective.getSelectedItem());
-
-        if (((String) this.cboSelectPrimarySolver.getSelectedItem()).equalsIgnoreCase("internal")) {
-            options.setPrimarySolver(null);
-        }
-        if (((String) this.cboSelectSecondarySolver.getSelectedItem()).equalsIgnoreCase("off")) {
-            options.setSecondarySolver(null);
-        }
-        try {
-            options.setPrimarySolver(
-                    OptimiserFactory.getInstance().createOptimiserInstance(
-                            (String) this.cboSelectPrimarySolver.getSelectedItem(), Objective.ObjectiveType.QUADRATIC));
-
-            options.setSecondarySolver(
-                    OptimiserFactory.getInstance().createOptimiserInstance(
-                            (String) this.cboSelectSecondarySolver.getSelectedItem(), options.getSecondaryProblem().getObjectiveType()));
-        } catch (OptimiserException oe) {
-            showErrorDialog("Could not create requested optimiser: " + (String) this.cboSelectSecondarySolver.getSelectedItem());
+        catch(Exception e) {
+            showErrorDialog("Unexpected error occurred configuring SuperQ: " + e.getMessage());
             return null;
         }
-
-        options.setScaleInputTree(this.chkScaleInput.isEnabled() && this.chkScaleInput.isSelected());
 
         return options;
     }
