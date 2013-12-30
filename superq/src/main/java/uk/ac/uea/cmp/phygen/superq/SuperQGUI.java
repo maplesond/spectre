@@ -447,6 +447,9 @@ public class SuperQGUI extends JFrame implements ToolHost {
                                             Objective.ObjectiveType.LINEAR
                             ).toArray()));
         }
+        else {
+            cboSelectSecondaryObjective.setModel(new DefaultComboBoxModel());
+        }
     }
 
     /**
