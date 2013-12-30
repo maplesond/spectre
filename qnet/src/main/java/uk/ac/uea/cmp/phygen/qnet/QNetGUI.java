@@ -216,7 +216,7 @@ public class QNetGUI extends JFrame implements ToolHost {
 
     private void cboSolverActionPerformed(ActionEvent evt) {
 
-        enableTolerance(!(((String) this.cboSolver.getSelectedItem()).equalsIgnoreCase("internal")));
+        enableTolerance((((String) this.cboSolver.getSelectedItem()).equalsIgnoreCase("internal")));
     }
 
     private void enableTolerance(boolean enabled) {
@@ -327,7 +327,7 @@ public class QNetGUI extends JFrame implements ToolHost {
         this.initStatusComponents();
         this.initControlComponents();
 
-        this.enableTolerance(false);
+        this.enableTolerance(true);
 
         pnlOptions = new JPanel();
         pnlOptions.setLayout(new BoxLayout(pnlOptions, BoxLayout.PAGE_AXIS));

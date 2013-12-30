@@ -24,7 +24,7 @@ public class QNetOptions {
 
     public static final String DESC_TOLERANCE = "The tolerance to use when computing edge weights using internal method.  Not used if an external optimiser is selected.";
 
-    public static final String DESC_OPTIMISER = "If specified, uses an external optimiser to compute weights.  If not, " +
+    public static final String DESC_OPTIMISER = "If specified, uses an external quadratic optimiser to compute weights.  If not, " +
             "then an internal method is used instead.  Available external optimisers: " + OptimiserFactory.getInstance().listOperationalOptimisers(Objective.ObjectiveType.QUADRATIC);
 
 
