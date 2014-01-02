@@ -34,7 +34,7 @@ import static junit.framework.TestCase.assertFalse;
  * Time: 23:54
  * To change this template use File | Settings | File Templates.
  */
-public class SuperQIntegrationTest {
+public class SuperQITCase {
 
     @Rule
     public TemporaryFolder folder= new TemporaryFolder();
@@ -49,14 +49,14 @@ public class SuperQIntegrationTest {
     protected SuperQOptions createSimpleOptions() throws OptimiserException {
 
         SuperQOptions options = new SuperQOptions(
-                FileUtils.toFile(SuperQIntegrationTest.class.getResource("/simple/in.script")),
+                FileUtils.toFile(SuperQITCase.class.getResource("/simple/in.script")),
                 SuperQOptions.InputFormat.SCRIPT,
                 new File(simpleOutput, "simple.out"),
                 null,
                 null,
                 null,
                 null,
-                0.0,
+                null,
                 false
         );
 
@@ -72,6 +72,10 @@ public class SuperQIntegrationTest {
 
         superQ.run();
 
-        //assertFalse(superQ.failed());
+        if (superQ.failed()) {
+            System.err.println(superQ.getFullErrorMessage());
+        }
+
+        assertFalse(superQ.failed());
     }
 }

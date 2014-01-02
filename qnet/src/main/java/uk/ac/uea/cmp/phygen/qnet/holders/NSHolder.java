@@ -15,6 +15,8 @@
  */
 package uk.ac.uea.cmp.phygen.qnet.holders;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.WeightedQuartetMap;
@@ -22,162 +24,61 @@ import uk.ac.uea.cmp.phygen.core.ds.quartet.WeightedQuartetMap;
 import java.util.List;
 
 
-public class NSHolder {
-
-    private Integer[] counts;
-    private Double[] weights;
+public class NSHolder extends AbstractBasicHolder {
 
     public NSHolder(List<Taxa> taxaSets, int N, WeightedQuartetMap theQuartetWeights) {
 
-        counts = new Integer[Quartet.over2(N)];
-        weights = new Double[Quartet.over2(N)];
+        super(N, taxaSets, theQuartetWeights);
+    }
 
-        for (int n = 0; n < Quartet.over2(N); n++) {
-
-            counts[n] = new Integer(0);
-            weights[n] = new Double(0.0);
-
-        }
+    @Override
+    protected Pair<Integer, Double> calcCountWeight(Taxa A, Taxa B, int a, int b) {
 
         // now, we store everything properly
 
-        for (int i = 1; i < N; i++) {
+        int count = 0;
+        double weight = 0.0;
 
-            for (int j = i + 1; j < N + 1; j++) {
+        for (int c = 0; c < taxaSets.size() - 1; c++) {
 
-                // for every pair i, j
+            for (int d = c + 1; d < taxaSets.size(); d++) {
 
-                // find which list they are in
-                // for those two indices
-                // take all combinations of path entries
-                // against all combinations of other paths by all other path entries
+                if (c != a && c != b && d != a && d != b) {
 
-                int a = -1, b = -1;
+                    Taxa C = taxaSets.get(c);
+                    Taxa D = taxaSets.get(d);
 
-                for (int m = 0; m < taxaSets.size(); m++) {
+                    // we now have four non-same lists
 
-                    Taxa tL = taxaSets.get(m);
+                    for (int xA = 0; xA < A.size(); xA++) {
 
-                    if (tL.contains(i)) {
+                        for (int xB = 0; xB < B.size(); xB++) {
 
-                        a = m;
-                        break;
+                            for (int xC = 0; xC < C.size(); xC++) {
 
-                    }
+                                for (int xD = 0; xD < D.size(); xD++) {
 
-                }
+                                    // this is a unique, suitable quartet
 
-                for (int m = 0; m < taxaSets.size(); m++) {
+                                    int yA = A.get(xA).getId();
+                                    int yB = B.get(xB).getId();
+                                    int yC = C.get(xC).getId();
+                                    int yD = D.get(xD).getId();
 
-                    Taxa tL = taxaSets.get(m);
-
-                    if (tL.contains(j)) {
-
-                        b = m;
-                        break;
-
-                    }
-
-                }
-
-                if (a == b) {
-
-                    // if on the same path, no quartets meet the conditions
-
-                    counts[Quartet.over2(j - 1) + Quartet.over1(i - 1)] = new Integer(0);
-                    weights[Quartet.over2(j - 1) + Quartet.over1(i - 1)] = new Double(0.0);
-
-                    continue;
-
-                }
-
-                // otherwise:
-                // we now have the list indices
-
-                int count = 0;
-                double weight = 0.0;
-
-                Taxa A = taxaSets.get(a);
-                Taxa B = taxaSets.get(b);
-
-                for (int c = 0; c < taxaSets.size() - 1; c++) {
-
-                    for (int d = c + 1; d < taxaSets.size(); d++) {
-
-                        if (c != a && c != b && d != a && d != b) {
-
-                            Taxa C = taxaSets.get(c);
-                            Taxa D = taxaSets.get(d);
-
-                            // we now have four non-same lists
-
-                            for (int xA = 0; xA < A.size(); xA++) {
-
-                                for (int xB = 0; xB < B.size(); xB++) {
-
-                                    for (int xC = 0; xC < C.size(); xC++) {
-
-                                        for (int xD = 0; xD < D.size(); xD++) {
-
-                                            // this is a unique, suitable quartet
-
-                                            int yA = A.get(xA).getId();
-                                            int yB = B.get(xB).getId();
-                                            int yC = C.get(xC).getId();
-                                            int yD = D.get(xD).getId();
-
-                                            count++;
-                                            weight += theQuartetWeights.getWeight(new Quartet(yA, yB, yC, yD));
-                                        }
+                                    // DAN:  Add this check, which wasn't here before, because we are now stricter with regards to
+                                    // what is and what isn't a quartet
+                                    if (Quartet.areDistinct(yA, yB, yC, yD)) {
+                                        count++;
+                                        weight += theQuartetWeights.getWeight(new Quartet(yA, yB, yC, yD));
                                     }
                                 }
                             }
                         }
                     }
                 }
-
-                counts[Quartet.over2(j - 1) + Quartet.over1(i - 1)] = new Integer(count);
-                weights[Quartet.over2(j - 1) + Quartet.over1(i - 1)] = new Double(weight);
-
             }
-
         }
 
-    }
-
-    public int getN(int i, int j) {
-
-        int x = Math.max(i, j);
-        int y = Math.min(i, j);
-
-        return counts[Quartet.over2(x - 1) + Quartet.over1(y - 1)].intValue();
-
-    }
-
-    public void setN(int i, int j, int newN) {
-
-        int x = Math.max(i, j);
-        int y = Math.min(i, j);
-
-        counts[Quartet.over2(x - 1) + Quartet.over1(y - 1)] = new Integer(newN);
-
-    }
-
-    public double getS(int i, int j) {
-
-        int x = Math.max(i, j);
-        int y = Math.min(i, j);
-
-        return weights[Quartet.over2(x - 1) + Quartet.over1(y - 1)].doubleValue();
-
-    }
-
-    public void setS(int i, int j, double newS) {
-
-        int x = Math.max(i, j);
-        int y = Math.min(i, j);
-
-        weights[Quartet.over2(x - 1) + Quartet.over1(y - 1)] = new Double(newS);
-
+        return new ImmutablePair<>(count, weight);
     }
 }

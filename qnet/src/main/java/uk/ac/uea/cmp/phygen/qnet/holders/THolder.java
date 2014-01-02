@@ -23,26 +23,19 @@ import java.util.List;
 
 public class THolder {
 
+
+    private int[][][] counts;
+    private double[][][] weights;
+
     public THolder(List<Taxa> taxaSets, int N, WeightedQuartetMap theQuartetWeights) {
 
-        counts = new Integer[N][N][N];
-        weights = new Double[N][N][N];
+        counts = new int[N][N][N];
+        weights = new double[N][N][N];
 
-        for (int n1 = 1; n1 < N + 1; n1++) {
 
-            for (int n2 = 1; n2 < N + 1; n2++) {
+        for (int i = 0; i < N; i++) {
 
-                for (int n3 = 1; n3 < N + 1; n3++) {
-
-                    counts[n1 - 1][n2 - 1][n3 - 1] = new Integer(0);
-                    weights[n1 - 1][n2 - 1][n3 - 1] = new Double(0.0);
-                }
-            }
-        }
-
-        for (int i = 1; i < N + 1; i++) {
-
-            for (int j = 1; j < N + 1; j++) {
+            for (int j = 0; j < N; j++) {
 
                 // here, we must have that i and j are not on the same path
                 // and we want their paths
@@ -53,7 +46,7 @@ public class THolder {
 
                     Taxa tL = taxaSets.get(m);
 
-                    if (tL.contains(i)) {
+                    if (tL.containsId(i)) {
 
                         a = m;
                         break;
@@ -64,24 +57,31 @@ public class THolder {
 
                     Taxa tL = taxaSets.get(m);
 
-                    if (tL.contains(j)) {
+                    if (tL.containsId(j)) {
 
                         b = m;
                         break;
                     }
                 }
 
+                if (a == -1) {
+                    throw new IllegalStateException("Could not find taxaset associated with i: " + i);
+                }
+
+                if (b == -1) {
+                    throw new IllegalStateException("Could not find taxaset associated with j: " + j);
+                }
+
                 if (a == b) {
 
                     // if on the same path, no quartets meet the conditions
-
                     continue;
                 }
 
                 Taxa A = taxaSets.get(a);
                 Taxa B = taxaSets.get(b);
 
-                for (int k = 1; k < N + 1; k++) {
+                for (int k = 0; k < N; k++) {
 
                     int c = -1;
 
@@ -91,11 +91,15 @@ public class THolder {
 
                         Taxa tL = taxaSets.get(m);
 
-                        if (tL.contains(k)) {
+                        if (tL.containsId(k)) {
 
                             c = m;
                             break;
                         }
+                    }
+
+                    if (c == -1) {
+                        throw new IllegalStateException("Could not find taxaset associated with k: " + k);
                     }
 
                     if (c != a && c != b) {
@@ -122,15 +126,19 @@ public class THolder {
                                         int yB = B.get(xB).getId();
                                         int yC = C.get(xC).getId();
 
-                                        count++;
-                                        weight += theQuartetWeights.getWeight(new Quartet(yA1, yB, yA2, yC));
+                                        // DAN:  Add this check, which wasn't here before, because we are now stricter with regards to
+                                        // what is and what isn't a quartet
+                                        if (Quartet.areDistinct(yA1, yA2, yB, yC)) {
+                                            count++;
+                                            weight += theQuartetWeights.getWeight(new Quartet(yA1, yB, yA2, yC));
+                                        }
                                     }
                                 }
                             }
                         }
 
-                        counts[i - 1][j - 1][k - 1] = new Integer(count);
-                        weights[i - 1][j - 1][k - 1] = new Double(weight);
+                        counts[i][j][k] = count;
+                        weights[i][j][k] = weight;
                     }
                 }
             }
@@ -138,21 +146,19 @@ public class THolder {
     }
 
     public int getN(int i, int j, int k) {
-        return counts[i - 1][j - 1][k - 1].intValue();
+        return counts[i][j][k];
     }
 
     public void setN(int i, int j, int k, int newN) {
-        counts[i - 1][j - 1][k - 1] = new Integer(newN);
+        counts[i][j][k] = newN;
     }
 
     public double getT(int i, int j, int k) {
-        return weights[i - 1][j - 1][k - 1].doubleValue();
+        return weights[i][j][k];
     }
 
     public void setT(int i, int j, int k, double newT) {
-        weights[i - 1][j - 1][k - 1] = new Double(newT);
+        weights[i][j][k] = newT;
     }
 
-    Integer[][][] counts;
-    Double[][][] weights;
 }

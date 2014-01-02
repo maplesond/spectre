@@ -17,6 +17,7 @@
 package uk.ac.uea.cmp.phygen.core.ds.quartet;
 
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
+import uk.ac.uea.cmp.phygen.core.ds.Taxon;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -34,6 +35,7 @@ public class QuartetSystemCombiner {
     private QuartetSystemList originalSystems;
 
     private Taxa taxa;
+    private List<Taxa> translated;
     private WeightedQuartetMap quartetWeights;
     private WeightedQuartetMap summer;
 
@@ -46,10 +48,15 @@ public class QuartetSystemCombiner {
         this.quartetWeights = quartetWeights;
         this.summer = summer;
         this.originalSystems = new QuartetSystemList();
+        this.translated = new ArrayList<>();
     }
 
     public Taxa getTaxa() {
         return taxa;
+    }
+
+    public List<Taxa> getTranslatedTaxaSets() {
+        return translated;
     }
 
     public WeightedQuartetMap getQuartetWeights() {
@@ -118,12 +125,10 @@ public class QuartetSystemCombiner {
         Taxa oldTaxa = new Taxa(this.taxa);
 
         // Combine chopped tree's taxa set, with everything found in loader.  Only keeps distinct taxa.
-        this.taxa.addAll(qnet.getTaxa());
+        this.taxa.addAll(qnet.getTaxa(), false);
 
-        // Is this still necessary any longer?... I'd prefer not to touch the original datasets
-        // I don't like doing this much, but this method goes back through all the data sets and updates the Taxa indicies
-        // so they match our new master taxa list
-        //dataSets.translateTaxaIndicies(this.taxa);
+        // Store a separate version of the quartet system taxa list, which specify the position in the new complete dataset
+        this.translated.add(this.translateTaxaIndicies(this.taxa, qnet.getTaxa()));
 
         // Convert the taxa sets in the current quartet weights and the summer
         this.quartetWeights.translate(oldTaxa, this.taxa);
@@ -136,6 +141,25 @@ public class QuartetSystemCombiner {
         this.summer.sum(this.taxa, qnet.getTaxa(), qnet.getWeight());
 
         return this;
+    }
+
+    /**
+     * Using the indices of the master taxa set, updates the new taxa set with the master's indicies
+     * @param allTaxa The combined taxa set
+     * @param subset The subset of taxa, which is a subset of the combined master taxa set.
+     * @returns Returns a new copy of subset, which has its indicies updated to reflect those in the master taxa set.
+     *
+     */
+    private Taxa translateTaxaIndicies(Taxa allTaxa, Taxa subset) {
+
+        Taxa newTaxa = new Taxa();
+        for(Taxon t : subset) {
+            Taxon masterTaxon = allTaxa.getByName(t.getName());
+
+            newTaxa.add(new Taxon(t.getName(), masterTaxon.getId()));
+        }
+
+        return newTaxa;
     }
 
     public QuartetSystem create() {

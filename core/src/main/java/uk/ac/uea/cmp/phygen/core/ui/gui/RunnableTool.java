@@ -15,12 +15,14 @@
  */
 package uk.ac.uea.cmp.phygen.core.ui.gui;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.IOException;
 
 public abstract class RunnableTool implements Runnable {
     // Error handling
 
-    private String error_message;
+    private Throwable error;
     // Runtime controls
     private ThreadCompleteListener listener;
     private StatusTracker tracker;
@@ -35,7 +37,7 @@ public abstract class RunnableTool implements Runnable {
     }
 
     protected RunnableTool(StatusTracker tracker, ThreadCompleteListener listener) {
-        this.error_message = null;
+        this.error = null;
         this.continue_run = true;
 
         setTracker(tracker);
@@ -44,19 +46,33 @@ public abstract class RunnableTool implements Runnable {
 
     // Error handling routines.
     public boolean failed() {
-        return this.error_message != null ? true : false;
+        return this.error != null ? true : false;
     }
 
     public String getErrorMessage() {
-        return error_message;
+        return error.getMessage();
     }
 
-    protected void setErrorMessage(String message) {
-        this.error_message = message;
+    public String getStackTrace() {
+
+        return StringUtils.join(this.error.getStackTrace(), "\n");
     }
 
-    protected void clearErrorMessage() {
-        this.error_message = null;
+    public Throwable getError() {
+        return this.error;
+    }
+
+    public String getFullErrorMessage() {
+        return this.getErrorMessage() + "\n" + this.getStackTrace();
+
+    }
+
+    protected void setError(Throwable throwable) {
+        this.error = throwable;
+    }
+
+    protected void clearError() {
+        this.error = null;
     }
 
     // Runtime handling routines.

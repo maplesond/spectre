@@ -24,6 +24,20 @@ import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
 public class PHolder {
 
     /**
+     * The heart of the data structure
+     */
+    private PHContent[] data;
+
+    /**
+     * this is N
+     */
+    private int cSize;
+    /**
+     * Number of actual quartets
+     */
+    private int theSize;
+
+    /**
      * ArrayList of ArrayLists of etc. of triplets
      * <p/>
      * and a get and set method
@@ -39,7 +53,6 @@ public class PHolder {
     public int getSize() {
 
         return theSize;
-
     }
 
     /**
@@ -49,7 +62,6 @@ public class PHolder {
 
         data = new PHContent[Quartet.over4(N)];
         cSize = N;
-
     }
 
     public void initialize() {
@@ -60,15 +72,12 @@ public class PHolder {
 
             PHContent d = new PHContent(0, 0);
             data[n] = d;
-
         }
-
     }
 
     public void setSize(int theNewSize) {
 
         theSize = theNewSize;
-
     }
 
     public int getP(int a, int b, int c, int d) {
@@ -79,7 +88,6 @@ public class PHolder {
         if (!(a < b && b < c && c < d)) {
 
             return 0;
-
         }
 
         if (d > cSize) {
@@ -89,15 +97,13 @@ public class PHolder {
             // we work with out of d - n, a, b, c
 
             return data[Quartet.over1(d - cSize - 1) + Quartet.over2(a - 1) + Quartet.over3(b - 1) + Quartet.over4(c - 1)].getOuterP();
-
-        } else {
+        }
+        else {
 
             // we work with in of a, b, c, d
 
             return data[Quartet.over1(a - 1) + Quartet.over2(b - 1) + Quartet.over3(c - 1) + Quartet.over4(d - 1)].getInnerP();
-
         }
-
     }
 
     public int getQ(int a, int b, int c, int d) {
@@ -116,7 +122,8 @@ public class PHolder {
 
             return data[Quartet.over1(d - cSize - 1) + Quartet.over2(a - 1) + Quartet.over3(b - 1) + Quartet.over4(c - 1)].getOuterQ();
 
-        } else {
+        }
+        else {
 
             // we work with in of a, b, c, d
 
@@ -124,9 +131,7 @@ public class PHolder {
 //            System.out.println ("inner q " + a + " " + b + " " + c + " " + d + " gets " + data[over4 (a - 1) + over3 (b - 1) + over2 (c - 1) + over1 (d - 1)].getInnerQ ());
 
             return data[Quartet.over1(a - 1) + Quartet.over2(b - 1) + Quartet.over3(c - 1) + Quartet.over4(d - 1)].getInnerQ();
-
         }
-
     }
 
     public boolean getR(int a, int b, int c, int d, Taxa cT) {
@@ -139,7 +144,6 @@ public class PHolder {
             c = b;
             b = a;
             a = oD - cT.size();
-
         }
 
         // this is an ugly hack
@@ -206,15 +210,13 @@ public class PHolder {
             // we work with out of d - n, a, b, c
 
             return data[Quartet.over1(d - cSize - 1) + Quartet.over2(a - 1) + Quartet.over3(b - 1) + Quartet.over4(c - 1)].getR();
-
-        } else {
+        }
+        else {
 
             // we work with in of a, b, c, d
 
             return data[Quartet.over1(a - 1) + Quartet.over2(b - 1) + Quartet.over3(c - 1) + Quartet.over4(d - 1)].getR();
-
         }
-
     }
 
     public void setP(int a, int b, int c, int d, int newW) {
@@ -229,15 +231,13 @@ public class PHolder {
             // we work with out of d - n, a, b, c
 
             data[Quartet.over1(d - cSize - 1) + Quartet.over2(a - 1) + Quartet.over3(b - 1) + Quartet.over4(c - 1)].setOuterP(newW);
-
-        } else {
+        }
+        else {
 
             // we work with in of a, b, c, d
 
             data[Quartet.over1(a - 1) + Quartet.over2(b - 1) + Quartet.over3(c - 1) + Quartet.over4(d - 1)].setInnerP(newW);
-
         }
-
     }
 
     public void setQ(int a, int b, int c, int d, int newW) {
@@ -252,15 +252,13 @@ public class PHolder {
             // we work with out of d - n, a, b, c
 
             data[Quartet.over1(d - cSize - 1) + Quartet.over2(a - 1) + Quartet.over3(b - 1) + Quartet.over4(c - 1)].setOuterQ(newW);
-
-        } else {
+        }
+        else {
 
             // we work with in of a, b, c, d
 
             data[Quartet.over1(a - 1) + Quartet.over2(b - 1) + Quartet.over3(c - 1) + Quartet.over4(d - 1)].setInnerQ(newW);
-
         }
-
     }
 
     public void setR(int a, int b, int c, int d, boolean newW) {
@@ -275,119 +273,96 @@ public class PHolder {
             // we work with out of d - n, a, b, c
 
             data[Quartet.over1(d - cSize - 1) + Quartet.over2(a - 1) + Quartet.over3(b - 1) + Quartet.over4(c - 1)].setR(newW);
-
-        } else {
+        }
+        else {
 
             // we work with in of a, b, c, d
 
             data[Quartet.over1(a - 1) + Quartet.over2(b - 1) + Quartet.over3(c - 1) + Quartet.over4(d - 1)].setR(newW);
-
         }
-
     }
 
     public PHContent[] getData() {
 
         return data;
-
     }
 
     public void setData(PHContent[] newData) {
 
         data = newData;
-
     }
+
+
 
     /**
-     * The heart of the data structure
+     * Small helper - the first is p/q (a, b, c, d) - i.e. inner join the second is p/q (b, c, d, n + a) - i.e. outer join
+     * it is still defined for a, b, c, d
      */
-    PHContent[] data;
-    // this is N
-    int cSize;
-    /**
-     * Number of actual quartets
-     */
-    int theSize;
+    static class PHContent {
+
+        int outerP, innerP;
+        int outerQ, innerQ;
+        boolean R;
+
+        public PHContent(int out, int in) {
+
+            this.outerP = out;
+            this.innerP = in;
+
+            innerQ = 0;
+            outerQ = 0;
+            R = false;
+        }
+
+        public boolean getR() {
+
+            return R;
+        }
+
+        public void setR(boolean r) {
+
+            this.R = r;
+        }
+
+        public int getOuterQ() {
+
+            return outerQ;
+        }
+
+        public void setOuterQ(int outerQ) {
+
+            this.outerQ = outerQ;
+        }
+
+        public int getInnerQ() {
+
+            return innerQ;
+        }
+
+        public void setInnerQ(int innerQ) {
+
+            this.innerQ = innerQ;
+        }
+
+        public int getOuterP() {
+
+            return outerP;
+        }
+
+        public void setOuterP(int outerP) {
+
+            this.outerP = outerP;
+        }
+
+        public int getInnerP() {
+
+            return innerP;
+        }
+
+        public void setInnerP(int innerP) {
+
+            this.innerP = innerP;
+        }
+    }
 }
 
-/**
- * Small helper - the first is p/q (a, b, c, d) - i.e. inner join the second is p/q (b, c, d, n + a) - i.e. outer join
- * it is still defined for a, b, c, d
- */
-class PHContent {
-
-    int outerP, innerP;
-    int outerQ, innerQ;
-    boolean R;
-
-    public PHContent(int out, int in) {
-
-        this.outerP = out;
-        this.innerP = in;
-
-        innerQ = 0;
-        outerQ = 0;
-        R = false;
-
-    }
-
-    public boolean getR() {
-
-        return R;
-
-    }
-
-    public void setR(boolean r) {
-
-        this.R = r;
-
-    }
-
-    public int getOuterQ() {
-
-        return outerQ;
-
-    }
-
-    public void setOuterQ(int outerQ) {
-
-        this.outerQ = outerQ;
-
-    }
-
-    public int getInnerQ() {
-
-        return innerQ;
-
-    }
-
-    public void setInnerQ(int innerQ) {
-
-        this.innerQ = innerQ;
-
-    }
-
-    public int getOuterP() {
-
-        return outerP;
-
-    }
-
-    public void setOuterP(int outerP) {
-
-        this.outerP = outerP;
-
-    }
-
-    public int getInnerP() {
-
-        return innerP;
-
-    }
-
-    public void setInnerP(int innerP) {
-
-        this.innerP = innerP;
-
-    }
-}

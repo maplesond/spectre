@@ -28,19 +28,19 @@ public class ZHolder {
 
         sizes = new ArrayList<>();
 
-        for (int i = 1; i < N + 1; i++) {
+        for (int i = 0; i < N; i++) {
             sizes.add(z(taxaSets, i));
         }
     }
 
     public int getZ(int i) {
 
-        return ((Integer) sizes.get(i - 1)).intValue();
+        return sizes.get(i);
     }
 
     public void setZ(int i, int newZ) {
 
-        sizes.set(i - 1, new Integer(newZ));
+        sizes.set(i, new Integer(newZ));
     }
 
 
@@ -49,7 +49,7 @@ public class ZHolder {
 
         for (Taxa tL : taxaSets) {
 
-            if (tL.contains(i)) {
+            if (tL.containsId(i)) {
 
                 if (i == tL.first().getId()) {
                     return tL.size();

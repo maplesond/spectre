@@ -122,10 +122,10 @@ public class QNet extends RunnableTool {
         // Order the taxa
         CircularOrdering circularOrdering = this.computeCircularOrdering(combinedQuartetSystem);
 
-        // Create the actual quartet system from the combiner
-        QuartetSystem quartetSystem = combinedQuartetSystem.create();
-
         notifyUser("Computing weights");
+
+        // Get the actual combined quartet system
+        QuartetSystem quartetSystem = combinedQuartetSystem.create();
 
         // Compute the weights
         ComputedWeights solution = this.computedWeights(quartetSystem, tolerance, optimiser);
@@ -158,7 +158,7 @@ public class QNet extends RunnableTool {
 
         Taxa allTaxa = combinedQuartetSystem.getTaxa();
         int N = allTaxa.size();
-        List<Taxa> taxaSets = combinedQuartetSystem.getOriginalTaxaSets();
+        List<Taxa> taxaSets = combinedQuartetSystem.getTranslatedTaxaSets();
         WeightedQuartetMap theQuartetWeights = combinedQuartetSystem.getQuartetWeights();
 
         double c = 0.5;
@@ -176,7 +176,9 @@ public class QNet extends RunnableTool {
 
             // The taxa set X (prime)
 
-            X.add((taxaSets.get(n)).get(0).getId());
+            //X.add((taxaSets.get(n)).get(0).getId());
+
+            X.add(allTaxa.get(n).getId());
         }
 
         // init all the holders
@@ -198,7 +200,7 @@ public class QNet extends RunnableTool {
 
         // DEBUG: output t
 
-        log.debug("After initiation step:");
+        log.debug("After initialisation step:");
 
         if (X.size() > 2) {
 
@@ -209,10 +211,10 @@ public class QNet extends RunnableTool {
                     int i = X.get(xI);
                     int j = X.get(xJ);
 
-                    if (snH.getS(i, j) != 0.0) {
+                    if (snH.getWeight(i, j) != 0.0) {
 
-                        log.debug("n (" + i + ", " + j + "): " + snH.getN(i, j));
-                        log.debug("s (" + i + ", " + j + "): " + snH.getS(i, j));
+                        log.debug("n (" + i + ", " + j + "): " + snH.getCount(i, j));
+                        log.debug("s (" + i + ", " + j + "): " + snH.getWeight(i, j));
                     }
                 }
 
@@ -248,18 +250,15 @@ public class QNet extends RunnableTool {
                     int a = X.get(xA);
                     int b = X.get(xB);
 
-                    double q = snH.getS(a, b) / ((double) snH.getN(a, b));
+                    double q = snH.calcWeightedCount(a, b);
 
                     if (q > qMax) {
 
                         qMax = q;
                         aMax = a;
                         bMax = b;
-
                     }
-
                 }
-
             }
 
             int a = aMax;
@@ -288,31 +287,29 @@ public class QNet extends RunnableTool {
                     tBAK += tH.getT(b, a, k);
                     tAKB += tH.getT(a, k, b);
                     tBKA += tH.getT(b, k, a);
-
                 }
-
             }
 
             double y1 = (zH.getZ(a) - 1) * tABK
                     + (zH.getZ(b) - 1) * tBAK
                     + (zH.getZ(b) - 1) * (zH.getZ(a) - 1) * c
-                    * (N - zH.getZ(a) - zH.getZ(b)) * u0H.getU(a, b);
+                    * (N - zH.getZ(a) - zH.getZ(b)) * u0H.getWeight(a, b);
             double y2 = (zH.getZ(a) - 1) * tABK
                     + (zH.getZ(b) - 1) * tBKA
                     + (zH.getZ(b) - 1) * (zH.getZ(a) - 1) * c
-                    * (N - zH.getZ(a) - zH.getZ(b)) * u1H.getU(a, b);
+                    * (N - zH.getZ(a) - zH.getZ(b)) * u1H.getWeight(a, b);
             double y3 = (zH.getZ(a) - 1) * tAKB
                     + (zH.getZ(b) - 1) * tBAK
                     + (zH.getZ(b) - 1) * (zH.getZ(a) - 1) * c
-                    * (N - zH.getZ(a) - zH.getZ(b)) * u1H.getU(a, b);
+                    * (N - zH.getZ(a) - zH.getZ(b)) * u1H.getWeight(a, b);
             double y4 = (zH.getZ(a) - 1) * tAKB
                     + (zH.getZ(b) - 1) * tBKA
                     + (zH.getZ(b) - 1) * (zH.getZ(a) - 1) * c
-                    * (N - zH.getZ(a) - zH.getZ(b)) * u0H.getU(a, b);
+                    * (N - zH.getZ(a) - zH.getZ(b)) * u0H.getWeight(a, b);
 
             log.debug("Deciding on direction to join by:\nsum t (a, b, k): " + tABK + "\nsum t (a, k, b): " + tAKB
                     + "\nsum t (b, a, k):" + tBAK + "\nsum t (b, k, a): " + tBKA + "\nu (a, b, 0): "
-                    + u0H.getU(a, b) + "\nu (a, b, 1): " + u1H.getU(a, b) + "\ny1: " + y1 + " y2: " + y2 + " y3: " + y3 + " y4: " + y4);
+                    + u0H.getWeight(a, b) + "\nu (a, b, 1): " + u1H.getWeight(a, b) + "\ny1: " + y1 + " y2: " + y2 + " y3: " + y3 + " y4: " + y4);
 
 
             if (y1 > yMax) {
@@ -388,8 +385,8 @@ public class QNet extends RunnableTool {
 
                     // modify s
 
-                    double sAK = snH.getS(a, k);
-                    double sBK = snH.getS(b, k);
+                    double sAK = snH.getWeight(a, k);
+                    double sBK = snH.getWeight(b, k);
 
                     double wSum = 0;
 
@@ -403,14 +400,14 @@ public class QNet extends RunnableTool {
                         }
                     }
 
-                    snH.setS(a, k, sAK + sBK - wSum);
+                    snH.setWeight(a, k, sAK + sBK - wSum);
 
                     // modify n
 
-                    int nAK = snH.getN(a, k);
-                    int nBK = snH.getN(b, k);
+                    int nAK = snH.getCount(a, k);
+                    int nBK = snH.getCount(b, k);
 
-                    snH.setN(a, k, nAK + nBK - 2
+                    snH.setCount(a, k, nAK + nBK - 2
                             * (N - zH.getZ(a) - zH.getZ(b) - zH.getZ(k))
                             * zH.getZ(a) * zH.getZ(b) * zH.getZ(k));
 
@@ -422,11 +419,11 @@ public class QNet extends RunnableTool {
 
                         if (l != a && l != b && l != k && l < k) {
 
-                            double sKL = snH.getS(k, l);
-                            int nKL = snH.getN(k, l);
+                            double sKL = snH.getWeight(k, l);
+                            int nKL = snH.getCount(k, l);
 
-                            snH.setS(k, l, sKL - wH.getW(a, b, k, l));
-                            snH.setN(k, l, nKL - zH.getZ(a) * zH.getZ(b)
+                            snH.setWeight(k, l, sKL - wH.getW(a, b, k, l));
+                            snH.setCount(k, l, nKL - zH.getZ(a) * zH.getZ(b)
                                     * zH.getZ(k) * zH.getZ(l));
 
                             if (y == 1) {
@@ -497,42 +494,40 @@ public class QNet extends RunnableTool {
 
                     if (y == 1) {
 
-                        double m1 = u1H.getU(a, k) + u0H.getU(b, k) + tH.getT(k, a, b);
-                        double m2 = u0H.getU(a, k) + u1H.getU(b, k) + tH.getT(k, b, a);
+                        double m1 = u1H.getWeight(a, k) + u0H.getWeight(b, k) + tH.getT(k, a, b);
+                        double m2 = u0H.getWeight(a, k) + u1H.getWeight(b, k) + tH.getT(k, b, a);
 
-                        u0H.setU(a, k, m1);
-                        u1H.setU(a, k, m2);
+                        u0H.setWeight(a, k, m1);
+                        u1H.setWeight(a, k, m2);
                     }
 
                     if (y == 2) {
 
-                        double m1 = u1H.getU(a, k) + u1H.getU(b, k) + tH.getT(k, a, b);
-                        double m2 = u0H.getU(a, k) + u0H.getU(b, k) + tH.getT(k, b, a);
+                        double m1 = u1H.getWeight(a, k) + u1H.getWeight(b, k) + tH.getT(k, a, b);
+                        double m2 = u0H.getWeight(a, k) + u0H.getWeight(b, k) + tH.getT(k, b, a);
 
-                        u0H.setU(a, k, m1);
-                        u1H.setU(a, k, m2);
+                        u0H.setWeight(a, k, m1);
+                        u1H.setWeight(a, k, m2);
                     }
 
                     if (y == 3) {
 
-                        double m1 = u0H.getU(a, k) + u0H.getU(b, k) + tH.getT(k, a, b);
-                        double m2 = u1H.getU(a, k) + u1H.getU(b, k) + tH.getT(k, b, a);
+                        double m1 = u0H.getWeight(a, k) + u0H.getWeight(b, k) + tH.getT(k, a, b);
+                        double m2 = u1H.getWeight(a, k) + u1H.getWeight(b, k) + tH.getT(k, b, a);
 
-                        u0H.setU(a, k, m1);
-                        u1H.setU(a, k, m2);
+                        u0H.setWeight(a, k, m1);
+                        u1H.setWeight(a, k, m2);
                     }
 
                     if (y == 4) {
 
-                        double m1 = u0H.getU(a, k) + u1H.getU(b, k) + tH.getT(k, a, b);
-                        double m2 = u1H.getU(a, k) + u0H.getU(b, k) + tH.getT(k, b, a);
+                        double m1 = u0H.getWeight(a, k) + u1H.getWeight(b, k) + tH.getT(k, a, b);
+                        double m2 = u1H.getWeight(a, k) + u0H.getWeight(b, k) + tH.getT(k, b, a);
 
-                        u0H.setU(a, k, m1);
-                        u1H.setU(a, k, m2);
+                        u0H.setWeight(a, k, m1);
+                        u1H.setWeight(a, k, m2);
                     }
-
                 }
-
             }
 
             zH.setZ(a, zH.getZ(a) + zH.getZ(b));
@@ -555,20 +550,20 @@ public class QNet extends RunnableTool {
                         int i = X.get(xI);
                         int j = X.get(xJ);
 
-                        if (snH.getS(i, j) != 0.0) {
+                        if (snH.getWeight(i, j) != 0.0) {
 
-                            log.debug("n (" + i + ", " + j + "): " + snH.getN(i, j));
-                            log.debug("s (" + i + ", " + j + "): " + snH.getS(i, j));
+                            log.debug("n (" + i + ", " + j + "): " + snH.getCount(i, j));
+                            log.debug("s (" + i + ", " + j + "): " + snH.getWeight(i, j));
                         }
 
-                        if (u0H.getU(i, j) != 0.0) {
+                        if (u0H.getWeight(i, j) != 0.0) {
 
-                            log.debug("u (" + i + ", " + j + ", 0): " + u0H.getU(i, j));
+                            log.debug("u (" + i + ", " + j + ", 0): " + u0H.getWeight(i, j));
                         }
 
-                        if (u1H.getU(i, j) != 0.0) {
+                        if (u1H.getWeight(i, j) != 0.0) {
 
-                            log.debug("u (" + i + ", " + j + ", 1): " + u1H.getU(i, j));
+                            log.debug("u (" + i + ", " + j + ", 1): " + u1H.getWeight(i, j));
                         }
 
                     }
@@ -638,12 +633,10 @@ public class QNet extends RunnableTool {
          */
         log.debug("QNet done.");
 
-        Taxa rTL = taxaSets.get(0);
-
         int[] ordering = new int[N];
 
         for (int n = 0; n < N; n++) {
-            ordering[n] = rTL.get(n).getId() - 1;
+            ordering[n] = allTaxa.get(n).getId() + 1;
         }
 
         return new CircularOrdering(ordering);
@@ -655,51 +648,51 @@ public class QNet extends RunnableTool {
 
         double y1 = tH.getT(i, k, j)
                 + tH.getT(j, i, k)
-                + tH.getT(k, j, i) + c * (u1H.getU(i, j)
-                + u1H.getU(i, k)
-                + u1H.getU(j, k));
+                + tH.getT(k, j, i) + c * (u1H.getWeight(i, j)
+                + u1H.getWeight(i, k)
+                + u1H.getWeight(j, k));
 
         double y2 = tH.getT(i, k, j)
                 + tH.getT(j, i, k)
-                + tH.getT(k, i, j) + c * (u1H.getU(i, j)
-                + u0H.getU(i, k)
-                + u0H.getU(j, k));
+                + tH.getT(k, i, j) + c * (u1H.getWeight(i, j)
+                + u0H.getWeight(i, k)
+                + u0H.getWeight(j, k));
 
         double y3 = tH.getT(i, k, j)
                 + tH.getT(j, k, i)
-                + tH.getT(k, j, i) + c * (u0H.getU(i, j)
-                + u1H.getU(i, k)
-                + u0H.getU(j, k));
+                + tH.getT(k, j, i) + c * (u0H.getWeight(i, j)
+                + u1H.getWeight(i, k)
+                + u0H.getWeight(j, k));
 
         double y4 = tH.getT(i, k, j)
                 + tH.getT(j, k, i)
-                + tH.getT(k, i, j) + c * (u0H.getU(i, j)
-                + u0H.getU(i, k)
-                + u1H.getU(j, k));
+                + tH.getT(k, i, j) + c * (u0H.getWeight(i, j)
+                + u0H.getWeight(i, k)
+                + u1H.getWeight(j, k));
 
         double y5 = tH.getT(i, j, k)
                 + tH.getT(j, i, k)
-                + tH.getT(k, j, i) + c * (u0H.getU(i, j)
-                + u0H.getU(i, k)
-                + u1H.getU(j, k));
+                + tH.getT(k, j, i) + c * (u0H.getWeight(i, j)
+                + u0H.getWeight(i, k)
+                + u1H.getWeight(j, k));
 
         double y6 = tH.getT(i, j, k)
                 + tH.getT(j, i, k)
-                + tH.getT(k, i, j) + c * (u0H.getU(i, j)
-                + u1H.getU(i, k)
-                + u0H.getU(j, k));
+                + tH.getT(k, i, j) + c * (u0H.getWeight(i, j)
+                + u1H.getWeight(i, k)
+                + u0H.getWeight(j, k));
 
         double y7 = tH.getT(i, j, k)
                 + tH.getT(j, k, i)
-                + tH.getT(k, j, i) + c * (u1H.getU(i, j)
-                + u0H.getU(i, k)
-                + u0H.getU(j, k));
+                + tH.getT(k, j, i) + c * (u1H.getWeight(i, j)
+                + u0H.getWeight(i, k)
+                + u0H.getWeight(j, k));
 
         double y8 = tH.getT(i, j, k)
                 + tH.getT(j, k, i)
-                + tH.getT(k, i, j) + c * (u1H.getU(i, j)
-                + u1H.getU(i, k)
-                + u1H.getU(j, k));
+                + tH.getT(k, i, j) + c * (u1H.getWeight(i, j)
+                + u1H.getWeight(i, k)
+                + u1H.getWeight(j, k));
 
         if (y1 > yMax) {
 
@@ -881,7 +874,7 @@ public class QNet extends RunnableTool {
 
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            this.setErrorMessage(e.getMessage());
+            this.setError(e);
             this.trackerFinished(false);
         } finally {
             this.notifyListener();

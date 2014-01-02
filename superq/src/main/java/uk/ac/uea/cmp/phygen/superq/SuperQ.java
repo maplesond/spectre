@@ -178,7 +178,7 @@ public class SuperQ extends RunnableTool {
 
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            this.setErrorMessage(e.getMessage());
+            this.setError(e);
             this.trackerFinished(false);
         } finally {
             this.notifyListener();

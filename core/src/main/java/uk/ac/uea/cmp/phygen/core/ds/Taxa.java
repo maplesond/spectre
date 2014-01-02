@@ -132,24 +132,29 @@ public class Taxa extends ArrayList<Taxon> {
     }
 
     /**
-     * Adds taxon from another taxa list into this taxa list.  Will ignore taxa that are already present in this list.
+     * Adds taxa from another taxa list into this taxa list.  Will ignore taxa that are already present in this list.
      * The return flag indicates if all taxa were merged.
      * @param taxa Taxa to merge into this list.
+     * @param retainIds If true, we keep the ids of the original taxa after merging.  If not then we ensure all taxa ids
+     *                  in this taxa are unique.
      * @return True if all taxa were merged.  False if some were not
      */
-    @Override
-    public boolean addAll(Collection<? extends Taxon> taxa) {
+    public boolean addAll(Collection<? extends Taxon> taxa, boolean retainIds) {
 
         int i = 0;
         for(Taxon t : taxa) {
             if (!duplicatesAllowed) {
                 if (!this.names.contains(t.getName())) {
-                    this.add(t);
+                    this.add(retainIds ?
+                            t :
+                            new Taxon(t.getName(), this.size()));
                     i++;
                 }
             }
             else {
-                this.add(t);
+                this.add(retainIds ?
+                        t :
+                        new Taxon(t.getName(), this.size()));
                 i++;
             }
         }
@@ -171,6 +176,22 @@ public class Taxa extends ArrayList<Taxon> {
         return super.set(index, taxon);
     }
 
+
+    public Taxon getByName(String name) {
+
+        if (!this.names.contains(name)) {
+            return null;
+        }
+
+        for(Taxon taxon : this) {
+            if (taxon.getName().equals(name)) {
+                return taxon;
+            }
+        }
+
+        return null;
+    }
+
     public Quadruple getQuadruple(int a, int b, int c, int d) {
 
         if (this.size() < 4)
@@ -184,6 +205,15 @@ public class Taxa extends ArrayList<Taxon> {
             && this.contains(quad.getQ2())
             && this.contains(quad.getQ3())
             && this.contains(quad.getQ4());
+    }
+
+    public boolean containsId(int taxaId) {
+
+        for(Taxon t : this) {
+            if (t.getId() == taxaId)
+                return true;
+        }
+        return false;
     }
 
     /**

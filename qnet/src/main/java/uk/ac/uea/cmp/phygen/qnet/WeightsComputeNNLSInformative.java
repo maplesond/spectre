@@ -24,6 +24,7 @@ import uk.ac.tgac.metaopt.*;
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystem;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystemCombiner;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.WeightedQuartetMap;
 import uk.ac.uea.cmp.phygen.core.math.matrix.SymmetricMatrix;
 import uk.ac.uea.cmp.phygen.core.math.matrix.UpperTriangularMatrix;
@@ -39,23 +40,17 @@ public class WeightsComputeNNLSInformative {
 
     private static Logger log = LoggerFactory.getLogger(WeightsComputeNNLSInformative.class);
 
-    public static ComputedWeights computeWeights(QuartetSystem quartetNetwork,
+    public static ComputedWeights computeWeights(QuartetSystem quartetSystem,
                                                  double tolerance, Optimiser optimiser) throws QNetException, OptimiserException {
 
         // This method is probably going to take a while so start a timer.
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
 
-        List<Taxa> taxaSets = null; //quartetNetworkAgglomerator.getTaxaSets();
-        WeightedQuartetMap theQuartetWeights = quartetNetwork.getQuartets();
-        int N = quartetNetwork.getTaxa().size();
+        WeightedQuartetMap theQuartetWeights = quartetSystem.getQuartets();
+        int N = quartetSystem.getTaxa().size();
 
-        // we have N taxa
-
-        // we have theQuartetWeighst weights
-        // we have...
-
-        Taxa c = taxaSets.get(0);
+        Taxa c = quartetSystem.getTaxa();
 
         // ... the cyclic ordering
 

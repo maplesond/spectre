@@ -222,7 +222,7 @@ public abstract class NewickNode {
             for(NewickNode otherBranch : this.branches) {
 
                 if (branch != otherBranch) {
-                    setB.addAll(otherBranch.findAllTaxa());
+                    setB.addAll(otherBranch.findAllTaxa(), true);
                 }
             }
 
