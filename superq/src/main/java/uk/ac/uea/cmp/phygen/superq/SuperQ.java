@@ -161,7 +161,7 @@ public class SuperQ extends RunnableTool {
 
             if (this.options.getFilter() != null) {
 
-                notifyUser("SUPERQ - filtering out bottom " + this.options.getFilter() * 100.0 + " % of splits");
+                notifyUser("Filtering out bottom " + this.options.getFilter() * 100.0 + " % of splits");
                 this.filterNexus(new File(filterTempFile), this.options.getOutputFile(), this.options.getFilter());
             }
 

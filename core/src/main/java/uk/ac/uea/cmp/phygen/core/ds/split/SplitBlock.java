@@ -87,8 +87,8 @@ public class SplitBlock implements Comparable<SplitBlock> {
     }
 
     public SplitBlock makeComplement(int nbTaxa) {
-        ArrayList<Integer> complement = new ArrayList<Integer>();
-        for (int i = 0; i < nbTaxa; i++) {
+        ArrayList<Integer> complement = new ArrayList<>();
+        for (int i = 1; i <= nbTaxa; i++) {
             if (this.elements.contains(i) == false) {
                 complement.add(i);
             }

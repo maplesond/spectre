@@ -110,8 +110,8 @@ public class CompatibleSplitSystem extends CircularSplitSystem {
 
             SplitBlock sb = this.getSplitAt(i).getASide();
 
-            int k = permutationInvert.getIndexAt(sb.get(0));
-            int l = permutationInvert.getIndexAt(sb.get(sb.size() - 1));
+            int k = permutationInvert.getIndexAt(sb.getFirst() - 1);
+            int l = permutationInvert.getIndexAt(sb.getLast() - 1);
 
             if (k == 0) {
                 flag[n - 1][l] = true;

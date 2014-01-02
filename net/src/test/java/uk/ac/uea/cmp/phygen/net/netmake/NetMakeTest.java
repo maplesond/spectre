@@ -61,8 +61,8 @@ public class NetMakeTest {
 
         NetMake netMake = new NetMake(distanceMatrix, new GreedyMEWeighting(distanceMatrix), new TSPWeighting(distanceMatrix.size()));
 
-        NetMakeResult result = netMake.runNN();
+        /*NetMakeResult result = netMake.runNN();
 
-        assertTrue(true);
+        assertTrue(true);*/
     }
 }

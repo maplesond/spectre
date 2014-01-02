@@ -38,7 +38,7 @@ public class NetMECLIITCase {
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
-    /*@Test
+    @Test
     public void testTreeBees() throws IOException {
 
         File outputDir = temporaryFolder.getRoot();
@@ -54,7 +54,7 @@ public class NetMECLIITCase {
 
         // Just check 3 output files exist for now
         assertTrue(outputDir.listFiles().length == 3);
-    } */
+    }
 
     @Test
     public void testColors() throws IOException {

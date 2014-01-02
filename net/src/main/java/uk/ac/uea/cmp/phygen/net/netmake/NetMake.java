@@ -382,8 +382,8 @@ public class NetMake {
 
                     for (int k = 0; k < components.rowSize(i); k++) {
                         for (int m = 0; m < components.rowSize(j); m++) {
-                            int vertex1 = components.get(i, k);
-                            int vertex2 = components.get(j, m);
+                            int vertex1 = components.get(i, k) - 1;
+                            int vertex2 = components.get(j, m) - 1;
                             double vertexDistance = w.getWeightingParam(vertex1)
                                     * w.getWeightingParam(vertex2)
                                     * distanceMatrix.getDistance(vertex1, vertex2);
@@ -428,7 +428,7 @@ public class NetMake {
                         k = components.rowSize(j);
                     } else {
                         int vertex1 = i;
-                        int vertex2 = components.get(j, k);
+                        int vertex2 = components.get(j, k) - 1;
                         double vertexDistance = w.getWeightingParam(vertex2)
                                 * distanceMatrix.getDistance(vertex1, vertex2);
 
@@ -446,8 +446,9 @@ public class NetMake {
         CircularOrdering permutationInvert = permutation.invertOrdering();
 
         for (int i = 0; i < splits.rows(); i++) {
-            int k = permutationInvert.getAt(splits.get(i, 0));
-            int l = permutationInvert.getAt(splits.get(i, splits.rowSize(i) - 1));
+
+            int k = permutationInvert.getIndexAt(splits.get(i, 0) - 1);
+            int l = permutationInvert.getIndexAt(splits.get(i, splits.rowSize(i) - 1) - 1);
 
             if (l < k) {
                 splits.reverseRow(i);
@@ -456,9 +457,9 @@ public class NetMake {
     }
 
     protected final Tableau<Integer> initialiseComponents(final int size) {
-        Tableau<Integer> c = new Tableau<Integer>();
+        Tableau<Integer> c = new Tableau<>();
 
-        for (int i = 0; i < size; i++) {
+        for (int i = 1; i <= size; i++) {
             c.addRow(i);
         }
 
@@ -467,7 +468,7 @@ public class NetMake {
 
     protected CircularOrdering createCircularOrdering() {
 
-        ArrayList<Integer> help = new ArrayList<Integer>();
+        ArrayList<Integer> help = new ArrayList<>();
         for (int j = 0; j < 2; j++) {
             for (int i = 0; i < components.rowSize(j); i++) {
                 help.add(components.get(j, i));
@@ -475,14 +476,14 @@ public class NetMake {
         }
         int[] permutation = new int[help.size()];
         for (int i = 0; i < help.size(); i++) {
-            permutation[i] = help.get(i) + 1;
+            permutation[i] = help.get(i);
         }
 
         return new CircularOrdering(permutation);
     }
 
     protected void addTrivialSplits(Tableau<Integer> splits) {
-        for (int i = 0; i < this.NB_TAXA; i++) {
+        for (int i = 1; i <= this.NB_TAXA; i++) {
             splits.addRow(i);
         }
     }

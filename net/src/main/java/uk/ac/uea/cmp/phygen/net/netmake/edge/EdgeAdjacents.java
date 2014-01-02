@@ -139,8 +139,6 @@ public class EdgeAdjacents {
         EdgeAdjacents aEdgeAdjacents = new EdgeAdjacents(C, ptemp, offset);
 
         return aEdgeAdjacents;
-
     }
-
 }
 

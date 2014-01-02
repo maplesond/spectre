@@ -113,6 +113,16 @@ public class GreedyMEWeighting extends Weighting {
 
         int C[] = aEdgeAdjacents.getNumberOfLeavesInAdjacents();
 
+        for(int i = 0; i < C.length; i++) {
+            if (C[i] == 0) {
+                throw new IllegalStateException("C[" + i + "] is 0.  This array represents the number of leaves in each adjacent.  This is an illegal state.");
+            }
+
+            if (C[i] == 2) {
+                throw new IllegalStateException("C[" + i + "] is 2.  This array represents the number of leaves in each adjacent.  This is an illegal state.");
+            }
+        }
+
         double d[] = calcD(C, nbTaxa);
 
         InitialVars initialVars = external ?
@@ -382,13 +392,13 @@ public class GreedyMEWeighting extends Weighting {
 
         log.debug("  Calculating " + tableau.rows() + " Edge Weights...");
 
-        ArrayList<Double> edgeWeights = new ArrayList<Double>();
+        ArrayList<Double> edgeWeights = new ArrayList<>();
 
         SummedDistanceList P = new SummedDistanceList(this.calculateP(tableau, this.distanceMatrix));
 
         for (int i = 0; i < tableau.rows(); i++) {
 
-            Tableau<Integer> splitsCopy = new Tableau<Integer>(tableau);
+            Tableau<Integer> splitsCopy = new Tableau<>(tableau);
 
             boolean external = tableau.rowSize(i) == 1 || tableau.rowSize(i) == this.distanceMatrix.size() - 1;
 
@@ -436,7 +446,7 @@ public class GreedyMEWeighting extends Weighting {
             for (int j = 0; j < splits.rowSize(i); j++) {
                 for (int k = 0; k < nb_taxa; k++) {
                     if (splited[k] == false) {
-                        P[i] += this.distanceMatrix.getDistance(splits.get(i, j), k);
+                        P[i] += this.distanceMatrix.getDistance(splits.get(i, j) - 1, k);
                     }
                 }
             }

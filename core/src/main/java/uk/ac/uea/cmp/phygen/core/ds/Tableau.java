@@ -82,7 +82,7 @@ public class Tableau<E> {
             for (int j = 0; j < cols; j++) {
 
                 E e = this.get(i, j);
-                copyRow[j] = Integer.parseInt(e.toString());
+                copyRow[j] = Integer.parseInt(e.toString());  // 1-base the value from the tableau
             }
 
             splits.add(new Split(new SplitBlock(copyRow), distanceMatrix.size()));
