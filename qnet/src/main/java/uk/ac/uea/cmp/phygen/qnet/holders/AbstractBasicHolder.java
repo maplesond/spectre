@@ -66,8 +66,9 @@ public abstract class AbstractBasicHolder {
                 // Do whatever custom initialisation is required
                 Pair<Integer, Double> countWeight = this.calcCountWeight(A, B, a ,b);
 
-                counts[Quartet.over2(j - 1) + Quartet.over1(i - 1)] = countWeight.getLeft();
-                weights[Quartet.over2(j - 1) + Quartet.over1(i - 1)] = countWeight.getRight();
+                int index = Quartet.over2(j - 1) + Quartet.over1(i - 1);
+                counts[index] = countWeight.getLeft();
+                weights[index] = countWeight.getRight();
             }
         }
     }
@@ -88,7 +89,10 @@ public abstract class AbstractBasicHolder {
     protected abstract Pair<Integer, Double> calcCountWeight(Taxa A, Taxa B, int a, int b);
 
     public double calcWeightedCount(int i, int j) {
-        return this.getWeight(i, j) / ((double) this.getCount(i, j));
+
+        int count = this.getCount(i, j);
+
+        return count == 0 ? 0.0 : this.getWeight(i, j) / ((double)count);
     }
 
     public int getCount(int i, int j) {

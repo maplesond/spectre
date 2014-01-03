@@ -57,6 +57,7 @@ public interface SplitSystem {
     SplitSystem filterByWeight(double threshold);
 
 
+
     // **** Methods related to circular ordering ****
 
     boolean isCircular();
@@ -64,4 +65,8 @@ public interface SplitSystem {
     CircularOrdering getCircularOrdering();
 
 
+
+    // **** Methods related to compatible split system ****
+
+    boolean isCompatible();
 }

@@ -1,14 +1,13 @@
 package uk.ac.uea.cmp.phygen.qnet;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystem;
-import uk.ac.uea.cmp.phygen.core.ds.split.CircularOrdering;
+import uk.ac.uea.cmp.phygen.core.ds.split.*;
 
-import java.io.File;
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by dan on 15/12/13.
@@ -37,15 +36,7 @@ public class QNetResult {
         return quartetSystem;
     }
 
-    /**
-     * Outputs qnet result to disk as a nexus file
-     * TODO most of this should be done in NexusWriter
-     * @param outputFile
-     * @param x
-     * @param mode mode tells the method whether we want to write: 0 - standard; 1 - minimum; 2 - maximum
-     * @throws IOException
-     */
-    public void writeWeights(File outputFile, double[] x, int mode) throws IOException {
+    public CompatibleSplitSystem createSplitSystem(double[] x, int mode) {
 
         // Setup shortcuts
         Taxa allTaxa = this.quartetSystem.getTaxa();
@@ -137,53 +128,30 @@ public class QNetResult {
             }
 
         }
-        // print
 
-        String nexusString = new String();
-
-        nexusString += "#NEXUS\nBEGIN taxa;\nDIMENSIONS ntax=" + N + ";\nTAXLABELS\n";
-
-        for (int i = 0; i < N; i++) {
-
-            nexusString += allTaxa.get(i) + "\n";
-        }
-
-        nexusString += ";\nEND;\n\nBEGIN st_splits;\nDIMENSIONS ntax=" + N + " nsplits=" + (existingSplits + N) + ";\n";
-        nexusString += "FORMAT\nlabels\nweights\n;\nPROPERTIES\nweakly compatible\ncyclic\n;\nCYCLE";
-
-        for (int i = 0; i < N; i++) {
-
-            nexusString += " " + this.circularOrdering.getAt(i);
-        }
-
-        nexusString += ";\nMATRIX\n";
+        List<Split> splits = new ArrayList<>();
 
         int s = 0;
-
-        int wn = 0;
         double ws = 0.0;
+        int wn = 0;
 
-        for (int i = 0; i < N * (N - 1) / 2 - N; i++) {
-
+        for(int i = 0; i < noSplits; i++) {
             if (splitExists[i]) {
-
-                // this split exists
-
                 s++;
 
-                nexusString += "" + (s) + "   " + y[i] + "  ";
+                Pair<Integer, Integer> sI = splitIndices[i];
+
+                List<Integer> list = new ArrayList<>();
+
+                for (int p = sI.getLeft(); p < sI.getRight(); p++) {
+
+                    list.add(this.circularOrdering.getAt(p));
+                }
 
                 wn++;
                 ws += y[i];
 
-                Pair<Integer, Integer> sI = splitIndices[i];
-
-                for (int p = sI.getLeft() + 1; p < sI.getRight() + 1; p++) {
-
-                    nexusString += " " + this.circularOrdering.getAt(p - 1);
-                }
-
-                nexusString += ",\n";
+                splits.add(new Split(new SplitBlock(list), N, y[i]));
             }
         }
 
@@ -196,26 +164,11 @@ public class QNetResult {
 
             s++;
 
-            nexusString += "" + (s) + "   " + mw + "  ";
-
-            nexusString += " " + (i + 1);
-
-            nexusString += ",\n";
+            splits.add(new Split(new SplitBlock(new int[]{i+1}), N, mw));
         }
 
-        s = 0;
+        CompatibleSplitSystem ss = new CompatibleSplitSystem(new CircularSplitSystem(allTaxa, splits, this.circularOrdering));
 
-        wn = 0;
-        ws = 0.0;
-
-        mw = 1.0;
-        if (wn > 0) {
-            mw = ws / ((double) wn);
-        }
-
-        nexusString += ";\nEND;";
-
-        // Write to file
-        FileUtils.writeStringToFile(outputFile, nexusString);
+        return ss;
     }
 }

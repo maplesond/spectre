@@ -29,6 +29,8 @@ import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystemCombiner;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.WeightedQuartetMap;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.load.QLoader;
 import uk.ac.uea.cmp.phygen.core.ds.split.CircularOrdering;
+import uk.ac.uea.cmp.phygen.core.ds.split.CompatibleSplitSystem;
+import uk.ac.uea.cmp.phygen.core.io.nexus.NexusWriter;
 import uk.ac.uea.cmp.phygen.core.ui.gui.RunnableTool;
 import uk.ac.uea.cmp.phygen.core.ui.gui.StatusTracker;
 import uk.ac.uea.cmp.phygen.core.util.SpiFactory;
@@ -863,7 +865,11 @@ public class QNet extends RunnableTool {
             notifyUser("QNet algorithm completed.  Saving results...");
 
             // Output results in nexus file in standard mode
-            result.writeWeights(this.options.getOutput(), null, 0);
+            CompatibleSplitSystem ss = result.createSplitSystem(result.getComputedWeights().getX(), 0);
+
+            new NexusWriter().writeSplitSystem(this.options.getOutput(), ss);
+
+
 
             this.trackerFinished(true);
 

@@ -64,7 +64,7 @@ public class NexusWriter extends AbstractPhygenWriter implements Appendable {
      *                             data to the file.
      */
     @Override
-    public void writeSplitSystem(File file, SimpleSplitSystem ss) throws IOException {
+    public void writeSplitSystem(File file, SplitSystem ss) throws IOException {
 
         // Clear out whatever was in the file content buffer before
         this.fileContent = new StringBuilder();
@@ -257,7 +257,7 @@ public class NexusWriter extends AbstractPhygenWriter implements Appendable {
         this.appendLine("BEGIN Splits;");
         this.appendLine(" DIMENSIONS ntax=" + ss.getNbTaxa() + " nsplits=" + ss.getNbSplits() + ";");
         this.appendLine(" FORMAT labels=no weights=" + (ss.isWeighted() ? "yes" : "no") + " confidences=no intervals=no;");
-        this.appendLine(" PROPERTIES fit=-1.0" + (ss.isCircular() ? " cyclic" : ""));
+        this.appendLine(" PROPERTIES fit=-1.0" + (ss.isCompatible() ? " weakly_compatible" : "") + (ss.isCircular() ? " cyclic" : ""));
         if (ss.isCircular()) {
             this.appendLine(" CYCLE " + ss.getCircularOrdering().toString() + ";");
         }
@@ -270,7 +270,7 @@ public class NexusWriter extends AbstractPhygenWriter implements Appendable {
             SplitBlock sb = s.getASide();
 
             if (!ss.isWeighted() || s.getWeight() != 0.0) {
-                this.appendLine("  [ " + currentSplitIndex++ + ", size=" + sb.size() + "]\t" + s.getWeight() + "\t" + sb.toString() + ",");
+                this.appendLine("  [" + currentSplitIndex++ + ", size=" + sb.size() + "]\t" + s.getWeight() + "\t" + sb.toString() + ",");
             }
         }
         this.appendLine(";");

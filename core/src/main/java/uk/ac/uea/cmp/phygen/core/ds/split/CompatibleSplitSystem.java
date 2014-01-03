@@ -39,9 +39,14 @@ public class CompatibleSplitSystem extends CircularSplitSystem {
         reweight(this.calculateSplitWeighting(distanceMatrix, circularOrdering));
     }
 
-    public CompatibleSplitSystem(CompatibleSplitSystem unweightedSplitSystem, TreeSplitWeights treeWeights) {
+    public CompatibleSplitSystem(CircularSplitSystem splitSystem) {
 
-        super(new Taxa(unweightedSplitSystem.getTaxa()), unweightedSplitSystem.copySplits(), unweightedSplitSystem.getCircularOrdering().copy());
+        super(new Taxa(splitSystem.getTaxa()), splitSystem.copySplits(), splitSystem.getCircularOrdering().copy());
+    }
+
+    public CompatibleSplitSystem(CircularSplitSystem unweightedSplitSystem, TreeSplitWeights treeWeights) {
+
+        this(unweightedSplitSystem); //new Taxa(unweightedSplitSystem.getTaxa()), unweightedSplitSystem.copySplits(), unweightedSplitSystem.getCircularOrdering().copy());
 
         reweight(treeWeights);
     }
@@ -155,5 +160,8 @@ public class CompatibleSplitSystem extends CircularSplitSystem {
         return count;
     }
 
-
+    @Override
+    public boolean isCompatible() {
+        return true;
+    }
 }

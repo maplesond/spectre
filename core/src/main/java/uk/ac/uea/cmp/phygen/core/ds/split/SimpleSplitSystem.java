@@ -294,4 +294,9 @@ public class SimpleSplitSystem implements SplitSystem {
         throw new UnsupportedOperationException("A simple split system is not necessarily circular.  Can't retrieve circular ordering.");
     }
 
+    @Override
+    public boolean isCompatible() {
+        return false;
+    }
+
 }

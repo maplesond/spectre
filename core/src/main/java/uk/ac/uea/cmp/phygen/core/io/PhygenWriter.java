@@ -17,7 +17,7 @@ package uk.ac.uea.cmp.phygen.core.io;
 
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystem;
-import uk.ac.uea.cmp.phygen.core.ds.split.SimpleSplitSystem;
+import uk.ac.uea.cmp.phygen.core.ds.split.SplitSystem;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,7 +31,7 @@ import java.io.IOException;
  */
 public interface PhygenWriter {
 
-    void writeSplitSystem(File outFile, SimpleSplitSystem splitSystem) throws IOException;
+    void writeSplitSystem(File outFile, SplitSystem splitSystem) throws IOException;
 
     void writeDistanceMatrix(File outFile, DistanceMatrix distanceMatrix) throws IOException;
 

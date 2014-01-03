@@ -18,7 +18,7 @@ package uk.ac.uea.cmp.phygen.core.io;
 
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystem;
-import uk.ac.uea.cmp.phygen.core.ds.split.SimpleSplitSystem;
+import uk.ac.uea.cmp.phygen.core.ds.split.SplitSystem;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,7 +29,7 @@ import java.io.IOException;
 public class AbstractPhygenWriter implements PhygenWriter {
 
     @Override
-    public void writeSplitSystem(File outFile, SimpleSplitSystem splitSystem) throws IOException {
+    public void writeSplitSystem(File outFile, SplitSystem splitSystem) throws IOException {
         throw new UnsupportedOperationException(this.getClass().getCanonicalName() + " does not support writing of split systems.");
     }
 
