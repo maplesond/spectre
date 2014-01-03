@@ -14,13 +14,12 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.phygen.qnet;
+package uk.ac.uea.cmp.phygen.superq.qnet;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
-import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.tgac.metaopt.Objective;

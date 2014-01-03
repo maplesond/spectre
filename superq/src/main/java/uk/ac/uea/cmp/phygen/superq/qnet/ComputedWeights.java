@@ -2,7 +2,7 @@
  * Phylogenetics Tool suite
  * Copyright (C) 2013  UEA CMP Phylogenetics Group
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
@@ -14,18 +14,32 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.phygen.qnet;
+package uk.ac.uea.cmp.phygen.superq.qnet;
+
+import uk.ac.uea.cmp.phygen.core.math.matrix.SymmetricMatrix;
 
 /**
  * Created with IntelliJ IDEA.
- * User: Sarah_2
- * Date: 08/05/13
- * Time: 22:01
+ * User: dan
+ * Date: 13/11/13
+ * Time: 18:34
  * To change this template use File | Settings | File Templates.
  */
-public class QNetException extends Exception {
+public class ComputedWeights {
 
-    public QNetException(String message) {
-        super(message);
+    private double[] x;
+    private SymmetricMatrix EtE;
+
+    public ComputedWeights(double[] x, SymmetricMatrix etE) {
+        this.x = x;
+        EtE = etE;
+    }
+
+    public double[] getX() {
+        return x;
+    }
+
+    public SymmetricMatrix getEtE() {
+        return EtE;
     }
 }

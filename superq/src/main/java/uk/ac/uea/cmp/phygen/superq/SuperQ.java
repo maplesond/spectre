@@ -31,8 +31,8 @@ import uk.ac.uea.cmp.phygen.core.io.nexus.NexusReader;
 import uk.ac.uea.cmp.phygen.core.io.nexus.NexusWriter;
 import uk.ac.uea.cmp.phygen.core.ui.gui.RunnableTool;
 import uk.ac.uea.cmp.phygen.core.ui.gui.StatusTracker;
-import uk.ac.uea.cmp.phygen.qnet.QNet;
-import uk.ac.uea.cmp.phygen.qnet.QNetResult;
+import uk.ac.uea.cmp.phygen.superq.qnet.QNet;
+import uk.ac.uea.cmp.phygen.superq.qnet.QNetResult;
 import uk.ac.uea.cmp.phygen.tools.chopper.Chopper;
 
 import java.io.File;

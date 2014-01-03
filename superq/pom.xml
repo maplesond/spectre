@@ -64,6 +64,14 @@
                             <mainClass>uk.ac.uea.cmp.phygen.superq.SuperQGUI</mainClass>
                             <id>superq-gui</id>
                         </program>
+                        <program>
+                            <mainClass>uk.ac.uea.cmp.phygen.superq.qnet.QNetCLI</mainClass>
+                            <id>qnet</id>
+                        </program>
+                        <program>
+                            <mainClass>uk.ac.uea.cmp.phygen.superq.qnet.QNetGUI</mainClass>
+                            <id>qnet-gui</id>
+                        </program>
                     </programs>
                 </configuration>
             </plugin>
@@ -84,6 +92,8 @@
                             <target>
                                 <chmod file="${build-dir}/bin/superq" perm="755"/>
                                 <chmod file="${build-dir}/bin/superq-gui" perm="755"/>
+                                <chmod file="${build-dir}/bin/qnet" perm="755"/>
+                                <chmod file="${build-dir}/bin/qnet-gui" perm="755"/>
                             </target>
                         </configuration>
                     </execution>

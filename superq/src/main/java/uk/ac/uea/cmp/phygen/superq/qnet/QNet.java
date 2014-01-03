@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package uk.ac.uea.cmp.phygen.qnet;
+package uk.ac.uea.cmp.phygen.superq.qnet;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.time.StopWatch;
@@ -34,7 +34,7 @@ import uk.ac.uea.cmp.phygen.core.io.nexus.NexusWriter;
 import uk.ac.uea.cmp.phygen.core.ui.gui.RunnableTool;
 import uk.ac.uea.cmp.phygen.core.ui.gui.StatusTracker;
 import uk.ac.uea.cmp.phygen.core.util.SpiFactory;
-import uk.ac.uea.cmp.phygen.qnet.holders.*;
+import uk.ac.uea.cmp.phygen.superq.qnet.holders.*;
 
 import java.io.File;
 import java.io.IOException;

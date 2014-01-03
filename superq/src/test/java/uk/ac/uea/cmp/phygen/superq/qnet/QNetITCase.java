@@ -1,4 +1,4 @@
-package uk.ac.uea.cmp.phygen.qnet;
+package uk.ac.uea.cmp.phygen.superq.qnet;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;

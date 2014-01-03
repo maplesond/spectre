@@ -220,7 +220,6 @@
         <module>core</module>
         <module>phygentools</module>
         <module>net</module>
-        <module>qnet</module>
         <module>superq</module>
         <module>flatnj</module>
 
