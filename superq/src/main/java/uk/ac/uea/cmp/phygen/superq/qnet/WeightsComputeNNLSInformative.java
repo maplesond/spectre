@@ -24,17 +24,21 @@ import uk.ac.tgac.metaopt.*;
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystem;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.WeightedQuartetMap;
+import uk.ac.uea.cmp.phygen.core.io.qweight.QWeightReader;
 import uk.ac.uea.cmp.phygen.core.math.matrix.SymmetricMatrix;
 import uk.ac.uea.cmp.phygen.core.math.matrix.UpperTriangularMatrix;
 import uk.ac.uea.cmp.phygen.superq.qnet.holders.PHolder;
 
+import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.*;
 
 public class WeightsComputeNNLSInformative {
 
     private static Logger log = LoggerFactory.getLogger(WeightsComputeNNLSInformative.class);
+
 
     public static ComputedWeights computeWeights(QuartetSystem quartetSystem,
                                                  double tolerance, Optimiser optimiser) throws QNetException, OptimiserException {
@@ -146,9 +150,15 @@ public class WeightsComputeNNLSInformative {
         pHolder.initialize();
 
         // load r values
+        for(Map.Entry<Quartet, QuartetWeights> entry : quartetSystem.getQuartets().entrySet()) {
 
-        //TODO Loading info  rewrite to get from agglomerator
-        //load(pHolder, file.getAbsolutePath());
+            pHolder.setR(
+                    entry.getKey().getA(),
+                    entry.getKey().getB(),
+                    entry.getKey().getC(),
+                    entry.getKey().getD(),
+                    entry.getValue().getA() == 1.0);
+        }
 
         // fill upp pHolder by provided loop
 
