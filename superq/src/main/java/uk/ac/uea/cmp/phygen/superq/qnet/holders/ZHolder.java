@@ -22,30 +22,30 @@ import java.util.List;
 
 public class ZHolder {
 
-    private ArrayList<Integer> sizes;
+    private int[] sizes;
 
     public ZHolder(List<Taxa> taxaSets, int N) {
 
-        sizes = new ArrayList<>();
+        sizes = new int[N];
 
         for (int i = 0; i < N; i++) {
-            sizes.add(z(taxaSets, i));
+            sizes[i] = z(taxaSets, i);
         }
     }
 
     public int getZ(int i) {
 
-        return sizes.get(i);
+        return sizes[i];
     }
 
     public void setZ(int i, int newZ) {
 
-        sizes.set(i, new Integer(newZ));
+        sizes[i] = newZ;
     }
 
 
 
-    int z(List<Taxa> taxaSets, int i) {
+    protected int z(List<Taxa> taxaSets, int i) {
 
         for (Taxa tL : taxaSets) {
 

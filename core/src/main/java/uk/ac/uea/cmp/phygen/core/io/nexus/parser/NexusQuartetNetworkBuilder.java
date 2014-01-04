@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystem;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.WeightedQuartetMap;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.WeightedQuartetGroupMap;
 
 /**
  * Created with IntelliJ IDEA.
@@ -36,14 +36,14 @@ public class NexusQuartetNetworkBuilder {
     private int expectedNbTaxa;
     private Taxa taxa;
     private double weight;
-    private WeightedQuartetMap weightedQuartets;
+    private WeightedQuartetGroupMap weightedQuartets;
 
 
     public NexusQuartetNetworkBuilder() {
         this.expectedNbTaxa = 0;
         this.taxa = null;
         this.weight = 1.0;
-        this.weightedQuartets = new WeightedQuartetMap();
+        this.weightedQuartets = new WeightedQuartetGroupMap();
     }
 
 

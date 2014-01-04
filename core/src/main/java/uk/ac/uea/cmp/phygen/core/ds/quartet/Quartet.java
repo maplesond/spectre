@@ -15,13 +15,20 @@
  */
 package uk.ac.uea.cmp.phygen.core.ds.quartet;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 import java.text.NumberFormat;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Objects of this class are used as keys in the hashmap that associates sorts 4-tuples of taxa with the corresponding
  * weights of the three quartets.  Assumes the quartets are sorted when created.  If not, the sort method is available
  * to sort the indices.
+ *
+ * A quartet is always stored in its canonical form: the left pair must contain the smallest taxa id of the quadruple
+ *
  */
 public class Quartet implements Comparable {
 
@@ -33,14 +40,7 @@ public class Quartet implements Comparable {
 
     public Quartet(int a, int b, int c, int d) {
 
-        this.a = a;
-        this.b = b;
-        this.c = c;
-        this.d = d;
-
-        if (!areDistinct()) {
-            throw new IllegalArgumentException("Each taxa id must be distinct");
-        }
+        this.setCanonically(a, b, c, d);
     }
 
     public Quartet(int[] elements) {
@@ -48,21 +48,14 @@ public class Quartet implements Comparable {
         if (elements.length != 4)
             throw new IllegalArgumentException("Array must be of length 4");
 
-        this.a = elements[0];
-        this.b = elements[1];
-        this.c = elements[2];
-        this.d = elements[3];
-
-        if (!areDistinct()) {
-            throw new IllegalArgumentException("Each taxa id must be distinct");
-        }
+        this.setCanonically(elements[0], elements[1], elements[2], elements[3]);
     }
 
     /**
      * Copy constructor.
      *
-     * Note: We do not reuse the other constructor here as we already know that the other quartet must be distinct.  Therefore
-     * we can save some time here by just directly copying the variables.
+     * Note: We do not reuse the other constructor here as we already know that the other quartet must be distinct and
+     * in canonical form.  Therefore we can save some time here by just directly copying the variables.
      * @param q
      */
     public Quartet(Quartet q) {
@@ -71,6 +64,33 @@ public class Quartet implements Comparable {
         this.b = q.b;
         this.c = q.c;
         this.d = q.d;
+    }
+
+    /**
+     * This method is critical for setting up quartets.  It converts the taxa ids into their quartet canonical form.  This
+     * means that the first taxa id should be the minimum for the quadruple, whilst maintaining the input pairings.
+     * @param a
+     * @param b
+     * @param c
+     * @param d
+     */
+    protected final void setCanonically(int a, int b, int c, int d) {
+
+        if (!areDistinct(a, b, c, d)) {
+            throw new IllegalArgumentException("Each taxa id must be distinct");
+        }
+
+        // Sort each pair
+        int u = a < b ? a : b;
+        int v = a < b ? b : a;
+        int x = c < d ? c : d;
+        int y = c < d ? d : c;
+
+        // Sort pairs
+        this.a = u < x ? u : x;
+        this.b = u < x ? v : y;
+        this.c = u < x ? x : u;
+        this.d = u < x ? y : v;
     }
 
     public int getA() {
@@ -245,5 +265,20 @@ public class Quartet implements Comparable {
         newQuartet.sort();
 
         return newQuartet;
+    }
+
+    public int getGroupIndex() {
+
+        Quartet sorted = this.createSortedQuartet();
+
+        if (this.equals(sorted)) {
+            return 0;
+        }
+
+        int[] array = new int[]{a, b, c, d};
+
+        List<Integer> list = Arrays.asList(ArrayUtils.toObject(array));
+
+        return b == Collections.max(list) ? 2 : 1;
     }
 }

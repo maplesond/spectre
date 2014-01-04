@@ -23,16 +23,17 @@ import uk.ac.uea.cmp.phygen.core.ds.split.Split;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by dan on 04/12/13.
  */
-public class WeightedQuartetMap extends HashMap<Quartet, QuartetWeights> {
+public class WeightedQuartetGroupMap extends HashMap<Quartet, QuartetWeights> {
 
     /**
      * Creates an empty weighted quartet map
      */
-    public WeightedQuartetMap() {
+    public WeightedQuartetGroupMap() {
         super();
     }
 
@@ -40,7 +41,7 @@ public class WeightedQuartetMap extends HashMap<Quartet, QuartetWeights> {
      * Creates a weighted quartet map from a distance matrix
      * @param distanceMatrix The distance matrix to conver to quartets
      */
-    public WeightedQuartetMap(DistanceMatrix distanceMatrix) {
+    public WeightedQuartetGroupMap(DistanceMatrix distanceMatrix) {
 
         final int N = distanceMatrix.getNbTaxa();
 
@@ -72,6 +73,19 @@ public class WeightedQuartetMap extends HashMap<Quartet, QuartetWeights> {
     }
 
     /**
+     * Creates a weighted quartet group map from a map of canonical quartets to weights
+     * @param qMap The map of canonical quartets mapped to single weights
+     */
+    public WeightedQuartetGroupMap(CanonicalWeightedQuartetMap qMap) {
+
+        for(Map.Entry<Quartet, Double> entry : qMap.entrySet()) {
+
+            this.put(entry.getKey(), entry.getValue());
+        }
+
+    }
+
+    /**
      * Adds a weighted quartet into the hash map.
      * @param quartet
      * @param weight
@@ -79,14 +93,18 @@ public class WeightedQuartetMap extends HashMap<Quartet, QuartetWeights> {
     public void put(Quartet quartet, double weight) {
 
         Quartet sorted = quartet.createSortedQuartet();
+        int index = quartet.getGroupIndex();
 
         QuartetWeights weights = this.get(sorted);
 
         if (weights != null) {
-            weights.update(sorted, quartet, weight);
+            weights.set(index, weight);
         }
         else {
-            super.put(sorted, new QuartetWeights(sorted, quartet, weight));
+            QuartetWeights qw = new QuartetWeights();
+            qw.set(index, weight);
+
+            super.put(sorted, qw);
         }
     }
 
@@ -204,10 +222,20 @@ public class WeightedQuartetMap extends HashMap<Quartet, QuartetWeights> {
      * note: this now simply computes a weighted sum. This is the part that may be done in any number of ways here,
      * take weighted sum of every quartet where the quartet is nonzero
      */
-    public void weighedAdd(WeightedQuartetMap otherMap, double w) {
+    public void weighedAdd(WeightedQuartetGroupMap otherMap, double w) {
 
         for (Quartet q : otherMap.keySet()) {
-            this.incrementWeight(q, otherMap.getWeight(q) * w);
+            this.incrementWeights(q, otherMap.get(q), w);
+        }
+    }
+
+    private void incrementWeights(Quartet q, QuartetWeights weights, double w) {
+
+        if (this.containsKey(q)) {
+            this.get(q).weightedIncrement(weights, w);
+        }
+        else {
+            this.put(q, new QuartetWeights(weights, w));
         }
     }
 
@@ -216,7 +244,7 @@ public class WeightedQuartetMap extends HashMap<Quartet, QuartetWeights> {
      * of this hash map otherwise a null pointer exception will be thrown
      * @param summer
      */
-    public void divide(WeightedQuartetMap summer) {
+    public void divide(WeightedQuartetGroupMap summer) {
 
         for (Quartet q : this.keySet()) {
             this.get(q).divide(summer.get(q));

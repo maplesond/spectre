@@ -25,13 +25,11 @@ import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystem;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.WeightedQuartetMap;
-import uk.ac.uea.cmp.phygen.core.io.qweight.QWeightReader;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.WeightedQuartetGroupMap;
 import uk.ac.uea.cmp.phygen.core.math.matrix.SymmetricMatrix;
 import uk.ac.uea.cmp.phygen.core.math.matrix.UpperTriangularMatrix;
 import uk.ac.uea.cmp.phygen.superq.qnet.holders.PHolder;
 
-import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.*;
 
@@ -47,7 +45,7 @@ public class WeightsComputeNNLSInformative {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
 
-        WeightedQuartetMap theQuartetWeights = quartetSystem.getQuartets();
+        WeightedQuartetGroupMap theQuartetWeights = quartetSystem.getQuartets();
         int N = quartetSystem.getTaxa().size();
 
         Taxa c = quartetSystem.getTaxa();

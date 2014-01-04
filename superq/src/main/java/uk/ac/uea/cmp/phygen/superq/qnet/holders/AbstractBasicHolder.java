@@ -3,7 +3,7 @@ package uk.ac.uea.cmp.phygen.superq.qnet.holders;
 import org.apache.commons.lang3.tuple.Pair;
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.WeightedQuartetMap;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.WeightedQuartetGroupMap;
 
 import java.util.List;
 
@@ -19,10 +19,10 @@ public abstract class AbstractBasicHolder {
     protected int[] counts;
     protected double[] weights;
     protected List<Taxa> taxaSets;
-    protected WeightedQuartetMap theQuartetWeights;
+    protected WeightedQuartetGroupMap theQuartetWeights;
 
 
-    protected AbstractBasicHolder(final int N, final List<Taxa> taxaSets, WeightedQuartetMap theQuartetWeights) {
+    protected AbstractBasicHolder(final int N, final List<Taxa> taxaSets, WeightedQuartetGroupMap theQuartetWeights) {
 
         this.taxaSets = taxaSets;
         this.theQuartetWeights = theQuartetWeights;

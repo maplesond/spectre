@@ -26,7 +26,7 @@ import uk.ac.uea.cmp.phygen.core.ds.Taxon;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystem;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.WeightedQuartetMap;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.WeightedQuartetGroupMap;
 
 /**
  * Created with IntelliJ IDEA.
@@ -41,13 +41,13 @@ public class QWeightPopulator implements QWeightListener {
     private static Logger log = LoggerFactory.getLogger(QWeightPopulator.class);
 
     private QuartetSystem quartetNetwork;
-    private WeightedQuartetMap weightedQuartets;
+    private WeightedQuartetGroupMap weightedQuartets;
 
     private int expectedTaxa;
 
     public QWeightPopulator(QuartetSystem quartetNetwork) {
         this.quartetNetwork = quartetNetwork;
-        this.weightedQuartets = new WeightedQuartetMap();
+        this.weightedQuartets = new WeightedQuartetGroupMap();
         this.expectedTaxa = 0;
     }
 

@@ -43,13 +43,13 @@ public class QuartetSystem {
     private Taxa taxa;
     private double weight;
     private Sense sense;
-    private WeightedQuartetMap quartets;
+    private WeightedQuartetGroupMap quartets;
 
     public QuartetSystem() {
-        this(new Taxa(), 1.0, new WeightedQuartetMap());
+        this(new Taxa(), 1.0, new WeightedQuartetGroupMap());
     }
 
-    public QuartetSystem(Taxa taxa, double weight, WeightedQuartetMap quartets) {
+    public QuartetSystem(Taxa taxa, double weight, WeightedQuartetGroupMap quartets) {
         this.taxa = taxa;
         this.weight = weight;
         this.sense = Sense.MAX;
@@ -69,7 +69,7 @@ public class QuartetSystem {
         final int N = distanceMatrix.getNbTaxa();
         final int expectedNbQuartets = Quartet.over4(N);
 
-        this.quartets = new WeightedQuartetMap(distanceMatrix);
+        this.quartets = new WeightedQuartetGroupMap(distanceMatrix);
 
         if (this.quartets.size() != expectedNbQuartets) {
             throw new IllegalArgumentException("Found unexpected number of quartets.  Something went wrong creating the " +
@@ -109,11 +109,11 @@ public class QuartetSystem {
         this.sense = sense;
     }
 
-    public WeightedQuartetMap getQuartets() {
+    public WeightedQuartetGroupMap getQuartets() {
         return quartets;
     }
 
-    public void setQuartets(WeightedQuartetMap quartets) {
+    public void setQuartets(WeightedQuartetGroupMap quartets) {
         this.quartets = quartets;
     }
 

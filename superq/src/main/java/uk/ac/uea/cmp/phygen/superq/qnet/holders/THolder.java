@@ -17,7 +17,7 @@ package uk.ac.uea.cmp.phygen.superq.qnet.holders;
 
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.WeightedQuartetMap;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.WeightedQuartetGroupMap;
 
 import java.util.List;
 
@@ -27,7 +27,7 @@ public class THolder {
     private int[][][] counts;
     private double[][][] weights;
 
-    public THolder(List<Taxa> taxaSets, int N, WeightedQuartetMap theQuartetWeights) {
+    public THolder(List<Taxa> taxaSets, int N, WeightedQuartetGroupMap theQuartetWeights) {
 
         counts = new int[N][N][N];
         weights = new double[N][N][N];

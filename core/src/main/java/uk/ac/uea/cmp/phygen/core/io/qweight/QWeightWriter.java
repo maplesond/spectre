@@ -25,6 +25,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.NumberFormat;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -34,6 +37,7 @@ public class QWeightWriter extends AbstractPhygenWriter {
 
     @Override
     public void writeQuartets(File outFile, QuartetSystem quartetNetwork) throws IOException {
+
 
         FileWriter out = new FileWriter(outFile);
 
@@ -51,9 +55,13 @@ public class QWeightWriter extends AbstractPhygenWriter {
             out.write("taxon:   " + nF.format(n + 1) + "   name: " + quartetNetwork.getTaxa().get(n).getName() + ";\n");
         }
 
+        // Sort the quartets
+        List<Quartet> keys = new LinkedList<>(quartetNetwork.getQuartets().keySet());
+        Collections.sort(keys);
+
         // Output the quartets and weights part
-        for(Map.Entry<Quartet, QuartetWeights> qw : quartetNetwork.getQuartets().entrySet()) {
-            out.write(qw.getKey().toString(nF) + " " + qw.getValue().toString() + ";\n");
+        for(Quartet quartet : keys) {
+            out.write(quartet.toString(nF) + " " + quartetNetwork.getQuartets().get(quartet).toString() + ";\n");
         }
 
         out.close();

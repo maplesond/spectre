@@ -36,14 +36,14 @@ public class QuartetSystemCombiner {
 
     private Taxa taxa;
     private List<Taxa> translated;
-    private WeightedQuartetMap quartetWeights;
-    private WeightedQuartetMap summer;
+    private WeightedQuartetGroupMap quartetWeights;
+    private WeightedQuartetGroupMap summer;
 
     public QuartetSystemCombiner() {
-        this(new Taxa(), new WeightedQuartetMap(), new WeightedQuartetMap());
+        this(new Taxa(), new WeightedQuartetGroupMap(), new WeightedQuartetGroupMap());
     }
 
-    public QuartetSystemCombiner(Taxa taxa, WeightedQuartetMap quartetWeights, WeightedQuartetMap summer) {
+    public QuartetSystemCombiner(Taxa taxa, WeightedQuartetGroupMap quartetWeights, WeightedQuartetGroupMap summer) {
         this.taxa = taxa;
         this.quartetWeights = quartetWeights;
         this.summer = summer;
@@ -59,11 +59,11 @@ public class QuartetSystemCombiner {
         return translated;
     }
 
-    public WeightedQuartetMap getQuartetWeights() {
+    public WeightedQuartetGroupMap getQuartetWeights() {
         return quartetWeights;
     }
 
-    public WeightedQuartetMap getSummer() {
+    public WeightedQuartetGroupMap getSummer() {
         return summer;
     }
 

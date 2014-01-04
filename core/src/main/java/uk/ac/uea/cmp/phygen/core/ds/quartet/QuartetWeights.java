@@ -12,6 +12,9 @@ import uk.ac.uea.cmp.phygen.core.math.tuple.Triplet;
 */
 public class QuartetWeights extends Triplet<Double> {
 
+    public QuartetWeights() {
+        super(0.0, 0.0, 0.0);
+    }
 
     public QuartetWeights(double a, double b, double c) {
         super(a,b,c);
@@ -20,6 +23,12 @@ public class QuartetWeights extends Triplet<Double> {
     public QuartetWeights(Quartet q1, Quartet q2, double weight) {
         this(0.0, 0.0, 0.0);
         this.update(q1, q2, weight);
+    }
+
+    public QuartetWeights(QuartetWeights qW, double weight) {
+        this(qW.getA(), qW.getB(), qW.getC());
+
+        this.multiply(weight);
     }
 
     /**
@@ -100,6 +109,22 @@ public class QuartetWeights extends Triplet<Double> {
     }
 
 
+    public void set(int index, double weight) {
+
+        if (index == 0) {
+            this.setA(weight);
+        }
+        else if (index == 1) {
+            this.setB(weight);
+        }
+        else if (index == 2) {
+            this.setC(weight);
+        }
+        else {
+            throw new IllegalArgumentException("Invalid weight index: " + index);
+        }
+    }
+
     /**
      * Investigate which topology of a, b, c, d that the topologies of x, y, u, v correspond to, and set weights accordingly
      * See if xy|uv is ab|cd (w1), ac|bd (w2), or ad|bc (w3)
@@ -124,24 +149,24 @@ public class QuartetWeights extends Triplet<Double> {
     /**
      * Determine which quartet to take. Use the unordered numbers, they
      * match one ordering or other
-     * @param q1
-     * @param q2
+     * @param sorted
+     * @param unsorted
      * @return The weight determined by considering q1 and q2
      */
-    public double selectWeight(Quartet q1, Quartet q2) {
+    public double selectWeight(Quartet sorted, Quartet unsorted) {
 
-        if (((q2.a == q1.a || q2.a == q1.b) && (q2.b == q1.a || q2.b == q1.b)) ||
-                ((q2.c == q1.a || q2.c == q1.b) && (q2.d == q1.a || q2.d == q1.b))) {
+        if (((unsorted.a == sorted.a || unsorted.a == sorted.b) && (unsorted.b == sorted.a || unsorted.b == sorted.b)) ||
+                ((unsorted.c == sorted.a || unsorted.c == sorted.b) && (unsorted.d == sorted.a || unsorted.d == sorted.b))) {
 
             return this.getA();
         }
-        else if (((q2.a == q1.a || q2.a ==  q1.c) && (q2.b == q1.a || q2.b == q1.c)) ||
-                ((q2.c == q1.a || q2.c ==  q1.c) && (q2.d == q1.a || q2.d == q1.c))) {
+        else if (((unsorted.a == sorted.a || unsorted.a ==  sorted.c) && (unsorted.b == sorted.a || unsorted.b == sorted.c)) ||
+                ((unsorted.c == sorted.a || unsorted.c ==  sorted.c) && (unsorted.d == sorted.a || unsorted.d == sorted.c))) {
 
             return this.getB();
         }
-        else if (((q2.a == q1.a || q2.a ==  q1.d) && (q2.b == q1.a || q2.b == q1.d)) ||
-                ((q2.c == q1.a || q2.c ==  q1.d) && (q2.d == q1.a || q2.d == q1.d))) {
+        else if (((unsorted.a == sorted.a || unsorted.a ==  sorted.d) && (unsorted.b == sorted.a || unsorted.b == sorted.d)) ||
+                ((unsorted.c == sorted.a || unsorted.c ==  sorted.d) && (unsorted.d == sorted.a || unsorted.d == sorted.d))) {
 
             return this.getC();
         }

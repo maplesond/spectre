@@ -26,7 +26,7 @@ import uk.ac.tgac.metaopt.OptimiserException;
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystem;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystemCombiner;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.WeightedQuartetMap;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.WeightedQuartetGroupMap;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.load.QLoader;
 import uk.ac.uea.cmp.phygen.core.ds.split.CircularOrdering;
 import uk.ac.uea.cmp.phygen.core.ds.split.CompatibleSplitSystem;
@@ -161,7 +161,7 @@ public class QNet extends RunnableTool {
         Taxa allTaxa = combinedQuartetSystem.getTaxa();
         int N = allTaxa.size();
         List<Taxa> taxaSets = combinedQuartetSystem.getTranslatedTaxaSets();
-        WeightedQuartetMap theQuartetWeights = combinedQuartetSystem.getQuartetWeights();
+        WeightedQuartetGroupMap theQuartetWeights = combinedQuartetSystem.getQuartetWeights();
 
         double c = 0.5;
 

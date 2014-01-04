@@ -17,7 +17,7 @@ package uk.ac.uea.cmp.phygen.superq.qnet.holders;
 
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.WeightedQuartetMap;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.WeightedQuartetGroupMap;
 import uk.ac.uea.cmp.phygen.core.math.tuple.Triplet;
 
 import java.util.List;
@@ -27,7 +27,7 @@ public class WHolder {
     private Triplet<Integer>[] counts;
     private Triplet<Double>[] weights;
 
-    public WHolder(List<Taxa> taxaSets, int N, WeightedQuartetMap theQuartetWeights) {
+    public WHolder(List<Taxa> taxaSets, int N, WeightedQuartetGroupMap theQuartetWeights) {
 
         this.counts = new Triplet[Quartet.over4(N)];
         this.weights = new Triplet[Quartet.over4(N)];

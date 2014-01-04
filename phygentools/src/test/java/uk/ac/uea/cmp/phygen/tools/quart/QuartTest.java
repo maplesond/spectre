@@ -36,9 +36,21 @@ import static junit.framework.TestCase.assertTrue;
 public class QuartTest {
 
     @Test
+    public void testFiveTaxaTree() throws IOException {
+
+        NewickTree tree = new NewickTree("(((A:1,B:1):1,C:1),(D:1,E:1):1);");
+
+        QuartetSystemList qsl = new QuartetSystemList(new QuartetSystem(tree));
+
+        QuartetSystemCombiner qsc = new Quart().execute(qsl);
+
+        assertTrue(true);
+    }
+
+    @Test
     public void testSevenTaxaTree() throws IOException {
 
-        NewickTree tree = new NewickTree("(((A:1,B:1):1,((C:1,D:1):1,E:1):1):1,(F:1,G:1):1);");
+        NewickTree tree = new NewickTree("(((A:1,B:1):1,((C:1,D:1):1,E:1):1),(F:1,G:1):1);");
 
         QuartetSystemList qsl = new QuartetSystemList(new QuartetSystem(tree));
 

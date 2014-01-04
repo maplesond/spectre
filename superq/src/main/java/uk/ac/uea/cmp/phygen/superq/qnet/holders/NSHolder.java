@@ -19,14 +19,14 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.WeightedQuartetMap;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.WeightedQuartetGroupMap;
 
 import java.util.List;
 
 
 public class NSHolder extends AbstractBasicHolder {
 
-    public NSHolder(List<Taxa> taxaSets, int N, WeightedQuartetMap theQuartetWeights) {
+    public NSHolder(List<Taxa> taxaSets, int N, WeightedQuartetGroupMap theQuartetWeights) {
 
         super(N, taxaSets, theQuartetWeights);
     }
