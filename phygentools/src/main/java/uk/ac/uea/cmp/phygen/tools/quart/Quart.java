@@ -149,11 +149,11 @@ public class Quart extends PhygenTool {
         this.infoFile = new File(outputDir, outputPrefix + ".info");
         this.quartetFile = new File(outputDir, outputPrefix + ".qw");
 
-        QuartetSystemCombiner quartetNetworkAgglomerator = this.execute(inputFile, source, optimiser);
+        QuartetSystemCombiner quartetSystemCombiner = this.execute(inputFile, source, optimiser);
 
-        quartetNetworkAgglomerator.saveInformation(this.infoFile);
+        quartetSystemCombiner.saveInformation(this.infoFile);
 
-        QuartetSystem quartetNetwork = quartetNetworkAgglomerator.create();
+        QuartetSystem quartetNetwork = quartetSystemCombiner.create();
 
         // Write to disk
         new QWeightWriter().writeQuartets(this.quartetFile, quartetNetwork);
@@ -222,7 +222,7 @@ public class Quart extends PhygenTool {
             combiner.combine(qnet);
         }
 
-        // Divides the quartet weights in the agglomerated network by ???
+        // Divides the quartet weights in the combined network
         combiner.divide();
 
         return combiner;

@@ -81,8 +81,8 @@ public class QuartetSystemList extends ArrayList<QuartetSystem> {
 
         super();
 
-        for(QuartetSystem qnet : new SpiFactory<>(QLoader.class).create(source).load(inputFile, 1.0)) {
-            this.add(qnet);
+        for(QuartetSystem qs : new SpiFactory<>(QLoader.class).create(source).load(inputFile, 1.0)) {
+            this.add(qs);
         }
     }
 
@@ -157,11 +157,11 @@ public class QuartetSystemList extends ArrayList<QuartetSystem> {
         // Loop through each quartet network and update it
         for (int i = 0; i < w.length; i++) {
 
-            QuartetSystem qnet = this.get(i);
+            QuartetSystem qs = this.get(i);
 
             double weight = w[i];
 
-            for(QuartetWeights weights : qnet.getQuartets().values()) {
+            for(QuartetWeights weights : qs.getQuartets().values()) {
                 weights.multiply(weight);
             }
         }
