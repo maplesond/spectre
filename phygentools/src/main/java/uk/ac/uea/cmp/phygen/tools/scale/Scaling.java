@@ -51,7 +51,7 @@ public class Scaling extends PhygenTool {
 
     @Override
     public String getDescription() {
-        return "Scales input trees to a given range based on their quartet weights (uses \"chopper\" to get the quartet weights from the trees)";
+        return "Scales input trees to a given range based on their quartet weights (uses \"quart\" to get the quartet weights from the trees)";
     }
 
     @Override

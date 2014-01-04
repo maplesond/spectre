@@ -33,7 +33,7 @@ import uk.ac.uea.cmp.phygen.core.ui.gui.RunnableTool;
 import uk.ac.uea.cmp.phygen.core.ui.gui.StatusTracker;
 import uk.ac.uea.cmp.phygen.superq.qnet.QNet;
 import uk.ac.uea.cmp.phygen.superq.qnet.QNetResult;
-import uk.ac.uea.cmp.phygen.tools.chopper.Chopper;
+import uk.ac.uea.cmp.phygen.tools.quart.Quart;
 
 import java.io.File;
 import java.io.IOException;
@@ -104,7 +104,7 @@ public class SuperQ extends RunnableTool {
 
             notifyUser("Converting input trees into a combined quartet system.  " +
                     (this.options.getScalingSolver() != null ? "(Scaling input - optimising with: " + this.options.getScalingSolver() + ")" : ""));
-            QuartetSystemCombiner combinedQuartetSystem =  new Chopper().execute(new File(file), type.toUpperCase(),
+            QuartetSystemCombiner combinedQuartetSystem =  new Quart().execute(new File(file), type.toUpperCase(),
                             this.options.getScalingSolver());
 
             rt.gc();

@@ -72,7 +72,7 @@ public class ScriptLoader extends AbstractQLoader {
                     // Create a source loader
                     QLoader QLoader = this.sourceFactory.create(sourceName);
 
-                    // Load source and execute chopper, combine results
+                    // Load source and execute quart, combine results
                     qnets.addAll(QLoader.load(sourceFile, entryWeight));
 
                 } else {

@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package uk.ac.uea.cmp.phygen.tools.chopper;
+package uk.ac.uea.cmp.phygen.tools.quart;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.OptionBuilder;
@@ -41,13 +41,13 @@ import java.io.IOException;
  * This class creates a single combined quartet system from a number of trees.
  */
 @MetaInfServices
-public class Chopper extends PhygenTool {
+public class Quart extends PhygenTool {
 
     private static final String DEFAULT_OUTPUT_PREFIX = "chopper";
     private static final File DEFAULT_OUTPUT_DIR = new File("").getParentFile();
 
 
-    private static Logger log = LoggerFactory.getLogger(Chopper.class);
+    private static Logger log = LoggerFactory.getLogger(Quart.class);
 
     private static final String OPT_INPUT_FILE = "input";
     private static final String OPT_OUTPUT_DIR = "output";
@@ -68,7 +68,7 @@ public class Chopper extends PhygenTool {
         Options options = new Options();
 
         options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_OUTPUT_DIR).hasArg()
-                .withDescription("The directory, which will contain output from chopper").create("o"));
+                .withDescription("The directory, which will contain output from quart").create("o"));
 
         options.addOption(OptionBuilder.withArgName("string").withLongOpt(OPT_OUTPUT_PREFIX).hasArg()
                 .withDescription("The prefix for the output files.  Default: " + DEFAULT_OUTPUT_PREFIX).create("p"));
@@ -210,7 +210,7 @@ public class Chopper extends PhygenTool {
     }
 
     /**
-     * Core execution routine for chopper.  Takes in a list of quartet networks and combines them.
+     * Core execution routine for quart.  Takes in a list of quartet networks and combines them.
      * @param qnets A list of quartet networks
      * @return A combination of quartet networks
      */
@@ -236,7 +236,7 @@ public class Chopper extends PhygenTool {
     public static void main(String[] args) {
 
         try {
-            new Chopper().execute(args);
+            new Quart().execute(args);
         } catch (Exception e) {
             System.err.println(e.getMessage());
             System.err.println(StringUtils.join(e.getStackTrace(), "\n"));

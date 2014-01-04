@@ -65,6 +65,24 @@ public class SuperQITCase {
     }
 
     @Test
+    public void test7TaxaTree() throws OptimiserException {
+        SuperQOptions options = this.createSimpleOptions(
+                "/simple/7-taxa-deg2.tre",
+                SuperQOptions.InputFormat.NEWICK,
+                new File(simpleOutput, "7taxa-deg2.out"));
+
+        SuperQ superQ = new SuperQ(options);
+
+        superQ.run();
+
+        if (superQ.failed()) {
+            System.err.println(superQ.getFullErrorMessage());
+        }
+
+        assertFalse(superQ.failed());
+    }
+
+    @Test
     public void testSimpleTree() throws OptimiserException {
         SuperQOptions options = this.createSimpleOptions(
                 "/simple/single-tree-1.tre",

@@ -14,7 +14,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.phygen.tools.chopper;
+package uk.ac.uea.cmp.phygen.tools.quart;
 
 import org.junit.Test;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystem;
@@ -33,7 +33,7 @@ import static junit.framework.TestCase.assertTrue;
  * Time: 22:48
  * To change this template use File | Settings | File Templates.
  */
-public class ChopperTest {
+public class QuartTest {
 
     @Test
     public void testSevenTaxaTree() throws IOException {
@@ -42,7 +42,7 @@ public class ChopperTest {
 
         QuartetSystemList qsl = new QuartetSystemList(new QuartetSystem(tree));
 
-        QuartetSystemCombiner qsc = new Chopper().execute(qsl);
+        QuartetSystemCombiner qsc = new Quart().execute(qsl);
 
         assertTrue(true);
     }
