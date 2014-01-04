@@ -44,9 +44,7 @@ public class THolder {
 
                 for (int m = 0; m < taxaSets.size(); m++) {
 
-                    Taxa tL = taxaSets.get(m);
-
-                    if (tL.containsId(i)) {
+                    if (taxaSets.get(m).containsId(i)) {
 
                         a = m;
                         break;
@@ -55,9 +53,7 @@ public class THolder {
 
                 for (int m = 0; m < taxaSets.size(); m++) {
 
-                    Taxa tL = taxaSets.get(m);
-
-                    if (tL.containsId(j)) {
+                    if (taxaSets.get(m).containsId(j)) {
 
                         b = m;
                         break;
@@ -89,9 +85,7 @@ public class THolder {
 
                     for (int m = 0; m < taxaSets.size(); m++) {
 
-                        Taxa tL = taxaSets.get(m);
-
-                        if (tL.containsId(k)) {
+                        if (taxaSets.get(m).containsId(k)) {
 
                             c = m;
                             break;

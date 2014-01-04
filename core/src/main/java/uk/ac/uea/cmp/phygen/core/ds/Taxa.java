@@ -15,10 +15,7 @@
  */
 package uk.ac.uea.cmp.phygen.core.ds;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Taxa class.  This is an extension of Arraylist, which also acts as a set in that it does not allow the client
@@ -26,7 +23,8 @@ import java.util.Set;
  */
 public class Taxa extends ArrayList<Taxon> {
 
-    private Set<String> names;
+    private Map<String, Taxon> names;
+    private Map<Integer, Taxon> ids;
     private boolean duplicatesAllowed;
 
     /**
@@ -39,7 +37,8 @@ public class Taxa extends ArrayList<Taxon> {
     public Taxa(boolean duplicatesAllowed) {
         super();
         this.duplicatesAllowed = duplicatesAllowed;
-        this.names = new HashSet<>();
+        this.names = new HashMap<>();
+        this.ids = new HashMap<>();
     }
 
     /**
@@ -53,7 +52,8 @@ public class Taxa extends ArrayList<Taxon> {
 
     public Taxa(final String[] taxa) {
 
-        this.names = new HashSet<>();
+        this.names = new HashMap<>();
+        this.ids = new HashMap<>();
         this.duplicatesAllowed = false;
 
         for(String taxon : taxa) {
@@ -68,7 +68,8 @@ public class Taxa extends ArrayList<Taxon> {
     public Taxa(Taxa taxa) {
         super(taxa);
         this.duplicatesAllowed = taxa.isDuplicatesAllowed();
-        this.names = new HashSet<>();
+        this.names = new HashMap<>();
+        this.ids = new HashMap<>();
     }
 
 
@@ -92,7 +93,7 @@ public class Taxa extends ArrayList<Taxon> {
 
     /**
      * Will try to add a new taxon to the end of the list.  Throws an IllegalArgumentException if this
-     * taxon name already exists
+     * taxon name or id already exists
      * @param taxon The taxon to add
      * @return True if successfully added taxon to the list
      */
@@ -100,10 +101,19 @@ public class Taxa extends ArrayList<Taxon> {
     public boolean add(Taxon taxon) {
 
         if (!duplicatesAllowed) {
-            if (this.names.contains(taxon.getName()))
-                throw new IllegalArgumentException("Taxa list already contains taxon: " + taxon.getName());
+            if (this.names.containsKey(taxon.getName()))
+                throw new IllegalArgumentException("Taxa list already contains taxon name: " + taxon.getName());
 
-            this.names.add(taxon.getName());
+            // If the user didn't both to set the taxa id then we do it ourselves.
+            if (taxon.getId() == -1) {
+                taxon.setId(this.size());
+            }
+
+            if (this.ids.containsKey(taxon.getId()))
+                throw new IllegalArgumentException("Taxa list already contains taxon id: " + taxon.getId());
+
+            this.names.put(taxon.getName(), taxon);
+            this.ids.put(taxon.getId(), taxon);
         }
 
         return super.add(taxon);
@@ -118,12 +128,19 @@ public class Taxa extends ArrayList<Taxon> {
     @Override
     public void add(int index, Taxon taxon) {
         if (!duplicatesAllowed) {
-            if (!this.names.contains(taxon.getName())) {
-                this.names.add(taxon.getName());
+
+            // If the user didn't both to set the taxa id then we do it ourselves.
+            if (taxon.getId() == -1) {
+                taxon.setId(index);
+            }
+
+            if (!this.names.containsKey(taxon.getName()) && !this.ids.containsKey(taxon.getId())) {
+                this.names.put(taxon.getName(), taxon);
+                this.ids.put(taxon.getId(), taxon);
                 super.add(index, taxon);
             }
             else {
-                throw new IllegalArgumentException("Taxa list already contains taxon: " + taxon.getName());
+                throw new IllegalArgumentException("Taxa list already contains taxon with name: " + taxon.getName() + "; or id: " + taxon.getId());
             }
         }
         else {
@@ -144,7 +161,7 @@ public class Taxa extends ArrayList<Taxon> {
         int i = 0;
         for(Taxon t : taxa) {
             if (!duplicatesAllowed) {
-                if (!this.names.contains(t.getName())) {
+                if (!this.names.containsKey(t.getName())) {
                     this.add(retainIds ?
                             t :
                             new Taxon(t.getName(), this.size()));
@@ -171,7 +188,9 @@ public class Taxa extends ArrayList<Taxon> {
     public Taxon set(int index, Taxon taxon) {
         if (!duplicatesAllowed) {
             this.names.remove(this.get(index).getName());
-            this.names.add(taxon.getName());
+            this.names.put(taxon.getName(), taxon);
+            this.ids.remove(this.get(index).getId());
+            this.ids.put(taxon.getId(), taxon);
         }
         return super.set(index, taxon);
     }
@@ -179,17 +198,11 @@ public class Taxa extends ArrayList<Taxon> {
 
     public Taxon getByName(String name) {
 
-        if (!this.names.contains(name)) {
-            return null;
-        }
+        return this.names.get(name);
+    }
 
-        for(Taxon taxon : this) {
-            if (taxon.getName().equals(name)) {
-                return taxon;
-            }
-        }
-
-        return null;
+    public Taxon getById(int id) {
+        return this.ids.get(id);
     }
 
     public Quadruple getQuadruple(int a, int b, int c, int d) {
@@ -207,13 +220,13 @@ public class Taxa extends ArrayList<Taxon> {
             && this.contains(quad.getQ4());
     }
 
+    public boolean containsName(String name) {
+        return this.names.containsKey(name);
+    }
+
     public boolean containsId(int taxaId) {
 
-        for(Taxon t : this) {
-            if (t.getId() == taxaId)
-                return true;
-        }
-        return false;
+        return this.ids.containsKey(taxaId);
     }
 
     /**
