@@ -24,17 +24,16 @@ import org.slf4j.LoggerFactory;
 import uk.ac.tgac.metaopt.Optimiser;
 import uk.ac.tgac.metaopt.OptimiserException;
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystem;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.GroupedQuartetSystem;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystemCombiner;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.WeightedQuartetGroupMap;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.load.QLoader;
 import uk.ac.uea.cmp.phygen.core.ds.split.CircularOrdering;
 import uk.ac.uea.cmp.phygen.core.ds.split.CompatibleSplitSystem;
 import uk.ac.uea.cmp.phygen.core.io.nexus.NexusWriter;
 import uk.ac.uea.cmp.phygen.core.ui.gui.RunnableTool;
 import uk.ac.uea.cmp.phygen.core.ui.gui.StatusTracker;
-import uk.ac.uea.cmp.phygen.core.util.SpiFactory;
 import uk.ac.uea.cmp.phygen.superq.qnet.holders.*;
+import uk.ac.uea.cmp.phygen.tools.quart.Quart;
 
 import java.io.File;
 import java.io.IOException;
@@ -90,25 +89,17 @@ public class QNet extends RunnableTool {
 
         String ext = FilenameUtils.getExtension(input.getName());
 
-        notifyUser("Loading quartet system from: " + input.getName());
+        notifyUser("Loading and combining quartet systems from: " + input.getName());
 
-        // Load the quartet network
-        QuartetSystem quartetNetwork = new SpiFactory<>(QLoader.class).create(ext).load(input, 1.0).get(0);
+        QuartetSystemCombiner combinedQuartetSystem =  new Quart().execute(input, ext.toUpperCase());
 
-        notifyUser("Normalising quartets " + (logNormalise ? " (using log)" : "") + ".");
-
-        // Normalise the values in the network
-        quartetNetwork.normaliseQuartets(logNormalise);
-
-        // Create combiner (will only contain a single network!! TODO check this!)
-        QuartetSystemCombiner combinedQuartetSystem = new QuartetSystemCombiner().combine(quartetNetwork);
-
-        return this.execute(combinedQuartetSystem, tolerance, optimiser);
+        return this.execute(combinedQuartetSystem, logNormalise, tolerance, optimiser);
     }
 
     /**
      * Runs QNet from a combined quartet system.  Calculates the circular ordering and compute edge weights.
      * @param combinedQuartetSystem The combined split system to process
+     * @param logNormalise Whether to normalise the quartet weights by natural log, or not.
      * @param tolerance The tolerance to apply when computing weights
      * @param optimiser The optimiser to use when computing weights
      * @return The QNet results, which contains a quartet system derived from the combined quartet system that was input,
@@ -116,21 +107,35 @@ public class QNet extends RunnableTool {
      * @throws QNetException Thrown if there were any unexpected issues with the QNET algorithm implementation
      * @throws OptimiserException Thrown if there was an issue running the optimiser when computing weights
      */
-    public QNetResult execute(QuartetSystemCombiner combinedQuartetSystem, double tolerance, Optimiser optimiser)
+    public QNetResult execute(QuartetSystemCombiner combinedQuartetSystem, boolean logNormalise, double tolerance, Optimiser optimiser)
             throws OptimiserException, QNetException {
+
+        notifyUser("Creating a grouped quartet system");
+
+        // Get the actual combined quartet system
+        GroupedQuartetSystem groupedQuartetSystem = combinedQuartetSystem.create();
+
+        notifyUser("Normalising quartets " + (logNormalise ? " (using log)" : "") + ".");
+
+        // Normalise the values in the network
+        groupedQuartetSystem.normaliseQuartets(logNormalise);
+
 
         notifyUser("Computing circular ordering.");
 
         // Order the taxa
-        CircularOrdering circularOrdering = this.computeCircularOrdering(combinedQuartetSystem);
+        CircularOrdering circularOrdering = this.computeCircularOrdering(
+                combinedQuartetSystem.getTaxa(),
+                combinedQuartetSystem.getOriginalTaxaSets(),
+                groupedQuartetSystem.getQuartets());
 
         notifyUser("Computing weights");
 
         // Get the actual combined quartet system
-        QuartetSystem quartetSystem = combinedQuartetSystem.create();
+        GroupedQuartetSystem quartetSystem = combinedQuartetSystem.create();
 
         // Compute the weights
-        ComputedWeights solution = this.computedWeights(quartetSystem, tolerance, optimiser);
+        ComputedWeights solution = this.computeWeights(quartetSystem, tolerance, optimiser);
 
         return new QNetResult(circularOrdering, solution, quartetSystem);
     }
@@ -145,7 +150,7 @@ public class QNet extends RunnableTool {
      * @throws QNetException Thrown if there were any unexpected issues with the QNET algorithm implementation
      * @throws OptimiserException Thrown if there was an issue running the optimiser when computing weights
      */
-    public ComputedWeights computedWeights(QuartetSystem quartetSystem, double tolerance, Optimiser optimiser)
+    public ComputedWeights computeWeights(GroupedQuartetSystem quartetSystem, double tolerance, Optimiser optimiser)
             throws OptimiserException, QNetException {
 
         return WeightsComputeNNLSInformative.computeWeights(quartetSystem, tolerance, optimiser);
@@ -153,15 +158,15 @@ public class QNet extends RunnableTool {
 
     /**
      * Computes a circular ordering from a combination of quartet systems
-     * @param combinedQuartetSystem The combined split system to process
+     * @param allTaxa All of the taxa used in the merged quartet system
+     * @param theQuartetWeights The quartet groups mapped to the normalised weights
      * @return A circular ordering
+     * @throws QNetException if there were any problems.
      */
-    public CircularOrdering computeCircularOrdering(QuartetSystemCombiner combinedQuartetSystem) throws QNetException {
+    public CircularOrdering computeCircularOrdering(Taxa allTaxa, List<Taxa> taxaSets, WeightedQuartetGroupMap theQuartetWeights)
+            throws QNetException {
 
-        Taxa allTaxa = combinedQuartetSystem.getTaxa();
         int N = allTaxa.size();
-        List<Taxa> taxaSets = combinedQuartetSystem.getTranslatedTaxaSets();
-        WeightedQuartetGroupMap theQuartetWeights = combinedQuartetSystem.getQuartetWeights();
 
         double c = 0.5;
 

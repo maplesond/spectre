@@ -17,7 +17,6 @@ package uk.ac.uea.cmp.phygen.superq.qnet.holders;
 
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ZHolder {

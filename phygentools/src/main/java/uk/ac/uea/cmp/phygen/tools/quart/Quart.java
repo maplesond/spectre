@@ -26,6 +26,7 @@ import uk.ac.tgac.metaopt.Objective;
 import uk.ac.tgac.metaopt.Optimiser;
 import uk.ac.tgac.metaopt.OptimiserException;
 import uk.ac.tgac.metaopt.OptimiserFactory;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.GroupedQuartetSystem;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystem;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystemCombiner;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystemList;
@@ -144,7 +145,7 @@ public class Quart extends PhygenTool {
      * @throws IOException Thrown if there was an issue loading files.
      * @throws OptimiserException Thrown if there was a problem scaling the quartet networks.
      */
-    public QuartetSystem execute(File inputFile, String source, Optimiser optimiser, File outputDir, String outputPrefix) throws IOException, OptimiserException {
+    public GroupedQuartetSystem execute(File inputFile, String source, Optimiser optimiser, File outputDir, String outputPrefix) throws IOException, OptimiserException {
 
         this.infoFile = new File(outputDir, outputPrefix + ".info");
         this.quartetFile = new File(outputDir, outputPrefix + ".qw");
@@ -153,12 +154,12 @@ public class Quart extends PhygenTool {
 
         quartetSystemCombiner.saveInformation(this.infoFile);
 
-        QuartetSystem quartetNetwork = quartetSystemCombiner.create();
+        GroupedQuartetSystem quartetSystem = quartetSystemCombiner.create();
 
         // Write to disk
-        new QWeightWriter().writeQuartets(this.quartetFile, quartetNetwork);
+        new QWeightWriter().writeQuartets(this.quartetFile, quartetSystem);
 
-        return quartetNetwork;
+        return quartetSystem;
     }
 
 

@@ -33,7 +33,7 @@ public class QWeightLoader extends AbstractQLoader {
     public QuartetSystem load(File file) throws IOException {
 
         // Load the quartet network from the qweight file
-        return new QWeightReader().parse(file);
+        return new QuartetSystem(new QWeightReader().parse(file));
     }
 
 

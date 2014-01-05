@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -110,11 +111,11 @@ public class QuartetSystemList extends ArrayList<QuartetSystem> {
     }
 
 
-    public void translateTaxaIndicies(Taxa superTaxaSet) {
+    /*public void translateTaxaIndicies(Taxa superTaxaSet) {
         for(QuartetSystem data : this) {
             data.setTaxaIndicies(superTaxaSet);
         }
-    }
+    }*/
 
     public List<Double> getWeights() {
 
@@ -161,13 +162,13 @@ public class QuartetSystemList extends ArrayList<QuartetSystem> {
 
             double weight = w[i];
 
-            for(QuartetWeights weights : qs.getQuartets().values()) {
-                weights.multiply(weight);
+            for(Map.Entry<Quartet, Double> entry : qs.getQuartets().entrySet()) {
+                entry.setValue(entry.getValue() * weight);
             }
         }
     }
 
-    public void saveNetworks(File outputPrefix) throws IOException {
+    public void saveQWeights(File outputPrefix) throws IOException {
 
         File outputDir = outputPrefix.getParentFile();
         String prefix = outputPrefix.getName();

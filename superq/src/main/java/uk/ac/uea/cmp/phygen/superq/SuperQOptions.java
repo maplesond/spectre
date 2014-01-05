@@ -21,7 +21,6 @@ import uk.ac.tgac.metaopt.Objective;
 import uk.ac.tgac.metaopt.Optimiser;
 import uk.ac.tgac.metaopt.OptimiserException;
 import uk.ac.tgac.metaopt.OptimiserFactory;
-import uk.ac.tgac.metaopt.external.JOptimizer;
 import uk.ac.uea.cmp.phygen.superq.problems.SecondaryProblem;
 import uk.ac.uea.cmp.phygen.superq.problems.SecondaryProblemFactory;
 

@@ -3,7 +3,7 @@ package uk.ac.uea.cmp.phygen.superq.qnet;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystem;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.GroupedQuartetSystem;
 import uk.ac.uea.cmp.phygen.core.ds.split.*;
 
 import java.util.ArrayList;
@@ -16,9 +16,9 @@ public class QNetResult {
 
     private CircularOrdering circularOrdering;
     private ComputedWeights computedWeights;
-    private QuartetSystem quartetSystem;
+    private GroupedQuartetSystem quartetSystem;
 
-    public QNetResult(CircularOrdering circularOrdering, ComputedWeights computedWeights, QuartetSystem quartetSystem) {
+    public QNetResult(CircularOrdering circularOrdering, ComputedWeights computedWeights, GroupedQuartetSystem quartetSystem) {
         this.circularOrdering = circularOrdering;
         this.computedWeights = computedWeights;
         this.quartetSystem = quartetSystem;
@@ -32,7 +32,7 @@ public class QNetResult {
         return computedWeights;
     }
 
-    public QuartetSystem getQuartetSystem() {
+    public GroupedQuartetSystem getQuartetSystem() {
         return quartetSystem;
     }
 

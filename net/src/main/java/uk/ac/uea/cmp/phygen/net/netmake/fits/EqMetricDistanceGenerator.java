@@ -16,8 +16,8 @@
 
 package uk.ac.uea.cmp.phygen.net.netmake.fits;
 
-import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrixGenerator;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
+import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrixGenerator;
 import uk.ac.uea.cmp.phygen.core.ds.distance.RandomDistanceGenerator;
 import uk.ac.uea.cmp.phygen.core.ds.split.CompatibleSplitSystem;
 import uk.ac.uea.cmp.phygen.net.netmake.NetMake;

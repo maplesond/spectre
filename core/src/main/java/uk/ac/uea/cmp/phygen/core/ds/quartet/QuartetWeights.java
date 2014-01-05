@@ -31,68 +31,23 @@ public class QuartetWeights extends Triplet<Double> {
         this.multiply(weight);
     }
 
-    /**
-     * Investigate which topology of a, b, c, d (quartet 1) that the topologies of x, y, u, v (quartet 2) correspond to,
-     * and set weights accordingly
-     * @param q1
-     * @param q2
-     */
-    public QuartetWeights(Quartet q1, Quartet q2, QuartetWeights weights) {
+    @Override
+    public boolean equals(Object o) {
 
-        super(0.0, 0.0, 0.0);
+        return this.equals((QuartetWeights)o);
+    }
 
-        int x = q1.a, y = q1.b, u = q1.c, v = q1.d;
-        int a = q2.a, b = q2.b, c = q2.c, d = q2.d;
+    public boolean equals(QuartetWeights quartetWeights) {
 
-        double r1 = 0.0;
-        double r2 = 0.0;
-        double r3 = 0.0;
+        if (this == quartetWeights)
+            return true;
 
-        // See if xy|uv is ab|cd (w1), ac|bd (w2), or ad|bc (w3)
-        if (((x == a || x == b) && (y == a || y == b)) || ((u == a || u == b) && (v == a || v == b))) {
-            r1 = weights.getA();
-        }
-        else if (((x == a || x == c) && (y == a || y == c)) || ((u == a || u == c) && (v == a || v == c))) {
-            r1 = weights.getB();
-        }
-        else if (((x == a || x == d) && (y == a || y == d)) || ((u == a || u == d) && (v == a || v == d))) {
-            r1 = weights.getC();
-        }
-        else {
-            throw new IllegalStateException("Didn't expect to be here!");
-        }
+        if (quartetWeights == null)
+            return false;
 
-        // See if xu|yv is ab|cd (w1), ac|bd (w2), or ad|bc (w3)
-        if (((x == a || x == b) && (u == a || u == b)) || ((y == a || y == b) && (v == a || v == b))) {
-            r2 = weights.getA();
-        }
-        else if (((x == a || x == c) && (u == a || u == c)) || ((y == a || y == c) && (v == a || v == c))) {
-            r2 = weights.getB();
-        }
-        else if (((x == a || x == d) && (u == a || u == d)) || ((y == a || y == d) && (v == a || v == d))) {
-            r2 = weights.getC();
-        }
-        else {
-            throw new IllegalStateException("Didn't expect to be here!");
-        }
-
-        // See if xv|uy is ab|cd (w1), ac|bd (w2), or ad|bc (w3)
-        if (((x == a || x == b) && (v == a || v == b)) || ((u == a || u == b) && (y == a || y == b))) {
-            r3 = weights.getA();
-        }
-        else if (((x == a || x == c) && (v == a || v == c)) || ((u == a || u == c) && (y == a || y == c))) {
-            r3 = weights.getB();
-        }
-        else if (((x == a || x == d) && (v == a || v == d)) || ((u == a || u == d) && (y == a || y == d))) {
-            r3 = weights.getC();
-        }
-        else {
-            throw new IllegalStateException("Didn't expect to be here!");
-        }
-
-        this.setA(r1);
-        this.setB(r2);
-        this.setC(r3);
+        return (this.getA().doubleValue() == quartetWeights.getA().doubleValue() &&
+                this.getB().doubleValue() == quartetWeights.getB().doubleValue() &&
+                this.getC().doubleValue() == quartetWeights.getC().doubleValue());
     }
 
 
@@ -357,18 +312,6 @@ public class QuartetWeights extends Triplet<Double> {
         return new QuartetWeights(newA, newB, newC);
     }
 
-    /**
-     * Simply divides these weights by those in the provided QuartetWeights
-     * @param other
-     */
-    public void divide(QuartetWeights other) {
-
-        if (other.allNonZero()) {
-            this.setA(this.getA() / other.getA());
-            this.setB(this.getB() / other.getB());
-            this.setC(this.getC() / other.getC());
-        }
-    }
 
     /**
      * just a potentially weighted mean with this, quartets supported by few trees will be weak, although if the

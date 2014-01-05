@@ -1,7 +1,7 @@
 package uk.ac.uea.cmp.phygen.core.ds.quartet.scale;
 
+import uk.ac.uea.cmp.phygen.core.ds.quartet.GroupedQuartetSystem;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystem;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystemList;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 
@@ -34,7 +34,9 @@ public class ScalingMatrix {
         // Compute non-diagonal elements of coefficient matrix
         for (int i = 0; i < (nbNetworks - 1); i++) {
             for (int j = i + 1; j < nbNetworks; j++) {
-                this.matrix[i][j] = computeOffDiagonalElement(quartetSystemList.get(i), quartetSystemList.get(j));
+                this.matrix[i][j] = computeOffDiagonalElement(
+                        new GroupedQuartetSystem(quartetSystemList.get(i)),
+                        new GroupedQuartetSystem(quartetSystemList.get(j)));
                 this.matrix[j][i] = this.matrix[i][j];
             }
         }
@@ -83,7 +85,7 @@ public class ScalingMatrix {
      * @return Sum of the diagonals
      * @throws java.io.IOException
      */
-    protected double sumUpDiagonal(QuartetSystem qni, QuartetSystem qnj) {
+    protected double sumUpDiagonal(GroupedQuartetSystem qni, GroupedQuartetSystem qnj) {
 
         //auxilliary variable to store intermediate
         //results when summing up the values for the
@@ -150,7 +152,9 @@ public class ScalingMatrix {
         //loop through the trees with index j distinct from i
         for (int j = 0; j < quartetSystemList.size(); j++) {
             if (j != i) {
-                coeff = coeff + this.sumUpDiagonal(quartetSystemList.get(i), quartetSystemList.get(j));
+                coeff = coeff + this.sumUpDiagonal(
+                        new GroupedQuartetSystem(quartetSystemList.get(i)),
+                        new GroupedQuartetSystem(quartetSystemList.get(j)));
             }
         }
 
@@ -164,7 +168,7 @@ public class ScalingMatrix {
      * @return Value of the off diagonal element
      * @throws IOException
      */
-    protected double computeOffDiagonalElement(QuartetSystem qni, QuartetSystem qnj) {
+    protected double computeOffDiagonalElement(GroupedQuartetSystem qni, GroupedQuartetSystem qnj) {
 
         //auxiliary variable used to store intermediate results
         double coeff = 0.0;

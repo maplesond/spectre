@@ -62,9 +62,9 @@ public interface PhygenReader {
     SplitSystem readSplitSystem(File file) throws IOException;
 
     /**
-     * Loads a quartet network from a file
+     * Loads a quartet system from a file
      * @param file The file to read
-     * @return A quartet network
+     * @return A quartet system
      * @throws IOException
      */
     QuartetSystem readQuartets(File file) throws IOException;

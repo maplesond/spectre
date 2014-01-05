@@ -117,7 +117,7 @@ public class Scaling extends PhygenTool {
      */
     public void execute(File inputFile, File outputPrefix, String type, Optimiser optimiser) throws OptimiserException, IOException {
 
-        this.execute(inputFile, type, optimiser).saveNetworks(outputPrefix);
+        this.execute(inputFile, type, optimiser).saveQWeights(outputPrefix);
     }
 
 

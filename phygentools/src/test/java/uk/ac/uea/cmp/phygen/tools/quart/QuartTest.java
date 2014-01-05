@@ -17,13 +17,13 @@
 package uk.ac.uea.cmp.phygen.tools.quart;
 
 import org.junit.Test;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystem;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystemCombiner;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystemList;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.*;
 import uk.ac.uea.cmp.phygen.core.ds.tree.newick.NewickTree;
 
 import java.io.IOException;
+import java.util.List;
 
+import static junit.framework.Assert.assertNotNull;
 import static junit.framework.TestCase.assertTrue;
 
 /**
@@ -53,6 +53,54 @@ public class QuartTest {
         NewickTree tree = new NewickTree("(((A:1,B:1):1,((C:1,D:1):1,E:1):1),(F:1,G:1):1);");
 
         QuartetSystemList qsl = new QuartetSystemList(new QuartetSystem(tree));
+
+        QuartetSystemCombiner qsc = new Quart().execute(qsl);
+
+        assertTrue(true);
+    }
+
+    @Test
+    public void testConflict() throws IOException {
+
+        NewickTree tree1 = new NewickTree("(((A:1,B:1):1,C:1),(D:1,E:1):1);");
+
+        NewickTree tree2 = new NewickTree("(((A:1,B:1):1,D:1),(C:1,E:1):1);");
+
+        QuartetSystemList qsl = new QuartetSystemList();
+        qsl.add(new QuartetSystem(tree1));
+        qsl.add(new QuartetSystem(tree2));
+
+        QuartetSystemCombiner qsc = new Quart().execute(qsl);
+        GroupedQuartetSystem gqs = qsc.create();
+        List<Quartet> quartets = gqs.sortedQuartets();
+
+        assertNotNull(quartets);
+        assertTrue(quartets.size() == 5);
+
+        Quartet q1 = new Quartet(1, 2, 3, 4);
+        assertTrue(quartets.get(0).equals(q1));
+        assertTrue(gqs.getQuartets().get(q1).equals(new QuartetWeights(1.0, 0.0, 0.0)));
+
+        Quartet q2 = new Quartet(1, 2, 3, 5);
+        assertTrue(quartets.get(1).equals(q2));
+        assertTrue(gqs.getQuartets().get(q2).equals(new QuartetWeights(1.5, 0.0, 0.0)));
+
+        Quartet q4 = new Quartet(1, 3, 4, 5);
+        assertTrue(quartets.get(3).equals(q4));
+        assertTrue(gqs.getQuartets().get(q4).equals(new QuartetWeights(1.0, 1.0, 0.0)));
+    }
+
+
+    @Test
+    public void testCombine() throws IOException {
+
+        NewickTree tree1 = new NewickTree("(((A:1,B:1):1,C:1),(D:1,E:1):1);");
+
+        NewickTree tree2 = new NewickTree("(((A:1,B:1):1,((H:1,D:1):1,E:1):1),(F:1,G:1):1);");
+
+        QuartetSystemList qsl = new QuartetSystemList();
+        qsl.add(new QuartetSystem(tree1));
+        qsl.add(new QuartetSystem(tree2));
 
         QuartetSystemCombiner qsc = new Quart().execute(qsl);
 

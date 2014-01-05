@@ -21,7 +21,6 @@ import uk.ac.uea.cmp.phygen.core.ds.Alignment;
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrixBuilder;
-import uk.ac.uea.cmp.phygen.core.ds.split.SimpleSplitSystem;
 import uk.ac.uea.cmp.phygen.core.ds.split.Split;
 import uk.ac.uea.cmp.phygen.core.ds.split.SplitBlock;
 import uk.ac.uea.cmp.phygen.core.ds.split.SplitSystem;

@@ -23,8 +23,8 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.ds.Taxon;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.GroupedQuartetSystem;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystem;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.WeightedQuartetGroupMap;
 
@@ -40,13 +40,13 @@ public class QWeightPopulator implements QWeightListener {
 
     private static Logger log = LoggerFactory.getLogger(QWeightPopulator.class);
 
-    private QuartetSystem quartetNetwork;
+    private GroupedQuartetSystem groupedQuartetSystem;
     private WeightedQuartetGroupMap weightedQuartets;
 
     private int expectedTaxa;
 
-    public QWeightPopulator(QuartetSystem quartetNetwork) {
-        this.quartetNetwork = quartetNetwork;
+    public QWeightPopulator(GroupedQuartetSystem groupedQuartetSystem) {
+        this.groupedQuartetSystem = groupedQuartetSystem;
         this.weightedQuartets = new WeightedQuartetGroupMap();
         this.expectedTaxa = 0;
     }
@@ -138,7 +138,7 @@ public class QWeightPopulator implements QWeightListener {
 
     @Override
     public void exitSense_option(@NotNull QWeightParser.Sense_optionContext ctx) {
-        this.quartetNetwork.setSense(QuartetSystem.Sense.valueOf(ctx.getText().toUpperCase()));
+        this.groupedQuartetSystem.setSense(GroupedQuartetSystem.Sense.valueOf(ctx.getText().toUpperCase()));
     }
 
     @Override
@@ -180,7 +180,7 @@ public class QWeightPopulator implements QWeightListener {
     public void exitParse(@NotNull QWeightParser.ParseContext ctx) {
 
         // log some warnings if things aren't proceeding as expected
-        final int actualTaxa = this.quartetNetwork.getTaxa().size();
+        final int actualTaxa = this.groupedQuartetSystem.getTaxa().size();
 
         if (actualTaxa != this.expectedTaxa) {
 
@@ -188,7 +188,7 @@ public class QWeightPopulator implements QWeightListener {
         }
 
         final int expectedQuartets = Quartet.over4(this.expectedTaxa);
-        final int actualQuartets = this.quartetNetwork.getQuartets().size();
+        final int actualQuartets = this.groupedQuartetSystem.getQuartets().size();
 
         if (actualQuartets != expectedQuartets) {
 
@@ -217,7 +217,7 @@ public class QWeightPopulator implements QWeightListener {
         Quartet quartet = new Quartet(a, b, c, d);
         QuartetWeights weights = new QuartetWeights(w1, w2, w3);
 
-        this.quartetNetwork.getQuartets().put(quartet, weights);
+        this.groupedQuartetSystem.getQuartets().put(quartet, weights);
     }
 
     @Override
@@ -229,7 +229,7 @@ public class QWeightPopulator implements QWeightListener {
     public void exitTaxon(@NotNull QWeightParser.TaxonContext ctx) {
         String name = ctx.IDENTIFIER().getText();
         int id = Integer.parseInt(ctx.NUMERIC().getText());
-        this.quartetNetwork.getTaxa().add(new Taxon(name, id));
+        this.groupedQuartetSystem.getTaxa().add(new Taxon(name, id));
     }
 
     @Override

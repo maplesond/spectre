@@ -113,7 +113,7 @@ public class SuperQ extends RunnableTool {
             this.continueRun();
 
             notifyUser("Calculating the circular ordering and computing weights using QNET (optimising with: " + primarySolverName + ")");
-            QNetResult qnetResult = new QNet().execute(combinedQuartetSystem, -1.0, this.options.getPrimarySolver());
+            QNetResult qnetResult = new QNet().execute(combinedQuartetSystem, false, -1.0, this.options.getPrimarySolver());
 
             rt.gc();
             log.debug("FREE MEM - after running Q-Net: " + rt.freeMemory());

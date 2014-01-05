@@ -24,7 +24,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA. User: Dan Date: 29/07/13 Time: 22:51 To change this template use File | Settings | File
@@ -35,35 +37,35 @@ public class QuartetSystemCombiner {
     private QuartetSystemList originalSystems;
 
     private Taxa taxa;
-    private List<Taxa> translated;
-    private WeightedQuartetGroupMap quartetWeights;
-    private WeightedQuartetGroupMap summer;
+    private List<Map<Integer,Integer>> taxaIdLut;
+    private CanonicalWeightedQuartetMap quartetWeights;
+    private CanonicalWeightedQuartetMap summer;
 
     public QuartetSystemCombiner() {
-        this(new Taxa(), new WeightedQuartetGroupMap(), new WeightedQuartetGroupMap());
+        this(new Taxa(), new CanonicalWeightedQuartetMap(), new CanonicalWeightedQuartetMap());
     }
 
-    public QuartetSystemCombiner(Taxa taxa, WeightedQuartetGroupMap quartetWeights, WeightedQuartetGroupMap summer) {
+    public QuartetSystemCombiner(Taxa taxa, CanonicalWeightedQuartetMap quartetWeights, CanonicalWeightedQuartetMap summer) {
         this.taxa = taxa;
         this.quartetWeights = quartetWeights;
         this.summer = summer;
         this.originalSystems = new QuartetSystemList();
-        this.translated = new ArrayList<>();
+        this.taxaIdLut = new ArrayList<>();
     }
 
     public Taxa getTaxa() {
         return taxa;
     }
 
-    public List<Taxa> getTranslatedTaxaSets() {
-        return translated;
+    public List<Map<Integer,Integer>> getTranslatedTaxaSets() {
+        return taxaIdLut;
     }
 
-    public WeightedQuartetGroupMap getQuartetWeights() {
+    public CanonicalWeightedQuartetMap getQuartetWeights() {
         return quartetWeights;
     }
 
-    public WeightedQuartetGroupMap getSummer() {
+    public CanonicalWeightedQuartetMap getSummer() {
         return summer;
     }
 
@@ -85,7 +87,9 @@ public class QuartetSystemCombiner {
         nF.setMaximumIntegerDigits(3);
 
         for (int n = 0; n < N; n++) {
-            out.write("taxon:   " + nF.format(n + 1) + "   name: " + taxa.get(n).getName() + ";\n");
+
+            Taxon taxon = taxa.get(n);
+            out.write("taxon:   " + nF.format(taxon.getId()) + "   name: " + taxon.getName() + ";\n");
         }
 
         for (int a = 1; a <= N - 3; a++) {
@@ -96,7 +100,7 @@ public class QuartetSystemCombiner {
 
                     for (int d = c + 1; d <= N; d++) {
 
-                        if (summer.getWeight(new Quartet(a, b, c, d)) > 0.0) {
+                        if (summer.get(new Quartet(a, b, c, d)) > 0.0) {
 
                             out.write("quartet: " + nF.format(a) + " " + nF.format(b) + " " + nF.format(c) + " " + nF.format(d)
                                     + " weights: "
@@ -116,31 +120,54 @@ public class QuartetSystemCombiner {
         out.close();
     }
 
-    public QuartetSystemCombiner combine(QuartetSystem qnet) {
+    public QuartetSystemCombiner combine(QuartetSystem qs) {
 
         // Keep a copy of the original datasets
-        this.originalSystems.add(qnet);
+        this.originalSystems.add(qs);
 
         // Save current taxa
-        Taxa oldTaxa = new Taxa(this.taxa);
+        //Taxa oldTaxa = new Taxa(this.taxa);
 
         // Combine chopped tree's taxa set, with everything found in loader.  Only keeps distinct taxa.
-        this.taxa.addAll(qnet.getTaxa(), false);
+        this.taxa.addAll(qs.getTaxa(), false);
 
         // Store a separate version of the quartet system taxa list, which specify the position in the new complete dataset
-        this.translated.add(this.translateTaxaIndicies(this.taxa, qnet.getTaxa()));
+        Map<Integer, Integer> subsetToMasterLut = this.translateTaxaIndicies(this.taxa, qs.getTaxa(), true);
+        this.taxaIdLut.add(subsetToMasterLut);
 
         // Convert the taxa sets in the current quartet weights and the summer
-        this.quartetWeights.translate(oldTaxa, this.taxa);
-        this.summer.translate(oldTaxa, this.taxa);
+        //this.quartetWeights.translate(oldTaxa, this.taxa);
+        //this.summer.translate(oldTaxa, this.taxa);
 
-        // Agglomerate quartets
-        this.quartetWeights.weighedAdd(qnet.getQuartets(), qnet.getWeight());
-
-        // Do some summing???
-        this.summer.sum(this.taxa, qnet.getTaxa(), qnet.getWeight());
+        // Combine quartets
+        this.combine(qs.getQuartets(), subsetToMasterLut, qs.getWeight());
 
         return this;
+    }
+
+
+    /**
+     * note: this now simply computes a weighted sum. This is the part that may be done in any number of ways here,
+     * take weighted sum of every quartet where the quartet is nonzero
+     */
+    public void combine(CanonicalWeightedQuartetMap other, Map<Integer, Integer> translation, double scalingFactor) {
+
+        for (Quartet q : other.keySet()) {
+            Quartet translated = this.translateQuartet(q, translation);
+
+            this.quartetWeights.incrementWeight(translated, other.get(q) * scalingFactor);
+            this.summer.incrementWeight(translated, scalingFactor);
+        }
+    }
+
+    private Quartet translateQuartet(Quartet q, Map<Integer, Integer> lut) {
+
+        return new Quartet(
+                lut.get(q.getA()),
+                lut.get(q.getB()),
+                lut.get(q.getC()),
+                lut.get(q.getD())
+                );
     }
 
     /**
@@ -150,20 +177,22 @@ public class QuartetSystemCombiner {
      * @returns Returns a new copy of subset, which has its indicies updated to reflect those in the master taxa set.
      *
      */
-    private Taxa translateTaxaIndicies(Taxa allTaxa, Taxa subset) {
+    private Map<Integer, Integer> translateTaxaIndicies(Taxa allTaxa, Taxa subset, boolean subsetToMaster) {
 
-        Taxa newTaxa = new Taxa();
+        Map<Integer, Integer> lut = new HashMap<>();
         for(Taxon t : subset) {
             Taxon masterTaxon = allTaxa.getByName(t.getName());
 
-            newTaxa.add(new Taxon(t.getName(), masterTaxon.getId()));
+            lut.put(
+                    subsetToMaster ? t.getId() : masterTaxon.getId(),
+                    subsetToMaster ? masterTaxon.getId() : t.getId());
         }
 
-        return newTaxa;
+        return lut;
     }
 
-    public QuartetSystem create() {
-        return new QuartetSystem(this.taxa, 1.0, this.quartetWeights);
+    public GroupedQuartetSystem create() {
+        return new GroupedQuartetSystem(new QuartetSystem(this.taxa, 1.0, this.quartetWeights));
     }
 
     public List<Taxa> getOriginalTaxaSets() {

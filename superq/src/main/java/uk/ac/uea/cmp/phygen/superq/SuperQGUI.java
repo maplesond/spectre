@@ -24,7 +24,6 @@ import uk.ac.tgac.metaopt.OptimiserFactory;
 import uk.ac.uea.cmp.phygen.core.ui.gui.JobController;
 import uk.ac.uea.cmp.phygen.core.ui.gui.StatusTracker;
 import uk.ac.uea.cmp.phygen.core.ui.gui.ToolHost;
-import uk.ac.uea.cmp.phygen.superq.problems.SecondaryProblem;
 import uk.ac.uea.cmp.phygen.superq.problems.SecondaryProblemFactory;
 
 import javax.swing.*;

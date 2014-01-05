@@ -1,6 +1,5 @@
 package uk.ac.uea.cmp.phygen.superq.qnet;
 
-import org.apache.commons.cli.OptionBuilder;
 import uk.ac.tgac.metaopt.Objective;
 import uk.ac.tgac.metaopt.Optimiser;
 import uk.ac.tgac.metaopt.OptimiserFactory;

@@ -237,15 +237,15 @@ public abstract class NewickNode {
 
                     for (int iA2 = iA1 + 1; iA2 < setA.size(); iA2++) {
 
-                        int a1 = 1 + setA.get(iA1).getId();
-                        int a2 = 1 + setA.get(iA2).getId();
+                        int a1 = setA.get(iA1).getId();
+                        int a2 = setA.get(iA2).getId();
 
                         for (int iB1 = 0; iB1 < setB.size() - 1; iB1++) {
 
                             for (int iB2 = iB1 + 1; iB2 < setB.size(); iB2++) {
 
-                                int b1 = 1 + setB.get(iB1).getId();
-                                int b2 = 1 + setB.get(iB2).getId();
+                                int b1 = setB.get(iB1).getId();
+                                int b2 = setB.get(iB2).getId();
 
                                 qW.incrementWeight(new Quartet(a1, a2, b1, b2), w);
                             }

@@ -15,7 +15,10 @@
  */
 package uk.ac.uea.cmp.phygen.core.ds;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Taxa class.  This is an extension of Arraylist, which also acts as a set in that it does not allow the client
@@ -105,8 +108,8 @@ public class Taxa extends ArrayList<Taxon> {
                 throw new IllegalArgumentException("Taxa list already contains taxon name: " + taxon.getName());
 
             // If the user didn't both to set the taxa id then we do it ourselves.
-            if (taxon.getId() == -1) {
-                taxon.setId(this.size());
+            if (taxon.getId() == Taxon.DEFAULT_ID) {
+                taxon.setId(this.size()+1);
             }
 
             if (this.ids.containsKey(taxon.getId()))
@@ -130,7 +133,7 @@ public class Taxa extends ArrayList<Taxon> {
         if (!duplicatesAllowed) {
 
             // If the user didn't both to set the taxa id then we do it ourselves.
-            if (taxon.getId() == -1) {
+            if (taxon.getId() == Taxon.DEFAULT_ID) {
                 taxon.setId(index);
             }
 
@@ -164,14 +167,14 @@ public class Taxa extends ArrayList<Taxon> {
                 if (!this.names.containsKey(t.getName())) {
                     this.add(retainIds ?
                             t :
-                            new Taxon(t.getName(), this.size()));
+                            new Taxon(t.getName(), this.size()+1));
                     i++;
                 }
             }
             else {
                 this.add(retainIds ?
                         t :
-                        new Taxon(t.getName(), this.size()));
+                        new Taxon(t.getName(), this.size()+1));
                 i++;
             }
         }
@@ -210,7 +213,7 @@ public class Taxa extends ArrayList<Taxon> {
         if (this.size() < 4)
             throw new IllegalStateException("Taxa list must contain at least 4 taxa for this method to work");
 
-        return new Quadruple(this.get(a), this.get(b), this.get(c), this.get(d));
+        return new Quadruple(this.getById(a), this.getById(b), this.getById(c), this.getById(d));
     }
 
     public boolean contains(Quadruple quad) {
@@ -259,7 +262,7 @@ public class Taxa extends ArrayList<Taxon> {
     }
 
     public void setDefaultIndicies() {
-        int i = 0;
+        int i = 1;
         for(Taxon taxon : this) {
             taxon.setId(i++);
         }

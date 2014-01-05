@@ -25,7 +25,7 @@ package uk.ac.uea.cmp.phygen.core.ds;
  */
 public class Taxon {
 
-    public static final int DEFAULT_ID = -1;
+    public static final int DEFAULT_ID = 0;
 
     private String name;
     private int id;

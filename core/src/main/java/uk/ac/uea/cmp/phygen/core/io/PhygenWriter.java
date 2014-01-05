@@ -16,6 +16,7 @@
 package uk.ac.uea.cmp.phygen.core.io;
 
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.GroupedQuartetSystem;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystem;
 import uk.ac.uea.cmp.phygen.core.ds.split.SplitSystem;
 
@@ -35,5 +36,7 @@ public interface PhygenWriter {
 
     void writeDistanceMatrix(File outFile, DistanceMatrix distanceMatrix) throws IOException;
 
-    void writeQuartets(File outFile, QuartetSystem quartetNetwork) throws IOException;
+    void writeQuartets(File outFile, QuartetSystem quartetSystem) throws IOException;
+
+    void writeQuartets(File outFile, GroupedQuartetSystem quartetSystem) throws IOException;
 }

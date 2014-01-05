@@ -20,6 +20,7 @@ import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.kohsuke.MetaInfServices;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.GroupedQuartetSystem;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystem;
 import uk.ac.uea.cmp.phygen.core.io.AbstractPhygenReader;
 import uk.ac.uea.cmp.phygen.core.io.PhygenDataType;
@@ -43,7 +44,7 @@ import java.io.IOException;
 @MetaInfServices(uk.ac.uea.cmp.phygen.core.io.PhygenReader.class)
 public class QWeightReader extends AbstractPhygenReader {
 
-    public QuartetSystem parse(File file) throws IOException {
+    public GroupedQuartetSystem parse(File file) throws IOException {
 
         // Convert loader into a character stream
         CharStream in = new ANTLRInputStream(new FileInputStream(file));
@@ -57,7 +58,7 @@ public class QWeightReader extends AbstractPhygenReader {
         CommonTokenStream tokens = new CommonTokenStream(lexer);
 
         // The results of parsing go in here
-        QuartetSystem quartetNetwork = new QuartetSystem();
+        GroupedQuartetSystem quartetNetwork = new GroupedQuartetSystem();
 
         // Setup parser
         QWeightParser parser = new QWeightParser(tokens);
@@ -82,7 +83,7 @@ public class QWeightReader extends AbstractPhygenReader {
 
     @Override
     public QuartetSystem readQuartets(File file) throws IOException {
-        return this.parse(file);
+        return new QuartetSystem(this.parse(file));
     }
 
     @Override

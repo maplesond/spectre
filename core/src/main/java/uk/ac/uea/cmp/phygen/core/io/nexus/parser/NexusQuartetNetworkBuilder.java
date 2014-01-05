@@ -19,7 +19,7 @@ package uk.ac.uea.cmp.phygen.core.io.nexus.parser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystem;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.GroupedQuartetSystem;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.WeightedQuartetGroupMap;
 
 /**
@@ -47,7 +47,7 @@ public class NexusQuartetNetworkBuilder {
     }
 
 
-    public QuartetSystem createQuartetNetwork() {
+    public GroupedQuartetSystem createQuartetNetwork() {
 
         final int nbTaxa = taxa != null ? taxa.size() : expectedNbTaxa;
 
@@ -55,7 +55,7 @@ public class NexusQuartetNetworkBuilder {
             log.warn("Expected number of taxa (" + expectedNbTaxa + ") is different from the number of found taxa (" + nbTaxa + ").");
         }
 
-        return new QuartetSystem(this.taxa, this.weight, null); //this.weightedQuartets);
+        return new GroupedQuartetSystem(this.taxa, this.weight, null); //this.weightedQuartets);
     }
 
     public int getExpectedNbTaxa() {
