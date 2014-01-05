@@ -425,18 +425,18 @@ public class QNetGUI extends JFrame implements ToolHost {
 
         options.setLogNormalise(this.chkLogNormalise.isSelected());
 
-        double tolerance = -1.0;
-        try {
-            tolerance = Double.parseDouble(this.txtTolerance.getText());
-        }
-        catch(Exception e) {
-            showErrorDialog("Tolerance must be a real number.");
-            return null;
-        }
-        options.setTolerance(tolerance);
-
         if (((String) this.cboSolver.getSelectedItem()).equalsIgnoreCase("internal")) {
             options.setOptimiser(null);
+
+            double tolerance = -1.0;
+            try {
+                tolerance = Double.parseDouble(this.txtTolerance.getText());
+            }
+            catch(Exception e) {
+                showErrorDialog("Tolerance must be a real number.");
+                return null;
+            }
+            options.setTolerance(tolerance);
         }
         else {
             try {
