@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 import uk.ac.tgac.metaopt.Objective;
 import uk.ac.tgac.metaopt.Optimiser;
 import uk.ac.tgac.metaopt.OptimiserFactory;
-import uk.ac.uea.cmp.phygen.core.ds.split.CompatibleSplitSystem;
+import uk.ac.uea.cmp.phygen.core.ds.split.CircularSplitSystem;
 import uk.ac.uea.cmp.phygen.core.io.nexus.NexusWriter;
 import uk.ac.uea.cmp.phygen.core.ui.cli.CommandLineHelper;
 
@@ -97,7 +97,7 @@ public class QNetCLI {
             QNetResult result = new QNet().execute(input, log, tolerance, optimiser);
 
             // Create a split system in standard mode
-            CompatibleSplitSystem ss = result.createSplitSystem(result.getComputedWeights().getX(), 0);
+            CircularSplitSystem ss = result.createSplitSystem(null, QNetResult.SplitLimiter.STANDARD);
 
             // Write the split system out in nexus format
             new NexusWriter().writeSplitSystem(output, ss);

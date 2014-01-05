@@ -117,12 +117,12 @@ public class NexusWriter extends AbstractPhygenWriter implements Appendable {
 
         /*if (nexusData.getCycle() != null) {
 
-        }
+        }*/
 
         if (nexusData.getSplitSystem() != null) {
             this.appendLine();
             this.append(nexusData.getSplitSystem());
-        }  */
+        }
 
         // Save to disk
         this.write(file);

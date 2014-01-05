@@ -9,6 +9,7 @@ import uk.ac.tgac.metaopt.OptimiserException;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystem;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystemCombiner;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystemList;
+import uk.ac.uea.cmp.phygen.core.ds.split.CircularSplitSystem;
 import uk.ac.uea.cmp.phygen.core.ds.tree.newick.NewickTree;
 import uk.ac.uea.cmp.phygen.tools.quart.Quart;
 
@@ -57,7 +58,7 @@ public class QNetITCase {
         QuartetSystemList qsl = new QuartetSystemList(new QuartetSystem(tree));
         QuartetSystemCombiner qsc = new Quart().execute(qsl);
         QNetResult result = new QNet().execute(qsc, false, -1.0, null);
-
+        CircularSplitSystem ss = result.createSplitSystem(null, QNetResult.SplitLimiter.STANDARD);
         assertTrue(true);
     }
 
@@ -74,6 +75,9 @@ public class QNetITCase {
 
         QuartetSystemCombiner qsc = new Quart().execute(qsl);
         QNetResult result = new QNet().execute(qsc, false, -1.0, null);
+
+        CircularSplitSystem ss = result.createSplitSystem(null, QNetResult.SplitLimiter.STANDARD);
+
 
         assertTrue(true);
     }

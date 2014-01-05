@@ -25,7 +25,7 @@ import uk.ac.tgac.metaopt.Optimiser;
 import uk.ac.tgac.metaopt.OptimiserException;
 import uk.ac.tgac.metaopt.Problem;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystemCombiner;
-import uk.ac.uea.cmp.phygen.core.ds.split.CompatibleSplitSystem;
+import uk.ac.uea.cmp.phygen.core.ds.split.CircularSplitSystem;
 import uk.ac.uea.cmp.phygen.core.io.nexus.Nexus;
 import uk.ac.uea.cmp.phygen.core.io.nexus.NexusReader;
 import uk.ac.uea.cmp.phygen.core.io.nexus.NexusWriter;
@@ -154,7 +154,7 @@ public class SuperQ extends RunnableTool {
             File weightsOutput = this.options.getFilter() != null ? new File(filterTempFile) : this.options.getOutputFile();
 
             notifyUser("Saving weights to file: " + weightsOutput.getAbsoluteFile());
-            CompatibleSplitSystem ss = qnetResult.createSplitSystem(solution, 0);
+            CircularSplitSystem ss = qnetResult.createSplitSystem(null, QNetResult.SplitLimiter.STANDARD);
 
             new NexusWriter().writeSplitSystem(weightsOutput, ss);
 

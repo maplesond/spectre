@@ -130,4 +130,17 @@ public class CollectionUtils {
         array[i2] = tmp;
     }
 
+    public static int findIndexOfMax(double[] array) {
+
+        double maxVal = Double.NEGATIVE_INFINITY;
+        int maxIndex = -1;
+        for(int i = 0; i < array.length; i++) {
+            if (array[i] > maxVal) {
+                maxIndex = i;
+            }
+        }
+
+        return maxIndex;
+    }
+
 }

@@ -4,7 +4,10 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.GroupedQuartetSystem;
-import uk.ac.uea.cmp.phygen.core.ds.split.*;
+import uk.ac.uea.cmp.phygen.core.ds.split.CircularOrdering;
+import uk.ac.uea.cmp.phygen.core.ds.split.CircularSplitSystem;
+import uk.ac.uea.cmp.phygen.core.ds.split.Split;
+import uk.ac.uea.cmp.phygen.core.ds.split.SplitBlock;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +39,7 @@ public class QNetResult {
         return quartetSystem;
     }
 
-    public CompatibleSplitSystem createSplitSystem(double[] x, int mode) {
+    public CircularSplitSystem createSplitSystem(double[] limit, SplitLimiter mode) {
 
         // Setup shortcuts
         Taxa allTaxa = this.quartetSystem.getTaxa();
@@ -94,49 +97,15 @@ public class QNetResult {
 
         int noSplits = N * (N - 1) / 2 - N;
         boolean[] splitExists = new boolean[noSplits];
-
-        int existingSplits = 0;
-        // stuff to print _all_ splits
-
-        for (int i = 0; i < noSplits; i++) {
-
-            if (mode == 0)//standard
-            {
-                if (y[i] > 0.0) {
-                    splitExists[i] = true;
-                    existingSplits++;
-                } else {
-                    splitExists[i] = false;
-                }
-            } else if (mode == 1)//minimum
-            {
-                if ((y[i] > 0.0) && (y[i] < x[i])) {
-                    splitExists[i] = true;
-                    existingSplits++;
-                } else {
-                    splitExists[i] = false;
-
-                }
-            } else if (mode == 2)//maximum
-            {
-                if (y[i] > x[i]) {
-                    splitExists[i] = true;
-                    existingSplits++;
-                } else {
-                    splitExists[i] = false;
-                }
-            }
-
-        }
-
         List<Split> splits = new ArrayList<>();
 
         int s = 0;
         double ws = 0.0;
         int wn = 0;
+        int existingSplits = 0;
+        for (int i = 0; i < noSplits; i++) {
 
-        for(int i = 0; i < noSplits; i++) {
-            if (splitExists[i]) {
+            if (mode.validSplit(y[i], limit != null ? limit[i] : 0.0)) {
                 s++;
 
                 Pair<Integer, Integer> sI = splitIndices[i];
@@ -155,6 +124,7 @@ public class QNetResult {
             }
         }
 
+
         double mw = 1.0;
         if (wn > 0) {
             mw = ws / ((double) wn);
@@ -167,8 +137,30 @@ public class QNetResult {
             splits.add(new Split(new SplitBlock(new int[]{i+1}), N, mw));
         }
 
-        CompatibleSplitSystem ss = new CompatibleSplitSystem(new CircularSplitSystem(allTaxa, splits, this.circularOrdering));
+        return new CircularSplitSystem(allTaxa, splits, this.circularOrdering);
+    }
 
-        return ss;
+    public static enum SplitLimiter {
+
+        STANDARD {
+            @Override
+            public boolean validSplit(double weight, double limit) {
+                return weight > 0.0;
+            }
+        },
+        MIN {
+            @Override
+            public boolean validSplit(double weight, double limit) {
+                return (weight > 0.0) && (weight < limit);
+            }
+        },
+        MAX {
+            @Override
+            public boolean validSplit(double weight, double limit) {
+                return weight > limit;
+            }
+        };
+
+        public abstract boolean validSplit(double weight, double limit);
     }
 }
