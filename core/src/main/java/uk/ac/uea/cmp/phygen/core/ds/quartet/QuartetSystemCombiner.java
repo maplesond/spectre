@@ -37,7 +37,7 @@ public class QuartetSystemCombiner {
     private QuartetSystemList originalSystems;
 
     private Taxa taxa;
-    private List<Map<Integer,Integer>> taxaIdLut;
+    private List<Taxa> translatedTaxaList;
     private CanonicalWeightedQuartetMap quartetWeights;
     private CanonicalWeightedQuartetMap summer;
 
@@ -50,15 +50,15 @@ public class QuartetSystemCombiner {
         this.quartetWeights = quartetWeights;
         this.summer = summer;
         this.originalSystems = new QuartetSystemList();
-        this.taxaIdLut = new ArrayList<>();
+        this.translatedTaxaList = new ArrayList<>();
     }
 
     public Taxa getTaxa() {
         return taxa;
     }
 
-    public List<Map<Integer,Integer>> getTranslatedTaxaSets() {
-        return taxaIdLut;
+    public List<Taxa> getTranslatedTaxaSets() {
+        return translatedTaxaList;
     }
 
     public CanonicalWeightedQuartetMap getQuartetWeights() {
@@ -133,11 +133,7 @@ public class QuartetSystemCombiner {
 
         // Store a separate version of the quartet system taxa list, which specify the position in the new complete dataset
         Map<Integer, Integer> subsetToMasterLut = this.translateTaxaIndicies(this.taxa, qs.getTaxa(), true);
-        this.taxaIdLut.add(subsetToMasterLut);
-
-        // Convert the taxa sets in the current quartet weights and the summer
-        //this.quartetWeights.translate(oldTaxa, this.taxa);
-        //this.summer.translate(oldTaxa, this.taxa);
+        this.translatedTaxaList.add(lutToTaxa(subsetToMasterLut, this.taxa));
 
         // Combine quartets
         this.combine(qs.getQuartets(), subsetToMasterLut, qs.getWeight());
@@ -189,6 +185,17 @@ public class QuartetSystemCombiner {
         }
 
         return lut;
+    }
+
+    private Taxa lutToTaxa(Map<Integer, Integer> lut, Taxa allTaxa) {
+
+        Taxa newTaxa = new Taxa();
+
+        for(Map.Entry<Integer, Integer> entry : lut.entrySet()) {
+            newTaxa.add(allTaxa.getById(entry.getValue()));
+        }
+
+        return newTaxa;
     }
 
     public GroupedQuartetSystem create() {

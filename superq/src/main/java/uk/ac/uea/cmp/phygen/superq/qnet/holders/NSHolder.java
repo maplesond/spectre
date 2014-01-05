@@ -18,15 +18,15 @@ package uk.ac.uea.cmp.phygen.superq.qnet.holders;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.CanonicalWeightedQuartetMap;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.WeightedQuartetGroupMap;
 
 import java.util.List;
 
 
 public class NSHolder extends AbstractBasicHolder {
 
-    public NSHolder(List<Taxa> taxaSets, int N, WeightedQuartetGroupMap theQuartetWeights) {
+    public NSHolder(List<Taxa> taxaSets, int N, CanonicalWeightedQuartetMap theQuartetWeights) {
 
         super(N, taxaSets, theQuartetWeights);
     }
@@ -68,8 +68,13 @@ public class NSHolder extends AbstractBasicHolder {
                                     // DAN:  Add this check, which wasn't here before, because we are now stricter with regards to
                                     // what is and what isn't a quartet
                                     if (Quartet.areDistinct(yA, yB, yC, yD)) {
+
+                                        Quartet q = new Quartet(yA, yB, yC, yD);
+
                                         count++;
-                                        weight += theQuartetWeights.getWeight(new Quartet(yA, yB, yC, yD));
+                                        weight += theQuartetWeights.containsKey(q) ?
+                                                theQuartetWeights.get(q) :
+                                                0.0;
                                     }
                                 }
                             }

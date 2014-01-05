@@ -976,13 +976,6 @@ public class WeightsComputeNNLSInformative {
             Z.add(i);
         }
 
-        // initially, all variables are set to zero
-        for (int i = 0; i < arraySize; i++) {
-
-            x[i] = 0.0;
-            w[i] = 0.0;
-            z[i] = 0.0;
-        }
 
         // finite precision test thing
 
@@ -992,7 +985,7 @@ public class WeightsComputeNNLSInformative {
 
         // list of choices tested
 
-        List<SolutionHypothesis> hypotheses = new LinkedList<SolutionHypothesis>();
+        List<SolutionHypothesis> hypotheses = new LinkedList<>();
 
         int it = 0;
 
@@ -1042,7 +1035,6 @@ public class WeightsComputeNNLSInformative {
             if (Z.isEmpty()) {
 
                 break;
-
             }
 
             boolean allLequalZero = true;
@@ -1133,10 +1125,10 @@ public class WeightsComputeNNLSInformative {
                 if (isContained) {
 
                     w[t] = 0.0;
-                } else {
+                }
+                else {
 
                     hypotheses.add(sH);
-
                     break;
                 }
             }
@@ -1146,13 +1138,12 @@ public class WeightsComputeNNLSInformative {
             if (w[t] <= tolerance) {
 
                 // we end anyway
-
                 break;
             }
 
             log.debug("Step 5");
 
-            Z.remove(t);
+            Z.remove(new Integer(t));
             P.add(t);
 
             // start of inner loop
@@ -1165,7 +1156,8 @@ public class WeightsComputeNNLSInformative {
 
                 if (from5) {
                     log.debug("From outer loop: ");
-                } else {
+                }
+                else {
                     log.debug("From inner loop: ");
                 }
 
@@ -1242,9 +1234,7 @@ public class WeightsComputeNNLSInformative {
                         aMap[mapIndex] = i;
 
                         mapIndex++;
-
                     }
-
                 }
 
                 // so aMap is the map reduced z to true z
@@ -1274,7 +1264,6 @@ public class WeightsComputeNNLSInformative {
                         }
 
                         L[j] = sum;
-
                     }
 
                     // next...
@@ -1292,7 +1281,6 @@ public class WeightsComputeNNLSInformative {
                         // for all elements in the column
 
                         v[k] = EtEp[k][i] - jSum;
-
                     }
 
                     // then we must normalize v before adding it
@@ -1302,7 +1290,6 @@ public class WeightsComputeNNLSInformative {
                     for (int k = 0; k < noSplits; k++) {
 
                         length += v[k] * v[k];
-
                     }
 
                     if (length != 0.0) {
@@ -1310,9 +1297,7 @@ public class WeightsComputeNNLSInformative {
                         for (int k = 0; k < noSplits; k++) {
 
                             v[k] = v[k] / Math.sqrt(length);
-
                         }
-
                     }
 
                     // then store v
@@ -1320,9 +1305,7 @@ public class WeightsComputeNNLSInformative {
                     for (int k = 0; k < noSplits; k++) {
 
                         Q[k][i] = v[k];
-
                     }
-
                 }
 
                 // then calculate R
@@ -1342,9 +1325,7 @@ public class WeightsComputeNNLSInformative {
                         }
 
                         R.setElementAt(j, i, sum);
-
                     }
-
                 }
 
                 // we now have the Q and R matrices
@@ -1385,7 +1366,6 @@ public class WeightsComputeNNLSInformative {
                         for (int j = 0; j < noSplits; j++) {
 
                             log.info(" " + nF.format(R.getElementAt(i, j)));
-
                         }
                     }
                 }

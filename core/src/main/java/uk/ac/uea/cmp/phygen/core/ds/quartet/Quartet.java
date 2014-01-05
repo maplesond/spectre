@@ -16,6 +16,8 @@
 package uk.ac.uea.cmp.phygen.core.ds.quartet;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.text.NumberFormat;
 import java.util.Arrays;
@@ -280,5 +282,28 @@ public class Quartet implements Comparable {
         List<Integer> list = Arrays.asList(ArrayUtils.toObject(array));
 
         return b == Collections.max(list) ? 2 : 1;
+    }
+
+    public Pair<Quartet, Integer> getGroupKeys() {
+
+        Quartet sorted = new Quartet(this);
+
+        sorted.sort();
+
+        int index = 0;
+
+        if (this.equals(sorted)) {
+            index = 0;
+        }
+        else {
+
+            int[] array = new int[]{a, b, c, d};
+
+            List<Integer> list = Arrays.asList(ArrayUtils.toObject(array));
+
+            index = b == Collections.max(list) ? 2 : 1;
+        }
+
+        return new ImmutablePair<>(sorted, index);
     }
 }

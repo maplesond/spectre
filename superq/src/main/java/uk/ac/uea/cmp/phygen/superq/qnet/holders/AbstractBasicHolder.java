@@ -2,8 +2,8 @@ package uk.ac.uea.cmp.phygen.superq.qnet.holders;
 
 import org.apache.commons.lang3.tuple.Pair;
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.CanonicalWeightedQuartetMap;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.WeightedQuartetGroupMap;
 
 import java.util.List;
 
@@ -19,10 +19,10 @@ public abstract class AbstractBasicHolder {
     protected int[] counts;
     protected double[] weights;
     protected List<Taxa> taxaSets;
-    protected WeightedQuartetGroupMap theQuartetWeights;
+    protected CanonicalWeightedQuartetMap theQuartetWeights;
 
 
-    protected AbstractBasicHolder(final int N, final List<Taxa> taxaSets, WeightedQuartetGroupMap theQuartetWeights) {
+    protected AbstractBasicHolder(final int N, final List<Taxa> taxaSets, CanonicalWeightedQuartetMap theQuartetWeights) {
 
         this.taxaSets = taxaSets;
         this.theQuartetWeights = theQuartetWeights;
@@ -32,12 +32,12 @@ public abstract class AbstractBasicHolder {
         counts = new int[size];
         weights = new double[size];
 
-        for (int i = 1; i < N; i++) {
+        for (int i = 1; i < N -1; i++) {
 
-            for (int j = i + 1; j < N + 1; j++) {
+            for (int j = i + 1; j < N; j++) {
 
-                int a = indexOfTaxaSet(i - 1);
-                int b = indexOfTaxaSet(j - 1);
+                int a = indexOfTaxaSet(i);
+                int b = indexOfTaxaSet(j);
 
                 if (a == -1) {
                     throw new IllegalStateException("Could not find taxaset associated with i: " + i);

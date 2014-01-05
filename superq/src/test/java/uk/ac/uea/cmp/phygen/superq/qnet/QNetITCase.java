@@ -6,10 +6,17 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import uk.ac.tgac.metaopt.OptimiserException;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystem;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystemCombiner;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystemList;
+import uk.ac.uea.cmp.phygen.core.ds.tree.newick.NewickTree;
+import uk.ac.uea.cmp.phygen.tools.quart.Quart;
 
 import java.io.File;
+import java.io.IOException;
 
 import static junit.framework.TestCase.assertFalse;
+import static junit.framework.TestCase.assertTrue;
 
 /**
  * Created with IntelliJ IDEA.
@@ -41,6 +48,34 @@ public class QNetITCase {
         );
 
         return options;
+    }
+
+    @Test
+    public void test5TaxaTree() throws OptimiserException, IOException, QNetException {
+
+        NewickTree tree = new NewickTree("(((A:1,B:1):1,C:1),(D:1,E:1):1);");
+        QuartetSystemList qsl = new QuartetSystemList(new QuartetSystem(tree));
+        QuartetSystemCombiner qsc = new Quart().execute(qsl);
+        QNetResult result = new QNet().execute(qsc, false, -1.0, null);
+
+        assertTrue(true);
+    }
+
+    @Test
+    public void test2ConflictingTrees() throws OptimiserException, IOException, QNetException {
+
+        NewickTree tree1 = new NewickTree("(((A:1,B:1):1,C:1),(D:1,E:1):1);");
+
+        NewickTree tree2 = new NewickTree("(((A:1,B:1):1,D:1),(C:1,E:1):1);");
+
+        QuartetSystemList qsl = new QuartetSystemList();
+        qsl.add(new QuartetSystem(tree1));
+        qsl.add(new QuartetSystem(tree2));
+
+        QuartetSystemCombiner qsc = new Quart().execute(qsl);
+        QNetResult result = new QNet().execute(qsc, false, -1.0, null);
+
+        assertTrue(true);
     }
 
     @Test

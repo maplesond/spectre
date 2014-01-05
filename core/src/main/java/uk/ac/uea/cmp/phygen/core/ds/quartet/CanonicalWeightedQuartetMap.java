@@ -4,6 +4,7 @@ import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phygen.core.ds.split.Split;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by dan on 04/01/14.
@@ -46,6 +47,20 @@ public class CanonicalWeightedQuartetMap extends HashMap<Quartet, Double> {
                     }
                 }
             }
+        }
+    }
+
+    public CanonicalWeightedQuartetMap(WeightedQuartetGroupMap groupMap) {
+        super();
+
+        for(Map.Entry<Quartet, QuartetWeights> entry : groupMap.entrySet()) {
+
+            Quartet sorted = entry.getKey();
+            QuartetWeights weights = entry.getValue();
+
+            this.put(new Quartet(sorted), weights.getA());
+            this.put(new Quartet(sorted.getA(), sorted.getC(), sorted.getB(), sorted.getD()), weights.getB());
+            this.put(new Quartet(sorted.getA(), sorted.getD(), sorted.getB(), sorted.getC()), weights.getC());
         }
     }
 

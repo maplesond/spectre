@@ -16,8 +16,8 @@
 package uk.ac.uea.cmp.phygen.superq.qnet.holders;
 
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.CanonicalWeightedQuartetMap;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.WeightedQuartetGroupMap;
 
 import java.util.List;
 
@@ -27,7 +27,7 @@ public class THolder {
     private int[][][] counts;
     private double[][][] weights;
 
-    public THolder(List<Taxa> taxaSets, int N, WeightedQuartetGroupMap theQuartetWeights) {
+    public THolder(List<Taxa> taxaSets, int N, CanonicalWeightedQuartetMap theQuartetWeights) {
 
         counts = new int[N][N][N];
         weights = new double[N][N][N];
@@ -44,7 +44,7 @@ public class THolder {
 
                 for (int m = 0; m < taxaSets.size(); m++) {
 
-                    if (taxaSets.get(m).containsId(i)) {
+                    if (taxaSets.get(m).containsId(i+1)) {
 
                         a = m;
                         break;
@@ -53,7 +53,7 @@ public class THolder {
 
                 for (int m = 0; m < taxaSets.size(); m++) {
 
-                    if (taxaSets.get(m).containsId(j)) {
+                    if (taxaSets.get(m).containsId(j+1)) {
 
                         b = m;
                         break;
@@ -85,7 +85,7 @@ public class THolder {
 
                     for (int m = 0; m < taxaSets.size(); m++) {
 
-                        if (taxaSets.get(m).containsId(k)) {
+                        if (taxaSets.get(m).containsId(k+1)) {
 
                             c = m;
                             break;
@@ -123,8 +123,13 @@ public class THolder {
                                         // DAN:  Add this check, which wasn't here before, because we are now stricter with regards to
                                         // what is and what isn't a quartet
                                         if (Quartet.areDistinct(yA1, yA2, yB, yC)) {
+
+                                            Quartet q = new Quartet(yA1, yB, yA2, yC);
+
                                             count++;
-                                            weight += theQuartetWeights.getWeight(new Quartet(yA1, yB, yA2, yC));
+                                            weight += theQuartetWeights.containsKey(q) ?
+                                                    theQuartetWeights.get(q) :
+                                                    0.0;
                                         }
                                     }
                                 }

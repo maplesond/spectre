@@ -16,6 +16,7 @@
 
 package uk.ac.uea.cmp.phygen.core.ds.quartet;
 
+import org.apache.commons.lang3.tuple.Pair;
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.tree.newick.NewickTree;
 
@@ -81,10 +82,9 @@ public class GroupedQuartetSystem {
 
         for(Map.Entry<Quartet, Double> entry : quartetSystem.getQuartets().entrySet()) {
 
-            Quartet sorted = entry.getKey().createSortedQuartet();
-            int index = entry.getKey().getGroupIndex();
+            Pair<Quartet, Integer> keys = entry.getKey().getGroupKeys();
 
-            this.quartets.put(sorted, index, entry.getValue());
+            this.quartets.put(keys.getLeft(), keys.getRight(), entry.getValue());
         }
 
     }

@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import uk.ac.tgac.metaopt.Optimiser;
 import uk.ac.tgac.metaopt.OptimiserException;
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.CanonicalWeightedQuartetMap;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.GroupedQuartetSystem;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystemCombiner;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.WeightedQuartetGroupMap;
@@ -126,7 +127,7 @@ public class QNet extends RunnableTool {
         // Order the taxa
         CircularOrdering circularOrdering = this.computeCircularOrdering(
                 combinedQuartetSystem.getTaxa(),
-                combinedQuartetSystem.getOriginalTaxaSets(),
+                combinedQuartetSystem.getTranslatedTaxaSets(),
                 groupedQuartetSystem.getQuartets());
 
         notifyUser("Computing weights");
@@ -182,20 +183,18 @@ public class QNet extends RunnableTool {
         for (int n = 0; n < N; n++) {
 
             // The taxa set X (prime)
-
-            //X.add((taxaSets.get(n)).get(0).getId());
-
-            X.add(allTaxa.get(n).getId());
+            X.add(allTaxa.get(n).getId()-1);
         }
 
         // init all the holders
+        CanonicalWeightedQuartetMap canonicalWeightedQuartets = new CanonicalWeightedQuartetMap(theQuartetWeights);
 
         ZHolder zH = new ZHolder(taxaSets, N);
-        WHolder wH = new WHolder(taxaSets, N, theQuartetWeights);
-        U0Holder u0H = new U0Holder(taxaSets, N, theQuartetWeights);
-        U1Holder u1H = new U1Holder(taxaSets, N, theQuartetWeights);
-        NSHolder snH = new NSHolder(taxaSets, N, theQuartetWeights);
-        THolder tH = new THolder(taxaSets, N, theQuartetWeights);
+        WHolder wH = new WHolder(taxaSets, N, canonicalWeightedQuartets);
+        U0Holder u0H = new U0Holder(taxaSets, N, canonicalWeightedQuartets);
+        U1Holder u1H = new U1Holder(taxaSets, N, canonicalWeightedQuartets);
+        NSHolder snH = new NSHolder(taxaSets, N, canonicalWeightedQuartets);
+        THolder tH = new THolder(taxaSets, N, canonicalWeightedQuartets);
 
 
         // Make shortcuts to directions
@@ -643,7 +642,7 @@ public class QNet extends RunnableTool {
         int[] ordering = new int[N];
 
         for (int n = 0; n < N; n++) {
-            ordering[n] = allTaxa.get(n).getId() + 1;
+            ordering[n] = allTaxa.get(n).getId();
         }
 
         return new CircularOrdering(ordering);

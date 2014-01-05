@@ -18,14 +18,14 @@ package uk.ac.uea.cmp.phygen.superq.qnet.holders;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.CanonicalWeightedQuartetMap;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.WeightedQuartetGroupMap;
 
 import java.util.List;
 
 public class U0Holder extends AbstractBasicHolder {
 
-    public U0Holder(List<Taxa> taxaSets, int N, WeightedQuartetGroupMap theQuartetWeights) {
+    public U0Holder(List<Taxa> taxaSets, int N, CanonicalWeightedQuartetMap theQuartetWeights) {
 
         super(N, taxaSets, theQuartetWeights);
     }
@@ -56,13 +56,21 @@ public class U0Holder extends AbstractBasicHolder {
                         // DAN:  Add this check, which wasn't here before, because we are now stricter with regards to
                         // what is and what isn't a quartet
                         if (Quartet.areDistinct(yA1, yA2, yB1, yB2)) {
+
+                            Quartet q1 = new Quartet(yA1, yB1, yA2, yB2);
+                            Quartet q2 = new Quartet(yA2, yB2, yA1, yB1);
+
                             count++;
-                            weight += theQuartetWeights.getWeight(new Quartet(yA1, yB1, yA2, yB2));
+                            weight += theQuartetWeights.containsKey(q1) ?
+                                    theQuartetWeights.get(q1) :
+                                    0.0;
 
                             // hope this does not mean doing stuff twice
 
                             count++;
-                            weight += theQuartetWeights.getWeight(new Quartet(yA2, yB2, yA1, yB1));
+                            weight += theQuartetWeights.containsKey(q2) ?
+                                    theQuartetWeights.get(q2) :
+                                    0.0;
                         }
                     }
                 }

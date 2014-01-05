@@ -16,6 +16,8 @@
 
 package uk.ac.uea.cmp.phygen.core.ds.quartet;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -51,10 +53,9 @@ public class WeightedQuartetGroupMap extends HashMap<Quartet, QuartetWeights> {
      */
     public QuartetWeights put(Quartet quartet, double weight) {
 
-        Quartet sorted = quartet.createSortedQuartet();
-        int index = quartet.getGroupIndex();
+        Pair<Quartet, Integer> keys = quartet.getGroupKeys();
 
-        return this.put(sorted, index, weight);
+        return this.put(keys.getLeft(), keys.getRight(), weight);
     }
 
     protected QuartetWeights put(Quartet sorted, int index, double weight) {
@@ -95,8 +96,9 @@ public class WeightedQuartetGroupMap extends HashMap<Quartet, QuartetWeights> {
      */
     public void incrementWeight(Quartet q, double increment) {
 
-        Quartet sorted = q.createSortedQuartet();
-        int index = q.getGroupIndex();
+        Pair<Quartet, Integer> keys = q.getGroupKeys();
+        Quartet sorted = keys.getLeft();
+        int index = keys.getRight();
 
         if (this.containsKey(sorted)) {
             this.put(sorted, this.getWeight(sorted, index) + increment);
@@ -113,10 +115,9 @@ public class WeightedQuartetGroupMap extends HashMap<Quartet, QuartetWeights> {
      */
     public double getWeight(Quartet q) {
 
-        Quartet sorted = q.createSortedQuartet();
-        int index = q.getGroupIndex();
+        Pair<Quartet, Integer> keys = q.getGroupKeys();
 
-        return this.getWeight(sorted, index);
+        return this.getWeight(keys.getLeft(), keys.getRight());
     }
 
     public double getWeight(Quartet sorted, int index) {

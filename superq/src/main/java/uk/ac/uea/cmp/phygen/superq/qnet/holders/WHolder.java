@@ -16,8 +16,8 @@
 package uk.ac.uea.cmp.phygen.superq.qnet.holders;
 
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.CanonicalWeightedQuartetMap;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.WeightedQuartetGroupMap;
 import uk.ac.uea.cmp.phygen.core.math.tuple.Triplet;
 
 import java.util.List;
@@ -27,7 +27,7 @@ public class WHolder {
     private Triplet<Integer>[] counts;
     private Triplet<Double>[] weights;
 
-    public WHolder(List<Taxa> taxaSets, int N, WeightedQuartetGroupMap theQuartetWeights) {
+    public WHolder(List<Taxa> taxaSets, int N, CanonicalWeightedQuartetMap theQuartetWeights) {
 
         this.counts = new Triplet[Quartet.over4(N)];
         this.weights = new Triplet[Quartet.over4(N)];
@@ -61,7 +61,7 @@ public class WHolder {
 
                             Taxa tL = taxaSets.get(m);
 
-                            if (tL.contains(i)) {
+                            if (tL.containsId(i)) {
 
                                 a = m;
                                 break;
@@ -74,7 +74,7 @@ public class WHolder {
 
                             Taxa tL = taxaSets.get(m);
 
-                            if (tL.contains(j)) {
+                            if (tL.containsId(j)) {
 
                                 b = m;
                                 break;
@@ -87,7 +87,7 @@ public class WHolder {
 
                             Taxa tL = taxaSets.get(m);
 
-                            if (tL.contains(k)) {
+                            if (tL.containsId(k)) {
 
                                 c = m;
                                 break;
@@ -100,7 +100,7 @@ public class WHolder {
 
                             Taxa tL = taxaSets.get(m);
 
-                            if (tL.contains(l)) {
+                            if (tL.containsId(l)) {
 
                                 d = m;
                                 break;
@@ -155,11 +155,11 @@ public class WHolder {
                                         int yD = D.get(xD).getId();
 
                                         count1++;
-                                        weight1 += theQuartetWeights.getWeight(new Quartet(yA, yB, yC, yD));
+                                        weight1 += theQuartetWeights.get(new Quartet(yA, yB, yC, yD));
                                         count2++;
-                                        weight2 += theQuartetWeights.getWeight(new Quartet(yA, yC, yB, yD));
+                                        weight2 += theQuartetWeights.get(new Quartet(yA, yC, yB, yD));
                                         count3++;
-                                        weight3 += theQuartetWeights.getWeight(new Quartet(yA, yD, yB, yC));
+                                        weight3 += theQuartetWeights.get(new Quartet(yA, yD, yB, yC));
 
                                     }
 
