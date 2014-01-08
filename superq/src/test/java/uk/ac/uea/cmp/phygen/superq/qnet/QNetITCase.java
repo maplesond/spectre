@@ -1,6 +1,7 @@
 package uk.ac.uea.cmp.phygen.superq.qnet;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.BasicConfigurator;
 import org.junit.Before;
 import org.junit.Rule;
@@ -19,6 +20,7 @@ import java.io.IOException;
 
 import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertTrue;
+import static junit.framework.TestCase.fail;
 
 /**
  * Created with IntelliJ IDEA.
@@ -60,6 +62,10 @@ public class QNetITCase {
         QuartetSystemList qsl = new QuartetSystemList(new QuartetSystem(tree));
         QuartetSystemCombiner qsc = new Quart().execute(qsl);
         QNetResult result = new QNet().execute(qsc, false, -1.0, null);
+
+        // Check circular ordering
+        assertTrue(ArrayUtils.isEquals(result.getCircularOrdering().toArray(), new int[]{2,1,3,4,5}));
+
         CircularSplitSystem ss = result.createSplitSystem(null, QNetResult.SplitLimiter.STANDARD);
         assertTrue(true);
     }
@@ -77,6 +83,10 @@ public class QNetITCase {
 
         QuartetSystemCombiner qsc = new Quart().execute(qsl);
         QNetResult result = new QNet().execute(qsc, false, -1.0, null);
+
+        // Check circular ordering
+        assertTrue(ArrayUtils.isEquals(result.getCircularOrdering().toArray(),
+                new int[]{3,1,2,4,5}));
 
         CircularSplitSystem ss = result.createSplitSystem(null, QNetResult.SplitLimiter.STANDARD);
 

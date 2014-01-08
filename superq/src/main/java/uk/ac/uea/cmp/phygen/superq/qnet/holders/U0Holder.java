@@ -20,18 +20,19 @@ import org.apache.commons.lang3.tuple.Pair;
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.CanonicalWeightedQuartetMap;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
+import uk.ac.uea.cmp.phygen.superq.qnet.QNetException;
 
 import java.util.List;
 
 public class U0Holder extends AbstractBasicHolder {
 
-    public U0Holder(List<Taxa> taxaSets, int N, CanonicalWeightedQuartetMap theQuartetWeights) {
+    public U0Holder(List<Taxa> taxaSets, int N, CanonicalWeightedQuartetMap theQuartetWeights) throws QNetException {
 
         super(N, taxaSets, theQuartetWeights);
     }
 
     @Override
-    protected Pair<Integer, Double> calcCountWeight(Taxa A, Taxa B) {
+    protected Pair<Integer, Double> calcCountWeight(Taxa A, Taxa B) throws QNetException {
 
         int count = 0;
         double weight = 0.0;
@@ -69,6 +70,9 @@ public class U0Holder extends AbstractBasicHolder {
                             weight += theQuartetWeights.containsKey(q2) ?
                                     theQuartetWeights.get(q2) :
                                     0.0;
+                        }
+                        else {
+                            throw new QNetException("Not sure if we are supposed to be here! :s");
                         }
                     }
                 }

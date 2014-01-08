@@ -137,6 +137,7 @@ public class CollectionUtils {
         for(int i = 0; i < array.length; i++) {
             if (array[i] > maxVal) {
                 maxIndex = i;
+                maxVal = array[i];
             }
         }
 

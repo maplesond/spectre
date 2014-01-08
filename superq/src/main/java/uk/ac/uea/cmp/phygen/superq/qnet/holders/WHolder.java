@@ -69,68 +69,65 @@ public class WHolder {
 
                             // if on the same path, no quartets meet the conditions
 
-                            counts[Quartet.over4(l - 1) + Quartet.over3(k - 1)
-                                    + Quartet.over2(j - 1) + Quartet.over1(i - 1)] = new Triplet<>(0, 0, 0);
-                            weights[Quartet.over4(l - 1) + Quartet.over3(k - 1)
-                                    + Quartet.over2(j - 1) + Quartet.over1(i - 1)] = new Triplet<>(0.0, 0.0, 0.0);
-
-                            continue;
-
+                            int index = Quartet.over4(l - 1) + Quartet.over3(k - 1) + Quartet.over2(j - 1) + Quartet.over1(i - 1);
+                            counts[index] = new Triplet<>(0, 0, 0);
+                            weights[index] = new Triplet<>(0.0, 0.0, 0.0);
                         }
+                        else {
 
-                        int count1 = 0;
-                        double weight1 = 0.0;
-                        int count2 = 0;
-                        double weight2 = 0.0;
-                        int count3 = 0;
-                        double weight3 = 0.0;
+                            int count1 = 0;
+                            double weight1 = 0.0;
+                            int count2 = 0;
+                            double weight2 = 0.0;
+                            int count3 = 0;
+                            double weight3 = 0.0;
 
-                        // we now have four non-same lists
-                        for (int xA = 0; xA < A.size(); xA++) {
+                            // we now have four non-same lists
+                            for (int xA = 0; xA < A.size(); xA++) {
 
-                            for (int xB = 0; xB < B.size(); xB++) {
+                                for (int xB = 0; xB < B.size(); xB++) {
 
-                                for (int xC = 0; xC < C.size(); xC++) {
+                                    for (int xC = 0; xC < C.size(); xC++) {
 
-                                    for (int xD = 0; xD < D.size(); xD++) {
+                                        for (int xD = 0; xD < D.size(); xD++) {
 
-                                        // this is a unique, suitable quartet
+                                            // this is a unique, suitable quartet
 
-                                        int yA = A.get(xA).getId();
-                                        int yB = B.get(xB).getId();
-                                        int yC = C.get(xC).getId();
-                                        int yD = D.get(xD).getId();
+                                            int yA = A.get(xA).getId();
+                                            int yB = B.get(xB).getId();
+                                            int yC = C.get(xC).getId();
+                                            int yD = D.get(xD).getId();
 
-                                        Quartet q1 = new Quartet(yA, yB, yC, yD);
-                                        Quartet q2 = new Quartet(yA, yC, yB, yD);
-                                        Quartet q3 = new Quartet(yA, yD, yB, yC);
+                                            Quartet q1 = new Quartet(yA, yB, yC, yD);
+                                            Quartet q2 = new Quartet(yA, yC, yB, yD);
+                                            Quartet q3 = new Quartet(yA, yD, yB, yC);
 
 
-                                        count1++;
-                                        weight1 += quartetMap.containsKey(q1) ?
-                                                quartetMap.get(q1) :
-                                                0.0;
+                                            count1++;
+                                            weight1 += quartetMap.containsKey(q1) ?
+                                                    quartetMap.get(q1) :
+                                                    0.0;
 
-                                        count2++;
-                                        weight2 += quartetMap.containsKey(q2) ?
-                                                quartetMap.get(q2) :
-                                                0.0;
+                                            count2++;
+                                            weight2 += quartetMap.containsKey(q2) ?
+                                                    quartetMap.get(q2) :
+                                                    0.0;
 
-                                        count3++;
-                                        weight3 += quartetMap.containsKey(q3) ?
-                                                quartetMap.get(q3) :
-                                                0.0;
+                                            count3++;
+                                            weight3 += quartetMap.containsKey(q3) ?
+                                                    quartetMap.get(q3) :
+                                                    0.0;
 
+                                        }
                                     }
                                 }
                             }
+
+                            int index = Quartet.over4(l - 1) + Quartet.over3(k - 1) + Quartet.over2(j - 1) + Quartet.over1(i - 1);
+
+                            counts[index] = new Triplet<>(count1, count2, count3);
+                            weights[index] = new Triplet<>(weight1, weight2, weight3);
                         }
-
-                        counts[Quartet.over4(l - 1) + Quartet.over3(k - 1)
-                                + Quartet.over2(j - 1) + Quartet.over1(i - 1)] = new Triplet<>(count1, count2, count3);
-                        weights[Quartet.over4(l - 1) + Quartet.over3(k - 1)
-                                + Quartet.over2(j - 1) + Quartet.over1(i - 1)] = new Triplet<>(weight1, weight2, weight3);
-
                     }
                 }
             }
@@ -153,8 +150,8 @@ public class WHolder {
             // both largest to the left or to the right
 
             position = 1;
-
-        } else if (((i > k && i > l && ((j > l && j < k) || (j < l && j > k)))
+        }
+        else if (((i > k && i > l && ((j > l && j < k) || (j < l && j > k)))
                 || (j > k && j > l && ((i > l && i < k) || (i < l && i > k))))
                 || (l > j && l > i && ((k > i && k < j) || (k < i && k > j)))
                 || (k > j && k > i && ((l > i && l < j) || (l < i && l > j)))) {
@@ -162,8 +159,8 @@ public class WHolder {
             // largest and third to the left or to the right
 
             position = 2;
-
-        } else if ((i > k && i > l && (j < l && j < k))
+        }
+        else if ((i > k && i > l && (j < l && j < k))
                 || (j > k && j > l && (i < l && i < k))
                 || (l > j && l > i && (k < i && k < j))
                 || (k > j && k > i && (l < i && l < j))) {
@@ -171,7 +168,6 @@ public class WHolder {
             // largest and smallest to the left or to the right
 
             position = 3;
-
         }
 
         int x = i;
@@ -279,7 +275,6 @@ public class WHolder {
             m = x;
             x = y;
             y = m;
-
         }
 
         if (u > x) {
@@ -287,7 +282,6 @@ public class WHolder {
             m = x;
             x = u;
             u = m;
-
         }
 
         if (v > x) {
@@ -295,7 +289,6 @@ public class WHolder {
             m = x;
             x = v;
             v = m;
-
         }
 
         if (u > y) {
@@ -303,7 +296,6 @@ public class WHolder {
             m = y;
             y = u;
             u = m;
-
         }
 
         if (v > y) {
@@ -311,7 +303,6 @@ public class WHolder {
             m = y;
             y = v;
             v = m;
-
         }
 
         if (v > u) {
@@ -319,7 +310,6 @@ public class WHolder {
             m = u;
             u = v;
             v = m;
-
         }
 
         Triplet t = weights[Quartet.over4(x - 1) + Quartet.over3(y - 1)
@@ -331,7 +321,5 @@ public class WHolder {
                 + Quartet.over2(u - 1) + Quartet.over1(v - 1)] = t;
 
     }
-
-
 
 }

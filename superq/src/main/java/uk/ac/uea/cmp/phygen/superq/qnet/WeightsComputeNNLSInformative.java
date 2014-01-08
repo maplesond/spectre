@@ -1237,7 +1237,7 @@ public class WeightsComputeNNLSInformative {
                     }
                 }
 
-                // so aMap is the map reduced z to true z
+                // so aMap is the map reduced zHolder to true zHolder
 
                 double Q[][] = new double[noSplits][noSplits];
 
@@ -1370,7 +1370,7 @@ public class WeightsComputeNNLSInformative {
                     }
                 }
 
-                // least squares solution of z:
+                // least squares solution of zHolder:
 
                 double[] QtEtfp = new double[noSplits];
 

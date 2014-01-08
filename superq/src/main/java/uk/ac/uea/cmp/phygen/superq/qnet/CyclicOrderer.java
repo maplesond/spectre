@@ -10,7 +10,6 @@ import uk.ac.uea.cmp.phygen.core.ds.Taxon;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.CanonicalWeightedQuartetMap;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.WeightedQuartetGroupMap;
 import uk.ac.uea.cmp.phygen.core.ds.split.CircularOrdering;
-import uk.ac.uea.cmp.phygen.core.util.CollectionUtils;
 import uk.ac.uea.cmp.phygen.superq.qnet.holders.*;
 
 import java.util.ArrayList;
@@ -23,25 +22,15 @@ public class CyclicOrderer {
 
     private static Logger log = LoggerFactory.getLogger(CyclicOrderer.class);
 
-    private NSHolder nsH;
-    private THolder tH;
-    private ZHolder zH;
-    private U0Holder u0H;
-    private U1Holder u1H;
-    private WHolder wH;
+    private Holders holders;
 
     private int N;
 
     private static final double c = 0.5;
 
     public CyclicOrderer() {
-        nsH = null;
-        tH = null;
-        zH = null;
-        u0H = null;
-        u1H = null;
-        wH = null;
 
+        holders = null;
         N = -1;
     }
 
@@ -61,7 +50,7 @@ public class CyclicOrderer {
 
 
         // Number of taxa in combined quartet system
-        N = taxa.size();
+        this.N = taxa.size();
 
         // Initalise paths
         List<Taxa> paths = this.initPaths(taxa);
@@ -76,25 +65,19 @@ public class CyclicOrderer {
         log.info("Initialising QNet Holders");
 
         // Init all the holders
-        Holders holders = new Holders(paths, N, canonicalWeightedQuartets);
-        nsH = holders.getNs();
-        tH = holders.getT();
-        zH = holders.getZ();
-        u0H = holders.getU0();
-        u1H = holders.getU1();
-        wH = holders.getW();
+        this.holders = new Holders(paths, N, canonicalWeightedQuartets);
 
         log.info("QNet Holders initialised");
 
         // Iterate N-3 times
         int nbIterations = N-3;
 
-        log.info("Processing " + nbIterations + " iterations");
+        log.info("Processing " + nbIterations + " path joining iterations");
         for (int p = 1; p <= nbIterations; p++) {
 
             paths = this.iteration(X, paths);
 
-            log.debug("Iteration " + p + " of " + nbIterations + " complete.");
+            log.debug("Path joining iteration " + p + " of " + nbIterations + " complete.");
         }
 
         log.info("Commencing QNet termination step");
@@ -141,14 +124,15 @@ public class CyclicOrderer {
     }
 
 
-    protected List<Taxa> iteration(List<Integer> X, List<Taxa> taxaSets) throws QNetException {
+    protected List<Taxa> iteration(List<Integer> X, List<Taxa> paths) throws QNetException {
 
         // find a, b, a < b, in X so s (a, b) / n (a, b) maximal
         Pair<Integer, Integer> ab = this.findMaxAB(X);
         int a = ab.getLeft();
         int b = ab.getRight();
 
-        int y = this.selectIterationJoin(a, b, c, X);
+        // Get a join type
+        int y = this.holders.selectJoin2(a, b, c, X);
 
         if (y < 0) {
 
@@ -159,21 +143,19 @@ public class CyclicOrderer {
         Taxa.Direction FORWARD = Taxa.Direction.FORWARD;
         Taxa.Direction BACKWARD = Taxa.Direction.BACKWARD;
 
-
-        // we now know which joining to perform
-
+        // Perform the requested path join
         switch(y) {
             case 1:
-                join2(taxaSets, a, BACKWARD, b, FORWARD);
+                join2(paths, a, BACKWARD, b, FORWARD);
                 break;
             case 2:
-                join2(taxaSets, a, BACKWARD, b, BACKWARD);
+                join2(paths, a, BACKWARD, b, BACKWARD);
                 break;
             case 3:
-                join2(taxaSets, a, FORWARD, b, FORWARD);
+                join2(paths, a, FORWARD, b, FORWARD);
                 break;
             case 4:
-                join2(taxaSets, a, FORWARD, b, BACKWARD);
+                join2(paths, a, FORWARD, b, BACKWARD);
                 break;
         }
 
@@ -181,229 +163,23 @@ public class CyclicOrderer {
         // remove b from X
         X.remove(new Integer(b));
 
-        // loop over all elements k in X that are not a, b
+        // Update counts and weights in the holders
+        this.holders.update(a, b, y, X);
 
-        for (int xK = 0; xK < X.size(); xK++) {
-
-            int k = X.get(xK);
-
-            if (k != a && k != b) {
-
-                // modify s
-
-                double sAK = nsH.getWeight(a, k);
-                double sBK = nsH.getWeight(b, k);
-
-                double wSum = 0;
-
-                for (int xL = 0; xL < X.size(); xL++) {
-
-                    int l = X.get(xL);
-
-                    if (l != a && l != b && l != k) {
-
-                        wSum += wH.getW(a, k, b, l) + wH.getW(b, k, a, l);
-                    }
-                }
-
-                nsH.setWeight(a, k, sAK + sBK - wSum);
-
-                // modify n
-
-                int nAK = nsH.getCount(a, k);
-                int nBK = nsH.getCount(b, k);
-
-                nsH.setCount(a, k, nAK + nBK - 2
-                        * (N - zH.getZ(a) - zH.getZ(b) - zH.getZ(k))
-                        * zH.getZ(a) * zH.getZ(b) * zH.getZ(k));
-
-                for (int xL = 0; xL < X.size(); xL++) {
-
-                    int l = X.get(xL);
-
-                    // site of troublesome mod
-
-                    if (l != a && l != b && l != k && l < k) {
-
-                        double sKL = nsH.getWeight(k, l);
-                        int nKL = nsH.getCount(k, l);
-
-                        nsH.setWeight(k, l, sKL - wH.getW(a, b, k, l));
-                        nsH.setCount(k, l, nKL - zH.getZ(a) * zH.getZ(b)
-                                * zH.getZ(k) * zH.getZ(l));
-
-                        if (y == 1) {
-
-                            double m1 = tH.getWeight(a, l, k) + tH.getWeight(b, k, l) + wH.getW(a, k, b, l);
-                            double m2 = tH.getWeight(a, k, l) + tH.getWeight(b, l, k) + wH.getW(a, l, b, k);
-
-                            tH.setWeight(a, l, k, m2);
-                            tH.setWeight(a, k, l, m1);
-
-                        } else if (y == 2) {
-
-                            double m1 = tH.getWeight(a, l, k) + tH.getWeight(b, l, k) + wH.getW(a, k, b, l);
-                            double m2 = tH.getWeight(a, k, l) + tH.getWeight(b, k, l) + wH.getW(a, l, b, k);
-
-                            tH.setWeight(a, l, k, m2);
-                            tH.setWeight(a, k, l, m1);
-
-                        } else if (y == 3) {
-
-                            double m1 = tH.getWeight(a, k, l) + tH.getWeight(b, k, l) + wH.getW(a, k, b, l);
-                            double m2 = tH.getWeight(a, l, k) + tH.getWeight(b, l, k) + wH.getW(a, l, b, k);
-
-                            tH.setWeight(a, l, k, m2);
-                            tH.setWeight(a, k, l, m1);
-
-                        } else if (y == 4) {
-
-                            double m1 = tH.getWeight(a, k, l) + tH.getWeight(b, l, k) + wH.getW(a, k, b, l);
-                            double m2 = tH.getWeight(a, l, k) + tH.getWeight(b, k, l) + wH.getW(a, l, b, k);
-
-                            tH.setWeight(a, l, k, m2);
-                            tH.setWeight(a, k, l, m1);
-
-                        } else {
-
-                            throw new QNetException("QNet: No y - weird; please report this!");
-                        }
-
-                        double m1 = tH.getWeight(k, a, l) + tH.getWeight(k, b, l);
-                        double m2 = tH.getWeight(l, a, k) + tH.getWeight(l, b, k);
-                        double m3 = tH.getWeight(k, l, a) + tH.getWeight(k, l, b);
-                        double m4 = tH.getWeight(l, k, a) + tH.getWeight(l, k, b);
-
-                        tH.setWeight(k, a, l, m1);
-                        tH.setWeight(l, a, k, m2);
-                        tH.setWeight(k, l, a, m3);
-                        tH.setWeight(l, k, a, m4);
-
-                        for (int xM = 0; xM < X.size(); xM++) {
-
-                            int m = X.get(xM);
-
-                            if (m != a && m != b && m != k && m != l && m < l) {
-
-                                m1 = wH.getW(a, k, l, m) + wH.getW(b, k, l, m);
-                                m2 = wH.getW(a, l, k, m) + wH.getW(b, l, k, m);
-                                m3 = wH.getW(a, m, l, k) + wH.getW(b, m, l, k);
-
-                                wH.setW(a, k, l, m, m1);
-                                wH.setW(a, l, k, m, m2);
-                                wH.setW(a, m, l, k, m3);
-
-                            }
-                        }
-                    }
-                }
-
-                if (y == 1) {
-
-                    double m1 = u1H.getWeight(a, k) + u0H.getWeight(b, k) + tH.getWeight(k, a, b);
-                    double m2 = u0H.getWeight(a, k) + u1H.getWeight(b, k) + tH.getWeight(k, b, a);
-
-                    u0H.setWeight(a, k, m1);
-                    u1H.setWeight(a, k, m2);
-                }
-
-                if (y == 2) {
-
-                    double m1 = u1H.getWeight(a, k) + u1H.getWeight(b, k) + tH.getWeight(k, a, b);
-                    double m2 = u0H.getWeight(a, k) + u0H.getWeight(b, k) + tH.getWeight(k, b, a);
-
-                    u0H.setWeight(a, k, m1);
-                    u1H.setWeight(a, k, m2);
-                }
-
-                if (y == 3) {
-
-                    double m1 = u0H.getWeight(a, k) + u0H.getWeight(b, k) + tH.getWeight(k, a, b);
-                    double m2 = u1H.getWeight(a, k) + u1H.getWeight(b, k) + tH.getWeight(k, b, a);
-
-                    u0H.setWeight(a, k, m1);
-                    u1H.setWeight(a, k, m2);
-                }
-
-                if (y == 4) {
-
-                    double m1 = u0H.getWeight(a, k) + u1H.getWeight(b, k) + tH.getWeight(k, a, b);
-                    double m2 = u1H.getWeight(a, k) + u0H.getWeight(b, k) + tH.getWeight(k, b, a);
-
-                    u0H.setWeight(a, k, m1);
-                    u1H.setWeight(a, k, m2);
-                }
-            }
-        }
-
-        zH.setZ(a, zH.getZ(a) + zH.getZ(b));
-        zH.setZ(b, 0);
-
-
-        return taxaSets;
+        return paths;
     }
 
 
+    protected List<Taxa> terminationJoin(int i, int j, int k, List<Taxa> taxaSets) throws QNetException {
 
-    protected List<Taxa> terminationJoin(int i, int k, int j, List<Taxa> taxaSets) throws QNetException {
-
-        double[] y8 = new double[8];
-
-        y8[0] = tH.getWeight(i, k, j)
-                + tH.getWeight(j, i, k)
-                + tH.getWeight(k, j, i) + c * (u1H.getWeight(i, j)
-                + u1H.getWeight(i, k)
-                + u1H.getWeight(j, k));
-
-        y8[1] = tH.getWeight(i, k, j)
-                + tH.getWeight(j, i, k)
-                + tH.getWeight(k, i, j) + c * (u1H.getWeight(i, j)
-                + u0H.getWeight(i, k)
-                + u0H.getWeight(j, k));
-
-        y8[2] = tH.getWeight(i, k, j)
-                + tH.getWeight(j, k, i)
-                + tH.getWeight(k, j, i) + c * (u0H.getWeight(i, j)
-                + u1H.getWeight(i, k)
-                + u0H.getWeight(j, k));
-
-        y8[3] = tH.getWeight(i, k, j)
-                + tH.getWeight(j, k, i)
-                + tH.getWeight(k, i, j) + c * (u0H.getWeight(i, j)
-                + u0H.getWeight(i, k)
-                + u1H.getWeight(j, k));
-
-        y8[4] = tH.getWeight(i, j, k)
-                + tH.getWeight(j, i, k)
-                + tH.getWeight(k, j, i) + c * (u0H.getWeight(i, j)
-                + u0H.getWeight(i, k)
-                + u1H.getWeight(j, k));
-
-        y8[5] = tH.getWeight(i, j, k)
-                + tH.getWeight(j, i, k)
-                + tH.getWeight(k, i, j) + c * (u0H.getWeight(i, j)
-                + u1H.getWeight(i, k)
-                + u0H.getWeight(j, k));
-
-        y8[6] = tH.getWeight(i, j, k)
-                + tH.getWeight(j, k, i)
-                + tH.getWeight(k, j, i) + c * (u1H.getWeight(i, j)
-                + u0H.getWeight(i, k)
-                + u0H.getWeight(j, k));
-
-        y8[7] = tH.getWeight(i, j, k)
-                + tH.getWeight(j, k, i)
-                + tH.getWeight(k, i, j) + c * (u1H.getWeight(i, j)
-                + u1H.getWeight(i, k)
-                + u1H.getWeight(j, k));
-
-        int y = CollectionUtils.findIndexOfMax(y8) + 1;
+        // Work out which path join to use
+        int y = this.holders.selectJoin3(i, j, k, c);
 
         // Make shortcuts to directions
         Taxa.Direction FORWARD = Taxa.Direction.FORWARD;
         Taxa.Direction BACKWARD = Taxa.Direction.BACKWARD;
 
-
+        // Perform the requested path join
         switch(y) {
             case 1:
                 join3(taxaSets, i, FORWARD, j, FORWARD, k, FORWARD);
@@ -511,6 +287,7 @@ public class CyclicOrderer {
         int aMax = -1;
         int bMax = -1;
         double qMax = Double.NEGATIVE_INFINITY;
+        NSHolder nsHolder = this.holders.getNsHolder();
 
         for (int xA = 0; xA < X.size() - 1; xA++) {
 
@@ -519,7 +296,7 @@ public class CyclicOrderer {
                 int a = X.get(xA);
                 int b = X.get(xB);
 
-                double q = nsH.calcWeightedCount(a, b);
+                double q = nsHolder.calcWeightedCount(a, b);
 
                 if (q > qMax) {
 
@@ -533,49 +310,5 @@ public class CyclicOrderer {
         return new ImmutablePair<>(aMax, bMax);
     }
 
-    private int selectIterationJoin(int a, int b, double c, List<Integer> X) {
-
-        // we have found which a, b in X' to join
-        // this is equivalent to which lists to join
-
-        double tABK = 0.0;
-        double tBAK = 0.0;
-        double tAKB = 0.0;
-        double tBKA = 0.0;
-
-        for (int n = 0; n < X.size(); n++) {
-
-            int k = X.get(n);
-
-            if (k != a && k != b) {
-
-                tABK += tH.getWeight(a, b, k);
-                tBAK += tH.getWeight(b, a, k);
-                tAKB += tH.getWeight(a, k, b);
-                tBKA += tH.getWeight(b, k, a);
-            }
-        }
-
-        double[] y4 = new double[4];
-
-        y4[0] = (zH.getZ(a) - 1) * tABK
-                + (zH.getZ(b) - 1) * tBAK
-                + (zH.getZ(b) - 1) * (zH.getZ(a) - 1) * c
-                * (N - zH.getZ(a) - zH.getZ(b)) * u0H.getWeight(a, b);
-        y4[1] = (zH.getZ(a) - 1) * tABK
-                + (zH.getZ(b) - 1) * tBKA
-                + (zH.getZ(b) - 1) * (zH.getZ(a) - 1) * c
-                * (N - zH.getZ(a) - zH.getZ(b)) * u1H.getWeight(a, b);
-        y4[2] = (zH.getZ(a) - 1) * tAKB
-                + (zH.getZ(b) - 1) * tBAK
-                + (zH.getZ(b) - 1) * (zH.getZ(a) - 1) * c
-                * (N - zH.getZ(a) - zH.getZ(b)) * u1H.getWeight(a, b);
-        y4[3] = (zH.getZ(a) - 1) * tAKB
-                + (zH.getZ(b) - 1) * tBKA
-                + (zH.getZ(b) - 1) * (zH.getZ(a) - 1) * c
-                * (N - zH.getZ(a) - zH.getZ(b)) * u0H.getWeight(a, b);
-
-        return CollectionUtils.findIndexOfMax(y4) + 1;
-    }
 
 }

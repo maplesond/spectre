@@ -102,6 +102,9 @@ public class THolder {
                                                     theQuartetWeights.get(q) :
                                                     0.0;
                                         }
+                                        else {
+                                            throw new QNetException("Not sure if we are supposed to be here! :s");
+                                        }
                                     }
                                 }
                             }
