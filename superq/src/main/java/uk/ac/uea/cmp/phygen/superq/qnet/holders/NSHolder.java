@@ -26,27 +26,27 @@ import java.util.List;
 
 public class NSHolder extends AbstractBasicHolder {
 
-    public NSHolder(List<Taxa> taxaSets, int N, CanonicalWeightedQuartetMap theQuartetWeights) {
+    public NSHolder(List<Taxa> paths, int N, CanonicalWeightedQuartetMap theQuartetWeights) {
 
-        super(N, taxaSets, theQuartetWeights);
+        super(N, paths, theQuartetWeights);
     }
 
     @Override
-    protected Pair<Integer, Double> calcCountWeight(Taxa A, Taxa B, int a, int b) {
+    protected Pair<Integer, Double> calcCountWeight(Taxa A, Taxa B) {
 
         // now, we store everything properly
 
         int count = 0;
         double weight = 0.0;
 
-        for (int c = 0; c < taxaSets.size() - 1; c++) {
+        for (int c = 0; c < paths.size() - 1; c++) {
 
-            for (int d = c + 1; d < taxaSets.size(); d++) {
+            for (int d = c + 1; d < paths.size(); d++) {
 
-                if (c != a && c != b && d != a && d != b) {
+                Taxa C = paths.get(c);
+                Taxa D = paths.get(d);
 
-                    Taxa C = taxaSets.get(c);
-                    Taxa D = taxaSets.get(d);
+                if (C != A && C != B && D != A && D != B) {
 
                     // we now have four non-same lists
 

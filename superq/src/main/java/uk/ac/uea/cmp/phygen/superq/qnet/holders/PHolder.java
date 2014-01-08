@@ -282,17 +282,6 @@ public class PHolder {
         }
     }
 
-    public PHContent[] getData() {
-
-        return data;
-    }
-
-    public void setData(PHContent[] newData) {
-
-        data = newData;
-    }
-
-
 
     /**
      * Small helper - the first is p/q (a, b, c, d) - i.e. inner join the second is p/q (b, c, d, n + a) - i.e. outer join

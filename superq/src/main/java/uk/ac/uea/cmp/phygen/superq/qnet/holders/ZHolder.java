@@ -23,35 +23,33 @@ public class ZHolder {
 
     private int[] sizes;
 
-    public ZHolder(List<Taxa> taxaSets, int N) {
+    public ZHolder(List<Taxa> paths, int N) {
 
         sizes = new int[N];
 
-        for (int i = 0; i < N; i++) {
-            sizes[i] = z(taxaSets, i);
+        for (int i = 1; i <= N; i++) {
+            sizes[i-1] = z(paths, i);
         }
     }
 
     public int getZ(int i) {
 
-        return sizes[i];
+        return sizes[i-1];
     }
 
     public void setZ(int i, int newZ) {
 
-        sizes[i] = newZ;
+        sizes[i-1] = newZ;
     }
 
+    protected int z(List<Taxa> paths, int i) {
 
+        for (Taxa p : paths) {
 
-    protected int z(List<Taxa> taxaSets, int i) {
+            if (p.containsId(i)) {
 
-        for (Taxa tL : taxaSets) {
-
-            if (tL.containsId(i)) {
-
-                if (i == tL.first().getId()) {
-                    return tL.size();
+                if (i == p.first().getId()) {
+                    return p.size();
                 }
             }
         }

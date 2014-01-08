@@ -1,6 +1,7 @@
 package uk.ac.uea.cmp.phygen.superq.qnet;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.log4j.BasicConfigurator;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -36,6 +37,7 @@ public class QNetITCase {
     @Before
     public void setUp() throws Exception {
         simpleOutput = folder.newFolder("simple");
+        //BasicConfigurator.configure();
     }
 
     protected QNetOptions createSimpleOptions() throws OptimiserException {

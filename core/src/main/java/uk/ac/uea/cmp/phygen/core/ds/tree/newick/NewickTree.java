@@ -80,7 +80,7 @@ public class NewickTree extends NewickNode {
         NewickTreeParser parser = new NewickTreeParser(tokens);
         parser.removeParseListeners();
         parser.removeErrorListeners();
-        parser.addParseListener(new NewickTreePopulator(this, true));
+        parser.addParseListener(new NewickTreePopulator(this, false));
         parser.addErrorListener(new DefaultParsingErrorListener());
         parser.setErrorHandler(new DefaultParsingErrorStrategy());
 

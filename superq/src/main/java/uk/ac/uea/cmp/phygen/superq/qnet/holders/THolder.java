@@ -18,6 +18,7 @@ package uk.ac.uea.cmp.phygen.superq.qnet.holders;
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.CanonicalWeightedQuartetMap;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
+import uk.ac.uea.cmp.phygen.superq.qnet.QNetException;
 
 import java.util.List;
 
@@ -27,83 +28,53 @@ public class THolder {
     private int[][][] counts;
     private double[][][] weights;
 
-    public THolder(List<Taxa> taxaSets, int N, CanonicalWeightedQuartetMap theQuartetWeights) {
+    public THolder(List<Taxa> taxaSets, int N, CanonicalWeightedQuartetMap theQuartetWeights) throws QNetException {
 
         counts = new int[N][N][N];
         weights = new double[N][N][N];
 
 
-        for (int i = 0; i < N; i++) {
+        for (int i = 1; i <= N; i++) {
 
-            for (int j = 0; j < N; j++) {
+            for (int j = 1; j <= N; j++) {
 
                 // here, we must have that i and j are not on the same path
                 // and we want their paths
 
-                int a = -1, b = -1;
+                Taxa A = Holders.findFirstPathContainingId(taxaSets, i);
+                Taxa B = Holders.findFirstPathContainingId(taxaSets, j);
 
-                for (int m = 0; m < taxaSets.size(); m++) {
-
-                    if (taxaSets.get(m).containsId(i+1)) {
-
-                        a = m;
-                        break;
-                    }
+                if (A == null) {
+                    throw new QNetException("Could not find path associated with i: " + i);
                 }
 
-                for (int m = 0; m < taxaSets.size(); m++) {
-
-                    if (taxaSets.get(m).containsId(j+1)) {
-
-                        b = m;
-                        break;
-                    }
+                if (B == null) {
+                    throw new QNetException("Could not find path associated with j: " + j);
                 }
 
-                if (a == -1) {
-                    throw new IllegalStateException("Could not find taxaset associated with i: " + i);
-                }
-
-                if (b == -1) {
-                    throw new IllegalStateException("Could not find taxaset associated with j: " + j);
-                }
-
-                if (a == b) {
+                if (A == B) {
 
                     // if on the same path, no quartets meet the conditions
                     continue;
                 }
 
-                Taxa A = taxaSets.get(a);
-                Taxa B = taxaSets.get(b);
 
-                for (int k = 0; k < N; k++) {
-
-                    int c = -1;
+                for (int k = 1; k <= N; k++) {
 
                     // and we must have that k is not on the path of i, j
 
-                    for (int m = 0; m < taxaSets.size(); m++) {
+                    Taxa C = Holders.findFirstPathContainingId(taxaSets, k);
 
-                        if (taxaSets.get(m).containsId(k+1)) {
-
-                            c = m;
-                            break;
-                        }
+                    if (C == null) {
+                        throw new IllegalStateException("Could not find path associated with k: " + k);
                     }
 
-                    if (c == -1) {
-                        throw new IllegalStateException("Could not find taxaset associated with k: " + k);
-                    }
-
-                    if (c != a && c != b) {
+                    if (C != A && C != B) {
 
                         // yay! uniqueness
 
                         int count = 0;
                         double weight = 0.0;
-
-                        Taxa C = taxaSets.get(c);
 
                         for (int xA1 = 0; xA1 < A.size() - 1; xA1++) {
 
@@ -136,28 +107,20 @@ public class THolder {
                             }
                         }
 
-                        counts[i][j][k] = count;
-                        weights[i][j][k] = weight;
+                        counts[i-1][j-1][k-1] = count;
+                        weights[i-1][j-1][k-1] = weight;
                     }
                 }
             }
         }
     }
 
-    public int getN(int i, int j, int k) {
-        return counts[i][j][k];
+    public double getWeight(int i, int j, int k) {
+        return weights[i-1][j-1][k-1];
     }
 
-    public void setN(int i, int j, int k, int newN) {
-        counts[i][j][k] = newN;
-    }
-
-    public double getT(int i, int j, int k) {
-        return weights[i][j][k];
-    }
-
-    public void setT(int i, int j, int k, double newT) {
-        weights[i][j][k] = newT;
+    public void setWeight(int i, int j, int k, double newT) {
+        weights[i-1][j-1][k-1] = newT;
     }
 
 }

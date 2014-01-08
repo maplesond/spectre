@@ -18,13 +18,13 @@ public abstract class AbstractBasicHolder {
 
     protected int[] counts;
     protected double[] weights;
-    protected List<Taxa> taxaSets;
+    protected List<Taxa> paths;
     protected CanonicalWeightedQuartetMap theQuartetWeights;
 
 
-    protected AbstractBasicHolder(final int N, final List<Taxa> taxaSets, CanonicalWeightedQuartetMap theQuartetWeights) {
+    protected AbstractBasicHolder(final int N, final List<Taxa> paths, CanonicalWeightedQuartetMap theQuartetWeights) {
 
-        this.taxaSets = taxaSets;
+        this.paths = paths;
         this.theQuartetWeights = theQuartetWeights;
 
         final int size = Quartet.over2(N);
@@ -32,23 +32,23 @@ public abstract class AbstractBasicHolder {
         counts = new int[size];
         weights = new double[size];
 
-        for (int i = 1; i < N -1; i++) {
+        for (int i = 1; i <= N; i++) {
 
-            for (int j = i + 1; j < N; j++) {
+            for (int j = i + 1; j <= N; j++) {
 
-                int a = indexOfTaxaSet(i);
-                int b = indexOfTaxaSet(j);
+                Taxa A = Holders.findFirstPathContainingId(paths, i);
+                Taxa B = Holders.findFirstPathContainingId(paths, j);
 
-                if (a == -1) {
+                if (A == null) {
                     throw new IllegalStateException("Could not find taxaset associated with i: " + i);
                 }
 
-                if (b == -1) {
+                if (B == null) {
                     throw new IllegalStateException("Could not find taxaset associated with j: " + j);
                 }
 
                 // if on the same path, no quartets meet the conditions
-                if (a == b) {
+                if (A == B) {
 
                     counts[Quartet.over2(j - 1) + Quartet.over1(i - 1)] = 0;
                     weights[Quartet.over2(j - 1) + Quartet.over1(i - 1)] = 0.0;
@@ -56,14 +56,8 @@ public abstract class AbstractBasicHolder {
                     continue;
                 }
 
-                // otherwise:
-                // we now have the list indices
-
-                Taxa A = taxaSets.get(a);
-                Taxa B = taxaSets.get(b);
-
                 // Do whatever custom initialisation is required
-                Pair<Integer, Double> countWeight = this.calcCountWeight(A, B, a ,b);
+                Pair<Integer, Double> countWeight = this.calcCountWeight(A, B);
 
                 int index = Quartet.over2(j - 1) + Quartet.over1(i - 1);
                 counts[index] = countWeight.getLeft();
@@ -72,20 +66,7 @@ public abstract class AbstractBasicHolder {
         }
     }
 
-    protected int indexOfTaxaSet(int taxaId) {
-
-        for (int m = 0; m < taxaSets.size(); m++) {
-
-            if (taxaSets.get(m).containsId(taxaId)) {
-
-                return m;
-            }
-        }
-
-        return -1;
-    }
-
-    protected abstract Pair<Integer, Double> calcCountWeight(Taxa A, Taxa B, int a, int b);
+    protected abstract Pair<Integer, Double> calcCountWeight(Taxa A, Taxa B);
 
     public double calcWeightedCount(int i, int j) {
 

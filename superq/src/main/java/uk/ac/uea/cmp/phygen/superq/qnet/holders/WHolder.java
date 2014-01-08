@@ -19,6 +19,7 @@ import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.CanonicalWeightedQuartetMap;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
 import uk.ac.uea.cmp.phygen.core.math.tuple.Triplet;
+import uk.ac.uea.cmp.phygen.superq.qnet.QNetException;
 
 import java.util.List;
 
@@ -27,7 +28,7 @@ public class WHolder {
     private Triplet<Integer>[] counts;
     private Triplet<Double>[] weights;
 
-    public WHolder(List<Taxa> taxaSets, int N, CanonicalWeightedQuartetMap theQuartetWeights) {
+    public WHolder(List<Taxa> paths, int N, CanonicalWeightedQuartetMap quartetMap) throws QNetException {
 
         this.counts = new Triplet[Quartet.over4(N)];
         this.weights = new Triplet[Quartet.over4(N)];
@@ -55,75 +56,27 @@ public class WHolder {
                         // take all combinations of path entries
                         // against all combinations of other paths by all other path entries
 
-                        int a = -1, b = -1, c = -1, d = -1;
+                        Taxa A = Holders.findFirstPathContainingId(paths, i);
+                        Taxa B = Holders.findFirstPathContainingId(paths, j);
+                        Taxa C = Holders.findFirstPathContainingId(paths, k);
+                        Taxa D = Holders.findFirstPathContainingId(paths, l);
 
-                        for (int m = 0; m < taxaSets.size(); m++) {
-
-                            Taxa tL = taxaSets.get(m);
-
-                            if (tL.containsId(i)) {
-
-                                a = m;
-                                break;
-
-                            }
-
+                        if (A == null || B == null || C == null || D == null) {
+                            throw new QNetException("Could not find paths for all indicies: " + i + ", " + j + ", " + k + ", " + l);
                         }
 
-                        for (int m = 0; m < taxaSets.size(); m++) {
-
-                            Taxa tL = taxaSets.get(m);
-
-                            if (tL.containsId(j)) {
-
-                                b = m;
-                                break;
-
-                            }
-
-                        }
-
-                        for (int m = 0; m < taxaSets.size(); m++) {
-
-                            Taxa tL = taxaSets.get(m);
-
-                            if (tL.containsId(k)) {
-
-                                c = m;
-                                break;
-
-                            }
-
-                        }
-
-                        for (int m = 0; m < taxaSets.size(); m++) {
-
-                            Taxa tL = taxaSets.get(m);
-
-                            if (tL.containsId(l)) {
-
-                                d = m;
-                                break;
-
-                            }
-
-                        }
-
-                        if (a == b || a == c || a == d || b == c || b == d || c == d) {
+                        if (A == B || A == C || A == D || B == C || B == D || C == D) {
 
                             // if on the same path, no quartets meet the conditions
 
                             counts[Quartet.over4(l - 1) + Quartet.over3(k - 1)
-                                    + Quartet.over2(j - 1) + Quartet.over1(i - 1)] = new Triplet<Integer>(0, 0, 0);
+                                    + Quartet.over2(j - 1) + Quartet.over1(i - 1)] = new Triplet<>(0, 0, 0);
                             weights[Quartet.over4(l - 1) + Quartet.over3(k - 1)
-                                    + Quartet.over2(j - 1) + Quartet.over1(i - 1)] = new Triplet<Double>(0.0, 0.0, 0.0);
+                                    + Quartet.over2(j - 1) + Quartet.over1(i - 1)] = new Triplet<>(0.0, 0.0, 0.0);
 
                             continue;
 
                         }
-
-                        // otherwise:
-                        // we now have the list indices
 
                         int count1 = 0;
                         double weight1 = 0.0;
@@ -132,13 +85,7 @@ public class WHolder {
                         int count3 = 0;
                         double weight3 = 0.0;
 
-                        Taxa A = taxaSets.get(a);
-                        Taxa B = taxaSets.get(b);
-                        Taxa C = taxaSets.get(c);
-                        Taxa D = taxaSets.get(d);
-
                         // we now have four non-same lists
-
                         for (int xA = 0; xA < A.size(); xA++) {
 
                             for (int xB = 0; xB < B.size(); xB++) {
@@ -154,19 +101,29 @@ public class WHolder {
                                         int yC = C.get(xC).getId();
                                         int yD = D.get(xD).getId();
 
+                                        Quartet q1 = new Quartet(yA, yB, yC, yD);
+                                        Quartet q2 = new Quartet(yA, yC, yB, yD);
+                                        Quartet q3 = new Quartet(yA, yD, yB, yC);
+
+
                                         count1++;
-                                        weight1 += theQuartetWeights.get(new Quartet(yA, yB, yC, yD));
+                                        weight1 += quartetMap.containsKey(q1) ?
+                                                quartetMap.get(q1) :
+                                                0.0;
+
                                         count2++;
-                                        weight2 += theQuartetWeights.get(new Quartet(yA, yC, yB, yD));
+                                        weight2 += quartetMap.containsKey(q2) ?
+                                                quartetMap.get(q2) :
+                                                0.0;
+
                                         count3++;
-                                        weight3 += theQuartetWeights.get(new Quartet(yA, yD, yB, yC));
+                                        weight3 += quartetMap.containsKey(q3) ?
+                                                quartetMap.get(q3) :
+                                                0.0;
 
                                     }
-
                                 }
-
                             }
-
                         }
 
                         counts[Quartet.over4(l - 1) + Quartet.over3(k - 1)
@@ -175,209 +132,11 @@ public class WHolder {
                                 + Quartet.over2(j - 1) + Quartet.over1(i - 1)] = new Triplet<>(weight1, weight2, weight3);
 
                     }
-
                 }
-
             }
-
         }
-
     }
 
-    public int getN(int i, int j, int k, int l) {
-
-        /**
-         *
-         * Create size-ordered quadruple x, y, u, v from i, j, k, l
-         *
-         */
-        int position = 0;
-
-        if ((i > k && j > k && i > l && j > l)
-                || (i < k && j < k && i < l && j < l)) {
-
-            // both largest to the left or to the right
-
-            position = 1;
-
-        } else if (((i > k && i > l && ((j > l && j < k) || (j < l && j > k)))
-                || (j > k && j > l && ((i > l && i < k) || (i < l && i > k))))
-                || (l > j && l > i && ((k > i && k < j) || (k < i && k > j)))
-                || (k > j && k > i && ((l > i && l < j) || (l < i && l > j)))) {
-
-            // largest and third to the left or to the right
-
-            position = 2;
-
-        } else if ((i > k && i > l && (j < l && j < k))
-                || (j > k && j > l && (i < l && i < k))
-                || (l > j && l > i && (k < i && k < j))
-                || (k > j && k > i && (l < i && l < j))) {
-
-            // largest and smallest to the left or to the right
-
-            position = 3;
-
-        }
-
-        int x = i;
-        int y = j;
-        int u = k;
-        int v = l;
-        int m;
-
-        if (y > x) {
-
-            m = x;
-            x = y;
-            y = m;
-
-        }
-
-        if (u > x) {
-
-            m = x;
-            x = u;
-            u = m;
-
-        }
-
-        if (v > x) {
-
-            m = x;
-            x = v;
-            v = m;
-
-        }
-
-        if (u > y) {
-
-            m = y;
-            y = u;
-            u = m;
-
-        }
-
-        if (v > y) {
-
-            m = y;
-            y = v;
-            v = m;
-
-        }
-
-        if (v > u) {
-
-            m = u;
-            u = v;
-            v = m;
-
-        }
-
-        return counts[Quartet.over4(x - 1) + Quartet.over3(y - 1)
-                + Quartet.over2(u - 1) + Quartet.over1(v - 1)].get(position);
-
-    }
-
-    public void setN(int i, int j, int k, int l, int newN) {
-
-        /**
-         *
-         * Create size-ordered quadruple x, y, u, v from i, j, k, l
-         *
-         */
-        int position = 0;
-
-        if ((i > k && j > k && i > l && j > l)
-                || (i < k && j < k && i < l && j < l)) {
-
-            // both largest to the left or to the right
-
-            position = 1;
-
-        } else if (((i > k && i > l && ((j > l && j < k) || (j < l && j > k)))
-                || (j > k && j > l && ((i > l && i < k) || (i < l && i > k))))
-                || (l > j && l > i && ((k > i && k < j) || (k < i && k > j)))
-                || (k > j && k > i && ((l > i && l < j) || (l < i && l > j)))) {
-
-            // largest and third to the left or to the right
-
-            position = 2;
-
-        } else if ((i > k && i > l && (j < l && j < k))
-                || (j > k && j > l && (i < l && i < k))
-                || (l > j && l > i && (k < i && k < j))
-                || (k > j && k > i && (l < i && l < j))) {
-
-            // largest and smallest to the left or to the right
-
-            position = 3;
-
-        }
-
-        int x = i;
-        int y = j;
-        int u = k;
-        int v = l;
-        int m;
-
-        if (y > x) {
-
-            m = x;
-            x = y;
-            y = m;
-
-        }
-
-        if (u > x) {
-
-            m = x;
-            x = u;
-            u = m;
-
-        }
-
-        if (v > x) {
-
-            m = x;
-            x = v;
-            v = m;
-
-        }
-
-        if (u > y) {
-
-            m = y;
-            y = u;
-            u = m;
-
-        }
-
-        if (v > y) {
-
-            m = y;
-            y = v;
-            v = m;
-
-        }
-
-        if (v > u) {
-
-            m = u;
-            u = v;
-            v = m;
-
-        }
-
-        Triplet<Integer> iT = counts[Quartet.over4(x - 1) + Quartet.over3(y - 1)
-                + Quartet.over2(u - 1) + Quartet.over1(v - 1)];
-
-        iT.set(position, newN);
-
-        counts[Quartet.over4(x - 1) + Quartet.over3(y - 1)
-                + Quartet.over2(u - 1) + Quartet.over1(v - 1)] = iT;
-
-    }
 
     public double getW(int i, int j, int k, int l) {
 
@@ -466,7 +225,6 @@ public class WHolder {
             m = u;
             u = v;
             v = m;
-
         }
 
         return weights[Quartet.over4(x - 1) + Quartet.over3(y - 1)
@@ -573,6 +331,7 @@ public class WHolder {
                 + Quartet.over2(u - 1) + Quartet.over1(v - 1)] = t;
 
     }
+
 
 
 }

@@ -31,7 +31,7 @@ public class U0Holder extends AbstractBasicHolder {
     }
 
     @Override
-    protected Pair<Integer, Double> calcCountWeight(Taxa A, Taxa B, int a, int b) {
+    protected Pair<Integer, Double> calcCountWeight(Taxa A, Taxa B) {
 
         int count = 0;
         double weight = 0.0;
@@ -64,8 +64,6 @@ public class U0Holder extends AbstractBasicHolder {
                             weight += theQuartetWeights.containsKey(q1) ?
                                     theQuartetWeights.get(q1) :
                                     0.0;
-
-                            // hope this does not mean doing stuff twice
 
                             count++;
                             weight += theQuartetWeights.containsKey(q2) ?

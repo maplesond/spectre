@@ -312,6 +312,16 @@ public class Taxa extends ArrayList<Taxon> {
         return nameArray;
     }
 
+    public int[] getIds() {
+        int[] idArray = new int[this.size()];
+
+        for(int i = 0; i < this.size(); i++) {
+            idArray[i] = this.get(i).getId();
+        }
+
+        return idArray;
+    }
+
     @Override
     public String toString() {
 
@@ -340,20 +350,20 @@ public class Taxa extends ArrayList<Taxon> {
     public static Taxa join(Taxa firstTaxa, Direction firstDirection,
                             Taxa secondTaxa, Direction secondDirection) {
 
-        Taxa result = new Taxa(true);
+        Taxa result = new Taxa();
 
         if (firstDirection == Direction.FORWARD) {
-            result.addAll(firstTaxa);
+            result.addAll(firstTaxa, true);
         }
         else {
-            result.addAll(firstTaxa.invert());
+            result.addAll(firstTaxa.invert(), true);
         }
 
         if (secondDirection == Direction.FORWARD) {
-            result.addAll(secondTaxa);
+            result.addAll(secondTaxa, true);
         }
         else if (secondDirection == Direction.BACKWARD) {
-            result.addAll(secondTaxa.invert());
+            result.addAll(secondTaxa.invert(), true);
         }
 
         return result;

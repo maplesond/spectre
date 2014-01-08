@@ -39,6 +39,10 @@ public class Taxon {
         this.id = id;
     }
 
+    public Taxon(Taxon taxon) {
+        this(taxon.getName(), taxon.getId());
+    }
+
     public boolean isEmpty() {
         return this.name != null && this.name.isEmpty() && this.id != DEFAULT_ID;
     }
