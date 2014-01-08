@@ -44,7 +44,7 @@ import java.io.IOException;
 @MetaInfServices
 public class Quart extends PhygenTool {
 
-    private static final String DEFAULT_OUTPUT_PREFIX = "chopper";
+    private static final String DEFAULT_OUTPUT_PREFIX = "quart";
     private static final File DEFAULT_OUTPUT_DIR = new File("").getParentFile();
 
 
@@ -117,13 +117,13 @@ public class Quart extends PhygenTool {
 
     @Override
     public String getName() {
-        return "chopper";
+        return "quart";
     }
 
 
     @Override
     public String getDescription() {
-        return "Chopper extracts quartet weights from trees";
+        return "Quart extracts quartet weights from trees";
     }
 
     public File getInfoFile() {
