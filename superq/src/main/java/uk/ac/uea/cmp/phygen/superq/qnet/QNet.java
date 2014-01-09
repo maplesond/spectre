@@ -17,33 +17,23 @@ package uk.ac.uea.cmp.phygen.superq.qnet;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.time.StopWatch;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.PropertyConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.tgac.metaopt.Optimiser;
 import uk.ac.tgac.metaopt.OptimiserException;
-import uk.ac.uea.cmp.phygen.core.ds.Taxa;
-import uk.ac.uea.cmp.phygen.core.ds.Taxon;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.CanonicalWeightedQuartetMap;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.GroupedQuartetSystem;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystemCombiner;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.WeightedQuartetGroupMap;
 import uk.ac.uea.cmp.phygen.core.ds.split.CircularOrdering;
 import uk.ac.uea.cmp.phygen.core.ds.split.CircularSplitSystem;
 import uk.ac.uea.cmp.phygen.core.io.nexus.NexusWriter;
 import uk.ac.uea.cmp.phygen.core.ui.gui.RunnableTool;
 import uk.ac.uea.cmp.phygen.core.ui.gui.StatusTracker;
-import uk.ac.uea.cmp.phygen.core.util.CollectionUtils;
-import uk.ac.uea.cmp.phygen.superq.qnet.holders.*;
 import uk.ac.uea.cmp.phygen.tools.quart.Quart;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * The QNet main class
@@ -156,7 +146,7 @@ public class QNet extends RunnableTool {
     public ComputedWeights computeWeights(GroupedQuartetSystem quartetSystem, double tolerance, Optimiser optimiser)
             throws OptimiserException, QNetException {
 
-        return WeightsComputeNNLSInformative.computeWeights(quartetSystem, tolerance, optimiser);
+        return new WeightsComputer().computeWeights(quartetSystem, tolerance, optimiser);
     }
 
 

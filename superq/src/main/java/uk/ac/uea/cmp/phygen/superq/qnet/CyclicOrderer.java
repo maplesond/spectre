@@ -62,12 +62,12 @@ public class CyclicOrderer {
         // Convert grouped quartets to canonical quartets
         CanonicalWeightedQuartetMap canonicalWeightedQuartets = new CanonicalWeightedQuartetMap(theQuartetWeights);
 
-        log.info("Initialising QNet Holders");
+        log.debug("Initialising QNet Holders");
 
         // Init all the holders
         this.holders = new Holders(paths, N, canonicalWeightedQuartets);
 
-        log.info("QNet Holders initialised");
+        log.debug("QNet Holders initialised");
 
         // Iterate N-3 times
         int nbIterations = N-3;
@@ -80,7 +80,7 @@ public class CyclicOrderer {
             log.debug("Path joining iteration " + p + " of " + nbIterations + " complete.");
         }
 
-        log.info("Commencing QNet termination step");
+        log.debug("Commencing QNet termination step");
 
         // termination step
         paths = this.terminationJoin(X.get(0), X.get(1), X.get(2), paths);

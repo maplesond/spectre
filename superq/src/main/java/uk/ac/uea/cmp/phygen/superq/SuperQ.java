@@ -132,7 +132,7 @@ public class SuperQ extends RunnableTool {
 
                 try {
 
-                    // Create problem from the computer weights
+                    // Create problem from the computed weights
                     Problem problem = this.options.getSecondaryProblem().compileProblem(qnetResult.getCircularOrdering().size(),
                             solution, qnetResult.getComputedWeights().getEtE().toArray());
 
@@ -145,7 +145,8 @@ public class SuperQ extends RunnableTool {
                     for (int i = 0; i < solution.length; i++) {
                         solution[i] = solution[i] + solution2[i];
                     }
-                } catch (OptimiserException use) {
+                }
+                catch (OptimiserException use) {
                     log.warn("Secondary optimisation - Invalid solution.  Keeping original solution from first optimisation step.");
                 }
             }

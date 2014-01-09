@@ -16,7 +16,12 @@
 package uk.ac.uea.cmp.phygen.superq.qnet.holders;
 
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.GroupedQuartetSystem;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystem;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
+
+import java.util.Map;
 
 /**
  * PHolder class
@@ -352,6 +357,267 @@ public class PHolder {
 
             this.innerP = innerP;
         }
+    }
+
+
+    /**
+     * We need structures, probably quartet structures as we deal with several quantities of data.  We calculate
+     * these for disjoint quartets by the given formula and the loaded existence information quartet structure.
+     * Basically, we need a data structure with a bool and four ints for each quadruple set... we first load this from
+     * the information file, then we fill up the same structure from the provided loops and then access below to get the
+     * informative interval combinatorics... it is basically defined like outer and inner interval of two types and
+     * existence value for each quadruple.
+     * @param quartetSystem The quartet system
+     */
+    public static PHolder create(GroupedQuartetSystem quartetSystem) {
+
+        Taxa c = quartetSystem.getTaxa();
+        final int N = c.size();
+
+        PHolder pHolder = new PHolder();
+        pHolder.ensureCapacity(N);
+        pHolder.initialize();
+
+        // load r values
+        for(Map.Entry<Quartet, QuartetWeights> entry : quartetSystem.getQuartets().entrySet()) {
+
+            pHolder.setR(
+                    entry.getKey().getA(),
+                    entry.getKey().getB(),
+                    entry.getKey().getC(),
+                    entry.getKey().getD(),
+                    entry.getValue().getA() == 1.0);
+        }
+
+        // fill upp pHolder by provided loop
+
+        for (int iA = 1; iA < N - 2; iA++) {
+
+            for (int iB = iA + 1; iB < N - 1; iB++) {
+
+                for (int iC = iB + 1; iC < N; iC++) {
+
+                    for (int iD = iC + 1; iD <= N; iD++) {
+
+                        // these are NOT all 1 <= iA < iB < iC < iD <= N
+
+                        if (iB == iA + 1) {
+
+                            if (pHolder.getR(iA + 1, iB + 1, iC + 1, iD + 1, c)) {
+
+                                pHolder.setQ(iA, iB, iC, iD, 1);
+
+                            } else {
+
+                                pHolder.setQ(iA, iB, iC, iD, 0);
+
+                            }
+
+                        }
+
+                        if (iC == iB + 1) {
+
+                            pHolder.setQ(iB, iC, iD, iA + N,
+                                    pHolder.getR(iA + 1, iB + 1, iC + 1, iD + 1, c) ? 1 : 0);
+
+                        }
+                    }
+                }
+            }
+        }
+
+//        System.out.println ("Second loop");
+
+        for (int iA = 1; iA < N - 1; iA++) {
+
+            for (int iB = iA + 1; iB < N; iB++) {
+
+                for (int iC = iB + 1; iC <= N; iC++) {
+
+                    if (iB > iA + 2) {
+
+                        if (pHolder.getR(iA + 1, iA + 3, iB + 1, iC + 1, c)) {
+
+                            pHolder.setQ(iA, iA + 2, iB, iC, pHolder.getQ(iA + 1, iA + 2, iB, iC)
+                                    + pHolder.getQ(iA, iA + 1, iB, iC) + 1);
+
+                        } else {
+
+                            pHolder.setQ(iA, iA + 2, iB, iC, pHolder.getQ(iA + 1, iA + 2, iB, iC)
+                                    + pHolder.getQ(iA, iA + 1, iB, iC));
+
+                        }
+
+                    }
+
+                    if (iC > iB + 2) {
+
+                        if (pHolder.getR(iA + 1, iB + 1, iB + 3, iC + 1, c)) {
+
+                            pHolder.setQ(iB, iB + 2, iC, iA + N, pHolder.getQ(iB + 1, iB + 2, iC, iA + N)
+                                    + pHolder.getQ(iB, iB + 1, iC, iA + N) + 1);
+
+                        } else {
+
+                            pHolder.setQ(iB, iB + 2, iC, iA + N, pHolder.getQ(iB + 1, iB + 2, iC, iA + N)
+                                    + pHolder.getQ(iB, iB + 1, iC, iA + N));
+
+                        }
+                    }
+                }
+            }
+        }
+
+        for (int iD = 3; iD < N - 2; iD++) {
+
+            for (int iA = 1; iA < N - 1; iA++) {
+
+                for (int iB = iA + 1; iB < N; iB++) {
+
+                    for (int iC = iB + 1; iC <= N; iC++) {
+
+                        if (iB > iA + iD) {
+
+                            if (pHolder.getR(iA + 1, iA + iD + 1, iB + 1, iC + 1, c)) {
+
+                                pHolder.setQ(iA, iA + iD, iB, iC, pHolder.getQ(iA + 1, iA + iD, iB, iC)
+                                        + pHolder.getQ(iA, iA + iD - 1, iB, iC)
+                                        - pHolder.getQ(iA + 1, iA + iD - 1, iB, iC) + 1);
+
+                            } else {
+
+                                pHolder.setQ(iA, iA + iD, iB, iC, pHolder.getQ(iA + 1, iA + iD, iB, iC)
+                                        + pHolder.getQ(iA, iA + iD - 1, iB, iC)
+                                        - pHolder.getQ(iA + 1, iA + iD - 1, iB, iC));
+
+                            }
+
+                        }
+
+                        if (iC > iB + iD) {
+
+                            if (pHolder.getR(iA + 1, iB + 1, iB + iD + 1, iC + 1, c)) {
+
+                                pHolder.setQ(iB, iB + iD, iC, iA + N, pHolder.getQ(iB + 1, iB + iD, iC, iA + N)
+                                        + pHolder.getQ(iB, iB + iD - 1, iC, iA + N)
+                                        - pHolder.getQ(iB + 1, iB + iD - 1, iC, iA + N) + 1);
+
+                            } else {
+
+                                pHolder.setQ(iB, iB + iD, iC, iA + N, pHolder.getQ(iB + 1, iB + iD, iC, iA + N)
+                                        + pHolder.getQ(iB, iB + iD - 1, iC, iA + N)
+                                        - pHolder.getQ(iB + 1, iB + iD - 1, iC, iA + N));
+
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        for (int iB = 2; iB < N; iB++) {
+
+            for (int iC = iB + 1; iC < N; iC++) {
+
+                pHolder.setP(1, iB, iC, iC + 1, pHolder.getQ(1, iB, iC, iC + 1));
+            }
+        }
+
+        for (int iB = 2; iB < N - 2; iB++) {
+
+            for (int iC = iB + 1; iC < N - 1; iC++) {
+
+                pHolder.setP(1, iB, iC, iC + 2, pHolder.getP(1, iB, iC + 1, iC + 2)
+                        + pHolder.getP(1, iB, iC, iC + 1)
+                        + pHolder.getQ(1, iB, iC, iC + 2));
+            }
+        }
+
+        for (int iD = 3; iD < N - 2; iD++) {
+
+            for (int iB = 2; iB < N - iD; iB++) {
+
+                for (int iC = iB + 1; iC < N - iD + 1; iC++) {
+
+                    pHolder.setP(1, iB, iC, iC + iD, pHolder.getP(1, iB, iC + 1, iC + iD)
+                            + pHolder.getP(1, iB, iC, iC + iD - 1)
+                            - pHolder.getP(1, iB, iC + 1, iC + iD - 1)
+                            + pHolder.getQ(1, iB, iC, iC + iD));
+                }
+            }
+        }
+
+        for (int iA = 2; iA < N - 1; iA++) {
+
+            for (int iB = iA + 1; iB < N; iB++) {
+
+                for (int iC = iB + 1; iC <= N; iC++) {
+
+                    if (iA + N > iC + 1) {
+
+                        pHolder.setP(iA, iB, iC, iC + 1, pHolder.getQ(iA, iB, iC, iC + 1));
+                    }
+                }
+            }
+        }
+
+        for (int iA = 2; iA < N - 1; iA++) {
+
+            for (int iB = iA + 1; iB < N; iB++) {
+
+                for (int iC = iB + 1; iC <= N; iC++) {
+
+                    if (iA + N > iC + 2) {
+
+                        if (iC != N) {
+
+                            pHolder.setP(iA, iB, iC, iC + 2, pHolder.getP(iA, iB, iC + 1, iC + 2)
+                                    + pHolder.getP(iA, iB, iC, iC + 1)
+                                    + pHolder.getQ(iA, iB, iC, iC + 2));
+
+                        } else {
+
+                            pHolder.setP(iA, iB, iC, iC + 2, pHolder.getP(1, 2, iA, iB)
+                                    + pHolder.getP(iA, iB, iC, iC + 1)
+                                    + pHolder.getQ(iA, iB, iC, iC + 2));
+                        }
+                    }
+                }
+            }
+        }
+
+        for (int iD = 3; iD < N - 2; iD++) {
+
+            for (int iA = 2; iA < N - 1; iA++) {
+
+                for (int iB = iA + 1; iB < N; iB++) {
+
+                    for (int iC = iB + 1; iC <= N; iC++) {
+
+                        if (N + iA > iC + iD) {
+
+                            if (iC != N) {
+
+                                pHolder.setP(iA, iB, iC, iC + iD, pHolder.getP(iA, iB, iC + 1, iC + iD)
+                                        + pHolder.getP(iA, iB, iC, iC + iD - 1)
+                                        - pHolder.getP(iA, iB, iC + 1, iC + iD - 1)
+                                        + pHolder.getQ(iA, iB, iC, iC + iD));
+
+                            } else {
+
+                                pHolder.setP(iA, iB, iC, iC + iD, pHolder.getP(1, iD, iA, iB)
+                                        + pHolder.getP(iA, iB, iC, iC + iD - 1)
+                                        - pHolder.getP(1, iD - 1, iA, iB)
+                                        + pHolder.getQ(iA, iB, iC, iC + iD));
+
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return pHolder;
     }
 }
 

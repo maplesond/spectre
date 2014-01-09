@@ -39,7 +39,7 @@ public class QNetITCase {
     @Before
     public void setUp() throws Exception {
         simpleOutput = folder.newFolder("simple");
-        //BasicConfigurator.configure();
+        BasicConfigurator.configure();
     }
 
     protected QNetOptions createSimpleOptions() throws OptimiserException {
