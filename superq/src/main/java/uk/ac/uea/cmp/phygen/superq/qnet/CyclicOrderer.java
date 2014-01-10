@@ -52,10 +52,10 @@ public class CyclicOrderer {
         // Number of taxa in combined quartet system
         this.N = taxa.size();
 
-        // Initalise paths
+        // Initialise paths
         List<Taxa> paths = this.initPaths(taxa);
 
-        // Initialise the X', which is a
+        // Initialise the X'
         List<Integer> X = this.initXPrime(taxa);
 
 

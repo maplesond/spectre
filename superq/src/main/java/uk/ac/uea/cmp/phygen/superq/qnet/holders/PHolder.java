@@ -18,7 +18,6 @@ package uk.ac.uea.cmp.phygen.superq.qnet.holders;
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.GroupedQuartetSystem;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystem;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 
 import java.util.Map;
@@ -36,29 +35,266 @@ public class PHolder {
     /**
      * this is N
      */
-    private int cSize;
-    /**
-     * Number of actual quartets
-     */
-    private int theSize;
+    private int nbTaxa;
+
 
     /**
-     * ArrayList of ArrayLists of etc. of triplets
-     * <p/>
-     * and a get and set method
+     * We need structures, probably quartet structures as we deal with several quantities of data.  We calculate
+     * these for disjoint quartets by the given formula and the loaded existence information quartet structure.
+     * Basically, we need a data structure with a bool and four ints for each quadruple set... we first load this from
+     * the information file, then we fill up the same structure from the provided loops and then access below to get the
+     * informative interval combinatorics... it is basically defined like outer and inner interval of two types and
+     * existence value for each quadruple.
+     * @param quartetSystem The quartet system
      */
-    public PHolder() {
+    public PHolder(GroupedQuartetSystem quartetSystem) {
 
-        theSize = 0;
+        Taxa c = quartetSystem.getTaxa();
+        final int N = c.size();
+
+        this.ensureCapacity(N);
+        this.initialize();
+
+        // load r values
+        for(Map.Entry<Quartet, QuartetWeights> entry : quartetSystem.getQuartets().entrySet()) {
+
+            this.setR(
+                    entry.getKey().getA(),
+                    entry.getKey().getB(),
+                    entry.getKey().getC(),
+                    entry.getKey().getD(),
+                    entry.getValue().getA() == 1.0);
+        }
+
+        // fill upp pHolder by provided loop
+
+        for (int iA = 1; iA < N - 2; iA++) {
+
+            for (int iB = iA + 1; iB < N - 1; iB++) {
+
+                for (int iC = iB + 1; iC < N; iC++) {
+
+                    for (int iD = iC + 1; iD <= N; iD++) {
+
+                        // these are NOT all 1 <= iA < iB < iC < iD <= N
+
+                        if (iB == iA + 1) {
+
+                            if (this.getR(iA + 1, iB + 1, iC + 1, iD + 1, c)) {
+
+                                this.setQ(iA, iB, iC, iD, 1);
+
+                            } else {
+
+                                this.setQ(iA, iB, iC, iD, 0);
+
+                            }
+
+                        }
+
+                        if (iC == iB + 1) {
+
+                            this.setQ(iB, iC, iD, iA + N,
+                                    this.getR(iA + 1, iB + 1, iC + 1, iD + 1, c) ? 1 : 0);
+
+                        }
+                    }
+                }
+            }
+        }
+
+//        System.out.println ("Second loop");
+
+        for (int iA = 1; iA < N - 1; iA++) {
+
+            for (int iB = iA + 1; iB < N; iB++) {
+
+                for (int iC = iB + 1; iC <= N; iC++) {
+
+                    if (iB > iA + 2) {
+
+                        if (this.getR(iA + 1, iA + 3, iB + 1, iC + 1, c)) {
+
+                            this.setQ(iA, iA + 2, iB, iC, this.getQ(iA + 1, iA + 2, iB, iC)
+                                    + this.getQ(iA, iA + 1, iB, iC) + 1);
+
+                        } else {
+
+                            this.setQ(iA, iA + 2, iB, iC, this.getQ(iA + 1, iA + 2, iB, iC)
+                                    + this.getQ(iA, iA + 1, iB, iC));
+
+                        }
+
+                    }
+
+                    if (iC > iB + 2) {
+
+                        if (this.getR(iA + 1, iB + 1, iB + 3, iC + 1, c)) {
+
+                            this.setQ(iB, iB + 2, iC, iA + N, this.getQ(iB + 1, iB + 2, iC, iA + N)
+                                    + this.getQ(iB, iB + 1, iC, iA + N) + 1);
+
+                        } else {
+
+                            this.setQ(iB, iB + 2, iC, iA + N, this.getQ(iB + 1, iB + 2, iC, iA + N)
+                                    + this.getQ(iB, iB + 1, iC, iA + N));
+
+                        }
+                    }
+                }
+            }
+        }
+
+        for (int iD = 3; iD < N - 2; iD++) {
+
+            for (int iA = 1; iA < N - 1; iA++) {
+
+                for (int iB = iA + 1; iB < N; iB++) {
+
+                    for (int iC = iB + 1; iC <= N; iC++) {
+
+                        if (iB > iA + iD) {
+
+                            if (this.getR(iA + 1, iA + iD + 1, iB + 1, iC + 1, c)) {
+
+                                this.setQ(iA, iA + iD, iB, iC, this.getQ(iA + 1, iA + iD, iB, iC)
+                                        + this.getQ(iA, iA + iD - 1, iB, iC)
+                                        - this.getQ(iA + 1, iA + iD - 1, iB, iC) + 1);
+
+                            } else {
+
+                                this.setQ(iA, iA + iD, iB, iC, this.getQ(iA + 1, iA + iD, iB, iC)
+                                        + this.getQ(iA, iA + iD - 1, iB, iC)
+                                        - this.getQ(iA + 1, iA + iD - 1, iB, iC));
+
+                            }
+
+                        }
+
+                        if (iC > iB + iD) {
+
+                            if (this.getR(iA + 1, iB + 1, iB + iD + 1, iC + 1, c)) {
+
+                                this.setQ(iB, iB + iD, iC, iA + N, this.getQ(iB + 1, iB + iD, iC, iA + N)
+                                        + this.getQ(iB, iB + iD - 1, iC, iA + N)
+                                        - this.getQ(iB + 1, iB + iD - 1, iC, iA + N) + 1);
+
+                            } else {
+
+                                this.setQ(iB, iB + iD, iC, iA + N, this.getQ(iB + 1, iB + iD, iC, iA + N)
+                                        + this.getQ(iB, iB + iD - 1, iC, iA + N)
+                                        - this.getQ(iB + 1, iB + iD - 1, iC, iA + N));
+
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        for (int iB = 2; iB < N; iB++) {
+
+            for (int iC = iB + 1; iC < N; iC++) {
+
+                this.setP(1, iB, iC, iC + 1, this.getQ(1, iB, iC, iC + 1));
+            }
+        }
+
+        for (int iB = 2; iB < N - 2; iB++) {
+
+            for (int iC = iB + 1; iC < N - 1; iC++) {
+
+                this.setP(1, iB, iC, iC + 2, this.getP(1, iB, iC + 1, iC + 2)
+                        + this.getP(1, iB, iC, iC + 1)
+                        + this.getQ(1, iB, iC, iC + 2));
+            }
+        }
+
+        for (int iD = 3; iD < N - 2; iD++) {
+
+            for (int iB = 2; iB < N - iD; iB++) {
+
+                for (int iC = iB + 1; iC < N - iD + 1; iC++) {
+
+                    this.setP(1, iB, iC, iC + iD, this.getP(1, iB, iC + 1, iC + iD)
+                            + this.getP(1, iB, iC, iC + iD - 1)
+                            - this.getP(1, iB, iC + 1, iC + iD - 1)
+                            + this.getQ(1, iB, iC, iC + iD));
+                }
+            }
+        }
+
+        for (int iA = 2; iA < N - 1; iA++) {
+
+            for (int iB = iA + 1; iB < N; iB++) {
+
+                for (int iC = iB + 1; iC <= N; iC++) {
+
+                    if (iA + N > iC + 1) {
+
+                        this.setP(iA, iB, iC, iC + 1, this.getQ(iA, iB, iC, iC + 1));
+                    }
+                }
+            }
+        }
+
+        for (int iA = 2; iA < N - 1; iA++) {
+
+            for (int iB = iA + 1; iB < N; iB++) {
+
+                for (int iC = iB + 1; iC <= N; iC++) {
+
+                    if (iA + N > iC + 2) {
+
+                        if (iC != N) {
+
+                            this.setP(iA, iB, iC, iC + 2, this.getP(iA, iB, iC + 1, iC + 2)
+                                    + this.getP(iA, iB, iC, iC + 1)
+                                    + this.getQ(iA, iB, iC, iC + 2));
+
+                        } else {
+
+                            this.setP(iA, iB, iC, iC + 2, this.getP(1, 2, iA, iB)
+                                    + this.getP(iA, iB, iC, iC + 1)
+                                    + this.getQ(iA, iB, iC, iC + 2));
+                        }
+                    }
+                }
+            }
+        }
+
+        for (int iD = 3; iD < N - 2; iD++) {
+
+            for (int iA = 2; iA < N - 1; iA++) {
+
+                for (int iB = iA + 1; iB < N; iB++) {
+
+                    for (int iC = iB + 1; iC <= N; iC++) {
+
+                        if (N + iA > iC + iD) {
+
+                            if (iC != N) {
+
+                                this.setP(iA, iB, iC, iC + iD, this.getP(iA, iB, iC + 1, iC + iD)
+                                        + this.getP(iA, iB, iC, iC + iD - 1)
+                                        - this.getP(iA, iB, iC + 1, iC + iD - 1)
+                                        + this.getQ(iA, iB, iC, iC + iD));
+
+                            } else {
+
+                                this.setP(iA, iB, iC, iC + iD, this.getP(1, iD, iA, iB)
+                                        + this.getP(iA, iB, iC, iC + iD - 1)
+                                        - this.getP(1, iD - 1, iA, iB)
+                                        + this.getQ(iA, iB, iC, iC + iD));
+
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
-    /**
-     * Check if filled...
-     */
-    public int getSize() {
-
-        return theSize;
-    }
 
     /**
      * Ensure capacity...
@@ -66,7 +302,7 @@ public class PHolder {
     public void ensureCapacity(int N) {
 
         data = new PHContent[Quartet.over4(N)];
-        cSize = N;
+        nbTaxa = N;
     }
 
     public void initialize() {
@@ -80,11 +316,6 @@ public class PHolder {
         }
     }
 
-    public void setSize(int theNewSize) {
-
-        theSize = theNewSize;
-    }
-
     public int getP(int a, int b, int c, int d) {
 
         // we assume size-order and one-upmanship
@@ -95,13 +326,13 @@ public class PHolder {
             return 0;
         }
 
-        if (d > cSize) {
+        if (d > nbTaxa) {
 
             // if requesting something after the last (remembering we have one-upmanship
 
             // we work with out of d - n, a, b, c
 
-            return data[Quartet.over1(d - cSize - 1) + Quartet.over2(a - 1) + Quartet.over3(b - 1) + Quartet.over4(c - 1)].getOuterP();
+            return data[Quartet.over1(d - nbTaxa - 1) + Quartet.over2(a - 1) + Quartet.over3(b - 1) + Quartet.over4(c - 1)].getOuterP();
         }
         else {
 
@@ -115,28 +346,9 @@ public class PHolder {
 
         // we assume size-order and one-upmanship
         // we check for d > N
-
-        if (d > cSize) {
-
-            // if requesting something after the last (remembering we have one-upmanship
-
-            // we work with out of d - n, a, b, c
-
-//            System.out.println ("outer q " + a + " " + b + " " + c + " " + d + " gets " + data[over4 (d - cSize - 1) + over3 (a - 1) + over2 (b - 1) + over1 (c - 1)].getOuterQ ());
-//            System.out.println ("inner q " + a + " " + b + " " + c + " " + d + " gets " + data[over4 (d - cSize - 1) + over3 (a - 1) + over2 (b - 1) + over1 (c - 1)].getInnerQ ());
-
-            return data[Quartet.over1(d - cSize - 1) + Quartet.over2(a - 1) + Quartet.over3(b - 1) + Quartet.over4(c - 1)].getOuterQ();
-
-        }
-        else {
-
-            // we work with in of a, b, c, d
-
-//            System.out.println ("outer q " + a + " " + b + " " + c + " " + d + " gets " + data[over4 (a - 1) + over3 (b - 1) + over2 (c - 1) + over1 (d - 1)].getOuterQ ());
-//            System.out.println ("inner q " + a + " " + b + " " + c + " " + d + " gets " + data[over4 (a - 1) + over3 (b - 1) + over2 (c - 1) + over1 (d - 1)].getInnerQ ());
-
-            return data[Quartet.over1(a - 1) + Quartet.over2(b - 1) + Quartet.over3(c - 1) + Quartet.over4(d - 1)].getInnerQ();
-        }
+        return d > nbTaxa ?
+            data[Quartet.over1(d - nbTaxa - 1) + Quartet.over2(a - 1) + Quartet.over3(b - 1) + Quartet.over4(c - 1)].getOuterQ() :
+            data[Quartet.over1(a - 1) + Quartet.over2(b - 1) + Quartet.over3(c - 1) + Quartet.over4(d - 1)].getInnerQ();
     }
 
     public boolean getR(int a, int b, int c, int d, Taxa cT) {
@@ -208,34 +420,24 @@ public class PHolder {
         // we assume size-order and one-upmanship
         // we check for d > N
 
-        if (d > cSize) {
-
-            // if requesting something after the last (remembering we have one-upmanship
-
-            // we work with out of d - n, a, b, c
-
-            return data[Quartet.over1(d - cSize - 1) + Quartet.over2(a - 1) + Quartet.over3(b - 1) + Quartet.over4(c - 1)].getR();
-        }
-        else {
-
-            // we work with in of a, b, c, d
-
-            return data[Quartet.over1(a - 1) + Quartet.over2(b - 1) + Quartet.over3(c - 1) + Quartet.over4(d - 1)].getR();
-        }
+        return d > nbTaxa ?
+            data[Quartet.over1(d - nbTaxa - 1) + Quartet.over2(a - 1) + Quartet.over3(b - 1) + Quartet.over4(c - 1)].getR() :
+            data[Quartet.over1(a - 1) + Quartet.over2(b - 1) + Quartet.over3(c - 1) + Quartet.over4(d - 1)].getR();
     }
+
 
     public void setP(int a, int b, int c, int d, int newW) {
 
         // we assume size-order and one-upmanship
         // we check for d > N
 
-        if (d > cSize) {
+        if (d > nbTaxa) {
 
             // if requesting something after the last (remembering we have one-upmanship
 
             // we work with out of d - n, a, b, c
 
-            data[Quartet.over1(d - cSize - 1) + Quartet.over2(a - 1) + Quartet.over3(b - 1) + Quartet.over4(c - 1)].setOuterP(newW);
+            data[Quartet.over1(d - nbTaxa - 1) + Quartet.over2(a - 1) + Quartet.over3(b - 1) + Quartet.over4(c - 1)].setOuterP(newW);
         }
         else {
 
@@ -250,13 +452,13 @@ public class PHolder {
         // we assume size-order and one-upmanship
         // we check for d > N
 
-        if (d > cSize) {
+        if (d > nbTaxa) {
 
             // if requesting something after the last (remembering we have one-upmanship
 
             // we work with out of d - n, a, b, c
 
-            data[Quartet.over1(d - cSize - 1) + Quartet.over2(a - 1) + Quartet.over3(b - 1) + Quartet.over4(c - 1)].setOuterQ(newW);
+            data[Quartet.over1(d - nbTaxa - 1) + Quartet.over2(a - 1) + Quartet.over3(b - 1) + Quartet.over4(c - 1)].setOuterQ(newW);
         }
         else {
 
@@ -271,13 +473,13 @@ public class PHolder {
         // we assume size-order and one-upmanship
         // we check for d > N
 
-        if (d > cSize) {
+        if (d > nbTaxa) {
 
             // if requesting something after the last (remembering we have one-upmanship
 
             // we work with out of d - n, a, b, c
 
-            data[Quartet.over1(d - cSize - 1) + Quartet.over2(a - 1) + Quartet.over3(b - 1) + Quartet.over4(c - 1)].setR(newW);
+            data[Quartet.over1(d - nbTaxa - 1) + Quartet.over2(a - 1) + Quartet.over3(b - 1) + Quartet.over4(c - 1)].setR(newW);
         }
         else {
 
@@ -360,264 +562,6 @@ public class PHolder {
     }
 
 
-    /**
-     * We need structures, probably quartet structures as we deal with several quantities of data.  We calculate
-     * these for disjoint quartets by the given formula and the loaded existence information quartet structure.
-     * Basically, we need a data structure with a bool and four ints for each quadruple set... we first load this from
-     * the information file, then we fill up the same structure from the provided loops and then access below to get the
-     * informative interval combinatorics... it is basically defined like outer and inner interval of two types and
-     * existence value for each quadruple.
-     * @param quartetSystem The quartet system
-     */
-    public static PHolder create(GroupedQuartetSystem quartetSystem) {
 
-        Taxa c = quartetSystem.getTaxa();
-        final int N = c.size();
-
-        PHolder pHolder = new PHolder();
-        pHolder.ensureCapacity(N);
-        pHolder.initialize();
-
-        // load r values
-        for(Map.Entry<Quartet, QuartetWeights> entry : quartetSystem.getQuartets().entrySet()) {
-
-            pHolder.setR(
-                    entry.getKey().getA(),
-                    entry.getKey().getB(),
-                    entry.getKey().getC(),
-                    entry.getKey().getD(),
-                    entry.getValue().getA() == 1.0);
-        }
-
-        // fill upp pHolder by provided loop
-
-        for (int iA = 1; iA < N - 2; iA++) {
-
-            for (int iB = iA + 1; iB < N - 1; iB++) {
-
-                for (int iC = iB + 1; iC < N; iC++) {
-
-                    for (int iD = iC + 1; iD <= N; iD++) {
-
-                        // these are NOT all 1 <= iA < iB < iC < iD <= N
-
-                        if (iB == iA + 1) {
-
-                            if (pHolder.getR(iA + 1, iB + 1, iC + 1, iD + 1, c)) {
-
-                                pHolder.setQ(iA, iB, iC, iD, 1);
-
-                            } else {
-
-                                pHolder.setQ(iA, iB, iC, iD, 0);
-
-                            }
-
-                        }
-
-                        if (iC == iB + 1) {
-
-                            pHolder.setQ(iB, iC, iD, iA + N,
-                                    pHolder.getR(iA + 1, iB + 1, iC + 1, iD + 1, c) ? 1 : 0);
-
-                        }
-                    }
-                }
-            }
-        }
-
-//        System.out.println ("Second loop");
-
-        for (int iA = 1; iA < N - 1; iA++) {
-
-            for (int iB = iA + 1; iB < N; iB++) {
-
-                for (int iC = iB + 1; iC <= N; iC++) {
-
-                    if (iB > iA + 2) {
-
-                        if (pHolder.getR(iA + 1, iA + 3, iB + 1, iC + 1, c)) {
-
-                            pHolder.setQ(iA, iA + 2, iB, iC, pHolder.getQ(iA + 1, iA + 2, iB, iC)
-                                    + pHolder.getQ(iA, iA + 1, iB, iC) + 1);
-
-                        } else {
-
-                            pHolder.setQ(iA, iA + 2, iB, iC, pHolder.getQ(iA + 1, iA + 2, iB, iC)
-                                    + pHolder.getQ(iA, iA + 1, iB, iC));
-
-                        }
-
-                    }
-
-                    if (iC > iB + 2) {
-
-                        if (pHolder.getR(iA + 1, iB + 1, iB + 3, iC + 1, c)) {
-
-                            pHolder.setQ(iB, iB + 2, iC, iA + N, pHolder.getQ(iB + 1, iB + 2, iC, iA + N)
-                                    + pHolder.getQ(iB, iB + 1, iC, iA + N) + 1);
-
-                        } else {
-
-                            pHolder.setQ(iB, iB + 2, iC, iA + N, pHolder.getQ(iB + 1, iB + 2, iC, iA + N)
-                                    + pHolder.getQ(iB, iB + 1, iC, iA + N));
-
-                        }
-                    }
-                }
-            }
-        }
-
-        for (int iD = 3; iD < N - 2; iD++) {
-
-            for (int iA = 1; iA < N - 1; iA++) {
-
-                for (int iB = iA + 1; iB < N; iB++) {
-
-                    for (int iC = iB + 1; iC <= N; iC++) {
-
-                        if (iB > iA + iD) {
-
-                            if (pHolder.getR(iA + 1, iA + iD + 1, iB + 1, iC + 1, c)) {
-
-                                pHolder.setQ(iA, iA + iD, iB, iC, pHolder.getQ(iA + 1, iA + iD, iB, iC)
-                                        + pHolder.getQ(iA, iA + iD - 1, iB, iC)
-                                        - pHolder.getQ(iA + 1, iA + iD - 1, iB, iC) + 1);
-
-                            } else {
-
-                                pHolder.setQ(iA, iA + iD, iB, iC, pHolder.getQ(iA + 1, iA + iD, iB, iC)
-                                        + pHolder.getQ(iA, iA + iD - 1, iB, iC)
-                                        - pHolder.getQ(iA + 1, iA + iD - 1, iB, iC));
-
-                            }
-
-                        }
-
-                        if (iC > iB + iD) {
-
-                            if (pHolder.getR(iA + 1, iB + 1, iB + iD + 1, iC + 1, c)) {
-
-                                pHolder.setQ(iB, iB + iD, iC, iA + N, pHolder.getQ(iB + 1, iB + iD, iC, iA + N)
-                                        + pHolder.getQ(iB, iB + iD - 1, iC, iA + N)
-                                        - pHolder.getQ(iB + 1, iB + iD - 1, iC, iA + N) + 1);
-
-                            } else {
-
-                                pHolder.setQ(iB, iB + iD, iC, iA + N, pHolder.getQ(iB + 1, iB + iD, iC, iA + N)
-                                        + pHolder.getQ(iB, iB + iD - 1, iC, iA + N)
-                                        - pHolder.getQ(iB + 1, iB + iD - 1, iC, iA + N));
-
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        for (int iB = 2; iB < N; iB++) {
-
-            for (int iC = iB + 1; iC < N; iC++) {
-
-                pHolder.setP(1, iB, iC, iC + 1, pHolder.getQ(1, iB, iC, iC + 1));
-            }
-        }
-
-        for (int iB = 2; iB < N - 2; iB++) {
-
-            for (int iC = iB + 1; iC < N - 1; iC++) {
-
-                pHolder.setP(1, iB, iC, iC + 2, pHolder.getP(1, iB, iC + 1, iC + 2)
-                        + pHolder.getP(1, iB, iC, iC + 1)
-                        + pHolder.getQ(1, iB, iC, iC + 2));
-            }
-        }
-
-        for (int iD = 3; iD < N - 2; iD++) {
-
-            for (int iB = 2; iB < N - iD; iB++) {
-
-                for (int iC = iB + 1; iC < N - iD + 1; iC++) {
-
-                    pHolder.setP(1, iB, iC, iC + iD, pHolder.getP(1, iB, iC + 1, iC + iD)
-                            + pHolder.getP(1, iB, iC, iC + iD - 1)
-                            - pHolder.getP(1, iB, iC + 1, iC + iD - 1)
-                            + pHolder.getQ(1, iB, iC, iC + iD));
-                }
-            }
-        }
-
-        for (int iA = 2; iA < N - 1; iA++) {
-
-            for (int iB = iA + 1; iB < N; iB++) {
-
-                for (int iC = iB + 1; iC <= N; iC++) {
-
-                    if (iA + N > iC + 1) {
-
-                        pHolder.setP(iA, iB, iC, iC + 1, pHolder.getQ(iA, iB, iC, iC + 1));
-                    }
-                }
-            }
-        }
-
-        for (int iA = 2; iA < N - 1; iA++) {
-
-            for (int iB = iA + 1; iB < N; iB++) {
-
-                for (int iC = iB + 1; iC <= N; iC++) {
-
-                    if (iA + N > iC + 2) {
-
-                        if (iC != N) {
-
-                            pHolder.setP(iA, iB, iC, iC + 2, pHolder.getP(iA, iB, iC + 1, iC + 2)
-                                    + pHolder.getP(iA, iB, iC, iC + 1)
-                                    + pHolder.getQ(iA, iB, iC, iC + 2));
-
-                        } else {
-
-                            pHolder.setP(iA, iB, iC, iC + 2, pHolder.getP(1, 2, iA, iB)
-                                    + pHolder.getP(iA, iB, iC, iC + 1)
-                                    + pHolder.getQ(iA, iB, iC, iC + 2));
-                        }
-                    }
-                }
-            }
-        }
-
-        for (int iD = 3; iD < N - 2; iD++) {
-
-            for (int iA = 2; iA < N - 1; iA++) {
-
-                for (int iB = iA + 1; iB < N; iB++) {
-
-                    for (int iC = iB + 1; iC <= N; iC++) {
-
-                        if (N + iA > iC + iD) {
-
-                            if (iC != N) {
-
-                                pHolder.setP(iA, iB, iC, iC + iD, pHolder.getP(iA, iB, iC + 1, iC + iD)
-                                        + pHolder.getP(iA, iB, iC, iC + iD - 1)
-                                        - pHolder.getP(iA, iB, iC + 1, iC + iD - 1)
-                                        + pHolder.getQ(iA, iB, iC, iC + iD));
-
-                            } else {
-
-                                pHolder.setP(iA, iB, iC, iC + iD, pHolder.getP(1, iD, iA, iB)
-                                        + pHolder.getP(iA, iB, iC, iC + iD - 1)
-                                        - pHolder.getP(1, iD - 1, iA, iB)
-                                        + pHolder.getQ(iA, iB, iC, iC + iD));
-
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        return pHolder;
-    }
 }
 

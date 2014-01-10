@@ -120,7 +120,7 @@ public class SuperQ extends RunnableTool {
 
             this.continueRun();
 
-            double[] solution = qnetResult.getComputedWeights().getX();
+            double[] solution = qnetResult.getComputedWeights().getSolution();
 
             if (this.options.getSecondaryProblem() == null || this.options.getSecondarySolver() == null) {
                 log.info("Secondary optimisation of QNET results - Not requested");

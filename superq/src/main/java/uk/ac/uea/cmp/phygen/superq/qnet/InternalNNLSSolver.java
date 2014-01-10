@@ -2,6 +2,8 @@ package uk.ac.uea.cmp.phygen.superq.qnet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.ac.uea.cmp.phygen.core.ds.split.Split;
+import uk.ac.uea.cmp.phygen.core.ds.split.SplitUtils;
 import uk.ac.uea.cmp.phygen.core.math.matrix.SymmetricMatrix;
 import uk.ac.uea.cmp.phygen.core.math.matrix.UpperTriangularMatrix;
 
@@ -31,16 +33,16 @@ public class InternalNNLSSolver {
         LinkedList<Integer> Z = new LinkedList<>();
 
 
-        int nbSplits = N * (N - 1) / 2 - N;
+        int maxSplits = SplitUtils.calcMaxSplits(N);
 
         //Original implemented method to solve NNLS
 
-        double[] x = new double[nbSplits];
-        double[] w = new double[nbSplits];
-        double[] z = new double[nbSplits];
+        double[] x = new double[maxSplits];
+        double[] w = new double[maxSplits];
+        double[] z = new double[maxSplits];
 
         // step 1: initially, all variables are classed as zero variables
-        for (int i = 0; i < nbSplits; i++) {
+        for (int i = 0; i < maxSplits; i++) {
             Z.add(i);
         }
 
@@ -213,13 +215,13 @@ public class InternalNNLSSolver {
 
                 // fill
 
-                for (int i = 0; i < nbSplits; i++) {
+                for (int i = 0; i < maxSplits; i++) {
 
                     if (P.contains(i)) {
 
                         column = 0;
 
-                        for (int j = 0; j < nbSplits; j++) {
+                        for (int j = 0; j < maxSplits; j++) {
 
                             if (P.contains(j)) {
 
@@ -249,7 +251,7 @@ public class InternalNNLSSolver {
 
                 int mapIndex = 0;
 
-                for (int i = 0; i < nbSplits; i++) {
+                for (int i = 0; i < maxSplits; i++) {
 
                     if (P.contains(i)) {
 
@@ -381,7 +383,7 @@ public class InternalNNLSSolver {
 
                 // first for the non-personas...
 
-                for (int i = 0; i < nbSplits; i++) {
+                for (int i = 0; i < maxSplits; i++) {
 
                     z[i] = 0.0;
                 }
@@ -438,7 +440,7 @@ public class InternalNNLSSolver {
 
                 if (allAboveZero) {
 
-                    for (int i = 0; i < nbSplits; i++) {
+                    for (int i = 0; i < maxSplits; i++) {
 
                         x[i] = z[i];
                     }
@@ -471,7 +473,7 @@ public class InternalNNLSSolver {
 
                 // step 10:
 
-                for (int i = 0; i < nbSplits; i++) {
+                for (int i = 0; i < maxSplits; i++) {
 
                     x[i] = x[i] + alpha * (z[i] - x[i]);
                 }

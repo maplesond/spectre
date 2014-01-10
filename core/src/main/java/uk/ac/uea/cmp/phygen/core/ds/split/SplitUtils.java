@@ -16,6 +16,11 @@
 
 package uk.ac.uea.cmp.phygen.core.ds.split;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+import uk.ac.uea.cmp.phygen.core.ds.Taxa;
+import uk.ac.uea.cmp.phygen.core.ds.Taxon;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,5 +63,44 @@ public class SplitUtils {
     public static double meanOfWeights(List<Split> splits) {
 
         return sumOfWeights(splits) / (double) splits.size();
+    }
+
+    public static int calcMaxSplits(final int nbTaxa) {
+        return nbTaxa * (nbTaxa - 1) / 2 - nbTaxa;
+    }
+
+
+    public static Pair<Integer, Integer>[] createSplitIndices(Taxa taxa) {
+
+        final int N = taxa.size();
+
+        Pair<Integer, Integer>[] splitIndices = new ImmutablePair[calcMaxSplits(N)];
+
+        int n = 0;
+
+        for (int i = 0; i < N; i++) {
+
+            for (int j = i + 2; j < N; j++) {
+
+                if (i != 0 || j != N-1) {
+                    // valid split
+                    splitIndices[n++] = new ImmutablePair<>(taxa.get(i).getId(), taxa.get(j).getId());
+                }
+            }
+        }
+
+        return splitIndices;
+    }
+
+    public static List<Split> createTrivialSplits(Taxa taxa, final double weight) {
+
+        List<Split> splits = new ArrayList<>();
+
+        for (Taxon taxon : taxa) {
+
+            splits.add(new Split(new SplitBlock(new int[]{taxon.getId()}), taxa.size(), weight));
+        }
+
+        return splits;
     }
 }

@@ -27,16 +27,16 @@ import uk.ac.uea.cmp.phygen.core.math.matrix.SymmetricMatrix;
  */
 public class ComputedWeights {
 
-    private double[] x;
+    private double[] solution;
     private SymmetricMatrix EtE;
 
-    public ComputedWeights(double[] x, SymmetricMatrix etE) {
-        this.x = x;
+    public ComputedWeights(double[] solution, SymmetricMatrix etE) {
+        this.solution = solution;
         EtE = etE;
     }
 
-    public double[] getX() {
-        return x;
+    public double[] getSolution() {
+        return solution;
     }
 
     public SymmetricMatrix getEtE() {
