@@ -220,7 +220,7 @@
         <module>core</module>
         <module>phygentools</module>
         <module>net</module>
-        <module>superq</module>
+        <module>qtools</module>
         <module>flatnj</module>
 
         <!-- This gets executed last because it creates the distribution and the manual -->
