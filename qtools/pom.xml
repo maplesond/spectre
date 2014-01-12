@@ -106,6 +106,9 @@
                                 <chmod file="${build-dir}/bin/superq-gui" perm="755"/>
                                 <chmod file="${build-dir}/bin/qnet" perm="755"/>
                                 <chmod file="${build-dir}/bin/qnet-gui" perm="755"/>
+                                <chmod file="${build-dir}/bin/qmaker" perm="755"/>
+                                <chmod file="${build-dir}/bin/scaling" perm="755"/>
+                                <chmod file="${build-dir}/bin/sfilter" perm="755"/>
                             </target>
                         </configuration>
                     </execution>

@@ -101,11 +101,9 @@
                         </goals>
                         <configuration>
                             <target>
-                                <chmod file="${build-dir}/bin/quart" perm="755"/>
                                 <chmod file="${build-dir}/bin/distmxconv" perm="755"/>
                                 <chmod file="${build-dir}/bin/phycor" perm="755"/>
                                 <chmod file="${build-dir}/bin/rdg" perm="755"/>
-                                <chmod file="${build-dir}/bin/scaling" perm="755"/>
                             </target>
                         </configuration>
                     </execution>
