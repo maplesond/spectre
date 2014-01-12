@@ -84,16 +84,14 @@ public class QNet extends RunnableTool {
 
         notifyUser("Loading quartet system from: " + input.getName());
 
-        QuartetSystem quartetSystem = new QWeightLoader().load(input);
-        QuartetSystemCombiner combiner = new QuartetSystemCombiner();
-        combiner.combine(quartetSystem);
+        GroupedQuartetSystem quartetSystem = new GroupedQuartetSystem(new QWeightLoader().load(input));
 
-        return this.execute(combiner, logNormalise, tolerance, optimiser);
+        return this.execute(quartetSystem, logNormalise, tolerance, optimiser);
     }
 
     /**
      * Runs QNet from a combined quartet system.  Calculates the circular ordering and compute edge weights.
-     * @param combinedQuartetSystem The combined split system to process
+     * @param groupedQuartetSystem The quartet system (in grouped form) to process
      * @param logNormalise Whether to normalise the quartet weights by natural log, or not.
      * @param tolerance The tolerance to apply when computing weights
      * @param optimiser The optimiser to use when computing weights
@@ -102,54 +100,29 @@ public class QNet extends RunnableTool {
      * @throws QNetException Thrown if there were any unexpected issues with the QNET algorithm implementation
      * @throws OptimiserException Thrown if there was an issue running the optimiser when computing weights
      */
-    public QNetResult execute(QuartetSystemCombiner combinedQuartetSystem, boolean logNormalise, double tolerance, Optimiser optimiser)
+    public QNetResult execute(GroupedQuartetSystem groupedQuartetSystem, boolean logNormalise, double tolerance, Optimiser optimiser)
             throws OptimiserException, QNetException {
 
-        notifyUser("Creating a grouped quartet system");
-
-        // Get the actual combined quartet system
-        GroupedQuartetSystem groupedQuartetSystem = combinedQuartetSystem.create();
-
-        notifyUser("Normalising quartets " + (logNormalise ? " (using log)" : "") + ".");
+        notifyUser("Normalising quartets" + (logNormalise ? " (using log)" : ""));
 
         // Normalise the values in the network
         groupedQuartetSystem.normaliseQuartets(logNormalise);
 
 
-        notifyUser("Computing circular ordering.");
+        notifyUser("Computing circular ordering");
 
         // Order the taxa
         CircularOrdering circularOrdering = new CyclicOrderer().computeCircularOrdering(
-                combinedQuartetSystem.getTaxa(),
+                groupedQuartetSystem.getTaxa(),
                 groupedQuartetSystem.getQuartets());
 
-        notifyUser("Computing weights");
-
-        // Get the actual combined quartet system
-        GroupedQuartetSystem quartetSystem = combinedQuartetSystem.create();
+        notifyUser("Computing split weights");
 
         // Compute the weights
-        ComputedWeights solution = this.computeWeights(quartetSystem, tolerance, optimiser);
+        ComputedWeights solution = new WeightsComputer().computeWeights(groupedQuartetSystem, circularOrdering, tolerance, optimiser);
 
-        return new QNetResult(circularOrdering, solution, quartetSystem);
+        return new QNetResult(circularOrdering, solution, groupedQuartetSystem);
     }
-
-
-    /**
-     * Computers edge weights from a quartet system
-     * @param quartetSystem The quartet system
-     * @param tolerance The tolerance to apply when computing weights
-     * @param optimiser The optimiser to use when computing weights
-     * @return A set of computer edge weights
-     * @throws QNetException Thrown if there were any unexpected issues with the QNET algorithm implementation
-     * @throws OptimiserException Thrown if there was an issue running the optimiser when computing weights
-     */
-    public ComputedWeights computeWeights(GroupedQuartetSystem quartetSystem, double tolerance, Optimiser optimiser)
-            throws OptimiserException, QNetException {
-
-        return new WeightsComputer().computeWeights(quartetSystem, tolerance, optimiser);
-    }
-
 
 
     private void notifyUser(String message) {
@@ -158,6 +131,7 @@ public class QNet extends RunnableTool {
     }
 
     public static void configureLogging() {
+
         // Setup logging
         File propsFile = new File("logging.properties");
 

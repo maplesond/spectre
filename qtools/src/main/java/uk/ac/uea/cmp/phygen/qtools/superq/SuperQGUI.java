@@ -120,7 +120,7 @@ public class SuperQGUI extends JFrame implements ToolHost {
         });
 
         txtInput.setToolTipText(inputTip);
-        txtInput.setMinimumSize(new Dimension(400, txtInput.getHeight()));
+        //txtInput.setMinimumSize(new Dimension(400, txtInput.getHeight()));
 
         lblInput.setText("Input files:");
         lblInput.setToolTipText(inputTip);

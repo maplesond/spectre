@@ -70,21 +70,24 @@ public class SplitUtils {
     }
 
 
-    public static Pair<Integer, Integer>[] createSplitIndices(Taxa taxa) {
-
-        final int N = taxa.size();
+    /**
+     * Create a list of possible split indices from a given number of taxa
+     * @param N The number of taxa
+     * @return An array of split indices
+     */
+    public static Pair<Integer, Integer>[] createSplitIndices(final int N) {
 
         Pair<Integer, Integer>[] splitIndices = new ImmutablePair[calcMaxSplits(N)];
 
         int n = 0;
 
-        for (int i = 0; i < N; i++) {
+        for (int i = 1; i <= N - 2; i++) {
 
-            for (int j = i + 2; j < N; j++) {
+            for (int j = i + 2; j <= N; j++) {
 
-                if (i != 0 || j != N-1) {
+                if (i != 1 || j != N) {
                     // valid split
-                    splitIndices[n++] = new ImmutablePair<>(taxa.get(i).getId(), taxa.get(j).getId());
+                    splitIndices[n++] = new ImmutablePair<>(i, j);
                 }
             }
         }

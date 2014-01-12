@@ -203,10 +203,10 @@ public class InternalNNLSSolver {
 
                 // step 6: LS subproblem! this is the difficult part... generate submatrices, corresponding in size...
 
-                int noSplits = P.size();
+                int nbSplits = P.size();
 
-                double[][] EtEp = new double[noSplits][noSplits];
-                double[] Etfp = new double[noSplits];
+                double[][] EtEp = new double[nbSplits][nbSplits];
+                double[] Etfp = new double[nbSplits];
 
                 int row = 0;
                 int column = 0;
@@ -215,25 +215,21 @@ public class InternalNNLSSolver {
 
                 for (int i = 0; i < maxSplits; i++) {
 
-                    if (P.contains(i)) {
+                    if (P.contains(new Integer(i))) {
 
                         column = 0;
 
                         for (int j = 0; j < maxSplits; j++) {
 
-                            if (P.contains(j)) {
+                            if (P.contains(new Integer(j))) {
 
                                 EtEp[row][column] = EtE.getElementAt(i, j);
 
                                 column++;
-
                             }
-
                         }
 
-                        Etfp[row] = Etf[i];
-
-                        row++;
+                        Etfp[row++] = Etf[i];
                     }
                 }
 
@@ -251,7 +247,7 @@ public class InternalNNLSSolver {
 
                 for (int i = 0; i < maxSplits; i++) {
 
-                    if (P.contains(i)) {
+                    if (P.contains(new Integer(i))) {
 
                         aMap[mapIndex] = i;
 
@@ -261,15 +257,15 @@ public class InternalNNLSSolver {
 
                 // so aMap is the map reduced zHolder to true zHolder
 
-                double Q[][] = new double[noSplits][noSplits];
+                double Q[][] = new double[nbSplits][nbSplits];
 
-                for (int i = 0; i < noSplits; i++) {
+                for (int i = 0; i < nbSplits; i++) {
 
                     // for each column
 
                     // the column is v
 
-                    double[] v = new double[noSplits];
+                    double[] v = new double[nbSplits];
 
                     // take the list of dot products
 
@@ -279,10 +275,9 @@ public class InternalNNLSSolver {
 
                         double sum = 0.0;
 
-                        for (int k = 0; k < noSplits; k++) {
+                        for (int k = 0; k < nbSplits; k++) {
 
                             sum += EtEp[k][i] * Q[k][j];
-
                         }
 
                         L[j] = sum;
@@ -290,14 +285,13 @@ public class InternalNNLSSolver {
 
                     // next...
 
-                    for (int k = 0; k < noSplits; k++) {
+                    for (int k = 0; k < nbSplits; k++) {
 
                         double jSum = 0.0;
 
                         for (int j = 0; j < i; j++) {
 
                             jSum += L[j] * Q[k][j];
-
                         }
 
                         // for all elements in the column
@@ -309,14 +303,14 @@ public class InternalNNLSSolver {
 
                     double length = 0.0;
 
-                    for (int k = 0; k < noSplits; k++) {
+                    for (int k = 0; k < nbSplits; k++) {
 
                         length += v[k] * v[k];
                     }
 
                     if (length != 0.0) {
 
-                        for (int k = 0; k < noSplits; k++) {
+                        for (int k = 0; k < nbSplits; k++) {
 
                             v[k] = v[k] / Math.sqrt(length);
                         }
@@ -324,7 +318,7 @@ public class InternalNNLSSolver {
 
                     // then store v
 
-                    for (int k = 0; k < noSplits; k++) {
+                    for (int k = 0; k < nbSplits; k++) {
 
                         Q[k][i] = v[k];
                     }
@@ -332,18 +326,17 @@ public class InternalNNLSSolver {
 
                 // then calculate R
 
-                UpperTriangularMatrix R = new UpperTriangularMatrix(noSplits);
+                UpperTriangularMatrix R = new UpperTriangularMatrix(nbSplits);
 
-                for (int i = 0; i < noSplits; i++) {
+                for (int i = 0; i < nbSplits; i++) {
 
-                    for (int j = 0; j < i + 1; j++) {
+                    for (int j = 0; j <= i; j++) {
 
                         double sum = 0.0;
 
-                        for (int k = 0; k < noSplits; k++) {
+                        for (int k = 0; k < nbSplits; k++) {
 
                             sum += EtEp[k][i] * Q[k][j];
-
                         }
 
                         R.setElementAt(j, i, sum);
@@ -354,7 +347,7 @@ public class InternalNNLSSolver {
 
                 // check consistency!
 
-                if (R.getElementAt(noSplits - 1, noSplits - 1) == 0) {
+                if (R.getElementAt(nbSplits - 1, nbSplits - 1) == 0) {
 
                     log.warn("Subproblem is underdetermined, results may not be unique!");
                 }
@@ -363,13 +356,13 @@ public class InternalNNLSSolver {
 
                 // least squares solution of zHolder:
 
-                double[] QtEtfp = new double[noSplits];
+                double[] QtEtfp = new double[nbSplits];
 
-                for (int i = 0; i < noSplits; i++) {
+                for (int i = 0; i < nbSplits; i++) {
 
                     double jSum = 0.0;
 
-                    for (int j = 0; j < noSplits; j++) {
+                    for (int j = 0; j < nbSplits; j++) {
 
                         jSum += Q[j][i] * Etfp[j];
                     }
@@ -388,11 +381,11 @@ public class InternalNNLSSolver {
 
                 // ... second those that exist; wonder if I can do this?
 
-                double[] zRed = new double[noSplits];
+                double[] zRed = new double[nbSplits];
 
-                for (int i = 0; i < noSplits; i++) {
+                for (int i = 0; i < nbSplits; i++) {
 
-                    int d = noSplits - 1;
+                    int d = nbSplits - 1;
 
                     double jSum = 0.0;
 

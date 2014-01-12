@@ -15,6 +15,8 @@
  */
 package uk.ac.uea.cmp.phygen.core.ds;
 
+import uk.ac.uea.cmp.phygen.core.ds.split.CircularOrdering;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -367,5 +369,25 @@ public class Taxa extends ArrayList<Taxon> {
         }
 
         return result;
+    }
+
+    public Taxa applyCircularOrdering(CircularOrdering circularOrdering) {
+
+        if (circularOrdering.size() != this.size()) {
+            throw new IllegalArgumentException("Can't apply circular ordering as its size is different from this taxa objects.  " +
+                "Circular ordering size: " + circularOrdering.size() + "; Number of taxon in this taxa: " + this.size());
+        }
+
+        Taxa orderedTaxa = new Taxa();
+
+        for(int i = 0; i < this.size(); i ++) {
+
+            int id = circularOrdering.getAt(i);
+            Taxon t = this.getById(id);
+
+            orderedTaxa.add(new Taxon(t));
+        }
+
+        return orderedTaxa;
     }
 }

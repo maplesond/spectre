@@ -25,6 +25,7 @@ import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.GroupedQuartetSystem;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.WeightedQuartetGroupMap;
+import uk.ac.uea.cmp.phygen.core.ds.split.CircularOrdering;
 import uk.ac.uea.cmp.phygen.core.ds.split.SplitUtils;
 import uk.ac.uea.cmp.phygen.core.math.matrix.SymmetricMatrix;
 import uk.ac.uea.cmp.phygen.qtools.qnet.holders.PHolder;
@@ -38,13 +39,15 @@ public class WeightsComputer {
      * Calculate the split weights for such splits as are relevant.  That is, we first go through all relevant splits
      * and create a list of split indices.  There are n choose 2 - n splits i.e. n(n-1)/2 - n.
      * @param quartetSystem
+     * @param circularOrdering
      * @param tolerance
      * @param optimiser
      * @return
      * @throws QNetException
      * @throws OptimiserException
      */
-    public ComputedWeights computeWeights(GroupedQuartetSystem quartetSystem, double tolerance, Optimiser optimiser)
+    public ComputedWeights computeWeights(GroupedQuartetSystem quartetSystem, CircularOrdering circularOrdering,
+                                          double tolerance, Optimiser optimiser)
             throws QNetException, OptimiserException {
 
         // This method is probably going to take a while so start a timer.
@@ -57,19 +60,20 @@ public class WeightsComputer {
 
         log.debug("Initialising NNLS problem to solve");
 
-        Taxa taxa = quartetSystem.getTaxa();
-        final int N = taxa.size();
+        // Get the ordered taxa
+        Taxa orderedTaxa = quartetSystem.getTaxa().applyCircularOrdering(circularOrdering);
+        final int N = orderedTaxa.size();
 
-        Pair<Integer, Integer>[] splitIndices = SplitUtils.createSplitIndices(taxa);
+        Pair<Integer, Integer>[] splitIndices = SplitUtils.createSplitIndices(N);
 
         // Initialise PHolder using the quartet system.
-        PHolder pHolder = new PHolder(quartetSystem);
+        PHolder pHolder = new PHolder(quartetSystem, orderedTaxa);
 
         // Initialise EtE using split indices and the pHolder
         SymmetricMatrix EtE = this.initEtE(N, splitIndices, pHolder);
 
         // Initialise EtF using splitIndices and the quartets
-        double[] Etf = this.initEtf(splitIndices, quartetSystem);
+        double[] Etf = this.initEtf(splitIndices, quartetSystem, orderedTaxa);
 
         stopWatchInit.stop();
         log.debug("NNLS Problem initialised in " + stopWatchInit.toString());
@@ -101,10 +105,10 @@ public class WeightsComputer {
         stopWatchOptimise.stop();
         log.debug("Time taken to solve NNLS problem: " + stopWatchOptimise.toString());
 
-        log.info("Taxa weights: " + ArrayUtils.toString(solution));
+        log.info("Split weights: " + ArrayUtils.toString(solution));
 
         stopWatchAll.stop();
-        log.info("Total time taken to compute weights: " + stopWatchAll.toString());
+        log.info("Total time taken to compute split weights: " + stopWatchAll.toString());
 
         return new ComputedWeights(solution, EtE);
     }
@@ -221,10 +225,9 @@ public class WeightsComputer {
         return EtE;
     }
 
-    private double[][][][] populateGw(GroupedQuartetSystem quartetSystem) {
+    private double[][][][] populateGw(GroupedQuartetSystem quartetSystem, Taxa c) {
 
         WeightedQuartetGroupMap theQuartetWeights = quartetSystem.getQuartets();
-        Taxa c = quartetSystem.getTaxa();
         final int N = c.size();
 
         double gw[][][][] = new double[N][N][N][N];
@@ -373,7 +376,7 @@ public class WeightsComputer {
     }
 
 
-    private double[] initEtf(Pair<Integer, Integer>[] splitIndices, GroupedQuartetSystem quartetSystem) {
+    private double[] initEtf(Pair<Integer, Integer>[] splitIndices, GroupedQuartetSystem quartetSystem, Taxa orderedTaxa) {
 
         final int N = quartetSystem.getTaxa().size();
         final int maxSplits = SplitUtils.calcMaxSplits(N);
@@ -382,7 +385,7 @@ public class WeightsComputer {
             throw new IllegalArgumentException("Size of split indices and quartet system's taxa are different");
         }
 
-        double[][][][] gw = this.populateGw(quartetSystem);
+        double[][][][] gw = this.populateGw(quartetSystem, orderedTaxa);
 
         double[] Etf = new double[maxSplits];
 

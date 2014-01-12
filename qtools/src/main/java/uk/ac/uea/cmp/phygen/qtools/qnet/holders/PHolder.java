@@ -47,9 +47,8 @@ public class PHolder {
      * existence value for each quadruple.
      * @param quartetSystem The quartet system
      */
-    public PHolder(GroupedQuartetSystem quartetSystem) {
+    public PHolder(GroupedQuartetSystem quartetSystem, Taxa c) {
 
-        Taxa c = quartetSystem.getTaxa();
         final int N = c.size();
 
         this.ensureCapacity(N);

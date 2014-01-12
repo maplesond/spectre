@@ -95,7 +95,7 @@ public class QuartetSystemList extends ArrayList<QuartetSystem> {
                 nbQuartetSystems++;
             }
 
-            log.info("Loaded " + nbQuartetSystems + " quartet systems from " + file.getAbsolutePath());
+            log.info("Loaded " + nbQuartetSystems + " quartet system" + (nbQuartetSystems > 1 ? "s" : "") + " from " + file.getAbsolutePath());
         }
     }
 

@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import uk.ac.tgac.metaopt.Optimiser;
 import uk.ac.tgac.metaopt.OptimiserException;
 import uk.ac.tgac.metaopt.Problem;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.GroupedQuartetSystem;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystemCombiner;
 import uk.ac.uea.cmp.phygen.core.ds.split.CircularSplitSystem;
 import uk.ac.uea.cmp.phygen.core.io.nexus.Nexus;
@@ -100,7 +101,7 @@ public class SuperQ extends RunnableTool {
             notifyUser("Converting input trees into a combined quartet system.  " +
                     (this.options.getScalingSolver() != null ? "(Scaling input - optimising with: " + this.options.getScalingSolver().getIdentifier() + ")" : ""));
 
-            QuartetSystemCombiner combinedQuartetSystem =  new QMaker().execute(
+            GroupedQuartetSystem combinedQuartetSystem =  new QMaker().execute(
                     this.options.getInputFiles(),
                     this.options.getScalingSolver());
 

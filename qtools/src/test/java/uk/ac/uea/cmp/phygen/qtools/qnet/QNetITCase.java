@@ -8,6 +8,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import uk.ac.tgac.metaopt.OptimiserException;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.GroupedQuartetSystem;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystem;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystemCombiner;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystemList;
@@ -55,7 +56,7 @@ public class QNetITCase {
         return options;
     }
 
-    protected QuartetSystemCombiner create2ConflictingTreesWithSameFiveTaxa() throws IOException {
+    protected GroupedQuartetSystem create2ConflictingTreesWithSameFiveTaxa() throws IOException {
 
         NewickTree tree1 = new NewickTree("(((A:1,B:1):1,C:1),(D:1,E:1):1);");
 
@@ -72,9 +73,8 @@ public class QNetITCase {
     public void test5TaxaTree() throws OptimiserException, IOException, QNetException {
 
         NewickTree tree = new NewickTree("(((A:1,B:1):1,C:1),(D:1,E:1):1);");
-        QuartetSystemList qsl = new QuartetSystemList(new QuartetSystem(tree));
-        QuartetSystemCombiner qsc = new QMaker().execute(qsl);
-        QNetResult result = new QNet().execute(qsc, false, -1.0, null);
+        GroupedQuartetSystem qs = new GroupedQuartetSystem(tree);
+        QNetResult result = new QNet().execute(qs, false, -1.0, null);
 
         // Check circular ordering
         assertTrue(ArrayUtils.isEquals(result.getCircularOrdering().toArray(), new int[]{2,1,3,4,5}));
@@ -86,8 +86,8 @@ public class QNetITCase {
     @Test
     public void test2ConflictingTreesInternal() throws OptimiserException, IOException, QNetException {
 
-        QuartetSystemCombiner qsc = create2ConflictingTreesWithSameFiveTaxa();
-        QNetResult result = new QNet().execute(qsc, false, -1.0, null);
+        GroupedQuartetSystem qs = create2ConflictingTreesWithSameFiveTaxa();
+        QNetResult result = new QNet().execute(qs, false, -1.0, null);
 
         // Check circular ordering
         assertTrue(ArrayUtils.isEquals(result.getCircularOrdering().toArray(),

@@ -30,22 +30,26 @@ public class UpperTriangularMatrix {
     public UpperTriangularMatrix(int size) {
 
         this.size = size;
+        final int triangleSize = Quartet.over2(size) + Quartet.over1(size);
 
         this.diagonal = new double[size];
-        this.triangle = new double[Quartet.over2(size)];
+        this.triangle = new double[triangleSize];
 
         for (int n = 0; n < size; n++) {
             diagonal[n] = 0.0;
         }
 
-        for (int n = 0; n < Quartet.over2(size); n++) {
+        for (int n = 0; n < triangleSize; n++) {
             triangle[n] = 0.0;
         }
     }
 
     public void setElementAt(int i, int j, double newW) {
 
-        if (j > i) {
+        if (i > j) {
+            // Do nothing
+        }
+        else if (j > i) {
             triangle[Quartet.over2(j) + Quartet.over1(i)] = newW;
         }
         else {

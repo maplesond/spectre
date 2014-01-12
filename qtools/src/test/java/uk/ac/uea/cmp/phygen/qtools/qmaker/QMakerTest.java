@@ -42,7 +42,7 @@ public class QMakerTest {
 
         QuartetSystemList qsl = new QuartetSystemList(new QuartetSystem(tree));
 
-        QuartetSystemCombiner qsc = new QMaker().execute(qsl);
+        GroupedQuartetSystem qsc = new QMaker().execute(qsl);
 
         assertTrue(true);
     }
@@ -54,7 +54,7 @@ public class QMakerTest {
 
         QuartetSystemList qsl = new QuartetSystemList(new QuartetSystem(tree));
 
-        QuartetSystemCombiner qsc = new QMaker().execute(qsl);
+        GroupedQuartetSystem qsc = new QMaker().execute(qsl);
 
         assertTrue(true);
     }
@@ -70,8 +70,7 @@ public class QMakerTest {
         qsl.add(new QuartetSystem(tree1));
         qsl.add(new QuartetSystem(tree2));
 
-        QuartetSystemCombiner qsc = new QMaker().execute(qsl);
-        GroupedQuartetSystem gqs = qsc.create();
+        GroupedQuartetSystem gqs = new QMaker().execute(qsl);
         List<Quartet> quartets = gqs.sortedQuartets();
 
         assertNotNull(quartets);
@@ -102,7 +101,7 @@ public class QMakerTest {
         qsl.add(new QuartetSystem(tree1));
         qsl.add(new QuartetSystem(tree2));
 
-        QuartetSystemCombiner qsc = new QMaker().execute(qsl);
+        GroupedQuartetSystem qsc = new QMaker().execute(qsl);
 
         assertTrue(true);
     }

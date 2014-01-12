@@ -155,11 +155,7 @@ public class QMaker extends PhygenTool {
         this.infoFile = new File(outputDir, outputPrefix + ".info");
         this.quartetFile = new File(outputDir, outputPrefix + ".qw");
 
-        QuartetSystemCombiner quartetSystemCombiner = this.execute(inputFiles, optimiser);
-
-        quartetSystemCombiner.saveInformation(this.infoFile);
-
-        GroupedQuartetSystem quartetSystem = quartetSystemCombiner.create();
+        GroupedQuartetSystem quartetSystem = this.execute(inputFiles, optimiser);
 
         // Write to disk
         new QWeightWriter().writeQuartets(this.quartetFile, quartetSystem);
@@ -174,7 +170,7 @@ public class QMaker extends PhygenTool {
      * @return A combination of quartet networks
      * @throws IOException Thrown if there was an issue loading files.
      */
-    public QuartetSystemCombiner execute(File[] inputFiles)
+    public GroupedQuartetSystem execute(File[] inputFiles)
             throws IOException {
 
         return this.execute(new QuartetSystemList(inputFiles));
@@ -188,7 +184,7 @@ public class QMaker extends PhygenTool {
      * @throws IOException Thrown if there was an issue loading files.
      * @throws OptimiserException Thrown if there was a problem scaling the quartet networks.
      */
-    public QuartetSystemCombiner execute(File[] inputFiles, Optimiser optimiser)
+    public GroupedQuartetSystem execute(File[] inputFiles, Optimiser optimiser)
             throws IOException, OptimiserException {
 
         return this.execute(new QuartetSystemList(inputFiles), optimiser);
@@ -202,7 +198,7 @@ public class QMaker extends PhygenTool {
      * @return A combination of quartet networks
      * @throws OptimiserException Thrown if there was an issue scaling the quartet networks
      */
-    public QuartetSystemCombiner execute(QuartetSystemList quartetSystems, Optimiser optimiser)
+    public GroupedQuartetSystem execute(QuartetSystemList quartetSystems, Optimiser optimiser)
             throws OptimiserException {
 
         // Scale the quartet systems only if an optimiser is provided
@@ -218,7 +214,7 @@ public class QMaker extends PhygenTool {
      * @param quartetSystems A list of quartet networks
      * @return A combination of quartet networks
      */
-    public QuartetSystemCombiner execute(QuartetSystemList quartetSystems) {
+    public GroupedQuartetSystem execute(QuartetSystemList quartetSystems) {
 
         // Combines networks
         QuartetSystemCombiner combiner = new QuartetSystemCombiner();
@@ -229,7 +225,9 @@ public class QMaker extends PhygenTool {
         // Divides the quartet weights in the combined network
         combiner.divide();
 
-        return combiner;
+        //combiner.saveInformation(this.infoFile);
+
+        return combiner.create();
     }
 
 
