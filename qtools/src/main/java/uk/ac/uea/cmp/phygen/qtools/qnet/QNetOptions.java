@@ -15,7 +15,7 @@ import java.io.File;
  */
 public class QNetOptions {
 
-    public static final String DESC_INPUT = "The file containing the taxa to input.";
+    public static final String DESC_INPUT = "The q weight file containing the taxa and quartets to process.";
 
     public static final String DESC_OUTPUT = "The nexus file that will contain output.";
 

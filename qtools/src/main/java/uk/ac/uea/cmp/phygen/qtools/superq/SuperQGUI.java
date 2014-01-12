@@ -21,14 +21,18 @@ import uk.ac.tgac.metaopt.Objective;
 import uk.ac.tgac.metaopt.Optimiser;
 import uk.ac.tgac.metaopt.OptimiserException;
 import uk.ac.tgac.metaopt.OptimiserFactory;
+import uk.ac.uea.cmp.phygen.core.io.nexus.NexusFileFilter;
 import uk.ac.uea.cmp.phygen.core.ui.gui.JobController;
 import uk.ac.uea.cmp.phygen.core.ui.gui.StatusTracker;
 import uk.ac.uea.cmp.phygen.core.ui.gui.ToolHost;
 import uk.ac.uea.cmp.phygen.qtools.superq.problems.SecondaryProblemFactory;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.io.File;
+import java.util.ArrayList;
 
 public class SuperQGUI extends JFrame implements ToolHost {
 
@@ -40,9 +44,6 @@ public class SuperQGUI extends JFrame implements ToolHost {
 
     private JPanel pnlInput;
     private JPanel pnlSelectInput;
-    private JPanel pnlInputOptions;
-    private JLabel lblInputFormat;
-    private JComboBox<String> cboInputFormat;
     private JLabel lblInput;
     private JTextField txtInput;
     private JButton cmdInput;
@@ -105,27 +106,24 @@ public class SuperQGUI extends JFrame implements ToolHost {
         lblInput = new JLabel();
         txtInput = new JTextField();
         cmdInput = new JButton();
-        lblInputFormat = new JLabel();
-        cboInputFormat = new JComboBox();
+
+        final String inputTip = "REQUIRED: The input files containing trees, or paths to many trees if input format is " +
+                "script.  Supports NEWICK, NEXUS, QWEIGHT and script files.  Multiple files are separated with semi-colons. " +
+                "Paths containing spaces should be wrapped in quotes.";
 
         cmdInput.setText("...");
-        cmdInput.setToolTipText(SuperQOptions.DESC_INPUT);
+        cmdInput.setToolTipText(inputTip);
         cmdInput.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cmdInputActionPerformed(evt);
             }
         });
 
-        txtInput.setToolTipText(SuperQOptions.DESC_INPUT);
+        txtInput.setToolTipText(inputTip);
+        txtInput.setMinimumSize(new Dimension(400, txtInput.getHeight()));
 
-        lblInput.setText("Input file:");
-        lblInput.setToolTipText(SuperQOptions.DESC_INPUT);
-
-        lblInputFormat.setText("Input format:");
-        lblInputFormat.setToolTipText(SuperQOptions.DESC_INPUT_FORMAT);
-
-        cboInputFormat.setModel(new DefaultComboBoxModel(new String[]{"script", "newick", "nexus"}));
-        cboInputFormat.setToolTipText(SuperQOptions.DESC_INPUT_FORMAT);
+        lblInput.setText("Input files:");
+        lblInput.setToolTipText(inputTip);
 
         pnlSelectInput = new JPanel();
         pnlSelectInput.setLayout(new BoxLayout(pnlSelectInput, BoxLayout.LINE_AXIS));
@@ -139,22 +137,11 @@ public class SuperQGUI extends JFrame implements ToolHost {
 
         pack();
 
-        pnlInputOptions = new JPanel();
-        pnlInputOptions.setLayout(new BoxLayout(pnlInputOptions, BoxLayout.LINE_AXIS));
-        pnlInputOptions.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
-        pnlInputOptions.add(Box.createHorizontalGlue());
-        pnlInputOptions.add(lblInputFormat);
-        pnlInputOptions.add(Box.createRigidArea(new Dimension(10, 0)));
-        pnlInputOptions.add(cboInputFormat);
-
-        pack();
-
         pnlInput = new JPanel();
         pnlInput.setLayout(new BoxLayout(pnlInput, BoxLayout.PAGE_AXIS));
         pnlInput.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), "Input:"));
         pnlInput.add(Box.createVerticalGlue());
         pnlInput.add(pnlSelectInput);
-        pnlInput.add(pnlInputOptions);
 
         pack();
     }
@@ -478,14 +465,23 @@ public class SuperQGUI extends JFrame implements ToolHost {
      */
     private void cmdInputActionPerformed(java.awt.event.ActionEvent evt) {
 
-        final JFileChooser fc = new JFileChooser();
         if (evt.getSource() == cmdInput) {
+            final JFileChooser fc = new JFileChooser();
+            fc.addChoosableFileFilter(new NexusFileFilter());
+            fc.addChoosableFileFilter(new FileNameExtensionFilter("QWeight", "qw"));
+            fc.addChoosableFileFilter(new FileNameExtensionFilter("Phylip/Newick", "phylip", "newick", "tree", "tre"));
+            fc.addChoosableFileFilter(new FileNameExtensionFilter("Script", "script", "scr"));
+            fc.setMultiSelectionEnabled(true);
             int returnVal = fc.showOpenDialog(SuperQGUI.this);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
-                File file = fc.getSelectedFile();
-                String z = "";
-                z = file.getAbsolutePath();
-                txtInput.setText(z);
+                File[] files = fc.getSelectedFiles();
+
+                StringBuilder sb = new StringBuilder();
+                for(File f : files) {
+                    sb.append(f.getAbsolutePath());
+                    sb.append("; ");
+                }
+                txtInput.setText(sb.toString());
             } else {
                 log.debug("Open command cancelled by user.");
             }
@@ -522,10 +518,19 @@ public class SuperQGUI extends JFrame implements ToolHost {
 
         try {
 
-            options.setInputFileFormat(SuperQOptions.InputFormat.valueOf(((String) cboInputFormat.getSelectedItem()).toUpperCase()));
+            String[] files = this.txtInput.getText().split(";");
 
-            File input_file = new File(this.txtInput.getText().replaceAll("(^\")|(\"$)", ""));
-            options.setInputFile(input_file);
+            java.util.List<File> inputFiles = new ArrayList<>();
+            for(int i = 0; i < files.length; i++) {
+                String path = files[i].trim();
+
+                if (!path.isEmpty()) {
+                    path = path.replaceAll("(^\")|(\"$)", "");
+                    inputFiles.add(new File(path));
+                }
+            }
+
+            options.setInputFiles(inputFiles.toArray(new File[inputFiles.size()]));
 
             File output_file = new File(this.txtSave.getText().replaceAll("(^\")|(\"$)", ""));
             options.setOutputFile(output_file);
@@ -612,6 +617,7 @@ public class SuperQGUI extends JFrame implements ToolHost {
         lblSelectSecondaryObjective.setEnabled(enabled);
         cboSelectSecondaryObjective.setEnabled(enabled);
     }
+
 
 
     /**

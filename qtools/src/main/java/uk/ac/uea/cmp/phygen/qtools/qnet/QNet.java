@@ -24,7 +24,9 @@ import org.slf4j.LoggerFactory;
 import uk.ac.tgac.metaopt.Optimiser;
 import uk.ac.tgac.metaopt.OptimiserException;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.GroupedQuartetSystem;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystem;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystemCombiner;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.load.QWeightLoader;
 import uk.ac.uea.cmp.phygen.core.ds.split.CircularOrdering;
 import uk.ac.uea.cmp.phygen.core.ds.split.CircularSplitSystem;
 import uk.ac.uea.cmp.phygen.core.io.nexus.NexusWriter;
@@ -64,9 +66,8 @@ public class QNet extends RunnableTool {
     }
 
     /**
-     * Runs QNet from input file, which might contain trees, distance matrices or quartet systems, converts the input
-     * into a quartet network, normalises the quartet weights, then calculates the circular ordering and computes
-     * edge weights.
+     * Runs QNet from a qweight input file, which contains a set of taxa and an associated quartet system. QNet, then
+     * normalises the quartet weights, then calculates the circular ordering and computes edge weights.
      * @param input The file containing trees, distance matrices or quartet systems, will parse as appropriate based on
      *              the file extension.
      * @param logNormalise Whether to normalise the quartet weights by natural log, or not.
@@ -81,13 +82,13 @@ public class QNet extends RunnableTool {
     public QNetResult execute(File input, boolean logNormalise, double tolerance, Optimiser optimiser)
             throws IOException, QNetException, OptimiserException {
 
-        String ext = FilenameUtils.getExtension(input.getName());
+        notifyUser("Loading quartet system from: " + input.getName());
 
-        notifyUser("Loading and combining quartet systems from: " + input.getName());
+        QuartetSystem quartetSystem = new QWeightLoader().load(input);
+        QuartetSystemCombiner combiner = new QuartetSystemCombiner();
+        combiner.combine(quartetSystem);
 
-        QuartetSystemCombiner combinedQuartetSystem =  new QMaker().execute(input, ext.toUpperCase());
-
-        return this.execute(combinedQuartetSystem, logNormalise, tolerance, optimiser);
+        return this.execute(combiner, logNormalise, tolerance, optimiser);
     }
 
     /**

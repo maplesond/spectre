@@ -15,6 +15,8 @@
  */
 package uk.ac.uea.cmp.phygen.core.ds.split;
 
+import uk.ac.uea.cmp.phygen.core.ds.Taxa;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -117,20 +119,45 @@ public class CircularOrdering {
     public String toString() {
 
         if (this.co == null || this.co.length == 0) {
-            return "";
+            return "[]";
         }
         else if (this.co.length == 1) {
-            return Integer.toString(this.co[0]);
+            return "[ " + Integer.toString(this.co[0]) + " ]";
         }
         else {
 
             StringBuilder sb = new StringBuilder();
 
-            sb.append(this.co[0]);
+            sb.append("[ ").append(this.co[0]);
 
             for(int i = 1; i < this.co.length; i++) {
-               sb.append(' ').append(this.co[i]);
+               sb.append(", ").append(this.co[i]);
             }
+
+            sb.append(" ]");
+
+            return sb.toString();
+        }
+    }
+
+    public String toString(Taxa taxa) {
+
+        if (this.co == null || this.co.length == 0) {
+            return "[]";
+        }
+        else if (this.co.length == 1) {
+            return "[ " + taxa.getById(this.co[0]).getName() + " ]";
+        }
+        else {
+            StringBuilder sb = new StringBuilder();
+
+            sb.append("[ ").append(taxa.getById(this.co[0]).getName());
+
+            for(int i = 1; i < this.co.length; i++) {
+                sb.append(", ").append(taxa.getById(this.co[i]).getName());
+            }
+
+            sb.append(" ]");
 
             return sb.toString();
         }

@@ -47,11 +47,10 @@ public class SuperQITCase {
     }
 
 
-    protected SuperQOptions createSimpleOptions(String inputResource, SuperQOptions.InputFormat type, File output) throws OptimiserException {
+    protected SuperQOptions createSimpleOptions(String inputResource, File output) throws OptimiserException {
 
         SuperQOptions options = new SuperQOptions(
-                FileUtils.toFile(SuperQITCase.class.getResource(inputResource)),
-                type,
+                new File[] {FileUtils.toFile(SuperQITCase.class.getResource(inputResource))},
                 output,
                 null,
                 null,
@@ -68,7 +67,6 @@ public class SuperQITCase {
     public void test7TaxaTree() throws OptimiserException {
         SuperQOptions options = this.createSimpleOptions(
                 "/simple/7-taxa-deg2.tre",
-                SuperQOptions.InputFormat.NEWICK,
                 new File(simpleOutput, "7taxa-deg2.out"));
 
         SuperQ superQ = new SuperQ(options);
@@ -86,7 +84,6 @@ public class SuperQITCase {
     public void testSimpleTree() throws OptimiserException {
         SuperQOptions options = this.createSimpleOptions(
                 "/simple/single-tree-1.tre",
-                SuperQOptions.InputFormat.NEWICK,
                 new File(simpleOutput, "newick-1.out"));
 
         SuperQ superQ = new SuperQ(options);
@@ -105,7 +102,6 @@ public class SuperQITCase {
 
         SuperQOptions options = this.createSimpleOptions(
                 "/simple/in.script",
-                SuperQOptions.InputFormat.SCRIPT,
                 new File(simpleOutput, "simple.out"));
 
         SuperQ superQ = new SuperQ(options);

@@ -55,6 +55,11 @@ public class TreeLoader implements QLoader {
     }
 
     @Override
+    public boolean acceptsExtension(String ext) {
+        return ext.equalsIgnoreCase("newick") || ext.equalsIgnoreCase("phylip") || ext.equalsIgnoreCase("tre") || ext.equalsIgnoreCase("tree");
+    }
+
+    @Override
     public String getName() {
         return "newick";
     }

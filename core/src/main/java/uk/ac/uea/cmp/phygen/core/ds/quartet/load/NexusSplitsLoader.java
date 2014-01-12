@@ -30,7 +30,7 @@ import java.io.IOException;
  * change this template use Options | File Templates.
  */
 @MetaInfServices(QLoader.class)
-public class NexusSplitsLoader extends AbstractQLoader {
+public class NexusSplitsLoader extends AbstractNexusLoader {
 
     @Override
     public QuartetSystem load(File file) throws IOException {

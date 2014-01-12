@@ -115,7 +115,7 @@ public class NexusReader extends AbstractPhygenReader {
 
     @Override
     public String[] commonFileExtensions() {
-        return new String[]{"nex", "nxs", "nexus"};
+        return new NexusFileFilter().commonFileExtensions();
     }
 
     @Override

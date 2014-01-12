@@ -44,4 +44,12 @@ public interface QLoader extends Service {
      * @throws IOException Thrown if there was a problem reading the file
      */
     QuartetSystemList load(File file, double weight) throws IOException;
+
+
+    /**
+     * Returns true if this QLoader accepts the file extension, false otherwise.
+     * @param ext The file extension to test
+     * @return True if accepted, false if not.
+     */
+    boolean acceptsExtension(String ext);
 }

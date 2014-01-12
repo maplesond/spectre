@@ -17,11 +17,15 @@
 package uk.ac.uea.cmp.phygen.core.ds.quartet;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.ac.tgac.metaopt.Optimiser;
 import uk.ac.tgac.metaopt.OptimiserException;
 import uk.ac.tgac.metaopt.Solution;
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.load.QLoader;
+import uk.ac.uea.cmp.phygen.core.ds.quartet.load.QLoaderFactory;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.scale.ScalingMatrix;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.scale.ScalingOptimiser;
 import uk.ac.uea.cmp.phygen.core.ds.tree.newick.NewickTree;
@@ -42,6 +46,8 @@ import java.util.Map;
  * To change this template use File | Settings | File Templates.
  */
 public class QuartetSystemList extends ArrayList<QuartetSystem> {
+
+    private static Logger log = LoggerFactory.getLogger(QuartetSystemList.class);
 
     /**
      * Creates an empty quartet network list.
@@ -74,16 +80,22 @@ public class QuartetSystemList extends ArrayList<QuartetSystem> {
 
     /**
      * Creates a list of quartet networks from a file source
-     * @param inputFile The file to load
-     * @param source The type of file to load
+     * @param inputFiles The files to load
      * @throws IOException Thrown if there were any issues loading the file.
      */
-    public QuartetSystemList(File inputFile, String source) throws IOException {
+    public QuartetSystemList(File[] inputFiles) throws IOException {
 
         super();
 
-        for(QuartetSystem qs : new SpiFactory<>(QLoader.class).create(source).load(inputFile, 1.0)) {
-            this.add(qs);
+        for(File file : inputFiles) {
+
+            int nbQuartetSystems = 0;
+            for(QuartetSystem qs : new QLoaderFactory().create(FilenameUtils.getExtension(file.getName())).load(file, 1.0)) {
+                this.add(qs);
+                nbQuartetSystems++;
+            }
+
+            log.info("Loaded " + nbQuartetSystems + " quartet systems from " + file.getAbsolutePath());
         }
     }
 

@@ -38,9 +38,7 @@ public class Scaling extends PhygenTool {
 
     private static Logger log = LoggerFactory.getLogger(Scaling.class);
 
-    private static final String OPT_INPUT_FILE = "input";
     private static final String OPT_OUTPUT_PREFIX = "output";
-    private static final String OPT_TYPE = "type";
     private static final String OPT_OPTIMISER = "optimiser";
 
     @Override
@@ -62,12 +60,6 @@ public class Scaling extends PhygenTool {
         options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_OUTPUT_PREFIX).hasArg()
                 .withDescription("The output prefix path, which will be used for all output files").create("o"));
 
-        options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_INPUT_FILE).hasArg()
-                .withDescription("The input file containing the tree to be scaled").create("i"));
-
-        options.addOption(OptionBuilder.withArgName("string").withLongOpt(OPT_TYPE).hasArg()
-                .withDescription("The output file type: " + new SpiFactory<>(QLoader.class).listServicesAsString()).create("t"));
-
         options.addOption(OptionBuilder.withArgName("string").withLongOpt(OPT_OPTIMISER).hasArg()
                 .withDescription("The optimiser to use: " + OptimiserFactory.getInstance().listOperationalOptimisers()).create("p"));
 
@@ -86,9 +78,18 @@ public class Scaling extends PhygenTool {
     protected void execute(CommandLine commandLine) throws IOException {
 
         // All options are required
-        File inputFile = new File(commandLine.getOptionValue(OPT_INPUT_FILE));
         File outputPrefix = new File(commandLine.getOptionValue(OPT_OUTPUT_PREFIX));
-        String type = commandLine.getOptionValue(OPT_TYPE);
+
+        String[] args = commandLine.getArgs();
+
+        if (args == null || args.length == 0) {
+            throw new IOException("You must specify at least one input file");
+        }
+
+        File[] inputFiles = new File[args.length];
+        for(int i = 0; i < args.length; i++) {
+            inputFiles[i] = new File(args[i].trim());
+        }
 
         // Create the optimiser to use and execute scaler, wrap any optimiser exceptions as io exceptions.
         Optimiser optimiser;
@@ -98,7 +99,7 @@ public class Scaling extends PhygenTool {
                             commandLine.getOptionValue(OPT_OPTIMISER), Objective.ObjectiveType.QUADRATIC) :
                     null;
 
-            this.execute(inputFile, outputPrefix, type, optimiser);
+            this.execute(inputFiles, outputPrefix, optimiser);
 
         } catch (OptimiserException oe) {
             throw new IOException(oe);
@@ -107,31 +108,29 @@ public class Scaling extends PhygenTool {
 
     /**
      * Scales a list of quartet networks loaded from a file and then writes scaled networks to file.
-     * @param inputFile The file to load
-     * @param type The type of file to load
+     * @param inputFiles The file to load
      * @param optimiser The optimiser to use for scaling
      * @param outputPrefix The location for output files to be created
      * @throws OptimiserException
      * @throws IOException
      */
-    public void execute(File inputFile, File outputPrefix, String type, Optimiser optimiser) throws OptimiserException, IOException {
+    public void execute(File[] inputFiles, File outputPrefix, Optimiser optimiser) throws OptimiserException, IOException {
 
-        this.execute(inputFile, type, optimiser).saveQWeights(outputPrefix);
+        this.execute(inputFiles, optimiser).saveQWeights(outputPrefix);
     }
 
 
     /**
      * Scales a list of quartet networks loaded from a file
-     * @param inputFile The file to load
-     * @param type The type of file to load
+     * @param inputFiles The files to load
      * @param optimiser The optimiser to use for scaling
      * @return A scaled list of quartet networks.
      * @throws OptimiserException
      * @throws IOException
      */
-    public QuartetSystemList execute(File inputFile, String type, Optimiser optimiser) throws OptimiserException, IOException {
+    public QuartetSystemList execute(File[] inputFiles, Optimiser optimiser) throws OptimiserException, IOException {
 
-        return new QuartetSystemList(inputFile, type).scaleWeights(optimiser);
+        return new QuartetSystemList(inputFiles).scaleWeights(optimiser);
     }
 
 

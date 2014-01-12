@@ -36,6 +36,11 @@ public class QWeightLoader extends AbstractQLoader {
         return new QuartetSystem(new QWeightReader().parse(file));
     }
 
+    @Override
+    public boolean acceptsExtension(String ext) {
+        return ext.equalsIgnoreCase("qw");
+    }
+
 
     @Override
     public String getName() {

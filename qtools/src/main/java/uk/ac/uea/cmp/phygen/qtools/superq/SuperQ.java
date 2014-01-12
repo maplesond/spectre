@@ -58,17 +58,14 @@ public class SuperQ extends RunnableTool {
             throw new IOException("Must specify a valid set of parameters to control superQ.");
         }
 
-        if (this.options.getInputFile() == null || !this.options.getInputFile().exists() || this.options.getInputFile().isDirectory()) {
-            throw new IOException("Must specify a valid input file.");
+        if (this.options.getInputFiles() == null || this.options.getInputFiles().length == 0) {
+            throw new IOException("Must specify at least one valid input file.");
         }
 
         if (this.options.getOutputFile() == null || this.options.getOutputFile().isDirectory()) {
             throw new IOException("Must specify a valid path where to create the output file.");
         }
 
-        if (this.options.getInputFileFormat() == null) {
-            throw new IOException("Must specify a input file format.");
-        }
     }
 
     @Override
@@ -86,11 +83,9 @@ public class SuperQ extends RunnableTool {
             StopWatch stopWatch = new StopWatch();
             stopWatch.start();
 
-            log.info("Starting job: " + this.options.getInputFile().getPath());
+            log.info("Starting job");
             log.debug("FREE MEM - at start: " + rt.freeMemory());
 
-            String type = this.options.getInputFileFormat().toString().toLowerCase();
-            String file = this.options.getInputFile().getPath();
             String path = this.options.getOutputFile().getParent();
             File tmpdir = new File(path, "tempfiles");
             tmpdir.mkdir();
@@ -103,12 +98,14 @@ public class SuperQ extends RunnableTool {
             this.continueRun();
 
             notifyUser("Converting input trees into a combined quartet system.  " +
-                    (this.options.getScalingSolver() != null ? "(Scaling input - optimising with: " + this.options.getScalingSolver() + ")" : ""));
-            QuartetSystemCombiner combinedQuartetSystem =  new QMaker().execute(new File(file), type.toUpperCase(),
-                            this.options.getScalingSolver());
+                    (this.options.getScalingSolver() != null ? "(Scaling input - optimising with: " + this.options.getScalingSolver().getIdentifier() + ")" : ""));
+
+            QuartetSystemCombiner combinedQuartetSystem =  new QMaker().execute(
+                    this.options.getInputFiles(),
+                    this.options.getScalingSolver());
 
             rt.gc();
-            log.debug("FREE MEM - after running Chopper: " + rt.freeMemory());
+            log.debug("FREE MEM - after running QMaker: " + rt.freeMemory());
 
             this.continueRun();
 

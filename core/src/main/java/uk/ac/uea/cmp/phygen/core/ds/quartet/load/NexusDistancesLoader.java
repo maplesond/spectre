@@ -19,6 +19,7 @@ import org.kohsuke.MetaInfServices;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.CanonicalWeightedQuartetMap;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystem;
+import uk.ac.uea.cmp.phygen.core.io.nexus.NexusFileFilter;
 import uk.ac.uea.cmp.phygen.core.io.nexus.NexusReader;
 
 import java.io.File;
@@ -29,7 +30,7 @@ import java.io.IOException;
  * change this template use Options | File Templates.
  */
 @MetaInfServices(QLoader.class)
-public class NexusDistancesLoader extends AbstractQLoader {
+public class NexusDistancesLoader extends AbstractNexusLoader {
 
     @Override
     public QuartetSystem load(File file) throws IOException {

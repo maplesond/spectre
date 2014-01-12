@@ -88,7 +88,9 @@ public class CyclicOrderer {
         // Now, the lists should contain the desired circular ordering, convert those into a circular ordering object
         CircularOrdering circularOrdering = new CircularOrdering(paths.get(0).getIds());
 
-        log.info("QNet circular ordering computed: " + circularOrdering.toString());
+        log.info("QNet circular ordering computed:");
+        log.info(" IDs:   " + circularOrdering.toString());
+        log.info(" Names: " + circularOrdering.toString(taxa));
 
         stopWatch.stop();
         log.info("Time taken to compute ordering: " + stopWatch.toString());

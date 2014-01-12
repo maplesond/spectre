@@ -28,6 +28,8 @@ import uk.ac.uea.cmp.phygen.core.ui.cli.CommandLineHelper;
 import uk.ac.uea.cmp.phygen.qtools.superq.problems.SecondaryProblemFactory;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SuperQCLI {
 
@@ -35,8 +37,6 @@ public class SuperQCLI {
 
     private static String BIN_NAME = "superq";
 
-    private static String OPT_INPUT = "input";
-    private static String OPT_INPUT_FORMAT = "input_format";
     private static String OPT_OUTPUT = "output";
     private static String OPT_SCALING_SOLVER = "scaling_solver";
     private static String OPT_PRIMARY_SOLVER = "primary_solver";
@@ -81,13 +81,8 @@ public class SuperQCLI {
 
         Options options = new Options();
         options.addOption(OptionBuilder
-                .withDescription(SuperQOptions.DESC_INPUT)
-                .hasArg().isRequired().withLongOpt(OPT_INPUT).create("i"));
-        options.addOption(OptionBuilder
                 .withDescription(SuperQOptions.DESC_OUTPUT)
                 .hasArg().isRequired().withLongOpt(OPT_OUTPUT).create("o"));
-        options.addOption(OptionBuilder.withDescription(SuperQOptions.DESC_INPUT_FORMAT)
-                .hasArg().withLongOpt(OPT_INPUT_FORMAT).create("m"));
         options.addOption("x", OPT_PRIMARY_SOLVER, true, SuperQOptions.DESC_PRIMARY_SOLVER);
         options.addOption("y", OPT_SECONDARY_SOLVER, true, SuperQOptions.DESC_SECONDARY_SOLVER);
         options.addOption("b", OPT_SECONDARY_OBJECTIVE, true, SuperQOptions.DESC_SECONDARY_OBJECTIVE);
@@ -109,23 +104,11 @@ public class SuperQCLI {
                     "optimiser and set an appropriate objective.");
         }
 
-
-        if (commandLine.hasOption(OPT_INPUT)) {
-            sqOpts.setInputFile(new File(commandLine.getOptionValue(OPT_INPUT)));
-        } else {
-            throw new ParseException("You must specify an input file");
-        }
-
         if (commandLine.hasOption(OPT_OUTPUT)) {
             sqOpts.setOutputFile(new File(commandLine.getOptionValue(OPT_OUTPUT)));
         } else {
             throw new ParseException("You must specify an output file");
         }
-
-        if (commandLine.hasOption(OPT_INPUT_FORMAT)) {
-            sqOpts.setInputFileFormat(SuperQOptions.InputFormat.valueOf(commandLine.getOptionValue(OPT_INPUT_FORMAT).toUpperCase()));
-        }
-
 
         if (commandLine.hasOption(OPT_SECONDARY_OBJECTIVE)) {
 
@@ -135,7 +118,6 @@ public class SuperQCLI {
         }
 
         try {
-
 
             if (commandLine.hasOption(OPT_SCALING_SOLVER)) {
                 sqOpts.setScalingSolver(
@@ -167,6 +149,18 @@ public class SuperQCLI {
         if (commandLine.hasOption(OPT_VERBOSE)) {
             sqOpts.setVerbose(true);
         }
+
+        String[] args = commandLine.getArgs();
+
+        if (args == null || args.length == 0) {
+            throw new ParseException("You must specify at least one input file");
+        }
+
+        File[] inputFiles = new File[args.length];
+        for(int i = 0; i < args.length; i++) {
+            inputFiles[i] = new File(args[i].trim());
+        }
+        sqOpts.setInputFiles(inputFiles);
 
         return sqOpts;
     }

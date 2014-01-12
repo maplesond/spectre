@@ -70,10 +70,12 @@ public class ScriptLoader extends AbstractQLoader {
                             1.0;
 
                     // Create a source loader
-                    QLoader QLoader = this.sourceFactory.create(sourceName);
+                    QLoader qLoader = this.sourceFactory.create(sourceName);
 
                     // Load source and execute qmaker, combine results
-                    qnets.addAll(QLoader.load(sourceFile, entryWeight));
+                    qnets.addAll(qLoader.load(sourceFile, entryWeight));
+
+                    log.debug("Loaded " + sourceFile.getAbsolutePath());
 
                 } else {
 
@@ -83,6 +85,11 @@ public class ScriptLoader extends AbstractQLoader {
         }
 
         return qnets;
+    }
+
+    @Override
+    public boolean acceptsExtension(String ext) {
+        return ext.equalsIgnoreCase("script") || ext.equalsIgnoreCase("scr") || ext.equalsIgnoreCase("txt");
     }
 
     @Override

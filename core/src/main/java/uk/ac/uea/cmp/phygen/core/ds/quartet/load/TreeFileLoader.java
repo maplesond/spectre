@@ -147,6 +147,13 @@ public class TreeFileLoader extends AbstractQLoader {
     }
 
     @Override
+    public boolean acceptsExtension(String ext) {
+
+        //TODO what extension will this file have???
+        return false;
+    }
+
+    @Override
     public String getName() {
         return "nexus:trees";
     }

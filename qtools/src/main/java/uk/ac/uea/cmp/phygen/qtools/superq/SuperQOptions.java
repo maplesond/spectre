@@ -31,10 +31,6 @@ public class SuperQOptions {
 
     private static Logger logger = LoggerFactory.getLogger(SuperQOptions.class);
 
-    public static final String DESC_INPUT = "REQUIRED: The input file containing trees, or paths to many trees if input format is script";
-
-    public static final String DESC_INPUT_FORMAT = "The input file format: SCRIPT, NEWICK or NEXUS.  Default: will guess from input file extension";
-
     public static final String DESC_SCALING_SOLVER = "If a scaling optimiser is selected, the input trees are scaled.  Available optimisers: " +
             OptimiserFactory.getInstance().listOperationalOptimisersAsString(Objective.ObjectiveType.QUADRATIC);
 
@@ -54,14 +50,7 @@ public class SuperQOptions {
 
     public static final String DESC_FILTER = "The filter value to use.  Default: no filter (0.0)";
 
-    public enum InputFormat {
-        SCRIPT,
-        NEWICK,
-        NEXUS;
-    }
-
-    private File inputFile;
-    private InputFormat inputFileFormat;
+    private File[] inputFiles;
     private File outputFile;
     private Optimiser scalingSolver;
     private Optimiser primarySolver;
@@ -71,17 +60,16 @@ public class SuperQOptions {
     private boolean verbose;
 
     public SuperQOptions() throws OptimiserException {
-        this(null, null, null,
+        this(null, null,
                 null, null, null, null,
                 null, false);
     }
 
-    public SuperQOptions(File inputFile, InputFormat inputFileFormat, File outputFile,
+    public SuperQOptions(File[] inputFiles, File outputFile,
                          Optimiser scalingSolver, Optimiser primarySolver, Optimiser secondarySolver, SecondaryProblem secondaryProblem,
                          Double filter, boolean verbose) {
 
-        this.inputFile = inputFile;
-        this.inputFileFormat = inputFileFormat;
+        this.inputFiles = inputFiles;
         this.outputFile = outputFile;
         this.scalingSolver = scalingSolver;
         this.primarySolver = primarySolver;
@@ -91,17 +79,12 @@ public class SuperQOptions {
         this.verbose = verbose;
     }
 
-    public void createValidateConfig() {
-
+    public File[] getInputFiles() {
+        return inputFiles;
     }
 
-
-    public File getInputFile() {
-        return inputFile;
-    }
-
-    public void setInputFile(File inputFile) {
-        this.inputFile = inputFile;
+    public void setInputFiles(File[] inputFiles) {
+        this.inputFiles = inputFiles;
     }
 
     public SecondaryProblem getSecondaryProblem() {
@@ -118,14 +101,6 @@ public class SuperQOptions {
 
     public void setFilter(Double filter) {
         this.filter = filter;
-    }
-
-    public InputFormat getInputFileFormat() {
-        return inputFileFormat;
-    }
-
-    public void setInputFileFormat(InputFormat inputFileFormat) {
-        this.inputFileFormat = inputFileFormat;
     }
 
     public Optimiser getScalingSolver() {

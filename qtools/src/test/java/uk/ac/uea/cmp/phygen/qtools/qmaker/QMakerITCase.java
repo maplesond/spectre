@@ -26,12 +26,12 @@ public class QMakerITCase {
         File treeFile = FileUtils.toFile(QMakerTest.class.getResource("/chopper/7-taxa.tre"));
         File outputDir = temp.newFolder();
 
-        QMaker chopper = new QMaker();
-        chopper.execute(treeFile, "newick", null, outputDir, "simpleTest");
+        QMaker qMaker = new QMaker();
+        qMaker.execute(new File[] {treeFile}, null, outputDir, "simpleTest");
 
-        assertTrue(chopper.getQuartetFile().exists());
+        assertTrue(qMaker.getQuartetFile().exists());
 
-        List<String> lines = FileUtils.readLines(chopper.getQuartetFile());
+        List<String> lines = FileUtils.readLines(qMaker.getQuartetFile());
 
         assertTrue(lines.size() == 45);
     }
@@ -43,7 +43,7 @@ public class QMakerITCase {
         File outputDir = temp.newFolder();
 
         QMaker chopper = new QMaker();
-        chopper.execute(treeFile, "newick", null, outputDir, "simpleTest");
+        chopper.execute(new File[] {treeFile}, null, outputDir, "simpleTest");
 
         assertTrue(chopper.getQuartetFile().exists());
 
@@ -59,7 +59,7 @@ public class QMakerITCase {
         File outputDir = temp.newFolder();
 
         QMaker chopper = new QMaker();
-        chopper.execute(treeFile, "script", null, outputDir, "singleTreeScript");
+        chopper.execute(new File[] {treeFile}, null, outputDir, "singleTreeScript");
 
         assertTrue(chopper.getQuartetFile().exists());
 

@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import uk.ac.tgac.metaopt.Objective;
 import uk.ac.tgac.metaopt.OptimiserException;
 import uk.ac.tgac.metaopt.OptimiserFactory;
+import uk.ac.uea.cmp.phygen.core.io.qweight.QWeightFileFilter;
 import uk.ac.uea.cmp.phygen.core.ui.gui.JobController;
 import uk.ac.uea.cmp.phygen.core.ui.gui.StatusTracker;
 import uk.ac.uea.cmp.phygen.core.ui.gui.ToolHost;
@@ -372,6 +373,7 @@ public class QNetGUI extends JFrame implements ToolHost {
 
         final JFileChooser fc = new JFileChooser();
         if (evt.getSource() == cmdInput) {
+            fc.addChoosableFileFilter(new QWeightFileFilter());
             int returnVal = fc.showOpenDialog(QNetGUI.this);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 File file = fc.getSelectedFile();
