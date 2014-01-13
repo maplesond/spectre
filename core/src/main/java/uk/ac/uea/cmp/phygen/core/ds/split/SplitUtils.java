@@ -72,22 +72,24 @@ public class SplitUtils {
 
     /**
      * Create a list of possible split indices from a given number of taxa
-     * @param N The number of taxa
+     * @param circularOrdering The circular ordering of taxa indices
      * @return An array of split indices
      */
-    public static Pair<Integer, Integer>[] createSplitIndices(final int N) {
+    public static Pair<Integer, Integer>[] createSplitIndices(CircularOrdering circularOrdering) {
+
+        final int N = circularOrdering.size();
 
         Pair<Integer, Integer>[] splitIndices = new ImmutablePair[calcMaxSplits(N)];
 
         int n = 0;
 
-        for (int i = 1; i <= N - 2; i++) {
+        for (int i = 0; i < N - 2; i++) {
 
-            for (int j = i + 2; j <= N; j++) {
+            for (int j = i + 2; j < N; j++) {
 
-                if (i != 1 || j != N) {
+                if (i != 0 || j != N-1) {
                     // valid split
-                    splitIndices[n++] = new ImmutablePair<>(i, j);
+                    splitIndices[n++] = new ImmutablePair<>(circularOrdering.getAt(i), circularOrdering.getAt(j));
                 }
             }
         }

@@ -88,7 +88,7 @@ public class NexusWriter extends AbstractPhygenWriter implements Appendable {
         // Construct file content
         this.appendHeader()
             .appendLine()
-            .append(distanceMatrix.getTaxaSet())
+            .append(distanceMatrix.getTaxa())
             .appendLine()
             .append(distanceMatrix);
 

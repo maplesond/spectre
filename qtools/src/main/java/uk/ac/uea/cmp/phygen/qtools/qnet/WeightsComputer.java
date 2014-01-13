@@ -60,20 +60,18 @@ public class WeightsComputer {
 
         log.debug("Initialising NNLS problem to solve");
 
-        // Get the ordered taxa
-        Taxa orderedTaxa = quartetSystem.getTaxa().applyCircularOrdering(circularOrdering);
-        final int N = orderedTaxa.size();
+        final int N = circularOrdering.size();
 
-        Pair<Integer, Integer>[] splitIndices = SplitUtils.createSplitIndices(N);
+        Pair<Integer, Integer>[] splitIndices = SplitUtils.createSplitIndices(circularOrdering);
 
         // Initialise PHolder using the quartet system.
-        PHolder pHolder = new PHolder(quartetSystem, orderedTaxa);
+        PHolder pHolder = new PHolder(quartetSystem, circularOrdering);
 
         // Initialise EtE using split indices and the pHolder
         SymmetricMatrix EtE = this.initEtE(N, splitIndices, pHolder);
 
         // Initialise EtF using splitIndices and the quartets
-        double[] Etf = this.initEtf(splitIndices, quartetSystem, orderedTaxa);
+        double[] Etf = this.initEtf(splitIndices, quartetSystem, circularOrdering);
 
         stopWatchInit.stop();
         log.debug("NNLS Problem initialised in " + stopWatchInit.toString());
@@ -225,7 +223,7 @@ public class WeightsComputer {
         return EtE;
     }
 
-    private double[][][][] populateGw(GroupedQuartetSystem quartetSystem, Taxa c) {
+    private double[][][][] populateGw(GroupedQuartetSystem quartetSystem, CircularOrdering c) {
 
         WeightedQuartetGroupMap theQuartetWeights = quartetSystem.getQuartets();
         final int N = c.size();
@@ -249,10 +247,10 @@ public class WeightsComputer {
 
                         if (l == 2) {
 
-                            int cA = c.get(p).getId();
-                            int cB = c.get(p + 1).getId();
-                            int cC = c.get(i - 1).getId();
-                            int cD = c.get(j - 1).getId();
+                            int cA = c.getAt(p);
+                            int cB = c.getAt(p + 1);
+                            int cC = c.getAt(i - 1);
+                            int cD = c.getAt(j - 1);
 
                             double aW = theQuartetWeights.getWeight(new Quartet(cA, cB, cC, cD));
 
@@ -260,10 +258,10 @@ public class WeightsComputer {
                         }
                         else if (l == 3) {
 
-                            int cA = c.get(p).getId();
-                            int cB = c.get(p + 2).getId();
-                            int cC = c.get(i - 1).getId();
-                            int cD = c.get(j - 1).getId();
+                            int cA = c.getAt(p);
+                            int cB = c.getAt(p + 2);
+                            int cC = c.getAt(i - 1);
+                            int cD = c.getAt(j - 1);
 
                             double aW = theQuartetWeights.getWeight(new Quartet(cA, cB, cC, cD));
 
@@ -272,10 +270,10 @@ public class WeightsComputer {
                         }
                         else {
 
-                            int cA = c.get(p).getId();
-                            int cB = c.get(p + l - 1).getId();
-                            int cC = c.get(i - 1).getId();
-                            int cD = c.get(j - 1).getId();
+                            int cA = c.getAt(p);
+                            int cB = c.getAt(p + l - 1);
+                            int cC = c.getAt(i - 1);
+                            int cD = c.getAt(j - 1);
 
                             double aW = theQuartetWeights.getWeight(new Quartet(cA, cB, cC, cD));
 
@@ -289,10 +287,10 @@ public class WeightsComputer {
 
                         if (l == 2) {
 
-                            int cA = c.get(p).getId();
-                            int cB = c.get(p + 1).getId();
-                            int cC = c.get(i - 1).getId();
-                            int cD = c.get(j - 1).getId();
+                            int cA = c.getAt(p);
+                            int cB = c.getAt(p + 1);
+                            int cC = c.getAt(i - 1);
+                            int cD = c.getAt(j - 1);
 
                             double aW = theQuartetWeights.getWeight(new Quartet(cA, cB, cC, cD));
 
@@ -300,10 +298,10 @@ public class WeightsComputer {
                         }
                         else if (l == 3) {
 
-                            int cA = c.get(p).getId();
-                            int cB = c.get(p + 2).getId();
-                            int cC = c.get(i - 1).getId();
-                            int cD = c.get(j - 1).getId();
+                            int cA = c.getAt(p);
+                            int cB = c.getAt(p + 2);
+                            int cC = c.getAt(i - 1);
+                            int cD = c.getAt(j - 1);
 
                             double aW = theQuartetWeights.getWeight(new Quartet(cA, cB, cC, cD));
 
@@ -312,10 +310,10 @@ public class WeightsComputer {
                         }
                         else {
 
-                            int cA = c.get(p).getId();
-                            int cB = c.get(p + l - 1).getId();
-                            int cC = c.get(i - 1).getId();
-                            int cD = c.get(j - 1).getId();
+                            int cA = c.getAt(p);
+                            int cB = c.getAt(p + l - 1);
+                            int cC = c.getAt(i - 1);
+                            int cD = c.getAt(j - 1);
 
                             double aW = theQuartetWeights.getWeight(new Quartet(cA, cB, cC, cD));
 
@@ -332,10 +330,10 @@ public class WeightsComputer {
 
                         if (l == 2) {
 
-                            int cA = c.get(p).getId();
-                            int cB = c.get(p + 1).getId();
-                            int cC = c.get(i - 1).getId();
-                            int cD = c.get(j - 1).getId();
+                            int cA = c.getAt(p);
+                            int cB = c.getAt(p + 1);
+                            int cC = c.getAt(i - 1);
+                            int cD = c.getAt(j - 1);
 
                             double aW = theQuartetWeights.getWeight(new Quartet(cA, cB, cC, cD));
 
@@ -343,10 +341,10 @@ public class WeightsComputer {
 
                         } else if (l == 3) {
 
-                            int cA = c.get(p).getId();
-                            int cB = c.get(p + 2).getId();
-                            int cC = c.get(i - 1).getId();
-                            int cD = c.get(j - 1).getId();
+                            int cA = c.getAt(p);
+                            int cB = c.getAt(p + 2);
+                            int cC = c.getAt(i - 1);
+                            int cD = c.getAt(j - 1);
 
                             double aW = theQuartetWeights.getWeight(new Quartet(cA, cB, cC, cD));
 
@@ -355,10 +353,10 @@ public class WeightsComputer {
 
                         } else {
 
-                            int cA = c.get(p).getId();
-                            int cB = c.get(p + l - 1).getId();
-                            int cC = c.get(i - 1).getId();
-                            int cD = c.get(j - 1).getId();
+                            int cA = c.getAt(p);
+                            int cB = c.getAt(p + l - 1);
+                            int cC = c.getAt(i - 1);
+                            int cD = c.getAt(j - 1);
 
                             double aW = theQuartetWeights.getWeight(new Quartet(cA, cB, cC, cD));
 
@@ -376,7 +374,7 @@ public class WeightsComputer {
     }
 
 
-    private double[] initEtf(Pair<Integer, Integer>[] splitIndices, GroupedQuartetSystem quartetSystem, Taxa orderedTaxa) {
+    private double[] initEtf(Pair<Integer, Integer>[] splitIndices, GroupedQuartetSystem quartetSystem, CircularOrdering circularOrdering) {
 
         final int N = quartetSystem.getTaxa().size();
         final int maxSplits = SplitUtils.calcMaxSplits(N);
@@ -385,7 +383,7 @@ public class WeightsComputer {
             throw new IllegalArgumentException("Size of split indices and quartet system's taxa are different");
         }
 
-        double[][][][] gw = this.populateGw(quartetSystem, orderedTaxa);
+        double[][][][] gw = this.populateGw(quartetSystem, circularOrdering);
 
         double[] Etf = new double[maxSplits];
 

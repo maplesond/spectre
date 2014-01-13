@@ -19,6 +19,7 @@ import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.GroupedQuartetSystem;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
+import uk.ac.uea.cmp.phygen.core.ds.split.CircularOrdering;
 
 import java.util.Map;
 
@@ -46,8 +47,9 @@ public class PHolder {
      * informative interval combinatorics... it is basically defined like outer and inner interval of two types and
      * existence value for each quadruple.
      * @param quartetSystem The quartet system
+     * @param c The circular ordering of taxa ids
      */
-    public PHolder(GroupedQuartetSystem quartetSystem, Taxa c) {
+    public PHolder(GroupedQuartetSystem quartetSystem, CircularOrdering c) {
 
         final int N = c.size();
 
@@ -350,7 +352,7 @@ public class PHolder {
             data[Quartet.over1(a - 1) + Quartet.over2(b - 1) + Quartet.over3(c - 1) + Quartet.over4(d - 1)].getInnerQ();
     }
 
-    public boolean getR(int a, int b, int c, int d, Taxa cT) {
+    public boolean getR(int a, int b, int c, int d, CircularOrdering cT) {
 
         if (d > cT.size()) {
 
@@ -365,10 +367,10 @@ public class PHolder {
         // this is an ugly hack
         // we seek mapped a < b < c < d
 
-        a = cT.get(a - 1).getId();
-        b = cT.get(b - 1).getId();
-        c = cT.get(c - 1).getId();
-        d = cT.get(d - 1).getId();
+        a = cT.getAt(a - 1);
+        b = cT.getAt(b - 1);
+        c = cT.getAt(c - 1);
+        d = cT.getAt(d - 1);
 
         int m;
 

@@ -58,6 +58,44 @@ public class CircularOrdering {
         return new CircularOrdering(permutationInvert);
     }
 
+    @Override
+    public boolean equals(Object o) {
+
+        if (o == null)
+            return false;
+
+        CircularOrdering other = (CircularOrdering)o;
+
+        if (this.size() != other.size())
+            return false;
+
+        if (this.size() == 0)
+            return true;
+
+        int idx = other.indexOf(this.co[0]);
+
+        if (idx == -1)
+            return false;
+
+        for(int i = 0; i < this.size(); i++) {
+            if (this.co[i] != other.getAt(idx++))
+                return false;
+        }
+
+        return true;
+    }
+
+
+    public int indexOf(int val) {
+
+        for(int i = 0; i < this.size(); i++) {
+            if (co[i] == val)
+                return i;
+        }
+
+        return -1;
+    }
+
     public CircularOrdering copy() {
         int[] copy = this.co.clone();
         return new CircularOrdering(copy);

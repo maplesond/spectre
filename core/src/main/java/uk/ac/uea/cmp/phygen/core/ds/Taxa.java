@@ -235,9 +235,9 @@ public class Taxa extends ArrayList<Taxon> {
     }
 
     /**
-     * Invert method. Places everything in opposite order... Returns the inversion...
+     * Reverses the ordering.  i.e. places taxon in the opposite order..
      */
-    public Taxa invert() {
+    public Taxa reverseOrdering() {
 
         Taxa result = new Taxa();
 
@@ -247,6 +247,7 @@ public class Taxa extends ArrayList<Taxon> {
 
         return result;
     }
+
 
     public boolean isDuplicatesAllowed() {
         return duplicatesAllowed;
@@ -358,14 +359,14 @@ public class Taxa extends ArrayList<Taxon> {
             result.addAll(firstTaxa, true);
         }
         else {
-            result.addAll(firstTaxa.invert(), true);
+            result.addAll(firstTaxa.reverseOrdering(), true);
         }
 
         if (secondDirection == Direction.FORWARD) {
             result.addAll(secondTaxa, true);
         }
         else if (secondDirection == Direction.BACKWARD) {
-            result.addAll(secondTaxa.invert(), true);
+            result.addAll(secondTaxa.reverseOrdering(), true);
         }
 
         return result;
@@ -389,5 +390,16 @@ public class Taxa extends ArrayList<Taxon> {
         }
 
         return orderedTaxa;
+    }
+
+    public CircularOrdering createCircularOrdering() {
+
+        int[] co = new int[this.size()];
+
+        for(int i = 0; i < this.size(); i++) {
+            co[i] = this.get(i).getId();
+        }
+
+        return new CircularOrdering(co);
     }
 }

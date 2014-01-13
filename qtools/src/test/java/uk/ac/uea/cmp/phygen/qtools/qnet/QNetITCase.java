@@ -12,6 +12,7 @@ import uk.ac.uea.cmp.phygen.core.ds.quartet.GroupedQuartetSystem;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystem;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystemCombiner;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystemList;
+import uk.ac.uea.cmp.phygen.core.ds.split.CircularOrdering;
 import uk.ac.uea.cmp.phygen.core.ds.split.CircularSplitSystem;
 import uk.ac.uea.cmp.phygen.core.ds.tree.newick.NewickTree;
 import uk.ac.uea.cmp.phygen.qtools.qmaker.QMaker;
@@ -76,8 +77,11 @@ public class QNetITCase {
         GroupedQuartetSystem qs = new GroupedQuartetSystem(tree);
         QNetResult result = new QNet().execute(qs, false, -1.0, null);
 
+
+        CircularOrdering correctCircularOrdering = new CircularOrdering(new int[]{2,1,3,4,5});
+
         // Check circular ordering
-        assertTrue(ArrayUtils.isEquals(result.getCircularOrdering().toArray(), new int[]{2,1,3,4,5}));
+        assertTrue(result.getCircularOrdering().equals(correctCircularOrdering));
 
         CircularSplitSystem ss = result.createSplitSystem(null, QNetResult.SplitLimiter.STANDARD);
         assertTrue(true);

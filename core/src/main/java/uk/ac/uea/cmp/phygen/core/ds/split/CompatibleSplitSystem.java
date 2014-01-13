@@ -28,7 +28,7 @@ public class CompatibleSplitSystem extends CircularSplitSystem {
 
     public CompatibleSplitSystem(List<Split> splits, DistanceMatrix distanceMatrix, CircularOrdering circularOrdering) {
 
-        super(distanceMatrix.getTaxaSet(), splits, circularOrdering);
+        super(distanceMatrix.getTaxa(), splits, circularOrdering);
 
         if (circularOrdering.size() != distanceMatrix.size()) {
             throw new IllegalArgumentException("Distance matrix and circular ordering are not the same size");

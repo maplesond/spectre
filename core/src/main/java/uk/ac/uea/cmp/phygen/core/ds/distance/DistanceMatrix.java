@@ -270,7 +270,7 @@ public class DistanceMatrix {
      *
      * @return The set of taxa.
      */
-    public Taxa getTaxaSet() {
+    public Taxa getTaxa() {
         return this.taxa;
     }
 
@@ -280,7 +280,7 @@ public class DistanceMatrix {
      * @param i The index of the taxa to return.
      * @return The taxa
      */
-    public String getTaxa(final int i) {
+    public String getTaxonName(final int i) {
         return this.taxa.get(i).getName();
     }
 

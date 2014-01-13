@@ -19,7 +19,6 @@ import org.kohsuke.MetaInfServices;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.CanonicalWeightedQuartetMap;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystem;
-import uk.ac.uea.cmp.phygen.core.io.nexus.NexusFileFilter;
 import uk.ac.uea.cmp.phygen.core.io.nexus.NexusReader;
 
 import java.io.File;
@@ -42,7 +41,7 @@ public class NexusDistancesLoader extends AbstractNexusLoader {
         CanonicalWeightedQuartetMap qw = new CanonicalWeightedQuartetMap(distanceMatrix);
 
         // Create and return the quartet network
-        return new QuartetSystem(distanceMatrix.getTaxaSet(), 1.0, qw);
+        return new QuartetSystem(distanceMatrix.getTaxa(), 1.0, qw);
     }
 
     @Override

@@ -44,7 +44,7 @@ public class QNetResult {
         double[] solution = this.computedWeights.getSolution();
 
         // Create the basic split indices
-        Pair<Integer, Integer>[] splitIndices = SplitUtils.createSplitIndices(N);
+        Pair<Integer, Integer>[] splitIndices = SplitUtils.createSplitIndices(this.circularOrdering);
 
         List<Split> splits = new ArrayList<>();
         double totalWeight = 0.0;

@@ -39,7 +39,7 @@ public class CircularSplitSystem extends SimpleSplitSystem {
 
     public CircularSplitSystem(DistanceMatrix distanceMatrix, CircularOrdering circularOrdering) {
 
-        super(distanceMatrix.getTaxaSet(), new ArrayList<Split>());
+        super(distanceMatrix.getTaxa(), new ArrayList<Split>());
 
         int n = circularOrdering.size();
 

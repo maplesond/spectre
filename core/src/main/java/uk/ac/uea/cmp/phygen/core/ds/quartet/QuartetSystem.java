@@ -48,7 +48,7 @@ public class QuartetSystem {
                     "quartets in the hash.  Instead we found " + this.quartets.size() + " quartets in the hash.");
         }
 
-        this.taxa = distanceMatrix.getTaxaSet();
+        this.taxa = distanceMatrix.getTaxa();
         this.weight = weight;
     }*/
 
