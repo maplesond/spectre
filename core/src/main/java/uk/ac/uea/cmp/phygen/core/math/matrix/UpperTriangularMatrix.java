@@ -61,7 +61,7 @@ public class UpperTriangularMatrix {
 
         return i > j ?
                 0.0 :
-                j > 1 ?
+                j > i ?
                     triangle[Quartet.over2(j) + Quartet.over1(i)] :
                     diagonal[i];
     }

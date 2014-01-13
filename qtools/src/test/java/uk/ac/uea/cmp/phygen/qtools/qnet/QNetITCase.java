@@ -8,9 +8,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import uk.ac.tgac.metaopt.OptimiserException;
+import uk.ac.tgac.metaopt.external.JOptimizer;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.GroupedQuartetSystem;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystem;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystemCombiner;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetSystemList;
 import uk.ac.uea.cmp.phygen.core.ds.split.CircularOrdering;
 import uk.ac.uea.cmp.phygen.core.ds.split.CircularSplitSystem;
@@ -20,9 +20,7 @@ import uk.ac.uea.cmp.phygen.qtools.qmaker.QMaker;
 import java.io.File;
 import java.io.IOException;
 
-import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertTrue;
-import static junit.framework.TestCase.fail;
 
 /**
  * Created with IntelliJ IDEA.
@@ -40,21 +38,15 @@ public class QNetITCase {
 
     @Before
     public void setUp() throws Exception {
-        simpleOutput = folder.newFolder("simple");
+        simpleOutput = folder.newFolder("qnet-IT");
+
+        // Uncomment this line if you want to see output.
         BasicConfigurator.configure();
     }
 
-    protected QNetOptions createSimpleOptions() throws OptimiserException {
+    protected GroupedQuartetSystem createFromScript() throws IOException {
 
-        QNetOptions options = new QNetOptions(
-                FileUtils.toFile(QNetITCase.class.getResource("/simple/in.script")),
-                new File(simpleOutput, "simple.out"),
-                null,
-                false,
-                -1.0
-        );
-
-        return options;
+        return new QMaker().execute(new File[]{FileUtils.toFile(QNetITCase.class.getResource("/simple/in.script"))});
     }
 
     protected GroupedQuartetSystem create2ConflictingTreesWithSameFiveTaxa() throws IOException {
@@ -77,37 +69,43 @@ public class QNetITCase {
         GroupedQuartetSystem qs = new GroupedQuartetSystem(tree);
         QNetResult result = new QNet().execute(qs, false, -1.0, null);
 
-
-        CircularOrdering correctCircularOrdering = new CircularOrdering(new int[]{2,1,3,4,5});
-
         // Check circular ordering
-        assertTrue(result.getCircularOrdering().equals(correctCircularOrdering));
+        assertTrue(result.getCircularOrdering().equals(new CircularOrdering(new int[]{2,1,3,4,5})));
 
+        // Check weights from solver
+        assertTrue(ArrayUtils.isEquals(result.getComputedWeights().getSolution(), new double[]{0.0, 0.0, 0.0, 2.0, 2.0}));
+
+        // Generate splits
         CircularSplitSystem ss = result.createSplitSystem(null, QNetResult.SplitLimiter.STANDARD);
-        assertTrue(true);
+
+        // Check splits
+        assertTrue(ss.getNbSplits() == 7);
+        assertTrue(ss.getWeightAt(0) == 2.0);
+        assertTrue(ss.getWeightAt(1) == 2.0);
     }
 
-    @Test
+    /*@Test
     public void test2ConflictingTreesInternal() throws OptimiserException, IOException, QNetException {
 
         GroupedQuartetSystem qs = create2ConflictingTreesWithSameFiveTaxa();
         QNetResult result = new QNet().execute(qs, false, -1.0, null);
 
         // Check circular ordering
-        assertTrue(ArrayUtils.isEquals(result.getCircularOrdering().toArray(),
-                new int[]{3,1,2,4,5}));
+        assertTrue(result.getCircularOrdering().equals(new CircularOrdering(new int[]{3,1,2,4,5})));
 
         CircularSplitSystem ss = result.createSplitSystem(null, QNetResult.SplitLimiter.STANDARD);
 
+        assertTrue(ss.getNbSplits() == 8);
+        assertTrue(ss.getWeightAt(0) == 4.0);
+        assertTrue(ss.getWeightAt(1) == 1.75);
+        assertTrue(ss.getWeightAt(2) == 1.75);
+    } */
 
-        assertTrue(true);
-    }
-
-    /*@Test
+    @Test
     public void test2ConflictingTreesJOptimiser() throws OptimiserException, IOException, QNetException {
 
-        QuartetSystemCombiner qsc = create2ConflictingTreesWithSameFiveTaxa();
-        QNetResult result = new QNet().execute(qsc, false, -1.0, new JOptimizer());
+        GroupedQuartetSystem qs = create2ConflictingTreesWithSameFiveTaxa();
+        QNetResult result = new QNet().execute(qs, false, -1.0, new JOptimizer());
 
         // Check circular ordering
         assertTrue(ArrayUtils.isEquals(result.getCircularOrdering().toArray(),
@@ -117,21 +115,22 @@ public class QNetITCase {
 
 
         assertTrue(true);
-    } */
+    }
 
     @Test
-    public void testSimpleScript() throws OptimiserException {
+    public void testSimpleScript() throws OptimiserException, IOException, QNetException {
 
-        QNetOptions options = this.createSimpleOptions();
+        GroupedQuartetSystem qs = this.createFromScript();
 
-        QNet qnet = new QNet(options, null);
+        QNetResult result = new QNet().execute(qs, false, -1.0, null);
 
-        qnet.run();
+        // Check circular ordering
+        assertTrue(result.getCircularOrdering().equals(new CircularOrdering(new int[]{
+                23,22,1,24,25,26,31,32,21,19,20,30,2,3,4,14,27,11,10,8,7,9,5,6,28,12,13,29,17,15,16,18})));
 
-        if (qnet.failed()) {
-            System.err.println(qnet.getFullErrorMessage());
-        }
+        CircularSplitSystem ss = result.createSplitSystem(null, QNetResult.SplitLimiter.STANDARD);
 
-        assertFalse(qnet.failed());
+        // We expect only the trivial splits for this one.  Solver fails!
+        assertTrue(ss.getNbSplits() == 32);
     }
 }

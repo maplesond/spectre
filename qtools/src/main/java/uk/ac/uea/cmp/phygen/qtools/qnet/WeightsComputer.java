@@ -21,7 +21,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.tgac.metaopt.*;
-import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.GroupedQuartetSystem;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.WeightedQuartetGroupMap;
@@ -29,6 +28,8 @@ import uk.ac.uea.cmp.phygen.core.ds.split.CircularOrdering;
 import uk.ac.uea.cmp.phygen.core.ds.split.SplitUtils;
 import uk.ac.uea.cmp.phygen.core.math.matrix.SymmetricMatrix;
 import uk.ac.uea.cmp.phygen.qtools.qnet.holders.PHolder;
+import uk.ac.uea.cmp.phygen.qtools.qnet.solvers.ExternalNNLSSolver;
+import uk.ac.uea.cmp.phygen.qtools.qnet.solvers.InternalNNLSSolver;
 
 public class WeightsComputer {
 
@@ -62,7 +63,7 @@ public class WeightsComputer {
 
         final int N = circularOrdering.size();
 
-        Pair<Integer, Integer>[] splitIndices = SplitUtils.createSplitIndices(circularOrdering);
+        Pair<Integer, Integer>[] splitIndices = SplitUtils.createSplitIndices(N);
 
         // Initialise PHolder using the quartet system.
         PHolder pHolder = new PHolder(quartetSystem, circularOrdering);
@@ -96,7 +97,7 @@ public class WeightsComputer {
                 tolerance = 10.0 * Math.pow(((double) N), 8.0) / 48.0 / 64.0 * epsilon;
             }
 
-            log.info("Using QNet's internal method to solve NNLS problem");
+            log.info("Using QNet's internal method to solve NNLS problem.  Tolerance set to: " + tolerance);
             solution = new InternalNNLSSolver().optimise(N, Etf, EtE, tolerance);
         }
 
@@ -123,6 +124,8 @@ public class WeightsComputer {
 
             for (int j = 0; j < i + 1; j++) {
 
+
+                //TODO Check this is right to 0-base theese indices
                 int p1 = splitIndices[i].getLeft();
                 int q1 = splitIndices[i].getRight();
                 int p2 = splitIndices[j].getLeft();
@@ -389,23 +392,23 @@ public class WeightsComputer {
 
         for (int a = 0; a < maxSplits; a++) {
 
-            int p = splitIndices[a].getLeft();
-            int q = splitIndices[a].getRight();
+            final int p = splitIndices[a].getLeft();
+            final int q = splitIndices[a].getRight();
 
             double sum = 0.0;
 
-            for (int i = 1; i < p + 1; i++) {
-                for (int j = i + 1; j < p + 1; j++) {
+            for (int i = 1; i <= p; i++) {
+                for (int j = i + 1; j <= p; j++) {
                     sum += gw[p - 1][q - 1][i - 1][j - 1];
                 }
 
-                for (int j = q + 1; j < N + 1; j++) {
+                for (int j = q + 1; j <= N; j++) {
                     sum += gw[p - 1][q - 1][i - 1][j - 1];
                 }
             }
 
-            for (int i = q + 1; i < N + 1; i++) {
-                for (int j = i + 1; j < N + 1; j++) {
+            for (int i = q + 1; i <= N; i++) {
+                for (int j = i + 1; j <= N; j++) {
                     sum += gw[p - 1][q - 1][i - 1][j - 1];
                 }
             }

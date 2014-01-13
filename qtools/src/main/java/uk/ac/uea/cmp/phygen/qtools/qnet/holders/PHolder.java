@@ -21,6 +21,7 @@ import uk.ac.uea.cmp.phygen.core.ds.quartet.Quartet;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.QuartetWeights;
 import uk.ac.uea.cmp.phygen.core.ds.split.CircularOrdering;
 
+import java.util.Arrays;
 import java.util.Map;
 
 /**
@@ -84,20 +85,17 @@ public class PHolder {
                             if (this.getR(iA + 1, iB + 1, iC + 1, iD + 1, c)) {
 
                                 this.setQ(iA, iB, iC, iD, 1);
-
-                            } else {
+                            }
+                            else {
 
                                 this.setQ(iA, iB, iC, iD, 0);
-
                             }
-
                         }
 
                         if (iC == iB + 1) {
 
                             this.setQ(iB, iC, iD, iA + N,
                                     this.getR(iA + 1, iB + 1, iC + 1, iD + 1, c) ? 1 : 0);
-
                         }
                     }
                 }
@@ -123,9 +121,7 @@ public class PHolder {
 
                             this.setQ(iA, iA + 2, iB, iC, this.getQ(iA + 1, iA + 2, iB, iC)
                                     + this.getQ(iA, iA + 1, iB, iC));
-
                         }
-
                     }
 
                     if (iC > iB + 2) {
@@ -134,12 +130,11 @@ public class PHolder {
 
                             this.setQ(iB, iB + 2, iC, iA + N, this.getQ(iB + 1, iB + 2, iC, iA + N)
                                     + this.getQ(iB, iB + 1, iC, iA + N) + 1);
-
-                        } else {
+                        }
+                        else {
 
                             this.setQ(iB, iB + 2, iC, iA + N, this.getQ(iB + 1, iB + 2, iC, iA + N)
                                     + this.getQ(iB, iB + 1, iC, iA + N));
-
                         }
                     }
                 }
@@ -161,13 +156,12 @@ public class PHolder {
                                 this.setQ(iA, iA + iD, iB, iC, this.getQ(iA + 1, iA + iD, iB, iC)
                                         + this.getQ(iA, iA + iD - 1, iB, iC)
                                         - this.getQ(iA + 1, iA + iD - 1, iB, iC) + 1);
-
-                            } else {
+                            }
+                            else {
 
                                 this.setQ(iA, iA + iD, iB, iC, this.getQ(iA + 1, iA + iD, iB, iC)
                                         + this.getQ(iA, iA + iD - 1, iB, iC)
                                         - this.getQ(iA + 1, iA + iD - 1, iB, iC));
-
                             }
 
                         }
@@ -179,13 +173,12 @@ public class PHolder {
                                 this.setQ(iB, iB + iD, iC, iA + N, this.getQ(iB + 1, iB + iD, iC, iA + N)
                                         + this.getQ(iB, iB + iD - 1, iC, iA + N)
                                         - this.getQ(iB + 1, iB + iD - 1, iC, iA + N) + 1);
-
-                            } else {
+                            }
+                            else {
 
                                 this.setQ(iB, iB + iD, iC, iA + N, this.getQ(iB + 1, iB + iD, iC, iA + N)
                                         + this.getQ(iB, iB + iD - 1, iC, iA + N)
                                         - this.getQ(iB + 1, iB + iD - 1, iC, iA + N));
-
                             }
                         }
                     }
@@ -287,7 +280,6 @@ public class PHolder {
                                         + this.getP(iA, iB, iC, iC + iD - 1)
                                         - this.getP(1, iD - 1, iA, iB)
                                         + this.getQ(iA, iB, iC, iC + iD));
-
                             }
                         }
                     }
@@ -321,7 +313,6 @@ public class PHolder {
 
         // we assume size-order and one-upmanship
         // we check for d > N
-
         if (!(a < b && b < c && c < d)) {
 
             return 0;
@@ -367,54 +358,19 @@ public class PHolder {
         // this is an ugly hack
         // we seek mapped a < b < c < d
 
-        a = cT.getAt(a - 1);
-        b = cT.getAt(b - 1);
-        c = cT.getAt(c - 1);
-        d = cT.getAt(d - 1);
+        int[] qidx = new int[]{
+                cT.getAt(a - 1),
+                cT.getAt(b - 1),
+                cT.getAt(c - 1),
+                cT.getAt(d - 1)
+        };
 
-        int m;
+        Arrays.sort(qidx);
 
-        if (c > d) {
-
-            m = d;
-            d = c;
-            c = m;
-        }
-
-        if (b > d) {
-
-            m = d;
-            d = b;
-            b = m;
-        }
-
-        if (a > d) {
-
-            m = d;
-            d = a;
-            a = m;
-        }
-
-        if (b > c) {
-
-            m = c;
-            c = b;
-            b = m;
-        }
-
-        if (a > c) {
-
-            m = c;
-            c = a;
-            a = m;
-        }
-
-        if (a > b) {
-
-            m = b;
-            b = a;
-            a = m;
-        }
+        a = qidx[0];
+        b = qidx[1];
+        c = qidx[2];
+        d = qidx[3];
 
         // now we have size-order and proper mapping
 
@@ -431,19 +387,14 @@ public class PHolder {
 
         // we assume size-order and one-upmanship
         // we check for d > N
-
         if (d > nbTaxa) {
 
             // if requesting something after the last (remembering we have one-upmanship
-
             // we work with out of d - n, a, b, c
-
             data[Quartet.over1(d - nbTaxa - 1) + Quartet.over2(a - 1) + Quartet.over3(b - 1) + Quartet.over4(c - 1)].setOuterP(newW);
         }
         else {
-
             // we work with in of a, b, c, d
-
             data[Quartet.over1(a - 1) + Quartet.over2(b - 1) + Quartet.over3(c - 1) + Quartet.over4(d - 1)].setInnerP(newW);
         }
     }
@@ -456,15 +407,12 @@ public class PHolder {
         if (d > nbTaxa) {
 
             // if requesting something after the last (remembering we have one-upmanship
-
             // we work with out of d - n, a, b, c
-
             data[Quartet.over1(d - nbTaxa - 1) + Quartet.over2(a - 1) + Quartet.over3(b - 1) + Quartet.over4(c - 1)].setOuterQ(newW);
         }
         else {
 
             // we work with in of a, b, c, d
-
             data[Quartet.over1(a - 1) + Quartet.over2(b - 1) + Quartet.over3(c - 1) + Quartet.over4(d - 1)].setInnerQ(newW);
         }
     }
@@ -477,15 +425,12 @@ public class PHolder {
         if (d > nbTaxa) {
 
             // if requesting something after the last (remembering we have one-upmanship
-
             // we work with out of d - n, a, b, c
-
             data[Quartet.over1(d - nbTaxa - 1) + Quartet.over2(a - 1) + Quartet.over3(b - 1) + Quartet.over4(c - 1)].setR(newW);
         }
         else {
 
             // we work with in of a, b, c, d
-
             data[Quartet.over1(a - 1) + Quartet.over2(b - 1) + Quartet.over3(c - 1) + Quartet.over4(d - 1)].setR(newW);
         }
     }

@@ -1,4 +1,4 @@
-package uk.ac.uea.cmp.phygen.qtools.qnet;
+package uk.ac.uea.cmp.phygen.qtools.qnet.solvers;
 
 import uk.ac.tgac.metaopt.*;
 
