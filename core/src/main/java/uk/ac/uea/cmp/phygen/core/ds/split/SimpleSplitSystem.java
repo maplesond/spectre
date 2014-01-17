@@ -103,8 +103,14 @@ public class SimpleSplitSystem implements SplitSystem {
         return new SummedDistanceList(P);
     }
 
+    @Override
     public void addSplit(Split split) {
         this.splits.add(split);
+    }
+
+    @Override
+    public void removeLastSplit() {
+        this.splits.remove(this.splits.size() - 1);
     }
 
     @Override
@@ -137,13 +143,16 @@ public class SimpleSplitSystem implements SplitSystem {
      * @param index2 the index of the split that is to be removed
      * @throws IndexOutOfBoundsException if a row is out of range
      */
-    public void mergeSplits(int index1, int index2) {
+    @Override
+    public Split mergeSplits(int index1, int index2) {
         Split split1 = this.getSplitAt(index1);
         Split split2 = this.getSplitAt(index2);
 
         split1.merge(split2);
 
         this.splits.remove(index2);
+
+        return split1;
     }
 
     public List<Split> copySplits() {
@@ -166,31 +175,6 @@ public class SimpleSplitSystem implements SplitSystem {
     public double getWeightAt(int i) {
         return this.getSplitAt(i).getWeight();
     }
-
-
-
-
-
-    /*public void addTrivialSplits() {
-        for (String taxa : names) {
-            splits.add(taxa);
-            weightings.add(1.0);
-            StringBuilder complement = new StringBuilder();
-            for (String taxa2 : names) {
-                if (!taxa2.equals(taxa)) {
-                    complement.append(taxa2).append(" ");
-                }
-            }
-            splits.add(complement.toString().trim());
-            weightings.add(1.0);
-        }
-    }
-
-    public void removeTrivialSplits() {
-        for (Split split : splits) {
-            //?????
-        }
-    }  */
 
 
     /*public void convertToIndicies() {

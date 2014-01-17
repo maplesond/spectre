@@ -54,7 +54,7 @@ public class NetMakeCLIITCase {
         assertTrue(outputDir.listFiles().length == 2);
     }
 
-    /*@Test
+    @Test
     public void testTreeBees() throws IOException {
 
         File outputDir = temporaryFolder.getRoot();
@@ -69,5 +69,5 @@ public class NetMakeCLIITCase {
         });
 
         assertTrue(outputDir.listFiles().length == 2);
-    }*/
+    }
 }

@@ -16,16 +16,23 @@
 
 package uk.ac.uea.cmp.phygen.net.netmake;
 
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.ds.Tableau;
+import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
-import uk.ac.uea.cmp.phygen.core.ds.split.CircularOrdering;
-import uk.ac.uea.cmp.phygen.core.ds.split.CircularSplitSystem;
-import uk.ac.uea.cmp.phygen.core.ds.split.CompatibleSplitSystem;
+import uk.ac.uea.cmp.phygen.core.ds.split.*;
+import uk.ac.uea.cmp.phygen.core.io.PhygenDataType;
+import uk.ac.uea.cmp.phygen.core.io.PhygenReaderFactory;
+import uk.ac.uea.cmp.phygen.core.ui.gui.RunnableTool;
 import uk.ac.uea.cmp.phygen.net.netmake.weighting.GreedyMEWeighting;
 import uk.ac.uea.cmp.phygen.net.netmake.weighting.TreeWeighting;
 import uk.ac.uea.cmp.phygen.net.netmake.weighting.Weighting;
+import uk.ac.uea.cmp.phygen.net.netmake.weighting.Weightings;
 
 import java.util.ArrayList;
 
@@ -37,234 +44,147 @@ import java.util.ArrayList;
  *         See Sarah Bastkowski, 2010:
  *         <I>Algorithmen zum Finden von Bäumen in Neighbor Net Netzwerken</I>
  */
-public class NetMake {
+public class NetMake extends RunnableTool {
 
-    // Input class variables
-    private final DistanceMatrix distanceMatrix;
-    private Weighting weighting1;
-    private Weighting weighting2;
-    private final RunMode mode;
-    private final int NB_TAXA;
+    private static Logger log = LoggerFactory.getLogger(NetMake.class);
 
-    // Temporary state variables.
-    private Tableau<Integer> components;
 
-    /**
-     * Creates a new NetMake object with a distance matrix and a single weighting.
-     *
-     * @param distanceMatrix Distance matrix, which defines distanceMatrix between taxa
-     * @param weighting      Weighting system to be applied
-     */
-    public NetMake(final DistanceMatrix distanceMatrix, Weighting weighting) {
-        this(distanceMatrix, weighting, null);
+
+    private NetMakeOptions options;
+
+    public NetMake() {
+        this(new NetMakeOptions());
     }
 
-    /**
-     * Creates a new NetMake object with a distance matrix and two weightings, for use
-     * in a "hybrid" mode.
-     *
-     * @param distanceMatrix Distance matrix, which defines distanceMatrix between taxa
-     * @param weighting1     First weighting system to be applied
-     * @param weighting2     Second weighting system to be applied
-     */
-    public NetMake(final DistanceMatrix distanceMatrix, Weighting weighting1, Weighting weighting2) {
-        if (distanceMatrix == null) {
-            throw new NullPointerException("Must specify a Distance matrix to work with.");
-        }
-
-        this.mode = determineRunMode(weighting1, weighting2);
-
-        if (this.mode == RunMode.UNKNOWN)
-            throw new IllegalArgumentException("Unknown run mode configuration.  Please ensure the weighting configuration is valid.");
-
-        // Set input variables
-        this.distanceMatrix = distanceMatrix;
-        this.weighting1 = weighting1;
-        this.weighting2 = weighting2;
-
-        this.NB_TAXA = this.distanceMatrix.size();
-
-        // Initialise state and output variables.
-        reset();
+    public NetMake(NetMakeOptions options) {
+        this.options = options;
     }
 
-    protected enum RunMode {
-
-        UNKNOWN {
-            public NetMakeResult run(NetMake nn) {
-                throw new UnsupportedOperationException("Run Mode was not known");
-            }
-        },
-        NORMAL {
-            public NetMakeResult run(NetMake nn) {
-                return nn.runNN();
-            }
-        },
-        HYBRID {
-            public NetMakeResult run(NetMake nn) {
-                return nn.runNN();
-            }
-        },
-        HYBRID_GREEDYME {
-            public NetMakeResult run(NetMake nn) {
-                return nn.runNN();
-            }
-        };
-
-        public boolean isHybrid() {
-            return (this == HYBRID || this == HYBRID_GREEDYME);
-        }
-
-        public abstract NetMakeResult run(NetMake nn);
+    public NetMakeOptions getOptions() {
+        return options;
     }
 
-    public String getRunMode() {
-        return this.mode.toString();
+    public void setOptions(NetMakeOptions options) {
+        this.options = options;
     }
 
+    public NetMakeResult runNN(NetMakeOptions options) {
 
-    /**
-     * Helper method that returns the type of run mode configuration the client
-     * has requested.  If unknown, configuration then RunMode.UNKNOWN is returned.
-     *
-     * @param w1 First weighting to be applied.
-     * @param w2 Second weighting system to be applied.
-     * @return The RunMode determined by the supplied weighting systems.
-     */
-    private RunMode determineRunMode(Weighting w1, Weighting w2) {
-        if (w1 == null) {
-            return RunMode.UNKNOWN;
-        } else if (w2 == null && !isGreedyMEWeighting(w1)) {
-            return RunMode.NORMAL;
-        } else if (isGreedyMEWeighting(w1) && !isGreedyMEWeighting(w2)) {
-            return RunMode.HYBRID_GREEDYME;
-        } else if (!isGreedyMEWeighting(w1) && w2 != null) {
-            return RunMode.HYBRID;
-        }
+        final DistanceMatrix distanceMatrix = options.getDistanceMatrix();
+        final Taxa taxa = options.getDistanceMatrix().getTaxa();
 
-        return RunMode.UNKNOWN;
-    }
+        // Creates a set of trivial splits for ...
+        SplitSystem components = new SimpleSplitSystem(taxa, SplitUtils.createTrivialSplits(taxa, 1.0));
 
-    protected boolean isGreedyMEWeighting(Weighting w) {
-        if (w == null)
-            return false;
-
-        return (w instanceof GreedyMEWeighting);
-    }
-
-    /**
-     * Resets the output class variables, so the user can re-run NeighbourNet.
-     */
-    public final void reset() {
-        this.components = initialiseComponents(this.NB_TAXA);
-    }
-
-    /**
-     * Create a Tree SplitSystem and a Network SplitSystem by running the NeighborNet
-     * algorithm.
-     *
-     * @return A tree split system
-     */
-    public NetMakeResult process() {
-
-        return this.mode.run(this);
-    }
-
-    protected NetMakeResult runNN() {
-
-        // Contains the result of the neighbornet process.
-        Tableau<Integer> treeSplits = new Tableau<Integer>();
-        addTrivialSplits(treeSplits);
+        // Creates a simple split system with trivial splits from the given distance matrix
+        SplitSystem treeSplits = new SimpleSplitSystem(taxa, SplitUtils.createTrivialSplits(taxa, 1.0));
 
         // DistanceMatrix between components (make deep copy from initial distance matrix)
-        DistanceMatrix c2c = new DistanceMatrix(this.distanceMatrix);
+        DistanceMatrix c2c = new DistanceMatrix(distanceMatrix);
 
         //DistanceMatrix between components and vertices (make deep copy from initial distance matrix)
-        DistanceMatrix c2v = new DistanceMatrix(this.distanceMatrix);
+        DistanceMatrix c2v = new DistanceMatrix(distanceMatrix);
 
         // If required create a new GreedyME instance.
-        GreedyMEWeighting gme = this.mode == RunMode.HYBRID_GREEDYME ? new GreedyMEWeighting(this.distanceMatrix) : null;
+        GreedyMEWeighting gme = options.getRunMode() == NetMakeOptions.RunMode.HYBRID_GREEDYME ?
+                new GreedyMEWeighting(distanceMatrix) :
+                null;
 
         // Loop until components has only one entry left.
-        while (components.rows() > 2) {
+        while (components.getNbSplits() > 2) {
 
-            Pair<Integer, Integer> selectedComponents = this.mode == RunMode.HYBRID_GREEDYME ?
-                    gme.makeMECherry(treeSplits, this.components) :
-                    selectionStep1(c2c);
+            // The pair should be splits with the shortest tree length between them
+            Pair<Integer, Integer> selectedComponents = options.getRunMode() == NetMakeOptions.RunMode.HYBRID_GREEDYME ?
+                    gme.makeMECherry(treeSplits, components) :
+                    selectionStep1(c2c, components);
 
             int sc1 = selectedComponents.getLeft();
             int sc2 = selectedComponents.getRight();
 
-            Pair<Integer, Integer> selectedVerticies = selectionStep2(c2v, selectedComponents);
+            Pair<Integer, Integer> selectedVerticies = selectionStep2(c2v, selectedComponents, components, distanceMatrix);
 
             int sv1 = selectedVerticies.getLeft();
             int sv2 = selectedVerticies.getRight();
 
+            SplitBlock sc1Split = components.getSplitAt(sc1).getASide();
+            SplitBlock sc2Split = components.getSplitAt(sc2).getASide();
 
-            //merging of components
-            if (components.get(sc1, 0) == sv1) {
-                components.reverseRow(sc1);
+            // Merging of components
+            if (sc1Split.getFirst() == sv1) {
+                sc1Split.reverse();
             }
 
-            if (components.get(sc2, 0) == sv2) {
-                components.mergeRows(sc1, sc2);
-            } else {
-                components.reverseRow(sc2);
-                components.mergeRows(sc1, sc2);
+            if (sc2Split.getFirst() == sv2) {
+                components.mergeSplits(sc1, sc2);
+            }
+            else {
+                sc2Split.reverse();
+                components.mergeSplits(sc1, sc2);
             }
 
-            //add new component/split to Split list
-            treeSplits.addRow((ArrayList<Integer>) components.getRow(sc1).clone());
+            // Add new component/split to Split list
+            treeSplits.addSplit(components.getSplitAt(sc1).copy());
 
             // Update component to component distanceMatrix (assuming not in GreedyME mode)
-            if (this.mode != RunMode.HYBRID_GREEDYME)
-                updateC2C(c2c, weighting1);
+            if (options.getRunMode() != NetMakeOptions.RunMode.HYBRID_GREEDYME)
+                updateC2C(
+                        c2c,
+                        options.getWeighting1(),
+                        components,
+                        distanceMatrix);
 
             // Update component to vertex distanceMatrix (also updates weighting1 params)
-            updateC2V(c2v, this.mode.isHybrid() ? weighting2 : weighting1, selectedComponents);
+            updateC2V(
+                    c2v,
+                    options.getRunMode().isHybrid() ? options.getWeighting2() : options.getWeighting1(),
+                    selectedComponents,
+                    components,
+                    distanceMatrix);
         }
 
-        // Remove last two rows (last row is the whole set and the last but
-        // one is not required)
-        // treeSplits.removeRow(treeSplits.rows() - 1);
-        treeSplits.removeRow(treeSplits.rows() - 1);
+        // Remove last row (last row is the whole set and the last but one is not required)
+        treeSplits.removeLastSplit();
 
         // Create ordering
-        CircularOrdering permutation = this.createCircularOrdering();
+        CircularOrdering permutation = this.createCircularOrdering(components);
         organiseSplits(treeSplits, permutation);
 
         // Set tree split system
-        CompatibleSplitSystem tree = treeSplits.convertToSplitSystem(this.distanceMatrix, permutation);
-        CircularSplitSystem network = new CircularSplitSystem(this.distanceMatrix, permutation);
+        CompatibleSplitSystem tree = new CompatibleSplitSystem(treeSplits.getSplits(), distanceMatrix, permutation);
+        CircularSplitSystem network = new CircularSplitSystem(distanceMatrix, permutation);
 
         return new NetMakeResult(tree, network);
     }
 
-    protected Pair<Integer, Integer> selectionStep1(DistanceMatrix c2c) {
+    protected Pair<Integer, Integer> selectionStep1(final DistanceMatrix c2c, final SplitSystem components) {
+
+        final int nbTaxa = c2c.size();
+        final int nbSplits = components.getNbSplits();
+
         double min1 = Double.POSITIVE_INFINITY;
-        double[] sum_1 = new double[this.NB_TAXA];
-        double[] sum_2 = new double[this.NB_TAXA];
+        double[] sum1 = new double[nbTaxa];
+        double[] sum2 = new double[nbTaxa];
 
         int sc1 = -1;
         int sc2 = -1;
 
-        for (int i = 0; i < components.rows(); i++) {
-            sum_1[i] = 0;
-            sum_2[i] = 0;
-            for (int j = 0; j < components.rows(); j++) {
+        for (int i = 0; i < nbSplits; i++) {
+            sum1[i] = 0;
+            sum2[i] = 0;
+            for (int j = 0; j < nbSplits; j++) {
                 if (j != i) {
-                    sum_1[i] = sum_1[i] + c2c.getDistance(i, j);
-                    sum_2[i] = sum_2[i] + c2c.getDistance(j, i);
+                    sum1[i] = sum1[i] + c2c.getDistance(i, j);
+                    sum2[i] = sum2[i] + c2c.getDistance(j, i);
                 }
             }
         }
 
         // first Selection step for Components
-        for (int i = 0; i < components.rows(); i++) {
-            for (int j = i + 1; j < components.rows(); j++) {
-                double qDist = (components.rows() - 2)
+        for (int i = 0; i < nbSplits; i++) {
+            for (int j = i + 1; j < nbSplits; j++) {
+                double qDist = (nbSplits - 2)
                         * c2c.getDistance(i, j)
-                        - sum_1[i] - sum_2[j];
+                        - sum1[i] - sum2[j];
 
                 if (qDist < min1) {
                     min1 = qDist;
@@ -274,10 +194,13 @@ public class NetMake {
             }
         }
 
-        return new ImmutablePair<Integer, Integer>(sc1, sc2);
+        return new ImmutablePair<>(sc1, sc2);
     }
 
-    protected Pair<Integer, Integer> selectionStep2(DistanceMatrix c2v, Pair<Integer, Integer> selectedComponents) {
+    protected Pair<Integer, Integer> selectionStep2(DistanceMatrix c2v,
+                                                    Pair<Integer, Integer> selectedComponents,
+                                                    final SplitSystem components,
+                                                    final DistanceMatrix distanceMatrix) {
         double min2 = Double.POSITIVE_INFINITY;
         int selectedVertex1 = -1;
         int selectedVertex2 = -1;
@@ -285,13 +208,15 @@ public class NetMake {
         int sc1 = selectedComponents.getKey();
         int sc2 = selectedComponents.getValue();
 
+        SplitBlock splitBlockSc1 = components.getSplitAt(sc1).getASide();
+        SplitBlock splitBlockSc2 = components.getSplitAt(sc2).getASide();
 
         /*
          * second selection step for vertices with
          * ComponentsVerticesSistances
          */
-        for (int i = 0; i < components.rowSize(sc1); i++) {
-            for (int j = 0; j < components.rowSize(sc2);
+        for (int i = 0; i < splitBlockSc1.size(); i++) {
+            for (int j = 0; j < splitBlockSc2.size();
                  j++) {
                 double sum1 = 0;
                 double sum2 = 0;
@@ -300,90 +225,96 @@ public class NetMake {
                 int vertex_last1 = 0;
                 int vertex_last2 = 0;
 
-                for (int k = 0; k < components.rows(); k++) {
+                for (int k = 0; k < components.getNbSplits(); k++) {
                     if ((k != sc1)
                             && (k != sc2)) {
                         sum1 += c2v.getDistance(
-                                components.get(sc1, i), k);
+                                splitBlockSc1.get(i), k);
                     }
 
                     if ((k != sc1)
                             && (k != sc2)) {
                         sum2 += c2v.getDistance(
-                                components.get(sc2, j), k);
+                                splitBlockSc2.get(j), k);
                     }
                 }
 
-                for (int k = 0; k < components.rowSize(sc2);
+                for (int k = 0; k < splitBlockSc2.size();
                      k++) {
                     sum3 += distanceMatrix.getDistance(
-                            components.get(sc1, i),
-                            components.get(sc2, k));
+                            splitBlockSc1.get(i),
+                            splitBlockSc2.get(k));
 
-                    if (components.get(sc2, k)
-                            != components.get(sc2, j)) {
-                        vertex_last2 = components.get(sc2, k);
+                    if (splitBlockSc2.get(k)
+                            != splitBlockSc2.get(j)) {
+                        vertex_last2 = splitBlockSc2.get(k);
                     }
                 }
 
-                for (int k = 0; k < components.rowSize(sc1);
+                for (int k = 0; k < splitBlockSc1.size();
                      k++) {
-                    int vertex1 = components.get(sc1, k);
+                    int vertex1 = splitBlockSc1.get(k);
 
-                    if (vertex1 != components.get(sc1, i)) {
+                    if (vertex1 != splitBlockSc1.get(i)) {
                         vertex_last1 = vertex1;
                     }
                 }
 
-                sum3 += distanceMatrix.getDistance(components.get(sc2, j), vertex_last1);
-                sum4 += distanceMatrix.getDistance(components.get(sc1, i), vertex_last2);
+                sum3 += distanceMatrix.getDistance(splitBlockSc2.get(j), vertex_last1);
+                sum4 += distanceMatrix.getDistance(splitBlockSc1.get(i), vertex_last2);
 
                 int outerVertices1 = 0;
-                if (components.rowSize(sc1) == 1) {
+                if (splitBlockSc1.size() == 1) {
                     outerVertices1 = 1;
                 } else {
                     outerVertices1 = 2;
                 }
 
                 int outerVertices2 = 0;
-                if (components.rowSize(sc2) == 1) {
+                if (splitBlockSc2.size() == 1) {
                     outerVertices2 = 1;
                 } else {
                     outerVertices2 = 2;
                 }
 
-                double qDist = (components.rows() - 4 + outerVertices1
-                        + outerVertices2) * distanceMatrix.getDistance(components.get(sc1, i),
-                        components.get(sc2, j))
+                double qDist = (components.getNbSplits() - 4 + outerVertices1
+                        + outerVertices2) * distanceMatrix.getDistance(splitBlockSc1.get(i),
+                        splitBlockSc2.get(j))
                         - sum1 - sum2 - sum3 - sum4;
 
                 if (qDist < min2) {
                     min2 = qDist;
-                    selectedVertex1 = components.get(sc1, i);
-                    selectedVertex2 = components.get(sc2, j);
+                    selectedVertex1 = splitBlockSc1.get(i);
+                    selectedVertex2 = splitBlockSc2.get(j);
                 }
 
-                j = (j == components.rowSize(sc2) - 1) ? components.rowSize(sc2) : components.rowSize(sc2) - 2;
+                j = (j == splitBlockSc2.size() - 1) ? splitBlockSc2.size() : splitBlockSc2.size() - 2;
             }
 
-            i = (i == components.rowSize(sc1) - 1) ? components.rowSize(sc1) : components.rowSize(sc1) - 2;
+            i = (i == splitBlockSc1.size() - 1) ? splitBlockSc1.size() : splitBlockSc1.size() - 2;
         }
 
-        return new ImmutablePair<Integer, Integer>(selectedVertex1, selectedVertex2);
+        return new ImmutablePair<>(selectedVertex1, selectedVertex2);
     }
 
-    protected void updateC2C(DistanceMatrix c2c, Weighting w) {
-        for (int i = 0; i < components.rows(); i++) {
-            for (int j = 0; j < components.rows(); j++) {
-                if (i == j) {
-                    c2c.setDistance(i, j, 0.);
-                } else {
-                    double aComponentDistance = 0.;
+    protected void updateC2C(DistanceMatrix c2c, Weighting w, SplitSystem components, DistanceMatrix distanceMatrix) {
 
-                    for (int k = 0; k < components.rowSize(i); k++) {
-                        for (int m = 0; m < components.rowSize(j); m++) {
-                            int vertex1 = components.get(i, k) - 1;
-                            int vertex2 = components.get(j, m) - 1;
+        final int nbSplits = components.getNbSplits();
+
+        for (int i = 0; i < nbSplits; i++) {
+            for (int j = 0; j < nbSplits; j++) {
+                if (i == j) {
+                    c2c.setDistance(i, j, 0.0);
+                } else {
+                    double aComponentDistance = 0.0;
+
+                    SplitBlock sbI = components.getSplitAt(i).getASide();
+                    SplitBlock sbJ = components.getSplitAt(j).getASide();
+
+                    for (int k = 0; k < sbI.size(); k++) {
+                        for (int m = 0; m < sbJ.size(); m++) {
+                            int vertex1 = sbI.get(k) - 1;
+                            int vertex2 = sbJ.get(m) - 1;
                             double vertexDistance = w.getWeightingParam(vertex1)
                                     * w.getWeightingParam(vertex2)
                                     * distanceMatrix.getDistance(vertex1, vertex2);
@@ -397,16 +328,17 @@ public class NetMake {
         }
     }
 
-    protected void updateC2V(DistanceMatrix c2v, Weighting w, Pair<Integer, Integer> selectedComponents) {
+    protected void updateC2V(DistanceMatrix c2v, Weighting w, Pair<Integer, Integer> selectedComponents, SplitSystem components, DistanceMatrix distanceMatrix) {
 
         int position = -1;
-        int sc1 = selectedComponents.getKey();
-        int componentSplitPosition = components.rowSize(sc1);
+        final int sc1 = selectedComponents.getKey();
+
+        SplitBlock sb1 = components.getSplitAt(sc1).getASide();
+        int componentSplitPosition = sb1.size();
 
         for (int i = 0; i < distanceMatrix.size(); i++) {
-            for (int j = 0; j < components.rowSize(sc1);
-                 j++) {
-                if (i == components.get(sc1, j)) {
+            for (int j = 0; j < sb1.size(); j++) {
+                if (i == sb1.get(j)) {
                     position = j;
 
                     if (w instanceof TreeWeighting) {
@@ -414,21 +346,22 @@ public class NetMake {
                                 componentSplitPosition);
                     } else {
                         w.updateWeightingParam(i, position,
-                                components.rowSize(sc1));
+                                sb1.size());
                     }
                 }
             }
-            for (int j = 0; j < components.rows(); j++) {
+            for (int j = 0; j < components.getNbSplits(); j++) {
                 double aComponentVertexDistance = 0.;
                 int k = 0;
+                SplitBlock sbJ = components.getSplitAt(j).getASide();
 
-                while (k < components.rowSize(j)) {
-                    if (components.get(j, k) == i) {
+                while (k < sbJ.size()) {
+                    if (sbJ.get(k) == i) {
                         aComponentVertexDistance = 0.;
-                        k = components.rowSize(j);
+                        k = sbJ.size();
                     } else {
                         int vertex1 = i;
-                        int vertex2 = components.get(j, k) - 1;
+                        int vertex2 = sbJ.get(k) - 1;
                         double vertexDistance = w.getWeightingParam(vertex2)
                                 * distanceMatrix.getDistance(vertex1, vertex2);
 
@@ -441,37 +374,30 @@ public class NetMake {
         }
     }
 
-    protected void organiseSplits(Tableau<Integer> splits, CircularOrdering permutation) {
+    protected void organiseSplits(SplitSystem splits, CircularOrdering permutation) {
 
         CircularOrdering permutationInvert = permutation.invertOrdering();
 
-        for (int i = 0; i < splits.rows(); i++) {
+        for (int i = 0; i < splits.getNbSplits(); i++) {
 
-            int k = permutationInvert.getIndexAt(splits.get(i, 0) - 1);
-            int l = permutationInvert.getIndexAt(splits.get(i, splits.rowSize(i) - 1) - 1);
+            SplitBlock sb = splits.getSplitAt(i).getASide();
+
+            int k = permutationInvert.getIndexAt(sb.getFirst()) - 1;
+            int l = permutationInvert.getIndexAt(sb.getLast()) - 1;
 
             if (l < k) {
-                splits.reverseRow(i);
+                sb.reverse();
             }
         }
     }
 
-    protected final Tableau<Integer> initialiseComponents(final int size) {
-        Tableau<Integer> c = new Tableau<>();
-
-        for (int i = 1; i <= size; i++) {
-            c.addRow(i);
-        }
-
-        return c;
-    }
-
-    protected CircularOrdering createCircularOrdering() {
+    protected CircularOrdering createCircularOrdering(SplitSystem components) {
 
         ArrayList<Integer> help = new ArrayList<>();
         for (int j = 0; j < 2; j++) {
-            for (int i = 0; i < components.rowSize(j); i++) {
-                help.add(components.get(j, i));
+            SplitBlock sbJ = components.getSplitAt(j).getASide();
+            for (int i = 0; i < sbJ.size(); i++) {
+                help.add(sbJ.get(i));
             }
         }
         int[] permutation = new int[help.size()];
@@ -482,10 +408,19 @@ public class NetMake {
         return new CircularOrdering(permutation);
     }
 
-    protected void addTrivialSplits(Tableau<Integer> splits) {
-        for (int i = 1; i <= this.NB_TAXA; i++) {
-            splits.addRow(i);
+    @Override
+    public void run() {
+
+        try {
+            this.runNN(this.options);
+        }
+        catch (Exception e) {
+            log.error(e.getMessage(), e);
+            this.setError(e);
+            this.trackerFinished(false);
+        }
+        finally {
+            this.notifyListener();
         }
     }
-
 }

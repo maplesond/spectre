@@ -106,8 +106,8 @@ public class CanonicalWeightedQuartetMap extends HashMap<Quartet, Double> {
 
             // I think it will work out a little faster doing things this way... if that turns out not to be true consider
             // optimising this.
-            int[] setA = split.getASide().toArray();
-            int[] setB = split.getBSide().toArray();
+            int[] setA = split.getASide().toIntArray();
+            int[] setB = split.getBSide().toIntArray();
 
             for (int iA1 = 0; iA1 < aSize - 1; iA1++) {
 

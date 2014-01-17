@@ -29,8 +29,6 @@ import java.io.File;
 
 public class SuperQOptions {
 
-    private static Logger logger = LoggerFactory.getLogger(SuperQOptions.class);
-
     public static final String DESC_SCALING_SOLVER = "If a scaling optimiser is selected, the input trees are scaled.  Available optimisers: " +
             OptimiserFactory.getInstance().listOperationalOptimisersAsString(Objective.ObjectiveType.QUADRATIC);
 

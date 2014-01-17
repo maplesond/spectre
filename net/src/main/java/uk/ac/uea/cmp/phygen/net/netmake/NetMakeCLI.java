@@ -163,17 +163,15 @@ public class NetMakeCLI {
             log.info("          - Weighting 2: " + (weighting2 == null ? "null" : weighting2.toString()));
 
             // Create the configured NetMake object to process
-            NetMake netMake = new NetMake(
-                    distanceMatrix,
-                    weighting1,
-                    weighting2);
-
-            log.info("NetMake: System configured.  Netmake runmode: " + netMake.getRunMode());
+            NetMake netMake = new NetMake();
 
             log.info("NetMake: Processing Started");
 
             // Run NetMake
-            NetMakeResult netMakeResult = netMake.process();
+            NetMakeResult netMakeResult = netMake.runNN(new NetMakeOptions(
+                    distanceMatrix,
+                    weighting1,
+                    weighting2));
 
             log.info("NetMake: Processing Finished");
 

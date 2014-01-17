@@ -15,6 +15,11 @@
  */
 package uk.ac.uea.cmp.phygen.core.ds.split;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import uk.ac.uea.cmp.phygen.core.ds.tree.newick.parser.NewickTreeParser;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -23,33 +28,48 @@ import java.util.List;
 /**
  * @author Sarah
  */
-public class SplitBlock implements Comparable<SplitBlock> {
-
-    private ArrayList<Integer> elements;
+public class SplitBlock extends ArrayList<Integer> implements Comparable<SplitBlock> {
 
     public SplitBlock(Collection<Integer> splitBlock) {
+
+        super();
 
         if (splitBlock == null || splitBlock.size() < 1)
             throw new IllegalArgumentException("SplitBlock must be of at least size 1");
 
-        this.elements = new ArrayList<>(splitBlock);
+        for(Integer i : splitBlock) {
+            this.add(i.intValue());
+        }
+    }
+
+    public SplitBlock(SplitBlock splitBlock) {
+
+        super();
+
+        if (splitBlock == null || splitBlock.size() < 1)
+            throw new IllegalArgumentException("SplitBlock must be of at least size 1");
+
+        for(Integer i : splitBlock) {
+            this.add(i.intValue());
+        }
+
     }
 
     public SplitBlock(int[] splitBlock) {
 
+        super();
+
         if (splitBlock == null || splitBlock.length < 1)
             throw new IllegalArgumentException("SplitBlock must be of at least size 1");
 
-        this.elements = new ArrayList<>();
-
         for (int i : splitBlock) {
-            this.elements.add(i);
+            this.add(i);
         }
     }
 
     public SplitBlock(String s) {
 
-        this.elements = new ArrayList<>();
+        super();
 
         String[] parts = s.split(" ");
 
@@ -59,7 +79,7 @@ public class SplitBlock implements Comparable<SplitBlock> {
             raw[i] = Integer.parseInt(parts[i]);
         }
         if (parts.length == 1) {
-            this.elements.add(raw[0]);
+            this.add(raw[0]);
         }
 
         if (parts.length > 1) {
@@ -73,74 +93,56 @@ public class SplitBlock implements Comparable<SplitBlock> {
 
             if (overlap != -1) {
                 for (int i = overlap; i < raw.length; i++) {
-                    this.elements.add(new Integer(raw[i]));
+                    this.add(raw[i]);
                 }
                 for (int i = 0; i < overlap; i++) {
-                    this.elements.add(new Integer(raw[i]));
+                    this.add(raw[i]);
                 }
             } else {
                 for (int i = 0; i < raw.length; i++) {
-                    this.elements.add(new Integer(raw[i]));
+                    this.add(raw[i]);
                 }
             }
         }
     }
 
-    public SplitBlock makeComplement(int nbTaxa) {
-        ArrayList<Integer> complement = new ArrayList<>();
-        for (int i = 1; i <= nbTaxa; i++) {
-            if (this.elements.contains(i) == false) {
-                complement.add(i);
-            }
+    @Override
+    public int hashCode() {
+        HashCodeBuilder hcb = new HashCodeBuilder();
+
+        for(Integer i : this) {
+            hcb.append(i.intValue());
         }
 
-        return new SplitBlock(complement);
+        return hcb.toHashCode();
     }
 
-    public void sort() {
-        Collections.sort(this.elements);
+    @Override
+    public boolean equals(Object o) {
+
+        if (o == null)
+            return false;
+
+        if (this == o)
+            return true;
+
+        SplitBlock other = (SplitBlock)o;
+
+        if (this.size() != other.size())
+            return false;
+
+        EqualsBuilder eb = new EqualsBuilder();
+
+        for(int i = 0; i < this.size(); i++) {
+            eb.append(this.get(i).intValue(), other.get(i).intValue());
+        }
+
+        return eb.isEquals();
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-
-        for (Integer i : this.elements) {
-            sb.append(i);
-            sb.append(" ");
-        }
-
-        return sb.toString().trim();
-    }
-
-    public int getFirst() {
-        return this.elements.get(0);
-    }
-
-    public int getLast() {
-        return this.elements.get(this.elements.size() - 1);
-    }
-
-    public int get(int index) {
-        return this.elements.get(index);
-    }
-
-    public int size() {
-        return this.elements.size();
-    }
-
-    public void merge(SplitBlock splitBlock) {
-        this.elements.addAll(splitBlock.elements);
-    }
-
-    public SplitBlock copy() {
-        List<Integer> copy = new ArrayList<>();
-
-        for (Integer i : this.elements) {
-            copy.add(i);
-        }
-
-        return new SplitBlock(copy);
+        return StringUtils.join(this, " ");
     }
 
     @Override
@@ -159,18 +161,88 @@ public class SplitBlock implements Comparable<SplitBlock> {
         }
     }
 
-    public boolean retainAll(SplitBlock o) {
-        return this.elements.retainAll(o.elements);
-    }
+    public int[] toIntArray() {
 
-    public int[] toArray() {
+        int[] arr = new int[this.size()];
 
-        int[] arr = new int[this.elements.size()];
-
-        for(int i = 0; i < this.elements.size(); i++) {
-            arr[i] = this.elements.get(i);
+        for(int i = 0; i < this.size(); i++) {
+            arr[i] = this.get(i);
         }
 
         return arr;
+    }
+
+
+    public SplitBlock makeComplement(int nbTaxa) {
+        ArrayList<Integer> complement = new ArrayList<>();
+        for (int i = 1; i <= nbTaxa; i++) {
+            if (this.contains(i) == false) {
+                complement.add(i);
+            }
+        }
+
+        return new SplitBlock(complement);
+    }
+
+
+    public int getFirst() {
+        return this.get(0);
+    }
+
+    public int getLast() {
+        return this.get(this.size() - 1);
+    }
+
+    /**
+     * Copies elements from the provided splitblock and adds them to this splitblock
+     * @param splitBlock
+     */
+    public void merge(SplitBlock splitBlock) {
+
+        for(Integer i : splitBlock) {
+            this.add(i.intValue());
+        }
+    }
+
+    public SplitBlock copy() {
+        List<Integer> copy = new ArrayList<>();
+
+        for (Integer i : this) {
+            copy.add(i.intValue());
+        }
+
+        return new SplitBlock(copy);
+    }
+
+    public void sort() {
+        Collections.sort(this);
+    }
+
+    public SplitBlock makeSortedCopy() {
+
+        SplitBlock copy = this.copy();
+        copy.sort();
+        return copy;
+    }
+
+    public void reverse() {
+        Collections.reverse(this);
+    }
+
+    public SplitBlock makeReversedCopy() {
+
+        SplitBlock copy = this.copy();
+        copy.reverse();
+        return copy;
+    }
+
+
+    public EdgeType getType() {
+        return this.size() == 1 ? EdgeType.EXTERNAL : EdgeType.INTERNAL;
+    }
+
+    public enum EdgeType {
+        EXTERNAL,
+        INTERNAL
     }
 }

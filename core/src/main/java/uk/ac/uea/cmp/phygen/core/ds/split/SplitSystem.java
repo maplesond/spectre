@@ -32,41 +32,109 @@ public interface SplitSystem {
 
     // **** Taxa methods ****
 
+    /**
+     * Gets the number of taxa associated with this split system
+     * @return The number of taxa
+     */
     int getNbTaxa();
 
+    /**
+     * Gets the actual taxa object stored in this split system
+     * @return The taxa
+     */
     Taxa getTaxa();
 
 
 
     // **** Standard split methods ****
 
+    /**
+     * Gets the number of splits in this split system
+     * @return The number of splits
+     */
     int getNbSplits();
 
+    /**
+     * Gets the splits in this split system
+     * @return The splits
+     */
     List<Split> getSplits();
 
+    /**
+     * Get the split at the specified index
+     * @param i The index
+     * @return The split at the given index
+     */
     Split getSplitAt(final int i);
+
+    /**
+     * Adds a split to the end of current list of splits managed by this split system
+     * @param split The split to add
+     */
+    void addSplit(Split split);
+
+    /**
+     * Removes the last split in the split system
+     */
+    void removeLastSplit();
+
+    /**
+     * Merges the splits at the given indexes.  After merging Split i will contain the contents of both split i and split
+     * j before merging.  This merged split is returned.
+     * @param i The split to merge
+     * @param j The split which will be added to the split at i, and then deleted.
+     * @return The merged split.
+     */
+    Split mergeSplits(final int i, final int j);
 
 
 
     // **** Methods related to split weights ****
 
+    /**
+     * Returns true if this split system is weighted.
+     * @return True if this split system is weighted, false otherwise.
+     */
     boolean isWeighted();
 
+    /**
+     * Gets the weight of the split at the given index.
+     * @param i The index of the split weight
+     * @return The weight of the split
+     */
     double getWeightAt(final int i);
 
+    /**
+     * Filters this split system based on the given threshold.  Splits with weighting less than the threshold will be
+     * discarded.
+     * @param threshold The threshold to filter by
+     * @return The filtered split system
+     */
     SplitSystem filterByWeight(double threshold);
 
 
 
     // **** Methods related to circular ordering ****
 
+    /**
+     * Whether or not this split system is a circular split system
+     * @return True if this is a circular split system, false otherwise.
+     */
     boolean isCircular();
 
+    /**
+     * Gets the circular ordering associated with this split system.
+     * @return The circular ordering, or null if this is not a circular split system.
+     */
     CircularOrdering getCircularOrdering();
 
 
 
     // **** Methods related to compatible split system ****
 
+    /**
+     * Whether or not this split system is a compatible split system
+     * @return True if this is a compatible split system, false otherwise
+     */
     boolean isCompatible();
 }

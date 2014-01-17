@@ -84,7 +84,7 @@ public class QNetITCase {
         assertTrue(ss.getWeightAt(1) == 2.0);
     }
 
-    /*@Test
+    @Test
     public void test2ConflictingTreesInternal() throws OptimiserException, IOException, QNetException {
 
         GroupedQuartetSystem qs = create2ConflictingTreesWithSameFiveTaxa();
@@ -99,7 +99,7 @@ public class QNetITCase {
         assertTrue(ss.getWeightAt(0) == 4.0);
         assertTrue(ss.getWeightAt(1) == 1.75);
         assertTrue(ss.getWeightAt(2) == 1.75);
-    } */
+    }
 
     @Test
     public void test2ConflictingTreesJOptimiser() throws OptimiserException, IOException, QNetException {

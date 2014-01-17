@@ -15,6 +15,8 @@
  */
 package uk.ac.uea.cmp.phygen.core.ds.split;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
@@ -47,6 +49,47 @@ public class Split {
 
     public Split(Split split) {
         this(split.aSide.copy(), split.nbTaxa);
+    }
+
+    /**
+     * Creates a new split merged from the two provided splits
+     * @param s1
+     * @param s2
+     */
+    public Split(Split s1, Split s2) {
+        this(s1.aSide.copy(), s1.nbTaxa);
+        this.merge(s2);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return new HashCodeBuilder()
+                .append(aSide)
+                .append(bSide)
+                .append(nbTaxa)
+                .append(weight)
+                .toHashCode();
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+
+        if (o == null)
+            return false;
+
+        if (this == o)
+            return true;
+
+        Split other = (Split)o;
+
+        return new EqualsBuilder()
+                .append(aSide, other.aSide)
+                .append(bSide, other.bSide)
+                .append(nbTaxa, other.nbTaxa)
+                .append(weight, other.weight)
+                .isEquals();
     }
 
     public SplitBlock getASide() {
@@ -143,7 +186,6 @@ public class Split {
     public boolean onExternalEdge() {
         return this.aSide.size() == 1 || this.bSide.size() == 1;
     }
-
 
 
 }

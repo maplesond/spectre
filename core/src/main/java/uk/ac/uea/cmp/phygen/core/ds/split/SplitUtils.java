@@ -96,12 +96,23 @@ public class SplitUtils {
     }
 
     public static List<Split> createTrivialSplits(Taxa taxa, final double weight) {
-
         List<Split> splits = new ArrayList<>();
 
         for (Taxon taxon : taxa) {
 
             splits.add(new Split(new SplitBlock(new int[]{taxon.getId()}), taxa.size(), weight));
+        }
+
+        return splits;
+    }
+
+    public static List<Split> createTrivialSplits(final int nbTaxa, final double weight) {
+
+        List<Split> splits = new ArrayList<>();
+
+        for (int i = 1; i <= nbTaxa; i++) {
+
+            splits.add(new Split(new SplitBlock(new int[]{i}), nbTaxa, weight));
         }
 
         return splits;

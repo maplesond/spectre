@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>superq</artifactId>
+    <artifactId>qtools</artifactId>
     <version>2.0</version>
 
     <name>Phylogenetics Tool Suite: SuperQ</name>

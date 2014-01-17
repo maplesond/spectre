@@ -25,6 +25,8 @@ import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phygen.net.netmake.weighting.GreedyMEWeighting;
 import uk.ac.uea.cmp.phygen.net.netmake.weighting.TSPWeighting;
 
+import static junit.framework.Assert.assertTrue;
+
 /**
  * Created with IntelliJ IDEA. User: Dan Date: 12/05/13 Time: 23:27 To change this template use File | Settings | File
  * Templates.
@@ -57,10 +59,8 @@ public class NetMakeTest {
 
         DistanceMatrix distanceMatrix = new DistanceMatrix(taxa, distances);
 
-        NetMake netMake = new NetMake(distanceMatrix, new GreedyMEWeighting(distanceMatrix), new TSPWeighting(distanceMatrix.size()));
+        NetMakeResult result = new NetMake().runNN(new NetMakeOptions(distanceMatrix, new GreedyMEWeighting(distanceMatrix), new TSPWeighting(distanceMatrix.size())));
 
-        /*NetMakeResult result = netMake.runNN();
-
-        assertTrue(true);*/
+        assertTrue(true);
     }
 }

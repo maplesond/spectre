@@ -21,13 +21,17 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.ds.SummedDistanceList;
-import uk.ac.uea.cmp.phygen.core.ds.Tableau;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
+import uk.ac.uea.cmp.phygen.core.ds.split.Split;
+import uk.ac.uea.cmp.phygen.core.ds.split.SplitBlock;
+import uk.ac.uea.cmp.phygen.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.phygen.core.math.Statistics;
-import uk.ac.uea.cmp.phygen.net.netmake.edge.EdgeAdjacents;
+import uk.ac.uea.cmp.phygen.net.netmake.EdgeHandling;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * GreedyMEWeighting extends weighting, although it doesn't actually update a Weighting param.
@@ -55,29 +59,31 @@ public class GreedyMEWeighting extends Weighting {
     }
 
 
-    public Pair<Integer, Integer> makeMECherry(Tableau<Integer> splits, final Tableau<Integer> splitsCreation) {
+    public Pair<Integer, Integer> makeMECherry(SplitSystem splits, final SplitSystem splitsCreation) {
 
         double oldTreeLength = Double.POSITIVE_INFINITY;
 
         Pair<Integer, Integer> bestSplits = null;
 
-        log.debug(splitsCreation.rows() + " cherries to produce");
+        final int nbSplits = splitsCreation.getNbSplits();
 
-        for (int i = 0; i < splitsCreation.rows() - 1; i++) {
+        log.debug(nbSplits + " cherries to produce");
+
+        for (int i = 0; i < nbSplits - 1; i++) {
 
             log.debug("Making cherry " + i + "...");
-            for (int j = i + 1; j < splitsCreation.rows(); j++) {
+            for (int j = i + 1; j < nbSplits; j++) {
 
-                splits.addRow(splitsCreation.copyRow(i));
-                splits.addRow(splitsCreation.copyRow(j));
-                splits.mergeRows(splits.rows() - 2, splits.rows() - 1);
+                // Create a new merged split i and j from splits creation and add into ss
+                splits.addSplit(new Split(splitsCreation.getSplitAt(i), splitsCreation.getSplitAt(j)));
+
 
                 // If we've created a split which contains the entire taxa set then remove it
                 /*if (splits.getRow(splits.rows() -1).size() == this.distanceMatrix.size()) {
                     splits.removeRow(splits.rows() - 1);
                 } */
 
-                log.debug("  Number of splits: " + splits.rows());
+                log.debug("  Number of splits: " + splits.getNbSplits());
 
                 double treeLength = this.calculateTreeLength(splits);
 
@@ -85,10 +91,10 @@ public class GreedyMEWeighting extends Weighting {
 
                 if (treeLength < oldTreeLength) {
                     oldTreeLength = treeLength;
-                    bestSplits = new ImmutablePair<Integer, Integer>(i, j);
+                    bestSplits = new ImmutablePair<>(i, j);
                 }
 
-                splits.removeRow(splits.rows() - 1);
+                splits.removeLastSplit();
             }
 
             log.debug("Made cherry " + i);
@@ -97,7 +103,7 @@ public class GreedyMEWeighting extends Weighting {
         return bestSplits;
     }
 
-    private double calculateTreeLength(Tableau<Integer> splits) {
+    private double calculateTreeLength(SplitSystem splits) {
 
         return Statistics.sumDoubles(this.getEdgeWeights(splits));
     }
@@ -107,7 +113,7 @@ public class GreedyMEWeighting extends Weighting {
      * input is an arrayList of splits representing the tree topology,
      * the relevant distanceMatrix d and the number of the split, the length is calculated for
      */
-    private double calculateEdges(double P_0, EdgeAdjacents aEdgeAdjacents, boolean external) {
+    private double calculateEdges(double P_0, EdgeHandling.AdjacentEdges aEdgeAdjacents, boolean external) {
 
         int nbTaxa = this.distanceMatrix.size();
 
@@ -381,32 +387,30 @@ public class GreedyMEWeighting extends Weighting {
             for (int i = zero + 1; i < C.length; i++) {
                 w[i] = (1.0 / d[i]) * (v[i] - v[zero]);
             }
-
         }
 
         return w;
     }
 
 
-    public List<Double> getEdgeWeights(Tableau<Integer> tableau) {
+    public List<Double> getEdgeWeights(SplitSystem splits) {
 
-        log.debug("  Calculating " + tableau.rows() + " Edge Weights...");
+        log.debug("  Calculating " + splits.getNbSplits() + " Edge Weights...");
 
         ArrayList<Double> edgeWeights = new ArrayList<>();
 
-        SummedDistanceList P = new SummedDistanceList(this.calculateP(tableau, this.distanceMatrix));
+        // TODO calculateP should return a map of all possible splitblocks (a side and b side) and their summed distance list.
+        Map<Split, Double> splitDistanceMap = this.calculateP(splits);
 
-        for (int i = 0; i < tableau.rows(); i++) {
+        for (int i = 0; i < splits.getNbSplits(); i++) {
 
-            Tableau<Integer> splitsCopy = new Tableau<>(tableau);
+            Split splitI = splits.getSplitAt(i);
 
-            boolean external = tableau.rowSize(i) == 1 || tableau.rowSize(i) == this.distanceMatrix.size() - 1;
+            EdgeHandling.AdjacentEdges aEdgeAdjacents = new EdgeHandling().retrieveAdjacents(splitI, splits, splitDistanceMap);
 
-            EdgeAdjacents aEdgeAdjacents = EdgeAdjacents.retrieveAdjacents(splitsCopy, i, P, this.distanceMatrix.size());
+            log.debug("    Retrieved adjacent edges for " + i + ". " + aEdgeAdjacents.getNumberOfLeavesInAdjacents().length + " leaves");
 
-            log.debug("    Retrieved edge adjacents for " + i + ". " + aEdgeAdjacents.getNumberOfLeavesInAdjacents().length + " leaves in adjacents");
-
-            edgeWeights.add(calculateEdges(P.get(i), aEdgeAdjacents, external));
+            edgeWeights.add(calculateEdges(splitDistanceMap.get(splitI.getASide()), aEdgeAdjacents, splitI.onExternalEdge()));
 
             log.debug("    Calculated edge length for " + i + ": " + edgeWeights.get(i));
         }
@@ -417,25 +421,24 @@ public class GreedyMEWeighting extends Weighting {
     }
 
 
-    private double[] calculateP(Tableau<Integer> splits, DistanceMatrix distanceMatrix) {
+    private Map<Split, Double> calculateP(final SplitSystem splitSystem) {
 
-        int nb_taxa = this.distanceMatrix.size();
+        final int nbTaxa = this.distanceMatrix.size();
 
-        double P[] = new double[splits.rows()];
+        Map<Split, Double> map = new LinkedHashMap<>();
 
         //for each split, determine how many elements are on each side of the split
-        for (int i = 0; i < splits.rows(); i++) {
+        for (Split split : splitSystem.getSplits()) {
 
-            boolean splited[] = new boolean[nb_taxa];
-            for (int h = 0; h < splited.length; h++) {
-                splited[h] = false;
-            }
+            boolean splited[] = new boolean[nbTaxa];
+
+            SplitBlock splitASideI = split.getASide();
 
             //Array stores the info which elements are on one side
             //each element of the split
-            for (int j = 0; j < splits.rowSize(i); j++) {
-                for (int k = 0; k < nb_taxa; k++) {
-                    if (splits.get(i, j) == k) {
+            for (int j = 0; j < splitASideI.size(); j++) {
+                for (int k = 0; k < nbTaxa; k++) {
+                    if (splitASideI.get(j) == k+1) {
                         splited[k] = true;
                     }
                 }
@@ -443,15 +446,19 @@ public class GreedyMEWeighting extends Weighting {
 
             //sums up all distances from the elements on the one side of the edge
             //to the other side
-            for (int j = 0; j < splits.rowSize(i); j++) {
-                for (int k = 0; k < nb_taxa; k++) {
+            double sum = 0.0;
+            for (int j = 0; j < splitASideI.size(); j++) {
+                for (int k = 0; k < nbTaxa; k++) {
                     if (splited[k] == false) {
-                        P[i] += this.distanceMatrix.getDistance(splits.get(i, j) - 1, k);
+                        sum += this.distanceMatrix.getDistance(splitASideI.get(j) - 1, k);
                     }
                 }
             }
+
+            map.put(split, sum);
         }
-        return P;
+
+        return map;
     }
 
     /**
