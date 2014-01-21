@@ -44,7 +44,7 @@ public class WeightsComputer {
      * @param circularOrdering
      * @param tolerance
      * @param optimiser
-     * @return
+     * @return The computed weights from this quartet system and circular ordering
      * @throws QNetException
      * @throws OptimiserException
      */

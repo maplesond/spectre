@@ -3,6 +3,8 @@ package uk.ac.uea.cmp.phygen.qtools.qnet;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -42,6 +44,7 @@ public class QNetITCase {
 
         // Uncomment this line if you want to see output.
         BasicConfigurator.configure();
+        LogManager.getRootLogger().setLevel(Level.WARN);
     }
 
     protected GroupedQuartetSystem createFromScript() throws IOException {

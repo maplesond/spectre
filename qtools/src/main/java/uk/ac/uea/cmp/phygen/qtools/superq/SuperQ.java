@@ -192,7 +192,7 @@ public class SuperQ extends RunnableTool {
      * NOTE: This might be broken... probably need to modify the coefficients of the problem internally for each run
      *
      * @param problem
-     * @return
+     * @return The solution
      * @throws OptimiserException
      */
     protected double[] minimaOptimise(Optimiser optimiser, Problem problem, double[] data) throws OptimiserException {

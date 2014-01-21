@@ -86,7 +86,7 @@ public class NetMake extends RunnableTool {
         DistanceMatrix c2v = new DistanceMatrix(distanceMatrix);
 
         // If required create a new GreedyME instance.
-        GreedyMEWeighting gme = options.getRunMode() == NetMakeOptions.RunMode.HYBRID_GREEDYME ?
+        GreedyMEWeighting gme = runMode == NetMakeOptions.RunMode.HYBRID_GREEDYME ?
                 new GreedyMEWeighting(distanceMatrix) :
                 null;
 

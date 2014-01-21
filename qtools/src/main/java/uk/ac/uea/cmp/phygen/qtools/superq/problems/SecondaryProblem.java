@@ -32,26 +32,26 @@ public interface SecondaryProblem {
      * @param nbTaxa
      * @param X
      * @param EtE
-     * @return
+     * @return The problem to solve
      */
     Problem compileProblem(int nbTaxa, double[] X, double[][] EtE);
 
     /**
      * Whether this problem requires a quadratic or linear objective to find a solution
-     * @return
+     * @return The objective type
      */
     Objective.ObjectiveType getObjectiveType();
 
     /**
      * The identifier for this objective, which allows the user to easily identify and request this problem.
-     * @return
+     * @return The identifier
      */
     String getName();
 
     /**
      * Whether or not this objective recognises the input identifier
      * @param id
-     * @return
+     * @return True if accept identifier, false otherwise.
      */
     boolean acceptsIdentifier(String id);
 }
