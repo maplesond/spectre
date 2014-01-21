@@ -47,8 +47,8 @@ public class NetMECLIITCase {
         File coFile = FileUtils.toFile(NetMECLIITCase.class.getResource("/bees-tree.nex"));
 
         NetMECLI.main(new String[]{
-                "--distances_file", distancesFile.getAbsolutePath(),
-                "--circular_ordering_file", coFile.getAbsolutePath(),
+                "--distances", distancesFile.getAbsolutePath(),
+                "--circular_ordering", coFile.getAbsolutePath(),
                 "--output", outputDir.getAbsolutePath()
         });
 
@@ -65,8 +65,8 @@ public class NetMECLIITCase {
         File coFile = FileUtils.toFile(NetMECLIITCase.class.getResource("/colors-network.nex"));
 
         NetMECLI.main(new String[]{
-                "--distances_file", distancesFile.getAbsolutePath(),
-                "--circular_ordering_file", coFile.getAbsolutePath(),
+                "--distances", distancesFile.getAbsolutePath(),
+                "--circular_ordering", coFile.getAbsolutePath(),
                 "--output", outputDir.getAbsolutePath()
         });
 
@@ -82,8 +82,8 @@ public class NetMECLIITCase {
         File coFile = FileUtils.toFile(NetMECLIITCase.class.getResource("/test_MEGreedy6_Splits.nex"));
 
         NetMECLI.main(new String[]{
-                "--distances_file", distancesFile.getAbsolutePath(),
-                "--circular_ordering_file", coFile.getAbsolutePath(),
+                "--distances", distancesFile.getAbsolutePath(),
+                "--circular_ordering", coFile.getAbsolutePath(),
                 "--output", outputDir.getAbsolutePath()
         });
 
