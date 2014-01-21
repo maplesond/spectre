@@ -16,6 +16,7 @@
 
 package uk.ac.uea.cmp.phygen.net.netme;
 
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phygen.core.ds.Tableau;
@@ -23,8 +24,14 @@ import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phygen.core.ds.split.CircularOrdering;
 import uk.ac.uea.cmp.phygen.core.ds.split.CompatibleSplitSystem;
 import uk.ac.uea.cmp.phygen.core.ds.split.TreeSplitWeights;
+import uk.ac.uea.cmp.phygen.core.io.PhygenReader;
+import uk.ac.uea.cmp.phygen.core.io.PhygenReaderFactory;
+import uk.ac.uea.cmp.phygen.core.io.nexus.NexusReader;
 import uk.ac.uea.cmp.phygen.core.math.Statistics;
+import uk.ac.uea.cmp.phygen.core.ui.gui.RunnableTool;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -34,13 +41,86 @@ import java.util.ArrayList;
  * See D Bryant, 1997: <I>Building Trees, Hunting for Trees and
  * Comparing Trees - Theories and Methods in Phylogenetic Analysis</I>
  */
-public class NetME {
+public class NetME extends RunnableTool {
 
     private final static Logger log = LoggerFactory.getLogger(NetME.class);
 
 
+    private NetMEOptions options;
+
     public NetME() {
+        this(new NetMEOptions());
     }
+
+    public NetME(NetMEOptions options) {
+        this.options = options;
+    }
+
+    public NetMEOptions getOptions() {
+        return options;
+    }
+
+    public void setOptions(NetMEOptions options) {
+        this.options = options;
+    }
+
+    @Override
+    public void run() {
+        try {
+            this.run(this.options);
+        }
+        catch (Exception e) {
+            log.error(e.getMessage(), e);
+            this.setError(e);
+            this.trackerFinished(false);
+        }
+        finally {
+            this.notifyListener();
+        }
+    }
+
+    public void run(NetMEOptions options) throws IOException {
+        this.run(options.getDistancesFile(), options.getCircularOrderingFile(), options.getOutputDir(), options.getPrefix());
+    }
+
+    public void run(File distancesFile, File circularOrderingFile, File outputDir, String outputPrefix)
+            throws IOException {
+
+        log.info("NetME: Loading distance matrix from: " + distancesFile.getAbsolutePath());
+
+        // Get a handle on the phygen factory
+        PhygenReaderFactory factory = PhygenReaderFactory.getInstance();
+
+        // Setup appropriate reader to input file based on file type
+        PhygenReader phygenReader = factory.create(FilenameUtils.getExtension(distancesFile.getName()));
+
+        DistanceMatrix distanceMatrix = phygenReader.readDistanceMatrix(distancesFile);
+
+        log.info("NetME: Distance Matrix Loaded from file: " + distancesFile.getAbsolutePath());
+
+        // Load circular ordering from the provided nexus file
+        CircularOrdering circularOrdering = new NexusReader().extractCircOrdering(circularOrderingFile);
+
+        String circularOrderingMessage = "loaded from file " + circularOrderingFile.getAbsolutePath();
+
+        log.info("NetME: Circular ordering " + circularOrderingMessage);
+
+        log.info("NetME: Started");
+
+        NetMEResult netMeResult = this.calcMinEvoTree(distanceMatrix, circularOrdering);
+
+        log.info("NetME: Finished");
+
+        // Save result to disk
+        netMeResult.save(
+                new File(outputDir, outputPrefix + ".min-evo.nex"),
+                new File(outputDir, outputPrefix + ".original-min-evo.nex"),
+                new File(outputDir, outputPrefix + ".stats")
+        );
+
+        log.info("NetME: Results saved");
+    }
+
 
     public NetMEResult calcMinEvoTree(DistanceMatrix distanceMatrix, CircularOrdering circularOrdering) {
 
@@ -216,6 +296,8 @@ public class NetME {
 
         return val;
     }
+
+
 
 
     private class TreeAndWeights {

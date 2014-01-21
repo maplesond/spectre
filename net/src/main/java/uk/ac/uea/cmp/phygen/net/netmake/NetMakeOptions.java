@@ -42,7 +42,7 @@ public class NetMakeOptions {
     }
 
 
-    protected boolean isGreedyMEWeighting(Weighting w) {
+    protected static boolean isGreedyMEWeighting(Weighting w) {
         if (w == null)
             return false;
 
@@ -89,7 +89,7 @@ public class NetMakeOptions {
         return this.distanceMatrix != null ? this.distanceMatrix.size() : 0;
     }
 
-    public RunMode getRunMode() {
+    public static RunMode getRunMode(Weighting weighting1, Weighting weighting2) {
 
         if (weighting1 == null) {
             return RunMode.UNKNOWN;
@@ -102,5 +102,10 @@ public class NetMakeOptions {
         }
 
         return RunMode.UNKNOWN;
+    }
+
+    public RunMode getRunMode() {
+
+        return this.getRunMode(this.weighting1, this.weighting2);
     }
 }

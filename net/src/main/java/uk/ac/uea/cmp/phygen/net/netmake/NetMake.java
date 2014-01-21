@@ -69,9 +69,15 @@ public class NetMake extends RunnableTool {
     }
 
     public NetMakeResult runNN(NetMakeOptions options) {
+        return this.runNN(options.getDistanceMatrix(), options.getWeighting1(), options.getWeighting2());
+    }
 
-        final DistanceMatrix distanceMatrix = options.getDistanceMatrix();
-        final Taxa taxa = options.getDistanceMatrix().getTaxa();
+
+    public NetMakeResult runNN(DistanceMatrix distanceMatrix, Weighting weighting1, Weighting weighting2) {
+
+        final Taxa taxa = distanceMatrix.getTaxa();
+
+        final NetMakeOptions.RunMode runMode = NetMakeOptions.getRunMode(weighting1, weighting2);
 
         // Creates a set of trivial splits for ...
         SplitSystem components = new SimpleSplitSystem(taxa, SplitUtils.createTrivialSplits(taxa, 1.0));
@@ -94,7 +100,7 @@ public class NetMake extends RunnableTool {
         while (components.getNbSplits() > 2) {
 
             // The pair should be splits with the shortest tree length between them
-            Pair<Integer, Integer> selectedComponents = options.getRunMode() == NetMakeOptions.RunMode.HYBRID_GREEDYME ?
+            Pair<Integer, Integer> selectedComponents = runMode == NetMakeOptions.RunMode.HYBRID_GREEDYME ?
                     gme.makeMECherry(treeSplits, components) :
                     selectionStep1(c2c, components);
 
@@ -126,17 +132,17 @@ public class NetMake extends RunnableTool {
             treeSplits.addSplit(components.getSplitAt(sc1).copy());
 
             // Update component to component distanceMatrix (assuming not in GreedyME mode)
-            if (options.getRunMode() != NetMakeOptions.RunMode.HYBRID_GREEDYME)
+            if (runMode != NetMakeOptions.RunMode.HYBRID_GREEDYME)
                 updateC2C(
                         c2c,
-                        options.getWeighting1(),
+                        weighting1,
                         components,
                         distanceMatrix);
 
             // Update component to vertex distanceMatrix (also updates weighting1 params)
             updateC2V(
                     c2v,
-                    options.getRunMode().isHybrid() ? options.getWeighting2() : options.getWeighting1(),
+                    runMode.isHybrid() ? weighting2 : weighting1,
                     selectedComponents,
                     components,
                     distanceMatrix);
