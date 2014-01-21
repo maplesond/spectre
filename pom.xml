@@ -35,9 +35,9 @@
         <developer>
             <id>s.bastkowski</id>
             <name>Sarah Bastkowski</name>
-            <email>s.bastkowski@uea.ac.uk</email>
-            <organization>UEA</organization>
-            <organizationUrl>http://www.uea.ac.uk</organizationUrl>
+            <email>sarah.bastkowski@tgac.ac.uk</email>
+            <organization>TGAC</organization>
+            <organizationUrl>http://www.tgac.ac.uk</organizationUrl>
             <roles>
                 <role>developer</role>
             </roles>
