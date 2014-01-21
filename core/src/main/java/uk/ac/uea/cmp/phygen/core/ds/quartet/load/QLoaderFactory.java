@@ -1,6 +1,5 @@
 package uk.ac.uea.cmp.phygen.core.ds.quartet.load;
 
-import uk.ac.uea.cmp.phygen.core.util.Service;
 import uk.ac.uea.cmp.phygen.core.util.SpiFactory;
 
 /**

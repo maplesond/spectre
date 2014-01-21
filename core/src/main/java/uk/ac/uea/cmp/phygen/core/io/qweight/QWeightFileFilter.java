@@ -1,7 +1,5 @@
 package uk.ac.uea.cmp.phygen.core.io.qweight;
 
-import uk.ac.uea.cmp.phygen.core.io.nexus.NexusReader;
-
 import javax.swing.filechooser.FileFilter;
 import java.io.File;
 

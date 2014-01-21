@@ -10,7 +10,8 @@ import uk.ac.uea.cmp.phygen.core.ds.Taxon;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.CanonicalWeightedQuartetMap;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.WeightedQuartetGroupMap;
 import uk.ac.uea.cmp.phygen.core.ds.split.CircularOrdering;
-import uk.ac.uea.cmp.phygen.qtools.qnet.holders.*;
+import uk.ac.uea.cmp.phygen.qtools.qnet.holders.Holders;
+import uk.ac.uea.cmp.phygen.qtools.qnet.holders.NSHolder;
 
 import java.util.ArrayList;
 import java.util.List;

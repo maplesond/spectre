@@ -24,13 +24,11 @@ import uk.ac.tgac.metaopt.Optimiser;
 import uk.ac.tgac.metaopt.OptimiserException;
 import uk.ac.tgac.metaopt.Solution;
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
-import uk.ac.uea.cmp.phygen.core.ds.quartet.load.QLoader;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.load.QLoaderFactory;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.scale.ScalingMatrix;
 import uk.ac.uea.cmp.phygen.core.ds.quartet.scale.ScalingOptimiser;
 import uk.ac.uea.cmp.phygen.core.ds.tree.newick.NewickTree;
 import uk.ac.uea.cmp.phygen.core.io.qweight.QWeightWriter;
-import uk.ac.uea.cmp.phygen.core.util.SpiFactory;
 
 import java.io.File;
 import java.io.IOException;

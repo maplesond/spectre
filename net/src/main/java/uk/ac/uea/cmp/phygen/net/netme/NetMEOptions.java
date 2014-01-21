@@ -1,9 +1,5 @@
 package uk.ac.uea.cmp.phygen.net.netme;
 
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.OptionBuilder;
-import uk.ac.uea.cmp.phygen.core.io.PhygenDataType;
-import uk.ac.uea.cmp.phygen.core.io.PhygenReaderFactory;
 import uk.ac.uea.cmp.phygen.core.util.Time;
 
 import java.io.File;

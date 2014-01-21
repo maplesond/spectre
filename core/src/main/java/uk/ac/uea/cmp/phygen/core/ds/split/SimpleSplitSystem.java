@@ -15,10 +15,8 @@
  */
 package uk.ac.uea.cmp.phygen.core.ds.split;
 
-import uk.ac.uea.cmp.phygen.core.ds.SummedDistanceList;
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.Taxon;
-import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -80,27 +78,6 @@ public class SimpleSplitSystem implements SplitSystem {
 
     public String getTaxaAt(int i) {
         return this.taxa.get(i).getName();
-    }
-
-
-    /**
-     * Calculate the summed distanceMatrix between elements on the A side and B side for every split
-     *
-     * @return Array of P
-     */
-    public SummedDistanceList calculateP(DistanceMatrix distanceMatrix) {
-
-        if (this.getNbTaxa() != distanceMatrix.size())
-            throw new IllegalArgumentException("The number of taxa in DistanceMatrix is not that same as in this splis system");
-
-        double P[] = new double[this.splits.size()];
-
-        // For each split, determine how many elements are on each side of the split
-        for (int i = 0; i < this.splits.size(); i++) {
-            P[i] = this.splits.get(i).calculateP(distanceMatrix);
-        }
-
-        return new SummedDistanceList(P);
     }
 
     @Override

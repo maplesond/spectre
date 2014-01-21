@@ -28,8 +28,6 @@ import uk.ac.uea.cmp.phygen.core.ui.cli.CommandLineHelper;
 import uk.ac.uea.cmp.phygen.qtools.superq.problems.SecondaryProblemFactory;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 public class SuperQCLI {
 

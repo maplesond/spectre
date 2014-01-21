@@ -20,7 +20,7 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.uea.cmp.phygen.core.ds.SummedDistanceList;
+import uk.ac.uea.cmp.phygen.net.netmake.SummedDistanceList;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phygen.core.ds.split.Split;
 import uk.ac.uea.cmp.phygen.core.ds.split.SplitBlock;
@@ -30,9 +30,7 @@ import uk.ac.uea.cmp.phygen.core.math.Statistics;
 import uk.ac.uea.cmp.phygen.net.netmake.EdgeHandling;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * GreedyMEWeighting extends weighting, although it doesn't actually update a Weighting param.

@@ -1,6 +1,5 @@
 package uk.ac.uea.cmp.phygen.core.ds.split;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 

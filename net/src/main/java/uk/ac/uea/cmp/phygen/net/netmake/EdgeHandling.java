@@ -16,7 +16,6 @@
 
 package uk.ac.uea.cmp.phygen.net.netmake;
 
-import uk.ac.uea.cmp.phygen.core.ds.SummedDistanceList;
 import uk.ac.uea.cmp.phygen.core.ds.split.Split;
 import uk.ac.uea.cmp.phygen.core.ds.split.SplitBlock;
 import uk.ac.uea.cmp.phygen.core.ds.split.SplitDistanceMap;
@@ -24,7 +23,6 @@ import uk.ac.uea.cmp.phygen.core.ds.split.SplitSystem;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Describes the adjacent elements of an edge.

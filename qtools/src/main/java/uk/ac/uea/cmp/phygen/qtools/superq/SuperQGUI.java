@@ -28,7 +28,6 @@ import uk.ac.uea.cmp.phygen.core.ui.gui.ToolHost;
 import uk.ac.uea.cmp.phygen.qtools.superq.problems.SecondaryProblemFactory;
 
 import javax.swing.*;
-import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.io.File;

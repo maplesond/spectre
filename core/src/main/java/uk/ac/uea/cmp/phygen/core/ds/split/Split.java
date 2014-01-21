@@ -17,8 +17,6 @@ package uk.ac.uea.cmp.phygen.core.ds.split;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 
 /**

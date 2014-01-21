@@ -16,23 +16,17 @@
 
 package uk.ac.uea.cmp.phygen.net.netmake;
 
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.uea.cmp.phygen.core.ds.Tableau;
 import uk.ac.uea.cmp.phygen.core.ds.Taxa;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phygen.core.ds.split.*;
-import uk.ac.uea.cmp.phygen.core.io.PhygenDataType;
-import uk.ac.uea.cmp.phygen.core.io.PhygenReaderFactory;
 import uk.ac.uea.cmp.phygen.core.ui.gui.RunnableTool;
 import uk.ac.uea.cmp.phygen.net.netmake.weighting.GreedyMEWeighting;
 import uk.ac.uea.cmp.phygen.net.netmake.weighting.TreeWeighting;
 import uk.ac.uea.cmp.phygen.net.netmake.weighting.Weighting;
-import uk.ac.uea.cmp.phygen.net.netmake.weighting.Weightings;
 
 import java.util.ArrayList;
 

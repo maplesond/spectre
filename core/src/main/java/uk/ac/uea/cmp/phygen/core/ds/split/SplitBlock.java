@@ -18,7 +18,6 @@ package uk.ac.uea.cmp.phygen.core.ds.split;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import uk.ac.uea.cmp.phygen.core.ds.tree.newick.parser.NewickTreeParser;
 
 import java.util.ArrayList;
 import java.util.Collection;
