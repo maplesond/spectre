@@ -6,10 +6,10 @@
 
     <groupId>uk.ac.uea.cmp.phybre</groupId>
     <artifactId>phybre</artifactId>
-    <version>0.1</version>
+    <version>0.1.1</version>
     <packaging>pom</packaging>
 
-    <name>Phylogenetics Bundled Resources</name>
+    <name>Phylogenetics Bundled Resources (PhyBRe)</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -35,9 +35,9 @@
         <developer>
             <id>s.bastkowski</id>
             <name>Sarah Bastkowski</name>
-            <email>s.bastkowski@uea.ac.uk</email>
-            <organization>UEA</organization>
-            <organizationUrl>http://www.uea.ac.uk</organizationUrl>
+            <email>sarah.bastkowski@tgac.ac.uk</email>
+            <organization>TGAC</organization>
+            <organizationUrl>http://www.tgac.ac.uk</organizationUrl>
             <roles>
                 <role>developer</role>
             </roles>

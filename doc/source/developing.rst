@@ -5,7 +5,7 @@ Developing:
 
 Most modern IDEs support maven project structures, so there should be no reason to change IDEs, however, they may need a maven plugin installed.  The exact details of how to open a maven project will vary from IDE to IDE but it should be a simple process of just opening an existing project and pointing the IDE to the pom.xml in the root directory of the PhygenSuite.  This should open all child modules within the master project.
 
-Within the parent maven project for the PhygenSuite there is a single “pom.xml” which describes common properties for all child modules.  This file contains details such as project details, developer list, compiler settings, unit test configuration, common dependencies and some common jar packaging settings. Beyond the pom.xml there are the child modules themselves, which each have their own pom.xml describing their specific configuration.  A short summary of each module follows:
+Within the parent maven project for phybre there is a single “pom.xml” which describes common properties for all child modules.  This file contains details such as project details, developer list, compiler settings, unit test configuration, common dependencies and some common jar packaging settings. Beyond the pom.xml there are the child modules themselves, which each have their own pom.xml describing their specific configuration.  A short summary of each module follows:
 
 
 Core:
