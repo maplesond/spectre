@@ -21,12 +21,12 @@
     <parent>
         <artifactId>phybre</artifactId>
         <groupId>uk.ac.uea.cmp.phybre</groupId>
-        <version>0.1</version>
+        <version>0.1.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>misc</artifactId>
-    <version>0.1</version>
+    <version>0.1.1</version>
 
     <name>Phybre: Miscellaneous Tools</name>
 
