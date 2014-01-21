@@ -3,16 +3,16 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>phygen</artifactId>
-        <groupId>uk.ac.uea.cmp.phygen</groupId>
-        <version>1.0</version>
+        <artifactId>phybre</artifactId>
+        <groupId>uk.ac.uea.cmp.phybre</groupId>
+        <version>0.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>qtools</artifactId>
-    <version>2.0</version>
+    <version>2.0.1</version>
 
-    <name>Phylogenetics Tool Suite: SuperQ</name>
+    <name>Phybre: SuperQ</name>
 
     <build>
 
@@ -37,7 +37,7 @@
                                 <transformer
                                         implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <manifestEntries>
-                                        <Main-Class>uk.ac.uea.cmp.phygen.qtools.superq.SuperQCLI</Main-Class>
+                                        <Main-Class>uk.ac.uea.cmp.phybre.qtools.superq.SuperQCLI</Main-Class>
                                         <Build-Number>1</Build-Number>
                                     </manifestEntries>
                                 </transformer>
@@ -57,31 +57,31 @@
                 <configuration>
                     <programs>
                         <program>
-                            <mainClass>uk.ac.uea.cmp.phygen.qtools.superq.SuperQCLI</mainClass>
+                            <mainClass>uk.ac.uea.cmp.phybre.qtools.superq.SuperQCLI</mainClass>
                             <id>superq</id>
                         </program>
                         <program>
-                            <mainClass>uk.ac.uea.cmp.phygen.qtools.superq.SuperQGUI</mainClass>
+                            <mainClass>uk.ac.uea.cmp.phybre.qtools.superq.SuperQGUI</mainClass>
                             <id>superq-gui</id>
                         </program>
                         <program>
-                            <mainClass>uk.ac.uea.cmp.phygen.qtools.qnet.QNetCLI</mainClass>
+                            <mainClass>uk.ac.uea.cmp.phybre.qtools.qnet.QNetCLI</mainClass>
                             <id>qnet</id>
                         </program>
                         <program>
-                            <mainClass>uk.ac.uea.cmp.phygen.qtools.qnet.QNetGUI</mainClass>
+                            <mainClass>uk.ac.uea.cmp.phybre.qtools.qnet.QNetGUI</mainClass>
                             <id>qnet-gui</id>
                         </program>
                         <program>
-                            <mainClass>uk.ac.uea.cmp.phygen.qtools.qmaker.QMaker</mainClass>
+                            <mainClass>uk.ac.uea.cmp.phybre.qtools.qmaker.QMaker</mainClass>
                             <id>qmaker</id>
                         </program>
                         <program>
-                            <mainClass>uk.ac.uea.cmp.phygen.qtools.scale.Scaling</mainClass>
+                            <mainClass>uk.ac.uea.cmp.phybre.qtools.scale.Scaling</mainClass>
                             <id>scaling</id>
                         </program>
                         <program>
-                            <mainClass>uk.ac.uea.cmp.phygen.qtools.sfilter.SFilter</mainClass>
+                            <mainClass>uk.ac.uea.cmp.phybre.qtools.sfilter.SFilter</mainClass>
                             <id>sfilter</id>
                         </program>
                     </programs>

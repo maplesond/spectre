@@ -4,12 +4,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>uk.ac.uea.cmp.phygen</groupId>
-    <artifactId>phygen</artifactId>
-    <version>1.0</version>
+    <groupId>uk.ac.uea.cmp.phybre</groupId>
+    <artifactId>phybre</artifactId>
+    <version>0.1</version>
     <packaging>pom</packaging>
 
-    <name>Phylogenetics Tool Suite</name>
+    <name>Phylogenetics Bundled Resources</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -218,7 +218,7 @@
 
         <!-- Run through the child projects -->
         <module>core</module>
-        <module>phygentools</module>
+        <module>misc</module>
         <module>net</module>
         <module>qtools</module>
         <module>flatnj</module>
