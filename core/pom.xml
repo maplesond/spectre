@@ -5,38 +5,25 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>uk.ac.uea.cmp.phygen</groupId>
-        <artifactId>phygen</artifactId>
-        <version>1.0</version>
+        <groupId>uk.ac.uea.cmp.phybre</groupId>
+        <artifactId>phybre</artifactId>
+        <version>0.1</version>
     </parent>
 
     <artifactId>core</artifactId>
-    <version>1.0</version>
+    <version>0.1.0</version>
     <packaging>jar</packaging>
 
-    <name>Phylogenetics Tool Suite: Core functionality</name>
+    <name>Phybre: Core functionality</name>
 
     <properties>
         <antlr-version>4.1</antlr-version>
     </properties>
 
-    <!-- If you have gurobi installed then comment out this block.  This essentially excludes all gurobi java files
-         from being compiled.  As it stands gurobi do not make freely available their jar file (even though it only
-         contains JNI stubs), so we have to exclude these files by default as we cannot assume the user will have
-         gurobi installed. -->
+
     <build>
 
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
-                <configuration>
-                    <excludes>
-                        <exclude>**/gurobi/*.java</exclude>
-                    </excludes>
-                </configuration>
-            </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -68,49 +55,8 @@
     </build>
 
 
-    <!-- This remote repository holds the GLPK jar -->
-
-    <repositories>
-        <repository>
-            <id>XypronRelease</id>
-            <name>Xypron Release</name>
-            <url>http://rsync.xypron.de/repository</url>
-            <layout>default</layout>
-        </repository>
-    </repositories>
-
 
     <dependencies>
-
-        <!-- Optimisers -->
-
-        <dependency>
-            <groupId>de.xypron.linopt</groupId>
-            <artifactId>linopt</artifactId>
-            <version>1.8</version>
-        </dependency>
-
-        <dependency>
-            <groupId>joptimizer</groupId>
-            <artifactId>joptimizer</artifactId>
-            <version>3.2.0</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.commons</groupId>
-                    <artifactId>commons-lang3</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.commons</groupId>
-                    <artifactId>commons-math3</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>log4j</groupId>
-                    <artifactId>log4j</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-
 
 
         <!-- METAINF services -->
@@ -120,6 +66,14 @@
             <artifactId>metainf-services</artifactId>
             <version>1.1</version>
             <optional>true</optional>
+        </dependency>
+
+        <!-- Meta optimizer -->
+
+        <dependency>
+            <groupId>uk.ac.tgac.metaopt</groupId>
+            <artifactId>metaopt</artifactId>
+            <version>0.1</version>
         </dependency>
 
         <!-- Logging -->

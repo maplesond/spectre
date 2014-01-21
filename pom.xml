@@ -4,17 +4,22 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>uk.ac.uea.cmp.phygen</groupId>
-    <artifactId>phygen</artifactId>
-    <version>1.0</version>
+    <groupId>uk.ac.uea.cmp.phybre</groupId>
+    <artifactId>phybre</artifactId>
+    <version>0.1</version>
     <packaging>pom</packaging>
 
-    <name>Phylogenetics Tool Suite</name>
+    <name>Phylogenetics Bundled Resources</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java-version>1.7</java-version>
         <slf4j-version>1.6.1</slf4j-version>
+        <dist-name>${project.parent.artifactId}-${project.parent.version}</dist-name>
+        <dist-dir>${project.basedir}/../build/dist</dist-dir>
+        <build-dir>${project.basedir}/../build/${dist-name}</build-dir>
+        <doc-dir>${project.basedir}/../doc</doc-dir>
     </properties>
 
     <!-- Licensing -->
@@ -56,110 +61,141 @@
                 <role>developer</role>
             </roles>
         </developer>
+        <developer>
+            <id>anspliner</id>
+            <name>Andreas Spillner</name>
+            <email>anspliner@googlemail.com</email>
+            <organization>Greifswald University</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
     </developers>
 
     <build>
+
+        <pluginManagement>
+            <plugins>
+
+                <!-- Compiler settings -->
+                <plugin>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>2.3.2</version>
+                    <configuration>
+                        <source>${java-version}</source>
+                        <target>${java-version}</target>
+                        <showDeprecation>true</showDeprecation>
+                        <showWarnings>true</showWarnings>
+                        <compilerArgument>-Xlint:unchecked</compilerArgument>
+                    </configuration>
+                </plugin>
+
+
+                <!-- Creates scripts for all platforms that allow the user to easily execute this tool -->
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>appassembler-maven-plugin</artifactId>
+                    <version>1.6</version>
+
+                    <executions>
+                        <execution>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>assemble</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+
+                    <configuration>
+
+                        <assembleDirectory>${build-dir}</assembleDirectory>
+
+                        <licenseHeaderFile>${project.basedir}/../license-header.txt</licenseHeaderFile>
+
+                        <platforms>
+                            <platform>all</platform>
+                        </platforms>
+
+                    </configuration>
+                </plugin>
+
+            </plugins>
+
+        </pluginManagement>
+
         <plugins>
 
-            <!-- Compiler settings -->
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
-                <configuration>
-                    <source>${java-version}</source>
-                    <target>${java-version}</target>
-                    <showDeprecation>true</showDeprecation>
-                    <showWarnings>true</showWarnings>
-                    <compilerArgument>-Xlint:unchecked</compilerArgument>
-                </configuration>
-            </plugin>
-
-            <!-- Unit testing setup (ignores integration tests) -->
+            <!-- Unit testing setup (no integration tests) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.14.1</version>
-                <configuration>
-                    <excludes>
-                        <exclude>**/*IntegrationTest.java</exclude>
-                    </excludes>
-                </configuration>
             </plugin>
 
-            <!-- Create loader jar for all modules -->
+            <!-- Integration tests -->
+            <plugin>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>2.14</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.maven.surefire</groupId>
+                        <artifactId>surefire-junit47</artifactId>
+                        <version>2.13</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <id>failsafe-integration-tests</id>
+                        <phase>integration-test</phase>
+                        <goals>
+                            <goal>integration-test</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Creates a jar file containing the sources -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
                 <version>2.2.1</version>
                 <executions>
                     <execution>
-                        <id>attach-sources</id>
+                        <id>create-sources-jar</id>
+                        <phase>install</phase>
                         <goals>
                             <goal>jar</goal>
                         </goals>
+                        <configuration>
+                            <outputDirectory>${build-dir}/support_jars</outputDirectory>
+                        </configuration>
+
                     </execution>
                 </executions>
             </plugin>
 
-            <!-- Copy all final jars from sub modules into a single directory -->
+
+            <!-- Creates javadoc -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <inherited>false</inherited>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.9.1</version>
                 <executions>
                     <execution>
-                        <id>copy-artifact</id>
-                        <phase>deploy</phase>
+                        <id>create-javadoc-jar</id>
+                        <phase>install</phase>
                         <goals>
-                            <goal>copy</goal>
+                            <goal>jar</goal>
                         </goals>
                         <configuration>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>${project.groupId}</groupId>
-                                    <artifactId>flatnj</artifactId>
-                                    <version>1.0</version>
-                                    <type>jar</type>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>${project.groupId}</groupId>
-                                    <artifactId>superq</artifactId>
-                                    <version>2.0</version>
-                                    <type>jar</type>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>${project.groupId}</groupId>
-                                    <artifactId>qnet</artifactId>
-                                    <version>2.0</version>
-                                    <type>jar</type>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>${project.groupId}</groupId>
-                                    <artifactId>phygentools</artifactId>
-                                    <version>1.0</version>
-                                    <type>jar</type>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>${project.groupId}</groupId>
-                                    <artifactId>netme</artifactId>
-                                    <version>1.0</version>
-                                    <type>jar</type>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>${project.groupId}</groupId>
-                                    <artifactId>netmake</artifactId>
-                                    <version>1.0</version>
-                                    <type>jar</type>
-                                </artifactItem>
-                            </artifactItems>
-                            <outputDirectory>bin</outputDirectory>
+                            <jarOutputDirectory>${build-dir}/support_jars</jarOutputDirectory>
+                            <quiet>true</quiet>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
-
-
         </plugins>
+
     </build>
 
     <dependencies>
@@ -176,17 +212,19 @@
     </dependencies>
 
     <modules>
+
+        <!-- Execute this first to clean any mess in the main folder -->
+        <module>clean</module>
+
+        <!-- Run through the child projects -->
         <module>core</module>
-        <module>phygentools</module>
-        <module>netmake</module>
-        <module>netme</module>
-        <module>qnet</module>
-        <module>superq</module>
+        <module>misc</module>
+        <module>net</module>
+        <module>qtools</module>
         <module>flatnj</module>
 
-        <!-- Uncomment this if you have gurobi installed, and have the gurobi jar installed in the local maven repo.
-             QNet currently is designed to work only with gurobi so this is commented out as well for the moment. -->
-        <module>gurobi</module>
+        <!-- This gets executed last because it creates the distribution and the manual -->
+        <module>dist</module>
 
     </modules>
 

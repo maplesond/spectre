@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ Phylogenetics Tool suite
+  ~ Copyright (C) 2013  UEA CMP Phylogenetics Group
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
+  ~ License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+  ~ later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  ~ warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+  ~ details.
+  ~
+  ~ You should have received a copy of the GNU General Public License along with this program.  If not, see
+  ~ <http://www.gnu.org/licenses/>.
+  -->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>phygen</artifactId>
+        <groupId>uk.ac.uea.cmp.phygen</groupId>
+        <version>1.0</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>dist</artifactId>
+    <version>1.0</version>
+
+    <name>Phylogenetics Tool Suite: Create Distribution</name>
+
+
+    <build>
+
+        <plugins>
+
+
+            <!-- Various phases -->
+
+            <!-- Adds execute permission to scripts and copies resources to install folder during the package phase.
+                 Also creates and installs manual if possible in the install phase. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.7</version>
+                <executions>
+                    <execution>
+                        <id>create-manual</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+
+                                <!-- Create the documentation -->
+                                <exec
+                                        dir="${doc-dir}"
+                                        executable="make"
+                                        failonerror="false">
+                                    <arg line="html latexpdf" />
+                                </exec>
+
+                                <!-- copy the documentation in to the build dir -->
+                                <mkdir dir="${build-dir}/doc/html"/>
+                                <copy todir="${build-dir}/doc/html">
+                                    <fileset dir="${doc-dir}/build/html"/>
+                                </copy>
+                                <copy file="${doc-dir}/build/latex/phygen.pdf" todir="${build-dir}/doc"/>
+                            </target>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>create-distributable</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <mkdir dir="${dist-dir}"/>
+                                <tar longfile="gnu"
+                                     destfile="${dist-dir}/${dist-name}.tar.gz"
+                                     compression="gzip">
+
+                                    <tarfileset dir="${project.basedir}/../build" filemode="755">
+                                        <include name="${dist-name}/bin/*"/>
+                                    </tarfileset>
+
+                                    <tarfileset dir="${project.basedir}/../build">
+                                        <include name="${dist-name}/**"/>
+                                        <exclude name="${dist-name}/bin/*"/>
+                                    </tarfileset>
+                                </tar>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+    </build>
+
+
+</project>
+
+
+
+
+
+
+
+
+
+
+
+
+
