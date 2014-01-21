@@ -24,6 +24,7 @@ import uk.ac.uea.cmp.phygen.core.ds.SummedDistanceList;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phygen.core.ds.split.Split;
 import uk.ac.uea.cmp.phygen.core.ds.split.SplitBlock;
+import uk.ac.uea.cmp.phygen.core.ds.split.SplitDistanceMap;
 import uk.ac.uea.cmp.phygen.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.phygen.core.math.Statistics;
 import uk.ac.uea.cmp.phygen.net.netmake.EdgeHandling;
@@ -119,7 +120,7 @@ public class GreedyMEWeighting extends Weighting {
 
         int C[] = aEdgeAdjacents.getNumberOfLeavesInAdjacents();
 
-        for(int i = 0; i < C.length; i++) {
+        /*for(int i = 0; i < C.length; i++) {
             if (C[i] == 0) {
                 throw new IllegalStateException("C[" + i + "] is 0.  This array represents the number of leaves in each adjacent.  This is an illegal state.");
             }
@@ -127,7 +128,7 @@ public class GreedyMEWeighting extends Weighting {
             if (C[i] == 2) {
                 throw new IllegalStateException("C[" + i + "] is 2.  This array represents the number of leaves in each adjacent.  This is an illegal state.");
             }
-        }
+        }*/
 
         double d[] = calcD(C, nbTaxa);
 
@@ -399,8 +400,7 @@ public class GreedyMEWeighting extends Weighting {
 
         ArrayList<Double> edgeWeights = new ArrayList<>();
 
-        // TODO calculateP should return a map of all possible splitblocks (a side and b side) and their summed distance list.
-        Map<Split, Double> splitDistanceMap = this.calculateP(splits);
+        SplitDistanceMap splitDistanceMap = this.calculateP(splits);
 
         for (int i = 0; i < splits.getNbSplits(); i++) {
 
@@ -410,7 +410,7 @@ public class GreedyMEWeighting extends Weighting {
 
             log.debug("    Retrieved adjacent edges for " + i + ". " + aEdgeAdjacents.getNumberOfLeavesInAdjacents().length + " leaves");
 
-            edgeWeights.add(calculateEdges(splitDistanceMap.get(splitI.getASide()), aEdgeAdjacents, splitI.onExternalEdge()));
+            edgeWeights.add(calculateEdges(splitDistanceMap.get(splitI), aEdgeAdjacents, splitI.onExternalEdge()));
 
             log.debug("    Calculated edge length for " + i + ": " + edgeWeights.get(i));
         }
@@ -421,11 +421,11 @@ public class GreedyMEWeighting extends Weighting {
     }
 
 
-    private Map<Split, Double> calculateP(final SplitSystem splitSystem) {
+    private SplitDistanceMap calculateP(final SplitSystem splitSystem) {
 
         final int nbTaxa = this.distanceMatrix.size();
 
-        Map<Split, Double> map = new LinkedHashMap<>();
+        SplitDistanceMap map = new SplitDistanceMap();
 
         //for each split, determine how many elements are on each side of the split
         for (Split split : splitSystem.getSplits()) {

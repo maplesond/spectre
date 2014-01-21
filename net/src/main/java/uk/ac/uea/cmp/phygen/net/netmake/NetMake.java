@@ -229,39 +229,39 @@ public class NetMake extends RunnableTool {
                     if ((k != sc1)
                             && (k != sc2)) {
                         sum1 += c2v.getDistance(
-                                splitBlockSc1.get(i), k);
+                                splitBlockSc1.get(i)-1, k);
                     }
 
                     if ((k != sc1)
                             && (k != sc2)) {
                         sum2 += c2v.getDistance(
-                                splitBlockSc2.get(j), k);
+                                splitBlockSc2.get(j)-1, k);
                     }
                 }
 
                 for (int k = 0; k < splitBlockSc2.size();
                      k++) {
                     sum3 += distanceMatrix.getDistance(
-                            splitBlockSc1.get(i),
-                            splitBlockSc2.get(k));
+                            splitBlockSc1.get(i)-1,
+                            splitBlockSc2.get(k)-1);
 
                     if (splitBlockSc2.get(k)
                             != splitBlockSc2.get(j)) {
-                        vertex_last2 = splitBlockSc2.get(k);
+                        vertex_last2 = splitBlockSc2.get(k)-1;
                     }
                 }
 
                 for (int k = 0; k < splitBlockSc1.size();
                      k++) {
-                    int vertex1 = splitBlockSc1.get(k);
+                    int vertex1 = splitBlockSc1.get(k)-1;
 
-                    if (vertex1 != splitBlockSc1.get(i)) {
+                    if (vertex1 != splitBlockSc1.get(i)-1) {
                         vertex_last1 = vertex1;
                     }
                 }
 
-                sum3 += distanceMatrix.getDistance(splitBlockSc2.get(j), vertex_last1);
-                sum4 += distanceMatrix.getDistance(splitBlockSc1.get(i), vertex_last2);
+                sum3 += distanceMatrix.getDistance(splitBlockSc2.get(j)-1, vertex_last1);
+                sum4 += distanceMatrix.getDistance(splitBlockSc1.get(i)-1, vertex_last2);
 
                 int outerVertices1 = 0;
                 if (splitBlockSc1.size() == 1) {
@@ -278,8 +278,8 @@ public class NetMake extends RunnableTool {
                 }
 
                 double qDist = (components.getNbSplits() - 4 + outerVertices1
-                        + outerVertices2) * distanceMatrix.getDistance(splitBlockSc1.get(i),
-                        splitBlockSc2.get(j))
+                        + outerVertices2) * distanceMatrix.getDistance(splitBlockSc1.get(i)-1,
+                        splitBlockSc2.get(j)-1)
                         - sum1 - sum2 - sum3 - sum4;
 
                 if (qDist < min2) {
@@ -382,8 +382,8 @@ public class NetMake extends RunnableTool {
 
             SplitBlock sb = splits.getSplitAt(i).getASide();
 
-            int k = permutationInvert.getIndexAt(sb.getFirst()) - 1;
-            int l = permutationInvert.getIndexAt(sb.getLast()) - 1;
+            int k = permutationInvert.getIndexAt(sb.getFirst()-1);
+            int l = permutationInvert.getIndexAt(sb.getLast()-1);
 
             if (l < k) {
                 sb.reverse();

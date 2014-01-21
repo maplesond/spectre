@@ -22,6 +22,9 @@ import org.apache.log4j.LogManager;
 import org.junit.Before;
 import org.junit.Test;
 import uk.ac.uea.cmp.phygen.core.ds.distance.DistanceMatrix;
+import uk.ac.uea.cmp.phygen.core.ds.split.CompatibleSplitSystem;
+import uk.ac.uea.cmp.phygen.core.ds.split.Split;
+import uk.ac.uea.cmp.phygen.core.math.Equality;
 import uk.ac.uea.cmp.phygen.net.netmake.weighting.GreedyMEWeighting;
 import uk.ac.uea.cmp.phygen.net.netmake.weighting.TSPWeighting;
 
@@ -60,6 +63,20 @@ public class NetMakeTest {
         DistanceMatrix distanceMatrix = new DistanceMatrix(taxa, distances);
 
         NetMakeResult result = new NetMake().runNN(new NetMakeOptions(distanceMatrix, new GreedyMEWeighting(distanceMatrix), new TSPWeighting(distanceMatrix.size())));
+
+        CompatibleSplitSystem tree = result.getTree();
+
+        assertTrue(tree.getNbSplits() == 11);
+
+        for(Split s : tree.getSplits()) {
+            assertTrue(Equality.approxEquals(s.getWeight(), 1.0, 0.01));
+        }
+
+        assertTrue(result.getNetwork().getNbSplits() == 11);
+
+        for(Split s : result.getNetwork().getSplits()) {
+            assertTrue(s.getWeight() == 1.0);
+        }
 
         assertTrue(true);
     }

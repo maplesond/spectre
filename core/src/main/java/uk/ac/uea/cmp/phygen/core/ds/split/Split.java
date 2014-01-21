@@ -132,6 +132,13 @@ public class Split {
         return new Split(this.getASide().copy(), this.nbTaxa);
     }
 
+    public Split makeSortedCopy() {
+
+        Split copy = new Split(this);
+        copy.sort();
+        return copy;
+    }
+
     public enum SplitSide {
 
         A_SIDE {

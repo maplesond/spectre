@@ -19,6 +19,7 @@ package uk.ac.uea.cmp.phygen.net.netmake;
 import uk.ac.uea.cmp.phygen.core.ds.SummedDistanceList;
 import uk.ac.uea.cmp.phygen.core.ds.split.Split;
 import uk.ac.uea.cmp.phygen.core.ds.split.SplitBlock;
+import uk.ac.uea.cmp.phygen.core.ds.split.SplitDistanceMap;
 import uk.ac.uea.cmp.phygen.core.ds.split.SplitSystem;
 
 import java.util.ArrayList;
@@ -70,7 +71,7 @@ public class EdgeHandling {
 
 
 
-    public AdjacentEdges retrieveAdjacents(Split split, SplitSystem sortedSplits, Map<Split, Double> splitDistanceMap) {
+    public AdjacentEdges retrieveAdjacents(Split split, SplitSystem sortedSplits, SplitDistanceMap splitDistanceMap) {
 
         // Get the edges on either side of the current split
         SplitBlock edgeA = split.getASide().makeSortedCopy();
@@ -104,11 +105,11 @@ public class EdgeHandling {
         SummedDistanceList ptemp = new SummedDistanceList();
         if (internalEdge) {
             for (SplitBlock ss : aSide) {
-                ptemp.add(splitDistanceMap.get(ss).doubleValue());
+                ptemp.add(splitDistanceMap.getUsingSplitBlock(ss).doubleValue());
             }
         }
         for (SplitBlock ss : bSide) {
-            ptemp.add(splitDistanceMap.get(ss).doubleValue());
+            ptemp.add(splitDistanceMap.getUsingSplitBlock(ss).doubleValue());
         }
 
         AdjacentEdges aEdgeAdjacents = new AdjacentEdges(C, ptemp, offset);
