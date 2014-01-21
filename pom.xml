@@ -9,7 +9,7 @@
     <version>0.1</version>
     <packaging>pom</packaging>
 
-    <name>Phylogenetics Bundled Resources</name>
+    <name>Phylogenetics Bundled Resources (PhyBRe)</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
