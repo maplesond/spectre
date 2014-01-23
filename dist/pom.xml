@@ -59,7 +59,7 @@
                                         dir="${doc-dir}"
                                         executable="make"
                                         failonerror="false">
-                                    <arg line="html latexpdf" />
+                                    <arg line="html latexpdf text" />
                                 </exec>
 
                                 <!-- copy the documentation in to the build dir -->

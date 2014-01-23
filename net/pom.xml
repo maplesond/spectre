@@ -104,9 +104,9 @@
         <!-- PhyGen -->
 
         <dependency>
-            <groupId>uk.ac.uea.cmp.phygen</groupId>
+            <groupId>uk.ac.uea.cmp.phybre</groupId>
             <artifactId>core</artifactId>
-            <version>1.0</version>
+            <version>0.1.1</version>
         </dependency>
 
 

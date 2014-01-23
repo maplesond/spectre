@@ -13,9 +13,9 @@ Phybre is a maven project, so almost all the dependencies will be downloaded aut
 Installing
 ==========
 
-Before installing PhyGen please ensure that the Java Runtime Environment (JRE) V1.7+ is installed.
+Before installing Phybre please ensure that the Java Runtime Environment (JRE) V1.7+ is installed.
 
-PhyGen can be installed either from a distributable tarball, or from source via a git clone. These steps for both methods are described below.
+Phybre can be installed either from a distributable tarball, or from source via a git clone. These steps for both methods are described below.
 
 From tarball
 ------------
@@ -33,12 +33,13 @@ Should you want to run the tools without referring to their paths, you should en
 From source
 -----------
 
-Phygen is a java 1.7 / maven project. Before compiling the source code, please make sure the following tools are installed::
+Phybre is a java 1.7 / maven project. Before compiling the source code, please make sure the following tools are installed::
 
 * GIT
-* Maven 3
-* JDK v1.7+
-* Sphinx (If you would like to compile this documentation)
+* Maven (make sure you set the m2_home environment variable to point at your Maven directory)
+* JDK v1.7+  (make sure you set the JAVA_HOME environment variable to point at your JDK directory)
+* Make
+* Sphinx   (may require you to install phyton, also make sure the sphinx-build is on the path environment variable)
 
 You also need to make sure that the system to are compiling on has internet access, as it will try to automatically incorporate any required java dependencies via maven. Now type the following::
 
@@ -122,7 +123,7 @@ Constructs a circular split system from a set of weighted or unweighted partial 
 Quick Start:
 ============
 
-Assuming the user has access to the compiled executable jars for phybre, then they should only need JRE 1.7+ installed on their system.  To run any of the jars type: “java -jar <jar_name>-<jar_version>.jar <options>”.  To discover the options available for each jar just type “java -jar <jar_name>-<jar_version>.jar --help”
+Assuming the user has access to the compiled executable jars for phybre, then they should only need JRE 1.7+ installed on their system.  The tools can be found in the bin subfolder.
 
 
 
