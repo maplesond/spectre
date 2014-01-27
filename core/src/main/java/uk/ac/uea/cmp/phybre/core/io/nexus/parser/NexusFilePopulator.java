@@ -298,9 +298,11 @@ public class NexusFilePopulator implements NexusFileListener {
     @Override
     public void exitMatrix_splits_data(@NotNull NexusFileParser.Matrix_splits_dataContext ctx) {
 
-        if (ctx.NUMERIC() != null) {
+        if (ctx.NUMERIC() != null  && !ctx.NUMERIC().isEmpty()) {
 
-            double weight = Double.parseDouble(ctx.NUMERIC().getText());
+            double weight = ctx.NUMERIC().size() == 2 ?
+                    Double.parseDouble(ctx.NUMERIC(1).getText()) :
+                    Double.parseDouble(ctx.NUMERIC(0).getText());
 
             NexusFileParser.Matrix_splits_listContext ctxList = ctx.matrix_splits_list();
 

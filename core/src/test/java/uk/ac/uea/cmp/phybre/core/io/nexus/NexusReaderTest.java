@@ -149,4 +149,36 @@ public class NexusReaderTest {
         assertNotNull(s);
         assertTrue(s.getWeight() == 6.951241628977932E-4);
     }
+
+    @Test
+    public void testBeesSplitsPlusId() throws IOException {
+
+        File testFile = FileUtils.toFile(NexusReaderTest.class.getResource("/bees-splits-plusId.nex"));
+
+        Nexus nexus = new NexusReader().parse(testFile);
+
+        assertNotNull(nexus);
+
+        Taxa taxa = nexus.getTaxa();
+
+        assertNotNull(taxa);
+        assertTrue(taxa.size() == 6);
+
+        SplitSystem ss = nexus.getSplitSystem();
+
+        assertNotNull(ss);
+
+        CircularOrdering co = ss.getCircularOrdering();
+
+        assertNotNull(co);
+        assertTrue(co.size() == 6);
+        assertTrue(co.getAt(2) == 6);
+
+
+        assertTrue(ss.getNbSplits() == 9);
+        Split s = ss.getSplitAt(7);
+
+        assertNotNull(s);
+        assertTrue(s.getWeight() == 6.951241628977932E-4);
+    }
 }

@@ -81,7 +81,7 @@ public class NexusReader extends AbstractPhygenReader {
             parser.parse();
         }
         catch(RuntimeException e) {
-            throw new IOException(e);
+            throw new IOException("Error parsing: " + file.getAbsolutePath() + "; " + e.getMessage(), e);
         }
 
         // Return the populated Nexus object

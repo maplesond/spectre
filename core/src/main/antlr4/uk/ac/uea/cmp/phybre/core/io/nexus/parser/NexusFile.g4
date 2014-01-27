@@ -255,7 +255,8 @@ cycle_item : NUMERIC;
 
 matrix_splits_data :
     // Empty
-    |  NUMERIC matrix_splits_list ',' matrix_splits_data
+    | '\'' NUMERIC '\'' NUMERIC matrix_splits_list ',' matrix_splits_data
+    | NUMERIC matrix_splits_list ',' matrix_splits_data
     ;
 
 matrix_splits_list :
