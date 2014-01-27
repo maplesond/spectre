@@ -55,6 +55,9 @@
 
                 <!-- We create scripts for both CLI and GUI -->
                 <configuration>
+                    <platforms>
+                        <platform>${phybre-platform}</platform>
+                    </platforms>
                     <programs>
                         <program>
                             <mainClass>uk.ac.uea.cmp.phybre.qtools.superq.SuperQCLI</mainClass>

@@ -54,6 +54,9 @@
                 <version>1.6</version>
 
                 <configuration>
+                    <platforms>
+                        <platform>${phybre-platform}</platform>
+                    </platforms>
                     <programs>
                         <program>
                             <mainClass>uk.ac.uea.cmp.phybre.flatnj.FlatNJ</mainClass>
