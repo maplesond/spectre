@@ -181,4 +181,15 @@ public class NexusReaderTest {
         assertNotNull(s);
         assertTrue(s.getWeight() == 6.951241628977932E-4);
     }
+
+    @Test
+    public void testNetworkAssumptions() throws IOException {
+
+        File testFile = FileUtils.toFile(NexusReaderTest.class.getResource("/network-assumptions.nex"));
+
+        Nexus nexus = new NexusReader().parse(testFile);
+
+        assertNotNull(nexus);
+
+    }
 }

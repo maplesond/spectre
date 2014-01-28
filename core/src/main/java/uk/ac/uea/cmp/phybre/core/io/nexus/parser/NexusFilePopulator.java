@@ -116,6 +116,16 @@ public class NexusFilePopulator implements NexusFileListener {
     }
 
     @Override
+    public void enterDimensions_network(@NotNull NexusFileParser.Dimensions_networkContext ctx) {
+
+    }
+
+    @Override
+    public void exitDimensions_network(@NotNull NexusFileParser.Dimensions_networkContext ctx) {
+
+    }
+
+    @Override
     public void enterRoot(@NotNull NexusFileParser.RootContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -153,6 +163,16 @@ public class NexusFilePopulator implements NexusFileListener {
     @Override
     public void exitTriangle_option(@NotNull NexusFileParser.Triangle_optionContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void enterEdges_network(@NotNull NexusFileParser.Edges_networkContext ctx) {
+
+    }
+
+    @Override
+    public void exitEdges_network(@NotNull NexusFileParser.Edges_networkContext ctx) {
+
     }
 
     @Override
@@ -244,6 +264,16 @@ public class NexusFilePopulator implements NexusFileListener {
     }
 
     @Override
+    public void enterTranslate_network_data(@NotNull NexusFileParser.Translate_network_dataContext ctx) {
+
+    }
+
+    @Override
+    public void exitTranslate_network_data(@NotNull NexusFileParser.Translate_network_dataContext ctx) {
+
+    }
+
+    @Override
     public void enterMatrix_header(@NotNull NexusFileParser.Matrix_headerContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -290,6 +320,16 @@ public class NexusFilePopulator implements NexusFileListener {
     }
 
     @Override
+    public void enterVertices_2d_data(@NotNull NexusFileParser.Vertices_2d_dataContext ctx) {
+
+    }
+
+    @Override
+    public void exitVertices_2d_data(@NotNull NexusFileParser.Vertices_2d_dataContext ctx) {
+
+    }
+
+    @Override
     public void enterMatrix_splits_data(@NotNull NexusFileParser.Matrix_splits_dataContext ctx) {
 
 
@@ -298,11 +338,9 @@ public class NexusFilePopulator implements NexusFileListener {
     @Override
     public void exitMatrix_splits_data(@NotNull NexusFileParser.Matrix_splits_dataContext ctx) {
 
-        if (ctx.NUMERIC() != null  && !ctx.NUMERIC().isEmpty()) {
+        if (ctx.NUMERIC() != null) {
 
-            double weight = ctx.NUMERIC().size() == 2 ?
-                    Double.parseDouble(ctx.NUMERIC(1).getText()) :
-                    Double.parseDouble(ctx.NUMERIC(0).getText());
+            double weight = Double.parseDouble(ctx.NUMERIC().getText());
 
             NexusFileParser.Matrix_splits_listContext ctxList = ctx.matrix_splits_list();
 
@@ -396,6 +434,26 @@ public class NexusFilePopulator implements NexusFileListener {
     }
 
     @Override
+    public void enterTranslate_network_header(@NotNull NexusFileParser.Translate_network_headerContext ctx) {
+
+    }
+
+    @Override
+    public void exitTranslate_network_header(@NotNull NexusFileParser.Translate_network_headerContext ctx) {
+
+    }
+
+    @Override
+    public void enterRotate_network(@NotNull NexusFileParser.Rotate_networkContext ctx) {
+
+    }
+
+    @Override
+    public void exitRotate_network(@NotNull NexusFileParser.Rotate_networkContext ctx) {
+
+    }
+
+    @Override
     public void enterLabels_header(@NotNull NexusFileParser.Labels_headerContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -403,6 +461,16 @@ public class NexusFilePopulator implements NexusFileListener {
     @Override
     public void exitLabels_header(@NotNull NexusFileParser.Labels_headerContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void enterKey_value_pairs(@NotNull NexusFileParser.Key_value_pairsContext ctx) {
+
+    }
+
+    @Override
+    public void exitKey_value_pairs(@NotNull NexusFileParser.Key_value_pairsContext ctx) {
+
     }
 
     @Override
@@ -509,6 +577,16 @@ public class NexusFilePopulator implements NexusFileListener {
     }
 
     @Override
+    public void enterAssumptions_data(@NotNull NexusFileParser.Assumptions_dataContext ctx) {
+
+    }
+
+    @Override
+    public void exitAssumptions_data(@NotNull NexusFileParser.Assumptions_dataContext ctx) {
+
+    }
+
+    @Override
     public void enterFormat_distances(@NotNull NexusFileParser.Format_distancesContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -611,6 +689,16 @@ public class NexusFilePopulator implements NexusFileListener {
     }
 
     @Override
+    public void enterVlabels_network_data(@NotNull NexusFileParser.Vlabels_network_dataContext ctx) {
+
+    }
+
+    @Override
+    public void exitVlabels_network_data(@NotNull NexusFileParser.Vlabels_network_dataContext ctx) {
+
+    }
+
+    @Override
     public void enterProperties_splits(@NotNull NexusFileParser.Properties_splitsContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -631,6 +719,16 @@ public class NexusFilePopulator implements NexusFileListener {
     }
 
     @Override
+    public void enterVlabels_network(@NotNull NexusFileParser.Vlabels_networkContext ctx) {
+
+    }
+
+    @Override
+    public void exitVlabels_network(@NotNull NexusFileParser.Vlabels_networkContext ctx) {
+
+    }
+
+    @Override
     public void enterNewick_tree(@NotNull NexusFileParser.Newick_treeContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -638,6 +736,16 @@ public class NexusFilePopulator implements NexusFileListener {
     @Override
     public void exitNewick_tree(@NotNull NexusFileParser.Newick_treeContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void enterTranslate_network(@NotNull NexusFileParser.Translate_networkContext ctx) {
+
+    }
+
+    @Override
+    public void exitTranslate_network(@NotNull NexusFileParser.Translate_networkContext ctx) {
+
     }
 
     @Override
@@ -682,6 +790,16 @@ public class NexusFilePopulator implements NexusFileListener {
     }
 
     @Override
+    public void enterDraw_network_options(@NotNull NexusFileParser.Draw_network_optionsContext ctx) {
+
+    }
+
+    @Override
+    public void exitDraw_network_options(@NotNull NexusFileParser.Draw_network_optionsContext ctx) {
+
+    }
+
+    @Override
     public void enterMatrix_entry_list(@NotNull NexusFileParser.Matrix_entry_listContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -702,12 +820,82 @@ public class NexusFilePopulator implements NexusFileListener {
     }
 
     @Override
+    public void enterDraw_network(@NotNull NexusFileParser.Draw_networkContext ctx) {
+
+    }
+
+    @Override
+    public void exitDraw_network(@NotNull NexusFileParser.Draw_networkContext ctx) {
+
+    }
+
+    @Override
+    public void enterNvertices(@NotNull NexusFileParser.NverticesContext ctx) {
+
+    }
+
+    @Override
+    public void exitNvertices(@NotNull NexusFileParser.NverticesContext ctx) {
+
+    }
+
+    @Override
+    public void enterDraw_network_header(@NotNull NexusFileParser.Draw_network_headerContext ctx) {
+
+    }
+
+    @Override
+    public void exitDraw_network_header(@NotNull NexusFileParser.Draw_network_headerContext ctx) {
+
+    }
+
+    @Override
+    public void enterVlabels_network_label(@NotNull NexusFileParser.Vlabels_network_labelContext ctx) {
+
+    }
+
+    @Override
+    public void exitVlabels_network_label(@NotNull NexusFileParser.Vlabels_network_labelContext ctx) {
+
+    }
+
+    @Override
     public void enterFormat_splits_item(@NotNull NexusFileParser.Format_splits_itemContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
     public void exitFormat_splits_item(@NotNull NexusFileParser.Format_splits_itemContext ctx) {
+
+    }
+
+    @Override
+    public void enterVlabels_network_entry(@NotNull NexusFileParser.Vlabels_network_entryContext ctx) {
+
+    }
+
+    @Override
+    public void exitVlabels_network_entry(@NotNull NexusFileParser.Vlabels_network_entryContext ctx) {
+
+    }
+
+    @Override
+    public void enterVertices_network_header(@NotNull NexusFileParser.Vertices_network_headerContext ctx) {
+
+    }
+
+    @Override
+    public void exitVertices_network_header(@NotNull NexusFileParser.Vertices_network_headerContext ctx) {
+
+    }
+
+    @Override
+    public void enterEdges_network_header(@NotNull NexusFileParser.Edges_network_headerContext ctx) {
+
+    }
+
+    @Override
+    public void exitEdges_network_header(@NotNull NexusFileParser.Edges_network_headerContext ctx) {
 
     }
 
@@ -734,6 +922,16 @@ public class NexusFilePopulator implements NexusFileListener {
     @Override
     public void exitBlock_quartets(@NotNull NexusFileParser.Block_quartetsContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void enterVertices_network_data(@NotNull NexusFileParser.Vertices_network_dataContext ctx) {
+
+    }
+
+    @Override
+    public void exitVertices_network_data(@NotNull NexusFileParser.Vertices_network_dataContext ctx) {
+
     }
 
     @Override
@@ -807,6 +1005,16 @@ public class NexusFilePopulator implements NexusFileListener {
     }
 
     @Override
+    public void enterDraw_network_option(@NotNull NexusFileParser.Draw_network_optionContext ctx) {
+
+    }
+
+    @Override
+    public void exitDraw_network_option(@NotNull NexusFileParser.Draw_network_optionContext ctx) {
+
+    }
+
+    @Override
     public void enterFormat_splits(@NotNull NexusFileParser.Format_splitsContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -817,6 +1025,16 @@ public class NexusFilePopulator implements NexusFileListener {
     }
 
     @Override
+    public void enterNetwork_block_header(@NotNull NexusFileParser.Network_block_headerContext ctx) {
+
+    }
+
+    @Override
+    public void exitNetwork_block_header(@NotNull NexusFileParser.Network_block_headerContext ctx) {
+
+    }
+
+    @Override
     public void enterCs_quartet(@NotNull NexusFileParser.Cs_quartetContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -824,6 +1042,16 @@ public class NexusFilePopulator implements NexusFileListener {
     @Override
     public void exitCs_quartet(@NotNull NexusFileParser.Cs_quartetContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void enterScale_network(@NotNull NexusFileParser.Scale_networkContext ctx) {
+
+    }
+
+    @Override
+    public void exitScale_network(@NotNull NexusFileParser.Scale_networkContext ctx) {
+
     }
 
     @Override
@@ -847,6 +1075,16 @@ public class NexusFilePopulator implements NexusFileListener {
     }
 
     @Override
+    public void enterNedges(@NotNull NexusFileParser.NedgesContext ctx) {
+
+    }
+
+    @Override
+    public void exitNedges(@NotNull NexusFileParser.NedgesContext ctx) {
+
+    }
+
+    @Override
     public void enterTree_block_header(@NotNull NexusFileParser.Tree_block_headerContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -854,6 +1092,16 @@ public class NexusFilePopulator implements NexusFileListener {
     @Override
     public void exitTree_block_header(@NotNull NexusFileParser.Tree_block_headerContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void enterBlock_network(@NotNull NexusFileParser.Block_networkContext ctx) {
+
+    }
+
+    @Override
+    public void exitBlock_network(@NotNull NexusFileParser.Block_networkContext ctx) {
+
     }
 
     @Override
@@ -904,6 +1152,16 @@ public class NexusFilePopulator implements NexusFileListener {
     @Override
     public void exitMatrix_data(@NotNull NexusFileParser.Matrix_dataContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void enterBlock_assumptions(@NotNull NexusFileParser.Block_assumptionsContext ctx) {
+
+    }
+
+    @Override
+    public void exitBlock_assumptions(@NotNull NexusFileParser.Block_assumptionsContext ctx) {
+
     }
 
     @Override
@@ -967,6 +1225,26 @@ public class NexusFilePopulator implements NexusFileListener {
     }
 
     @Override
+    public void enterEdges_network_entry(@NotNull NexusFileParser.Edges_network_entryContext ctx) {
+
+    }
+
+    @Override
+    public void exitEdges_network_entry(@NotNull NexusFileParser.Edges_network_entryContext ctx) {
+
+    }
+
+    @Override
+    public void enterAssumptions_data_entry(@NotNull NexusFileParser.Assumptions_data_entryContext ctx) {
+
+    }
+
+    @Override
+    public void exitAssumptions_data_entry(@NotNull NexusFileParser.Assumptions_data_entryContext ctx) {
+
+    }
+
+    @Override
     public void enterIntervals_header(@NotNull NexusFileParser.Intervals_headerContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -977,6 +1255,16 @@ public class NexusFilePopulator implements NexusFileListener {
     }
 
     @Override
+    public void enterVertices_network_entry(@NotNull NexusFileParser.Vertices_network_entryContext ctx) {
+
+    }
+
+    @Override
+    public void exitVertices_network_entry(@NotNull NexusFileParser.Vertices_network_entryContext ctx) {
+
+    }
+
+    @Override
     public void enterBlocks(@NotNull NexusFileParser.BlocksContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -984,6 +1272,16 @@ public class NexusFilePopulator implements NexusFileListener {
     @Override
     public void exitBlocks(@NotNull NexusFileParser.BlocksContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void enterAssumptions_block_header(@NotNull NexusFileParser.Assumptions_block_headerContext ctx) {
+
+    }
+
+    @Override
+    public void exitAssumptions_block_header(@NotNull NexusFileParser.Assumptions_block_headerContext ctx) {
+
     }
 
     @Override
@@ -1030,6 +1328,16 @@ public class NexusFilePopulator implements NexusFileListener {
     }
 
     @Override
+    public void enterVertices_network(@NotNull NexusFileParser.Vertices_networkContext ctx) {
+
+    }
+
+    @Override
+    public void exitVertices_network(@NotNull NexusFileParser.Vertices_networkContext ctx) {
+
+    }
+
+    @Override
     public void enterBegin(@NotNull NexusFileParser.BeginContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -1050,6 +1358,26 @@ public class NexusFilePopulator implements NexusFileListener {
     }
 
     @Override
+    public void enterEdges_network_data(@NotNull NexusFileParser.Edges_network_dataContext ctx) {
+
+    }
+
+    @Override
+    public void exitEdges_network_data(@NotNull NexusFileParser.Edges_network_dataContext ctx) {
+
+    }
+
+    @Override
+    public void enterVlabels_network_header(@NotNull NexusFileParser.Vlabels_network_headerContext ctx) {
+
+    }
+
+    @Override
+    public void exitVlabels_network_header(@NotNull NexusFileParser.Vlabels_network_headerContext ctx) {
+
+    }
+
+    @Override
     public void enterWeights_header(@NotNull NexusFileParser.Weights_headerContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -1067,6 +1395,16 @@ public class NexusFilePopulator implements NexusFileListener {
     @Override
     public void exitTriangle(@NotNull NexusFileParser.TriangleContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void enterMatrix_split_identifier(@NotNull NexusFileParser.Matrix_split_identifierContext ctx) {
+
+    }
+
+    @Override
+    public void exitMatrix_split_identifier(@NotNull NexusFileParser.Matrix_split_identifierContext ctx) {
+
     }
 
     @Override
@@ -1169,6 +1507,16 @@ public class NexusFilePopulator implements NexusFileListener {
     }
 
     @Override
+    public void enterKey_value_pair(@NotNull NexusFileParser.Key_value_pairContext ctx) {
+
+    }
+
+    @Override
+    public void exitKey_value_pair(@NotNull NexusFileParser.Key_value_pairContext ctx) {
+
+    }
+
+    @Override
     public void enterLabel_quartet(@NotNull NexusFileParser.Label_quartetContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -1176,6 +1524,16 @@ public class NexusFilePopulator implements NexusFileListener {
     @Override
     public void exitLabel_quartet(@NotNull NexusFileParser.Label_quartetContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void enterVertices_3d_data(@NotNull NexusFileParser.Vertices_3d_dataContext ctx) {
+
+    }
+
+    @Override
+    public void exitVertices_3d_data(@NotNull NexusFileParser.Vertices_3d_dataContext ctx) {
+
     }
 
     @Override
@@ -1196,6 +1554,16 @@ public class NexusFilePopulator implements NexusFileListener {
     @Override
     public void exitProperties_splits_list(@NotNull NexusFileParser.Properties_splits_listContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void enterTranslate_network_entry(@NotNull NexusFileParser.Translate_network_entryContext ctx) {
+
+    }
+
+    @Override
+    public void exitTranslate_network_entry(@NotNull NexusFileParser.Translate_network_entryContext ctx) {
+
     }
 
     @Override

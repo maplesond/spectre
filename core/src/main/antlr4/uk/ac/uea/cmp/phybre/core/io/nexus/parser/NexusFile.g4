@@ -73,8 +73,9 @@ block_declaration :
   //| block_data
   //| block_codons
   //| block_sets
-  //| block_assumptions
+    | block_assumptions
     | block_trees
+    | block_network
   //| block_notes
   //| block_unknown
     ;
@@ -189,8 +190,6 @@ dimensions_splits :
     | dimensions ntax nsplits ';'
     ;
 
-nsplits : 'nsplits' '=' NUMERIC;
-
 format_splits :
     // Empty
     | format format_splits_list ';'
@@ -255,9 +254,15 @@ cycle_item : NUMERIC;
 
 matrix_splits_data :
     // Empty
-    | '\'' NUMERIC '\'' NUMERIC matrix_splits_list ',' matrix_splits_data
-    | NUMERIC matrix_splits_list ',' matrix_splits_data
+    | matrix_split_identifier NUMERIC matrix_splits_list ',' matrix_splits_data
     ;
+
+matrix_split_identifier :
+      // Empty
+    | '\'' NUMERIC '\''
+    | NUMERIC
+    ;
+
 
 matrix_splits_list :
     // Empty
@@ -298,6 +303,35 @@ sc_quartet : IDENTIFIER;
 
 cs_quartet: IDENTIFIER;
 
+
+// ----------------------------------------------------------------------------
+// Assumption definition rules
+// ----------------------------------------------------------------------------
+
+block_assumptions : assumptions_block_header ';' assumptions_data;
+
+assumptions_block_header : 'assumptions' | 'Assumptions' | 'ASSUMPTIONS' | 'st_Assumptions';
+
+assumptions_data :
+      // Empty
+    | assumptions_data_entry ';' assumptions_data
+    ;
+
+assumptions_data_entry :
+      IDENTIFIER key_value_pairs
+    | key_value_pair
+    | IDENTIFIER
+    ;
+
+key_value_pairs :
+      // Empty
+    | key_value_pair key_value_pairs
+    ;
+
+key_value_pair :
+      IDENTIFIER '=' IDENTIFIER
+    | IDENTIFIER '=' NUMERIC
+    ;
 
 
 // ----------------------------------------------------------------------
@@ -361,6 +395,111 @@ length :
     | ':' NUMERIC
     ;
 
+
+// ----------------------------------------------------------------------------
+// Network definition rules
+// ----------------------------------------------------------------------------
+
+block_network : network_block_header ';'
+                dimensions_network
+                draw_network
+                translate_network
+                vertices_network
+                vlabels_network
+                edges_network;
+
+network_block_header : 'network' | 'Network' | 'NETWORK';
+
+dimensions_network :
+      // Empty
+    | dimensions ntax nvertices nedges ';'
+    ;
+
+draw_network :
+      // Empty
+    | draw_network_header draw_network_options ';'
+    ;
+
+draw_network_header : 'draw' | 'Draw' | 'DRAW';
+
+draw_network_options :
+      // Empty
+    | draw_network_option draw_network_options
+    ;
+
+draw_network_option :
+      scale_network
+    | rotate_network
+    ;
+
+scale_network : 'to_scale';
+
+rotate_network : 'rotateAbout' '=' NUMERIC;
+
+translate_network :
+      // Empty
+    | translate_network_header translate_network_data ';'
+    ;
+
+translate_network_header : 'translate' | 'Translate' | 'TRANSLATE';
+
+translate_network_data :
+      // Empty
+    | translate_network_entry ',' translate_network_data
+    ;
+
+translate_network_entry : NUMERIC '\'' IDENTIFIER '\'';
+
+vertices_network :
+      // Empty
+    | vertices_network_header vertices_network_data ';'
+    ;
+
+vertices_network_header : 'vertices' | 'Vertices' | 'VERTICES';
+
+vertices_network_data :
+      // Empty
+    | vertices_network_entry ',' vertices_network_data
+    ;
+
+vertices_network_entry :
+      NUMERIC NUMERIC NUMERIC vertices_2d_data
+    | NUMERIC NUMERIC NUMERIC vertices_3d_data
+    ;
+
+vertices_2d_data : 's' '=' IDENTIFIER 'b' '=' NUMERIC NUMERIC NUMERIC;
+vertices_3d_data : 'w' '=' NUMERIC 'h' '=' NUMERIC 'b' '=' NUMERIC NUMERIC NUMERIC;
+
+
+vlabels_network :
+     // Empty
+   | vlabels_network_header vlabels_network_data ';'
+   ;
+
+vlabels_network_header : 'vlabels' | 'Vlabels' | 'VLABELS';
+
+vlabels_network_data :
+     // Empty
+   | vlabels_network_entry ',' vlabels_network_data
+   ;
+
+vlabels_network_entry : vlabels_network_label 'l' '=' NUMERIC 'x' '=' NUMERIC 'y' '=' NUMERIC 'f' '=' '\'' IDENTIFIER '\'';
+
+vlabels_network_label : NUMERIC '\'' IDENTIFIER '\'';
+
+edges_network :
+      // Empty
+    | edges_network_header edges_network_data ';'
+    ;
+
+edges_network_header : 'edges' | 'Edges' | 'EDGES';
+
+edges_network_data :
+      // Empty
+    | edges_network_entry ',' edges_network_data
+    ;
+
+edges_network_entry : NUMERIC NUMERIC NUMERIC 's' '=' NUMERIC 'w' '=' NUMERIC;
 
 
 // ----------------------------------------------------------------------------
@@ -433,6 +572,12 @@ newtaxa_optional :
     // Empty
     | newtaxa
     ;
+
+nsplits : 'nsplits' '=' NUMERIC;
+
+nvertices : 'nvertices' '=' NUMERIC;
+
+nedges : 'nedges' '=' NUMERIC;
 
 properties : 'properties' | 'PROPERTIES';
 

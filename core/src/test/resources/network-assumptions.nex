@@ -1,0 +1,145 @@
+#nexus
+
+BEGIN Taxa;
+DIMENSIONS ntax=13;
+TAXLABELS
+[1] 'Barbarea_vulgaris'
+[2] 'Arabis_parishii'
+[3] 'Boechera_fendleri'
+[4] 'Arabis_lyallii'
+[5] 'Boechera_lignifera'
+[6] 'Halimolobos_perplexa'
+[7] 'Crucihimalaya_wallichii'
+[8] 'Crucihimalaya_himalaica'
+[9] 'Capsella_rubella'
+[10] 'Olimarabidopsis_pumila'
+[11] 'A_lyrata'
+[12] 'A_halleri'
+[13] 'A_thaliana'
+;
+END; [Taxa]
+
+BEGIN Splits;
+DIMENSIONS ntax=13 nsplits=23;
+FORMAT labels=left weights=yes confidences=no intervals=no;
+PROPERTIES fit=-1.0 cyclic;
+CYCLE 5 8 7 10 1 12 11 13 9 6 4 2 3;
+MATRIX
+'1' 0.015344 	  1 2 3 4 5 6 9 10 11 12 13,
+'2' 0.011707 	  1 7 8 9 10 11 12 13,
+'3' 0.003886 	  1 6 7 8 9 10 11 12 13,
+'4' 0.013095 	  1 10 11 12 13,
+'5' 0.008633 	  1 9 10 11 12 13,
+'6' 0.009539 	  1 11 12 13,
+'7' 0.014992 	  1 2 3 4 5 6 7 8 9 10 13,
+'8' 0.005752 	  1 2 3 4 5 6 7 8 9 10,
+'9' 0.003658 	  1 5 6 7 8 9 10 11 12 13,
+'10' 0.001259 	  1 4 5 6 7 8 9 10 11 12 13,
+'11' 0.0087865 	  1,
+'12' 0.0087865 	  1 3 4 5 6 7 8 9 10 11 12 13,
+'13' 0.0087865 	  1 2 4 5 6 7 8 9 10 11 12 13,
+'14' 0.0087865 	  1 2 3 5 6 7 8 9 10 11 12 13,
+'15' 0.0087865 	  1 2 3 4 6 7 8 9 10 11 12 13,
+'16' 0.0087865 	  1 2 3 4 5 7 8 9 10 11 12 13,
+'17' 0.0087865 	  1 2 3 4 5 6 8 9 10 11 12 13,
+'18' 0.0087865 	  1 2 3 4 5 6 7 9 10 11 12 13,
+'19' 0.0087865 	  1 2 3 4 5 6 7 8 10 11 12 13,
+'20' 0.0087865 	  1 2 3 4 5 6 7 8 9 11 12 13,
+'21' 0.0087865 	  1 2 3 4 5 6 7 8 9 10 12 13,
+'22' 0.0087865 	  1 2 3 4 5 6 7 8 9 10 11 13,
+'23' 0.0087865 	  1 2 3 4 5 6 7 8 9 10 11 12,
+;
+END; [Splits]
+
+BEGIN Network;
+DIMENSIONS ntax=13 nvertices=24 nedges=23;
+DRAW to_scale rotateAbout=0.84823;
+TRANSLATE
+2 'Barbarea_vulgaris',
+3 'A_halleri',
+4 'A_lyrata',
+5 'A_thaliana',
+6 'Capsella_rubella',
+7 'Halimolobos_perplexa',
+8 'Arabis_lyallii',
+9 'Arabis_parishii',
+10 'Boechera_fendleri',
+11 'Boechera_lignifera',
+12 'Crucihimalaya_himalaica',
+13 'Crucihimalaya_wallichii',
+14 'Olimarabidopsis_pumila',
+;
+VERTICES
+1 -0.010223984 0.0017212391 s=n b=0 0 0,
+2 -0.0014374835 0.0017212391 w=3 h=3 b=0 0 0,
+3 0.013044575 0.01610583 w=3 h=3 b=0 0 0,
+4 0.009256499 0.023627724 w=3 h=3 b=0 0 0,
+5 -0.00589738 0.015177479 w=3 h=3 b=0 0 0,
+6 -0.032074813 -0.002474317 w=3 h=3 b=0 0 0,
+7 -0.053364575 -0.013389717 w=3 h=3 b=0 0 0,
+8 -0.061764486 -0.01822927 w=3 h=3 b=0 0 0,
+9 -0.06342634 -0.02458541 w=3 h=3 b=0 0 0,
+10 -0.059737287 -0.029823184 w=3 h=3 b=0 0 0,
+11 -0.049666677 -0.029790668 w=3 h=3 b=0 0 0,
+12 -0.028920814 -0.0394839 w=3 h=3 b=0 0 0,
+13 -0.021655539 -0.033573482 w=3 h=3 b=0 0 0,
+14 -0.009583968 -0.008687578 w=3 h=3 b=0 0 0,
+15 -0.017364027 -0.004604288 s=n b=0 0 0,
+16 -0.028959075 -0.010689838 s=n b=0 0 0,
+17 -0.03542097 -0.016414575 s=n b=0 0 0,
+18 -0.046787787 -0.019216245 s=n b=0 0 0,
+19 -0.050228667 -0.021022158 s=n b=0 0 0,
+20 -0.0069564753 0.0064550424 s=n b=0 0 0,
+21 -0.053780373 -0.021897575 s=n b=0 0 0,
+22 -0.02997991 -0.030761467 s=n b=0 0 0,
+23 0.0042651976 0.016396577 s=n b=0 0 0,
+24 -0.054895163 -0.022482662 s=n b=0 0 0,
+;
+VLABELS
+2 'Barbarea_vulgaris' l=9 x=-3 y=20 f='Dialog-PLAIN-14',
+3 'A_halleri' l=9 x=2 y=24 f='Dialog-PLAIN-14',
+4 'A_lyrata' l=9 x=-55 y=19 f='Dialog-PLAIN-14',
+5 'A_thaliana' l=9 x=-78 y=18 f='Dialog-PLAIN-14',
+6 'Capsella_rubella' l=9 x=-98 y=23 f='Dialog-PLAIN-14',
+7 'Halimolobos_perplexa' l=9 x=-139 y=23 f='Dialog-PLAIN-14',
+8 'Arabis_lyallii' l=9 x=-97 y=3 f='Dialog-PLAIN-14',
+9 'Arabis_parishii' l=9 x=-101 y=-8 f='Dialog-PLAIN-14',
+10 'Boechera_fendleri' l=9 x=-5 y=-7 f='Dialog-PLAIN-14',
+11 'Boechera_lignifera' l=9 x=5 y=-4 f='Dialog-PLAIN-14',
+12 'Crucihimalaya_himalaica' l=9 x=-27 y=-7 f='Dialog-PLAIN-14',
+13 'Crucihimalaya_wallichii' l=9 x=-32 y=21 f='Dialog-PLAIN-14',
+14 'Olimarabidopsis_pumila' l=9 x=-4 y=19 f='Dialog-PLAIN-14',
+;
+EDGES
+1 1 2 s=11 w=0.0087865,
+2 15 1 s=6 w=0.009539,
+3 15 14 s=20 w=0.0087865,
+4 16 15 s=4 w=0.013095,
+5 16 6 s=19 w=0.0087865,
+6 17 16 s=5 w=0.008633,
+7 18 17 s=2 w=0.011707,
+8 18 7 s=16 w=0.0087865,
+9 19 18 s=3 w=0.003886,
+10 19 11 s=15 w=0.0087865,
+11 20 1 s=8 w=0.005752,
+12 20 5 s=23 w=0.0087865,
+13 21 19 s=9 w=0.003658,
+14 21 8 s=14 w=0.0087865,
+15 22 17 s=1 w=0.015344,
+16 22 12 s=18 w=0.0087865,
+17 22 13 s=17 w=0.0087865,
+18 23 20 s=7 w=0.014992,
+19 23 3 s=22 w=0.0087865,
+20 23 4 s=21 w=0.0087865,
+21 24 21 s=10 w=0.001259,
+22 24 9 s=12 w=0.0087865,
+23 24 10 s=13 w=0.0087865,
+;
+END; [Network]
+
+BEGIN st_Assumptions;
+	uptodate;
+	splitstransform=EqualAngle;
+	SplitsPostProcess filter=dimension value=4;
+	autolayoutnodelabels;
+END; [st_Assumptions]
