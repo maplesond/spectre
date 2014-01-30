@@ -180,8 +180,6 @@ public class InternalNNLSSolver {
                     }
                 }
 
-                // done
-
                 // now solve their least squares problem EtEp x = Etfp
 
                 // BUT! we only have size (P) splits
@@ -190,22 +188,15 @@ public class InternalNNLSSolver {
                 int[] aMap = P.createMap(maxSplits);
 
                 double Q[][] = this.initQ(nbSplits, EtEp);
-
-                // then calculate R
                 UpperTriangularMatrix R = this.initR(nbSplits, EtEp, Q);
-
-                // we now have the Q and R matrices
 
                 // check consistency!
                 if (R.getElementAt(nbSplits - 1, nbSplits - 1) == 0) {
-
                     log.warn("Subproblem is underdetermined, results may not be unique!");
+                    //TODO Should I throw an exception here?
                 }
 
-                // done
-
                 // least squares solution of zHolder:
-
                 double[] QtEtfp = new double[nbSplits];
 
                 for (int i = 0; i < nbSplits; i++) {
@@ -213,7 +204,6 @@ public class InternalNNLSSolver {
                     double jSum = 0.0;
 
                     for (int j = 0; j < nbSplits; j++) {
-
                         jSum += Q[j][i] * Etfp[j];
                     }
 
@@ -222,11 +212,9 @@ public class InternalNNLSSolver {
 
                 // reduced row echelon whatever solver... maybe?
                 // first for the non-personas...
-
                 double[] z = new double[maxSplits];
 
                 // ... second those that exist; wonder if I can do this?
-
                 double[] zRed = new double[nbSplits];
 
                 for (int i = 0; i < nbSplits; i++) {

@@ -17,6 +17,9 @@
 package uk.ac.uea.cmp.phybre.qtools.superq;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -44,6 +47,10 @@ public class SuperQITCase {
     @Before
     public void setUp() throws Exception {
         simpleOutput = folder.newFolder("simple");
+
+        // Uncomment this line if you want to see output.
+        BasicConfigurator.configure();
+        LogManager.getRootLogger().setLevel(Level.INFO);
     }
 
 

@@ -20,7 +20,6 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.uea.cmp.phybre.net.netmake.SummedDistanceList;
 import uk.ac.uea.cmp.phybre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phybre.core.ds.split.Split;
 import uk.ac.uea.cmp.phybre.core.ds.split.SplitBlock;
@@ -28,6 +27,7 @@ import uk.ac.uea.cmp.phybre.core.ds.split.SplitDistanceMap;
 import uk.ac.uea.cmp.phybre.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.phybre.core.math.Statistics;
 import uk.ac.uea.cmp.phybre.net.netmake.EdgeHandling;
+import uk.ac.uea.cmp.phybre.net.netmake.SummedDistanceList;
 
 import java.util.ArrayList;
 import java.util.List;

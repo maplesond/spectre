@@ -110,10 +110,33 @@ public class WeightsComputer {
         stopWatchAll.stop();
         log.info("Total time taken to compute split weights: " + stopWatchAll.toString());
 
+        log.info("Validating weights");
+        this.validateQNetSolution(solution);
+
         return new ComputedWeights(solution, EtE);
     }
 
+    protected void validateQNetSolution(double[] solution) throws QNetException {
 
+        if (solution == null || solution.length < 2) {
+            throw new QNetException("No solution found.  Can't process further.");
+        }
+
+        for(int i = 0; i < solution.length; i++) {
+
+            Double d = new Double(solution[i]);
+
+            if (d.isNaN() || d.isInfinite()) {
+                throw new QNetException("Solution for variable " + i + " is not sensible (NaN or Infinity).");
+            }
+
+            if (solution[i] != 0.0) {
+                return;
+            }
+        }
+
+        throw new QNetException("Solution has 0.0 for all variables!");
+    }
 
     private SymmetricMatrix initEtE(final int N, Pair<Integer, Integer>[] splitIndices, PHolder pHolder) {
 
