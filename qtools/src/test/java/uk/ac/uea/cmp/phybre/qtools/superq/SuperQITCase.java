@@ -114,4 +114,22 @@ public class SuperQITCase {
 
         assertFalse(superQ.failed());
     }
+
+    @Test
+    public void testArabidopsisScript() throws OptimiserException {
+
+        SuperQOptions options = this.createSimpleOptions(
+                "/arabidopsis/flowers.script",
+                new File(simpleOutput, "arabidopsis.out"));
+
+        SuperQ superQ = new SuperQ(options);
+
+        superQ.run();
+
+        if (superQ.failed()) {
+            System.err.println(superQ.getFullErrorMessage());
+        }
+
+        assertFalse(superQ.failed());
+    }
 }

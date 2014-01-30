@@ -209,9 +209,9 @@ public class NexusFilePopulator implements NexusFileListener {
 
             NexusFileParser.NtaxContext ctxNtax = ctx.dimensions_taxa().ntax();
 
-            if (ctxNtax.NUMERIC() != null && !ctxNtax.NUMERIC().getText().isEmpty()) {
+            if (ctxNtax.INT() != null && !ctxNtax.INT().getText().isEmpty()) {
 
-                nTax = Integer.parseInt(ctxNtax.NUMERIC().getText());
+                nTax = Integer.parseInt(ctxNtax.INT().getText());
 
                 if (verbose && log.isDebugEnabled())
                     log.debug("Taxa Block: ntax:" + nTax);
@@ -338,9 +338,9 @@ public class NexusFilePopulator implements NexusFileListener {
     @Override
     public void exitMatrix_splits_data(@NotNull NexusFileParser.Matrix_splits_dataContext ctx) {
 
-        if (ctx.NUMERIC() != null) {
+        if (ctx.FLOAT() != null) {
 
-            double weight = Double.parseDouble(ctx.NUMERIC().getText());
+            double weight = Double.parseDouble(ctx.FLOAT().getText());
 
             NexusFileParser.Matrix_splits_listContext ctxList = ctx.matrix_splits_list();
 
@@ -348,9 +348,9 @@ public class NexusFilePopulator implements NexusFileListener {
 
             while (ctxList != null) {
 
-                if (ctxList.NUMERIC() != null) {
+                if (ctxList.INT() != null) {
 
-                    int val = Integer.parseInt(ctxList.NUMERIC().getText());
+                    int val = Integer.parseInt(ctxList.INT().getText());
 
                     setA.add(val);
                 }
@@ -372,7 +372,7 @@ public class NexusFilePopulator implements NexusFileListener {
 
         if (ctx.properties_splits_name() != null) {
 
-            String valStr = ctx.NUMERIC() != null ? ctx.NUMERIC().getText() : null;
+            String valStr = ctx.number() != null ? ctx.number().getText() : null;
 
             if (ctx.properties_splits_name().getText().equalsIgnoreCase("cyclic")) {
                 this.splitSystemBuilder.setCyclic(true);
@@ -495,14 +495,14 @@ public class NexusFilePopulator implements NexusFileListener {
 
             NexusFileParser.NtaxContext ctxNtax = ctx.newtaxa().ntax();
 
-            if (ctxNtax.NUMERIC() != null && !ctxNtax.NUMERIC().getText().isEmpty()) {
-                this.distanceMatrixBuilder.setNbTaxa(Integer.parseInt(ctxNtax.NUMERIC().getText()));
+            if (ctxNtax.INT() != null && !ctxNtax.INT().getText().isEmpty()) {
+                this.distanceMatrixBuilder.setNbTaxa(Integer.parseInt(ctxNtax.INT().getText()));
             }
 
             NexusFileParser.NcharContext ctxNchar = ctx.nchar();
 
-            if (ctxNchar.NUMERIC() != null && !ctxNchar.NUMERIC().getText().isEmpty()) {
-                this.distanceMatrixBuilder.setNbChars(Integer.parseInt(ctxNchar.NUMERIC().getText()));
+            if (ctxNchar.INT() != null && !ctxNchar.INT().getText().isEmpty()) {
+                this.distanceMatrixBuilder.setNbChars(Integer.parseInt(ctxNchar.INT().getText()));
             }
         }
     }
@@ -519,6 +519,16 @@ public class NexusFilePopulator implements NexusFileListener {
                         ctx.labels_header().getText().equalsIgnoreCase("labels") :
                         ctx.labels_option().getText().equalsIgnoreCase("true") ||
                                 ctx.labels_option().getText().equalsIgnoreCase("yes"));
+    }
+
+    @Override
+    public void enterNumber(@NotNull NexusFileParser.NumberContext ctx) {
+
+    }
+
+    @Override
+    public void exitNumber(@NotNull NexusFileParser.NumberContext ctx) {
+
     }
 
     @Override
@@ -564,14 +574,14 @@ public class NexusFilePopulator implements NexusFileListener {
         }
 
         if (ctx.ntax() != null) {
-            if (ctx.ntax().NUMERIC() != null) {
-                this.splitSystemBuilder.setExpectedNbTaxa(Integer.parseInt(ctx.ntax().NUMERIC().getText()));
+            if (ctx.ntax().INT() != null) {
+                this.splitSystemBuilder.setExpectedNbTaxa(Integer.parseInt(ctx.ntax().INT().getText()));
             }
         }
 
         if (ctx.nsplits() != null) {
-            if (ctx.nsplits().NUMERIC() != null) {
-                this.splitSystemBuilder.setExpectedNbSplits(Integer.parseInt(ctx.nsplits().NUMERIC().getText()));
+            if (ctx.nsplits().INT() != null) {
+                this.splitSystemBuilder.setExpectedNbSplits(Integer.parseInt(ctx.nsplits().INT().getText()));
             }
         }
     }
@@ -1292,8 +1302,8 @@ public class NexusFilePopulator implements NexusFileListener {
     @Override
     public void exitCycle_item(@NotNull NexusFileParser.Cycle_itemContext ctx) {
 
-        if (ctx.NUMERIC() != null) {
-            this.splitSystemBuilder.addCycleItem(Integer.parseInt(ctx.NUMERIC().getText()));
+        if (ctx.INT() != null) {
+            this.splitSystemBuilder.addCycleItem(Integer.parseInt(ctx.INT().getText()));
         }
     }
 
@@ -1415,10 +1425,10 @@ public class NexusFilePopulator implements NexusFileListener {
     @Override
     public void exitMatrix_quartet(@NotNull NexusFileParser.Matrix_quartetContext ctx) {
 
-        int x = Integer.parseInt(ctx.x_quartet().NUMERIC().getText());
-        int y = Integer.parseInt(ctx.y_quartet().NUMERIC().getText());
-        int u = Integer.parseInt(ctx.u_quartet().NUMERIC().getText());
-        int v = Integer.parseInt(ctx.v_quartet().NUMERIC().getText());
+        int x = Integer.parseInt(ctx.x_quartet().INT().getText());
+        int y = Integer.parseInt(ctx.y_quartet().INT().getText());
+        int u = Integer.parseInt(ctx.u_quartet().INT().getText());
+        int v = Integer.parseInt(ctx.v_quartet().INT().getText());
 
         //ctx.
         //Quartet quartet = new Quartet();
@@ -1447,9 +1457,9 @@ public class NexusFilePopulator implements NexusFileListener {
 
             List<Double> row = new ArrayList<>();
 
-            while (mtxCtx != null && mtxCtx.NUMERIC() != null) {
+            while (mtxCtx != null && mtxCtx.number() != null) {
 
-                String number = mtxCtx.NUMERIC().getText();
+                String number = mtxCtx.number().getText();
 
                 row.add(Double.parseDouble(number));
 
@@ -1464,6 +1474,16 @@ public class NexusFilePopulator implements NexusFileListener {
 
         // We should have all the information to build a distance matrix at this point... so do it.
         this.nexus.setDistanceMatrix(this.distanceMatrixBuilder.createDistanceMatrix());
+    }
+
+    @Override
+    public void enterVlabels_data(@NotNull NexusFileParser.Vlabels_dataContext ctx) {
+
+    }
+
+    @Override
+    public void exitVlabels_data(@NotNull NexusFileParser.Vlabels_dataContext ctx) {
+
     }
 
     @Override

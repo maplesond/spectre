@@ -11,11 +11,8 @@ options
 // TOKENS
 // ----------------------------------------------------------------------
 
-NUMERIC :
-      ('-')? DIGIT+ '.' DIGIT*   // match 1. 39. 3.14159 etc...
-    | ('-')? DIGIT* '.' DIGIT+ ('E' ('-')? DIGIT+)?
-    | ('-')? DIGIT+
-    ;
+INT : ('-')? DIGIT+;
+FLOAT : ('-')? DIGIT* '.' DIGIT+ ('E' ('-')? DIGIT+)?;
 
 
 // A token satisfing the regular expression [_\w]+[\d\w\._]*. Note that an single
@@ -120,7 +117,7 @@ dimensions_distances :
 
 nchar :
     // Empty
-    | 'nchar' '=' NUMERIC
+    | 'nchar' '=' INT
     ;
 
 format_distances :
@@ -231,7 +228,7 @@ properties_splits_list :
     | properties_splits_item properties_splits_list
     ;
 
-properties_splits_item : properties_splits_name ('=' NUMERIC)?;
+properties_splits_item : properties_splits_name ('=' number)?;
 
 properties_splits_name :
       'fit'
@@ -250,23 +247,23 @@ cycle_item_list :
     | cycle_item cycle_item_list
     ;
 
-cycle_item : NUMERIC;
+cycle_item : INT;
 
 matrix_splits_data :
-    // Empty
-    | matrix_split_identifier NUMERIC matrix_splits_list ',' matrix_splits_data
+      // Empty
+    | matrix_split_identifier FLOAT matrix_splits_list ',' matrix_splits_data
     ;
 
 matrix_split_identifier :
       // Empty
-    | '\'' NUMERIC '\''
-    | NUMERIC
+    |  '\'' INT '\''
+    | INT
     ;
 
 
 matrix_splits_list :
     // Empty
-    | NUMERIC matrix_splits_list
+    | INT matrix_splits_list
     ;
 
 
@@ -289,15 +286,15 @@ matrix_quartet : label_quartet weight_quartet x_quartet y_quartet sc_quartet u_q
 
 label_quartet : IDENTIFIER;
 
-weight_quartet : NUMERIC;
+weight_quartet : INT;
 
-x_quartet : NUMERIC;
+x_quartet : INT;
 
-y_quartet : NUMERIC;
+y_quartet : INT;
 
-u_quartet : NUMERIC;
+u_quartet : INT;
 
-v_quartet : NUMERIC;
+v_quartet : INT;
 
 sc_quartet : IDENTIFIER;
 
@@ -330,7 +327,7 @@ key_value_pairs :
 
 key_value_pair :
       IDENTIFIER '=' IDENTIFIER
-    | IDENTIFIER '=' NUMERIC
+    | IDENTIFIER '=' INT
     ;
 
 
@@ -382,7 +379,7 @@ tree_list :
 
 tree_label :
       IDENTIFIER length
-    | NUMERIC length
+    | INT length
     ;
 
 tree_label_optional :
@@ -392,7 +389,7 @@ tree_label_optional :
 
 length :
     // Empty
-    | ':' NUMERIC
+    | ':' INT
     ;
 
 
@@ -434,7 +431,7 @@ draw_network_option :
 
 scale_network : 'to_scale';
 
-rotate_network : 'rotateAbout' '=' NUMERIC;
+rotate_network : 'rotateAbout' '=' FLOAT;
 
 translate_network :
       // Empty
@@ -448,7 +445,7 @@ translate_network_data :
     | translate_network_entry ',' translate_network_data
     ;
 
-translate_network_entry : NUMERIC '\'' IDENTIFIER '\'';
+translate_network_entry : INT '\'' IDENTIFIER '\'';
 
 vertices_network :
       // Empty
@@ -463,12 +460,12 @@ vertices_network_data :
     ;
 
 vertices_network_entry :
-      NUMERIC NUMERIC NUMERIC vertices_2d_data
-    | NUMERIC NUMERIC NUMERIC vertices_3d_data
+      INT FLOAT FLOAT vertices_2d_data
+    | INT FLOAT FLOAT vertices_3d_data
     ;
 
-vertices_2d_data : 's' '=' IDENTIFIER 'b' '=' NUMERIC NUMERIC NUMERIC;
-vertices_3d_data : 'w' '=' NUMERIC 'h' '=' NUMERIC 'b' '=' NUMERIC NUMERIC NUMERIC;
+vertices_2d_data : 's' '=' IDENTIFIER 'b' '=' INT INT INT;
+vertices_3d_data : 'w' '=' INT 'h' '=' INT 'b' '=' INT INT INT;
 
 
 vlabels_network :
@@ -483,9 +480,13 @@ vlabels_network_data :
    | vlabels_network_entry ',' vlabels_network_data
    ;
 
-vlabels_network_entry : vlabels_network_label 'l' '=' NUMERIC 'x' '=' NUMERIC 'y' '=' NUMERIC 'f' '=' '\'' IDENTIFIER '\'';
+vlabels_network_entry : vlabels_network_label vlabels_data;
 
-vlabels_network_label : NUMERIC '\'' IDENTIFIER '\'';
+vlabels_network_label : INT '\'' IDENTIFIER '\'';
+
+vlabels_data :
+      'l' '=' INT 'x' '=' INT 'y' '=' INT 'f' '=' '\'' IDENTIFIER '\''
+    | 'x' '=' INT 'y' '=' INT 'f' '=' '\'' IDENTIFIER '\'';
 
 edges_network :
       // Empty
@@ -499,7 +500,7 @@ edges_network_data :
     | edges_network_entry ',' edges_network_data
     ;
 
-edges_network_entry : NUMERIC NUMERIC NUMERIC 's' '=' NUMERIC 'w' '=' NUMERIC;
+edges_network_entry : INT INT INT 's' '=' INT 'w' '=' FLOAT;
 
 
 // ----------------------------------------------------------------------------
@@ -518,7 +519,7 @@ matrix_data :
 
 matrix_entry_list :
     // Empty
-    | NUMERIC matrix_entry_list
+    | number matrix_entry_list
     | '(' state_composed_word state_composed_list ')' matrix_entry_list
     | '{' state_composed_word state_composed_list '}' matrix_entry_list
     ;
@@ -529,7 +530,7 @@ state_composed_word :
     ;
 
 state_complex_word :
-      NUMERIC
+      number
     //| WORD
     ;
 
@@ -561,7 +562,7 @@ identifier_list :
 // Any character except any of the following: \n\s()[]{}<>/\,;:=*^'"
 missing : 'missing' '=' LETTER_US;
 
-ntax : 'ntax' '=' NUMERIC;
+ntax : 'ntax' '=' INT;
 
 newtaxa :
       'newtaxa' ntax
@@ -573,16 +574,16 @@ newtaxa_optional :
     | newtaxa
     ;
 
-nsplits : 'nsplits' '=' NUMERIC;
+nsplits : 'nsplits' '=' INT;
 
-nvertices : 'nvertices' '=' NUMERIC;
+nvertices : 'nvertices' '=' INT;
 
-nedges : 'nedges' '=' NUMERIC;
+nedges : 'nedges' '=' INT;
 
 properties : 'properties' | 'PROPERTIES';
 
 reference :
-    NUMERIC
+    number
   | IDENTIFIER
   ;
 
@@ -604,3 +605,4 @@ taxlabels_optional :
 taxlabels_header : 'taxlabels' | 'TAXLABELS';
 
 
+number : INT | FLOAT;

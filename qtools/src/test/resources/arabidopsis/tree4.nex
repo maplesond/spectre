@@ -1,0 +1,169 @@
+#nexus
+
+BEGIN Taxa;
+DIMENSIONS ntax=16;
+TAXLABELS
+[1] 'Boechera_holboellii'
+[2] 'A_halleri'
+[3] 'A_cebennensis'
+[4] 'A_arenosa'
+[5] 'A_neglecta'
+[6] 'A_thaliana'
+[7] 'Camelina_microcarpa'
+[8] 'Neslia_paniculata'
+[9] 'Transberingia_virgata'
+[10] 'Transberingia_bursifolia'
+[11] 'Crucihimalaya_wallichii'
+[12] 'P_novaezelandiae'
+[13] 'P_stellata'
+[14] 'P_fastigiata'
+[15] 'P_cheesemanii'
+[16] 'P_exilis'
+;
+END; [Taxa]
+
+BEGIN Splits;
+DIMENSIONS ntax=16 nsplits=28;
+FORMAT labels=left weights=yes confidences=no intervals=no;
+PROPERTIES fit=-1.0 cyclic;
+CYCLE 11 9 10 1 6 3 2 4 5 7 8 15 16 12 13 14;
+MATRIX
+[1, size=2] 	 '1' 	 0.011406 	  1 2 3 4 5 6 7 8 11 12 13 14 15 16,
+[2, size=8] 	 '2' 	 0.001477 	  1 2 3 4 5 6 7 8,
+[3, size=3] 	 '3' 	 0.007719 	  1 2 3 4 5 6 7 8 12 13 14 15 16,
+[4, size=5] 	 '4' 	 0.021047 	  1 7 8 9 10 11 12 13 14 15 16,
+[5, size=7] 	 '5' 	 0.007367 	  1 9 10 11 12 13 14 15 16,
+[6, size=2] 	 '6' 	 0.003559 	  1 4 5 6 7 8 9 10 11 12 13 14 15 16,
+[7, size=4] 	 '7' 	 0.007943 	  1 6 7 8 9 10 11 12 13 14 15 16,
+[8, size=2] 	 '8' 	 0.010201 	  1 2 3 6 7 8 9 10 11 12 13 14 15 16,
+[9, size=2] 	 '9' 	 0.040246 	  1 2 3 4 5 6 9 10 11 12 13 14 15 16,
+[10, size=2] 	 '10' 	 0.004629 	  1 2 3 4 5 6 7 8 9 10 11 12 13 14,
+[11, size=5] 	 '11' 	 0.002347 	  1 2 3 4 5 6 7 8 9 10 11,
+[12, size=2] 	 '12' 	 7.62E-4 	  1 2 3 4 5 6 7 8 9 10 11 14 15 16,
+[13, size=1] 	 '13' 	 0.009891917 	  1,
+[14, size=1] 	 '14' 	 0.009891917 	  1 3 4 5 6 7 8 9 10 11 12 13 14 15 16,
+[15, size=1] 	 '15' 	 0.009891917 	  1 2 4 5 6 7 8 9 10 11 12 13 14 15 16,
+[16, size=1] 	 '16' 	 0.009891917 	  1 2 3 5 6 7 8 9 10 11 12 13 14 15 16,
+[17, size=1] 	 '17' 	 0.009891917 	  1 2 3 4 6 7 8 9 10 11 12 13 14 15 16,
+[18, size=1] 	 '18' 	 0.009891917 	  1 2 3 4 5 7 8 9 10 11 12 13 14 15 16,
+[19, size=1] 	 '19' 	 0.009891917 	  1 2 3 4 5 6 8 9 10 11 12 13 14 15 16,
+[20, size=1] 	 '20' 	 0.009891917 	  1 2 3 4 5 6 7 9 10 11 12 13 14 15 16,
+[21, size=1] 	 '21' 	 0.009891917 	  1 2 3 4 5 6 7 8 10 11 12 13 14 15 16,
+[22, size=1] 	 '22' 	 0.009891917 	  1 2 3 4 5 6 7 8 9 11 12 13 14 15 16,
+[23, size=1] 	 '23' 	 0.009891917 	  1 2 3 4 5 6 7 8 9 10 12 13 14 15 16,
+[24, size=1] 	 '24' 	 0.009891917 	  1 2 3 4 5 6 7 8 9 10 11 13 14 15 16,
+[25, size=1] 	 '25' 	 0.009891917 	  1 2 3 4 5 6 7 8 9 10 11 12 14 15 16,
+[26, size=1] 	 '26' 	 0.009891917 	  1 2 3 4 5 6 7 8 9 10 11 12 13 15 16,
+[27, size=1] 	 '27' 	 0.009891917 	  1 2 3 4 5 6 7 8 9 10 11 12 13 14 16,
+[28, size=1] 	 '28' 	 0.009891917 	  1 2 3 4 5 6 7 8 9 10 11 12 13 14 15,
+;
+END; [Splits]
+
+BEGIN Network;
+DIMENSIONS ntax=16 nvertices=29 nedges=28;
+DRAW to_scale;
+TRANSLATE
+2 'Boechera_holboellii',
+3 'A_thaliana',
+4 'A_cebennensis',
+5 'A_halleri',
+6 'A_arenosa',
+7 'A_neglecta',
+8 'Camelina_microcarpa',
+9 'Neslia_paniculata',
+10 'P_cheesemanii',
+11 'P_exilis',
+12 'P_novaezelandiae',
+13 'P_stellata',
+14 'P_fastigiata',
+15 'Crucihimalaya_wallichii',
+16 'Transberingia_virgata',
+17 'Transberingia_bursifolia',
+;
+VERTICES
+1 -0.0073645776 -0.0029277299 s=n b=0 0 0,
+2 0.0025273394 -0.0029277299 w=3 h=3 b=0 0 0,
+3 0.009828701 0.027669635 w=3 h=3 b=0 0 0,
+4 0.013132117 0.03891909 w=3 h=3 b=0 0 0,
+5 0.008002111 0.04377268 w=3 h=3 b=0 0 0,
+6 2.4924663E-4 0.051571444 w=3 h=3 b=0 0 0,
+7 -0.0061591016 0.04921499 w=3 h=3 b=0 0 0,
+8 -0.035695262 0.044032402 w=3 h=3 b=0 0 0,
+9 -0.043551978 0.038009413 w=3 h=3 b=0 0 0,
+10 -0.021836983 -0.0010998388 w=3 h=3 b=0 0 0,
+11 -0.023730502 -0.0074608824 w=3 h=3 b=0 0 0,
+12 -0.01853356 -0.011191325 w=3 h=3 b=0 0 0,
+13 -0.013521124 -0.01580845 w=3 h=3 b=0 0 0,
+14 -0.006315658 -0.015463025 w=3 h=3 b=0 0 0,
+15 0.001590904 -0.018973447 w=3 h=3 b=0 0 0,
+16 0.014283815 -0.023165982 w=3 h=3 b=0 0 0,
+17 0.016975798 -0.014166513 w=3 h=3 b=0 0 0,
+18 -0.007652726 -0.0043763495 s=n b=0 0 0,
+19 -0.0073645776 0.00443927 s=n b=0 0 0,
+20 6.897606E-4 0.023884162 s=n b=0 0 0,
+21 -0.009312306 -0.0060359295 s=n b=0 0 0,
+22 0.002239363 0.031674538 s=n b=0 0 0,
+23 -0.002194569 -0.0098345075 s=n b=0 0 0,
+24 0.0072891735 -0.016171342 s=n b=0 0 0,
+25 0.0042166375 0.034633737 s=n b=0 0 0,
+26 2.4924663E-4 0.041679528 s=n b=0 0 0,
+27 -0.034413036 0.03422394 s=n b=0 0 0,
+28 -0.013852362 -0.0069390023 s=n b=0 0 0,
+29 -0.00973565 -0.006669509 s=n b=0 0 0,
+;
+VLABELS
+2 'Boechera_holboellii' l=9 x=-3 y=22 f='Dialog-PLAIN-14',
+3 'A_thaliana' x=11 y=13 f='Dialog-PLAIN-14',
+4 'A_cebennensis' l=9 x=4 y=21 f='Dialog-PLAIN-14',
+5 'A_halleri' l=9 x=3 y=30 f='Dialog-PLAIN-14',
+6 'A_arenosa' l=9 x=-31 y=41 f='Dialog-PLAIN-14',
+7 'A_neglecta' l=9 x=-67 y=29 f='Dialog-PLAIN-14',
+8 'Camelina_microcarpa' l=9 x=-104 y=21 f='Dialog-PLAIN-14',
+9 'Neslia_paniculata' l=9 x=-111 y=-9 f='Dialog-PLAIN-14',
+10 'P_cheesemanii' l=9 x=-103 y=17 f='Dialog-PLAIN-14',
+11 'P_exilis' l=9 x=-115 y=11 f='Dialog-PLAIN-14',
+12 'P_novaezelandiae' l=9 x=-147 y=0 f='Dialog-PLAIN-14',
+13 'P_stellata' l=9 x=-102 y=-9 f='Dialog-PLAIN-14',
+14 'P_fastigiata' l=9 x=-81 y=-27 f='Dialog-PLAIN-14',
+15 'Crucihimalaya_wallichii' l=9 x=-67 y=-35 f='Dialog-PLAIN-14',
+16 'Transberingia_virgata' l=9 x=-24 y=-9 f='Dialog-PLAIN-14',
+17 'Transberingia_bursifolia' l=9 x=-20 y=20 f='Dialog-PLAIN-14',
+;
+EDGES
+1 1 2 s=13 w=0.009891917,
+2 18 1 s=2 w=0.001477,
+3 19 1 s=5 w=0.007367,
+4 20 19 s=4 w=0.021047,
+5 20 3 s=18 w=0.009891917,
+6 21 18 s=11 w=0.002347,
+7 21 14 s=26 w=0.009891917,
+8 22 20 s=7 w=0.007943,
+9 23 18 s=3 w=0.007719,
+10 23 15 s=23 w=0.009891917,
+11 24 23 s=1 w=0.011406,
+12 24 16 s=21 w=0.009891917,
+13 24 17 s=22 w=0.009891917,
+14 25 22 s=6 w=0.003559,
+15 25 4 s=15 w=0.009891917,
+16 25 5 s=14 w=0.009891917,
+17 26 22 s=8 w=0.010201,
+18 26 6 s=16 w=0.009891917,
+19 26 7 s=17 w=0.009891917,
+20 27 19 s=9 w=0.040246,
+21 27 8 s=19 w=0.009891917,
+22 27 9 s=20 w=0.009891917,
+23 28 21 s=10 w=0.004629,
+24 28 10 s=27 w=0.009891917,
+25 28 11 s=28 w=0.009891917,
+26 29 21 s=12 w=7.62E-4,
+27 29 12 s=24 w=0.009891917,
+28 29 13 s=25 w=0.009891917,
+;
+END; [Network]
+
+BEGIN st_Assumptions;
+	uptodate;
+	splitstransform=EqualAngle;
+	SplitsPostProcess filter=dimension value=4;
+	autolayoutnodelabels;
+END; [st_Assumptions]
