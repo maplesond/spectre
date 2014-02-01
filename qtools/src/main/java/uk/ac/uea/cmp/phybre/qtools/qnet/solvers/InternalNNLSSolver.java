@@ -191,7 +191,7 @@ public class InternalNNLSSolver {
                 UpperTriangularMatrix R = this.initR(nbSplits, EtEp, Q);
 
                 // check consistency!
-                if (R.getElementAt(nbSplits - 1, nbSplits - 1) == 0) {
+                if (R.getElementAt(nbSplits - 1, nbSplits - 1) == 0.0) {
                     log.warn("Subproblem is underdetermined, results may not be unique!");
                     //TODO Should I throw an exception here?
                 }

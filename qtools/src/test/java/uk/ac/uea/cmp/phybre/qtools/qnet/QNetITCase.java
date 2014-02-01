@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import uk.ac.tgac.metaopt.OptimiserException;
 import uk.ac.tgac.metaopt.external.JOptimizer;
+import uk.ac.tgac.metaopt.gurobi.Gurobi;
 import uk.ac.uea.cmp.phybre.core.ds.quartet.GroupedQuartetSystem;
 import uk.ac.uea.cmp.phybre.core.ds.quartet.QuartetSystem;
 import uk.ac.uea.cmp.phybre.core.ds.quartet.QuartetSystemList;
@@ -44,7 +45,7 @@ public class QNetITCase {
 
         // Uncomment this line if you want to see output.
         BasicConfigurator.configure();
-        LogManager.getRootLogger().setLevel(Level.WARN);
+        LogManager.getRootLogger().setLevel(Level.INFO);
     }
 
     protected GroupedQuartetSystem createFromScript() throws IOException {
@@ -104,7 +105,7 @@ public class QNetITCase {
         assertTrue(ss.getWeightAt(2) == 1.75);
     }
 
-    @Test
+    /*@Test
     public void test2ConflictingTreesJOptimiser() throws OptimiserException, IOException, QNetException {
 
         GroupedQuartetSystem qs = create2ConflictingTreesWithSameFiveTaxa();
@@ -118,14 +119,14 @@ public class QNetITCase {
 
 
         assertTrue(true);
-    }
+    }*/
 
     @Test
     public void testSimpleScript() throws OptimiserException, IOException, QNetException {
 
         GroupedQuartetSystem qs = this.createFromScript();
 
-        QNetResult result = new QNet().execute(qs, false, -1.0, null);
+        QNetResult result = new QNet().execute(qs, false, -1.0, new Gurobi());
 
         // Check circular ordering
         assertTrue(result.getCircularOrdering().equals(new CircularOrdering(new int[]{

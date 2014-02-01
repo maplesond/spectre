@@ -76,6 +76,14 @@
             <version>0.1</version>
         </dependency>
 
+        <!--TODO Gurobi is only in for testing purposes.  Remove when creating release -->
+
+        <dependency>
+            <groupId>uk.ac.tgac.metaopt</groupId>
+            <artifactId>gurobi</artifactId>
+            <version>0.1</version>
+        </dependency>
+
         <!-- Logging -->
 
         <dependency>
