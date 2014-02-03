@@ -104,7 +104,6 @@ public class QNet extends RunnableTool {
         // Normalise the values in the network
         groupedQuartetSystem.normaliseQuartets(logNormalise);
 
-
         notifyUser("Computing circular ordering");
 
         // Order the taxa

@@ -89,6 +89,28 @@ public class QNetITCase {
     }
 
     @Test
+    public void test5TaxaTreeJOptimiser() throws OptimiserException, IOException, QNetException {
+
+        NewickTree tree = new NewickTree("(((A:1,B:1):1,C:1):1,(D:1,E:1):1);");
+        GroupedQuartetSystem qs = new GroupedQuartetSystem(tree);
+        QNetResult result = new QNet().execute(qs, false, -1.0, new Gurobi());
+
+        // Check circular ordering
+        assertTrue(result.getCircularOrdering().equals(new CircularOrdering(new int[]{2,1,3,4,5})));
+
+        // Check weights from solver
+        assertTrue(ArrayUtils.isEquals(result.getComputedWeights().getSolution(), new double[]{0.0, 0.0, 0.0, 2.0, 2.0}));
+
+        // Generate splits
+        CircularSplitSystem ss = result.createSplitSystem(null, QNetResult.SplitLimiter.STANDARD);
+
+        // Check splits
+        assertTrue(ss.getNbSplits() == 7);
+        assertTrue(ss.getWeightAt(0) == 2.0);
+        assertTrue(ss.getWeightAt(1) == 2.0);
+    }
+
+    @Test
     public void test2ConflictingTreesInternal() throws OptimiserException, IOException, QNetException {
 
         GroupedQuartetSystem qs = create2ConflictingTreesWithSameFiveTaxa();
@@ -105,11 +127,11 @@ public class QNetITCase {
         assertTrue(ss.getWeightAt(2) == 1.75);
     }
 
-    /*@Test
+    @Test
     public void test2ConflictingTreesJOptimiser() throws OptimiserException, IOException, QNetException {
 
         GroupedQuartetSystem qs = create2ConflictingTreesWithSameFiveTaxa();
-        QNetResult result = new QNet().execute(qs, false, -1.0, new JOptimizer());
+        QNetResult result = new QNet().execute(qs, false, -1.0, new Gurobi());
 
         // Check circular ordering
         assertTrue(ArrayUtils.isEquals(result.getCircularOrdering().toArray(),
@@ -119,9 +141,9 @@ public class QNetITCase {
 
 
         assertTrue(true);
-    }*/
+    }
 
-    @Test
+    /*@Test
     public void testSimpleScript() throws OptimiserException, IOException, QNetException {
 
         GroupedQuartetSystem qs = this.createFromScript();
@@ -136,5 +158,5 @@ public class QNetITCase {
 
         // We expect only the trivial splits for this one.  Solver fails!
         assertTrue(ss.getNbSplits() == 32);
-    }
+    } */
 }

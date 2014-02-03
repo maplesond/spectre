@@ -127,7 +127,8 @@ public class WeightsComputer {
             Double d = new Double(solution[i]);
 
             if (d.isNaN() || d.isInfinite()) {
-                throw new QNetException("Solution for variable " + i + " is not sensible (NaN or Infinity).");
+                log.warn("Solution for variable " + i + " is not sensible (NaN or Infinity).");
+                //throw new QNetException("Solution for variable " + i + " is not sensible (NaN or Infinity).");
             }
 
             if (solution[i] != 0.0) {

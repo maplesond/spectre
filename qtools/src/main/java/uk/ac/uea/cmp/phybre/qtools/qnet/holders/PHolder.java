@@ -56,6 +56,16 @@ public class PHolder {
         this.ensureCapacity(N);
         this.initialize();
 
+
+        /*for(Quartet q : quartetSystem.sortedQuartets()) {
+            this.setR(
+                    q.getA(),
+                    q.getB(),
+                    q.getC(),
+                    q.getD(),
+                    quartetSystem..getQuartets().get(q).getA().intValue() == 1);
+        }*/
+
         // load r values
         for(Map.Entry<Quartet, QuartetWeights> entry : quartetSystem.getQuartets().entrySet()) {
 
@@ -64,7 +74,8 @@ public class PHolder {
                     entry.getKey().getB(),
                     entry.getKey().getC(),
                     entry.getKey().getD(),
-                    entry.getValue().getA() == 1.0);
+                    //entry.getValue().getA().intValue() == 1);
+                    true);
         }
 
         // fill upp pHolder by provided loop
