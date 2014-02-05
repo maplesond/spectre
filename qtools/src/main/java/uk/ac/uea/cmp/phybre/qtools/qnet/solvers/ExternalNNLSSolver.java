@@ -43,7 +43,7 @@ public class ExternalNNLSSolver {
 
         for (Variable var : variables) {
             Expression expr = new Expression().addTerm(1.0, var);
-            constraints.add(new Constraint("c0", expr, Constraint.Relation.EQUAL, 0.0));
+            constraints.add(new Constraint("c0", expr, Constraint.Relation.GREATER_THAN_OR_EQUAL_TO, 0.0));
         }
 
         return constraints;

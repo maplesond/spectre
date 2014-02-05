@@ -23,7 +23,7 @@ public class QMakerITCase {
     @Test
     public void sevenTaxa() throws IOException, OptimiserException {
 
-        File treeFile = FileUtils.toFile(QMakerTest.class.getResource("/chopper/7-taxa.tre"));
+        File treeFile = FileUtils.toFile(QMakerTest.class.getResource("/simple/7-taxa.tre"));
         File outputDir = temp.newFolder();
 
         QMaker qMaker = new QMaker();
@@ -39,7 +39,7 @@ public class QMakerITCase {
     @Test
     public void sevenTaxaDeg2() throws IOException, OptimiserException {
 
-        File treeFile = FileUtils.toFile(QMakerTest.class.getResource("/chopper/7-taxa-deg2.tre"));
+        File treeFile = FileUtils.toFile(QMakerTest.class.getResource("/simple/7-taxa-deg2.tre"));
         File outputDir = temp.newFolder();
 
         QMaker chopper = new QMaker();
@@ -55,7 +55,7 @@ public class QMakerITCase {
     @Test
     public void singleTreeScript() throws IOException, OptimiserException {
 
-        File treeFile = FileUtils.toFile(QMakerTest.class.getResource("/chopper/in.script"));
+        File treeFile = FileUtils.toFile(QMakerTest.class.getResource("/simple/in.script"));
         File outputDir = temp.newFolder();
 
         QMaker chopper = new QMaker();
@@ -65,6 +65,6 @@ public class QMakerITCase {
 
         List<String> lines = FileUtils.readLines(chopper.getQuartetFile());
 
-        assertTrue(lines.size() == 35995);
+        assertTrue(lines.size() == 31717);
     }
 }

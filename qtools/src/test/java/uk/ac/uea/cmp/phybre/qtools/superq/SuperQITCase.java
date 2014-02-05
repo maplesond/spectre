@@ -49,8 +49,8 @@ public class SuperQITCase {
         simpleOutput = folder.newFolder("simple");
 
         // Uncomment this line if you want to see output.
-        BasicConfigurator.configure();
-        LogManager.getRootLogger().setLevel(Level.INFO);
+        //BasicConfigurator.configure();
+        //LogManager.getRootLogger().setLevel(Level.INFO);
     }
 
 
@@ -104,7 +104,7 @@ public class SuperQITCase {
         assertFalse(superQ.failed());
     }
 
-    @Test
+    //@Test
     public void testSimpleScript() throws OptimiserException {
 
         SuperQOptions options = this.createSimpleOptions(
@@ -122,7 +122,7 @@ public class SuperQITCase {
         assertFalse(superQ.failed());
     }
 
-    @Test
+    //@Test
     public void testArabidopsisScript() throws OptimiserException {
 
         SuperQOptions options = this.createSimpleOptions(
