@@ -124,9 +124,8 @@ public class SuperQITCase {
     @Test
     public void testTreeCollectionNewickScript() throws OptimiserException {
         SuperQOptions options = this.createSimpleOptions(
-                "/simple/in02.script",
-                new File(simpleOutput, "in02.script.out"));
-
+                "/simple/in_02.script",
+                new File(simpleOutput, "in_02.script.out"));
         SuperQ superQ = new SuperQ(options);
 
         superQ.run();
