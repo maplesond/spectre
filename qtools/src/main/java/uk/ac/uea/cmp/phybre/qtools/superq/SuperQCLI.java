@@ -43,13 +43,14 @@ public class SuperQCLI {
     private static String OPT_FILTER = "filter";
     private static String OPT_HELP = "help";
     private static String OPT_VERBOSE = "verbose";
+    private static String OPT_INPUT = "input";
 
 
     public static void main(String args[]) {
 
         // Parse command line args
         CommandLine commandLine = CommandLineHelper.startApp(createOptions(), BIN_NAME,
-                "Creates a Circular Split Network from a set of trees", args);
+                "Generates a circular split network from a set of trees", args);
 
         // If we didn't return a command line object then just return.  Probably the user requested help or
         // input invalid args
@@ -78,16 +79,23 @@ public class SuperQCLI {
     private static Options createOptions() {
 
         Options options = new Options();
-        options.addOption(OptionBuilder
-                .withDescription(SuperQOptions.DESC_OUTPUT)
-                .hasArg().isRequired().withLongOpt(OPT_OUTPUT).create("o"));
-        options.addOption("x", OPT_PRIMARY_SOLVER, true, SuperQOptions.DESC_PRIMARY_SOLVER);
-        options.addOption("y", OPT_SECONDARY_SOLVER, true, SuperQOptions.DESC_SECONDARY_SOLVER);
-        options.addOption("b", OPT_SECONDARY_OBJECTIVE, true, SuperQOptions.DESC_SECONDARY_OBJECTIVE);
-        options.addOption("s", OPT_SCALING_SOLVER, true, SuperQOptions.DESC_SCALING_SOLVER);
-        options.addOption("f", OPT_FILTER, true, SuperQOptions.DESC_FILTER);
-        options.addOption("h", OPT_HELP, false, "Shows this help.");
-        options.addOption("v", OPT_VERBOSE, false, "Whether to output extra information");
+        options.addOption(CommandLineHelper.HELP_OPTION);
+        options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_INPUT).isRequired(true).hasArgs()
+                .withDescription(SuperQOptions.DESC_INPUT).create("i"));
+        options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_OUTPUT).isRequired(true).hasArg(true)
+                .withDescription(SuperQOptions.DESC_OUTPUT).create("o"));
+        options.addOption(OptionBuilder.withArgName("solver").withLongOpt(OPT_PRIMARY_SOLVER).isRequired(false).hasArg(true)
+                .withDescription(SuperQOptions.DESC_PRIMARY_SOLVER).create("x"));
+        options.addOption(OptionBuilder.withArgName("solver").withLongOpt(OPT_SECONDARY_SOLVER).isRequired(false).hasArg(true)
+                .withDescription(SuperQOptions.DESC_SECONDARY_SOLVER).create("y"));
+        options.addOption(OptionBuilder.withArgName("objective").withLongOpt(OPT_SECONDARY_OBJECTIVE).isRequired(false).hasArg(true)
+                .withDescription(SuperQOptions.DESC_SECONDARY_OBJECTIVE).create("b"));
+        options.addOption(OptionBuilder.withArgName("solver").withLongOpt(OPT_SCALING_SOLVER).isRequired(false).hasArg(true)
+                .withDescription(SuperQOptions.DESC_SCALING_SOLVER).create("s"));
+        options.addOption(OptionBuilder.withArgName("double").withLongOpt(OPT_FILTER).isRequired(false).hasArg(true)
+                .withDescription(SuperQOptions.DESC_FILTER).create("f"));
+        options.addOption(OptionBuilder.withLongOpt(OPT_VERBOSE).isRequired(false).hasArg(false)
+                .withDescription("Whether to output extra information").create("v"));
         return options;
     }
 
@@ -105,7 +113,18 @@ public class SuperQCLI {
         if (commandLine.hasOption(OPT_OUTPUT)) {
             sqOpts.setOutputFile(new File(commandLine.getOptionValue(OPT_OUTPUT)));
         } else {
-            throw new ParseException("You must specify an output file");
+            throw new ParseException("You must specify an output file.");
+        }
+
+        if (commandLine.hasOption(OPT_INPUT)) {
+            String[] args = commandLine.getOptionValues(OPT_INPUT);
+            File[] inputFiles = new File[args.length];
+            for(int i = 0; i< args.length; i++) {
+                inputFiles[i] = new File(args[i]);
+            }
+            sqOpts.setInputFiles(inputFiles);
+        } else {
+            throw new ParseException("You must specify at least one file.");
         }
 
         if (commandLine.hasOption(OPT_SECONDARY_OBJECTIVE)) {
@@ -147,18 +166,6 @@ public class SuperQCLI {
         if (commandLine.hasOption(OPT_VERBOSE)) {
             sqOpts.setVerbose(true);
         }
-
-        String[] args = commandLine.getArgs();
-
-        if (args == null || args.length == 0) {
-            throw new ParseException("You must specify at least one input file");
-        }
-
-        File[] inputFiles = new File[args.length];
-        for(int i = 0; i < args.length; i++) {
-            inputFiles[i] = new File(args[i].trim());
-        }
-        sqOpts.setInputFiles(inputFiles);
 
         return sqOpts;
     }
