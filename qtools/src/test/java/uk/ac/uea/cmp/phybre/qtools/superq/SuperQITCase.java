@@ -104,6 +104,40 @@ public class SuperQITCase {
         assertFalse(superQ.failed());
     }
 
+    @Test
+    public void testTreeCollectionNewickInOneFile() throws OptimiserException {
+        SuperQOptions options = this.createSimpleOptions(
+                "/simple/2-trees-5-taxa.tre",
+                new File(simpleOutput, "2-trees-5-taxa.out"));
+
+        SuperQ superQ = new SuperQ(options);
+
+        superQ.run();
+
+        if (superQ.failed()) {
+            System.err.println(superQ.getFullErrorMessage());
+        }
+
+        assertFalse(superQ.failed());
+    }
+
+    @Test
+    public void testTreeCollectionNewickScript() throws OptimiserException {
+        SuperQOptions options = this.createSimpleOptions(
+                "/simple/in.script02",
+                new File(simpleOutput, "script02.out"));
+
+        SuperQ superQ = new SuperQ(options);
+
+        superQ.run();
+
+        if (superQ.failed()) {
+            System.err.println(superQ.getFullErrorMessage());
+        }
+
+        assertFalse(superQ.failed());
+    }
+
     //@Test
     public void testSimpleScript() throws OptimiserException {
 
