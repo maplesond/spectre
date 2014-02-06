@@ -107,8 +107,8 @@ public class SuperQITCase {
     @Test
     public void testTreeCollectionNewickInOneFile() throws OptimiserException {
         SuperQOptions options = this.createSimpleOptions(
-                "/simple/2-trees-5-taxa.tre",
-                new File(simpleOutput, "2-trees-5-taxa.out"));
+                "/simple/2-trees-4-taxa-01.tre",
+                new File(simpleOutput, "2-trees-4-taxa-01.out"));
 
         SuperQ superQ = new SuperQ(options);
 
