@@ -80,7 +80,7 @@ public class SuperQCLI {
 
         Options options = new Options();
         options.addOption(CommandLineHelper.HELP_OPTION);
-        options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_INPUT).isRequired(true).hasArgs()
+        options.addOption(OptionBuilder.withArgName("file(s)").withLongOpt(OPT_INPUT).isRequired(true).hasArgs()
                 .withDescription(SuperQOptions.DESC_INPUT).create("i"));
         options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_OUTPUT).isRequired(true).hasArg(true)
                 .withDescription(SuperQOptions.DESC_OUTPUT).create("o"));
@@ -111,7 +111,7 @@ public class SuperQCLI {
         }
 
         if (commandLine.hasOption(OPT_OUTPUT)) {
-            sqOpts.setOutputFile(new File(commandLine.getOptionValue(OPT_OUTPUT)));
+            sqOpts.setOutputFile(new File(System.getProperty("user.dir"),commandLine.getOptionValue(OPT_OUTPUT)));
         } else {
             throw new ParseException("You must specify an output file.");
         }

@@ -47,9 +47,10 @@ public class SuperQOptions {
     public static final String DESC_FILTER = "The value used to filter the output split system.  Default: no filter (0.0)";
 
     public static final String DESC_INPUT = "REQUIRED: The file or files containing the input trees. They can " +
-            "be provided in Newick format. Multiple trees in a single file are allowed but must be on seperate lines. " +
-            "Alternatively a script files can be used. The format is detected automatically according " +
-            "to the file extension (Newick: .tre, script: .script)";
+            "be provided in Newick format. Multiple trees in a single Newick file are allowed but must be on seperate lines. " +
+            "Alternative formats include script and phylip. " +
+            "The format is detected automatically according " +
+            "to the file extension (e.g., Newick: .tre, script: .script)";
 
     private File[] inputFiles;
     private File outputFile;

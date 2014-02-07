@@ -153,6 +153,7 @@ public class SuperQ extends RunnableTool {
 
             notifyUser("Saving weights to file: " + weightsOutput.getAbsoluteFile());
             CircularSplitSystem ss = qnetResult.createSplitSystem(null, QNetResult.SplitLimiter.STANDARD);
+            notifyUser("Parent is: " + weightsOutput.getParentFile());
 
             // Create output dir if required
             if (!weightsOutput.getParentFile().exists()) {
