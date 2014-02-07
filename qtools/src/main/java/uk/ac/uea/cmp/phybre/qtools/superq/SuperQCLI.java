@@ -111,7 +111,7 @@ public class SuperQCLI {
         }
 
         if (commandLine.hasOption(OPT_OUTPUT)) {
-            sqOpts.setOutputFile(new File(System.getProperty("user.dir"),commandLine.getOptionValue(OPT_OUTPUT)));
+            sqOpts.setOutputFile(new File(commandLine.getOptionValue(OPT_OUTPUT)));
         } else {
             throw new ParseException("You must specify an output file.");
         }
