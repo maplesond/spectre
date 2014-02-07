@@ -82,7 +82,9 @@ Modules:
 ========
 
 Within the parent maven project for phybre there is a single “pom.xml” which describes common properties for all child
-modules.  This file contains details such as project details, developer list, compiler settings, unit test configuration, common dependencies and some common jar packaging settings. Beyond the pom.xml there are the child modules themselves, which each have their own pom.xml describing their specific configuration.  A short summary of each module follows:
+modules.  This file contains details such as project details, developer list, compiler settings, unit test configuration,
+common dependencies and some common jar packaging settings. Beyond the pom.xml there are the child modules themselves,
+which each have their own pom.xml describing their specific configuration.  A short summary of each module follows:
 
 
 Core:
@@ -142,7 +144,8 @@ Contains a number of tools related to creating and manipulating quartets.  These
 Quick Start:
 ============
 
-Assuming the user has access to the compiled executable jars for phybre, then they should only need JRE 1.7+ installed on their system.  The tools can be found in the bin subfolder.
+Assuming the user has access to the compiled executable jars for phybre, then they should only need JRE 1.7+ installed
+on their system.  The tools can be found in the bin subfolder.
 
 
 
