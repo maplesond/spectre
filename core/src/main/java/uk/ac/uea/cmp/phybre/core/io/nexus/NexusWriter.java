@@ -256,7 +256,7 @@ public class NexusWriter extends AbstractPhygenWriter implements Appendable {
         this.appendLine("BEGIN Splits;");
         this.appendLine(" DIMENSIONS ntax=" + ss.getNbTaxa() + " nsplits=" + ss.getNbSplits() + ";");
         this.appendLine(" FORMAT labels=no weights=" + (ss.isWeighted() ? "yes" : "no") + " confidences=no intervals=no;");
-        this.appendLine(" PROPERTIES fit=-1.0" + (ss.isCompatible() ? " weakly_compatible" : "") + (ss.isCircular() ? " cyclic" : ""));
+        this.appendLine(" PROPERTIES fit=-1.0" + (ss.isCompatible() ? " weakly_compatible" : "") + (ss.isCircular() ? " cyclic" : "") + ";");
         if (ss.isCircular()) {
             this.appendLine(" CYCLE " + ss.getCircularOrdering().toString() + ";");
         }
