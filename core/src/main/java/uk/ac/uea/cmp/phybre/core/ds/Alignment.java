@@ -15,6 +15,7 @@
  */
 package uk.ac.uea.cmp.phybre.core.ds;
 
+import java.io.PrintStream;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -61,9 +62,9 @@ public class Alignment {
     }
 
     //Prints alignment in the fasta format to the screen
-    public void printAlignmentInFasta() {
+    public void printAlignmentInFasta(PrintStream os) {
         for (int i = 0; i < taxaLabels.length; i++) {
-            System.out.println(">" + taxaLabels[i] + "\n" + sequences[i]);
+            os.println(">" + taxaLabels[i] + "\n" + sequences[i]);
         }
     }
 
