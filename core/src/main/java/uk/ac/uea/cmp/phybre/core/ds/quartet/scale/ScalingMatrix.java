@@ -1,5 +1,6 @@
 package uk.ac.uea.cmp.phybre.core.ds.quartet.scale;
 
+import org.apache.commons.lang3.StringUtils;
 import uk.ac.uea.cmp.phybre.core.ds.quartet.GroupedQuartetSystem;
 import uk.ac.uea.cmp.phybre.core.ds.quartet.Quartet;
 import uk.ac.uea.cmp.phybre.core.ds.quartet.QuartetSystemList;
@@ -213,13 +214,16 @@ public class ScalingMatrix {
         return (-coeff);
     }
 
-    public void dumpMatrix() {
+    @Override
+    public String toString() {
+
+        StringBuilder sb = new StringBuilder();
+
         for(int i = 0; i < matrix.length; i++) {
-            for(int j = 0; j < matrix[i].length; j++) {
-                System.out.print(matrix[i][j] + " ");
-            }
-            System.out.print("\n");
+            sb.append(StringUtils.join(matrix[i], " ")).append("\n");
         }
+
+        return sb.toString();
     }
 
 }
