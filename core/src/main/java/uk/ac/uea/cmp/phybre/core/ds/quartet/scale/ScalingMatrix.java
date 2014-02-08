@@ -4,6 +4,8 @@ import uk.ac.uea.cmp.phybre.core.ds.quartet.GroupedQuartetSystem;
 import uk.ac.uea.cmp.phybre.core.ds.quartet.Quartet;
 import uk.ac.uea.cmp.phybre.core.ds.quartet.QuartetSystemList;
 import uk.ac.uea.cmp.phybre.core.ds.quartet.QuartetWeights;
+import java.util.List;
+import java.util.Iterator;
 
 import java.io.IOException;
 
@@ -114,13 +116,13 @@ public class ScalingMatrix {
                 for (int t3 = t2 + 1; t3 < (ntaxaj - 1); t3++) {
                     for (int t4 = t3 + 1; t4 < ntaxaj; t4++) {
 
-                        wvj = qnj.getQuartets().get(new Quartet(t1, t2, t3, t4).createSortedQuartet());
+                        wvj = qnj.getQuartets().get(new Quartet((t1+1), (t2+1), (t3+1), (t4+1)).createSortedQuartet());
 
-                        wvi = qni.getQuartets().get(new Quartet(transind[t1], transind[t2], transind[t3], transind[t4]).createSortedQuartet());
+                        wvi = qni.getQuartets().get(new Quartet((transind[t1]+1), (transind[t2]+1), (transind[t3]+1), (transind[t4]+1)).createSortedQuartet());
 
                         if (wvi != null && wvj != null) {
 
-                            QuartetWeights wviPermuted = wvi.permute(transind[t1], transind[t2], transind[t3], transind[t4]);
+                            QuartetWeights wviPermuted = wvi.permute((transind[t1]+1), (transind[t2]+1), (transind[t3]+1), (transind[t4]+1));
 
                             if (wviPermuted.scalarProduct(wvj) != 0.0) {
                                 part += wviPermuted.squaredLength();
@@ -193,14 +195,14 @@ public class ScalingMatrix {
                 for (int t3 = t2 + 1; t3 < (ntaxaj - 1); t3++) {
                     for (int t4 = t3 + 1; t4 < ntaxaj; t4++) {
 
-                        wvj = qnj.getQuartets().get(new Quartet(t1, t2, t3, t4).createSortedQuartet());
+                        wvj = qnj.getQuartets().get(new Quartet((t1+1), (t2+1), (t3+1), (t4+1)).createSortedQuartet());
 
                         //need to sort indices after translation, best in
                         //constructor of Key
-                        wvi = qni.getQuartets().get(new Quartet(transind[t1], transind[t2], transind[t3], transind[t4]).createSortedQuartet());
+                        wvi = qni.getQuartets().get(new Quartet((transind[t1]+1), (transind[t2]+1), (transind[t3]+1), (transind[t4]+1)).createSortedQuartet());
 
                         if (wvi != null && wvj != null) {
-                            QuartetWeights wviPermuted = wvi.permute(transind[t1], transind[t2], transind[t3], transind[t4]);
+                            QuartetWeights wviPermuted = wvi.permute((transind[t1]+1), (transind[t2]+1), (transind[t3]+1), (transind[t4]+1));
                             coeff += wviPermuted.scalarProduct(wvj);
                         }
                     }
@@ -211,6 +213,13 @@ public class ScalingMatrix {
         return (-coeff);
     }
 
-
+    public void dumpMatrix() {
+        for(int i = 0; i < matrix.length; i++) {
+            for(int j = 0; j < matrix[i].length; j++) {
+                System.out.print(matrix[i][j] + " ");
+            }
+            System.out.print("\n");
+        }
+    }
 
 }
