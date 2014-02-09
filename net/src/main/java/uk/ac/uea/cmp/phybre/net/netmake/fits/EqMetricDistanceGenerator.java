@@ -41,7 +41,7 @@ public class EqMetricDistanceGenerator implements DistanceMatrixGenerator {
 
         DistanceMatrix inputData = new RandomDistanceGenerator().generateDistances(n);
 
-        NetMakeResult netMakeResult = new NetMake().runNN(new NetMakeOptions(inputData, new TSPWeighting(n), null));
+        NetMakeResult netMakeResult = new NetMake().execute(inputData, new TSPWeighting(n), null);
         CompatibleSplitSystem splits = netMakeResult.getTree();
         /*double[][] treeWeights = splits.calculateSplitWeighting();
 

@@ -80,6 +80,6 @@ public abstract class Weighting {
 
     @Override
     public String toString() {
-        return StringUtils.join(weightingParameters, ", ");
+        return this.getClass().getSimpleName() + ": " + StringUtils.join(weightingParameters, ", ");
     }
 }

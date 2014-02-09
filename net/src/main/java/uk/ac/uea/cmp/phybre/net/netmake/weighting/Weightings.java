@@ -120,4 +120,18 @@ public enum Weightings {
 
         return "[" + StringUtils.join(list, ", ") + "]";
     }
+
+    public static String[] stringValuesWithNone() {
+
+        String[] values = new String[values().length + 1];
+
+        values[0] = "NONE";
+
+        int i = 1;
+        for(Weightings weighting : values()) {
+            values[i++] = weighting.toString();
+        }
+
+        return values;
+    }
 }

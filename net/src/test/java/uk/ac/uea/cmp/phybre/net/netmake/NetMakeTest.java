@@ -62,7 +62,7 @@ public class NetMakeTest {
 
         DistanceMatrix distanceMatrix = new DistanceMatrix(taxa, distances);
 
-        NetMakeResult result = new NetMake().runNN(new NetMakeOptions(distanceMatrix, new GreedyMEWeighting(distanceMatrix), new TSPWeighting(distanceMatrix.size())));
+        NetMakeResult result = new NetMake().execute(distanceMatrix, new GreedyMEWeighting(distanceMatrix), new TSPWeighting(distanceMatrix.size()));
 
         CompatibleSplitSystem tree = result.getTree();
 

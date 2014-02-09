@@ -5,6 +5,8 @@ import uk.ac.uea.cmp.phybre.net.netmake.weighting.GreedyMEWeighting;
 import uk.ac.uea.cmp.phybre.net.netmake.weighting.Weighting;
 import uk.ac.uea.cmp.phybre.net.netmake.weighting.Weightings;
 
+import java.io.File;
+
 /**
  * Created by dan on 16/01/14.
  */
@@ -26,19 +28,32 @@ public class NetMakeOptions {
 
 
 
-    private DistanceMatrix distanceMatrix;
-    private Weighting weighting1;
-    private Weighting weighting2;
+    private File input;
+    private File outputDir;
+    private String outputPrefix;
+    private String weighting1;
+    private String weighting2;
+    private double treeParam;
 
     public NetMakeOptions() {
-        this(null, null, null);
+        this(null, null, "netmake", null, null, 0.5);
     }
 
-    public NetMakeOptions(DistanceMatrix distanceMatrix, Weighting weighting1, Weighting weighting2) {
+    public NetMakeOptions(File input, File outputDir, String outputPrefix, String weighting1, String weighting2, double treeParam) {
 
-        this.distanceMatrix = distanceMatrix;
+        // Validates that we have sensible input for the weightings
+        if (weighting1 != null && !weighting1.isEmpty())
+            Weightings.valueOf(weighting1);
+
+        if (weighting2 != null && !weighting2.isEmpty())
+            Weightings.valueOf(weighting2);
+
+        this.input = input;
+        this.outputDir = outputDir;
+        this.outputPrefix = outputPrefix;
         this.weighting1 = weighting1;
         this.weighting2 = weighting2;
+        this.treeParam = treeParam;
     }
 
 
@@ -61,32 +76,52 @@ public class NetMakeOptions {
         }
     }
 
-    public void setDistanceMatrix(DistanceMatrix distanceMatrix) {
-        this.distanceMatrix = distanceMatrix;
+    public File getInput() {
+        return input;
     }
 
-    public void setWeighting1(Weighting weighting1) {
-        this.weighting1 = weighting1;
+    public void setInput(File input) {
+        this.input = input;
     }
 
-    public void setWeighting2(Weighting weighting2) {
-        this.weighting2 = weighting2;
+    public File getOutputDir() {
+        return outputDir;
     }
 
-    public DistanceMatrix getDistanceMatrix() {
-        return distanceMatrix;
+    public void setOutputDir(File outputDir) {
+        this.outputDir = outputDir;
     }
 
-    public Weighting getWeighting1() {
+    public String getOutputPrefix() {
+        return outputPrefix;
+    }
+
+    public void setOutputPrefix(String outputPrefix) {
+        this.outputPrefix = outputPrefix;
+    }
+
+    public String getWeighting1() {
         return weighting1;
     }
 
-    public Weighting getWeighting2() {
+    public void setWeighting1(String weighting1) {
+        this.weighting1 = weighting1;
+    }
+
+    public String getWeighting2() {
         return weighting2;
     }
 
-    public int getNbTaxa() {
-        return this.distanceMatrix != null ? this.distanceMatrix.size() : 0;
+    public void setWeighting2(String weighting2) {
+        this.weighting2 = weighting2;
+    }
+
+    public double getTreeParam() {
+        return treeParam;
+    }
+
+    public void setTreeParam(double treeParam) {
+        this.treeParam = treeParam;
     }
 
     public static RunMode getRunMode(Weighting weighting1, Weighting weighting2) {
@@ -102,10 +137,5 @@ public class NetMakeOptions {
         }
 
         return RunMode.UNKNOWN;
-    }
-
-    public RunMode getRunMode() {
-
-        return this.getRunMode(this.weighting1, this.weighting2);
     }
 }

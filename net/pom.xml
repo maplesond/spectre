@@ -21,38 +21,6 @@
 
         <plugins>
 
-            <!-- Creates an executable jar with all dependencies built in -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>2.2</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <transformers>
-                                <transformer
-                                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <manifestEntries>
-                                        <Main-Class>uk.ac.uea.cmp.phybre.net.netmake.NetMakeCLI</Main-Class>
-                                        <Build-Number>1</Build-Number>
-                                    </manifestEntries>
-                                </transformer>
-                                <transformer
-                                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <manifestEntries>
-                                        <Main-Class>uk.ac.uea.cmp.phybre.net.netme.NetMECLI</Main-Class>
-                                        <Build-Number>1</Build-Number>
-                                    </manifestEntries>
-                                </transformer>
-                            </transformers>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
 
             <!-- Creates scripts for all platforms that allow the user to easily execute this tool -->
             <plugin>
@@ -68,6 +36,10 @@
                         <program>
                             <mainClass>uk.ac.uea.cmp.phybre.net.netmake.NetMakeCLI</mainClass>
                             <id>netmake</id>
+                        </program>
+                        <program>
+                            <mainClass>uk.ac.uea.cmp.phybre.net.netmake.NetMakeGUI</mainClass>
+                            <id>netmake-gui</id>
                         </program>
                         <program>
                             <mainClass>uk.ac.uea.cmp.phybre.net.netme.NetMECLI</mainClass>
@@ -92,6 +64,7 @@
                         <configuration>
                             <target>
                                 <chmod file="${build-dir}/bin/netmake" perm="755"/>
+                                <chmod file="${build-dir}/bin/netmake-gui" perm="755"/>
                                 <chmod file="${build-dir}/bin/netme" perm="755"/>
                             </target>
                         </configuration>
