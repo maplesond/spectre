@@ -42,7 +42,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'phybre'
-copyright = u'2013, Sarah Bastkowski, Daniel Mapleson, Monica Balvociute, Andreas Spillner'
+copyright = u'2014, Sarah Bastkowski, Daniel Mapleson, Monica Balvociute, Andreas Spillner'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -249,7 +249,7 @@ texinfo_documents = [
 epub_title = u'phybre'
 epub_author = u'Sarah Bastkowski, Daniel Mapleson, Monica Balvociute, Andreas Spillner'
 epub_publisher = u'Sarah Bastkowski, Daniel Mapleson, Monica Balvociute, Andreas Spillner'
-epub_copyright = u'2013, Sarah Bastkowski, Daniel Mapleson, Monica Balvociute, Andreas Spillner'
+epub_copyright = u'2014, Sarah Bastkowski, Daniel Mapleson, Monica Balvociute, Andreas Spillner'
 
 # The language of the text. It defaults to the language option
 # or en if the language is not set.

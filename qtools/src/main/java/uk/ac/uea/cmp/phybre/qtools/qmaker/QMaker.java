@@ -73,7 +73,7 @@ public class QMaker extends PhygenTool {
                 .withDescription("The prefix for the output files.  Default: " + DEFAULT_OUTPUT_PREFIX).create("p"));
 
         options.addOption(OptionBuilder.withArgName("string").withLongOpt(OPT_OPTIMISER).hasArg()
-                .withDescription("The optimiser to use: " + OptimiserFactory.getInstance().listOperationalOptimisers()).create("p"));
+                .withDescription("The optimiser to use: " + OptimiserFactory.getInstance().listOperationalOptimisers()).create("s"));
 
         return options;
     }
@@ -123,7 +123,7 @@ public class QMaker extends PhygenTool {
 
     @Override
     public String getDescription() {
-        return "Quart extracts quartet weights from trees";
+        return "QMaker extracts quartet weights from trees";
     }
 
     public File getInfoFile() {
