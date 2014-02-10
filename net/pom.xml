@@ -45,6 +45,10 @@
                             <mainClass>uk.ac.uea.cmp.phybre.net.netme.NetMECLI</mainClass>
                             <id>netme</id>
                         </program>
+                        <program>
+                            <mainClass>uk.ac.uea.cmp.phybre.net.netme.NetMEGUI</mainClass>
+                            <id>netme-gui</id>
+                        </program>
                     </programs>
                 </configuration>
             </plugin>
@@ -66,6 +70,7 @@
                                 <chmod file="${build-dir}/bin/netmake" perm="755"/>
                                 <chmod file="${build-dir}/bin/netmake-gui" perm="755"/>
                                 <chmod file="${build-dir}/bin/netme" perm="755"/>
+                                <chmod file="${build-dir}/bin/netme-gui" perm="755"/>
                             </target>
                         </configuration>
                     </execution>
