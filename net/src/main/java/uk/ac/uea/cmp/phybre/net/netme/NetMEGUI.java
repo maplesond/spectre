@@ -1,22 +1,22 @@
-package uk.ac.uea.cmp.phybre.net.netmake;
+package uk.ac.uea.cmp.phybre.net.netme;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phybre.core.ui.gui.JobController;
 import uk.ac.uea.cmp.phybre.core.ui.gui.StatusTracker;
 import uk.ac.uea.cmp.phybre.core.ui.gui.ToolHost;
-import uk.ac.uea.cmp.phybre.net.netmake.weighting.Weightings;
+import uk.ac.uea.cmp.phybre.net.netmake.NetMakeOptions;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 
 /**
- * Created by dan on 09/02/14.
+ * Created by maplesod on 10/02/14.
  */
-public class NetMakeGUI extends JFrame implements ToolHost {
+public class NetMEGUI extends JFrame implements ToolHost {
 
-    private static Logger log = LoggerFactory.getLogger(NetMakeGUI.class);
+    private static Logger log = LoggerFactory.getLogger(NetMEGUI.class);
 
     private static final String TITLE = "NetMake";
 
@@ -25,18 +25,14 @@ public class NetMakeGUI extends JFrame implements ToolHost {
     private JPanel pnlOptions;
 
     private JPanel pnlInput;
-    private JPanel pnlSelectInput;
-    private JLabel lblInput;
-    private JTextField txtInput;
-    private JButton cmdInput;
-
-    private JPanel pnlWeightings;
-    private JLabel lblWeighting1;
-    private JComboBox<String> cboWeighting1;
-    private JLabel lblWeighting2;
-    private JComboBox<String> cboWeighting2;
-    private JLabel lblWeight;
-    private JTextField txtWeight;
+    private JPanel pnlSelectDistances;
+    private JLabel lblInputDistances;
+    private JTextField txtInputDistances;
+    private JButton cmdInputDistances;
+    private JPanel pnlSelectOrdering;
+    private JLabel lblInputOrdering;
+    private JTextField txtInputOrdering;
+    private JButton cmdInputOrdering;
 
     private JPanel pnlOutput;
     private JPanel pnlSelectOutputDir;
@@ -59,15 +55,15 @@ public class NetMakeGUI extends JFrame implements ToolHost {
     private JDialog dialog = new JDialog(this, TITLE);
     private JFrame gui = new JFrame(TITLE);
     private JobController go_control;
-    private NetMakeRunner netMakeRunner;
+    private NetMERunner netMERunner;
 
-    public NetMakeGUI() {
+    public NetMEGUI() {
         initComponents();
         setTitle(TITLE);
 
         cmdRun.setEnabled(true);
 
-        this.netMakeRunner = new NetMakeRunner(this);
+        this.netMERunner = new NetMERunner(this);
 
         this.go_control = new JobController(this.cmdRun, this.cmdCancel);
         setRunningStatus(false);
@@ -78,33 +74,61 @@ public class NetMakeGUI extends JFrame implements ToolHost {
      */
     private void initInputComponents() {
 
-        lblInput = new JLabel();
-        txtInput = new JTextField();
-        cmdInput = new JButton();
+        lblInputDistances = new JLabel();
+        txtInputDistances = new JTextField();
+        cmdInputDistances = new JButton();
 
-        cmdInput.setText("...");
-        cmdInput.setToolTipText(NetMakeOptions.DESC_INPUT);
-        cmdInput.addActionListener(new java.awt.event.ActionListener() {
+        cmdInputDistances.setText("...");
+        cmdInputDistances.setToolTipText(NetMEOptions.DESC_DISTANCES);
+        cmdInputDistances.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cmdInputActionPerformed(evt);
+                cmdInputDistancesActionPerformed(evt);
             }
         });
 
-        txtInput.setPreferredSize(new Dimension(200, 25));
-        txtInput.setToolTipText(NetMakeOptions.DESC_INPUT);
+        txtInputDistances.setPreferredSize(new Dimension(200, 25));
+        txtInputDistances.setToolTipText(NetMEOptions.DESC_DISTANCES);
 
-        lblInput.setText("Input file:");
-        lblInput.setToolTipText(NetMakeOptions.DESC_INPUT);
+        lblInputDistances.setText("Input distance matrix file:");
+        lblInputDistances.setToolTipText(NetMEOptions.DESC_DISTANCES);
 
-        pnlSelectInput = new JPanel();
-        pnlSelectInput.setLayout(new BoxLayout(pnlSelectInput, BoxLayout.LINE_AXIS));
-        pnlSelectInput.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        pnlSelectInput.add(Box.createHorizontalGlue());
-        pnlSelectInput.add(lblInput);
-        pnlSelectInput.add(Box.createRigidArea(new Dimension(10, 0)));
-        pnlSelectInput.add(txtInput);
-        pnlSelectInput.add(Box.createRigidArea(new Dimension(10, 0)));
-        pnlSelectInput.add(cmdInput);
+        pnlSelectDistances = new JPanel();
+        pnlSelectDistances.setLayout(new BoxLayout(pnlSelectDistances, BoxLayout.LINE_AXIS));
+        pnlSelectDistances.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        pnlSelectDistances.add(Box.createHorizontalGlue());
+        pnlSelectDistances.add(lblInputDistances);
+        pnlSelectDistances.add(Box.createRigidArea(new Dimension(10, 0)));
+        pnlSelectDistances.add(txtInputDistances);
+        pnlSelectDistances.add(Box.createRigidArea(new Dimension(10, 0)));
+        pnlSelectDistances.add(cmdInputDistances);
+
+        lblInputOrdering = new JLabel();
+        txtInputOrdering = new JTextField();
+        cmdInputOrdering = new JButton();
+
+        cmdInputOrdering.setText("...");
+        cmdInputOrdering.setToolTipText(NetMEOptions.DESC_CIRCULAR_ORDERING);
+        cmdInputOrdering.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmdInputOrderingActionPerformed(evt);
+            }
+        });
+
+        txtInputOrdering.setPreferredSize(new Dimension(200, 25));
+        txtInputOrdering.setToolTipText(NetMEOptions.DESC_CIRCULAR_ORDERING);
+
+        lblInputOrdering.setText("Input circular ordering file:");
+        lblInputOrdering.setToolTipText(NetMEOptions.DESC_CIRCULAR_ORDERING);
+
+        pnlSelectOrdering = new JPanel();
+        pnlSelectOrdering.setLayout(new BoxLayout(pnlSelectOrdering, BoxLayout.LINE_AXIS));
+        pnlSelectOrdering.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
+        pnlSelectOrdering.add(Box.createHorizontalGlue());
+        pnlSelectOrdering.add(lblInputOrdering);
+        pnlSelectOrdering.add(Box.createRigidArea(new Dimension(10, 0)));
+        pnlSelectOrdering.add(txtInputOrdering);
+        pnlSelectOrdering.add(Box.createRigidArea(new Dimension(10, 0)));
+        pnlSelectOrdering.add(cmdInputOrdering);
 
         pack();
 
@@ -112,89 +136,11 @@ public class NetMakeGUI extends JFrame implements ToolHost {
         pnlInput.setLayout(new BoxLayout(pnlInput, BoxLayout.PAGE_AXIS));
         pnlInput.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), "Input:"));
         pnlInput.add(Box.createVerticalGlue());
-        pnlInput.add(pnlSelectInput);
+        pnlInput.add(pnlSelectDistances);
+        pnlInput.add(pnlSelectOrdering);
 
         pack();
     }
-
-    /**
-     * Optimiser options
-     */
-    private void initWeightingComponents() {
-
-        cboWeighting1 = new JComboBox();
-        lblWeighting1 = new JLabel();
-
-        cboWeighting2 = new JComboBox();
-        lblWeighting2 = new JLabel();
-
-        txtWeight = new JTextField();
-        lblWeight = new JLabel();
-
-        cboWeighting1.setModel(new DefaultComboBoxModel(Weightings.values()));
-        cboWeighting1.setToolTipText(NetMakeOptions.DESC_WEIGHTINGS_1);
-
-        lblWeighting1.setText("Select weight type 1:");
-        lblWeighting1.setToolTipText(NetMakeOptions.DESC_WEIGHTINGS_1);
-
-        cboWeighting2.setModel(new DefaultComboBoxModel(Weightings.stringValuesWithNone()));
-        cboWeighting2.setToolTipText(NetMakeOptions.DESC_WEIGHTINGS_2);
-
-        lblWeighting2.setText("Select weight type 2:");
-        lblWeighting2.setToolTipText(NetMakeOptions.DESC_WEIGHTINGS_2);
-
-
-        lblWeight.setText("Set the tree weight:");
-        lblWeight.setToolTipText(NetMakeOptions.DESC_TREE_PARAM);
-
-        txtWeight.setText("");
-        txtWeight.setPreferredSize(new Dimension(200, 25));
-        txtWeight.setToolTipText(NetMakeOptions.DESC_TREE_PARAM);
-
-        pnlWeightings = new JPanel();
-
-
-        GroupLayout layout = new GroupLayout(pnlWeightings);
-
-        pnlWeightings.setLayout(layout);
-        pnlWeightings.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), "Weighting Setup:"));
-
-        layout.setAutoCreateGaps(true);
-        layout.setAutoCreateContainerGaps(true);
-
-        layout.setHorizontalGroup(
-                layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-                                .addComponent(lblWeighting1)
-                                .addComponent(lblWeighting2)
-                                .addComponent(lblWeight)
-                        )
-                        .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                .addComponent(cboWeighting1)
-                                .addComponent(cboWeighting2)
-                                .addComponent(txtWeight)
-                        )
-
-        );
-        layout.setVerticalGroup(
-                layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                .addComponent(lblWeighting1)
-                                .addComponent(cboWeighting1)
-                        )
-                        .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                .addComponent(lblWeighting2)
-                                .addComponent(cboWeighting2)
-                        )
-                        .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                .addComponent(lblWeight)
-                                .addComponent(txtWeight)
-                        )
-        );
-
-        pack();
-    }
-
 
     /**
      * Output options
@@ -311,7 +257,6 @@ public class NetMakeGUI extends JFrame implements ToolHost {
     private void initComponents() {
 
         this.initInputComponents();
-        this.initWeightingComponents();
         this.initOutputComponents();
         this.initStatusComponents();
         this.initControlComponents();
@@ -320,8 +265,6 @@ public class NetMakeGUI extends JFrame implements ToolHost {
         pnlOptions.setLayout(new BoxLayout(pnlOptions, BoxLayout.PAGE_AXIS));
         pnlOptions.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         pnlOptions.add(pnlInput);
-        pnlOptions.add(Box.createRigidArea(new Dimension(0, 10)));
-        pnlOptions.add(pnlWeightings);
         pnlOptions.add(Box.createRigidArea(new Dimension(0, 10)));
         pnlOptions.add(pnlOutput);
 
@@ -350,14 +293,14 @@ public class NetMakeGUI extends JFrame implements ToolHost {
         final JFileChooser fc = new JFileChooser();
         if (evt.getSource() == cmdOutputDir) {
             fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-            int returnVal = fc.showSaveDialog(NetMakeGUI.this);
+            int returnVal = fc.showSaveDialog(NetMEGUI.this);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
 
                 File file = fc.getSelectedFile();
                 String z = file.getAbsolutePath();
                 txtOutputDir.setText(z);
             } else {
-                log.debug("Open command cancelled by user.");
+                log.debug("Open output directory command cancelled by user.");
             }
         }
     }
@@ -366,18 +309,38 @@ public class NetMakeGUI extends JFrame implements ToolHost {
      * Choose a file for input
      * @param evt
      */
-    private void cmdInputActionPerformed(java.awt.event.ActionEvent evt) {
+    private void cmdInputDistancesActionPerformed(java.awt.event.ActionEvent evt) {
 
         final JFileChooser fc = new JFileChooser();
-        if (evt.getSource() == cmdInput) {
-            int returnVal = fc.showOpenDialog(NetMakeGUI.this);
+        if (evt.getSource() == cmdInputDistances) {
+            int returnVal = fc.showOpenDialog(NetMEGUI.this);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 File file = fc.getSelectedFile();
                 String z = "";
                 z = file.getAbsolutePath();
-                txtInput.setText(z);
+                txtInputDistances.setText(z);
             } else {
-                log.debug("Open command cancelled by user.");
+                log.debug("Open distance matrix command cancelled by user.");
+            }
+        }
+    }
+
+    /**
+     * Choose a file for input
+     * @param evt
+     */
+    private void cmdInputOrderingActionPerformed(java.awt.event.ActionEvent evt) {
+
+        final JFileChooser fc = new JFileChooser();
+        if (evt.getSource() == cmdInputOrdering) {
+            int returnVal = fc.showOpenDialog(NetMEGUI.this);
+            if (returnVal == JFileChooser.APPROVE_OPTION) {
+                File file = fc.getSelectedFile();
+                String z = "";
+                z = file.getAbsolutePath();
+                txtInputOrdering.setText(z);
+            } else {
+                log.debug("Open circular ordering command cancelled by user.");
             }
         }
     }
@@ -388,10 +351,10 @@ public class NetMakeGUI extends JFrame implements ToolHost {
      */
     private void cmdRunActionPerformed(java.awt.event.ActionEvent evt) {
 
-        NetMakeOptions options = buildNetMakeOptions();
+        NetMEOptions options = buildNetMEOptions();
 
         if (options != null)
-            this.netMakeRunner.runNetMake(options, new StatusTracker(this.progStatus, this.lblStatus));
+            this.netMERunner.runNetME(options, new StatusTracker(this.progStatus, this.lblStatus));
 
     }
 
@@ -399,25 +362,14 @@ public class NetMakeGUI extends JFrame implements ToolHost {
      * Setup configuration using values specified in the GUI
      * @return configuration
      */
-    private NetMakeOptions buildNetMakeOptions() {
+    private NetMEOptions buildNetMEOptions() {
 
-        NetMakeOptions options = new NetMakeOptions();
+        NetMEOptions options = new NetMEOptions();
 
-        options.setInput(new File(this.txtInput.getText().replaceAll("(^\")|(\"$)", "")));
+        options.setDistancesFile(new File(this.txtInputDistances.getText().replaceAll("(^\")|(\"$)", "")));
+        options.setCircularOrderingFile(new File(this.txtInputOrdering.getText().replaceAll("(^\")|(\"$)", "")));
         options.setOutputDir(new File(this.txtOutputDir.getText().replaceAll("(^\")|(\"$)", "")));
-        options.setOutputPrefix(this.txtOutputPrefix.getText());
-
-        try {
-            options.setTreeParam(Double.parseDouble(this.txtWeight.getText()));
-        }
-        catch(Exception e) {
-            showErrorDialog("Tree param must be a real number.");
-            return null;
-        }
-
-        // May need some more validation here.
-        options.setWeighting1(this.cboWeighting1.getSelectedItem().toString());
-        options.setWeighting2(this.cboWeighting2.getSelectedItem().toString());
+        options.setPrefix(this.txtOutputPrefix.getText());
 
         return options;
     }
@@ -439,7 +391,7 @@ public class NetMakeGUI extends JFrame implements ToolHost {
     public void showErrorDialog(String message) {
         JOptionPane.showMessageDialog(this,
                 message,
-                "Net Make Error",
+                "Net ME Error",
                 JOptionPane.ERROR_MESSAGE);
     }
 
@@ -450,7 +402,7 @@ public class NetMakeGUI extends JFrame implements ToolHost {
     public static void main(String args[]) {
 
         // Configure logging
-        NetMake.configureLogging();
+        NetME.configureLogging();
 
         try {
             log.info("Running in GUI mode");
@@ -459,7 +411,7 @@ public class NetMakeGUI extends JFrame implements ToolHost {
 
                 @Override
                 public void run() {
-                    new NetMakeGUI().setVisible(true);
+                    new NetMEGUI().setVisible(true);
                 }
             });
             return;
@@ -470,3 +422,4 @@ public class NetMakeGUI extends JFrame implements ToolHost {
         }
     }
 }
+

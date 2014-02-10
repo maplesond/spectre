@@ -20,7 +20,6 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phybre.core.ui.cli.CommandLineHelper;
@@ -88,14 +87,25 @@ public class NetMECLI {
 
         try {
             // Configure logging
-            BasicConfigurator.configure();
+            NetME.configureLogging();
 
-            File distancesFile = new File(commandLine.getOptionValue(OPT_DISTANCES_FILE));
-            File circularOrderingFile = commandLine.hasOption(OPT_CIRCULAR_ORDERING_FILE) ? new File(commandLine.getOptionValue(OPT_CIRCULAR_ORDERING_FILE)) : null;
-            File outputDir = commandLine.hasOption(OPT_OUTPUT_DIR) ? new File(commandLine.getOptionValue(OPT_OUTPUT_DIR)) : new File(".");
-            String prefix = commandLine.hasOption(OPT_OUTPUT_PREFIX) ? commandLine.getOptionValue(OPT_OUTPUT_PREFIX) : "netme-" + Time.createTimestamp();
+            NetMEOptions options = new NetMEOptions();
 
-            new NetME().run(distancesFile, circularOrderingFile, outputDir, prefix);
+            options.setDistancesFile(new File(commandLine.getOptionValue(OPT_DISTANCES_FILE)));
+
+            options.setCircularOrderingFile(commandLine.hasOption(OPT_CIRCULAR_ORDERING_FILE) ?
+                    new File(commandLine.getOptionValue(OPT_CIRCULAR_ORDERING_FILE)) :
+                    null);
+
+            options.setOutputDir(commandLine.hasOption(OPT_OUTPUT_DIR) ?
+                    new File(commandLine.getOptionValue(OPT_OUTPUT_DIR)) :
+                    new File("."));
+
+            options.setPrefix(commandLine.hasOption(OPT_OUTPUT_PREFIX) ?
+                    commandLine.getOptionValue(OPT_OUTPUT_PREFIX) :
+                    "netme-" + Time.createTimestamp());
+
+            new NetME(options).run();
 
         } catch (Exception e) {
             System.err.println(e.getMessage());

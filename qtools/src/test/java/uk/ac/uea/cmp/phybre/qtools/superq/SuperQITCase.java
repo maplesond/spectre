@@ -17,9 +17,6 @@
 package uk.ac.uea.cmp.phybre.qtools.superq;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

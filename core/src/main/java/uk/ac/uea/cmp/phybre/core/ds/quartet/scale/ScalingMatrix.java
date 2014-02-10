@@ -5,8 +5,6 @@ import uk.ac.uea.cmp.phybre.core.ds.quartet.GroupedQuartetSystem;
 import uk.ac.uea.cmp.phybre.core.ds.quartet.Quartet;
 import uk.ac.uea.cmp.phybre.core.ds.quartet.QuartetSystemList;
 import uk.ac.uea.cmp.phybre.core.ds.quartet.QuartetWeights;
-import java.util.List;
-import java.util.Iterator;
 
 import java.io.IOException;
 

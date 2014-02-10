@@ -21,7 +21,6 @@ import uk.ac.uea.cmp.phybre.core.ds.distance.DistanceMatrixGenerator;
 import uk.ac.uea.cmp.phybre.core.ds.distance.RandomDistanceGenerator;
 import uk.ac.uea.cmp.phybre.core.ds.split.CompatibleSplitSystem;
 import uk.ac.uea.cmp.phybre.net.netmake.NetMake;
-import uk.ac.uea.cmp.phybre.net.netmake.NetMakeOptions;
 import uk.ac.uea.cmp.phybre.net.netmake.NetMakeResult;
 import uk.ac.uea.cmp.phybre.net.netmake.weighting.TSPWeighting;
 

@@ -16,8 +16,6 @@
 
 package uk.ac.uea.cmp.phybre.net.netmake.weighting;
 
-import org.apache.commons.lang3.StringUtils;
-
 /**
  * Every vertex of one component (after merging) gets the same weighting
  * parameter, so they are all equally weighted.

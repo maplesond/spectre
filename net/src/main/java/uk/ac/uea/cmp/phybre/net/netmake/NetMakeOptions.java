@@ -1,6 +1,5 @@
 package uk.ac.uea.cmp.phybre.net.netmake;
 
-import uk.ac.uea.cmp.phybre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phybre.net.netmake.weighting.GreedyMEWeighting;
 import uk.ac.uea.cmp.phybre.net.netmake.weighting.Weighting;
 import uk.ac.uea.cmp.phybre.net.netmake.weighting.Weightings;

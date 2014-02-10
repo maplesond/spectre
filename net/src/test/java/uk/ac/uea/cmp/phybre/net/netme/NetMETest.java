@@ -44,7 +44,7 @@ public class NetMETest {
 
         CircularOrdering circularOrdering = new CircularOrdering(new int[] {7,2,1,3,4,5,6});
 
-        NetMEResult result = new NetME().calcMinEvoTree(distanceMatrix, circularOrdering);
+        NetMEResult result = new NetME().execute(distanceMatrix, circularOrdering);
 
         assertTrue(result.getMeTree().getNbSplits() == 11);
 

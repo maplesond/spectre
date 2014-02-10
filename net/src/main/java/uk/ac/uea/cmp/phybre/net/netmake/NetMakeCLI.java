@@ -17,21 +17,12 @@
 package uk.ac.uea.cmp.phybre.net.netmake;
 
 import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.PropertyConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.uea.cmp.phybre.core.ds.distance.DistanceMatrix;
-import uk.ac.uea.cmp.phybre.core.io.PhygenDataType;
-import uk.ac.uea.cmp.phybre.core.io.PhygenReader;
-import uk.ac.uea.cmp.phybre.core.io.PhygenReaderFactory;
 import uk.ac.uea.cmp.phybre.core.ui.cli.CommandLineHelper;
-import uk.ac.uea.cmp.phybre.net.netmake.weighting.Weighting;
 import uk.ac.uea.cmp.phybre.net.netmake.weighting.Weightings;
 
 import java.io.File;
