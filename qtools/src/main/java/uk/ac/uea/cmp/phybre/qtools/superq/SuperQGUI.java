@@ -81,6 +81,9 @@ public class SuperQGUI extends JFrame implements ToolHost {
     private SuperQRunner superqRunner;
 
     public SuperQGUI() {
+
+        this.setPreferredSize(new Dimension(600, 500));
+
         initComponents();
         setTitle("SUPERQ");
 
@@ -91,6 +94,8 @@ public class SuperQGUI extends JFrame implements ToolHost {
 
         this.go_control = new JobController(this.cmdRun, this.cmdCancel);
         setRunningStatus(false);
+
+
 
         // Overridden this... this should work without gurobi :s
         // Only enable scaling if Gurobi is available
@@ -412,7 +417,8 @@ public class SuperQGUI extends JFrame implements ToolHost {
 
         final JFileChooser fc = new JFileChooser();
         if (evt.getSource() == cmdSave) {
-            fc.setSelectedFile(new File("outfile"));
+            fc.addChoosableFileFilter(new NexusFileFilter());
+            fc.setSelectedFile(new File("outfile.nex"));
             int returnVal = fc.showSaveDialog(SuperQGUI.this);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
 

@@ -178,6 +178,24 @@ public class CircularOrdering {
         }
     }
 
+    public String toNexusString() {
+
+        if (this.co == null || this.co.length == 0) {
+            return "";
+        }
+        else {
+            StringBuilder sb = new StringBuilder();
+
+            sb.append(this.co[0]);
+
+            for(int i = 1; i < this.co.length; i++) {
+                sb.append(" ").append(this.co[i]);
+            }
+
+            return sb.toString();
+        }
+    }
+
     public String toString(Taxa taxa) {
 
         if (this.co == null || this.co.length == 0) {

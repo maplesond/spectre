@@ -15,7 +15,6 @@
  */
 package uk.ac.uea.cmp.phybre.qtools.superq;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.PropertyConfigurator;
@@ -86,19 +85,10 @@ public class SuperQ extends RunnableTool {
             log.info("Starting job");
             log.debug("FREE MEM - at start: " + rt.freeMemory());
 
-            String path = this.options.getOutputFile().getParent();
-            File tmpdir = new File(path, "tempfiles");
-            tmpdir.mkdir();
-            String tmppath = tmpdir.getPath() + File.separator;
-
-            String primarySolverName = this.options.getPrimarySolver() == null ?
-                    "Internal NNLS method" :
-                    this.options.getPrimarySolver().getIdentifier();
-
             this.continueRun();
 
             notifyUser("Converting input trees into a combined quartet system.  " +
-                    (this.options.getScalingSolver() != null ? "(Scaling input - optimising with: " + this.options.getScalingSolver().getIdentifier() + ")" : ""));
+                    (this.options.getScalingSolver() != null ? "(Scaling input (optimiser: " + this.options.getScalingSolver().getIdentifier() + ")" : ""));
 
             GroupedQuartetSystem combinedQuartetSystem =  new QMaker().execute(
                     this.options.getInputFiles(),
@@ -109,7 +99,11 @@ public class SuperQ extends RunnableTool {
 
             this.continueRun();
 
-            notifyUser("Calculating the circular ordering and computing weights using QNET (optimising with: " + primarySolverName + ")");
+            String primarySolverName = this.options.getPrimarySolver() == null ?
+                    "INTERNAL" :
+                    this.options.getPrimarySolver().getIdentifier();
+
+            notifyUser("Running QNet (optimiser: " + primarySolverName + ")");
             QNetResult qnetResult = new QNet().execute(combinedQuartetSystem, false, -1.0, this.options.getPrimarySolver());
 
             rt.gc();
@@ -120,12 +114,12 @@ public class SuperQ extends RunnableTool {
             double[] solution = qnetResult.getComputedWeights().getSolution();
 
             if (this.options.getSecondaryProblem() == null || this.options.getSecondarySolver() == null) {
-                log.info("Secondary optimisation of QNET results - Not requested");
+                log.info("Secondary optimisation - Not requested");
             } else {
 
                 Optimiser secondarySolver = this.options.getSecondarySolver();
-                notifyUser("Secondary optimisation of QNET weights - Optimising with " + secondarySolver.toString() + " using the " +
-                        this.options.getSecondaryProblem() + " objective.");
+                notifyUser("Secondary optimisation (optimiser: " + secondarySolver.getIdentifier() + "; objective: " +
+                        this.options.getSecondaryProblem().getName() + ")");
 
                 try {
 
@@ -148,33 +142,31 @@ public class SuperQ extends RunnableTool {
                 }
             }
 
-            String filterTempFile = tmppath + "unfiltered-split-system.nex";
-            File weightsOutput = this.options.getFilter() != null ? new File(filterTempFile) : this.options.getOutputFile();
-
-            notifyUser("Saving weights to file: " + weightsOutput.getAbsoluteFile());
             CircularSplitSystem ss = qnetResult.createSplitSystem(null, QNetResult.SplitLimiter.STANDARD);
-
-            // Create output dir if required
-            if (weightsOutput.getParentFile() != null && !weightsOutput.getParentFile().exists()) {
-                weightsOutput.getParentFile().mkdirs();
-            }
-
-            new NexusWriter().writeSplitSystem(weightsOutput, ss);
-
 
             rt.gc();
             log.debug("FREE MEM - after computing weights: " + rt.freeMemory());
 
+            // Filter split system if required
             if (this.options.getFilter() != null) {
 
                 notifyUser("Filtering out bottom " + this.options.getFilter() * 100.0 + " % of splits");
-                this.filterNexus(new File(filterTempFile), this.options.getOutputFile(), this.options.getFilter());
+                ss.filterByWeight(this.options.getFilter());
             }
 
-            notifyUser("Removing temporary files in " + tmpdir.toString());
 
-            // Clean up temp dir
-            FileUtils.deleteDirectory(tmpdir);
+            // Save split system
+            File outputFile = this.options.getOutputFile();
+            File outputDir = this.options.getOutputFile().getParentFile();
+
+            // Create output dir if required
+            if (outputDir != null && !outputDir.exists()) {
+                outputDir.mkdirs();
+            }
+
+            notifyUser("Saving weights to file: " + outputFile.getAbsolutePath());
+            new NexusWriter().writeSplitSystem(outputFile, ss);
+
 
             this.trackerFinished(true);
 
