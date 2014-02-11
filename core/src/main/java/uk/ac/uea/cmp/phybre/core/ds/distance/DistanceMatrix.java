@@ -119,6 +119,19 @@ public class DistanceMatrix {
     }
 
     /**
+     * Creates a distance matrix from the provided distances and generates a default taxa set of the appropriate size to
+     * go with them.
+     * @param distances
+     */
+    public DistanceMatrix(double[][] distances) {
+        this.taxa = new Taxa(createDefaultTaxaSet(distances.length));
+        this.matrix = copyDistances(distances);
+        this.nbTaxa = this.taxa.size();
+
+        validate();
+    }
+
+    /**
      * Creates a new DistanceMatrix object by making a deep copy of the provided taxa
      * set and distances matrix. Ensures this object is in a valid state.
      *

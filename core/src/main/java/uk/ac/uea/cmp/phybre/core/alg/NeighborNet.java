@@ -20,6 +20,7 @@ import uk.ac.uea.cmp.phybre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phybre.core.ds.split.CircularOrdering;
 import uk.ac.uea.cmp.phybre.core.ds.split.CircularSplitSystem;
 import uk.ac.uea.cmp.phybre.core.ds.split.SimpleSplitSystem;
+import uk.ac.uea.cmp.phybre.core.ds.split.SplitSystem;
 
 import java.util.Arrays;
 import java.util.Stack;
@@ -38,7 +39,7 @@ public class NeighborNet {
      * @param distanceMatrix The Distance matrix to process
      * @return The computed split system
      */
-    public SimpleSplitSystem createCircularSplitSystem(final DistanceMatrix distanceMatrix){
+    public SplitSystem createCircularSplitSystem(final DistanceMatrix distanceMatrix){
 
         return new CircularSplitSystem(distanceMatrix, this.computeCircularOrdering(distanceMatrix));
     }

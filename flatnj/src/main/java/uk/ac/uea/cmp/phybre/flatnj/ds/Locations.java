@@ -16,6 +16,8 @@
 
 package uk.ac.uea.cmp.phybre.flatnj.ds;
 
+import uk.ac.uea.cmp.phybre.core.ds.distance.DistanceMatrix;
+
 import java.util.List;
 
 /**
@@ -71,8 +73,7 @@ public class Locations {
             }
 
         }
-        DistanceMatrix dm = new DistanceMatrix(matrix);
-        return dm;
+        return new DistanceMatrix(matrix);
     }
 
 }

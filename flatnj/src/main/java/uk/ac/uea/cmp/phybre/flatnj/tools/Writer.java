@@ -17,6 +17,7 @@
 package uk.ac.uea.cmp.phybre.flatnj.tools;
 
 import uk.ac.uea.cmp.phybre.core.ds.Alignment;
+import uk.ac.uea.cmp.phybre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phybre.flatnj.ds.*;
 import uk.ac.uea.cmp.phybre.flatnj.fdraw.*;
 import uk.ac.uea.cmp.phybre.flatnj.fdraw.Label;
@@ -107,7 +108,7 @@ public class Writer {
 
         writeLine();
         writeLine("BEGIN Distances;");
-        writeLine(" DIMENSIONS ntax=" + dm.getSize() + ";");
+        writeLine(" DIMENSIONS ntax=" + dm.getNbTaxa() + ";");
         writeLine(" FORMAT labels=NO interleave = NO diagonal;");
         writeLine(" MATRIX");
         for (int i = 0; i < matrix.length; i++) {
