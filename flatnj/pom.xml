@@ -36,6 +36,10 @@
                             <mainClass>uk.ac.uea.cmp.phybre.flatnj.FlatNJ</mainClass>
                             <id>flatnj</id>
                         </program>
+                        <program>
+                            <mainClass>uk.ac.uea.cmp.phybre.flatnj.gen4s.Gen4S</mainClass>
+                            <id>gen4s</id>
+                        </program>
                     </programs>
                 </configuration>
             </plugin>
@@ -55,6 +59,7 @@
                         <configuration>
                             <target>
                                 <chmod file="${build-dir}/bin/flatnj" perm="755"/>
+                                <chmod file="${build-dir}/bin/gen4s" perm="755"/>
                             </target>
                         </configuration>
                     </execution>

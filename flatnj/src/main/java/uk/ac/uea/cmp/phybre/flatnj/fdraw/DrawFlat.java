@@ -19,7 +19,6 @@ package uk.ac.uea.cmp.phybre.flatnj.fdraw;
 
 import uk.ac.uea.cmp.phybre.flatnj.ds.Taxa;
 
-import java.io.PrintWriter;
 import java.util.*;
 
 //This class provides the algorithm for drawing a

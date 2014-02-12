@@ -319,7 +319,7 @@ public class DistanceMatrix {
     }
 
     /**
-     * Retrieves the distance between two taxa
+     * Retrieves the distance between two taxa, using taxa indices
      *
      * @param row
      * @param col
@@ -328,6 +328,22 @@ public class DistanceMatrix {
     public double getDistance(final int row, final int col) {
         return matrix[row][col];
     }
+
+    /**
+     * Retrieves the distance between two taxa
+     *
+     * @param row
+     * @param col
+     * @return The distance at [row][col]
+     */
+    public double getDistance(final String row, final String col) {
+
+        final int rowId = this.taxa.getByName(row).getId();
+        final int colId = this.taxa.getByName(col).getId();
+        return matrix[rowId][colId];
+    }
+
+
 
     /**
      * Increments the distance at [row][col] by incValue.  Returns the new value at [row][col]

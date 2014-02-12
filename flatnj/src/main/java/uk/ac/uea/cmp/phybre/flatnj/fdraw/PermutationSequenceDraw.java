@@ -21,8 +21,6 @@ package uk.ac.uea.cmp.phybre.flatnj.fdraw;
 
 import uk.ac.uea.cmp.phybre.core.util.CollectionUtils;
 
-import java.io.LineNumberReader;
-import java.io.PrintWriter;
 import java.util.Random;
 
 public class PermutationSequenceDraw {

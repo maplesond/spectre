@@ -17,10 +17,7 @@ package uk.ac.uea.cmp.phybre.core.ds;
 
 import uk.ac.uea.cmp.phybre.core.ds.split.CircularOrdering;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Taxa class.  This is an extension of Arraylist, which also acts as a set in that it does not allow the client
@@ -313,6 +310,16 @@ public class Taxa extends ArrayList<Taxon> {
         }
 
         return nameArray;
+    }
+
+    public Set<String> getNameSet() {
+        Set<String> nameSet = new LinkedHashSet<>(this.size());
+
+        for(int i = 0; i < this.size(); i++) {
+            nameSet.add(this.get(i).getName());
+        }
+
+        return nameSet;
     }
 
     public int[] getIds() {
