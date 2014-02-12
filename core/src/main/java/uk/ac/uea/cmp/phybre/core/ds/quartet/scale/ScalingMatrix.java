@@ -1,6 +1,5 @@
 package uk.ac.uea.cmp.phybre.core.ds.quartet.scale;
 
-import org.apache.commons.lang3.StringUtils;
 import uk.ac.uea.cmp.phybre.core.ds.quartet.GroupedQuartetSystem;
 import uk.ac.uea.cmp.phybre.core.ds.quartet.Quartet;
 import uk.ac.uea.cmp.phybre.core.ds.quartet.QuartetSystemList;
@@ -8,6 +7,7 @@ import uk.ac.uea.cmp.phybre.core.ds.quartet.QuartetWeights;
 import uk.ac.uea.cmp.phybre.core.math.Equality;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * Created by dan on 14/12/13.
@@ -319,21 +319,21 @@ public class ScalingMatrix {
                         if (wvi != null && wvj != null) {
 
                             //check first weight in triplet
-                            if(wvi.getA().doubleValue() == 0.0) {
-                                if(wvj.getA().doubleValue() > 0.0) {
+                            if(wvi.getA() == 0.0) {
+                                if(wvj.getA() > 0.0) {
                                     this.perfectMatch = false;
                                 }
                             }
                             else {
-                                if(wvj.getA().doubleValue() == 0.0) {
+                                if(wvj.getA() == 0.0) {
                                     this.perfectMatch = false;
                                 }
                                 else {
                                     if(coeff < 0.0) {
-                                        coeff = wvi.getA().doubleValue()/wvj.getA().doubleValue();
+                                        coeff = wvi.getA() / wvj.getA();
                                     }
                                     else {
-                                        if(!Equality.approxEquals(coeff,wvi.getA().doubleValue()/wvj.getA().doubleValue(),LOCAL_TOLERANCE)) {
+                                        if(!Equality.approxEquals(coeff, wvi.getA() / wvj.getA(), LOCAL_TOLERANCE)) {
                                             this.perfectMatch = false;
                                         }
                                     }
@@ -341,21 +341,21 @@ public class ScalingMatrix {
                             }
 
                             //check second weight in triplet
-                            if(wvi.getB().doubleValue() == 0.0) {
-                                if(wvj.getB().doubleValue() > 0.0) {
+                            if(wvi.getB() == 0.0) {
+                                if(wvj.getB() > 0.0) {
                                     this.perfectMatch = false;
                                 }
                             }
                             else {
-                                if(wvj.getB().doubleValue() == 0.0) {
+                                if(wvj.getB() == 0.0) {
                                     this.perfectMatch = false;
                                 }
                                 else {
                                     if(coeff < 0.0) {
-                                        coeff = wvi.getB().doubleValue()/wvj.getB().doubleValue();
+                                        coeff = wvi.getB() / wvj.getB();
                                     }
                                     else {
-                                        if(!Equality.approxEquals(coeff,wvi.getB().doubleValue()/wvj.getB().doubleValue(),LOCAL_TOLERANCE)) {
+                                        if(!Equality.approxEquals(coeff, wvi.getB() / wvj.getB(), LOCAL_TOLERANCE)) {
                                             this.perfectMatch = false;
                                         }
                                     }
@@ -363,21 +363,21 @@ public class ScalingMatrix {
                             }
 
                             //check third weight in triplet
-                            if(wvi.getC().doubleValue() == 0.0) {
-                                if(wvj.getC().doubleValue() > 0.0) {
+                            if(wvi.getC() == 0.0) {
+                                if(wvj.getC() > 0.0) {
                                     this.perfectMatch = false;
                                 }
                             }
                             else {
-                                if(wvj.getC().doubleValue() == 0.0) {
+                                if(wvj.getC() == 0.0) {
                                     this.perfectMatch = false;
                                 }
                                 else {
                                     if(coeff < 0.0) {
-                                        coeff = wvi.getC().doubleValue()/wvj.getC().doubleValue();
+                                        coeff = wvi.getC() / wvj.getC();
                                     }
                                     else {
-                                        if(!Equality.approxEquals(coeff,wvi.getC().doubleValue()/wvj.getC().doubleValue(),LOCAL_TOLERANCE)) {
+                                        if(!Equality.approxEquals(coeff, wvi.getC() / wvj.getC(),LOCAL_TOLERANCE)) {
                                             this.perfectMatch = false;
                                         }
                                     }
@@ -390,6 +390,69 @@ public class ScalingMatrix {
         }
 
         return coeff;
+    }
+
+    public double[] computeFactorsDirectly() {
+
+        //the matrix of local scaling factors
+        final double[][] m = this.matrix;
+        //the global scaling factors
+        double[] s = new double[m.length];
+
+        //initialize global scaling factors
+        for(int i=0; i < s.length; i++) {
+            s[i] = -1.0;
+        }
+
+        //Linked list used in the search for connected components
+        ArrayList<Integer> reached = new ArrayList<Integer>();
+
+        //Computing the global scaling factors is
+        //similar to finding connected components in
+        //a graph given its adjacency matrix. It can
+        //happen that we find out that there is no
+        //perfect match.
+        for(int i=0; i < s.length; i++) {
+
+            //check if i starts a new connected component
+            if(s[i] == -1.0) {
+                s[i] = 1.0;
+                reached.add(i);
+            }
+
+            //process all elements in the current connected component
+            while(!reached.isEmpty()) {
+                int k = reached.remove(0);
+                for(int j=0; j < m.length; j++) {
+                    if(m[k][j] >= 0.0) {
+                        if(s[j] == -1.0) {
+                            s[j] = m[k][j]*s[k];
+                            reached.add(j);
+                        }
+                        else {
+                            if(!uk.ac.tgac.metaopt.Equality.approxEquals(s[j], m[k][j] * s[k], LOCAL_TOLERANCE)) {
+                                this.noPerfectMatch();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        //normalize global scaling factors
+        if(this.isPerfectMatch()) {
+            double sum = 0.0;
+
+            for(int i = 0; i < s.length; i++) {
+                sum += s[i];
+            }
+
+            for(int i = 0; i < s.length; i++) {
+                s[i] /= sum;
+            }
+        }
+
+        return s;
     }
 
     @Override
