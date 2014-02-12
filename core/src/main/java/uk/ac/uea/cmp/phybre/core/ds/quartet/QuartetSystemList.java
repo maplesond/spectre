@@ -20,6 +20,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.ac.tgac.metaopt.Equality;
 import uk.ac.tgac.metaopt.Optimiser;
 import uk.ac.tgac.metaopt.OptimiserException;
 import uk.ac.tgac.metaopt.Solution;
@@ -144,11 +145,23 @@ public class QuartetSystemList extends ArrayList<QuartetSystem> {
         // Computes the matrix of coefficients
         ScalingMatrix matrix = new ScalingMatrix(this);
 
-        // Create the problem from the coefficients and run the solver to get the optimal solution
-        Solution solution = new ScalingOptimiser(optimiser).optimise(matrix.getMatrix());
+        if(matrix.isPerfectMatch()) {
+            double[] solution = this.computeFactorsDirectly(matrix);
+            if(matrix.isPerfectMatch()) {
+                this.scaleWeights(solution);
+            }
+        }
 
-        // Updates quartet weights
-        this.scaleWeights(solution.getVariableValues());
+        if(!matrix.isPerfectMatch()) {
+
+            matrix.recomputeMatrix();
+
+            //Create the problem from the coefficients and run the solver to get the optimal solution
+            Solution solution = new ScalingOptimiser(optimiser).optimise(matrix.getMatrix());
+
+            // Updates quartet weights
+            this.scaleWeights(solution.getVariableValues());
+        }
 
         // Just return this as a convenience to the client.
         return this;
@@ -199,5 +212,66 @@ public class QuartetSystemList extends ArrayList<QuartetSystem> {
         FileUtils.writeLines(new File(outputDir, prefix + ".script"), lines);
     }
 
+    protected double[] computeFactorsDirectly(ScalingMatrix matrix) {
 
+        //the matrix of local scaling factors
+        double[][] m = matrix.getMatrix();
+        //the global scaling factors
+        double[] s = new double[m.length];
+
+        //initialize global scaling factors
+        for(int i=0; i < s.length; i++) {
+            s[i] = -1.0;
+        }
+
+        //Linked list used in the search for connected components
+        ArrayList<Integer> reached = new ArrayList<Integer>();
+
+        //Computing the global scaling factors is
+        //similar to finding connected components in
+        //a graph given its adjacency matrix. It can
+        //happen that we find out that there is no
+        //perfect match.
+        for(int i=0; i < s.length; i++) {
+
+            //check if i starts a new connected component
+            if(s[i] == -1.0) {
+                s[i] = 1.0;
+                reached.add(i);
+            }
+
+            //process all elements in the current connected component
+            while(!reached.isEmpty()) {
+                int k = reached.remove(0);
+                for(int j=0; j < m.length; j++) {
+                    if(m[k][j] >= 0.0) {
+                        if(s[j] == -1.0) {
+                            s[j] = m[k][j]*s[k];
+                            reached.add(j);
+                        }
+                        else {
+                            if(!Equality.approxEquals(s[j],m[k][j]*s[k],matrix.LOCAL_TOLERANCE)) {
+                                matrix.noPerfectMatch();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        //normalize global scaling factors
+        if(matrix.isPerfectMatch()) {
+            double sum = 0.0;
+
+            for(int i = 0; i < s.length; i++) {
+                sum += s[i];
+            }
+
+            for(int i = 0; i < s.length; i++) {
+                s[i] /= sum;
+            }
+        }
+
+        return s;
+    }
 }
