@@ -148,7 +148,7 @@ public class DrawFlat {
     //this file. This is the last step of the
     //computation of the split network. Again this
     //method is only made public for testing purposes.
-    public static void write_splits_graph_to_file(Vertex v, String filename, int ntaxa, String[] taxaname, PermutationSequenceDraw psequ) {
+    /*public static void write_splits_graph_to_file(Vertex v, String filename, int ntaxa, String[] taxaname, PermutationSequenceDraw psequ) {
         //collect vertices and edges of the network
         LinkedList<Vertex> vlist = collect_vertices(v);
         LinkedList<Edge> elist = null;
@@ -167,7 +167,7 @@ public class DrawFlat {
         NexusIO.writetaxa(ntaxa, taxaname, pw);
         NexusIO.writenetwork(ntaxa, nvert, nedges, psequ, vlist, elist, pw);
         NexusIO.closeprintwriter(pw);
-    }
+    } */
 
     //This method is the main public method that should be
     //called for computing a plane split network for a

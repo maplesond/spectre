@@ -178,7 +178,7 @@ public class PermutationSequenceDraw {
     //sequence stored in a nexus file
     //The threshold can be used to filter
     //the splits.
-    public PermutationSequenceDraw(String filename, double thold) {
+    /*public PermutationSequenceDraw(String filename, double thold) {
         int i = 0;
 
         LineNumberReader lnr = NexusIO.openlinereader(filename);
@@ -325,7 +325,7 @@ public class PermutationSequenceDraw {
             }
         }
         NexusIO.closelinereader(lnr);
-    }
+    }*/
 
     //Constructor of a template for a circular
     //split system from a list of taxa 
@@ -762,7 +762,7 @@ public class PermutationSequenceDraw {
         //System.out.println("Permutation sequence set up okay");
         return 0;
     }
-
+    /*
     //This method opens a nexus file and writes the 
     //permutation sequence to a flatsplits block in
     //a nexus file. 
@@ -796,7 +796,7 @@ public class PermutationSequenceDraw {
         NexusIO.writeflatsplits(ntaxa, nswaps, this, pw);
         NexusIO.writedistances(ntaxa, dist, pw);
         NexusIO.closeprintwriter(pw);
-    }
+    } */
 
     //We need to number the active splits consecutively
     //since SplitsTree seems only able to handle indices

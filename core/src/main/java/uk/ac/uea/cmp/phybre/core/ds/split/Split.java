@@ -19,6 +19,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import uk.ac.uea.cmp.phybre.core.ds.distance.DistanceMatrix;
 
+
 /**
  * Created with IntelliJ IDEA.
  * User: Sarah_2
@@ -26,7 +27,7 @@ import uk.ac.uea.cmp.phybre.core.ds.distance.DistanceMatrix;
  * Time: 16:34
  * To change this template use File | Settings | File Templates.
  */
-public class Split {
+public class Split implements Comparable<Split> {
 
     private SplitBlock aSide;
     private SplitBlock bSide;
@@ -135,6 +136,41 @@ public class Split {
         Split copy = new Split(this);
         copy.sort();
         return copy;
+    }
+
+    @Override
+    public int compareTo(Split o) {
+
+        if (o == null)
+            throw new NullPointerException("The split to compare is null");
+
+        if (o == this)
+            return 0;
+
+        int difNbTaxa = this.getNbTaxa() - o.getNbTaxa();
+
+        if (difNbTaxa == 0) {
+
+            double diffWeight = this.weight - o.weight;
+
+            if (diffWeight == 0.0) {
+
+                int difASide = this.aSide.compareTo(o.aSide);
+
+                if (difASide == 0) {
+                    return this.bSide.compareTo(o.bSide);
+                }
+                else {
+                    return difASide;
+                }
+            }
+            else {
+                return diffWeight < 0.0 ? -1 : 1;
+            }
+        }
+        else {
+            return difNbTaxa;
+        }
     }
 
     public enum SplitSide {
