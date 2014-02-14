@@ -49,10 +49,11 @@ public class ScalingOptimiser {
 
         List<Constraint> constraints = new ArrayList<>(variables.size());
 
+        Expression expr = new Expression();
         for (Variable var : variables) {
-            Expression expr = new Expression().addTerm(1.0, var);
-            constraints.add(new Constraint("c0", expr, Constraint.Relation.GREATER_THAN_OR_EQUAL_TO, 0.0));
+            expr.addTerm(1.0, var);
         }
+        constraints.add(new Constraint("c0", expr, Constraint.Relation.EQUAL, 1.0));
 
         return constraints;
     }
