@@ -21,14 +21,17 @@ import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.junit.Before;
 import org.junit.Test;
+import uk.ac.uea.cmp.phybre.core.ds.Taxa;
 import uk.ac.uea.cmp.phybre.core.ds.distance.DistanceMatrix;
+import uk.ac.uea.cmp.phybre.core.ds.distance.FlexibleDistanceMatrix;
 import uk.ac.uea.cmp.phybre.core.ds.split.CompatibleSplitSystem;
 import uk.ac.uea.cmp.phybre.core.ds.split.Split;
 import uk.ac.uea.cmp.phybre.core.math.Equality;
 import uk.ac.uea.cmp.phybre.net.netmake.weighting.GreedyMEWeighting;
 import uk.ac.uea.cmp.phybre.net.netmake.weighting.TSPWeighting;
 
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertTrue;
+
 
 /**
  * Created with IntelliJ IDEA. User: Dan Date: 12/05/13 Time: 23:27 To change this template use File | Settings | File
@@ -60,7 +63,7 @@ public class NetMakeTest {
         };
 
 
-        DistanceMatrix distanceMatrix = new DistanceMatrix(taxa, distances);
+        DistanceMatrix distanceMatrix = new FlexibleDistanceMatrix(new Taxa(taxa), distances);
 
         NetMakeResult result = new NetMake().execute(distanceMatrix, new GreedyMEWeighting(distanceMatrix), new TSPWeighting(distanceMatrix.size()));
 

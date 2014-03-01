@@ -15,6 +15,8 @@
  */
 package uk.ac.uea.cmp.phybre.core.ds.distance;
 
+import uk.ac.uea.cmp.phybre.core.ds.Taxa;
+
 /**
  * Created with IntelliJ IDEA.
  * User: Dan
@@ -27,16 +29,15 @@ public class RandomDistanceGenerator implements DistanceMatrixGenerator {
     @Override
     public DistanceMatrix generateDistances(final int n) {
 
-        DistanceMatrix distanceMatrix = new DistanceMatrix(n);
+        DistanceMatrix distanceMatrix = new FlexibleDistanceMatrix();
+        Taxa taxa = new Taxa(n);
 
         for (int i = 0; i < n; i++) {
             for (int j = i; j < n; j++) {
-                if (i == j) {
-                    distanceMatrix.setDistance(i, j, 0.0);
-                } else {
+                if (i != j) {
                     double aDistance = Math.round(Math.random() * 1.E5) / 1.E5;
-                    distanceMatrix.setDistance(i, j, aDistance);
-                    distanceMatrix.setDistance(j, i, aDistance);
+                    distanceMatrix.setDistance(taxa.get(i), taxa.get(j), aDistance);
+                    distanceMatrix.setDistance(taxa.get(j), taxa.get(i), aDistance);
                 }
             }
         }

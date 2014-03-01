@@ -17,8 +17,11 @@
 package uk.ac.uea.cmp.phybre.core.io.phylip;
 
 import org.apache.commons.io.FileUtils;
+import uk.ac.uea.cmp.phybre.core.ds.Taxa;
+import uk.ac.uea.cmp.phybre.core.ds.Taxon;
 import uk.ac.uea.cmp.phybre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phybre.core.io.AbstractPhygenWriter;
+import uk.ac.uea.cmp.phybre.core.util.CollectionUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,11 +42,14 @@ public class PhylipWriter extends AbstractPhygenWriter {
         fileContent.append(n);
         fileContent.append("\n");
 
+        Taxa nameSortedTaxa = distanceMatrix.getTaxa(new Taxon.NameComparator());
+        double[][] matrix = distanceMatrix.getMatrix(new Taxon.NameComparator());
+
         for (int i = 0; i < n; i++) {
 
-            fileContent.append(distanceMatrix.getTaxonName(i));
+            fileContent.append(nameSortedTaxa.get(i).getName());
             fileContent.append(" ");
-            fileContent.append(distanceMatrix.getRowAsString(i));
+            fileContent.append(CollectionUtils.doubleArrayToString(matrix[i], " "));
             fileContent.append("\n");
         }
 

@@ -446,9 +446,9 @@ public class GreedyMEWeighting extends Weighting {
             //to the other side
             double sum = 0.0;
             for (int j = 0; j < splitASideI.size(); j++) {
-                for (int k = 0; k < nbTaxa; k++) {
-                    if (splited[k] == false) {
-                        sum += this.distanceMatrix.getDistance(splitASideI.get(j) - 1, k);
+                for (int k = 1; k <= nbTaxa; k++) {
+                    if (splited[k-1] == false) {
+                        sum += this.distanceMatrix.getDistance(splitASideI.get(j), k);
                     }
                 }
             }

@@ -44,6 +44,6 @@ public class RandomDistanceGeneratorTest {
 
         assertTrue(distanceMatrix != null);
         assertTrue(distanceMatrix.size() == n);
-        assertTrue(distanceMatrix.getRow(0).length == n);
+        assertTrue(distanceMatrix.getMatrix()[0].length == n);
     }
 }

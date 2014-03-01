@@ -74,7 +74,7 @@ public class MinimumEvolutionCalculator {
                 ArrayList<Double> distances = new ArrayList<Double>();
 
                 for (int j = 0; j < NB_TAXA; j++) {
-                    distances.add(dist.getDistance(circularOrdering.getIndexAt(interval.get(i, 0)), circularOrdering.getIndexAt(j)));
+                    distances.add(dist.getDistance(circularOrdering.getAt(interval.get(i, 0)), circularOrdering.getAt(j)));
                 }
 
                 tableP[0][interval.get(i, 0)] = Statistics.sumDoubles(distances);
@@ -82,8 +82,8 @@ public class MinimumEvolutionCalculator {
                 ArrayList<Double> distances = new ArrayList<Double>();
 
                 for (int m = 1; m < interval.rowSize(i); m++) {
-                    distances.add(dist.getDistance(circularOrdering.getIndexAt(interval.get(i, 0)),
-                            circularOrdering.getIndexAt(interval.get(i, m))));
+                    distances.add(dist.getDistance(circularOrdering.getAt(interval.get(i, 0)),
+                            circularOrdering.getAt(interval.get(i, m))));
                 }
                 tableP[interval.rowSize(i) - 1][interval.get(i, 0)] = Statistics.sumDoubles(distances);
 
@@ -113,7 +113,7 @@ public class MinimumEvolutionCalculator {
 
         //Fill the 2 element interval values with distances
         for (int i = NB_TAXA; i < 2 * NB_TAXA; i++) {
-            val.appendToRow(i, dist.getDistance(circularOrdering.getIndexAt(interval.get(i, 0)), circularOrdering.getIndexAt(interval.get(i, 1))));
+            val.appendToRow(i, dist.getDistance(circularOrdering.getAt(interval.get(i, 0)), circularOrdering.getAt(interval.get(i, 1))));
 //            System.out.print("vals for 2-elements done");
         }
         /* Fill val */

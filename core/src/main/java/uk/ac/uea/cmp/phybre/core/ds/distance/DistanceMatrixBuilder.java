@@ -40,42 +40,42 @@ public class DistanceMatrixBuilder {
         BOTH {
             @Override
             public void fillRow(int row, List<Double> elements, DistanceMatrix distanceMatrix) {
-                for (int j = 0; j < elements.size(); j++) {
-                    distanceMatrix.setDistance(row, j, elements.get(j));
+                for (int j = 1; j <= elements.size(); j++) {
+                    distanceMatrix.setDistance(row, j, elements.get(j-1));
                 }
             }
 
             @Override
             public double[] getRow(int row, DistanceMatrix distanceMatrix) {
-                return distanceMatrix.getRow(row);
+                return distanceMatrix.getMatrix()[row-1];
             }
         },
         LOWER {
             @Override
             public void fillRow(int row, List<Double> elements, DistanceMatrix distanceMatrix) {
-                for (int j = 0; j < elements.size(); j++) {
-                    distanceMatrix.setDistance(row, j, elements.get(j));
-                    distanceMatrix.setDistance(j, row, elements.get(j));
+                for (int j = 1; j <= elements.size(); j++) {
+                    distanceMatrix.setDistance(row, j, elements.get(j-1));
+                    distanceMatrix.setDistance(j, row, elements.get(j-1));
                 }
             }
 
             @Override
             public double[] getRow(int row, DistanceMatrix distanceMatrix) {
-                return ArrayUtils.subarray(distanceMatrix.getRow(row), 0, row + 1);
+                return ArrayUtils.subarray(distanceMatrix.getMatrix()[row], 0, row + 1);
             }
         },
         UPPER {
             @Override
             public void fillRow(int row, List<Double> elements, DistanceMatrix distanceMatrix) {
-                for (int j = 0; j < elements.size(); j++) {
-                    distanceMatrix.setDistance(row, j + row, elements.get(j));
-                    distanceMatrix.setDistance(j + row, row, elements.get(j));
+                for (int j = 1; j <= elements.size(); j++) {
+                    distanceMatrix.setDistance(row, j + row, elements.get(j-1));
+                    distanceMatrix.setDistance(j + row, row, elements.get(j-1));
                 }
             }
 
             @Override
             public double[] getRow(int row, DistanceMatrix distanceMatrix) {
-                double[] data = distanceMatrix.getRow(row);
+                double[] data = distanceMatrix.getMatrix()[row];
                 return ArrayUtils.subarray(data, row, data.length);
             }
         };
@@ -104,11 +104,21 @@ public class DistanceMatrixBuilder {
     }
 
     public DistanceMatrix createDistanceMatrix() {
-        DistanceMatrix distanceMatrix = new DistanceMatrix(this.nbTaxa);
 
-        fillDistanceMatrix(this.rows, distanceMatrix);
-
+        this.removeEmptyLines(this.rows);
+        DistanceMatrix distanceMatrix = new FlexibleDistanceMatrix(this.rows.size());
+        this.fillDistanceMatrix(this.rows, distanceMatrix);
         return distanceMatrix;
+    }
+
+    private void removeEmptyLines(List<List<Double>> rows) {
+        for (int i = 0; i < rows.size(); i++) {
+
+            if (rows.get(i).isEmpty()) {
+                rows.remove(i--);
+            }
+        }
+
     }
 
     private Triangle fillDistanceMatrix(List<List<Double>> lines, DistanceMatrix distanceMatrix) {
@@ -133,10 +143,10 @@ public class DistanceMatrixBuilder {
             }
 
             // We should have covered all the bases here and ensured tf is non-null;
-            tf.fillRow(i, matrixLine, distanceMatrix);
+            tf.fillRow(i+1, matrixLine, distanceMatrix);
         }
 
-        // We didn't know it was upper triangular format before the second line so computer the first column now
+        // We didn't know it was upper triangular format before the second line so compute the first column now
         if (tf == Triangle.UPPER) {
             for (int i = 1; i < distanceMatrix.size(); i++) {
                 distanceMatrix.setDistance(i, 0, distanceMatrix.getDistance(0, i));

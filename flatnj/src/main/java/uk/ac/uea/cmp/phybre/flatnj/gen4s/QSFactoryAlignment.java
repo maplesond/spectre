@@ -34,19 +34,19 @@ public class QSFactoryAlignment implements QSFactory
      */
     private Alignment a;
     /**
-     * character {@link DistanceMatrix}.
+     * character {@link uk.ac.uea.cmp.phybre.core.ds.distance.DistanceMatrix}.
      */
     private DistanceMatrix dm;
 
     /**
      * Constructs {@linkplain QSFactoryAlignment} object that will use 
-     * {@linkplain Alignment} and {@linkplain  DistanceMatrix} to compute new 
+     * {@linkplain Alignment} and {@linkplain  uk.ac.uea.cmp.phybre.core.ds.distance.ImmutableDistanceMatrix} to compute new
      * {@link QuadrupleSystem}.
      * 
      * @param a     an {@linkplain Alignment} to be used for
      *              {@link QuadrupleSystem}
      *              estimation.
-     * @param dm    a {@linkplain DistanceMatrix} for more precise quadruple split
+     * @param dm    a {@linkplain uk.ac.uea.cmp.phybre.core.ds.distance.ImmutableDistanceMatrix} for more precise quadruple split
      *              weight estimation. In case it is <code>null</code>, inverted
      *              identity matrix will be used by default.
      */

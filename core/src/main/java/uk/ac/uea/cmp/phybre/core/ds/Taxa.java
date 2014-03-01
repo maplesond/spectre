@@ -29,6 +29,8 @@ public class Taxa extends ArrayList<Taxon> {
     private Map<Integer, Taxon> ids;
     private boolean duplicatesAllowed;
 
+    private int maxId;
+
     /**
      * Constructor
      */
@@ -36,11 +38,20 @@ public class Taxa extends ArrayList<Taxon> {
         this(false);
     }
 
+    public Taxa(final int size) {
+        this(false);
+
+        for(int i = 1; i <= size; i++) {
+            this.add(new Taxon(i));
+        }
+    }
+
     public Taxa(boolean duplicatesAllowed) {
         super();
         this.duplicatesAllowed = duplicatesAllowed;
         this.names = new HashMap<>();
         this.ids = new HashMap<>();
+        this.maxId = 0;
     }
 
     /**
@@ -54,12 +65,10 @@ public class Taxa extends ArrayList<Taxon> {
 
     public Taxa(final String[] taxa) {
 
-        this.names = new HashMap<>();
-        this.ids = new HashMap<>();
-        this.duplicatesAllowed = false;
-
+        this(false);
+        int i = 1;
         for(String taxon : taxa) {
-            this.add(new Taxon(taxon));
+            this.add(new Taxon(taxon, i++));
         }
     }
 
@@ -68,10 +77,14 @@ public class Taxa extends ArrayList<Taxon> {
      * @param taxa
      */
     public Taxa(Taxa taxa) {
-        super(taxa);
+        this();
         this.duplicatesAllowed = taxa.isDuplicatesAllowed();
         this.names = new HashMap<>();
         this.ids = new HashMap<>();
+
+        for(Taxon t : taxa) {
+            this.add(new Taxon(t));
+        }
     }
 
 
@@ -108,7 +121,11 @@ public class Taxa extends ArrayList<Taxon> {
 
             // If the user didn't both to set the taxa id then we do it ourselves.
             if (taxon.getId() == Taxon.DEFAULT_ID) {
-                taxon.setId(this.size()+1);
+                this.maxId = this.getNextId();
+                taxon.setId(this.maxId);
+            }
+            else {
+                this.maxId = this.maxId > taxon.getId() ? this.maxId : taxon.getId();
             }
 
             if (this.ids.containsKey(taxon.getId()))
@@ -133,8 +150,13 @@ public class Taxa extends ArrayList<Taxon> {
 
             // If the user didn't both to set the taxa id then we do it ourselves.
             if (taxon.getId() == Taxon.DEFAULT_ID) {
-                taxon.setId(index);
+                this.maxId = this.getNextId();
+                taxon.setId(this.maxId);
             }
+            else {
+                this.maxId = this.maxId > taxon.getId() ? this.maxId : taxon.getId();
+            }
+
 
             if (!this.names.containsKey(taxon.getName()) && !this.ids.containsKey(taxon.getId())) {
                 this.names.put(taxon.getName(), taxon);
@@ -267,6 +289,7 @@ public class Taxa extends ArrayList<Taxon> {
             taxon.setId(i++);
         }
 
+        this.maxId = this.size();
     }
 
     public static enum Direction {
@@ -330,6 +353,34 @@ public class Taxa extends ArrayList<Taxon> {
         }
 
         return idArray;
+    }
+
+
+    public List<Integer> getIdsAsLinkedList() {
+
+        List<Integer> list = new LinkedList<>();
+
+        for(int i = 0; i < this.size(); i++) {
+            list.add(this.get(i).getId());
+        }
+
+        return list;
+    }
+
+    /**
+     * Finds the maximum id already in the list and returns the next number
+     * @return
+     */
+    public int getNextId() {
+        return this.maxId+1;
+    }
+
+    /**
+     * Finds the maximum id already in the list
+     * @return
+     */
+    public int getMaxId() {
+        return this.maxId;
     }
 
     @Override
@@ -408,5 +459,26 @@ public class Taxa extends ArrayList<Taxon> {
         }
 
         return new CircularOrdering(co);
+    }
+
+
+    public Taxa sort(Comparator<Taxon> comparator) {
+
+        Taxa newTaxa = new Taxa(this);
+
+        Collections.sort(newTaxa, comparator);
+
+        return newTaxa;
+    }
+
+
+    public Taxa sortById() {
+
+        return this.sort(new Taxon.IdComparator());
+    }
+
+    public Taxa sortByName() {
+
+        return this.sort(new Taxon.NameComparator());
     }
 }

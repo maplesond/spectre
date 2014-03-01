@@ -17,6 +17,7 @@
 package uk.ac.uea.cmp.phybre.flatnj.ds;
 
 import uk.ac.uea.cmp.phybre.core.ds.distance.DistanceMatrix;
+import uk.ac.uea.cmp.phybre.core.ds.distance.FlexibleDistanceMatrix;
 
 import java.util.List;
 
@@ -64,6 +65,7 @@ public class Locations {
 
     public DistanceMatrix toDistanceMatrix() {
         double[][] matrix = new double[size()][size()];
+        uk.ac.uea.cmp.phybre.core.ds.Taxa taxa = new uk.ac.uea.cmp.phybre.core.ds.Taxa(size());
         for (int i = 0; i < locations.length; i++) {
             matrix[i][i] = 0.0;
             for (int j = i + 1; j < locations.length; j++) {
@@ -73,7 +75,7 @@ public class Locations {
             }
 
         }
-        return new DistanceMatrix(matrix);
+        return new FlexibleDistanceMatrix(taxa, matrix);
     }
 
 }

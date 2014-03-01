@@ -18,6 +18,7 @@ package uk.ac.uea.cmp.phybre.core.io.phylip;
 import org.apache.commons.io.FileUtils;
 import org.kohsuke.MetaInfServices;
 import uk.ac.uea.cmp.phybre.core.ds.distance.DistanceMatrix;
+import uk.ac.uea.cmp.phybre.core.ds.distance.FlexibleDistanceMatrix;
 import uk.ac.uea.cmp.phybre.core.io.AbstractPhygenReader;
 import uk.ac.uea.cmp.phybre.core.io.PhygenDataType;
 
@@ -85,56 +86,6 @@ public class PhylipReader extends AbstractPhygenReader {
     }
 
 
-    private DistanceMatrix oldParser(List<String> lines) {
-        String firstLine = lines.get(0).trim();
-        int nbTaxa = Integer.parseInt(firstLine);
-        DistanceMatrix distanceMatrix = new DistanceMatrix(nbTaxa);
-        int runidx2 = 0;
-        int runidx = 0;
-
-        // Process the rest of the lines
-        for (int i = 1; i < lines.size(); i++) {
-
-            String aLine = lines.get(i);
-
-            if (aLine.trim().isEmpty())
-                continue;
-
-            int taxaendIdx = aLine.indexOf(" ");
-
-            if (aLine.substring(0, taxaendIdx + 1).equals(" ") == false) {
-                runidx2 = 0;
-                distanceMatrix.setTaxa(runidx, aLine.substring(0, taxaendIdx));
-
-                runidx++;
-                aLine = aLine.substring(taxaendIdx + 1);
-            }
-
-            String distance = " ";
-            int idx = 0;
-
-            aLine = aLine.trim();
-
-            while (!aLine.isEmpty()) {
-                aLine = aLine.trim();
-                if (aLine.contains(" ")) {
-                    idx = aLine.indexOf(" ");
-                    distance = aLine.substring(0, idx);
-                    aLine = aLine.substring(idx + 1);
-                } else {
-                    distance = aLine.substring(0, aLine.length());
-                    aLine = aLine.substring(0, 0);
-                }
-
-
-                distanceMatrix.setDistance(runidx - 1, runidx2, Double.parseDouble(distance));
-
-                runidx2++;
-            }
-        }
-
-        return distanceMatrix;
-    }
 
     /**
      * Alternative Phylip parser which handles multi-line phylip files
@@ -151,10 +102,10 @@ public class PhylipReader extends AbstractPhygenReader {
         String firstLine = lines.get(0).trim();
         int nbTaxa = Integer.parseInt(firstLine);
 
-        DistanceMatrix distanceMatrix = new DistanceMatrix(nbTaxa);
+        DistanceMatrix distanceMatrix = new FlexibleDistanceMatrix(nbTaxa);
 
-        int dmRow = 0;
-        int dmCol = 0;
+        int dmRow = 1;
+        int dmCol = 1;
 
         // Process the rest of the lines
         for (int i = 1; i < lines.size(); i++) {
@@ -167,9 +118,8 @@ public class PhylipReader extends AbstractPhygenReader {
 
             String[] parts = aLine.split(" ");
 
-            // Assumes this means we are at the start of the row, so get the label first
-            if (dmCol == 0) {
-                distanceMatrix.setTaxa(dmRow, parts[0]);
+            if (!parts[0].isEmpty()) {
+                distanceMatrix.getTaxa().getById(dmRow).setName(parts[0]);
             }
 
             // Run through the rest of the line
@@ -182,9 +132,9 @@ public class PhylipReader extends AbstractPhygenReader {
                 }
             }
 
-            if (dmCol == nbTaxa) {
+            if (dmCol > nbTaxa) {
                 dmRow++;
-                dmCol = 0;
+                dmCol = 1;
             }
         }
 

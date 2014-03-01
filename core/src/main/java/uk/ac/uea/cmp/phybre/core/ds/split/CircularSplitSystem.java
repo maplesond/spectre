@@ -124,7 +124,7 @@ public class CircularSplitSystem extends SimpleSplitSystem {
 
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                permutedDistances[i][j] = distanceMatrix.getDistance(circularOrdering.getIndexAt(i), circularOrdering.getIndexAt(j));
+                permutedDistances[i][j] = distanceMatrix.getDistance(circularOrdering.getAt(i), circularOrdering.getAt(j));
             }
         }
 

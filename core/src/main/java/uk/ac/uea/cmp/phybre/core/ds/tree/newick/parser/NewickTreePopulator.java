@@ -44,6 +44,8 @@ public class NewickTreePopulator implements NewickTreeListener {
     private NewickNode currentNode;
     private int depth;
 
+    private int taxonId;
+
     /**
      * Provide the object to populate with findings from the parse context
      * @param tree
@@ -53,6 +55,7 @@ public class NewickTreePopulator implements NewickTreeListener {
         this.verbose = verbose;
         this.currentNode = tree;
         this.depth = 0;
+        this.taxonId = 1;
     }
 
     @Override
@@ -123,7 +126,7 @@ public class NewickTreePopulator implements NewickTreeListener {
             if (verbose && log.isDebugEnabled())
                 log.debug("Name: " + name);
 
-            this.currentNode.setTaxon(new Taxon(name));
+            this.currentNode.setTaxon(new Taxon(name, taxonId++));
         }
     }
 

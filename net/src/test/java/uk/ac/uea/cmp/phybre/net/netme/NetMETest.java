@@ -5,12 +5,14 @@ import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.junit.Before;
 import org.junit.Test;
+import uk.ac.uea.cmp.phybre.core.ds.Taxa;
 import uk.ac.uea.cmp.phybre.core.ds.distance.DistanceMatrix;
+import uk.ac.uea.cmp.phybre.core.ds.distance.FlexibleDistanceMatrix;
 import uk.ac.uea.cmp.phybre.core.ds.split.CircularOrdering;
 import uk.ac.uea.cmp.phybre.core.ds.split.Split;
 import uk.ac.uea.cmp.phybre.core.math.Equality;
 
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by dan on 21/01/14.
@@ -40,7 +42,7 @@ public class NetMETest {
         };
 
 
-        DistanceMatrix distanceMatrix = new DistanceMatrix(taxa, distances);
+        DistanceMatrix distanceMatrix = new FlexibleDistanceMatrix(new Taxa(taxa), distances);
 
         CircularOrdering circularOrdering = new CircularOrdering(new int[] {7,2,1,3,4,5,6});
 

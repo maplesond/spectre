@@ -16,6 +16,8 @@
 package uk.ac.uea.cmp.phybre.core.util;
 
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -142,6 +144,39 @@ public class CollectionUtils {
         }
 
         return maxIndex;
+    }
+
+
+    public static List<Integer> convertIntArrayToLinkedList(int[] array) {
+
+        List<Integer> list = new LinkedList<>();
+
+        for(int i = 0; i < array.length; i++) {
+            list.add(array[i]);
+        }
+
+        return list;
+    }
+
+    public static String doubleArrayToString(double[] array, String separator) {
+
+        if (array == null || separator == null) {
+            return null;
+        }
+
+        if (array.length == 0) {
+            return "";
+        }
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(array[0]);
+
+        for(int i = 1; i < array.length; i++) {
+            sb.append(separator).append(array[i]);
+        }
+
+        return sb.toString();
     }
 
 }

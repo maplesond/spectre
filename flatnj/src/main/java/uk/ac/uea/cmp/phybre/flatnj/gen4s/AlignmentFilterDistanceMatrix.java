@@ -22,7 +22,7 @@ import java.util.Set;
 
 /**
  * Multiple sequence alignment filter for illegal characters based on the
- * {@linkplain DistanceMatrix}.
+ * {@linkplain uk.ac.uea.cmp.phybre.core.ds.distance.ImmutableDistanceMatrix}.
  * 
  * @author balvociute
  */
@@ -36,8 +36,8 @@ public class AlignmentFilterDistanceMatrix extends AlignmentFilter
 
     /**
      * Initializes {@linkplain AlignmentFilter} using 
-     * {@linkplain DistanceMatrix}.
-     * @param dm {@linkplain  DistanceMatrix}.
+     * {@linkplain uk.ac.uea.cmp.phybre.core.ds.distance.DistanceMatrix}.
+     * @param dm {@linkplain  uk.ac.uea.cmp.phybre.core.ds.distance.DistanceMatrix}.
      */
     public AlignmentFilterDistanceMatrix(DistanceMatrix dm)
     {

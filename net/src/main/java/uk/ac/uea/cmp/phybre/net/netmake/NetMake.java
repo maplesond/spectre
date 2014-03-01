@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.phybre.core.ds.Taxa;
 import uk.ac.uea.cmp.phybre.core.ds.distance.DistanceMatrix;
+import uk.ac.uea.cmp.phybre.core.ds.distance.FlexibleDistanceMatrix;
 import uk.ac.uea.cmp.phybre.core.ds.split.*;
 import uk.ac.uea.cmp.phybre.core.io.PhygenReader;
 import uk.ac.uea.cmp.phybre.core.io.PhygenReaderFactory;
@@ -97,10 +98,10 @@ public class NetMake extends RunnableTool {
         SplitSystem treeSplits = new SimpleSplitSystem(taxa, SplitUtils.createTrivialSplits(taxa, 1.0));
 
         // DistanceMatrix between components (make deep copy from initial distance matrix)
-        DistanceMatrix c2c = new DistanceMatrix(distanceMatrix);
+        DistanceMatrix c2c = new FlexibleDistanceMatrix(distanceMatrix);
 
         //DistanceMatrix between components and vertices (make deep copy from initial distance matrix)
-        DistanceMatrix c2v = new DistanceMatrix(distanceMatrix);
+        DistanceMatrix c2v = new FlexibleDistanceMatrix(distanceMatrix);
 
         // If required create a new GreedyME instance.
         GreedyMEWeighting gme = runMode == NetMakeOptions.RunMode.HYBRID_GREEDYME ?
@@ -182,16 +183,16 @@ public class NetMake extends RunnableTool {
         double[] sum1 = new double[nbTaxa];
         double[] sum2 = new double[nbTaxa];
 
-        int sc1 = -1;
-        int sc2 = -1;
+        int sc1 = 0;
+        int sc2 = 0;
 
         for (int i = 0; i < nbSplits; i++) {
             sum1[i] = 0;
             sum2[i] = 0;
             for (int j = 0; j < nbSplits; j++) {
                 if (j != i) {
-                    sum1[i] = sum1[i] + c2c.getDistance(i, j);
-                    sum2[i] = sum2[i] + c2c.getDistance(j, i);
+                    sum1[i] = sum1[i] + c2c.getDistance(i+1, j+1);
+                    sum2[i] = sum2[i] + c2c.getDistance(j+1, i+1);
                 }
             }
         }
@@ -200,13 +201,13 @@ public class NetMake extends RunnableTool {
         for (int i = 0; i < nbSplits; i++) {
             for (int j = i + 1; j < nbSplits; j++) {
                 double qDist = (nbSplits - 2)
-                        * c2c.getDistance(i, j)
+                        * c2c.getDistance(i+1, j+1)
                         - sum1[i] - sum2[j];
 
                 if (qDist < min1) {
                     min1 = qDist;
-                    sc1 = i;
-                    sc2 = j;
+                    sc1 = i+1;
+                    sc2 = j+1;
                 }
             }
         }
@@ -230,74 +231,57 @@ public class NetMake extends RunnableTool {
 
         /*
          * second selection step for vertices with
-         * ComponentsVerticesSistances
+         * ComponentsVerticesDistances
          */
         for (int i = 0; i < splitBlockSc1.size(); i++) {
-            for (int j = 0; j < splitBlockSc2.size();
-                 j++) {
+            for (int j = 0; j < splitBlockSc2.size(); j++) {
+
                 double sum1 = 0;
                 double sum2 = 0;
                 double sum3 = 0;
                 double sum4 = 0;
-                int vertex_last1 = 0;
-                int vertex_last2 = 0;
+                int vertex_last1 = 1;
+                int vertex_last2 = 1;
 
                 for (int k = 0; k < components.getNbSplits(); k++) {
-                    if ((k != sc1)
-                            && (k != sc2)) {
-                        sum1 += c2v.getDistance(
-                                splitBlockSc1.get(i)-1, k);
+                    if ((k != sc1) && (k != sc2)) {
+                        sum1 += c2v.getDistance(splitBlockSc1.get(i), k+1);
                     }
 
-                    if ((k != sc1)
-                            && (k != sc2)) {
-                        sum2 += c2v.getDistance(
-                                splitBlockSc2.get(j)-1, k);
+                    if ((k != sc1) && (k != sc2)) {
+                        sum2 += c2v.getDistance(splitBlockSc2.get(j), k+1);
                     }
                 }
 
-                for (int k = 0; k < splitBlockSc2.size();
-                     k++) {
+                for (int k = 0; k < splitBlockSc2.size(); k++) {
                     sum3 += distanceMatrix.getDistance(
-                            splitBlockSc1.get(i)-1,
-                            splitBlockSc2.get(k)-1);
+                            splitBlockSc1.get(i),
+                            splitBlockSc2.get(k));
 
-                    if (splitBlockSc2.get(k)
-                            != splitBlockSc2.get(j)) {
-                        vertex_last2 = splitBlockSc2.get(k)-1;
+                    if (splitBlockSc2.get(k) != splitBlockSc2.get(j)) {
+                        vertex_last2 = splitBlockSc2.get(k);
                     }
                 }
 
-                for (int k = 0; k < splitBlockSc1.size();
-                     k++) {
-                    int vertex1 = splitBlockSc1.get(k)-1;
+                for (int k = 0; k < splitBlockSc1.size(); k++) {
+                    int vertex1 = splitBlockSc1.get(k);
 
-                    if (vertex1 != splitBlockSc1.get(i)-1) {
+                    if (vertex1 != splitBlockSc1.get(i)) {
                         vertex_last1 = vertex1;
                     }
                 }
 
-                sum3 += distanceMatrix.getDistance(splitBlockSc2.get(j)-1, vertex_last1);
-                sum4 += distanceMatrix.getDistance(splitBlockSc1.get(i)-1, vertex_last2);
+                sum3 += distanceMatrix.getDistance(splitBlockSc2.get(j), vertex_last1);
+                sum4 += distanceMatrix.getDistance(splitBlockSc1.get(i), vertex_last2);
 
-                int outerVertices1 = 0;
-                if (splitBlockSc1.size() == 1) {
-                    outerVertices1 = 1;
-                } else {
-                    outerVertices1 = 2;
-                }
+                int outerVertices1 = splitBlockSc1.size() == 1 ? 1 : 2;
+                int outerVertices2 = splitBlockSc2.size() == 1 ? 1 : 2;
 
-                int outerVertices2 = 0;
-                if (splitBlockSc2.size() == 1) {
-                    outerVertices2 = 1;
-                } else {
-                    outerVertices2 = 2;
-                }
+                final double totalSum = sum1 - sum2 - sum3 - sum4;
+                final double topPart = components.getNbSplits() - 4 + outerVertices1
+                        + outerVertices2;
 
-                double qDist = (components.getNbSplits() - 4 + outerVertices1
-                        + outerVertices2) * distanceMatrix.getDistance(splitBlockSc1.get(i)-1,
-                        splitBlockSc2.get(j)-1)
-                        - sum1 - sum2 - sum3 - sum4;
+                double qDist = topPart * distanceMatrix.getDistance(splitBlockSc1.get(i), splitBlockSc2.get(j)) - totalSum;
 
                 if (qDist < min2) {
                     min2 = qDist;
@@ -321,7 +305,7 @@ public class NetMake extends RunnableTool {
         for (int i = 0; i < nbSplits; i++) {
             for (int j = 0; j < nbSplits; j++) {
                 if (i == j) {
-                    c2c.setDistance(i, j, 0.0);
+                    c2c.setDistance(i+1, j+1, 0.0);
                 } else {
                     double aComponentDistance = 0.0;
 
@@ -330,16 +314,16 @@ public class NetMake extends RunnableTool {
 
                     for (int k = 0; k < sbI.size(); k++) {
                         for (int m = 0; m < sbJ.size(); m++) {
-                            int vertex1 = sbI.get(k) - 1;
-                            int vertex2 = sbJ.get(m) - 1;
-                            double vertexDistance = w.getWeightingParam(vertex1)
-                                    * w.getWeightingParam(vertex2)
+                            int vertex1 = sbI.get(k);
+                            int vertex2 = sbJ.get(m);
+                            double vertexDistance = w.getWeightingParam(vertex1-1)
+                                    * w.getWeightingParam(vertex2-1)
                                     * distanceMatrix.getDistance(vertex1, vertex2);
 
                             aComponentDistance += vertexDistance;
                         }
                     }
-                    c2c.setDistance(i, j, aComponentDistance);
+                    c2c.setDistance(i+1, j+1, aComponentDistance);
                 }
             }
         }
@@ -355,7 +339,7 @@ public class NetMake extends RunnableTool {
 
         for (int i = 0; i < distanceMatrix.size(); i++) {
             for (int j = 0; j < sb1.size(); j++) {
-                if (i == sb1.get(j)) {
+                if (i == sb1.get(j)-1) {
                     position = j;
 
                     if (w instanceof TreeWeighting) {
@@ -373,20 +357,20 @@ public class NetMake extends RunnableTool {
                 SplitBlock sbJ = components.getSplitAt(j).getASide();
 
                 while (k < sbJ.size()) {
-                    if (sbJ.get(k) == i) {
+                    if (sbJ.get(k)-1 == i) {
                         aComponentVertexDistance = 0.;
                         k = sbJ.size();
                     } else {
-                        int vertex1 = i;
-                        int vertex2 = sbJ.get(k) - 1;
-                        double vertexDistance = w.getWeightingParam(vertex2)
+                        int vertex1 = i+1;
+                        int vertex2 = sbJ.get(k);
+                        double vertexDistance = w.getWeightingParam(vertex2-1)
                                 * distanceMatrix.getDistance(vertex1, vertex2);
 
                         aComponentVertexDistance += vertexDistance;
                         k++;
                     }
                 }
-                c2v.setDistance(i, j, aComponentVertexDistance);
+                c2v.setDistance(i+1, j+1, aComponentVertexDistance);
             }
         }
     }

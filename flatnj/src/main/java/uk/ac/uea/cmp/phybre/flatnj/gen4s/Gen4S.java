@@ -230,7 +230,7 @@ public class Gen4S
 
     /**
      * Reads character distance matrix from DISTANCES block in nexus distance
-     * matrix file and initializes {@linkplain DistanceMatrix} object.
+     * matrix file and initializes {@linkplain uk.ac.uea.cmp.phybre.core.ds.distance.ImmutableDistanceMatrix} object.
      * 
      * @param distanceMatrixFile nexus file path.
      */

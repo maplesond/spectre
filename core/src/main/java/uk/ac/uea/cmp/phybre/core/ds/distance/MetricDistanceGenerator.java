@@ -27,13 +27,12 @@ public class MetricDistanceGenerator implements DistanceMatrixGenerator {
     @Override
     public DistanceMatrix generateDistances(final int n) {
 
-        DistanceMatrix distanceMatrix = new DistanceMatrix(n, 0.5);
+        DistanceMatrix distanceMatrix = new FlexibleDistanceMatrix();
 
         for (int i = 0; i < n; i++) {
             for (int j = i; j < n; j++) {
-                if (i == j) {
-                    distanceMatrix.setDistance(i, j, 0.0);
-                } else {
+                if (i != j) {
+
                     double maxVal = 1.;
                     double minVal = 0.00001; // 0.0 only for (i == j)
                     double aDistance;
@@ -43,6 +42,9 @@ public class MetricDistanceGenerator implements DistanceMatrixGenerator {
 
                             double distIK = distanceMatrix.getDistance(i, k);
                             double distKJ = distanceMatrix.getDistance(k, j);
+
+                            distIK = distIK == 0.0 ? 0.5 : distIK;
+                            distKJ = distKJ == 0.0 ? 0.5 : distKJ;
 
                             double pathLen = distIK + distKJ;
                             double localMin = Math.min(distIK, distKJ);
@@ -58,7 +60,6 @@ public class MetricDistanceGenerator implements DistanceMatrixGenerator {
                                     + minVal) * 1.E5) / 1.E5;
 
                     distanceMatrix.setDistance(i, j, aDistance);
-                    distanceMatrix.setDistance(j, i, aDistance);
                 }
             }
         }

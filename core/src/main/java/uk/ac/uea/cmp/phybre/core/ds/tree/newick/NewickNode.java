@@ -150,7 +150,7 @@ public abstract class NewickNode {
 
     public void setIndiciesToExternalTaxaList(Taxa externalTaxaList) {
         if (this.taxon != null && !this.taxon.getName().isEmpty()) {
-            this.taxon.setId(externalTaxaList.indexOf(this.taxon));
+            this.taxon.setId(externalTaxaList.indexOf(this.taxon)+1);
         }
 
         for(NewickNode node : this.branches) {
