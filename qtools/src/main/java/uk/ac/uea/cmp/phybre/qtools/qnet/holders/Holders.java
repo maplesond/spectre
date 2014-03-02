@@ -1,6 +1,6 @@
 package uk.ac.uea.cmp.phybre.qtools.qnet.holders;
 
-import uk.ac.uea.cmp.phybre.core.ds.Taxa;
+import uk.ac.uea.cmp.phybre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.phybre.core.ds.quartet.CanonicalWeightedQuartetMap;
 import uk.ac.uea.cmp.phybre.core.util.CollectionUtils;
 import uk.ac.uea.cmp.phybre.qtools.qnet.QNetException;
@@ -28,7 +28,7 @@ public class Holders {
      * @param canonicalWeightedQuartets the canonical weighted quartets
      * @throws QNetException Thrown if there are any inconsistencies in the holder initialisation
      */
-    public Holders(List<Taxa> initalPaths, int N, CanonicalWeightedQuartetMap canonicalWeightedQuartets) throws QNetException {
+    public Holders(List<IdentifierList> initalPaths, int N, CanonicalWeightedQuartetMap canonicalWeightedQuartets) throws QNetException {
         zHolder = new ZHolder(initalPaths, N);
         wHolder = new WHolder(initalPaths, N, canonicalWeightedQuartets);
         u0Holder = new U0Holder(initalPaths, N, canonicalWeightedQuartets);
@@ -324,9 +324,9 @@ public class Holders {
      * @param id The id of the taxa to find
      * @return The first path found containing the specified taxa ID, or null.
      */
-    public static Taxa findFirstPathContainingId(List<Taxa> paths, int id) {
+    public static IdentifierList findFirstPathContainingId(List<IdentifierList> paths, int id) {
 
-        for (Taxa path : paths) {
+        for (IdentifierList path : paths) {
 
             if (path.containsId(id)) {
 

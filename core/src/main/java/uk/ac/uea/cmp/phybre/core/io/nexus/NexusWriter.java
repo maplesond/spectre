@@ -18,7 +18,7 @@ package uk.ac.uea.cmp.phybre.core.io.nexus;
 
 import org.apache.commons.lang3.StringUtils;
 import uk.ac.uea.cmp.phybre.core.ds.Alignment;
-import uk.ac.uea.cmp.phybre.core.ds.Taxa;
+import uk.ac.uea.cmp.phybre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.phybre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phybre.core.ds.distance.DistanceMatrixBuilder;
 import uk.ac.uea.cmp.phybre.core.ds.split.Split;
@@ -198,7 +198,7 @@ public class NexusWriter extends AbstractPhygenWriter implements Appendable {
         return this;
     }
 
-    public NexusWriter append(Taxa taxa) {
+    public NexusWriter append(IdentifierList taxa) {
         this.appendLine("BEGIN Taxa;");
         this.appendLine(" DIMENSIONS ntax=" + taxa.size() + ";");
         this.appendLine(" TAXLABELS");

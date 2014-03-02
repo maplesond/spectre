@@ -22,7 +22,7 @@ import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.uea.cmp.phybre.core.ds.Taxon;
+import uk.ac.uea.cmp.phybre.core.ds.Identifier;
 import uk.ac.uea.cmp.phybre.core.ds.tree.newick.NewickNode;
 import uk.ac.uea.cmp.phybre.core.ds.tree.newick.NewickSubTree;
 import uk.ac.uea.cmp.phybre.core.ds.tree.newick.NewickTree;
@@ -126,7 +126,7 @@ public class NewickTreePopulator implements NewickTreeListener {
             if (verbose && log.isDebugEnabled())
                 log.debug("Name: " + name);
 
-            this.currentNode.setTaxon(new Taxon(name, taxonId++));
+            this.currentNode.setTaxon(new Identifier(name, taxonId++));
         }
     }
 

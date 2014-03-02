@@ -5,7 +5,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.junit.Before;
 import org.junit.Test;
-import uk.ac.uea.cmp.phybre.core.ds.Taxa;
+import uk.ac.uea.cmp.phybre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.phybre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phybre.core.ds.distance.FlexibleDistanceMatrix;
 import uk.ac.uea.cmp.phybre.core.ds.split.CircularOrdering;
@@ -42,7 +42,7 @@ public class NetMETest {
         };
 
 
-        DistanceMatrix distanceMatrix = new FlexibleDistanceMatrix(new Taxa(taxa), distances);
+        DistanceMatrix distanceMatrix = new FlexibleDistanceMatrix(new IdentifierList(taxa), distances);
 
         CircularOrdering circularOrdering = new CircularOrdering(new int[] {7,2,1,3,4,5,6});
 

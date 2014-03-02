@@ -15,7 +15,7 @@
  */
 package uk.ac.uea.cmp.phybre.core.ds.split;
 
-import uk.ac.uea.cmp.phybre.core.ds.Taxa;
+import uk.ac.uea.cmp.phybre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.phybre.core.ds.distance.DistanceMatrix;
 
 import java.util.ArrayList;
@@ -41,7 +41,7 @@ public class CompatibleSplitSystem extends CircularSplitSystem {
 
     public CompatibleSplitSystem(CircularSplitSystem splitSystem) {
 
-        super(new Taxa(splitSystem.getTaxa()), splitSystem.copySplits(), splitSystem.getCircularOrdering().copy());
+        super(new IdentifierList(splitSystem.getTaxa()), splitSystem.copySplits(), splitSystem.getCircularOrdering().copy());
     }
 
     public CompatibleSplitSystem(CircularSplitSystem unweightedSplitSystem, TreeSplitWeights treeWeights) {

@@ -18,7 +18,7 @@ package uk.ac.uea.cmp.phybre.core.io.nexus.parser;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.uea.cmp.phybre.core.ds.Taxa;
+import uk.ac.uea.cmp.phybre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.phybre.core.ds.split.*;
 
 import java.util.ArrayList;
@@ -46,7 +46,7 @@ public class NexusSplitSystemBuilder {
     private List<SplitBlock> splitBlocks;
     private List<Double> weights;
     private List<Integer> cycle;
-    private Taxa taxa;
+    private IdentifierList taxa;
 
     public NexusSplitSystemBuilder() {
         this.fit = -1.0;
@@ -84,7 +84,7 @@ public class NexusSplitSystemBuilder {
 
             ss = taxa != null ?
                     new CircularSplitSystem(taxa, splits, CircularOrdering.createFromList(cycle)) :
-                    new CircularSplitSystem(Taxa.createTrivialTaxaSet(expectedNbTaxa), splits, CircularOrdering.createFromList(cycle));
+                    new CircularSplitSystem(IdentifierList.createSimpleIdentifiers(expectedNbTaxa), splits, CircularOrdering.createFromList(cycle));
         }
         else {
             ss = taxa != null ?
@@ -173,11 +173,11 @@ public class NexusSplitSystemBuilder {
         this.cycle.add(cycleItem);
     }
 
-    public void setTaxa(Taxa taxa) {
+    public void setTaxa(IdentifierList taxa) {
         this.taxa = taxa;
     }
 
-    public Taxa getTaxa() {
+    public IdentifierList getTaxa() {
         return taxa;
     }
 }

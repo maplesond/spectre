@@ -24,7 +24,7 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.PropertyConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.uea.cmp.phybre.core.ds.Taxa;
+import uk.ac.uea.cmp.phybre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.phybre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phybre.core.ds.distance.FlexibleDistanceMatrix;
 import uk.ac.uea.cmp.phybre.core.ds.split.*;
@@ -87,7 +87,7 @@ public class NetMake extends RunnableTool {
 
     public NetMakeResult execute(DistanceMatrix distanceMatrix, Weighting weighting1, Weighting weighting2) {
 
-        final Taxa taxa = distanceMatrix.getTaxa();
+        final IdentifierList taxa = distanceMatrix.getTaxa();
 
         final NetMakeOptions.RunMode runMode = NetMakeOptions.getRunMode(weighting1, weighting2);
 

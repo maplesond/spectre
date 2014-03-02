@@ -17,7 +17,7 @@ package uk.ac.uea.cmp.phybre.qtools.qnet.holders;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import uk.ac.uea.cmp.phybre.core.ds.Taxa;
+import uk.ac.uea.cmp.phybre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.phybre.core.ds.quartet.CanonicalWeightedQuartetMap;
 import uk.ac.uea.cmp.phybre.core.ds.quartet.Quartet;
 import uk.ac.uea.cmp.phybre.qtools.qnet.QNetException;
@@ -26,13 +26,13 @@ import java.util.List;
 
 public class U1Holder extends AbstractBasicHolder {
 
-    public U1Holder(List<Taxa> taxaSets, int N, CanonicalWeightedQuartetMap theQuartetWeights) throws QNetException {
+    public U1Holder(List<IdentifierList> taxaSets, int N, CanonicalWeightedQuartetMap theQuartetWeights) throws QNetException {
 
         super(N, taxaSets, theQuartetWeights);
     }
 
     @Override
-    protected Pair<Integer, Double> calcCountWeight(Taxa A, Taxa B) throws QNetException {
+    protected Pair<Integer, Double> calcCountWeight(IdentifierList A, IdentifierList B) throws QNetException {
 
         int count = 0;
         double weight = 0.0;

@@ -22,7 +22,7 @@ import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.uea.cmp.phybre.core.ds.Taxon;
+import uk.ac.uea.cmp.phybre.core.ds.Identifier;
 import uk.ac.uea.cmp.phybre.core.ds.quartet.GroupedQuartetSystem;
 import uk.ac.uea.cmp.phybre.core.ds.quartet.Quartet;
 import uk.ac.uea.cmp.phybre.core.ds.quartet.QuartetWeights;
@@ -229,7 +229,7 @@ public class QWeightPopulator implements QWeightListener {
     public void exitTaxon(@NotNull QWeightParser.TaxonContext ctx) {
         String name = ctx.IDENTIFIER().getText();
         int id = Integer.parseInt(ctx.NUMERIC().getText());
-        this.groupedQuartetSystem.getTaxa().add(new Taxon(name, id));
+        this.groupedQuartetSystem.getTaxa().add(new Identifier(name, id));
     }
 
     @Override

@@ -15,7 +15,7 @@
  */
 package uk.ac.uea.cmp.phybre.qtools.qnet.holders;
 
-import uk.ac.uea.cmp.phybre.core.ds.Taxa;
+import uk.ac.uea.cmp.phybre.core.ds.IdentifierList;
 
 import java.util.List;
 
@@ -23,7 +23,7 @@ public class ZHolder {
 
     private int[] sizes;
 
-    public ZHolder(List<Taxa> paths, int N) {
+    public ZHolder(List<IdentifierList> paths, int N) {
 
         sizes = new int[N];
 
@@ -42,9 +42,9 @@ public class ZHolder {
         sizes[i-1] = newZ;
     }
 
-    protected int z(List<Taxa> paths, int i) {
+    protected int z(List<IdentifierList> paths, int i) {
 
-        for (Taxa p : paths) {
+        for (IdentifierList p : paths) {
 
             if (p.containsId(i)) {
 

@@ -2,8 +2,8 @@ package uk.ac.uea.cmp.phybre.core.ds.distance;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import uk.ac.uea.cmp.phybre.core.ds.Taxa;
-import uk.ac.uea.cmp.phybre.core.ds.Taxon;
+import uk.ac.uea.cmp.phybre.core.ds.Identifier;
+import uk.ac.uea.cmp.phybre.core.ds.IdentifierList;
 
 import java.util.*;
 
@@ -12,8 +12,8 @@ import java.util.*;
  */
 public class FlexibleDistanceMatrix implements DistanceMatrix {
 
-    private Map<Pair<Taxon,Taxon>, Double> matrix;
-    private Taxa taxa;
+    private Map<Pair<Identifier,Identifier>, Double> matrix;
+    private IdentifierList taxa;
 
 
     public FlexibleDistanceMatrix() {
@@ -23,9 +23,9 @@ public class FlexibleDistanceMatrix implements DistanceMatrix {
     public FlexibleDistanceMatrix(final int size) {
 
         this.matrix = new HashMap<>();
-        this.taxa = new Taxa(size);
-        for(Taxon ti : this.taxa) {
-            for(Taxon tj : this.taxa) {
+        this.taxa = new IdentifierList(size);
+        for(Identifier ti : this.taxa) {
+            for(Identifier tj : this.taxa) {
                 this.setDistance(ti, tj, 0.0);
             }
         }
@@ -33,24 +33,24 @@ public class FlexibleDistanceMatrix implements DistanceMatrix {
 
     public FlexibleDistanceMatrix(DistanceMatrix copy) {
 
-        this.taxa = new Taxa(copy.getTaxa());
+        this.taxa = new IdentifierList(copy.getTaxa());
         this.matrix = new HashMap<>();
 
-        for(Taxon ti : this.taxa) {
-            for(Taxon tj : this.taxa) {
+        for(Identifier ti : this.taxa) {
+            for(Identifier tj : this.taxa) {
                 this.setDistance(ti, tj, copy.getDistance(ti, tj));
             }
         }
     }
 
-    public FlexibleDistanceMatrix(Taxa taxa, double[][] distances) {
+    public FlexibleDistanceMatrix(IdentifierList taxa, double[][] distances) {
 
         if(taxa.size() != distances.length) {
             throw new IllegalArgumentException("Taxa size is not the same as matrix size.  Taxa size: " +
                     taxa.size() + "; Matrix size: " + distances.length);
         }
 
-        this.taxa = new Taxa(taxa);
+        this.taxa = new IdentifierList(taxa);
         this.matrix = new HashMap<>();
         for(int i = 0; i < taxa.size(); i++) {
             for(int j = 0; j < taxa.size(); j++) {
@@ -60,10 +60,10 @@ public class FlexibleDistanceMatrix implements DistanceMatrix {
     }
 
 
-    protected Pair<Taxon, Taxon> getSortedPair(Taxon taxon1, Taxon taxon2) {
+    protected Pair<Identifier, Identifier> getSortedPair(Identifier taxon1, Identifier taxon2) {
 
-        Taxon a = taxon1;
-        Taxon b = taxon2;
+        Identifier a = taxon1;
+        Identifier b = taxon2;
 
         if (a.getId() > b.getId()) {
             a = taxon2;
@@ -75,7 +75,7 @@ public class FlexibleDistanceMatrix implements DistanceMatrix {
 
 
     @Override
-    public double getDistance(final Taxon taxon1, final Taxon taxon2) {
+    public double getDistance(final Identifier taxon1, final Identifier taxon2) {
 
         if (taxon1 == null || taxon2 == null)
             throw new IllegalArgumentException("Need two valid taxa to get a distance");
@@ -101,7 +101,7 @@ public class FlexibleDistanceMatrix implements DistanceMatrix {
 
 
     @Override
-    public double setDistance(Taxon taxon1, Taxon taxon2, final double value) {
+    public double setDistance(Identifier taxon1, Identifier taxon2, final double value) {
 
         if (taxon1 == null || taxon2 == null)
             throw new IllegalArgumentException("Need two valid taxa to set a distance");
@@ -134,7 +134,7 @@ public class FlexibleDistanceMatrix implements DistanceMatrix {
     }
 
     @Override
-    public double incrementDistance(final Taxon taxon1, final Taxon taxon2, final double increment) {
+    public double incrementDistance(final Identifier taxon1, final Identifier taxon2, final double increment) {
 
         double newValue = this.getDistance(taxon1, taxon2) + increment;
 
@@ -162,23 +162,23 @@ public class FlexibleDistanceMatrix implements DistanceMatrix {
     }
 
     @Override
-    public Taxa getTaxa() {
+    public IdentifierList getTaxa() {
         return this.taxa;
     }
 
     @Override
-    public Taxa getTaxa(Comparator<Taxon> comparator) {
+    public IdentifierList getTaxa(Comparator<Identifier> comparator) {
         return this.taxa.sort(comparator);
     }
 
     @Override
-    public DistanceList getDistances(Taxon taxon, Comparator<Taxon> comparator) {
+    public DistanceList getDistances(Identifier taxon, Comparator<Identifier> comparator) {
 
         DistanceList dl = new FlexibleDistanceList(taxon);
 
-        Taxa sorted = comparator == null ? this.taxa : this.taxa.sort(comparator);
+        IdentifierList sorted = comparator == null ? this.taxa : this.taxa.sort(comparator);
 
-        for(Taxon t : sorted) {
+        for(Identifier t : sorted) {
 
             if (t != taxon) {
                 dl.setDistance(t, this.getDistance(taxon, t));
@@ -189,12 +189,12 @@ public class FlexibleDistanceMatrix implements DistanceMatrix {
     }
 
     @Override
-    public DistanceList getDistances(int taxonId, Comparator<Taxon> comparator) {
+    public DistanceList getDistances(int taxonId, Comparator<Identifier> comparator) {
         return this.getDistances(this.taxa.getById(taxonId), comparator);
     }
 
     @Override
-    public DistanceList getDistances(String taxonName, Comparator<Taxon> comparator) {
+    public DistanceList getDistances(String taxonName, Comparator<Identifier> comparator) {
         return this.getDistances(this.taxa.getByName(taxonName), comparator);
     }
 
@@ -205,13 +205,13 @@ public class FlexibleDistanceMatrix implements DistanceMatrix {
     }
 
     @Override
-    public List<DistanceList> getAllDistances(Comparator<Taxon> comparator) {
+    public List<DistanceList> getAllDistances(Comparator<Identifier> comparator) {
 
-        Taxa sorted = comparator == null ? this.taxa : this.taxa.sort(comparator);
+        IdentifierList sorted = comparator == null ? this.taxa : this.taxa.sort(comparator);
 
         List<DistanceList> allDistances = new ArrayList<>(this.size());
 
-        for(Taxon t : sorted) {
+        for(Identifier t : sorted) {
             allDistances.add(this.getDistances(t, comparator));
         }
 
@@ -224,19 +224,19 @@ public class FlexibleDistanceMatrix implements DistanceMatrix {
     }
 
     @Override
-    public double[][] getMatrix(Comparator<Taxon> comparator) {
+    public double[][] getMatrix(Comparator<Identifier> comparator) {
 
         double[][] matrix = new double[this.size()][this.size()];
 
-        Taxa sorted = comparator == null ? this.taxa : this.taxa.sort(comparator);
+        IdentifierList sorted = comparator == null ? this.taxa : this.taxa.sort(comparator);
 
         for(int i = 0; i < sorted.size(); i++) {
 
-            Taxon ti = sorted.get(i);
+            Identifier ti = sorted.get(i);
 
             for(int j = 0; j < sorted.size(); j++) {
 
-                Taxon tj = sorted.get(j);
+                Identifier tj = sorted.get(j);
 
                 matrix[i][j] = ti == tj ? 0.0 : this.getDistance(ti, tj);
             }
@@ -250,6 +250,40 @@ public class FlexibleDistanceMatrix implements DistanceMatrix {
     @Override
     public int size() {
         return this.getNbTaxa();
+    }
+
+    @Override
+    public void removeTaxon(Identifier taxon) {
+
+        List<Pair<Identifier, Identifier>> toRemove = new ArrayList<>();
+
+        for(Pair<Identifier,Identifier> key : this.matrix.keySet()) {
+
+            if (key.getLeft().equals(taxon) || key.getRight().equals(taxon)) {
+                toRemove.add(key);
+            }
+        }
+
+        for(int i = 0; i < toRemove.size(); i++) {
+            this.matrix.remove(toRemove.get(i));
+        }
+
+        this.taxa.remove(taxon);
+    }
+
+    @Override
+    public void removeTaxon(int taxonId) {
+        this.removeTaxon(this.taxa.getById(taxonId));
+    }
+
+    @Override
+    public void removeTaxon(String taxonName) {
+        this.removeTaxon(this.taxa.getByName(taxonName));
+    }
+
+    @Override
+    public Map<Pair<Identifier, Identifier>, Double> getMap() {
+        return this.matrix;
     }
 
 }

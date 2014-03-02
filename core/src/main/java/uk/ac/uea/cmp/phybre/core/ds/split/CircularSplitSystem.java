@@ -15,7 +15,7 @@
  */
 package uk.ac.uea.cmp.phybre.core.ds.split;
 
-import uk.ac.uea.cmp.phybre.core.ds.Taxa;
+import uk.ac.uea.cmp.phybre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.phybre.core.ds.distance.DistanceMatrix;
 
 import java.util.ArrayList;
@@ -32,7 +32,7 @@ public class CircularSplitSystem extends SimpleSplitSystem {
 
     private CircularOrdering circularOrdering;
 
-    public CircularSplitSystem(Taxa taxa, List<Split> splits, CircularOrdering circularOrdering) {
+    public CircularSplitSystem(IdentifierList taxa, List<Split> splits, CircularOrdering circularOrdering) {
         super(taxa, splits);
         this.circularOrdering = circularOrdering;
     }

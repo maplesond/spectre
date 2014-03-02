@@ -22,8 +22,8 @@ import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.uea.cmp.phybre.core.ds.Taxa;
-import uk.ac.uea.cmp.phybre.core.ds.Taxon;
+import uk.ac.uea.cmp.phybre.core.ds.Identifier;
+import uk.ac.uea.cmp.phybre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.phybre.core.ds.distance.DistanceMatrixBuilder;
 import uk.ac.uea.cmp.phybre.core.ds.split.SplitBlock;
 import uk.ac.uea.cmp.phybre.core.io.nexus.Nexus;
@@ -218,16 +218,16 @@ public class NexusFilePopulator implements NexusFileListener {
                 }
         }
 
-        Taxa taxa = this.nexus.getTaxa();
+        IdentifierList taxa = this.nexus.getTaxa();
 
         if (ctx.taxlabels() != null) {
 
-            taxa.add(new Taxon(ctx.taxlabels().IDENTIFIER().getText()));
+            taxa.add(new Identifier(ctx.taxlabels().IDENTIFIER().getText()));
 
             NexusFileParser.Identifier_listContext idListCtx = ctx.taxlabels().identifier_list();
 
             while(idListCtx != null && idListCtx.IDENTIFIER() != null) {
-                taxa.add(new Taxon(idListCtx.IDENTIFIER().getText()));
+                taxa.add(new Identifier(idListCtx.IDENTIFIER().getText()));
                 idListCtx = idListCtx.identifier_list();
             }
         }

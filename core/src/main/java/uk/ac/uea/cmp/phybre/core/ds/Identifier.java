@@ -28,27 +28,27 @@ import java.util.Comparator;
  * Time: 19:26
  * To change this template use File | Settings | File Templates.
  */
-public class Taxon implements Comparable<Taxon> {
+public class Identifier implements Comparable<Identifier> {
 
     public static final int DEFAULT_ID = 0;
 
     private String name;
     private int id;
 
-    public Taxon(String name) {
+    public Identifier(String name) {
         this(name, DEFAULT_ID);
     }
 
-    public Taxon(int id) {
+    public Identifier(int id) {
         this(Integer.toString(id), id);
     }
 
-    public Taxon(String name, int id) {
+    public Identifier(String name, int id) {
         this.name = name;
         this.id = id;
     }
 
-    public Taxon(Taxon taxon) {
+    public Identifier(Identifier taxon) {
         this(taxon.getName(), taxon.getId());
     }
 
@@ -88,10 +88,10 @@ public class Taxon implements Comparable<Taxon> {
             return false;
         if (o == this)
             return true;
-        if (!(o instanceof Taxon))
+        if (!(o instanceof Identifier))
             return false;
 
-        Taxon other = (Taxon)o;
+        Identifier other = (Identifier)o;
         return new EqualsBuilder()
                 .append(this.name, other.name)
                 .append(this.id, other.id)
@@ -104,7 +104,7 @@ public class Taxon implements Comparable<Taxon> {
      * @return
      */
     @Override
-    public int compareTo(Taxon o) {
+    public int compareTo(Identifier o) {
 
         int idDiff = this.id - o.id;
 
@@ -116,18 +116,18 @@ public class Taxon implements Comparable<Taxon> {
         }
     }
 
-    public static class NameComparator implements Comparator<Taxon> {
+    public static class NameComparator implements Comparator<Identifier> {
 
         @Override
-        public int compare(Taxon o1, Taxon o2) {
+        public int compare(Identifier o1, Identifier o2) {
             return o1.name.compareTo(o2.name);
         }
     }
 
-    public static class IdComparator implements Comparator<Taxon> {
+    public static class NumberComparator implements Comparator<Identifier> {
 
         @Override
-        public int compare(Taxon o1, Taxon o2) {
+        public int compare(Identifier o1, Identifier o2) {
             return o1.id - o2.id;
         }
     }

@@ -5,8 +5,8 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.uea.cmp.phybre.core.ds.Taxa;
-import uk.ac.uea.cmp.phybre.core.ds.Taxon;
+import uk.ac.uea.cmp.phybre.core.ds.Identifier;
+import uk.ac.uea.cmp.phybre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.phybre.core.ds.quartet.CanonicalWeightedQuartetMap;
 import uk.ac.uea.cmp.phybre.core.ds.quartet.WeightedQuartetGroupMap;
 import uk.ac.uea.cmp.phybre.core.ds.split.CircularOrdering;
@@ -42,7 +42,7 @@ public class CyclicOrderer {
      * @return A circular ordering
      * @throws QNetException if there were any problems.
      */
-    public CircularOrdering computeCircularOrdering(Taxa taxa, WeightedQuartetGroupMap theQuartetWeights)
+    public CircularOrdering computeCircularOrdering(IdentifierList taxa, WeightedQuartetGroupMap theQuartetWeights)
             throws QNetException {
 
         // This method is probably going to take a while so start a timer.
@@ -54,7 +54,7 @@ public class CyclicOrderer {
         this.N = taxa.size();
 
         // Initialise paths
-        List<Taxa> paths = this.initPaths(taxa);
+        List<IdentifierList> paths = this.initPaths(taxa);
 
         // Initialise the X'
         List<Integer> X = this.initXPrime(taxa);
@@ -87,7 +87,7 @@ public class CyclicOrderer {
         paths = this.terminationJoin(X.get(0), X.get(1), X.get(2), paths);
 
         // Now, the lists should contain the desired circular ordering, convert those into a circular ordering object
-        CircularOrdering circularOrdering = new CircularOrdering(paths.get(0).getIds());
+        CircularOrdering circularOrdering = new CircularOrdering(paths.get(0).getNumbers());
 
         log.info("QNet circular ordering computed:");
         log.info(" IDs:   " + circularOrdering.toString());
@@ -99,25 +99,25 @@ public class CyclicOrderer {
         return circularOrdering;
     }
 
-    private List<Taxa> initPaths(Taxa taxa) {
+    private List<IdentifierList> initPaths(IdentifierList taxa) {
 
-        List<Taxa> paths = new ArrayList<>();
+        List<IdentifierList> paths = new ArrayList<>();
 
-        for(Taxon taxon : taxa) {
+        for(Identifier taxon : taxa) {
 
-            Taxa path = new Taxa();
-            path.add(new Taxon(taxon));
+            IdentifierList path = new IdentifierList();
+            path.add(new Identifier(taxon));
             paths.add(path);
         }
 
         return paths;
     }
 
-    private List<Integer> initXPrime(Taxa taxa) {
+    private List<Integer> initXPrime(IdentifierList taxa) {
 
         List<Integer> X = new ArrayList<>();
 
-        for (Taxon taxon : taxa) {
+        for (Identifier taxon : taxa) {
 
             // The taxa set X (prime)
             X.add(taxon.getId());
@@ -127,7 +127,7 @@ public class CyclicOrderer {
     }
 
 
-    protected List<Taxa> iteration(List<Integer> X, List<Taxa> paths) throws QNetException {
+    protected List<IdentifierList> iteration(List<Integer> X, List<IdentifierList> paths) throws QNetException {
 
         // find a, b, a < b, in X so s (a, b) / n (a, b) maximal
         Pair<Integer, Integer> ab = this.findMaxAB(X);
@@ -143,8 +143,8 @@ public class CyclicOrderer {
         }
 
         // Make shortcuts to directions
-        Taxa.Direction FORWARD = Taxa.Direction.FORWARD;
-        Taxa.Direction BACKWARD = Taxa.Direction.BACKWARD;
+        IdentifierList.Direction FORWARD = IdentifierList.Direction.FORWARD;
+        IdentifierList.Direction BACKWARD = IdentifierList.Direction.BACKWARD;
 
         // Perform the requested path join
         switch(y) {
@@ -173,14 +173,14 @@ public class CyclicOrderer {
     }
 
 
-    protected List<Taxa> terminationJoin(int i, int j, int k, List<Taxa> taxaSets) throws QNetException {
+    protected List<IdentifierList> terminationJoin(int i, int j, int k, List<IdentifierList> taxaSets) throws QNetException {
 
         // Work out which path join to use
         int y = this.holders.selectJoin3(i, j, k, c);
 
         // Make shortcuts to directions
-        Taxa.Direction FORWARD = Taxa.Direction.FORWARD;
-        Taxa.Direction BACKWARD = Taxa.Direction.BACKWARD;
+        IdentifierList.Direction FORWARD = IdentifierList.Direction.FORWARD;
+        IdentifierList.Direction BACKWARD = IdentifierList.Direction.BACKWARD;
 
         // Perform the requested path join
         switch(y) {
@@ -213,12 +213,12 @@ public class CyclicOrderer {
         return taxaSets;
     }
 
-    protected List<Taxa> join2(List<Taxa> paths, int taxon1, Taxa.Direction reversed1,
-                               int taxon2, Taxa.Direction reversed2) throws QNetException {
+    protected List<IdentifierList> join2(List<IdentifierList> paths, int taxon1, IdentifierList.Direction reversed1,
+                               int taxon2, IdentifierList.Direction reversed2) throws QNetException {
 
-        Taxa tL1 = null, tL2 = null;
+        IdentifierList tL1 = null, tL2 = null;
 
-        for (Taxa path : paths) {
+        for (IdentifierList path : paths) {
 
             if (path.containsId(taxon1)) {
                 tL1 = path;
@@ -236,7 +236,7 @@ public class CyclicOrderer {
         paths.remove(tL1);
         paths.remove(tL2);
 
-        Taxa tL12 = Taxa.join(tL1, reversed1, tL2, reversed2);
+        IdentifierList tL12 = IdentifierList.join(tL1, reversed1, tL2, reversed2);
 
         paths.add(tL12);
 
@@ -244,13 +244,13 @@ public class CyclicOrderer {
 
     }
 
-    protected List<Taxa> join3(List<Taxa> paths, int taxon1, Taxa.Direction reversed1,
-                               int taxon2, Taxa.Direction reversed2,
-                               int taxon3, Taxa.Direction reversed3) throws QNetException {
+    protected List<IdentifierList> join3(List<IdentifierList> paths, int taxon1, IdentifierList.Direction reversed1,
+                               int taxon2, IdentifierList.Direction reversed2,
+                               int taxon3, IdentifierList.Direction reversed3) throws QNetException {
 
-        Taxa tL1 = null, tL2 = null, tL3 = null;
+        IdentifierList tL1 = null, tL2 = null, tL3 = null;
 
-        for (Taxa tL : paths) {
+        for (IdentifierList tL : paths) {
 
             if (tL.containsId(taxon1)) {
                 tL1 = tL;
@@ -273,7 +273,7 @@ public class CyclicOrderer {
         paths.remove(tL2);
         paths.remove(tL3);
 
-        Taxa tL123 = Taxa.join(Taxa.join(tL1, reversed1, tL2, reversed2), Taxa.Direction.FORWARD, tL3, reversed3);
+        IdentifierList tL123 = IdentifierList.join(IdentifierList.join(tL1, reversed1, tL2, reversed2), IdentifierList.Direction.FORWARD, tL3, reversed3);
 
         paths.add(tL123);
 

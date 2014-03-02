@@ -18,8 +18,8 @@ package uk.ac.uea.cmp.phybre.core.ds.split;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import uk.ac.uea.cmp.phybre.core.ds.Taxa;
-import uk.ac.uea.cmp.phybre.core.ds.Taxon;
+import uk.ac.uea.cmp.phybre.core.ds.Identifier;
+import uk.ac.uea.cmp.phybre.core.ds.IdentifierList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -95,10 +95,10 @@ public class SplitUtils {
         return splitIndices;
     }
 
-    public static List<Split> createTrivialSplits(Taxa taxa, final double weight) {
+    public static List<Split> createTrivialSplits(IdentifierList taxa, final double weight) {
         List<Split> splits = new ArrayList<>();
 
-        for (Taxon taxon : taxa) {
+        for (Identifier taxon : taxa) {
 
             splits.add(new Split(new SplitBlock(new int[]{taxon.getId()}), taxa.size(), weight));
         }

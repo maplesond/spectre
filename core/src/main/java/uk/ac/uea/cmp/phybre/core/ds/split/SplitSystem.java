@@ -16,7 +16,7 @@
 
 package uk.ac.uea.cmp.phybre.core.ds.split;
 
-import uk.ac.uea.cmp.phybre.core.ds.Taxa;
+import uk.ac.uea.cmp.phybre.core.ds.IdentifierList;
 
 import java.util.List;
 
@@ -42,7 +42,7 @@ public interface SplitSystem {
      * Gets the actual taxa object stored in this split system
      * @return The taxa
      */
-    Taxa getTaxa();
+    IdentifierList getTaxa();
 
 
 

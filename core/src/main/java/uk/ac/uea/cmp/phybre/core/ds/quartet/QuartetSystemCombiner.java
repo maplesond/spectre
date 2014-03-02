@@ -16,8 +16,8 @@
 
 package uk.ac.uea.cmp.phybre.core.ds.quartet;
 
-import uk.ac.uea.cmp.phybre.core.ds.Taxa;
-import uk.ac.uea.cmp.phybre.core.ds.Taxon;
+import uk.ac.uea.cmp.phybre.core.ds.Identifier;
+import uk.ac.uea.cmp.phybre.core.ds.IdentifierList;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -36,16 +36,16 @@ public class QuartetSystemCombiner {
 
     private QuartetSystemList originalSystems;
 
-    private Taxa taxa;
-    private List<Taxa> translatedTaxaList;
+    private IdentifierList taxa;
+    private List<IdentifierList> translatedTaxaList;
     private CanonicalWeightedQuartetMap quartetWeights;
     private CanonicalWeightedQuartetMap summer;
 
     public QuartetSystemCombiner() {
-        this(new Taxa(), new CanonicalWeightedQuartetMap(), new CanonicalWeightedQuartetMap());
+        this(new IdentifierList(), new CanonicalWeightedQuartetMap(), new CanonicalWeightedQuartetMap());
     }
 
-    public QuartetSystemCombiner(Taxa taxa, CanonicalWeightedQuartetMap quartetWeights, CanonicalWeightedQuartetMap summer) {
+    public QuartetSystemCombiner(IdentifierList taxa, CanonicalWeightedQuartetMap quartetWeights, CanonicalWeightedQuartetMap summer) {
         this.taxa = taxa;
         this.quartetWeights = quartetWeights;
         this.summer = summer;
@@ -53,11 +53,11 @@ public class QuartetSystemCombiner {
         this.translatedTaxaList = new ArrayList<>();
     }
 
-    public Taxa getTaxa() {
+    public IdentifierList getTaxa() {
         return taxa;
     }
 
-    public List<Taxa> getTranslatedTaxaSets() {
+    public List<IdentifierList> getTranslatedTaxaSets() {
         return translatedTaxaList;
     }
 
@@ -88,7 +88,7 @@ public class QuartetSystemCombiner {
 
         for (int n = 0; n < N; n++) {
 
-            Taxon taxon = taxa.get(n);
+            Identifier taxon = taxa.get(n);
             out.write("taxon:   " + nF.format(taxon.getId()) + "   name: " + taxon.getName() + ";\n");
         }
 
@@ -173,11 +173,11 @@ public class QuartetSystemCombiner {
      * @returns Returns a new copy of subset, which has its indicies updated to reflect those in the master taxa set.
      *
      */
-    private Map<Integer, Integer> translateTaxaIndicies(Taxa allTaxa, Taxa subset, boolean subsetToMaster) {
+    private Map<Integer, Integer> translateTaxaIndicies(IdentifierList allTaxa, IdentifierList subset, boolean subsetToMaster) {
 
         Map<Integer, Integer> lut = new HashMap<>();
-        for(Taxon t : subset) {
-            Taxon masterTaxon = allTaxa.getByName(t.getName());
+        for(Identifier t : subset) {
+            Identifier masterTaxon = allTaxa.getByName(t.getName());
 
             lut.put(
                     subsetToMaster ? t.getId() : masterTaxon.getId(),
@@ -187,9 +187,9 @@ public class QuartetSystemCombiner {
         return lut;
     }
 
-    private Taxa lutToTaxa(Map<Integer, Integer> lut, Taxa allTaxa) {
+    private IdentifierList lutToTaxa(Map<Integer, Integer> lut, IdentifierList allTaxa) {
 
-        Taxa newTaxa = new Taxa();
+        IdentifierList newTaxa = new IdentifierList();
 
         for(Map.Entry<Integer, Integer> entry : lut.entrySet()) {
             newTaxa.add(allTaxa.getById(entry.getValue()));
@@ -202,9 +202,9 @@ public class QuartetSystemCombiner {
         return new GroupedQuartetSystem(new QuartetSystem(this.taxa, 1.0, this.quartetWeights));
     }
 
-    public List<Taxa> getOriginalTaxaSets() {
+    public List<IdentifierList> getOriginalTaxaSets() {
 
-        List<Taxa> originalTaxaSets = new ArrayList<>();
+        List<IdentifierList> originalTaxaSets = new ArrayList<>();
 
         for(QuartetSystem qnet : this.originalSystems) {
             originalTaxaSets.add(qnet.getTaxa());

@@ -1,7 +1,7 @@
 package uk.ac.uea.cmp.phybre.qtools.qnet;
 
 import org.apache.commons.lang3.tuple.Pair;
-import uk.ac.uea.cmp.phybre.core.ds.Taxa;
+import uk.ac.uea.cmp.phybre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.phybre.core.ds.quartet.GroupedQuartetSystem;
 import uk.ac.uea.cmp.phybre.core.ds.split.*;
 
@@ -38,7 +38,7 @@ public class QNetResult {
     public CircularSplitSystem createSplitSystem(double[] limit, SplitLimiter mode) {
 
         // Setup shortcuts
-        Taxa taxa = this.quartetSystem.getTaxa();
+        IdentifierList taxa = this.quartetSystem.getTaxa();
         final int N = taxa.size();
         final int maxSplits = SplitUtils.calcMaxSplits(N);
         double[] solution = this.computedWeights.getSolution();

@@ -17,7 +17,7 @@ package uk.ac.uea.cmp.phybre.core.io.nexus;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
-import uk.ac.uea.cmp.phybre.core.ds.Taxa;
+import uk.ac.uea.cmp.phybre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.phybre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phybre.core.ds.split.CircularOrdering;
 import uk.ac.uea.cmp.phybre.core.ds.split.Split;
@@ -127,7 +127,7 @@ public class NexusReaderTest {
 
         assertNotNull(nexus);
 
-        Taxa taxa = nexus.getTaxa();
+        IdentifierList taxa = nexus.getTaxa();
 
         assertNotNull(taxa);
         assertTrue(taxa.size() == 6);
@@ -159,7 +159,7 @@ public class NexusReaderTest {
 
         assertNotNull(nexus);
 
-        Taxa taxa = nexus.getTaxa();
+        IdentifierList taxa = nexus.getTaxa();
 
         assertNotNull(taxa);
         assertTrue(taxa.size() == 6);

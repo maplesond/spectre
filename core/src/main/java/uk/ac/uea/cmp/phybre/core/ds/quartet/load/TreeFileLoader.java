@@ -16,8 +16,8 @@
 package uk.ac.uea.cmp.phybre.core.ds.quartet.load;
 
 import org.kohsuke.MetaInfServices;
-import uk.ac.uea.cmp.phybre.core.ds.Taxa;
-import uk.ac.uea.cmp.phybre.core.ds.Taxon;
+import uk.ac.uea.cmp.phybre.core.ds.Identifier;
+import uk.ac.uea.cmp.phybre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.phybre.core.ds.quartet.QuartetSystem;
 import uk.ac.uea.cmp.phybre.core.ds.quartet.QuartetSystemList;
 import uk.ac.uea.cmp.phybre.core.ds.tree.newick.NewickTree;
@@ -45,7 +45,7 @@ public class TreeFileLoader extends AbstractQLoader {
 
         QuartetSystemList sourceDataList = new QuartetSystemList();
 
-        Taxa taxa = new Taxa();
+        IdentifierList taxa = new IdentifierList();
 
         BufferedReader in = new BufferedReader(new FileReader(file));
 
@@ -103,7 +103,7 @@ public class TreeFileLoader extends AbstractQLoader {
 
                     }
 
-                    taxa.add(new Taxon(second.trim().substring(0, second.trim().length() - 1)));
+                    taxa.add(new Identifier(second.trim().substring(0, second.trim().length() - 1)));
                 }
             }
 

@@ -1,33 +1,33 @@
 package uk.ac.uea.cmp.phybre.core.ds.distance;
 
-import uk.ac.uea.cmp.phybre.core.ds.Taxa;
-import uk.ac.uea.cmp.phybre.core.ds.Taxon;
+import uk.ac.uea.cmp.phybre.core.ds.Identifier;
+import uk.ac.uea.cmp.phybre.core.ds.IdentifierList;
 
 import java.util.HashMap;
 
 /**
  * Created by dan on 27/02/14.
  */
-public class FlexibleDistanceList extends HashMap<Taxon, Double> implements DistanceList {
+public class FlexibleDistanceList extends HashMap<Identifier, Double> implements DistanceList {
 
-    private Taxa otherTaxa;
-    private Taxon primaryTaxon;
+    private IdentifierList otherTaxa;
+    private Identifier primaryTaxon;
 
 
     /**
      * Constructs an empty <tt>FlexibleDistanceList</tt>
      */
-    public FlexibleDistanceList(Taxon primaryTaxon) {
+    public FlexibleDistanceList(Identifier primaryTaxon) {
         super();
 
-        this.otherTaxa = new Taxa();
+        this.otherTaxa = new IdentifierList();
         this.primaryTaxon = primaryTaxon;
     }
 
 
 
     @Override
-    public Double put(Taxon key, Double value) {
+    public Double put(Identifier key, Double value) {
 
         Double oldValue = super.put(key, value);
 
@@ -47,7 +47,7 @@ public class FlexibleDistanceList extends HashMap<Taxon, Double> implements Dist
 
 
     @Override
-    public double getDistance(Taxon taxon) {
+    public double getDistance(Identifier taxon) {
         return this.get(taxon);
     }
 
@@ -62,8 +62,9 @@ public class FlexibleDistanceList extends HashMap<Taxon, Double> implements Dist
     }
 
     @Override
-    public double setDistance(Taxon taxon, double value) {
-        return this.put(taxon, value);
+    public double setDistance(Identifier taxon, double value) {
+        Double oldVal = this.put(taxon, value);
+        return oldVal == null ? 0.0 : oldVal;
     }
 
     @Override
@@ -77,7 +78,7 @@ public class FlexibleDistanceList extends HashMap<Taxon, Double> implements Dist
     }
 
     @Override
-    public double incrementDistance(Taxon taxon, double increment) {
+    public double incrementDistance(Identifier taxon, double increment) {
 
         double newValue = this.getDistance(taxon) + increment;
         this.setDistance(taxon, newValue);
@@ -95,12 +96,12 @@ public class FlexibleDistanceList extends HashMap<Taxon, Double> implements Dist
     }
 
     @Override
-    public Taxon getTaxon() {
+    public Identifier getTaxon() {
         return this.primaryTaxon;
     }
 
     @Override
-    public Taxa getOtherTaxa() {
+    public IdentifierList getOtherTaxa() {
         return this.otherTaxa;
     }
 

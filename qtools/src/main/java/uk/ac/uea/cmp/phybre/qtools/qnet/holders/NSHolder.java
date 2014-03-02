@@ -17,7 +17,7 @@ package uk.ac.uea.cmp.phybre.qtools.qnet.holders;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import uk.ac.uea.cmp.phybre.core.ds.Taxa;
+import uk.ac.uea.cmp.phybre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.phybre.core.ds.quartet.CanonicalWeightedQuartetMap;
 import uk.ac.uea.cmp.phybre.core.ds.quartet.Quartet;
 import uk.ac.uea.cmp.phybre.qtools.qnet.QNetException;
@@ -27,13 +27,13 @@ import java.util.List;
 
 public class NSHolder extends AbstractBasicHolder {
 
-    public NSHolder(List<Taxa> paths, int N, CanonicalWeightedQuartetMap theQuartetWeights) throws QNetException {
+    public NSHolder(List<IdentifierList> paths, int N, CanonicalWeightedQuartetMap theQuartetWeights) throws QNetException {
 
         super(N, paths, theQuartetWeights);
     }
 
     @Override
-    protected Pair<Integer, Double> calcCountWeight(Taxa A, Taxa B) throws QNetException {
+    protected Pair<Integer, Double> calcCountWeight(IdentifierList A, IdentifierList B) throws QNetException {
 
         // now, we store everything properly
 
@@ -44,8 +44,8 @@ public class NSHolder extends AbstractBasicHolder {
 
             for (int d = c + 1; d < paths.size(); d++) {
 
-                Taxa C = paths.get(c);
-                Taxa D = paths.get(d);
+                IdentifierList C = paths.get(c);
+                IdentifierList D = paths.get(d);
 
                 if (C != A && C != B && D != A && D != B) {
 

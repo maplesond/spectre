@@ -1,6 +1,6 @@
 package uk.ac.uea.cmp.phybre.core.ds.quartet;
 
-import uk.ac.uea.cmp.phybre.core.ds.Taxa;
+import uk.ac.uea.cmp.phybre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.phybre.core.ds.tree.newick.NewickTree;
 
 /**
@@ -19,16 +19,16 @@ public class QuartetSystem {
     }
 
 
-    private Taxa taxa;
+    private IdentifierList taxa;
     private double weight;
     private Sense sense;
     private CanonicalWeightedQuartetMap quartets;
 
     public QuartetSystem() {
-        this(new Taxa(), 1.0, new CanonicalWeightedQuartetMap());
+        this(new IdentifierList(), 1.0, new CanonicalWeightedQuartetMap());
     }
 
-    public QuartetSystem(Taxa taxa, double weight, CanonicalWeightedQuartetMap quartets) {
+    public QuartetSystem(IdentifierList taxa, double weight, CanonicalWeightedQuartetMap quartets) {
         this.taxa = taxa;
         this.weight = weight;
         this.sense = Sense.MAX;
@@ -61,11 +61,11 @@ public class QuartetSystem {
     }
 
 
-    public Taxa getTaxa() {
+    public IdentifierList getTaxa() {
         return taxa;
     }
 
-    public void setTaxa(Taxa taxa) {
+    public void setTaxa(IdentifierList taxa) {
         this.taxa = taxa;
     }
 

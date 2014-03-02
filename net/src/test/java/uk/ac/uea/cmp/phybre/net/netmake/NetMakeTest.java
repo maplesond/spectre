@@ -21,7 +21,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.junit.Before;
 import org.junit.Test;
-import uk.ac.uea.cmp.phybre.core.ds.Taxa;
+import uk.ac.uea.cmp.phybre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.phybre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phybre.core.ds.distance.FlexibleDistanceMatrix;
 import uk.ac.uea.cmp.phybre.core.ds.split.CompatibleSplitSystem;
@@ -63,7 +63,7 @@ public class NetMakeTest {
         };
 
 
-        DistanceMatrix distanceMatrix = new FlexibleDistanceMatrix(new Taxa(taxa), distances);
+        DistanceMatrix distanceMatrix = new FlexibleDistanceMatrix(new IdentifierList(taxa), distances);
 
         NetMakeResult result = new NetMake().execute(distanceMatrix, new GreedyMEWeighting(distanceMatrix), new TSPWeighting(distanceMatrix.size()));
 

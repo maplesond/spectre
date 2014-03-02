@@ -25,31 +25,31 @@ package uk.ac.uea.cmp.phybre.core.ds;
  */
 public class Quadruple {
 
-    private Taxon q1;
-    private Taxon q2;
-    private Taxon q3;
-    private Taxon q4;
+    private Identifier q1;
+    private Identifier q2;
+    private Identifier q3;
+    private Identifier q4;
 
-    public Quadruple(Taxon q1, Taxon q2, Taxon q3, Taxon q4) {
+    public Quadruple(Identifier q1, Identifier q2, Identifier q3, Identifier q4) {
         this.q1 = q1;
         this.q2 = q2;
         this.q3 = q3;
         this.q4 = q4;
     }
 
-    public Taxon getQ1() {
+    public Identifier getQ1() {
         return q1;
     }
 
-    public Taxon getQ2() {
+    public Identifier getQ2() {
         return q2;
     }
 
-    public Taxon getQ3() {
+    public Identifier getQ3() {
         return q3;
     }
 
-    public Taxon getQ4() {
+    public Identifier getQ4() {
         return q4;
     }
 }

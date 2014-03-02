@@ -16,7 +16,7 @@
 
 package uk.ac.uea.cmp.phybre.core.io.nexus;
 
-import uk.ac.uea.cmp.phybre.core.ds.Taxa;
+import uk.ac.uea.cmp.phybre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.phybre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phybre.core.ds.split.SplitSystem;
 
@@ -32,19 +32,19 @@ import java.util.List;
  */
 public class Nexus {
 
-    private Taxa taxa;
+    private IdentifierList taxa;
     private DistanceMatrix distanceMatrix;
     private SplitSystem splitSystem;
     private List<Integer> cycle;
 
     public Nexus() {
-        this.taxa = new Taxa();
+        this.taxa = new IdentifierList();
         this.distanceMatrix = null;
         this.cycle = new ArrayList<>();
         this.splitSystem = null;
     }
 
-    public void setTaxa(Taxa taxa) {
+    public void setTaxa(IdentifierList taxa) {
         this.taxa = taxa;
     }
 
@@ -52,7 +52,7 @@ public class Nexus {
         this.cycle = cycle;
     }
 
-    public Taxa getTaxa() {
+    public IdentifierList getTaxa() {
         return taxa;
     }
 

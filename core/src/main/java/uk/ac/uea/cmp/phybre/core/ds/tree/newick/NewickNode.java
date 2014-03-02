@@ -16,8 +16,8 @@
 
 package uk.ac.uea.cmp.phybre.core.ds.tree.newick;
 
-import uk.ac.uea.cmp.phybre.core.ds.Taxa;
-import uk.ac.uea.cmp.phybre.core.ds.Taxon;
+import uk.ac.uea.cmp.phybre.core.ds.Identifier;
+import uk.ac.uea.cmp.phybre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.phybre.core.ds.quartet.CanonicalWeightedQuartetMap;
 import uk.ac.uea.cmp.phybre.core.ds.quartet.Quartet;
 
@@ -33,7 +33,7 @@ import java.util.List;
  */
 public abstract class NewickNode {
 
-    protected Taxon taxon;
+    protected Identifier taxon;
     protected NewickNode parent;
     protected List<NewickNode> branches;
     protected double length;
@@ -71,9 +71,9 @@ public abstract class NewickNode {
      * Walks the tree and returns the taxa list.  May throw an IllegalArgumentException if there are duplicate taxa
      * @return The taxa found from this node.
      */
-    public Taxa findAllTaxa() {
+    public IdentifierList findAllTaxa() {
 
-        Taxa taxa = new Taxa();
+        IdentifierList taxa = new IdentifierList();
 
         if (this.taxon != null && !this.taxon.isEmpty()) {
             taxa.add(this.taxon);
@@ -90,7 +90,7 @@ public abstract class NewickNode {
         return this.findAllTaxa().size();
     }
 
-    protected void getTaxa(Taxa taxa) {
+    protected void getTaxa(IdentifierList taxa) {
         if (this.taxon != null && !this.taxon.isEmpty()) {
             taxa.add(this.taxon);
         }
@@ -148,7 +148,7 @@ public abstract class NewickNode {
         return true;
     }
 
-    public void setIndiciesToExternalTaxaList(Taxa externalTaxaList) {
+    public void setIndiciesToExternalTaxaList(IdentifierList externalTaxaList) {
         if (this.taxon != null && !this.taxon.getName().isEmpty()) {
             this.taxon.setId(externalTaxaList.indexOf(this.taxon)+1);
         }
@@ -173,7 +173,7 @@ public abstract class NewickNode {
         return this.branches;
     }
 
-    public Taxon getTaxon() {
+    public Identifier getTaxon() {
         return this.taxon;
     }
 
@@ -181,7 +181,7 @@ public abstract class NewickNode {
         return this.length;
     }
 
-    public void setTaxon(Taxon taxon) {
+    public void setTaxon(Identifier taxon) {
         this.taxon = taxon;
     }
 
@@ -209,15 +209,15 @@ public abstract class NewickNode {
      * @param remainder The taxa that are not found in this node
      * @return Calculated quartet weights for this node
      */
-    protected CanonicalWeightedQuartetMap split(CanonicalWeightedQuartetMap qW, Taxa remainder) {
+    protected CanonicalWeightedQuartetMap split(CanonicalWeightedQuartetMap qW, IdentifierList remainder) {
 
         for(int i = 0; i < this.branches.size(); i++) {
 
             NewickNode branch = this.branches.get(i);
             double w = branch.getLength();
 
-            Taxa setA = branch.findAllTaxa();
-            Taxa setB = new Taxa(remainder);
+            IdentifierList setA = branch.findAllTaxa();
+            IdentifierList setB = new IdentifierList(remainder);
 
             for(NewickNode otherBranch : this.branches) {
 

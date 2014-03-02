@@ -15,7 +15,7 @@
  */
 package uk.ac.uea.cmp.phybre.core.ds.split;
 
-import uk.ac.uea.cmp.phybre.core.ds.Taxa;
+import uk.ac.uea.cmp.phybre.core.ds.IdentifierList;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -196,7 +196,7 @@ public class CircularOrdering {
         }
     }
 
-    public String toString(Taxa taxa) {
+    public String toString(IdentifierList taxa) {
 
         if (this.co == null || this.co.length == 0) {
             return "[]";

@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 import uk.ac.tgac.metaopt.Optimiser;
 import uk.ac.tgac.metaopt.OptimiserException;
 import uk.ac.tgac.metaopt.Solution;
-import uk.ac.uea.cmp.phybre.core.ds.Taxa;
+import uk.ac.uea.cmp.phybre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.phybre.core.ds.quartet.load.QLoaderFactory;
 import uk.ac.uea.cmp.phybre.core.ds.quartet.scale.ScalingMatrix;
 import uk.ac.uea.cmp.phybre.core.ds.quartet.scale.ScalingOptimiser;
@@ -97,9 +97,9 @@ public class QuartetSystemList extends ArrayList<QuartetSystem> {
         }
     }
 
-    public Taxa combineTaxaSets() {
+    public IdentifierList combineTaxaSets() {
 
-        Taxa result = new Taxa();
+        IdentifierList result = new IdentifierList();
 
         for(QuartetSystem data : this) {
             result.addAll(data.getTaxa());
@@ -109,9 +109,9 @@ public class QuartetSystemList extends ArrayList<QuartetSystem> {
     }
 
 
-    public List<Taxa> getTaxaSets() {
+    public List<IdentifierList> getTaxaSets() {
 
-        List<Taxa> result = new ArrayList<>();
+        List<IdentifierList> result = new ArrayList<>();
 
         for(QuartetSystem data : this) {
             result.add(data.getTaxa());

@@ -1,10 +1,12 @@
 package uk.ac.uea.cmp.phybre.core.ds.distance;
 
-import uk.ac.uea.cmp.phybre.core.ds.Taxa;
-import uk.ac.uea.cmp.phybre.core.ds.Taxon;
+import org.apache.commons.lang3.tuple.Pair;
+import uk.ac.uea.cmp.phybre.core.ds.Identifier;
+import uk.ac.uea.cmp.phybre.core.ds.IdentifierList;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by dan on 27/02/14.
@@ -25,7 +27,7 @@ public interface DistanceMatrix {
      * @param taxon2
      * @return The distance between taxon1 and taxon2, or null if not found
      */
-    double getDistance(final Taxon taxon1, final Taxon taxon2);
+    double getDistance(final Identifier taxon1, final Identifier taxon2);
 
     /**
      * Retrieves the distance between two taxa, using taxa indices
@@ -52,7 +54,7 @@ public interface DistanceMatrix {
      * @param value
      * @return The previous distance set between the two taxa, or 0.0 if the value has never been set before
      */
-    double setDistance(final Taxon taxon1, final Taxon taxon2, final double value);
+    double setDistance(final Identifier taxon1, final Identifier taxon2, final double value);
 
     /**
      * Sets the specified distance between the specified taxa using their names
@@ -80,7 +82,7 @@ public interface DistanceMatrix {
      * @param increment
      * @return The value at [row][col] after incrementation.
      */
-    double incrementDistance(final Taxon taxon1, final Taxon taxon2, final double increment);
+    double incrementDistance(final Identifier taxon1, final Identifier taxon2, final double increment);
 
     /**
      * Using taxa ids, increments the distance between taxon1 and taxon2 by incValue.  Returns the new distance between
@@ -118,19 +120,19 @@ public interface DistanceMatrix {
      *
      * @return The set of taxa.
      */
-    Taxa getTaxa();
+    IdentifierList getTaxa();
 
     /**
      * Retrieves the entire taxa set associated with this DistanceMatrix, using the specified comparator.
      *
      * @return The set of sorted taxa.
      */
-    Taxa getTaxa(Comparator<Taxon> comparator);
+    IdentifierList getTaxa(Comparator<Identifier> comparator);
 
 
-    DistanceList getDistances(Taxon taxon, Comparator<Taxon> comparator);
-    DistanceList getDistances(int taxonId, Comparator<Taxon> comparator);
-    DistanceList getDistances(String taxonName, Comparator<Taxon> comparator);
+    DistanceList getDistances(Identifier taxon, Comparator<Identifier> comparator);
+    DistanceList getDistances(int taxonId, Comparator<Identifier> comparator);
+    DistanceList getDistances(String taxonName, Comparator<Identifier> comparator);
 
     /**
      *
@@ -143,7 +145,7 @@ public interface DistanceMatrix {
      * @param comparator How to order the distance lists
      * @return A List of DistanceLists for each taxon in this DistanceMatrix
      */
-    List<DistanceList> getAllDistances(Comparator<Taxon> comparator);
+    List<DistanceList> getAllDistances(Comparator<Identifier> comparator);
 
 
     /**
@@ -157,7 +159,7 @@ public interface DistanceMatrix {
      * @param comparator How the taxa should be sorted.
      * @return A copy of the distances represented as a 2D array.
      */
-    double[][] getMatrix(Comparator<Taxon> comparator);
+    double[][] getMatrix(Comparator<Identifier> comparator);
 
     /**
      * Returns the size (number of rows or number of columns) of the square matrix.  This is also equivalent to the
@@ -168,6 +170,29 @@ public interface DistanceMatrix {
     int size();
 
 
+    /**
+     * Removes all entries relating to the supplied taxon from the distance matrix
+     * @param taxon
+     */
+    void removeTaxon(Identifier taxon);
 
+    /**
+     * Removes all entries relating to the supplied taxon, based on its id, from the distance matrix
+     * @param taxonId
+     */
+    void removeTaxon(int taxonId);
+
+    /**
+     * Removes all entries relating to the supplied taxon, based on its name from the distance matrix
+     * @param taxonName
+     */
+    void removeTaxon(String taxonName);
+
+
+    /**
+     * Returns the map storing the distance matrix in non-redundant form
+     * @return The map representing the distance matrix
+     */
+    Map<Pair<Identifier,Identifier>, Double> getMap();
 
 }

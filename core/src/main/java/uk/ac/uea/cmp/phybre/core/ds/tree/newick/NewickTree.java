@@ -19,7 +19,7 @@ package uk.ac.uea.cmp.phybre.core.ds.tree.newick;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
-import uk.ac.uea.cmp.phybre.core.ds.Taxa;
+import uk.ac.uea.cmp.phybre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.phybre.core.ds.quartet.CanonicalWeightedQuartetMap;
 import uk.ac.uea.cmp.phybre.core.ds.tree.newick.parser.NewickTreeLexer;
 import uk.ac.uea.cmp.phybre.core.ds.tree.newick.parser.NewickTreeParser;
@@ -39,12 +39,12 @@ import java.io.IOException;
 public class NewickTree extends NewickNode {
 
     private double scalingFactor;
-    private Taxa taxa;
+    private IdentifierList taxa;
 
     public NewickTree(String source) throws IOException {
         super();
         this.scalingFactor = 1.0;
-        this.taxa = new Taxa();
+        this.taxa = new IdentifierList();
         this.parseNewick(source, scalingFactor);
     }
 
@@ -122,7 +122,7 @@ public class NewickTree extends NewickNode {
     }
 
 
-    public Taxa getTaxa() {
+    public IdentifierList getTaxa() {
         return this.taxa;
     }
 
@@ -130,7 +130,7 @@ public class NewickTree extends NewickNode {
 
         CanonicalWeightedQuartetMap qW = new CanonicalWeightedQuartetMap();
 
-        this.split(qW, new Taxa());
+        this.split(qW, new IdentifierList());
 
         return qW;
     }

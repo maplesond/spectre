@@ -15,8 +15,8 @@
  */
 package uk.ac.uea.cmp.phybre.core.ds.split;
 
-import uk.ac.uea.cmp.phybre.core.ds.Taxa;
-import uk.ac.uea.cmp.phybre.core.ds.Taxon;
+import uk.ac.uea.cmp.phybre.core.ds.Identifier;
+import uk.ac.uea.cmp.phybre.core.ds.IdentifierList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +24,7 @@ import java.util.List;
 public class SimpleSplitSystem implements SplitSystem {
 
     private List<Split> splits;
-    private Taxa taxa;
+    private IdentifierList taxa;
 
     public SimpleSplitSystem(int nbTaxa) {
         this(nbTaxa, new ArrayList<Split>());
@@ -35,19 +35,19 @@ public class SimpleSplitSystem implements SplitSystem {
         this(createGenericTaxa(nbTaxa), splits);
     }
 
-    public SimpleSplitSystem(Taxa taxa, List<Split> splits) {
+    public SimpleSplitSystem(IdentifierList taxa, List<Split> splits) {
 
         this.taxa = taxa;
         this.splits = splits;
     }
 
-    protected static Taxa createGenericTaxa(int nbTaxa) {
+    protected static IdentifierList createGenericTaxa(int nbTaxa) {
 
-        Taxa taxa = new Taxa();
+        IdentifierList taxa = new IdentifierList();
 
         // Assumes we don't have more than 26 taxa, otherwise this is going to get weird.
         for (int i = 0; i < nbTaxa; i++) {
-            taxa.add(new Taxon(Character.toString((char) (i + 65))));
+            taxa.add(new Identifier(Character.toString((char) (i + 65))));
         }
 
         return taxa;
@@ -63,11 +63,11 @@ public class SimpleSplitSystem implements SplitSystem {
     }
 
     @Override
-    public Taxa getTaxa() {
+    public IdentifierList getTaxa() {
         return this.taxa;
     }
 
-    protected void setTaxa(Taxa taxa) {
+    protected void setTaxa(IdentifierList taxa) {
         this.taxa = taxa;
     }
 

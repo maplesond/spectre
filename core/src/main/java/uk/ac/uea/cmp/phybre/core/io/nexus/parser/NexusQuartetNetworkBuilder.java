@@ -18,7 +18,7 @@ package uk.ac.uea.cmp.phybre.core.io.nexus.parser;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.uea.cmp.phybre.core.ds.Taxa;
+import uk.ac.uea.cmp.phybre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.phybre.core.ds.quartet.GroupedQuartetSystem;
 import uk.ac.uea.cmp.phybre.core.ds.quartet.WeightedQuartetGroupMap;
 
@@ -34,7 +34,7 @@ public class NexusQuartetNetworkBuilder {
     private static Logger log = LoggerFactory.getLogger(NexusQuartetNetworkBuilder.class);
 
     private int expectedNbTaxa;
-    private Taxa taxa;
+    private IdentifierList taxa;
     private double weight;
     private WeightedQuartetGroupMap weightedQuartets;
 
@@ -66,11 +66,11 @@ public class NexusQuartetNetworkBuilder {
         this.expectedNbTaxa = expectedNbTaxa;
     }
 
-    public void setTaxa(Taxa taxa) {
+    public void setTaxa(IdentifierList taxa) {
         this.taxa = taxa;
     }
 
-    public Taxa getTaxa() {
+    public IdentifierList getTaxa() {
         return taxa;
     }
 

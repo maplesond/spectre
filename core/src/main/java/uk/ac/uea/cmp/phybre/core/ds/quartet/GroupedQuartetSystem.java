@@ -17,7 +17,7 @@
 package uk.ac.uea.cmp.phybre.core.ds.quartet;
 
 import org.apache.commons.lang3.tuple.Pair;
-import uk.ac.uea.cmp.phybre.core.ds.Taxa;
+import uk.ac.uea.cmp.phybre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.phybre.core.ds.tree.newick.NewickTree;
 
 import java.util.Collections;
@@ -45,16 +45,16 @@ public class GroupedQuartetSystem {
     }
 
 
-    private Taxa taxa;
+    private IdentifierList taxa;
     private double weight;
     private Sense sense;
     private WeightedQuartetGroupMap quartets;
 
     public GroupedQuartetSystem() {
-        this(new Taxa(), 1.0, new WeightedQuartetGroupMap());
+        this(new IdentifierList(), 1.0, new WeightedQuartetGroupMap());
     }
 
-    public GroupedQuartetSystem(Taxa taxa, double weight, WeightedQuartetGroupMap quartets) {
+    public GroupedQuartetSystem(IdentifierList taxa, double weight, WeightedQuartetGroupMap quartets) {
         this.taxa = taxa;
         this.weight = weight;
         this.sense = Sense.MAX;
@@ -89,11 +89,11 @@ public class GroupedQuartetSystem {
 
     }
 
-    public Taxa getTaxa() {
+    public IdentifierList getTaxa() {
         return taxa;
     }
 
-    public void setTaxa(Taxa taxa) {
+    public void setTaxa(IdentifierList taxa) {
         this.taxa = taxa;
     }
 

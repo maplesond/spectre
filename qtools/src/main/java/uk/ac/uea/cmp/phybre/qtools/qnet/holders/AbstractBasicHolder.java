@@ -1,7 +1,7 @@
 package uk.ac.uea.cmp.phybre.qtools.qnet.holders;
 
 import org.apache.commons.lang3.tuple.Pair;
-import uk.ac.uea.cmp.phybre.core.ds.Taxa;
+import uk.ac.uea.cmp.phybre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.phybre.core.ds.quartet.CanonicalWeightedQuartetMap;
 import uk.ac.uea.cmp.phybre.core.ds.quartet.Quartet;
 import uk.ac.uea.cmp.phybre.qtools.qnet.QNetException;
@@ -19,11 +19,11 @@ public abstract class AbstractBasicHolder {
 
     protected int[] counts;
     protected double[] weights;
-    protected List<Taxa> paths;
+    protected List<IdentifierList> paths;
     protected CanonicalWeightedQuartetMap theQuartetWeights;
 
 
-    protected AbstractBasicHolder(final int N, final List<Taxa> paths, CanonicalWeightedQuartetMap theQuartetWeights)
+    protected AbstractBasicHolder(final int N, final List<IdentifierList> paths, CanonicalWeightedQuartetMap theQuartetWeights)
             throws QNetException {
 
         this.paths = paths;
@@ -38,8 +38,8 @@ public abstract class AbstractBasicHolder {
 
             for (int j = i + 1; j <= N; j++) {
 
-                Taxa A = Holders.findFirstPathContainingId(paths, i);
-                Taxa B = Holders.findFirstPathContainingId(paths, j);
+                IdentifierList A = Holders.findFirstPathContainingId(paths, i);
+                IdentifierList B = Holders.findFirstPathContainingId(paths, j);
 
                 if (A == null) {
                     throw new IllegalStateException("Could not find taxaset associated with i: " + i);
@@ -76,7 +76,7 @@ public abstract class AbstractBasicHolder {
      * @param B The second path
      * @return The count and weight for the 2 paths.
      */
-    protected abstract Pair<Integer, Double> calcCountWeight(Taxa A, Taxa B) throws QNetException;
+    protected abstract Pair<Integer, Double> calcCountWeight(IdentifierList A, IdentifierList B) throws QNetException;
 
     /**
      * Returns the weighted count at i, j.

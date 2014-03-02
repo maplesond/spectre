@@ -20,13 +20,13 @@ import uk.ac.uea.cmp.phybre.core.ds.split.CircularOrdering;
 import java.util.*;
 
 /**
- * Taxa class.  This is an extension of Arraylist, which also acts as a set in that it does not allow the client
+ * IdentifierList class.  This is an extension of Arraylist, which also acts as a set in that it does not allow the client
  * to add duplicate items into the list.
  */
-public class Taxa extends ArrayList<Taxon> {
+public class IdentifierList extends ArrayList<Identifier> {
 
-    private Map<String, Taxon> names;
-    private Map<Integer, Taxon> ids;
+    private Map<String, Identifier> names;
+    private Map<Integer, Identifier> numbers;
     private boolean duplicatesAllowed;
 
     private int maxId;
@@ -34,56 +34,56 @@ public class Taxa extends ArrayList<Taxon> {
     /**
      * Constructor
      */
-    public Taxa() {
+    public IdentifierList() {
         this(false);
     }
 
-    public Taxa(final int size) {
+    public IdentifierList(final int size) {
         this(false);
 
         for(int i = 1; i <= size; i++) {
-            this.add(new Taxon(i));
+            this.add(new Identifier(i));
         }
     }
 
-    public Taxa(boolean duplicatesAllowed) {
+    public IdentifierList(boolean duplicatesAllowed) {
         super();
         this.duplicatesAllowed = duplicatesAllowed;
         this.names = new HashMap<>();
-        this.ids = new HashMap<>();
+        this.numbers = new HashMap<>();
         this.maxId = 0;
     }
 
     /**
      * Seeded constructor. Add as single element aTaxon.
      */
-    public Taxa(Taxon taxon) {
+    public IdentifierList(Identifier identifier) {
 
         this(false);
-        this.add(taxon);
+        this.add(identifier);
     }
 
-    public Taxa(final String[] taxa) {
+    public IdentifierList(final String[] names) {
 
         this(false);
         int i = 1;
-        for(String taxon : taxa) {
-            this.add(new Taxon(taxon, i++));
+        for(String idName : names) {
+            this.add(new Identifier(idName, i++));
         }
     }
 
     /**
      * Copy constructor
-     * @param taxa
+     * @param identifierList
      */
-    public Taxa(Taxa taxa) {
+    public IdentifierList(IdentifierList identifierList) {
         this();
-        this.duplicatesAllowed = taxa.isDuplicatesAllowed();
+        this.duplicatesAllowed = identifierList.isDuplicatesAllowed();
         this.names = new HashMap<>();
-        this.ids = new HashMap<>();
+        this.numbers = new HashMap<>();
 
-        for(Taxon t : taxa) {
-            this.add(new Taxon(t));
+        for(Identifier t : identifierList) {
+            this.add(new Identifier(t));
         }
     }
 
@@ -91,7 +91,7 @@ public class Taxa extends ArrayList<Taxon> {
     @Override
     public boolean equals(Object o) {
 
-        Taxa other = (Taxa)o;
+        IdentifierList other = (IdentifierList)o;
 
         if (other.size() != this.size())
             return false;
@@ -107,132 +107,132 @@ public class Taxa extends ArrayList<Taxon> {
 
 
     /**
-     * Will try to add a new taxon to the end of the list.  Throws an IllegalArgumentException if this
+     * Will try to add a new identifier to the end of the list.  Throws an IllegalArgumentException if this
      * taxon name or id already exists
-     * @param taxon The taxon to add
-     * @return True if successfully added taxon to the list
+     * @param identifier The identifier to add
+     * @return True if successfully added identifier to the list
      */
     @Override
-    public boolean add(Taxon taxon) {
+    public boolean add(Identifier identifier) {
 
         if (!duplicatesAllowed) {
-            if (this.names.containsKey(taxon.getName()))
-                throw new IllegalArgumentException("Taxa list already contains taxon name: " + taxon.getName());
+            if (this.names.containsKey(identifier.getName()))
+                throw new IllegalArgumentException("Identifier list already contains an identifier with the same name: " + identifier.getName());
 
             // If the user didn't both to set the taxa id then we do it ourselves.
-            if (taxon.getId() == Taxon.DEFAULT_ID) {
+            if (identifier.getId() == Identifier.DEFAULT_ID) {
                 this.maxId = this.getNextId();
-                taxon.setId(this.maxId);
+                identifier.setId(this.maxId);
             }
             else {
-                this.maxId = this.maxId > taxon.getId() ? this.maxId : taxon.getId();
+                this.maxId = this.maxId > identifier.getId() ? this.maxId : identifier.getId();
             }
 
-            if (this.ids.containsKey(taxon.getId()))
-                throw new IllegalArgumentException("Taxa list already contains taxon id: " + taxon.getId());
+            if (this.numbers.containsKey(identifier.getId()))
+                throw new IllegalArgumentException("Taxa list already contains taxon id: " + identifier.getId());
 
-            this.names.put(taxon.getName(), taxon);
-            this.ids.put(taxon.getId(), taxon);
+            this.names.put(identifier.getName(), identifier);
+            this.numbers.put(identifier.getId(), identifier);
         }
 
-        return super.add(taxon);
+        return super.add(identifier);
     }
 
     /**
-     * Will try to insert a new taxon into the list at a specific location.  Throws an IllegalArgumentException if this
+     * Will try to insert a new identifier into the list at a specific location.  Throws an IllegalArgumentException if this
      * taxon name already exists
      * @param index Location to insert new taxon
-     * @param taxon The taxon to insert
+     * @param identifier The taxon to insert
      */
     @Override
-    public void add(int index, Taxon taxon) {
+    public void add(int index, Identifier identifier) {
         if (!duplicatesAllowed) {
 
-            // If the user didn't both to set the taxa id then we do it ourselves.
-            if (taxon.getId() == Taxon.DEFAULT_ID) {
+            // If the user didn't both to set the identifier number then we do it ourselves.
+            if (identifier.getId() == Identifier.DEFAULT_ID) {
                 this.maxId = this.getNextId();
-                taxon.setId(this.maxId);
+                identifier.setId(this.maxId);
             }
             else {
-                this.maxId = this.maxId > taxon.getId() ? this.maxId : taxon.getId();
+                this.maxId = this.maxId > identifier.getId() ? this.maxId : identifier.getId();
             }
 
 
-            if (!this.names.containsKey(taxon.getName()) && !this.ids.containsKey(taxon.getId())) {
-                this.names.put(taxon.getName(), taxon);
-                this.ids.put(taxon.getId(), taxon);
-                super.add(index, taxon);
+            if (!this.names.containsKey(identifier.getName()) && !this.numbers.containsKey(identifier.getId())) {
+                this.names.put(identifier.getName(), identifier);
+                this.numbers.put(identifier.getId(), identifier);
+                super.add(index, identifier);
             }
             else {
-                throw new IllegalArgumentException("Taxa list already contains taxon with name: " + taxon.getName() + "; or id: " + taxon.getId());
+                throw new IllegalArgumentException("Identifier list already contains an identifier with the name: " + identifier.getName() + "; or number: " + identifier.getId());
             }
         }
         else {
-            super.add(index, taxon);
+            super.add(index, identifier);
         }
     }
 
     /**
-     * Adds taxa from another taxa list into this taxa list.  Will ignore taxa that are already present in this list.
-     * The return flag indicates if all taxa were merged.
-     * @param taxa Taxa to merge into this list.
-     * @param retainIds If true, we keep the ids of the original taxa after merging.  If not then we ensure all taxa ids
-     *                  in this taxa are unique.
-     * @return True if all taxa were merged.  False if some were not
+     * Adds identifiers from another IdentifierList into this IdentifierList.  Will ignore identifiers that are already present in this list.
+     * The return flag indicates if all identifers were merged.
+     * @param identifiers IdentifierList to merge into this list.
+     * @param retainIds If true, we keep the numbers of the original identifiers after merging.  If not then we ensure all identfier numbers
+     *                  in this list are unique.
+     * @return True if all identifiers were merged.  False if some were not
      */
-    public boolean addAll(Collection<? extends Taxon> taxa, boolean retainIds) {
+    public boolean addAll(Collection<? extends Identifier> identifiers, boolean retainIds) {
 
         int i = 0;
-        for(Taxon t : taxa) {
+        for(Identifier t : identifiers) {
             if (!duplicatesAllowed) {
                 if (!this.names.containsKey(t.getName())) {
                     this.add(retainIds ?
                             t :
-                            new Taxon(t.getName(), this.size()+1));
+                            new Identifier(t.getName(), this.size()+1));
                     i++;
                 }
             }
             else {
                 this.add(retainIds ?
                         t :
-                        new Taxon(t.getName(), this.size()+1));
+                        new Identifier(t.getName(), this.size()+1));
                 i++;
             }
         }
-        return i == taxa.size();
+        return i == identifiers.size();
     }
 
     /**
-     * Overwrites the taxon at a specific position in the list with the one provided.
+     * Overwrites the identifier at a specific position in the list with the one provided.
      * @param index
-     * @param taxon
-     * @return The taxon that's been set.
+     * @param identifier
+     * @return The identifier that's been set.
      */
     @Override
-    public Taxon set(int index, Taxon taxon) {
+    public Identifier set(int index, Identifier identifier) {
         if (!duplicatesAllowed) {
             this.names.remove(this.get(index).getName());
-            this.names.put(taxon.getName(), taxon);
-            this.ids.remove(this.get(index).getId());
-            this.ids.put(taxon.getId(), taxon);
+            this.names.put(identifier.getName(), identifier);
+            this.numbers.remove(this.get(index).getId());
+            this.numbers.put(identifier.getId(), identifier);
         }
-        return super.set(index, taxon);
+        return super.set(index, identifier);
     }
 
 
-    public Taxon getByName(String name) {
+    public Identifier getByName(String name) {
 
         return this.names.get(name);
     }
 
-    public Taxon getById(int id) {
-        return this.ids.get(id);
+    public Identifier getById(int id) {
+        return this.numbers.get(id);
     }
 
     public Quadruple getQuadruple(int a, int b, int c, int d) {
 
         if (this.size() < 4)
-            throw new IllegalStateException("Taxa list must contain at least 4 taxa for this method to work");
+            throw new IllegalStateException("Identifier list must contain at least 4 taxa for this method to work");
 
         return new Quadruple(this.getById(a), this.getById(b), this.getById(c), this.getById(d));
     }
@@ -248,17 +248,17 @@ public class Taxa extends ArrayList<Taxon> {
         return this.names.containsKey(name);
     }
 
-    public boolean containsId(int taxaId) {
+    public boolean containsId(int idNumber) {
 
-        return this.ids.containsKey(taxaId);
+        return this.numbers.containsKey(idNumber);
     }
 
     /**
-     * Reverses the ordering.  i.e. places taxon in the opposite order..
+     * Reverses the ordering.  i.e. places identifier in the opposite order..
      */
-    public Taxa reverseOrdering() {
+    public IdentifierList reverseOrdering() {
 
-        Taxa result = new Taxa();
+        IdentifierList result = new IdentifierList();
 
         for (int a = 0; a < size(); a++) {
             result.add(this.get(this.size() - 1 - a));
@@ -272,12 +272,12 @@ public class Taxa extends ArrayList<Taxon> {
         return duplicatesAllowed;
     }
 
-    public static Taxa createTrivialTaxaSet(int expectedNbTaxa) {
+    public static IdentifierList createSimpleIdentifiers(int expectedNbIdentifiers) {
 
-        Taxa t = new Taxa();
+        IdentifierList t = new IdentifierList();
 
-        for(int i = 0; i < expectedNbTaxa; i++) {
-            t.add(new Taxon(new String(Character.toString((char)(i + 65)))));
+        for(int i = 0; i < expectedNbIdentifiers; i++) {
+            t.add(new Identifier(new String(Character.toString((char)(i + 65)))));
         }
 
         return t;
@@ -285,8 +285,8 @@ public class Taxa extends ArrayList<Taxon> {
 
     public void setDefaultIndicies() {
         int i = 1;
-        for(Taxon taxon : this) {
-            taxon.setId(i++);
+        for(Identifier id : this) {
+            id.setId(i++);
         }
 
         this.maxId = this.size();
@@ -300,9 +300,9 @@ public class Taxa extends ArrayList<Taxon> {
     /**
      * EXCLUSIVE sublist-complement, reverse-order (so front-front, back-back)
      */
-    public Taxa complement(int I, int J) {
+    public IdentifierList complement(int I, int J) {
 
-        Taxa result = new Taxa();
+        IdentifierList result = new IdentifierList();
 
         for (int i = I - 1; i >= 0; i--) {
             result.add(get(i));
@@ -317,11 +317,11 @@ public class Taxa extends ArrayList<Taxon> {
 
 
 
-    public Taxon first() {
+    public Identifier first() {
         return this.size() > 0 ? this.get(0) : null;
     }
 
-    public Taxon last() {
+    public Identifier last() {
         return this.size() > 0 ? this.get(size() - 1) : null;
     }
 
@@ -345,7 +345,7 @@ public class Taxa extends ArrayList<Taxon> {
         return nameSet;
     }
 
-    public int[] getIds() {
+    public int[] getNumbers() {
         int[] idArray = new int[this.size()];
 
         for(int i = 0; i < this.size(); i++) {
@@ -390,7 +390,7 @@ public class Taxa extends ArrayList<Taxon> {
 
         sb.append("[");
         int i = 0;
-        for(Taxon t : this) {
+        for(Identifier t : this) {
 
             if (i != 0) {
                 sb.append(",");
@@ -408,43 +408,43 @@ public class Taxa extends ArrayList<Taxon> {
      * Join method. Joins in that order the two lists, in the specified
      * orientation
      */
-    public static Taxa join(Taxa firstTaxa, Direction firstDirection,
-                            Taxa secondTaxa, Direction secondDirection) {
+    public static IdentifierList join(IdentifierList firstList, Direction firstDirection,
+                            IdentifierList secondList, Direction secondDirection) {
 
-        Taxa result = new Taxa();
+        IdentifierList result = new IdentifierList();
 
         if (firstDirection == Direction.FORWARD) {
-            result.addAll(firstTaxa, true);
+            result.addAll(firstList, true);
         }
         else {
-            result.addAll(firstTaxa.reverseOrdering(), true);
+            result.addAll(firstList.reverseOrdering(), true);
         }
 
         if (secondDirection == Direction.FORWARD) {
-            result.addAll(secondTaxa, true);
+            result.addAll(secondList, true);
         }
         else if (secondDirection == Direction.BACKWARD) {
-            result.addAll(secondTaxa.reverseOrdering(), true);
+            result.addAll(secondList.reverseOrdering(), true);
         }
 
         return result;
     }
 
-    public Taxa applyCircularOrdering(CircularOrdering circularOrdering) {
+    public IdentifierList applyCircularOrdering(CircularOrdering circularOrdering) {
 
         if (circularOrdering.size() != this.size()) {
-            throw new IllegalArgumentException("Can't apply circular ordering as its size is different from this taxa objects.  " +
-                "Circular ordering size: " + circularOrdering.size() + "; Number of taxon in this taxa: " + this.size());
+            throw new IllegalArgumentException("Can't apply circular ordering as its size is different from this object.  " +
+                "Circular ordering size: " + circularOrdering.size() + "; Number of identifiers in this list: " + this.size());
         }
 
-        Taxa orderedTaxa = new Taxa();
+        IdentifierList orderedTaxa = new IdentifierList();
 
         for(int i = 0; i < this.size(); i ++) {
 
             int id = circularOrdering.getAt(i);
-            Taxon t = this.getById(id);
+            Identifier t = this.getById(id);
 
-            orderedTaxa.add(new Taxon(t));
+            orderedTaxa.add(new Identifier(t));
         }
 
         return orderedTaxa;
@@ -462,23 +462,23 @@ public class Taxa extends ArrayList<Taxon> {
     }
 
 
-    public Taxa sort(Comparator<Taxon> comparator) {
+    public IdentifierList sort(Comparator<Identifier> comparator) {
 
-        Taxa newTaxa = new Taxa(this);
+        IdentifierList identifiers = new IdentifierList(this);
 
-        Collections.sort(newTaxa, comparator);
+        Collections.sort(identifiers, comparator);
 
-        return newTaxa;
+        return identifiers;
     }
 
 
-    public Taxa sortById() {
+    public IdentifierList sortById() {
 
-        return this.sort(new Taxon.IdComparator());
+        return this.sort(new Identifier.NumberComparator());
     }
 
-    public Taxa sortByName() {
+    public IdentifierList sortByName() {
 
-        return this.sort(new Taxon.NameComparator());
+        return this.sort(new Identifier.NameComparator());
     }
 }

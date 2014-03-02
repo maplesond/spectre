@@ -15,7 +15,7 @@
  */
 package uk.ac.uea.cmp.phybre.qtools.qnet.holders;
 
-import uk.ac.uea.cmp.phybre.core.ds.Taxa;
+import uk.ac.uea.cmp.phybre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.phybre.core.ds.quartet.CanonicalWeightedQuartetMap;
 import uk.ac.uea.cmp.phybre.core.ds.quartet.Quartet;
 import uk.ac.uea.cmp.phybre.qtools.qnet.QNetException;
@@ -28,7 +28,7 @@ public class THolder {
     private int[][][] counts;
     private double[][][] weights;
 
-    public THolder(List<Taxa> taxaSets, int N, CanonicalWeightedQuartetMap theQuartetWeights) throws QNetException {
+    public THolder(List<IdentifierList> taxaSets, int N, CanonicalWeightedQuartetMap theQuartetWeights) throws QNetException {
 
         counts = new int[N][N][N];
         weights = new double[N][N][N];
@@ -41,8 +41,8 @@ public class THolder {
                 // here, we must have that i and j are not on the same path
                 // and we want their paths
 
-                Taxa A = Holders.findFirstPathContainingId(taxaSets, i);
-                Taxa B = Holders.findFirstPathContainingId(taxaSets, j);
+                IdentifierList A = Holders.findFirstPathContainingId(taxaSets, i);
+                IdentifierList B = Holders.findFirstPathContainingId(taxaSets, j);
 
                 if (A == null) {
                     throw new QNetException("Could not find path associated with i: " + i);
@@ -63,7 +63,7 @@ public class THolder {
 
                     // and we must have that k is not on the path of i, j
 
-                    Taxa C = Holders.findFirstPathContainingId(taxaSets, k);
+                    IdentifierList C = Holders.findFirstPathContainingId(taxaSets, k);
 
                     if (C == null) {
                         throw new IllegalStateException("Could not find path associated with k: " + k);

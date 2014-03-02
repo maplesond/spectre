@@ -15,7 +15,7 @@
  */
 package uk.ac.uea.cmp.phybre.qtools.qnet.holders;
 
-import uk.ac.uea.cmp.phybre.core.ds.Taxa;
+import uk.ac.uea.cmp.phybre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.phybre.core.ds.quartet.CanonicalWeightedQuartetMap;
 import uk.ac.uea.cmp.phybre.core.ds.quartet.Quartet;
 import uk.ac.uea.cmp.phybre.core.math.tuple.Triplet;
@@ -28,7 +28,7 @@ public class WHolder {
     private Triplet<Integer>[] counts;
     private Triplet<Double>[] weights;
 
-    public WHolder(List<Taxa> paths, int N, CanonicalWeightedQuartetMap quartetMap) throws QNetException {
+    public WHolder(List<IdentifierList> paths, int N, CanonicalWeightedQuartetMap quartetMap) throws QNetException {
 
         this.counts = new Triplet[Quartet.over4(N)];
         this.weights = new Triplet[Quartet.over4(N)];
@@ -56,10 +56,10 @@ public class WHolder {
                         // take all combinations of path entries
                         // against all combinations of other paths by all other path entries
 
-                        Taxa A = Holders.findFirstPathContainingId(paths, i);
-                        Taxa B = Holders.findFirstPathContainingId(paths, j);
-                        Taxa C = Holders.findFirstPathContainingId(paths, k);
-                        Taxa D = Holders.findFirstPathContainingId(paths, l);
+                        IdentifierList A = Holders.findFirstPathContainingId(paths, i);
+                        IdentifierList B = Holders.findFirstPathContainingId(paths, j);
+                        IdentifierList C = Holders.findFirstPathContainingId(paths, k);
+                        IdentifierList D = Holders.findFirstPathContainingId(paths, l);
 
                         if (A == null || B == null || C == null || D == null) {
                             throw new QNetException("Could not find paths for all indicies: " + i + ", " + j + ", " + k + ", " + l);

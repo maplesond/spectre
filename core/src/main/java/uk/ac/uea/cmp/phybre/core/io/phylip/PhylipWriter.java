@@ -17,8 +17,8 @@
 package uk.ac.uea.cmp.phybre.core.io.phylip;
 
 import org.apache.commons.io.FileUtils;
-import uk.ac.uea.cmp.phybre.core.ds.Taxa;
-import uk.ac.uea.cmp.phybre.core.ds.Taxon;
+import uk.ac.uea.cmp.phybre.core.ds.Identifier;
+import uk.ac.uea.cmp.phybre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.phybre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.phybre.core.io.AbstractPhygenWriter;
 import uk.ac.uea.cmp.phybre.core.util.CollectionUtils;
@@ -42,8 +42,8 @@ public class PhylipWriter extends AbstractPhygenWriter {
         fileContent.append(n);
         fileContent.append("\n");
 
-        Taxa nameSortedTaxa = distanceMatrix.getTaxa(new Taxon.NameComparator());
-        double[][] matrix = distanceMatrix.getMatrix(new Taxon.NameComparator());
+        IdentifierList nameSortedTaxa = distanceMatrix.getTaxa(new Identifier.NameComparator());
+        double[][] matrix = distanceMatrix.getMatrix(new Identifier.NameComparator());
 
         for (int i = 0; i < n; i++) {
 
