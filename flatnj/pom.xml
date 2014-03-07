@@ -40,6 +40,10 @@
                             <mainClass>uk.ac.uea.cmp.phybre.flatnj.gen4s.Gen4S</mainClass>
                             <id>gen4s</id>
                         </program>
+                        <program>
+                            <mainClass>uk.ac.uea.cmp.phybre.flatnj.netvi.NetView</mainClass>
+                            <id>netview</id>
+                        </program>
                     </programs>
                 </configuration>
             </plugin>
@@ -60,6 +64,7 @@
                             <target>
                                 <chmod file="${build-dir}/bin/flatnj" perm="755"/>
                                 <chmod file="${build-dir}/bin/gen4s" perm="755"/>
+                                <chmod file="${build-dir}/bin/netview" perm="755"/>
                             </target>
                         </configuration>
                     </execution>
@@ -78,6 +83,16 @@
             <artifactId>core</artifactId>
             <version>0.1.1</version>
         </dependency>
+
+
+        <!-- itext pdf -->
+
+        <dependency>
+            <groupId>com.itextpdf</groupId>
+            <artifactId>itextpdf</artifactId>
+            <version>5.5.0</version>
+        </dependency>
+
 
 
     </dependencies>
