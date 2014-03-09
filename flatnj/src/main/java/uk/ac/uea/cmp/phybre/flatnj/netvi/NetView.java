@@ -23,6 +23,9 @@ import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import uk.ac.uea.cmp.phybre.core.ui.gui.LookAndFeel;
 import uk.ac.uea.cmp.phybre.flatnj.ds.Leaders;
 import uk.ac.uea.cmp.phybre.flatnj.ds.Network;
 import uk.ac.uea.cmp.phybre.flatnj.ds.Taxa;
@@ -39,8 +42,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JColorChooser;
@@ -58,6 +59,8 @@ import javax.swing.filechooser.FileNameExtensionFilter;
  */
 public class NetView extends javax.swing.JFrame
 {
+    private static Logger log = LoggerFactory.getLogger(NetView.class);
+
     private Point startPoint;
     private JFrame format;
     private JFrame formatLabels;
@@ -523,13 +526,11 @@ public class NetView extends javax.swing.JFrame
             if (pdfFile != null)
             {
                 directory = pdfFile.getPath();
-                try
-                {
+                try {
                     savePDF(pdfFile);
                 }
-                catch (DocumentException ex)
-                {
-                    Logger.getLogger(NetView.class.getName()).log(Level.SEVERE, null, ex);
+                catch (DocumentException ex) {
+                    log.error("Error saving PDF", ex);
                 }
             }
         }
@@ -779,39 +780,7 @@ public class NetView extends javax.swing.JFrame
      */
     public static void main(String args[])
     {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try
-        {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels())
-            {
-                if ("Nimbus".equals(info.getName()))
-                {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        }
-        catch (ClassNotFoundException ex)
-        {
-            java.util.logging.Logger.getLogger(NetView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        catch (InstantiationException ex)
-        {
-            java.util.logging.Logger.getLogger(NetView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        catch (IllegalAccessException ex)
-        {
-            java.util.logging.Logger.getLogger(NetView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        catch (javax.swing.UnsupportedLookAndFeelException ex)
-        {
-            java.util.logging.Logger.getLogger(NetView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
+        LookAndFeel.setLookAndFeel(LookAndFeel.NIMBUS);
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable()
@@ -822,7 +791,7 @@ public class NetView extends javax.swing.JFrame
                 try {
                     new NetView().setVisible(true);
                 } catch (IOException ex) {
-                    Logger.getLogger(NetView.class.getName()).log(Level.SEVERE, null, ex);
+                    log.error("Problem occured while running NetView", ex);
                 }
             }
         });

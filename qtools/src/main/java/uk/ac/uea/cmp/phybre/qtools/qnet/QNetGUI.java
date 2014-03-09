@@ -21,14 +21,15 @@ import uk.ac.tgac.metaopt.Objective;
 import uk.ac.tgac.metaopt.OptimiserException;
 import uk.ac.tgac.metaopt.OptimiserFactory;
 import uk.ac.uea.cmp.phybre.core.io.qweight.QWeightFileFilter;
-import uk.ac.uea.cmp.phybre.core.ui.gui.JobController;
-import uk.ac.uea.cmp.phybre.core.ui.gui.StatusTracker;
-import uk.ac.uea.cmp.phybre.core.ui.gui.ToolHost;
+import uk.ac.uea.cmp.phybre.core.ui.gui.*;
 
 import javax.swing.*;
+import javax.swing.LookAndFeel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
+
+import static uk.ac.uea.cmp.phybre.core.ui.gui.LookAndFeel.*;
 
 public class QNetGUI extends JFrame implements ToolHost {
 
@@ -484,6 +485,8 @@ public class QNetGUI extends JFrame implements ToolHost {
 
         // Configure logging
         QNet.configureLogging();
+
+        setLookAndFeel(NIMBUS);
 
         try {
             log.info("Running in GUI mode");

@@ -22,16 +22,17 @@ import uk.ac.tgac.metaopt.Optimiser;
 import uk.ac.tgac.metaopt.OptimiserException;
 import uk.ac.tgac.metaopt.OptimiserFactory;
 import uk.ac.uea.cmp.phybre.core.io.nexus.NexusFileFilter;
-import uk.ac.uea.cmp.phybre.core.ui.gui.JobController;
-import uk.ac.uea.cmp.phybre.core.ui.gui.StatusTracker;
-import uk.ac.uea.cmp.phybre.core.ui.gui.ToolHost;
+import uk.ac.uea.cmp.phybre.core.ui.gui.*;
 import uk.ac.uea.cmp.phybre.qtools.superq.problems.SecondaryProblemFactory;
 
 import javax.swing.*;
+import javax.swing.LookAndFeel;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.io.File;
 import java.util.ArrayList;
+
+import static uk.ac.uea.cmp.phybre.core.ui.gui.LookAndFeel.*;
 
 public class SuperQGUI extends JFrame implements ToolHost {
 
@@ -632,6 +633,8 @@ public class SuperQGUI extends JFrame implements ToolHost {
     public static void main(String args[]) {
 
         SuperQ.configureLogging();
+
+        setLookAndFeel(NIMBUS);
 
         try {
             log.info("Running in GUI mode");

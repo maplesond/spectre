@@ -36,7 +36,7 @@ public class NeighborNetImplTest {
 
         assertTrue(v2v.size() == 5);
 
-        new NeighborNetImpl().reduction(new Triplet<>(1, 2, 3), aThird, aThird, aThird, v2v);
+        new NeighborNetImpl().reduction(new Triplet<>(1, 2, 3), new NeighborNetParams(aThird, aThird, aThird), v2v);
 
         assertTrue(v2v.size() == 4);
 

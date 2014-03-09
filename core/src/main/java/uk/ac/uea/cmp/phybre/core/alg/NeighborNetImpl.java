@@ -21,15 +21,7 @@ public class NeighborNetImpl implements NeighborNet {
 
 
     @Override
-    public CompatibleSplitSystem execute(DistanceMatrix distanceMatrix, double alpha, double beta) {
-
-        // alpha + beta + gamma == 1
-        final double gamma = 1.0 - alpha - beta;
-
-        // Validation of the parameters
-        if (alpha + beta + gamma == 1.0) {
-            throw new IllegalArgumentException("alpha, beta and gamma do not sum to 1.0.  alpha: " + alpha + "; beta: " + beta + "; gamma: " + gamma);
-        }
+    public CompatibleSplitSystem execute(DistanceMatrix distanceMatrix, NeighborNetParams params) {
 
         // Make a shortcut to the taxa used in the distance matrix
         IdentifierList taxa = distanceMatrix.getTaxa();
@@ -130,12 +122,10 @@ public class NeighborNetImpl implements NeighborNet {
      * Reduces the 3 selected vertices down to 2 new vertices.  The output takes the form of an updated distance
      * matrix represented by v2v and an updated split system
      * @param vertices The selected vertices to reduce
-     * @param alpha alpha parameter
-     * @param beta beta parameter
-     * @param gamma gamma parameter
+     * @param params alpha, beta and gamma parameters
      * @param v2v the distance matrix to update based on this reduction
      */
-    protected void reduction(final Triplet<Integer> vertices, final double alpha, final double beta, final double gamma,
+    protected void reduction(final Triplet<Integer> vertices, NeighborNetParams params,
                              DistanceMatrix v2v) {
 
         final int maxId = v2v.getTaxa().getMaxId();
@@ -158,17 +148,17 @@ public class NeighborNetImpl implements NeighborNet {
             if (vertex != tA && vertex != tB && vertex != tC) {
 
                 v2v.setDistance(newVertex1, vertex,
-                                ((alpha + beta) * v2v.getDistance(tA, vertex)) +
-                                (gamma * v2v.getDistance(tB, vertex)));
+                                ((params.getAlpha() + params.getBeta()) * v2v.getDistance(tA, vertex)) +
+                                (params.getGamma() * v2v.getDistance(tB, vertex)));
 
                 v2v.setDistance(newVertex2, vertex,
-                                (alpha * v2v.getDistance(tB, vertex)) +
-                                ((1 - alpha) * v2v.getDistance(tC, vertex)));
+                                (params.getAlpha() * v2v.getDistance(tB, vertex)) +
+                                ((1 - params.getAlpha()) * v2v.getDistance(tC, vertex)));
 
                 v2v.setDistance(newVertex1, newVertex2,
-                                (alpha * v2v.getDistance(tA, tB)) +
-                                (beta * v2v.getDistance(tA, tC)) +
-                                (gamma * v2v.getDistance(tB, tC)));
+                                (params.getAlpha() * v2v.getDistance(tA, tB)) +
+                                (params.getBeta() * v2v.getDistance(tA, tC)) +
+                                (params.getGamma() * v2v.getDistance(tB, tC)));
             }
         }
 

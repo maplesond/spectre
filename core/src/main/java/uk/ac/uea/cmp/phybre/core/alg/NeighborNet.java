@@ -13,9 +13,8 @@ public interface NeighborNet {
      * sum of which should equal 1.0.  The result of neighbornet is a compatible split system which should contain a
      * circular ordering
      * @param distanceMatrix The distance matrix to process, which should also contain the set of taxa
-     * @param alpha parameter a
-     * @param beta parameter b
+     * @param params Alpha, Beta and Gamma parameters
      * @return The result of neighbornet, a compatible split system
      */
-    CompatibleSplitSystem execute(DistanceMatrix distanceMatrix, double alpha, double beta);
+    CompatibleSplitSystem execute(DistanceMatrix distanceMatrix, NeighborNetParams params);
 }
