@@ -12,7 +12,9 @@ import uk.ac.uea.cmp.phybre.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.phybre.core.ds.split.SplitUtils;
 import uk.ac.uea.cmp.phybre.core.math.tuple.Triplet;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by dan on 27/02/14.
@@ -93,6 +95,10 @@ public class NeighborNetImpl implements NeighborNet {
         IdentifierList component1 = components.get(selectedComponents.getLeft());
         IdentifierList component2 = components.get(selectedComponents.getRight());
 
+        IdentifierList union = new IdentifierList();
+        union.addAll(component1);
+        union.addAll(component2);
+
         for(Identifier id1 : component1) {
 
             for(Identifier id2 : component2) {
@@ -100,8 +106,13 @@ public class NeighborNetImpl implements NeighborNet {
                 final double sumId1 = c2v.getDistances(id1, null).sum() - c2v.getDistance(id1, selectedComponents.getRight());
                 final double sumId2 = c2v.getDistances(id2, null).sum() - c2v.getDistance(id2, selectedComponents.getLeft());
 
-                final double sumVId1 = 0.0;//v2v. ????
-                final double sumVId2 = 0.0;//v2v. ????
+                double sumVId1 = 0.0;
+                double sumVId2 = 0.0;
+
+                for(Identifier id3 : union) {
+                    sumVId1 += c2v.getDistance(id1, id3);
+                    sumVId2 += c2v.getDistance(id2, id3);
+                }
 
                 double q = ((components.size() - 4 + component1.size() + component2.size()) * v2v.getDistance(id1, id2)) -
                         sumId1 - sumId2 - sumVId1 - sumVId2;
