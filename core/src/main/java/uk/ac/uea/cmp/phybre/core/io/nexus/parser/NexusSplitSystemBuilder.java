@@ -83,8 +83,8 @@ public class NexusSplitSystemBuilder {
         if (isCyclic) {
 
             ss = taxa != null ?
-                    new CircularSplitSystem(taxa, splits, CircularOrdering.createFromList(cycle)) :
-                    new CircularSplitSystem(IdentifierList.createSimpleIdentifiers(expectedNbTaxa), splits, CircularOrdering.createFromList(cycle));
+                    new CircularSplitSystem(splits, new IdentifierList(cycle)) :
+                    new CircularSplitSystem(splits, new IdentifierList(cycle));
         }
         else {
             ss = taxa != null ?

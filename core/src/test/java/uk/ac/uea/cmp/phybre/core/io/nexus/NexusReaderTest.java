@@ -19,7 +19,6 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import uk.ac.uea.cmp.phybre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.phybre.core.ds.distance.DistanceMatrix;
-import uk.ac.uea.cmp.phybre.core.ds.split.CircularOrdering;
 import uk.ac.uea.cmp.phybre.core.ds.split.Split;
 import uk.ac.uea.cmp.phybre.core.ds.split.SplitSystem;
 
@@ -136,11 +135,11 @@ public class NexusReaderTest {
 
         assertNotNull(ss);
 
-        CircularOrdering co = ss.getCircularOrdering();
+        IdentifierList co = ss.getCircularOrdering();
 
         assertNotNull(co);
         assertTrue(co.size() == 6);
-        assertTrue(co.getAt(2) == 6);
+        assertTrue(co.get(2).getId() == 6);
 
 
         assertTrue(ss.getNbSplits() == 9);
@@ -168,11 +167,11 @@ public class NexusReaderTest {
 
         assertNotNull(ss);
 
-        CircularOrdering co = ss.getCircularOrdering();
+        IdentifierList co = ss.getCircularOrdering();
 
         assertNotNull(co);
         assertTrue(co.size() == 6);
-        assertTrue(co.getAt(2) == 6);
+        assertTrue(co.get(2).getId() == 6);
 
 
         assertTrue(ss.getNbSplits() == 9);

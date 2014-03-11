@@ -24,8 +24,8 @@ import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.kohsuke.MetaInfServices;
+import uk.ac.uea.cmp.phybre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.phybre.core.ds.distance.DistanceMatrix;
-import uk.ac.uea.cmp.phybre.core.ds.split.CircularOrdering;
 import uk.ac.uea.cmp.phybre.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.phybre.core.ds.tree.newick.NewickTree;
 import uk.ac.uea.cmp.phybre.core.io.AbstractPhygenReader;
@@ -148,7 +148,7 @@ public class NexusReader extends AbstractPhygenReader {
      * @return A circular ordering
      * @throws IOException
      */
-    public CircularOrdering extractCircOrdering(File file) throws IOException {
+    public IdentifierList extractCircOrdering(File file) throws IOException {
 
         SplitSystem splitSystem = this.parse(file).getSplitSystem();
 

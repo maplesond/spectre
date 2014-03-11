@@ -16,8 +16,8 @@
 
 package uk.ac.uea.cmp.phybre.core.alg;
 
+import uk.ac.uea.cmp.phybre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.phybre.core.ds.distance.DistanceMatrix;
-import uk.ac.uea.cmp.phybre.core.ds.split.CircularOrdering;
 import uk.ac.uea.cmp.phybre.core.ds.split.CircularSplitSystem;
 import uk.ac.uea.cmp.phybre.core.ds.split.SplitSystem;
 
@@ -49,11 +49,11 @@ public class NeighborNetOld {
      * @param distanceMatrix The Distance matrix to process
      * @return A CircularOrdering computed from the distance matrix using the NeighborNet algorithm
      */
-    public CircularOrdering computeCircularOrdering(final DistanceMatrix distanceMatrix) {
+    public IdentifierList computeCircularOrdering(final DistanceMatrix distanceMatrix) {
 
-        // Special case for small taxa sets: use trivial ordering; otherwise run NN proper
+        // Special case for small taxa sets: use the order they came in; otherwise run NN proper
         return distanceMatrix.getNbTaxa() <= MAX_TAXA_FOR_BASIC_ORDERING ?
-            CircularOrdering.createTrivialOrdering(distanceMatrix.getNbTaxa()) :
+            distanceMatrix.getTaxa() :
             executeNeighborNet(distanceMatrix);
     }
 
@@ -64,7 +64,7 @@ public class NeighborNetOld {
      * @param distanceMatrix The Distance matrix to process
      * @return A CircularOrdering computed from the distance matrix using the NeighborNet algorithm
      */
-    protected CircularOrdering executeNeighborNet(DistanceMatrix distanceMatrix) {
+    protected IdentifierList executeNeighborNet(DistanceMatrix distanceMatrix) {
 
         // Get number of taxa in the distance matrix
         int nbTaxa = distanceMatrix.size();
@@ -78,13 +78,13 @@ public class NeighborNetOld {
         // Perform the agglomeration step
         int[] oneBasedOrdering = agglomerateNodes(bigDistanceMatrix, network, nbTaxa);
 
-        // Neighbour net produces 1 based array, we should change it to zero based for external use
-        int[] zeroBasedOrdering = new int[nbTaxa];
+        // Return the ordered taxa
+        IdentifierList ids = new IdentifierList();
         for(int i = 0; i < nbTaxa; i++) {
-            zeroBasedOrdering[i] = oneBasedOrdering[i+1] - 1;
+            ids.add(distanceMatrix.getTaxa().getById(oneBasedOrdering[i]));
         }
 
-        return new CircularOrdering(zeroBasedOrdering);
+        return ids;
     }
 
     /**

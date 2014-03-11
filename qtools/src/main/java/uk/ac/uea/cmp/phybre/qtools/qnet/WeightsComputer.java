@@ -22,10 +22,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.tgac.metaopt.Optimiser;
 import uk.ac.tgac.metaopt.OptimiserException;
+import uk.ac.uea.cmp.phybre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.phybre.core.ds.quartet.GroupedQuartetSystem;
 import uk.ac.uea.cmp.phybre.core.ds.quartet.Quartet;
 import uk.ac.uea.cmp.phybre.core.ds.quartet.WeightedQuartetGroupMap;
-import uk.ac.uea.cmp.phybre.core.ds.split.CircularOrdering;
 import uk.ac.uea.cmp.phybre.core.ds.split.SplitUtils;
 import uk.ac.uea.cmp.phybre.core.math.matrix.SymmetricMatrix;
 import uk.ac.uea.cmp.phybre.qtools.qnet.holders.PHolder;
@@ -48,7 +48,7 @@ public class WeightsComputer {
      * @throws QNetException
      * @throws OptimiserException
      */
-    public ComputedWeights computeWeights(GroupedQuartetSystem quartetSystem, CircularOrdering circularOrdering,
+    public ComputedWeights computeWeights(GroupedQuartetSystem quartetSystem, IdentifierList circularOrdering,
                                           double tolerance, Optimiser optimiser)
             throws QNetException, OptimiserException {
 
@@ -251,12 +251,14 @@ public class WeightsComputer {
         return EtE;
     }
 
-    private double[][][][] populateGw(GroupedQuartetSystem quartetSystem, CircularOrdering c) {
+    private double[][][][] populateGw(GroupedQuartetSystem quartetSystem, IdentifierList circularOrdering) {
 
         WeightedQuartetGroupMap theQuartetWeights = quartetSystem.getQuartets();
-        final int N = c.size();
+        final int N = circularOrdering.size();
 
         double gw[][][][] = new double[N][N][N][N];
+
+        int[] c = circularOrdering.getNumbers();
 
         for (int l = 2; l < N - 1; l++) {
 
@@ -275,10 +277,10 @@ public class WeightsComputer {
 
                         if (l == 2) {
 
-                            int cA = c.getAt(p);
-                            int cB = c.getAt(p + 1);
-                            int cC = c.getAt(i - 1);
-                            int cD = c.getAt(j - 1);
+                            int cA = c[p];
+                            int cB = c[p + 1];
+                            int cC = c[i - 1];
+                            int cD = c[j - 1];
 
                             double aW = theQuartetWeights.getWeight(new Quartet(cA, cB, cC, cD));
 
@@ -286,10 +288,10 @@ public class WeightsComputer {
                         }
                         else if (l == 3) {
 
-                            int cA = c.getAt(p);
-                            int cB = c.getAt(p + 2);
-                            int cC = c.getAt(i - 1);
-                            int cD = c.getAt(j - 1);
+                            int cA = c[p];
+                            int cB = c[p + 2];
+                            int cC = c[i - 1];
+                            int cD = c[j - 1];
 
                             double aW = theQuartetWeights.getWeight(new Quartet(cA, cB, cC, cD));
 
@@ -298,10 +300,10 @@ public class WeightsComputer {
                         }
                         else {
 
-                            int cA = c.getAt(p);
-                            int cB = c.getAt(p + l - 1);
-                            int cC = c.getAt(i - 1);
-                            int cD = c.getAt(j - 1);
+                            int cA = c[p];
+                            int cB = c[p + l - 1];
+                            int cC = c[i - 1];
+                            int cD = c[j - 1];
 
                             double aW = theQuartetWeights.getWeight(new Quartet(cA, cB, cC, cD));
 
@@ -315,10 +317,10 @@ public class WeightsComputer {
 
                         if (l == 2) {
 
-                            int cA = c.getAt(p);
-                            int cB = c.getAt(p + 1);
-                            int cC = c.getAt(i - 1);
-                            int cD = c.getAt(j - 1);
+                            int cA = c[p];
+                            int cB = c[p + 1];
+                            int cC = c[i - 1];
+                            int cD = c[j - 1];
 
                             double aW = theQuartetWeights.getWeight(new Quartet(cA, cB, cC, cD));
 
@@ -326,10 +328,10 @@ public class WeightsComputer {
                         }
                         else if (l == 3) {
 
-                            int cA = c.getAt(p);
-                            int cB = c.getAt(p + 2);
-                            int cC = c.getAt(i - 1);
-                            int cD = c.getAt(j - 1);
+                            int cA = c[p];
+                            int cB = c[p + 2];
+                            int cC = c[i - 1];
+                            int cD = c[j - 1];
 
                             double aW = theQuartetWeights.getWeight(new Quartet(cA, cB, cC, cD));
 
@@ -338,10 +340,10 @@ public class WeightsComputer {
                         }
                         else {
 
-                            int cA = c.getAt(p);
-                            int cB = c.getAt(p + l - 1);
-                            int cC = c.getAt(i - 1);
-                            int cD = c.getAt(j - 1);
+                            int cA = c[p];
+                            int cB = c[p + l - 1];
+                            int cC = c[i - 1];
+                            int cD = c[j - 1];
 
                             double aW = theQuartetWeights.getWeight(new Quartet(cA, cB, cC, cD));
 
@@ -358,10 +360,10 @@ public class WeightsComputer {
 
                         if (l == 2) {
 
-                            int cA = c.getAt(p);
-                            int cB = c.getAt(p + 1);
-                            int cC = c.getAt(i - 1);
-                            int cD = c.getAt(j - 1);
+                            int cA = c[p];
+                            int cB = c[p + 1];
+                            int cC = c[i - 1];
+                            int cD = c[j - 1];
 
                             double aW = theQuartetWeights.getWeight(new Quartet(cA, cB, cC, cD));
 
@@ -369,10 +371,10 @@ public class WeightsComputer {
 
                         } else if (l == 3) {
 
-                            int cA = c.getAt(p);
-                            int cB = c.getAt(p + 2);
-                            int cC = c.getAt(i - 1);
-                            int cD = c.getAt(j - 1);
+                            int cA = c[p];
+                            int cB = c[p + 2];
+                            int cC = c[i - 1];
+                            int cD = c[j - 1];
 
                             double aW = theQuartetWeights.getWeight(new Quartet(cA, cB, cC, cD));
 
@@ -381,10 +383,10 @@ public class WeightsComputer {
 
                         } else {
 
-                            int cA = c.getAt(p);
-                            int cB = c.getAt(p + l - 1);
-                            int cC = c.getAt(i - 1);
-                            int cD = c.getAt(j - 1);
+                            int cA = c[p];
+                            int cB = c[p + l - 1];
+                            int cC = c[i - 1];
+                            int cD = c[j - 1];
 
                             double aW = theQuartetWeights.getWeight(new Quartet(cA, cB, cC, cD));
 
@@ -402,7 +404,7 @@ public class WeightsComputer {
     }
 
 
-    private double[] initEtf(Pair<Integer, Integer>[] splitIndices, GroupedQuartetSystem quartetSystem, CircularOrdering circularOrdering) {
+    private double[] initEtf(Pair<Integer, Integer>[] splitIndices, GroupedQuartetSystem quartetSystem, IdentifierList circularOrdering) {
 
         final int N = quartetSystem.getTaxa().size();
         final int maxSplits = SplitUtils.calcMaxSplits(N);

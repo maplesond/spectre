@@ -16,8 +16,7 @@
 
 package uk.ac.uea.cmp.phybre.flatnj.netvi;
 
-import java.awt.Color;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.util.Collection;
 import java.util.Iterator;
 

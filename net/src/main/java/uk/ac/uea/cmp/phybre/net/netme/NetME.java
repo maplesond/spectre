@@ -22,8 +22,8 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.PropertyConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.ac.uea.cmp.phybre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.phybre.core.ds.distance.DistanceMatrix;
-import uk.ac.uea.cmp.phybre.core.ds.split.CircularOrdering;
 import uk.ac.uea.cmp.phybre.core.io.PhygenReader;
 import uk.ac.uea.cmp.phybre.core.io.PhygenReaderFactory;
 import uk.ac.uea.cmp.phybre.core.io.nexus.NexusReader;
@@ -76,7 +76,7 @@ public class NetME extends RunnableTool {
         this.options = options;
     }
 
-    public NetMEResult execute(DistanceMatrix distanceMatrix, CircularOrdering circularOrdering) {
+    public NetMEResult execute(DistanceMatrix distanceMatrix, IdentifierList circularOrdering) {
         return new MinimumEvolutionCalculator().calcMinEvoTree(distanceMatrix, circularOrdering);
     }
 
@@ -106,7 +106,7 @@ public class NetME extends RunnableTool {
             log.info("Distance Matrix Loaded from file: " + this.options.getDistancesFile().getAbsolutePath());
 
             // Load circular ordering from the provided nexus file
-            CircularOrdering circularOrdering = new NexusReader().extractCircOrdering(this.options.getCircularOrderingFile());
+            IdentifierList circularOrdering = new NexusReader().extractCircOrdering(this.options.getCircularOrderingFile());
 
             String circularOrderingMessage = "loaded from file " + this.options.getCircularOrderingFile().getAbsolutePath();
 

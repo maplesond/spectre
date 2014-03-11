@@ -2,15 +2,17 @@ package uk.ac.uea.cmp.phybre.net.netme;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.uea.cmp.phybre.core.ui.gui.*;
+import uk.ac.uea.cmp.phybre.core.ui.gui.JobController;
+import uk.ac.uea.cmp.phybre.core.ui.gui.StatusTracker;
+import uk.ac.uea.cmp.phybre.core.ui.gui.ToolHost;
 import uk.ac.uea.cmp.phybre.net.netmake.NetMakeOptions;
 
 import javax.swing.*;
-import javax.swing.LookAndFeel;
 import java.awt.*;
 import java.io.File;
 
-import static uk.ac.uea.cmp.phybre.core.ui.gui.LookAndFeel.*;
+import static uk.ac.uea.cmp.phybre.core.ui.gui.LookAndFeel.NIMBUS;
+import static uk.ac.uea.cmp.phybre.core.ui.gui.LookAndFeel.setLookAndFeel;
 
 /**
  * Created by maplesod on 10/02/14.

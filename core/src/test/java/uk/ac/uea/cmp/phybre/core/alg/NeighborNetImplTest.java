@@ -1,6 +1,7 @@
 package uk.ac.uea.cmp.phybre.core.alg;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.junit.Before;
 import org.junit.Test;
 import uk.ac.uea.cmp.phybre.core.ds.Identifier;
 import uk.ac.uea.cmp.phybre.core.ds.IdentifierList;
@@ -17,12 +18,16 @@ import static org.junit.Assert.assertTrue;
  */
 public class NeighborNetImplTest {
 
-    @Test
-    public void testReduction() {
+    private String[] taxa;
+    private double[][] distances1;
+    private double[][] distances2;
 
-        String[] taxa = new String[]{"A", "B", "C", "D", "E"};
+    @Before
+    public void setup() {
 
-        double[][] distances = new double[][]{
+        this.taxa = new String[]{"A", "B", "C", "D", "E"};
+
+        this.distances1 = new double[][]{
                 {0, 3, 6, 6, 6},
                 {3, 0, 6, 6, 6},
                 {6, 6, 0, 3, 9},
@@ -30,7 +35,20 @@ public class NeighborNetImplTest {
                 {6, 6, 9, 9, 0}
         };
 
-        DistanceMatrix v2v = new FlexibleDistanceMatrix(new IdentifierList(taxa), distances);
+        this.distances2 = new double[][]{
+                {0, 3, 6, 6, 6},
+                {3, 0, 6, 6, 6},
+                {6, 6, 0, 3, 9},
+                {6, 6, 3, 0, 9},
+                {6, 6, 9, 9, 0}
+        };
+    }
+
+
+    @Test
+    public void testReduction() {
+
+        DistanceMatrix v2v = new FlexibleDistanceMatrix(new IdentifierList(taxa), distances1);
 
         final double aThird = 1.0 / 3.0;
 
@@ -52,6 +70,17 @@ public class NeighborNetImplTest {
     @Test
     public void testSelectionStep1() {
 
+        DistanceMatrix c2c = new FlexibleDistanceMatrix(new IdentifierList(taxa), distances1);
+
+        Pair<Identifier, Identifier> selectedComponents = new NeighborNetImpl().selectionStep1(c2c);
+
+        assertTrue(selectedComponents.getLeft().getName().equals("C"));
+        assertTrue(selectedComponents.getRight().getName().equals("D"));
+    }
+
+    @Test
+    public void testSelectionStep2() {
+
         String[] taxa = new String[]{"A", "B", "C", "D", "E"};
 
         double[][] distances = new double[][]{
@@ -62,7 +91,7 @@ public class NeighborNetImplTest {
                 {6, 6, 9, 9, 0}
         };
 
-        DistanceMatrix c2c = new FlexibleDistanceMatrix(new IdentifierList(taxa), distances);
+        DistanceMatrix c2c = new FlexibleDistanceMatrix(new IdentifierList(taxa), distances1);
 
         Pair<Identifier, Identifier> selectedComponents = new NeighborNetImpl().selectionStep1(c2c);
 

@@ -164,7 +164,7 @@ public class NetMake extends RunnableTool {
         treeSplits.removeLastSplit();
 
         // Create ordering
-        CircularOrdering permutation = this.createCircularOrdering(components);
+        IdentifierList permutation = this.createCircularOrdering(components);
         organiseSplits(treeSplits, permutation);
 
         // Set tree split system
@@ -375,16 +375,16 @@ public class NetMake extends RunnableTool {
         }
     }
 
-    protected void organiseSplits(SplitSystem splits, CircularOrdering permutation) {
+    protected void organiseSplits(SplitSystem splits, IdentifierList permutation) {
 
-        CircularOrdering permutationInvert = permutation.invertOrdering();
+        IdentifierList permutationInvert = permutation.reverseOrdering();
 
         for (int i = 0; i < splits.getNbSplits(); i++) {
 
             SplitBlock sb = splits.getSplitAt(i).getASide();
 
-            int k = permutationInvert.getIndexAt(sb.getFirst()-1);
-            int l = permutationInvert.getIndexAt(sb.getLast()-1);
+            int k = permutationInvert.get(sb.getFirst()-1).getId();
+            int l = permutationInvert.get(sb.getLast()-1).getId();
 
             if (l < k) {
                 sb.reverse();
@@ -392,7 +392,7 @@ public class NetMake extends RunnableTool {
         }
     }
 
-    protected CircularOrdering createCircularOrdering(SplitSystem components) {
+    protected IdentifierList createCircularOrdering(SplitSystem components) {
 
         ArrayList<Integer> help = new ArrayList<>();
         for (int j = 0; j < 2; j++) {
@@ -406,7 +406,7 @@ public class NetMake extends RunnableTool {
             permutation[i] = help.get(i);
         }
 
-        return new CircularOrdering(permutation);
+        return new IdentifierList(permutation);
     }
 
     private void notifyUser(String message) {

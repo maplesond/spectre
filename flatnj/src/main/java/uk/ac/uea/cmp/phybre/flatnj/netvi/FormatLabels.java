@@ -16,10 +16,8 @@
 
 package uk.ac.uea.cmp.phybre.flatnj.netvi;
 
-import java.awt.Color;
-import java.awt.GraphicsEnvironment;
-import javax.swing.JColorChooser;
-import javax.swing.JPanel;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  *

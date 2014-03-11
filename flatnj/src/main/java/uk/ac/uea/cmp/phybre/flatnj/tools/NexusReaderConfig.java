@@ -18,8 +18,7 @@ package uk.ac.uea.cmp.phybre.flatnj.tools;
 
 import uk.ac.uea.cmp.phybre.flatnj.fdraw.ViewerConfig;
 
-import java.awt.Color;
-import java.awt.Dimension;
+import java.awt.*;
 import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;

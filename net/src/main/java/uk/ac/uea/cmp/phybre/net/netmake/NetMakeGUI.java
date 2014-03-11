@@ -2,15 +2,17 @@ package uk.ac.uea.cmp.phybre.net.netmake;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.uea.cmp.phybre.core.ui.gui.*;
+import uk.ac.uea.cmp.phybre.core.ui.gui.JobController;
+import uk.ac.uea.cmp.phybre.core.ui.gui.StatusTracker;
+import uk.ac.uea.cmp.phybre.core.ui.gui.ToolHost;
 import uk.ac.uea.cmp.phybre.net.netmake.weighting.Weightings;
 
 import javax.swing.*;
-import javax.swing.LookAndFeel;
 import java.awt.*;
 import java.io.File;
 
-import static uk.ac.uea.cmp.phybre.core.ui.gui.LookAndFeel.*;
+import static uk.ac.uea.cmp.phybre.core.ui.gui.LookAndFeel.NIMBUS;
+import static uk.ac.uea.cmp.phybre.core.ui.gui.LookAndFeel.setLookAndFeel;
 
 /**
  * Created by dan on 09/02/14.
@@ -123,10 +125,10 @@ public class NetMakeGUI extends JFrame implements ToolHost {
      */
     private void initWeightingComponents() {
 
-        cboWeighting1 = new JComboBox();
+        cboWeighting1 = new JComboBox<>();
         lblWeighting1 = new JLabel();
 
-        cboWeighting2 = new JComboBox();
+        cboWeighting2 = new JComboBox<>();
         lblWeighting2 = new JLabel();
 
         txtWeight = new JTextField();

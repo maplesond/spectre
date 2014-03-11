@@ -21,7 +21,7 @@ import uk.ac.uea.cmp.phybre.flatnj.fdraw.Edge;
 import uk.ac.uea.cmp.phybre.flatnj.fdraw.Label;
 import uk.ac.uea.cmp.phybre.flatnj.fdraw.Vertex;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.Scanner;
 
 /**

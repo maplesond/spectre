@@ -251,7 +251,7 @@ public class SimpleSplitSystem implements SplitSystem {
     }
 
     @Override
-    public CircularOrdering getCircularOrdering() {
+    public IdentifierList getCircularOrdering() {
         throw new UnsupportedOperationException("A simple split system is not necessarily circular.  Can't retrieve circular ordering.");
     }
 

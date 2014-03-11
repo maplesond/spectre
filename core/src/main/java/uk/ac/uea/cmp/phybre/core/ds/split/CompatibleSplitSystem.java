@@ -15,33 +15,35 @@
  */
 package uk.ac.uea.cmp.phybre.core.ds.split;
 
+import uk.ac.uea.cmp.phybre.core.ds.Identifier;
 import uk.ac.uea.cmp.phybre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.phybre.core.ds.distance.DistanceMatrix;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A Compatible Split System can be represented by a tree
  */
 public class CompatibleSplitSystem extends CircularSplitSystem {
 
-    public CompatibleSplitSystem(List<Split> splits, DistanceMatrix distanceMatrix, CircularOrdering circularOrdering) {
+    public CompatibleSplitSystem(List<Split> splits, DistanceMatrix distanceMatrix, IdentifierList sortedTaxa) {
 
-        super(distanceMatrix.getTaxa(), splits, circularOrdering);
+        super(splits, sortedTaxa);
 
-        if (circularOrdering.size() != distanceMatrix.size()) {
+        if (sortedTaxa.size() != distanceMatrix.size()) {
             throw new IllegalArgumentException("Distance matrix and circular ordering are not the same size");
         }
 
         //this.setSplitWeights(this.calculateSplitWeighting(distanceMatrix, circularOrdering));
 
-        reweight(this.calculateSplitWeighting(distanceMatrix, circularOrdering));
+        reweight(this.calculateSplitWeighting(distanceMatrix, sortedTaxa));
     }
 
     public CompatibleSplitSystem(CircularSplitSystem splitSystem) {
 
-        super(new IdentifierList(splitSystem.getTaxa()), splitSystem.copySplits(), splitSystem.getCircularOrdering().copy());
+        super(splitSystem.copySplits(), new IdentifierList(splitSystem.getCircularOrdering()));
     }
 
     public CompatibleSplitSystem(CircularSplitSystem unweightedSplitSystem, TreeSplitWeights treeWeights) {
@@ -67,7 +69,7 @@ public class CompatibleSplitSystem extends CircularSplitSystem {
 
                     ArrayList<Integer> sb = new ArrayList<>();
                     for (int k = i + 1; k < j + 1; k++) {
-                        sb.add(this.getCircularOrdering().getAt(k));
+                        sb.add(this.getCircularOrdering().get(k).getId());
                     }
 
                     this.addSplit(new Split(new SplitBlock(sb), n, treeWeights.getAt(j, i)));
@@ -91,32 +93,26 @@ public class CompatibleSplitSystem extends CircularSplitSystem {
      * @return tree edge weightings
      */
     @Override
-    public SplitWeights calculateSplitWeighting(DistanceMatrix distanceMatrix, CircularOrdering circularOrdering) {
+    public SplitWeights calculateSplitWeighting(DistanceMatrix distanceMatrix, IdentifierList circularOrdering) {
 
         int n = distanceMatrix.size();
         double[][] permutedDistances = new double[n][n];
         boolean[][] flag = new boolean[n][n];
 
-        CircularOrdering permutationInvert = circularOrdering.invertOrdering();
-
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                flag[i][j] = false;
+                permutedDistances[i][j] = distanceMatrix.getDistance(circularOrdering.get(i), circularOrdering.get(j));
             }
         }
 
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                permutedDistances[i][j] = distanceMatrix.getDistance(circularOrdering.getAt(i), circularOrdering.getAt(j));
-            }
-        }
+        Map<Identifier, Integer> translation = circularOrdering.createLookup();
 
         for (int i = 0; i < this.getSplits().size(); i++) {
 
             SplitBlock sb = this.getSplitAt(i).getASide();
 
-            int k = permutationInvert.getIndexAt(sb.getFirst() - 1);
-            int l = permutationInvert.getIndexAt(sb.getLast() - 1);
+            int k = translation.get(circularOrdering.getById(sb.getFirst()));
+            int l = translation.get(circularOrdering.getById(sb.getLast()));
 
             if (k == 0) {
                 flag[n - 1][l] = true;

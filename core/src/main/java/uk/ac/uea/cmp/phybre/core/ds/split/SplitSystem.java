@@ -126,7 +126,7 @@ public interface SplitSystem {
      * Gets the circular ordering associated with this split system.
      * @return The circular ordering, or null if this is not a circular split system.
      */
-    CircularOrdering getCircularOrdering();
+    IdentifierList getCircularOrdering();
 
 
 

@@ -15,10 +15,10 @@
  */
 package uk.ac.uea.cmp.phybre.qtools.qnet.holders;
 
+import uk.ac.uea.cmp.phybre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.phybre.core.ds.quartet.GroupedQuartetSystem;
 import uk.ac.uea.cmp.phybre.core.ds.quartet.Quartet;
 import uk.ac.uea.cmp.phybre.core.ds.quartet.QuartetWeights;
-import uk.ac.uea.cmp.phybre.core.ds.split.CircularOrdering;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -49,7 +49,7 @@ public class PHolder {
      * @param quartetSystem The quartet system
      * @param c The circular ordering of taxa ids
      */
-    public PHolder(GroupedQuartetSystem quartetSystem, CircularOrdering c) {
+    public PHolder(GroupedQuartetSystem quartetSystem, IdentifierList c) {
 
         final int N = c.size();
 
@@ -353,7 +353,7 @@ public class PHolder {
             data[Quartet.over1(a - 1) + Quartet.over2(b - 1) + Quartet.over3(c - 1) + Quartet.over4(d - 1)].getInnerQ();
     }
 
-    public boolean getR(int a, int b, int c, int d, CircularOrdering cT) {
+    public boolean getR(int a, int b, int c, int d, IdentifierList cT) {
 
         if (d > cT.size()) {
 
@@ -369,10 +369,10 @@ public class PHolder {
         // we seek mapped a < b < c < d
 
         int[] qidx = new int[]{
-                cT.getAt(a - 1),
-                cT.getAt(b - 1),
-                cT.getAt(c - 1),
-                cT.getAt(d - 1)
+                cT.get(a - 1).getId(),
+                cT.get(b - 1).getId(),
+                cT.get(c - 1).getId(),
+                cT.get(d - 1).getId()
         };
 
         Arrays.sort(qidx);

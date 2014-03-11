@@ -12,9 +12,7 @@ import uk.ac.uea.cmp.phybre.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.phybre.core.ds.split.SplitUtils;
 import uk.ac.uea.cmp.phybre.core.math.tuple.Triplet;
 
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Created by dan on 27/02/14.
@@ -29,7 +27,7 @@ public class NeighborNetImpl implements NeighborNet {
         IdentifierList taxa = distanceMatrix.getTaxa();
 
         // Creates a set of trivial splits for ...
-        ConnectedComponents components = new ConnectedComponents(taxa);
+        ConnectedComponents connectedComponents = new ConnectedComponents(taxa);
 
         // Creates a simple split system with trivial splits from the given distance matrix
         SplitSystem treeSplits = new SimpleSplitSystem(taxa, SplitUtils.createTrivialSplits(taxa, 1.0));
@@ -44,15 +42,152 @@ public class NeighborNetImpl implements NeighborNet {
         // DistanceMatrix between vertices and vertices (make deep copy from initial distance matrix)
         DistanceMatrix v2v = new FlexibleDistanceMatrix(distanceMatrix);
 
-        // Choose a pair of components that minimise the Q criterion
-        Pair<Identifier, Identifier> selectedComponents = this.selectionStep1(c2c);
+        // Reduce down to 2 nodes
+        while (connectedComponents.size() > 3) {
 
-        Pair<Identifier, Identifier> selectedTaxon = this.selectionStep2(selectedComponents, c2v, v2v, components);
+            // Choose a pair of components that minimise the Q criterion
+            Pair<Identifier, Identifier> selectedComponents = this.selectionStep1(c2c);
+
+            // Should either be 1 or 2 components in length
+            IdentifierList component1 = connectedComponents.get(selectedComponents.getLeft());
+
+            // Should either be 1 or 2 components in length
+            IdentifierList component2 = connectedComponents.get(selectedComponents.getRight());
+
+            IdentifierList componentUnion = new IdentifierList();
+            componentUnion.addAll(component1);
+            componentUnion.addAll(component2);
+
+            // Choose a pair of taxa that minimise our formula
+            Pair<Identifier, Identifier> selectedTaxon = this.selectionStep2(selectedComponents, c2v, v2v, component1, component2, componentUnion);
+
+            // Merges selected components and reduces components of size > 2 to components of size 2
+            Pair<Identifier, Identifier> merged = this.merge(params, selectedTaxon, component1, component2, componentUnion, v2v);
+
+            connectedComponents.remove(selectedComponents.getLeft());
+            connectedComponents.remove(selectedComponents.getRight());
+
+            IdentifierList mergedIds = new IdentifierList();
+            mergedIds.add(merged.getLeft());
+            mergedIds.add(merged.getRight());
+
+            //connectedComponents.put(, mergedIds);
+
+            this.updateC2C(connectedComponents, c2c, v2v);
+
+            this.updateC2V(connectedComponents, c2v, v2v);
+        }
 
 
         return null;
     }
 
+    protected void updateC2C(ConnectedComponents connectedComponents, DistanceMatrix c2c, DistanceMatrix v2v) {
+
+        for(Map.Entry<Integer, IdentifierList> components1 : connectedComponents.entrySet()) {
+
+            for(Map.Entry<Integer, IdentifierList> components2 : connectedComponents.entrySet()) {
+
+                double sum1 = 0.0;
+
+                for(Identifier id1 : components1.getValue()) {
+                    for(Identifier id2 : components2.getValue()) {
+                        sum1 += v2v.getDistance(id1, id2);
+                    }
+                }
+
+                c2c.setDistance(components1.getKey(), components2.getKey(),
+                        1.0 / (components1.getValue().size() * components2.getValue().size()) * sum1);
+            }
+        }
+    }
+
+    protected void updateC2V(ConnectedComponents connectedComponents, DistanceMatrix c2v, DistanceMatrix v2v) {
+
+        IdentifierList activeTaxa = v2v.getTaxa();
+
+        for(Map.Entry<Integer, IdentifierList> components1 : connectedComponents.entrySet()) {
+
+            for(Identifier activeTaxon : activeTaxa) {
+
+                double sum1 = 0.0;
+
+                for(Identifier id1 : components1.getValue()) {
+                    sum1 += v2v.getDistance(id1, activeTaxon);
+                }
+
+                c2v.setDistance(components1.getKey(), activeTaxon.getId(),
+                        1.0 / components1.getValue().size() * sum1);
+            }
+        }
+    }
+
+
+    protected Pair<Identifier, Identifier> merge(NeighborNetParams params, Pair<Identifier, Identifier> selectedTaxon,
+                         IdentifierList component1, IdentifierList component2, IdentifierList componentUnion,
+                         DistanceMatrix v2v) {
+
+        final int nbVerticies = componentUnion.size();
+
+        IdentifierList mergedComponent = new IdentifierList();
+
+        if (nbVerticies == 2) {
+            return new ImmutablePair<>(componentUnion.get(0), componentUnion.get(1));
+        }
+        else if (nbVerticies == 3) {
+
+            int first = -1;
+            int second = -1;
+            int third = -1;
+
+            if (component1.size() == 1) {
+
+                first = component1.get(0).getId();
+
+                if (component2.get(0).getId() == selectedTaxon.getLeft().getId() || component2.get(0).getId() == selectedTaxon.getRight().getId()) {
+                    second = component2.get(0).getId();
+                    third = component2.get(1).getId();
+                }
+                else {
+                    second = component2.get(1).getId();
+                    third = component2.get(0).getId();
+                }
+            }
+            else {
+                first = component2.get(0).getId();
+
+                if (component1.get(0).getId() == selectedTaxon.getLeft().getId() || component1.get(0).getId() == selectedTaxon.getRight().getId()) {
+                    second = component1.get(0).getId();
+                    third = component1.get(1).getId();
+                }
+                else {
+                    second = component1.get(1).getId();
+                    third = component1.get(0).getId();
+                }
+            }
+
+            return reduction(new Triplet<>(first, second, third), params, v2v);
+        }
+        else { // Should be 4
+
+            int first = component1.get(0).getId() == selectedTaxon.getLeft().getId() ?
+                    component1.get(1).getId() :
+                    component1.get(0).getId();
+
+            int second = selectedTaxon.getLeft().getId();
+            int third = selectedTaxon.getRight().getId();
+
+            int fourth = component2.get(0).getId() == selectedTaxon.getRight().getId() ?
+                    component2.get(1).getId() :
+                    component2.get(0).getId();
+
+            Pair<Identifier, Identifier> reduced = reduction(new Triplet<Integer>(), params, v2v);
+
+            reduction(new Triplet<Integer>(), params, v2v);
+        }
+
+        throw new IllegalArgumentException("Number of vertices must be >= 2 || <= 4.  Found " + nbVerticies + " vertices");
+    }
 
     /**
      * Choose a pair of components that minimise the Q criterion
@@ -87,17 +222,12 @@ public class NeighborNetImpl implements NeighborNet {
 
 
     protected Pair<Identifier, Identifier> selectionStep2(Pair<Identifier, Identifier> selectedComponents, DistanceMatrix c2v,
-                                                DistanceMatrix v2v, ConnectedComponents components) {
+                                                DistanceMatrix v2v, IdentifierList component1, IdentifierList component2, IdentifierList union) {
 
         Pair<Identifier, Identifier> bestPair = null;
         double minQ = Double.MAX_VALUE;
 
-        IdentifierList component1 = components.get(selectedComponents.getLeft());
-        IdentifierList component2 = components.get(selectedComponents.getRight());
 
-        IdentifierList union = new IdentifierList();
-        union.addAll(component1);
-        union.addAll(component2);
 
         for(Identifier id1 : component1) {
 
@@ -114,7 +244,7 @@ public class NeighborNetImpl implements NeighborNet {
                     sumVId2 += c2v.getDistance(id2, id3);
                 }
 
-                double q = ((components.size() - 4 + component1.size() + component2.size()) * v2v.getDistance(id1, id2)) -
+                double q = ((union.size() - 4 + component1.size() + component2.size()) * v2v.getDistance(id1, id2)) -
                         sumId1 - sumId2 - sumVId1 - sumVId2;
 
                 if (q < minQ) {
@@ -128,6 +258,9 @@ public class NeighborNetImpl implements NeighborNet {
     }
 
 
+    protected void update() {
+
+    }
 
     /**
      * Reduces the 3 selected vertices down to 2 new vertices.  The output takes the form of an updated distance
@@ -135,8 +268,9 @@ public class NeighborNetImpl implements NeighborNet {
      * @param vertices The selected vertices to reduce
      * @param params alpha, beta and gamma parameters
      * @param v2v the distance matrix to update based on this reduction
+     * @return The two new verticies that represent the reduced input
      */
-    protected void reduction(final Triplet<Integer> vertices, NeighborNetParams params,
+    protected Pair<Identifier, Identifier> reduction(final Triplet<Integer> vertices, NeighborNetParams params,
                              DistanceMatrix v2v) {
 
         final int maxId = v2v.getTaxa().getMaxId();
@@ -177,5 +311,7 @@ public class NeighborNetImpl implements NeighborNet {
         v2v.removeTaxon(vertices.getA());
         v2v.removeTaxon(vertices.getB());
         v2v.removeTaxon(vertices.getC());
+
+        return new ImmutablePair<>(newVertex1, newVertex2);
     }
 }

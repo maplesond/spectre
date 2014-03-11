@@ -3,7 +3,10 @@ package uk.ac.uea.cmp.phybre.qtools.qnet;
 import org.apache.commons.lang3.tuple.Pair;
 import uk.ac.uea.cmp.phybre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.phybre.core.ds.quartet.GroupedQuartetSystem;
-import uk.ac.uea.cmp.phybre.core.ds.split.*;
+import uk.ac.uea.cmp.phybre.core.ds.split.CircularSplitSystem;
+import uk.ac.uea.cmp.phybre.core.ds.split.Split;
+import uk.ac.uea.cmp.phybre.core.ds.split.SplitBlock;
+import uk.ac.uea.cmp.phybre.core.ds.split.SplitUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,17 +16,17 @@ import java.util.List;
  */
 public class QNetResult {
 
-    private CircularOrdering circularOrdering;
+    private IdentifierList circularOrdering;
     private ComputedWeights computedWeights;
     private GroupedQuartetSystem quartetSystem;
 
-    public QNetResult(CircularOrdering circularOrdering, ComputedWeights computedWeights, GroupedQuartetSystem quartetSystem) {
+    public QNetResult(IdentifierList circularOrdering, ComputedWeights computedWeights, GroupedQuartetSystem quartetSystem) {
         this.circularOrdering = circularOrdering;
         this.computedWeights = computedWeights;
         this.quartetSystem = quartetSystem;
     }
 
-    public CircularOrdering getCircularOrdering() {
+    public IdentifierList getCircularOrdering() {
         return circularOrdering;
     }
 
@@ -59,7 +62,7 @@ public class QNetResult {
 
                 for (int p = sI.getLeft(); p < sI.getRight(); p++) {
 
-                    list.add(this.circularOrdering.getAt(p));
+                    list.add(this.circularOrdering.get(p).getId());
                 }
 
                 nbValidSplits++;
@@ -78,7 +81,7 @@ public class QNetResult {
         // Now add all the trivial splits
         splits.addAll(SplitUtils.createTrivialSplits(taxa, meanWeight));
 
-        return new CircularSplitSystem(taxa, splits, this.circularOrdering);
+        return new CircularSplitSystem(splits, this.circularOrdering);
     }
 
     public static enum SplitLimiter {

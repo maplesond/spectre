@@ -16,13 +16,9 @@
 
 package uk.ac.uea.cmp.phybre.flatnj.netvi;
 
-import java.awt.Color;
-import java.awt.Font;
+import javax.swing.*;
+import java.awt.*;
 import java.util.Set;
-import javax.swing.JColorChooser;
-import javax.swing.JPanel;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.WindowConstants;
 
 /**
  *

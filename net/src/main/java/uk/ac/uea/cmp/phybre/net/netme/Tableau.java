@@ -15,8 +15,12 @@
  */
 package uk.ac.uea.cmp.phybre.net.netme;
 
+import uk.ac.uea.cmp.phybre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.phybre.core.ds.distance.DistanceMatrix;
-import uk.ac.uea.cmp.phybre.core.ds.split.*;
+import uk.ac.uea.cmp.phybre.core.ds.split.CircularSplitSystem;
+import uk.ac.uea.cmp.phybre.core.ds.split.CompatibleSplitSystem;
+import uk.ac.uea.cmp.phybre.core.ds.split.Split;
+import uk.ac.uea.cmp.phybre.core.ds.split.SplitBlock;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,10 +66,10 @@ public class Tableau<E> {
 
     public CircularSplitSystem convertToSplitSystem(DistanceMatrix distanceMatrix) {
 
-        return convertToSplitSystem(distanceMatrix, CircularOrdering.createTrivialOrdering(distanceMatrix.size()));
+        return convertToSplitSystem(distanceMatrix, distanceMatrix.getTaxa().sortById());
     }
 
-    public CompatibleSplitSystem convertToSplitSystem(DistanceMatrix distanceMatrix, CircularOrdering circularOrdering) {
+    public CompatibleSplitSystem convertToSplitSystem(DistanceMatrix distanceMatrix, IdentifierList circularOrdering) {
 
         List<Split> splits = new ArrayList<>();
 

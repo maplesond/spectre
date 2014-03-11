@@ -16,12 +16,9 @@
 
 package uk.ac.uea.cmp.phybre.flatnj.netvi;
 
-import java.awt.Rectangle;
-import java.util.Iterator;
-import java.util.LinkedList;
+import java.awt.*;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  *

@@ -9,10 +9,10 @@ import org.junit.rules.TemporaryFolder;
 import uk.ac.tgac.metaopt.Equality;
 import uk.ac.tgac.metaopt.OptimiserException;
 import uk.ac.tgac.metaopt.external.JOptimizer;
+import uk.ac.uea.cmp.phybre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.phybre.core.ds.quartet.GroupedQuartetSystem;
 import uk.ac.uea.cmp.phybre.core.ds.quartet.QuartetSystem;
 import uk.ac.uea.cmp.phybre.core.ds.quartet.QuartetSystemList;
-import uk.ac.uea.cmp.phybre.core.ds.split.CircularOrdering;
 import uk.ac.uea.cmp.phybre.core.ds.split.CircularSplitSystem;
 import uk.ac.uea.cmp.phybre.core.ds.tree.newick.NewickTree;
 import uk.ac.uea.cmp.phybre.qtools.qmaker.QMaker;
@@ -71,7 +71,7 @@ public class QNetITCase {
         QNetResult result = new QNet().execute(qs, false, -1.0, null);
 
         // Check circular ordering
-        assertTrue(result.getCircularOrdering().equals(new CircularOrdering(new int[]{2,1,3,4,5})));
+        assertTrue(result.getCircularOrdering().equals(new IdentifierList(new int[]{2,1,3,4,5})));
 
         // Check weights from solver
         assertTrue(Equality.approxEquals(result.getComputedWeights().getSolution(), new double[]{0.0, 0.0, 0.0, 1.0, 1.0}));
@@ -93,8 +93,8 @@ public class QNetITCase {
         QNetResult result = new QNet().execute(qs, false, -1.0, new JOptimizer());
 
         // Check circular ordering
-        assertTrue(result.getCircularOrdering().equals(new CircularOrdering(new int[]{2,1,3,4,5})) ||
-                result.getCircularOrdering().equals(new CircularOrdering(new int[]{1,2,3,4,5})));
+        assertTrue(result.getCircularOrdering().equals(new IdentifierList(new int[]{2,1,3,4,5})) ||
+                result.getCircularOrdering().equals(new IdentifierList(new int[]{1,2,3,4,5})));
 
         // Check weights from solver
         assertTrue(Equality.approxEquals(result.getComputedWeights().getSolution(), new double[]{0.0, 0.0, 0.0, 1.0, 1.0}));
@@ -115,7 +115,7 @@ public class QNetITCase {
         QNetResult result = new QNet().execute(qs, false, -1.0, null);
 
         // Check circular ordering
-        assertTrue(result.getCircularOrdering().equals(new CircularOrdering(new int[]{3,1,2,4,5})));
+        assertTrue(result.getCircularOrdering().equals(new IdentifierList(new int[]{3,1,2,4,5})));
 
         CircularSplitSystem ss = result.createSplitSystem(null, QNetResult.SplitLimiter.STANDARD);
 

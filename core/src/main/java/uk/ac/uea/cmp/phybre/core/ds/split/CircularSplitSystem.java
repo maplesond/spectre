@@ -30,14 +30,33 @@ import java.util.List;
  */
 public class CircularSplitSystem extends SimpleSplitSystem {
 
-    private CircularOrdering circularOrdering;
+    private IdentifierList circularOrdering;
 
-    public CircularSplitSystem(IdentifierList taxa, List<Split> splits, CircularOrdering circularOrdering) {
-        super(taxa, splits);
+    /**
+     * Creates a CircularSplitSystem using the specified splits and the given circular ordering
+     * @param splits The splits in this split system
+     * @param circularOrdering The ordering of the taxa in this split system
+     */
+    public CircularSplitSystem(List<Split> splits, IdentifierList circularOrdering) {
+        super(circularOrdering.sortById(), splits);
         this.circularOrdering = circularOrdering;
     }
 
-    public CircularSplitSystem(DistanceMatrix distanceMatrix, CircularOrdering circularOrdering) {
+    /**
+     * Creates a CircularSplitSystem from the given distance matrix.  Assumes the ordering should be based on numerically
+     * ascending ID value.
+     * @param distanceMatrix The distance matrix to base this split system on
+     */
+    public CircularSplitSystem(DistanceMatrix distanceMatrix) {
+        this(distanceMatrix, distanceMatrix.getTaxa().sortById());
+    }
+
+    /**
+     * Creates a CircularSplitSystem from the given distance matrix and specified circular ordering
+     * @param distanceMatrix The distance matrix to base this split system on
+     * @param circularOrdering The ordering of the taxa in this split system
+     */
+    public CircularSplitSystem(DistanceMatrix distanceMatrix, IdentifierList circularOrdering) {
 
         super(distanceMatrix.getTaxa(), new ArrayList<Split>());
 
@@ -55,7 +74,7 @@ public class CircularSplitSystem extends SimpleSplitSystem {
 
                     ArrayList<Integer> sb = new ArrayList<>();
                     for (int k = i + 1; k < j + 1; k++) {
-                        sb.add(circularOrdering.getIndexAt(k));
+                        sb.add(circularOrdering.get(k).getId());
                     }
 
                     this.addSplit(new Split(new SplitBlock(sb), n, splitWeights.getAt(j, i)));
@@ -72,12 +91,12 @@ public class CircularSplitSystem extends SimpleSplitSystem {
         return true;
     }
 
-    public void setCircularOrdering(CircularOrdering circularOrdering) {
+    public void setCircularOrdering(IdentifierList circularOrdering) {
         this.circularOrdering = circularOrdering;
     }
 
     @Override
-    public CircularOrdering getCircularOrdering() {
+    public IdentifierList getCircularOrdering() {
         return circularOrdering;
     }
 
@@ -118,13 +137,13 @@ public class CircularSplitSystem extends SimpleSplitSystem {
      *
      * @return Split weights matrix
      */
-    protected SplitWeights calculateSplitWeighting(DistanceMatrix distanceMatrix, CircularOrdering circularOrdering) {
+    protected SplitWeights calculateSplitWeighting(DistanceMatrix distanceMatrix, IdentifierList circularOrdering) {
         int n = distanceMatrix.size();
         double[][] permutedDistances = new double[n][n];
 
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                permutedDistances[i][j] = distanceMatrix.getDistance(circularOrdering.getAt(i), circularOrdering.getAt(j));
+                permutedDistances[i][j] = distanceMatrix.getDistance(circularOrdering.get(i), circularOrdering.get(j));
             }
         }
 

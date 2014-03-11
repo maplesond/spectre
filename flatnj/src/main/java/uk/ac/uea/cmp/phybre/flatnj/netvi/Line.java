@@ -19,7 +19,7 @@ package uk.ac.uea.cmp.phybre.flatnj.netvi;
 import uk.ac.uea.cmp.phybre.flatnj.fdraw.Edge;
 import uk.ac.uea.cmp.phybre.flatnj.fdraw.Translocator;
 
-import java.awt.Color;
+import java.awt.*;
 
 /**
  *

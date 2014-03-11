@@ -1,7 +1,5 @@
 package uk.ac.uea.cmp.phybre.core.alg;
 
-import uk.ac.uea.cmp.phybre.core.math.tuple.Triplet;
-
 /**
  * Created by dan on 09/03/14.
  */

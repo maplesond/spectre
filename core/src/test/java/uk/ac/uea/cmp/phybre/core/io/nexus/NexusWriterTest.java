@@ -20,7 +20,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import uk.ac.uea.cmp.phybre.core.ds.distance.FlexibleDistanceMatrix;
-import uk.ac.uea.cmp.phybre.core.ds.split.CircularOrdering;
 import uk.ac.uea.cmp.phybre.core.ds.split.CircularSplitSystem;
 import uk.ac.uea.cmp.phybre.core.ds.split.SimpleSplitSystem;
 
@@ -51,7 +50,7 @@ public class NexusWriterTest {
 
         final int size = 5;
 
-        SimpleSplitSystem ss = new CircularSplitSystem(new FlexibleDistanceMatrix(size), CircularOrdering.createTrivialOrdering(size));
+        SimpleSplitSystem ss = new CircularSplitSystem(new FlexibleDistanceMatrix(size));
 
         new NexusWriter().writeSplitSystem(outputFile, ss);
 
@@ -72,7 +71,7 @@ public class NexusWriterTest {
 
         final int size = 5;
 
-        SimpleSplitSystem ss = new CircularSplitSystem(new FlexibleDistanceMatrix(size), CircularOrdering.createTrivialOrdering(size));
+        SimpleSplitSystem ss = new CircularSplitSystem(new FlexibleDistanceMatrix(size));
 
 
         /*new NexusWriter().writeTree(outputFile, ss, ss.calculateTreeWeighting(distanceMatrix));

@@ -21,15 +21,17 @@ import uk.ac.tgac.metaopt.Objective;
 import uk.ac.tgac.metaopt.OptimiserException;
 import uk.ac.tgac.metaopt.OptimiserFactory;
 import uk.ac.uea.cmp.phybre.core.io.qweight.QWeightFileFilter;
-import uk.ac.uea.cmp.phybre.core.ui.gui.*;
+import uk.ac.uea.cmp.phybre.core.ui.gui.JobController;
+import uk.ac.uea.cmp.phybre.core.ui.gui.StatusTracker;
+import uk.ac.uea.cmp.phybre.core.ui.gui.ToolHost;
 
 import javax.swing.*;
-import javax.swing.LookAndFeel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
 
-import static uk.ac.uea.cmp.phybre.core.ui.gui.LookAndFeel.*;
+import static uk.ac.uea.cmp.phybre.core.ui.gui.LookAndFeel.NIMBUS;
+import static uk.ac.uea.cmp.phybre.core.ui.gui.LookAndFeel.setLookAndFeel;
 
 public class QNetGUI extends JFrame implements ToolHost {
 

@@ -18,14 +18,9 @@ package uk.ac.uea.cmp.phybre.flatnj.netvi;
 
 import uk.ac.uea.cmp.phybre.flatnj.fdraw.Translocator;
 
-import java.awt.Color;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
+import java.awt.*;
+import java.util.*;
 import java.util.List;
-import java.util.Random;
-import java.util.Set;
 
 /**
  *

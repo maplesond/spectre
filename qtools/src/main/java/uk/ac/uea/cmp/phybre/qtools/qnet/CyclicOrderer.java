@@ -9,7 +9,6 @@ import uk.ac.uea.cmp.phybre.core.ds.Identifier;
 import uk.ac.uea.cmp.phybre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.phybre.core.ds.quartet.CanonicalWeightedQuartetMap;
 import uk.ac.uea.cmp.phybre.core.ds.quartet.WeightedQuartetGroupMap;
-import uk.ac.uea.cmp.phybre.core.ds.split.CircularOrdering;
 import uk.ac.uea.cmp.phybre.qtools.qnet.holders.Holders;
 import uk.ac.uea.cmp.phybre.qtools.qnet.holders.NSHolder;
 
@@ -42,7 +41,7 @@ public class CyclicOrderer {
      * @return A circular ordering
      * @throws QNetException if there were any problems.
      */
-    public CircularOrdering computeCircularOrdering(IdentifierList taxa, WeightedQuartetGroupMap theQuartetWeights)
+    public IdentifierList computeCircularOrdering(IdentifierList taxa, WeightedQuartetGroupMap theQuartetWeights)
             throws QNetException {
 
         // This method is probably going to take a while so start a timer.
@@ -87,11 +86,11 @@ public class CyclicOrderer {
         paths = this.terminationJoin(X.get(0), X.get(1), X.get(2), paths);
 
         // Now, the lists should contain the desired circular ordering, convert those into a circular ordering object
-        CircularOrdering circularOrdering = new CircularOrdering(paths.get(0).getNumbers());
+        IdentifierList circularOrdering = new IdentifierList(paths.get(0).getNumbers());
 
         log.info("QNet circular ordering computed:");
-        log.info(" IDs:   " + circularOrdering.toString());
-        log.info(" Names: " + circularOrdering.toString(taxa));
+        log.info(" IDs:   " + circularOrdering.toString(IdentifierList.IdentifierFormat.BY_ID));
+        log.info(" Names: " + circularOrdering.toString(IdentifierList.IdentifierFormat.BY_NAME));
 
         stopWatch.stop();
         log.info("Time taken to compute ordering: " + stopWatch.toString());

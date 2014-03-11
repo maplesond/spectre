@@ -22,9 +22,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.tgac.metaopt.Optimiser;
 import uk.ac.tgac.metaopt.OptimiserException;
+import uk.ac.uea.cmp.phybre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.phybre.core.ds.quartet.GroupedQuartetSystem;
 import uk.ac.uea.cmp.phybre.core.ds.quartet.load.QWeightLoader;
-import uk.ac.uea.cmp.phybre.core.ds.split.CircularOrdering;
 import uk.ac.uea.cmp.phybre.core.ds.split.CircularSplitSystem;
 import uk.ac.uea.cmp.phybre.core.io.nexus.NexusWriter;
 import uk.ac.uea.cmp.phybre.core.ui.gui.RunnableTool;
@@ -107,7 +107,7 @@ public class QNet extends RunnableTool {
         notifyUser("Computing circular ordering");
 
         // Order the taxa
-        CircularOrdering circularOrdering = new CyclicOrderer().computeCircularOrdering(
+        IdentifierList circularOrdering = new CyclicOrderer().computeCircularOrdering(
                 groupedQuartetSystem.getTaxa(),
                 groupedQuartetSystem.getQuartets());
 

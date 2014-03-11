@@ -12,11 +12,13 @@ class ConnectedComponents extends HashMap<Integer, IdentifierList> {
 
     public ConnectedComponents(IdentifierList taxa) {
 
+        int[] indexes = new int[taxa.size()];
         int i = 1;
         for(Identifier t : taxa) {
             IdentifierList newTaxa = new IdentifierList();
             newTaxa.add(t);
-            this.put(i, newTaxa);
+            this.put(i++, newTaxa);
+            indexes[i-1] = t.getId();
         }
     }
 }

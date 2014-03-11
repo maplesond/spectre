@@ -16,7 +16,7 @@
 
 package uk.ac.uea.cmp.phybre.flatnj.netvi;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;

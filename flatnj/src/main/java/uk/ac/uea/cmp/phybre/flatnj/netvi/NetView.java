@@ -33,6 +33,8 @@ import uk.ac.uea.cmp.phybre.flatnj.fdraw.Vertex;
 import uk.ac.uea.cmp.phybre.flatnj.fdraw.ViewerConfig;
 import uk.ac.uea.cmp.phybre.flatnj.tools.*;
 
+import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -42,16 +44,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
-import javax.swing.ButtonGroup;
-import javax.swing.ImageIcon;
-import javax.swing.JColorChooser;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
-import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  *

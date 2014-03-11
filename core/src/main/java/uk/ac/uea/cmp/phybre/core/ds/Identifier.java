@@ -131,4 +131,9 @@ public class Identifier implements Comparable<Identifier> {
             return o1.id - o2.id;
         }
     }
+
+    @Override
+    public String toString() {
+        return this.id + ":" + this.name;
+    }
 }

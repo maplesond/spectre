@@ -15,8 +15,6 @@
  */
 package uk.ac.uea.cmp.phybre.core.ds;
 
-import uk.ac.uea.cmp.phybre.core.ds.split.CircularOrdering;
-
 import java.util.*;
 
 /**
@@ -69,6 +67,20 @@ public class IdentifierList extends ArrayList<Identifier> {
         int i = 1;
         for(String idName : names) {
             this.add(new Identifier(idName, i++));
+        }
+    }
+
+    public IdentifierList(int[] idList) {
+        this(false);
+        for(Integer i : idList) {
+            this.add(new Identifier(i));
+        }
+    }
+
+    public IdentifierList(List<Integer> idList) {
+        this(false);
+        for(Integer i : idList) {
+            this.add(new Identifier(i));
         }
     }
 
@@ -386,22 +398,99 @@ public class IdentifierList extends ArrayList<Identifier> {
     @Override
     public String toString() {
 
-        StringBuilder sb = new StringBuilder();
+        return this.toString(IdentifierFormat.BY_NAME);
+    }
 
-        sb.append("[");
-        int i = 0;
-        for(Identifier t : this) {
+    public String toString(IdentifierFormat format) {
+        return format.toString(this);
+    }
 
-            if (i != 0) {
-                sb.append(",");
+    public static enum IdentifierFormat {
+
+        BY_NAME {
+            @Override
+            public String toString(IdentifierList identifierList) {
+                StringBuilder sb = new StringBuilder();
+
+                sb.append("[");
+                int i = 0;
+                for(Identifier t : identifierList) {
+
+                    if (i != 0) {
+                        sb.append(",");
+                    }
+                    sb.append(t.getName());
+
+                    i++;
+                }
+                sb.append("]");
+
+                return sb.toString();
             }
-            sb.append(t.getName());
+        },
+        BY_ID {
+            @Override
+            public String toString(IdentifierList identifierList) {
+                StringBuilder sb = new StringBuilder();
 
-            i++;
-        }
-        sb.append("]");
+                sb.append("[");
+                int i = 0;
+                for(Identifier t : identifierList) {
 
-        return sb.toString();
+                    if (i != 0) {
+                        sb.append(",");
+                    }
+                    sb.append(t.getId());
+
+                    i++;
+                }
+                sb.append("]");
+
+                return sb.toString();
+            }
+        },
+        BOTH {
+            @Override
+            public String toString(IdentifierList identifierList) {
+                StringBuilder sb = new StringBuilder();
+
+                sb.append("[");
+                int i = 0;
+                for(Identifier t : identifierList) {
+
+                    if (i != 0) {
+                        sb.append(",");
+                    }
+                    sb.append(t.toString());
+
+                    i++;
+                }
+                sb.append("]");
+
+                return sb.toString();
+            }
+        },
+        NEXUS_CIRCULAR_ORDERING {
+            @Override
+            public String toString(IdentifierList identifierList) {
+                if (identifierList.isEmpty()) {
+                    return "";
+                }
+                else {
+                    StringBuilder sb = new StringBuilder();
+
+                    sb.append(identifierList.get(0));
+
+                    for(int i = 1; i < identifierList.size(); i++) {
+                        sb.append(" ").append(identifierList.get(i));
+                    }
+
+                    return sb.toString();
+                }
+            }
+        };
+
+        public abstract String toString(IdentifierList identifierList);
     }
 
     /**
@@ -430,36 +519,6 @@ public class IdentifierList extends ArrayList<Identifier> {
         return result;
     }
 
-    public IdentifierList applyCircularOrdering(CircularOrdering circularOrdering) {
-
-        if (circularOrdering.size() != this.size()) {
-            throw new IllegalArgumentException("Can't apply circular ordering as its size is different from this object.  " +
-                "Circular ordering size: " + circularOrdering.size() + "; Number of identifiers in this list: " + this.size());
-        }
-
-        IdentifierList orderedTaxa = new IdentifierList();
-
-        for(int i = 0; i < this.size(); i ++) {
-
-            int id = circularOrdering.getAt(i);
-            Identifier t = this.getById(id);
-
-            orderedTaxa.add(new Identifier(t));
-        }
-
-        return orderedTaxa;
-    }
-
-    public CircularOrdering createCircularOrdering() {
-
-        int[] co = new int[this.size()];
-
-        for(int i = 0; i < this.size(); i++) {
-            co[i] = this.get(i).getId();
-        }
-
-        return new CircularOrdering(co);
-    }
 
 
     public IdentifierList sort(Comparator<Identifier> comparator) {
@@ -480,5 +539,21 @@ public class IdentifierList extends ArrayList<Identifier> {
     public IdentifierList sortByName() {
 
         return this.sort(new Identifier.NameComparator());
+    }
+
+    public void shuffle() {
+        Collections.shuffle(this);
+    }
+
+    public Map<Identifier, Integer> createLookup() {
+
+        Map<Identifier, Integer> lut = new HashMap<>();
+
+        int i = 0;
+        for(Identifier id : this) {
+            lut.put(id, i++);
+        }
+
+        return lut;
     }
 }

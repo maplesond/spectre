@@ -18,8 +18,7 @@ package uk.ac.uea.cmp.phybre.flatnj.netvi;
 
 import uk.ac.uea.cmp.phybre.flatnj.fdraw.Vertex;
 
-import java.awt.Color;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.util.Collection;
 import java.util.Set;
 

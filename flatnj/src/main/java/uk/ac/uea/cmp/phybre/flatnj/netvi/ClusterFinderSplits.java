@@ -21,13 +21,9 @@ import uk.ac.uea.cmp.phybre.flatnj.ds.Network;
 import uk.ac.uea.cmp.phybre.flatnj.fdraw.Edge;
 import uk.ac.uea.cmp.phybre.flatnj.fdraw.Vertex;
 
-import java.awt.Color;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
+import java.awt.*;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  *
