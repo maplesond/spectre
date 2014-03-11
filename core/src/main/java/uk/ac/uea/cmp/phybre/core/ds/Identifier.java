@@ -18,6 +18,7 @@ package uk.ac.uea.cmp.phybre.core.ds;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import uk.ac.uea.cmp.phybre.core.util.StringUtils;
 
 import java.util.Comparator;
 
@@ -40,7 +41,7 @@ public class Identifier implements Comparable<Identifier> {
     }
 
     public Identifier(int id) {
-        this(Integer.toString(id), id);
+        this(StringUtils.ConvertArabicToLetters(id), id);
     }
 
     public Identifier(String name, int id) {

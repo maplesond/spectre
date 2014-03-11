@@ -432,7 +432,7 @@ public class NeighborNetOld {
             if (p == Cx || p == Cx.nbr || p == Cy || p == Cy.nbr || p.nbr == null) {
                 Rx += D[z.id][p.id];
             }
-            // p.nbr != null so we take the average of the distances
+            // p.adjacent != null so we take the average of the distances
             else {
                 Rx += D[z.id][p.id] / 2.0;
             }

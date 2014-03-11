@@ -32,26 +32,18 @@ public class SimpleSplitSystem implements SplitSystem {
 
     public SimpleSplitSystem(int nbTaxa, List<Split> splits) {
 
-        this(createGenericTaxa(nbTaxa), splits);
+        this(new IdentifierList(nbTaxa), splits);
+    }
+
+    public SimpleSplitSystem(IdentifierList taxa) {
+        this(taxa, SplitUtils.createTrivialSplits(taxa, 1.0));
     }
 
     public SimpleSplitSystem(IdentifierList taxa, List<Split> splits) {
-
         this.taxa = taxa;
         this.splits = splits;
     }
 
-    protected static IdentifierList createGenericTaxa(int nbTaxa) {
-
-        IdentifierList taxa = new IdentifierList();
-
-        // Assumes we don't have more than 26 taxa, otherwise this is going to get weird.
-        for (int i = 0; i < nbTaxa; i++) {
-            taxa.add(new Identifier(Character.toString((char) (i + 65))));
-        }
-
-        return taxa;
-    }
 
     @Override
     public List<Split> getSplits() {

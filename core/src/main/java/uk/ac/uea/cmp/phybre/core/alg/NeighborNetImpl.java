@@ -9,7 +9,6 @@ import uk.ac.uea.cmp.phybre.core.ds.distance.FlexibleDistanceMatrix;
 import uk.ac.uea.cmp.phybre.core.ds.split.CompatibleSplitSystem;
 import uk.ac.uea.cmp.phybre.core.ds.split.SimpleSplitSystem;
 import uk.ac.uea.cmp.phybre.core.ds.split.SplitSystem;
-import uk.ac.uea.cmp.phybre.core.ds.split.SplitUtils;
 import uk.ac.uea.cmp.phybre.core.math.tuple.Triplet;
 
 import java.util.Map;
@@ -26,12 +25,11 @@ public class NeighborNetImpl implements NeighborNet {
         // Make a shortcut to the taxa used in the distance matrix
         IdentifierList taxa = distanceMatrix.getTaxa();
 
-        // Creates a set of trivial splits for ...
-        ConnectedComponents connectedComponents = new ConnectedComponents(taxa);
+        // Creates a trivial network for the taxa specified in the distance matrix
+        Network network = new Network(taxa);
 
         // Creates a simple split system with trivial splits from the given distance matrix
-        SplitSystem treeSplits = new SimpleSplitSystem(taxa, SplitUtils.createTrivialSplits(taxa, 1.0));
-
+        SplitSystem treeSplits = new SimpleSplitSystem(taxa);
 
         // DistanceMatrix between components (make deep copy from initial distance matrix)
         DistanceMatrix c2c = new FlexibleDistanceMatrix(distanceMatrix);
@@ -43,50 +41,49 @@ public class NeighborNetImpl implements NeighborNet {
         DistanceMatrix v2v = new FlexibleDistanceMatrix(distanceMatrix);
 
         // Reduce down to 2 nodes
-        while (connectedComponents.size() > 3) {
+        while (network.size() >= 2) {
 
             // Choose a pair of components that minimise the Q criterion
-            Pair<Identifier, Identifier> selectedComponents = this.selectionStep1(c2c);
+            Pair<Identifier, Identifier> selectedVertices1 = this.selectionStep1(c2c);
 
-            // Should either be 1 or 2 components in length
-            IdentifierList component1 = connectedComponents.get(selectedComponents.getLeft());
-
-            // Should either be 1 or 2 components in length
-            IdentifierList component2 = connectedComponents.get(selectedComponents.getRight());
+            // Both should be 1 or 2 components in length
+            IdentifierList component1 = network.get(selectedVertices1.getLeft());
+            IdentifierList component2 = network.get(selectedVertices1.getRight());
 
             IdentifierList componentUnion = new IdentifierList();
             componentUnion.addAll(component1);
             componentUnion.addAll(component2);
 
             // Choose a pair of taxa that minimise our formula
-            Pair<Identifier, Identifier> selectedTaxon = this.selectionStep2(selectedComponents, c2v, v2v, component1, component2, componentUnion);
+            Pair<Identifier, Identifier> selectedVertices2 = this.selectionStep2(selectedVertices1, c2v, v2v, component1, component2, componentUnion);
 
             // Merges selected components and reduces components of size > 2 to components of size 2
-            Pair<Identifier, Identifier> merged = this.merge(params, selectedTaxon, component1, component2, componentUnion, v2v);
+            Pair<Identifier, Identifier> mergedVertices = this.merge(params, selectedVertices2, component1, component2, componentUnion, v2v);
 
-            connectedComponents.remove(selectedComponents.getLeft());
-            connectedComponents.remove(selectedComponents.getRight());
+            // Remove the selected components from step 1 from connected components
+            network.remove(selectedVertices1.getLeft());
+            network.remove(selectedVertices1.getRight());
 
-            IdentifierList mergedIds = new IdentifierList();
-            mergedIds.add(merged.getLeft());
-            mergedIds.add(merged.getRight());
+            // Add the merged vertices to the connected components
+            IdentifierList mergedSet = new IdentifierList();
+            mergedSet.add(mergedVertices.getLeft());
+            mergedSet.add(mergedVertices.getRight());
+            network.put(network.createNextIdentifier(), mergedSet);
 
-            //connectedComponents.put(, mergedIds);
+            this.updateC2C(network, c2c, v2v);
 
-            this.updateC2C(connectedComponents, c2c, v2v);
-
-            this.updateC2V(connectedComponents, c2v, v2v);
+            this.updateC2V(network, c2v, v2v);
         }
 
 
         return null;
     }
 
-    protected void updateC2C(ConnectedComponents connectedComponents, DistanceMatrix c2c, DistanceMatrix v2v) {
+    protected void updateC2C(Network network, DistanceMatrix c2c, DistanceMatrix v2v) {
 
-        for(Map.Entry<Integer, IdentifierList> components1 : connectedComponents.entrySet()) {
+        for(Map.Entry<Identifier, IdentifierList> components1 : network.entrySet()) {
 
-            for(Map.Entry<Integer, IdentifierList> components2 : connectedComponents.entrySet()) {
+            for(Map.Entry<Identifier, IdentifierList> components2 : network.entrySet()) {
 
                 double sum1 = 0.0;
 
@@ -102,11 +99,11 @@ public class NeighborNetImpl implements NeighborNet {
         }
     }
 
-    protected void updateC2V(ConnectedComponents connectedComponents, DistanceMatrix c2v, DistanceMatrix v2v) {
+    protected void updateC2V(Network network, DistanceMatrix c2v, DistanceMatrix v2v) {
 
         IdentifierList activeTaxa = v2v.getTaxa();
 
-        for(Map.Entry<Integer, IdentifierList> components1 : connectedComponents.entrySet()) {
+        for(Map.Entry<Identifier, IdentifierList> components1 : network.entrySet()) {
 
             for(Identifier activeTaxon : activeTaxa) {
 
@@ -116,7 +113,7 @@ public class NeighborNetImpl implements NeighborNet {
                     sum1 += v2v.getDistance(id1, activeTaxon);
                 }
 
-                c2v.setDistance(components1.getKey(), activeTaxon.getId(),
+                c2v.setDistance(components1.getKey(), activeTaxon,
                         1.0 / components1.getValue().size() * sum1);
             }
         }
@@ -226,8 +223,6 @@ public class NeighborNetImpl implements NeighborNet {
 
         Pair<Identifier, Identifier> bestPair = null;
         double minQ = Double.MAX_VALUE;
-
-
 
         for(Identifier id1 : component1) {
 
