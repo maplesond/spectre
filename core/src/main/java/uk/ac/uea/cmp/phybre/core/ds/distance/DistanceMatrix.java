@@ -108,12 +108,8 @@ public interface DistanceMatrix {
 
 
 
+    void addIdentifier(Identifier id);
 
-    /**
-     * Returns the number of taxa represented by this distance matrix
-     * @return number of taxa in this distance matrix
-     */
-    int getNbTaxa();
 
     /**
      * Retrieves the entire taxa set associated with this DistanceMatrix.

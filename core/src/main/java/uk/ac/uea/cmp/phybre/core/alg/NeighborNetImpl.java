@@ -9,81 +9,84 @@ import uk.ac.uea.cmp.phybre.core.ds.distance.FlexibleDistanceMatrix;
 import uk.ac.uea.cmp.phybre.core.ds.split.CompatibleSplitSystem;
 import uk.ac.uea.cmp.phybre.core.ds.split.SimpleSplitSystem;
 import uk.ac.uea.cmp.phybre.core.ds.split.SplitSystem;
-import uk.ac.uea.cmp.phybre.core.math.tuple.Triplet;
 
 import java.util.Map;
+import java.util.Stack;
 
 /**
  * Created by dan on 27/02/14.
  */
 public class NeighborNetImpl implements NeighborNet {
 
+    protected Stack<VertexTriplet> stackedVertexTriplets;
+    protected Component2VertexSetMap c2vsMap;
+    protected DistanceMatrix c2c;
+    protected DistanceMatrix c2v;
+    protected DistanceMatrix v2v;
+    protected NeighborNetParams params;
+
+    public NeighborNetImpl() {
+        this.stackedVertexTriplets = null;
+        this.c2vsMap = null;
+        this.c2c = null;
+        this.c2v = null;
+        this.v2v = null;
+        this.params = null;
+    }
+
 
     @Override
     public CompatibleSplitSystem execute(DistanceMatrix distanceMatrix, NeighborNetParams params) {
 
-        // Make a shortcut to the taxa used in the distance matrix
-        IdentifierList taxa = distanceMatrix.getTaxa();
+        // We store intermediary triplets of nodes on a stack
+        this.stackedVertexTriplets = new Stack<>();
 
-        // Creates a trivial network for the taxa specified in the distance matrix
-        Network network = new Network(taxa);
+        // Store params in this class so we can access it from anywhere
+        this.params = params;
 
         // Creates a simple split system with trivial splits from the given distance matrix
-        SplitSystem treeSplits = new SimpleSplitSystem(taxa);
+        SplitSystem treeSplits = new SimpleSplitSystem(distanceMatrix.getTaxa());
+
+        // Setup the component to vertexset map.  Initialise using a one to one mapping of each taxon to itself.
+        this.c2vsMap = new Component2VertexSetMap(distanceMatrix.getTaxa());
 
         // DistanceMatrix between components (make deep copy from initial distance matrix)
-        DistanceMatrix c2c = new FlexibleDistanceMatrix(distanceMatrix);
+        this.c2c = new FlexibleDistanceMatrix(distanceMatrix);
 
         // DistanceMatrix between components and vertices (make deep copy from initial distance matrix)
-        DistanceMatrix c2v = new FlexibleDistanceMatrix(distanceMatrix);
+        this.c2v = new FlexibleDistanceMatrix(distanceMatrix);
 
         // DistanceMatrix between vertices and vertices (make deep copy from initial distance matrix)
-        DistanceMatrix v2v = new FlexibleDistanceMatrix(distanceMatrix);
+        this.v2v = new FlexibleDistanceMatrix(distanceMatrix);
 
         // Reduce down to 2 nodes
-        while (network.size() >= 2) {
+        while (c2vsMap.size() >= 2) {
 
-            // Choose a pair of components that minimise the Q criterion
-            Pair<Identifier, Identifier> selectedVertices1 = this.selectionStep1(c2c);
+            // Choose a pair of components from c2c that minimise the Q criterion
+            Pair<Identifier, Identifier> selectedComponents = this.selectionStep1();
 
-            // Both should be 1 or 2 components in length
-            IdentifierList component1 = network.get(selectedVertices1.getLeft());
-            IdentifierList component2 = network.get(selectedVertices1.getRight());
+            // Choose a pair of vertices that minimise the Q criterion
+            Pair<Identifier, Identifier> selectedVertices = this.selectionStep2(selectedComponents);
 
-            IdentifierList componentUnion = new IdentifierList();
-            componentUnion.addAll(component1);
-            componentUnion.addAll(component2);
+            // Reduces vertices contained within selected components to a pair.  Using the selected vertices to determine
+            // which vertices to reduce
+            Pair<Identifier, Identifier> newVertices = this.reduce(selectedComponents, selectedVertices);
 
-            // Choose a pair of taxa that minimise our formula
-            Pair<Identifier, Identifier> selectedVertices2 = this.selectionStep2(selectedVertices1, c2v, v2v, component1, component2, componentUnion);
-
-            // Merges selected components and reduces components of size > 2 to components of size 2
-            Pair<Identifier, Identifier> mergedVertices = this.merge(params, selectedVertices2, component1, component2, componentUnion, v2v);
-
-            // Remove the selected components from step 1 from connected components
-            network.remove(selectedVertices1.getLeft());
-            network.remove(selectedVertices1.getRight());
-
-            // Add the merged vertices to the connected components
-            IdentifierList mergedSet = new IdentifierList();
-            mergedSet.add(mergedVertices.getLeft());
-            mergedSet.add(mergedVertices.getRight());
-            network.put(network.createNextIdentifier(), mergedSet);
-
-            this.updateC2C(network, c2c, v2v);
-
-            this.updateC2V(network, c2v, v2v);
+            // Update the managed datastructures now that some vertices have been removed and replaced with new ones
+            this.updateDataStructures(selectedComponents, newVertices);
         }
 
+        // Expand back to taxa to get circular ordering
 
         return null;
     }
 
-    protected void updateC2C(Network network, DistanceMatrix c2c, DistanceMatrix v2v) {
 
-        for(Map.Entry<Identifier, IdentifierList> components1 : network.entrySet()) {
+    protected void updateC2C() {
 
-            for(Map.Entry<Identifier, IdentifierList> components2 : network.entrySet()) {
+        for(Map.Entry<Identifier, IdentifierList> components1 : c2vsMap.entrySet()) {
+
+            for(Map.Entry<Identifier, IdentifierList> components2 : c2vsMap.entrySet()) {
 
                 double sum1 = 0.0;
 
@@ -99,11 +102,11 @@ public class NeighborNetImpl implements NeighborNet {
         }
     }
 
-    protected void updateC2V(Network network, DistanceMatrix c2v, DistanceMatrix v2v) {
+    protected void updateC2V() {
 
         IdentifierList activeTaxa = v2v.getTaxa();
 
-        for(Map.Entry<Identifier, IdentifierList> components1 : network.entrySet()) {
+        for(Map.Entry<Identifier, IdentifierList> components1 : c2vsMap.entrySet()) {
 
             for(Identifier activeTaxon : activeTaxa) {
 
@@ -120,78 +123,83 @@ public class NeighborNetImpl implements NeighborNet {
     }
 
 
-    protected Pair<Identifier, Identifier> merge(NeighborNetParams params, Pair<Identifier, Identifier> selectedTaxon,
-                         IdentifierList component1, IdentifierList component2, IdentifierList componentUnion,
-                         DistanceMatrix v2v) {
+    protected Pair<Identifier, Identifier> reduce(Pair<Identifier, Identifier> selectedComponents, Pair<Identifier, Identifier> selectedVertices) {
 
-        final int nbVerticies = componentUnion.size();
+        // Both should be 1 or 2 components in length
+        IdentifierList vertices1 = c2vsMap.get(selectedComponents.getLeft());
+        IdentifierList vertices2 = c2vsMap.get(selectedComponents.getRight());
+
+        IdentifierList vertexUnion = new IdentifierList();
+        vertexUnion.addAll(vertices1);
+        vertexUnion.addAll(vertices2);
+
+        final int nbVerticies = vertexUnion.size();
 
         IdentifierList mergedComponent = new IdentifierList();
 
         if (nbVerticies == 2) {
-            return new ImmutablePair<>(componentUnion.get(0), componentUnion.get(1));
+            return new ImmutablePair<>(vertexUnion.get(0), vertexUnion.get(1));
         }
         else if (nbVerticies == 3) {
 
-            int first = -1;
-            int second = -1;
-            int third = -1;
+            Identifier first = null;
+            Identifier second = null;
+            Identifier third = null;
 
-            if (component1.size() == 1) {
+            if (vertices1.size() == 1) {
 
-                first = component1.get(0).getId();
+                first = vertices1.get(0);
 
-                if (component2.get(0).getId() == selectedTaxon.getLeft().getId() || component2.get(0).getId() == selectedTaxon.getRight().getId()) {
-                    second = component2.get(0).getId();
-                    third = component2.get(1).getId();
+                if (vertices2.get(0) == selectedVertices.getLeft() || vertices2.get(0) == selectedVertices.getRight()) {
+                    second = vertices2.get(0);
+                    third = vertices2.get(1);
                 }
                 else {
-                    second = component2.get(1).getId();
-                    third = component2.get(0).getId();
+                    second = vertices2.get(1);
+                    third = vertices2.get(0);
                 }
             }
             else {
-                first = component2.get(0).getId();
+                first = vertices2.get(0);
 
-                if (component1.get(0).getId() == selectedTaxon.getLeft().getId() || component1.get(0).getId() == selectedTaxon.getRight().getId()) {
-                    second = component1.get(0).getId();
-                    third = component1.get(1).getId();
+                if (vertices1.get(0) == selectedVertices.getLeft() || vertices1.get(0) == selectedVertices.getRight()) {
+                    second = vertices1.get(0);
+                    third = vertices1.get(1);
                 }
                 else {
-                    second = component1.get(1).getId();
-                    third = component1.get(0).getId();
+                    second = vertices1.get(1);
+                    third = vertices1.get(0);
                 }
             }
 
-            return reduction(new Triplet<>(first, second, third), params, v2v);
+            return vertexTripletReduction(new VertexTriplet(first, second, third));
         }
         else { // Should be 4
 
-            int first = component1.get(0).getId() == selectedTaxon.getLeft().getId() ?
-                    component1.get(1).getId() :
-                    component1.get(0).getId();
+            Identifier first = vertices1.get(0) == selectedVertices.getLeft() ?
+                    vertices1.get(1) :
+                    vertices1.get(0);
 
-            int second = selectedTaxon.getLeft().getId();
-            int third = selectedTaxon.getRight().getId();
+            Identifier second = selectedVertices.getLeft();
+            Identifier third = selectedVertices.getRight();
 
-            int fourth = component2.get(0).getId() == selectedTaxon.getRight().getId() ?
-                    component2.get(1).getId() :
-                    component2.get(0).getId();
+            Identifier fourth = vertices2.get(0) == selectedVertices.getRight() ?
+                    vertices2.get(1) :
+                    vertices2.get(0);
 
-            Pair<Identifier, Identifier> reduced = reduction(new Triplet<Integer>(), params, v2v);
+            Pair<Identifier, Identifier> newVertices = vertexTripletReduction(new VertexTriplet(first, second, third));
 
-            reduction(new Triplet<Integer>(), params, v2v);
+            return vertexTripletReduction(new VertexTriplet(first, second, third));
         }
 
-        throw new IllegalArgumentException("Number of vertices must be >= 2 || <= 4.  Found " + nbVerticies + " vertices");
+        //throw new IllegalArgumentException("Number of vertices must be >= 2 || <= 4.  Found " + nbVerticies + " vertices");
     }
 
     /**
-     * Choose a pair of components that minimise the Q criterion
-     * @param c2c components
+     * Choose a pair of components that minimise the Q criterion from c2c
      * @return a pair of components that minimise the Q criterion
      */
-    protected Pair<Identifier, Identifier> selectionStep1(final DistanceMatrix c2c) {
+    protected Pair<Identifier, Identifier> selectionStep1() {
 
         Pair<Identifier, Identifier> bestPair = null;
         double minQ = Double.MAX_VALUE;
@@ -200,6 +208,7 @@ public class NeighborNetImpl implements NeighborNet {
 
             Identifier id1 = entry.getKey().getLeft();
             Identifier id2 = entry.getKey().getRight();
+
 
             final double id1_2_id2 = c2c.getDistance(id1, id2);
 
@@ -218,15 +227,22 @@ public class NeighborNetImpl implements NeighborNet {
     }
 
 
-    protected Pair<Identifier, Identifier> selectionStep2(Pair<Identifier, Identifier> selectedComponents, DistanceMatrix c2v,
-                                                DistanceMatrix v2v, IdentifierList component1, IdentifierList component2, IdentifierList union) {
+    protected Pair<Identifier, Identifier> selectionStep2(Pair<Identifier, Identifier> selectedComponents) {
 
         Pair<Identifier, Identifier> bestPair = null;
         double minQ = Double.MAX_VALUE;
 
-        for(Identifier id1 : component1) {
+        // Both should be 1 or 2 components in length
+        IdentifierList vertices1 = c2vsMap.get(selectedComponents.getLeft());
+        IdentifierList vertices2 = c2vsMap.get(selectedComponents.getRight());
 
-            for(Identifier id2 : component2) {
+        IdentifierList vertexUnion = new IdentifierList();
+        vertexUnion.addAll(vertices1);
+        vertexUnion.addAll(vertices2);
+
+        for(Identifier id1 : vertices1) {
+
+            for(Identifier id2 : vertices2) {
 
                 final double sumId1 = c2v.getDistances(id1, null).sum() - c2v.getDistance(id1, selectedComponents.getRight());
                 final double sumId2 = c2v.getDistances(id2, null).sum() - c2v.getDistance(id2, selectedComponents.getLeft());
@@ -234,12 +250,12 @@ public class NeighborNetImpl implements NeighborNet {
                 double sumVId1 = 0.0;
                 double sumVId2 = 0.0;
 
-                for(Identifier id3 : union) {
+                for(Identifier id3 : vertexUnion) {
                     sumVId1 += c2v.getDistance(id1, id3);
                     sumVId2 += c2v.getDistance(id2, id3);
                 }
 
-                double q = ((union.size() - 4 + component1.size() + component2.size()) * v2v.getDistance(id1, id2)) -
+                double q = ((vertexUnion.size() - 4 + vertices1.size() + vertices2.size()) * v2v.getDistance(id1, id2)) -
                         sumId1 - sumId2 - sumVId1 - sumVId2;
 
                 if (q < minQ) {
@@ -253,60 +269,86 @@ public class NeighborNetImpl implements NeighborNet {
     }
 
 
-    protected void update() {
+    protected void updateDataStructures(Pair<Identifier, Identifier> selectedComponents, Pair<Identifier, Identifier> newVertices) {
 
+        // Remove the selected components from step 1 from connected components
+        c2vsMap.remove(selectedComponents.getLeft());
+        c2vsMap.remove(selectedComponents.getRight());
+
+        // Add the grouped vertices to the c2vsmap under a new component
+        IdentifierList mergedSet = new IdentifierList();
+        mergedSet.add(newVertices.getLeft());
+        mergedSet.add(newVertices.getRight());
+        c2vsMap.put(c2vsMap.createNextIdentifier(), mergedSet);
+
+        // Update c2c and c2v matrices with new c2vsMap info
+        this.updateC2C();
+        this.updateC2V();
     }
 
-    /**
-     * Reduces the 3 selected vertices down to 2 new vertices.  The output takes the form of an updated distance
-     * matrix represented by v2v and an updated split system
-     * @param vertices The selected vertices to reduce
-     * @param params alpha, beta and gamma parameters
-     * @param v2v the distance matrix to update based on this reduction
-     * @return The two new verticies that represent the reduced input
-     */
-    protected Pair<Identifier, Identifier> reduction(final Triplet<Integer> vertices, NeighborNetParams params,
-                             DistanceMatrix v2v) {
 
-        final int maxId = v2v.getTaxa().getMaxId();
+    /**
+     * Reduces the 3 selected vertices down to 2 new merged vertices.  These changes are reflected in the v2v matrix and
+     * the 2 new merged vertices are returned
+     * @param selectedVertices The three selected vertices to reduce
+     * @return The two new vertices that represent the reduced input
+     */
+    protected Pair<Identifier, Identifier> vertexTripletReduction(final VertexTriplet selectedVertices) {
+
+        // Add the selected vertices to reduce to the stack (we'll need these later)
+        this.stackedVertexTriplets.push(selectedVertices);
 
         // Create two new taxa for the reduced
-        Identifier newVertex1 = new Identifier(Integer.toString(maxId+1), maxId+1);
-        Identifier newVertex2 = new Identifier(Integer.toString(maxId+2), maxId+2);
+        Identifier newVertex1 = c2vsMap.createNextIdentifier();
+        Identifier newVertex2 = c2vsMap.createNextIdentifier();
 
         v2v.getTaxa().add(newVertex1);
         v2v.getTaxa().add(newVertex2);
 
-        final Identifier tA = v2v.getTaxa().getById(vertices.getA());
-        final Identifier tB = v2v.getTaxa().getById(vertices.getB());
-        final Identifier tC = v2v.getTaxa().getById(vertices.getC());
+        // Setup shortcuts
+        final Identifier vertex1 = selectedVertices.vertex1;
+        final Identifier vertex2 = selectedVertices.vertex2;
+        final Identifier vertex3 = selectedVertices.vertex3;
 
         // Iterate over all active vertices
-        for(Identifier vertex : v2v.getTaxa()) {
+        for(Identifier v : v2v.getTaxa()) {
 
             // Only process this vertex if it is not in the selected vertex list
-            if (vertex != tA && vertex != tB && vertex != tC) {
+            if (v != vertex1 && v != vertex2 && v != vertex3) {
 
-                v2v.setDistance(newVertex1, vertex,
-                                ((params.getAlpha() + params.getBeta()) * v2v.getDistance(tA, vertex)) +
-                                (params.getGamma() * v2v.getDistance(tB, vertex)));
+                v2v.setDistance(newVertex1, v,
+                                ((params.getAlpha() + params.getBeta()) * v2v.getDistance(vertex1, v)) +
+                                (params.getGamma() * v2v.getDistance(vertex2, v)));
 
-                v2v.setDistance(newVertex2, vertex,
-                                (params.getAlpha() * v2v.getDistance(tB, vertex)) +
-                                ((1 - params.getAlpha()) * v2v.getDistance(tC, vertex)));
+                v2v.setDistance(newVertex2, v,
+                                (params.getAlpha() * v2v.getDistance(vertex2, v)) +
+                                ((1 - params.getAlpha()) * v2v.getDistance(vertex3, v)));
 
                 v2v.setDistance(newVertex1, newVertex2,
-                                (params.getAlpha() * v2v.getDistance(tA, tB)) +
-                                (params.getBeta() * v2v.getDistance(tA, tC)) +
-                                (params.getGamma() * v2v.getDistance(tB, tC)));
+                                (params.getAlpha() * v2v.getDistance(vertex1, vertex2)) +
+                                (params.getBeta() * v2v.getDistance(vertex1, vertex3)) +
+                                (params.getGamma() * v2v.getDistance(vertex2, vertex3)));
             }
         }
 
         // Remove the selected vertices from v2v
-        v2v.removeTaxon(vertices.getA());
-        v2v.removeTaxon(vertices.getB());
-        v2v.removeTaxon(vertices.getC());
+        v2v.removeTaxon(vertex1);
+        v2v.removeTaxon(vertex2);
+        v2v.removeTaxon(vertex3);
 
         return new ImmutablePair<>(newVertex1, newVertex2);
+    }
+
+
+    protected static class VertexTriplet {
+        protected Identifier vertex1;
+        protected Identifier vertex2;
+        protected Identifier vertex3;
+
+        public VertexTriplet(Identifier vertex1, Identifier vertex2, Identifier vertex3) {
+            this.vertex1 = vertex1;
+            this.vertex2 = vertex2;
+            this.vertex3 = vertex3;
+        }
     }
 }

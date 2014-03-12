@@ -108,7 +108,7 @@ public class Writer {
 
         writeLine();
         writeLine("BEGIN Distances;");
-        writeLine(" DIMENSIONS ntax=" + dm.getNbTaxa() + ";");
+        writeLine(" DIMENSIONS ntax=" + dm.size() + ";");
         writeLine(" FORMAT labels=NO interleave = NO diagonal;");
         writeLine(" MATRIX");
         for (int i = 0; i < matrix.length; i++) {

@@ -24,10 +24,8 @@ public class FlexibleDistanceMatrix implements DistanceMatrix {
 
         this.matrix = new HashMap<>();
         this.taxa = new IdentifierList(size);
-        for(Identifier ti : this.taxa) {
-            for(Identifier tj : this.taxa) {
-                this.setDistance(ti, tj, 0.0);
-            }
+        for(Identifier id : this.taxa) {
+            this.addIdentifier(id);
         }
     }
 
@@ -99,6 +97,17 @@ public class FlexibleDistanceMatrix implements DistanceMatrix {
         return this.getDistance(this.taxa.getByName(taxon1Name), this.taxa.getByName(taxon2Name));
     }
 
+    @Override
+    public void addIdentifier(Identifier id) {
+
+        if (!taxa.contains(id)) {
+            this.taxa.add(id);
+
+            for(Identifier i : this.taxa) {
+                this.setDistance(i, id, 0.0);
+            }
+        }
+    }
 
     @Override
     public double setDistance(Identifier taxon1, Identifier taxon2, final double value) {
@@ -107,11 +116,11 @@ public class FlexibleDistanceMatrix implements DistanceMatrix {
             throw new IllegalArgumentException("Need two valid taxa to set a distance");
 
         if (!taxa.contains(taxon1)) {
-            taxa.add(taxon1);
+            this.addIdentifier(taxon1);
         }
 
         if (!taxa.contains(taxon2)) {
-            taxa.add(taxon2);
+            this.addIdentifier(taxon2);
         }
 
         // Don't do anything if both taxa are the same, except return 0.0, otherwise update the matrix and return the old
@@ -153,13 +162,6 @@ public class FlexibleDistanceMatrix implements DistanceMatrix {
         return this.incrementDistance(this.taxa.getByName(taxon1Name), this.taxa.getByName(taxon2Name), increment);
     }
 
-
-
-
-    @Override
-    public int getNbTaxa() {
-        return this.taxa.size();
-    }
 
     @Override
     public IdentifierList getTaxa() {
@@ -249,7 +251,7 @@ public class FlexibleDistanceMatrix implements DistanceMatrix {
 
     @Override
     public int size() {
-        return this.getNbTaxa();
+        return this.taxa.size();
     }
 
     @Override

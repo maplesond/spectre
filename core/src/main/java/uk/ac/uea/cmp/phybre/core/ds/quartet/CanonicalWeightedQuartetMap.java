@@ -21,7 +21,7 @@ public class CanonicalWeightedQuartetMap extends HashMap<Quartet, Double> {
      */
     public CanonicalWeightedQuartetMap(DistanceMatrix distanceMatrix) {
 
-        final int N = distanceMatrix.getNbTaxa();
+        final int N = distanceMatrix.size();
 
         double[][] D = distanceMatrix.getMatrix();
 

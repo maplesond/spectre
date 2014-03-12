@@ -52,7 +52,7 @@ public class NeighborNetOld {
     public IdentifierList computeCircularOrdering(final DistanceMatrix distanceMatrix) {
 
         // Special case for small taxa sets: use the order they came in; otherwise run NN proper
-        return distanceMatrix.getNbTaxa() <= MAX_TAXA_FOR_BASIC_ORDERING ?
+        return distanceMatrix.size() <= MAX_TAXA_FOR_BASIC_ORDERING ?
             distanceMatrix.getTaxa() :
             executeNeighborNet(distanceMatrix);
     }

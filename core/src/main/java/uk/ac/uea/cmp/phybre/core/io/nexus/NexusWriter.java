@@ -238,7 +238,7 @@ public class NexusWriter extends AbstractPhygenWriter implements Appendable {
         double[][] matrix = dm.getMatrix();
 
         this.appendLine("BEGIN Distances;");
-        this.appendLine(" DIMENSIONS ntax=" + dm.getNbTaxa() + ";");
+        this.appendLine(" DIMENSIONS ntax=" + dm.size() + ";");
         this.appendLine(" FORMAT labels=LEFT interleave=NO diagonal triangle=" + triangle.toString() + ";");
         this.appendLine(" MATRIX");
         for (int i = 1; i <= matrix.length; i++) {
