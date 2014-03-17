@@ -1,8 +1,8 @@
 /*
- * Phylogenetics Tool suite
- * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
+ * Copyright (C) 2014  UEA School of Computing Sciences
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
@@ -134,8 +134,7 @@ public class NetMake extends RunnableTool {
 
             if (sc2Split.getFirst() == sv2) {
                 components.mergeSplits(sc1, sc2);
-            }
-            else {
+            } else {
                 sc2Split.reverse();
                 components.mergeSplits(sc1, sc2);
             }
@@ -191,8 +190,8 @@ public class NetMake extends RunnableTool {
             sum2[i] = 0;
             for (int j = 0; j < nbSplits; j++) {
                 if (j != i) {
-                    sum1[i] = sum1[i] + c2c.getDistance(i+1, j+1);
-                    sum2[i] = sum2[i] + c2c.getDistance(j+1, i+1);
+                    sum1[i] = sum1[i] + c2c.getDistance(i + 1, j + 1);
+                    sum2[i] = sum2[i] + c2c.getDistance(j + 1, i + 1);
                 }
             }
         }
@@ -201,13 +200,13 @@ public class NetMake extends RunnableTool {
         for (int i = 0; i < nbSplits; i++) {
             for (int j = i + 1; j < nbSplits; j++) {
                 double qDist = (nbSplits - 2)
-                        * c2c.getDistance(i+1, j+1)
+                        * c2c.getDistance(i + 1, j + 1)
                         - sum1[i] - sum2[j];
 
                 if (qDist < min1) {
                     min1 = qDist;
-                    sc1 = i+1;
-                    sc2 = j+1;
+                    sc1 = i + 1;
+                    sc2 = j + 1;
                 }
             }
         }
@@ -245,11 +244,11 @@ public class NetMake extends RunnableTool {
 
                 for (int k = 0; k < components.getNbSplits(); k++) {
                     if ((k != sc1) && (k != sc2)) {
-                        sum1 += c2v.getDistance(splitBlockSc1.get(i), k+1);
+                        sum1 += c2v.getDistance(splitBlockSc1.get(i), k + 1);
                     }
 
                     if ((k != sc1) && (k != sc2)) {
-                        sum2 += c2v.getDistance(splitBlockSc2.get(j), k+1);
+                        sum2 += c2v.getDistance(splitBlockSc2.get(j), k + 1);
                     }
                 }
 
@@ -305,7 +304,7 @@ public class NetMake extends RunnableTool {
         for (int i = 0; i < nbSplits; i++) {
             for (int j = 0; j < nbSplits; j++) {
                 if (i == j) {
-                    c2c.setDistance(i+1, j+1, 0.0);
+                    c2c.setDistance(i + 1, j + 1, 0.0);
                 } else {
                     double aComponentDistance = 0.0;
 
@@ -316,14 +315,14 @@ public class NetMake extends RunnableTool {
                         for (int m = 0; m < sbJ.size(); m++) {
                             int vertex1 = sbI.get(k);
                             int vertex2 = sbJ.get(m);
-                            double vertexDistance = w.getWeightingParam(vertex1-1)
-                                    * w.getWeightingParam(vertex2-1)
+                            double vertexDistance = w.getWeightingParam(vertex1 - 1)
+                                    * w.getWeightingParam(vertex2 - 1)
                                     * distanceMatrix.getDistance(vertex1, vertex2);
 
                             aComponentDistance += vertexDistance;
                         }
                     }
-                    c2c.setDistance(i+1, j+1, aComponentDistance);
+                    c2c.setDistance(i + 1, j + 1, aComponentDistance);
                 }
             }
         }
@@ -339,7 +338,7 @@ public class NetMake extends RunnableTool {
 
         for (int i = 0; i < distanceMatrix.size(); i++) {
             for (int j = 0; j < sb1.size(); j++) {
-                if (i == sb1.get(j)-1) {
+                if (i == sb1.get(j) - 1) {
                     position = j;
 
                     if (w instanceof TreeWeighting) {
@@ -357,20 +356,20 @@ public class NetMake extends RunnableTool {
                 SplitBlock sbJ = components.getSplitAt(j).getASide();
 
                 while (k < sbJ.size()) {
-                    if (sbJ.get(k)-1 == i) {
+                    if (sbJ.get(k) - 1 == i) {
                         aComponentVertexDistance = 0.;
                         k = sbJ.size();
                     } else {
-                        int vertex1 = i+1;
+                        int vertex1 = i + 1;
                         int vertex2 = sbJ.get(k);
-                        double vertexDistance = w.getWeightingParam(vertex2-1)
+                        double vertexDistance = w.getWeightingParam(vertex2 - 1)
                                 * distanceMatrix.getDistance(vertex1, vertex2);
 
                         aComponentVertexDistance += vertexDistance;
                         k++;
                     }
                 }
-                c2v.setDistance(i+1, j+1, aComponentVertexDistance);
+                c2v.setDistance(i + 1, j + 1, aComponentVertexDistance);
             }
         }
     }
@@ -383,8 +382,8 @@ public class NetMake extends RunnableTool {
 
             SplitBlock sb = splits.getSplitAt(i).getASide();
 
-            int k = permutationInvert.get(sb.getFirst()-1).getId();
-            int l = permutationInvert.get(sb.getLast()-1).getId();
+            int k = permutationInvert.get(sb.getFirst() - 1).getId();
+            int l = permutationInvert.get(sb.getLast() - 1).getId();
 
             if (l < k) {
                 sb.reverse();
@@ -460,13 +459,11 @@ public class NetMake extends RunnableTool {
             // Print run time on screen
             stopWatch.stop();
             log.info("Completed Successfully - Total run time: " + stopWatch.toString());
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.error(e.getMessage(), e);
             this.setError(e);
             this.trackerFinished(false);
-        }
-        finally {
+        } finally {
             this.notifyListener();
         }
     }

@@ -1,8 +1,8 @@
 /*
- * Phylogenetics Tool suite
- * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
+ * Copyright (C) 2014  UEA School of Computing Sciences
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
@@ -70,8 +70,7 @@ public class U0Holder extends AbstractBasicHolder {
                             weight += theQuartetWeights.containsKey(q2) ?
                                     theQuartetWeights.get(q2) :
                                     0.0;
-                        }
-                        else {
+                        } else {
                             throw new QNetException("Not sure if we are supposed to be here! :s");
                         }
                     }

@@ -1,8 +1,8 @@
 /*
- * Phylogenetics Tool suite
- * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
+ * Copyright (C) 2014  UEA School of Computing Sciences
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
@@ -19,41 +19,33 @@ package uk.ac.uea.cmp.spectre.flatnj.netvi;
 import java.util.HashSet;
 
 /**
- *
- * @author Monika
  * @param <T>
+ * @author Monika
  */
-public class SelectableSet<T> extends HashSet<T>
-{
+public class SelectableSet<T> extends HashSet<T> {
 
-    public SelectableSet()
-    {
+    public SelectableSet() {
         super();
     }
 
     @Override
-    public boolean add(T t)
-    {
-        try
-        {
-            ((Selectable)t).setSelected(true);
+    public boolean add(T t) {
+        try {
+            ((Selectable) t).setSelected(true);
+        } catch (Exception ex) {
         }
-        catch(Exception ex){}
         return super.add(t);
     }
 
     @Override
-    public void clear()
-    {
-        for (T t : this)
-        {
-            try
-            {
-                ((Selectable)t).setSelected(false);
+    public void clear() {
+        for (T t : this) {
+            try {
+                ((Selectable) t).setSelected(false);
+            } catch (Exception ex) {
             }
-            catch(Exception ex){}
         }
         super.clear();
     }
-    
+
 }

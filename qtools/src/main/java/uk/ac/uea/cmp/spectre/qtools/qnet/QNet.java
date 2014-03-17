@@ -1,8 +1,8 @@
 /*
- * Phylogenetics Tool suite
- * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
+ * Copyright (C) 2014  UEA School of Computing Sciences
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
@@ -53,6 +53,7 @@ public class QNet extends RunnableTool {
 
     /**
      * Constructor for use from the GUI
+     *
      * @param options
      * @param statusTracker
      */
@@ -64,15 +65,16 @@ public class QNet extends RunnableTool {
     /**
      * Runs QNet from a qweight input file, which contains a set of taxa and an associated quartet system. QNet, then
      * normalises the quartet weights, then calculates the circular ordering and computes edge weights.
-     * @param input The file containing trees, distance matrices or quartet systems, will parse as appropriate based on
-     *              the file extension.
+     *
+     * @param input        The file containing trees, distance matrices or quartet systems, will parse as appropriate based on
+     *                     the file extension.
      * @param logNormalise Whether to normalise the quartet weights by natural log, or not.
-     * @param tolerance The tolerance to apply when computing weights
-     * @param optimiser The optimiser to use when computing weights
+     * @param tolerance    The tolerance to apply when computing weights
+     * @param optimiser    The optimiser to use when computing weights
      * @return The QNet results, which contains a quartet system, a set of computed weights and the quartet system
      * that was used to calculate these things.
-     * @throws IOException Thrown if there was an issue loading the input file.
-     * @throws QNetException Thrown if there were any unexpected issues with the QNET algorithm implementation
+     * @throws IOException        Thrown if there was an issue loading the input file.
+     * @throws QNetException      Thrown if there were any unexpected issues with the QNET algorithm implementation
      * @throws OptimiserException Thrown if there was an issue running the optimiser when computing weights
      */
     public QNetResult execute(File input, boolean logNormalise, double tolerance, Optimiser optimiser)
@@ -87,13 +89,14 @@ public class QNet extends RunnableTool {
 
     /**
      * Runs QNet from a combined quartet system.  Calculates the circular ordering and compute edge weights.
+     *
      * @param groupedQuartetSystem The quartet system (in grouped form) to process
-     * @param logNormalise Whether to normalise the quartet weights by natural log, or not.
-     * @param tolerance The tolerance to apply when computing weights
-     * @param optimiser The optimiser to use when computing weights
+     * @param logNormalise         Whether to normalise the quartet weights by natural log, or not.
+     * @param tolerance            The tolerance to apply when computing weights
+     * @param optimiser            The optimiser to use when computing weights
      * @return The QNet results, which contains a quartet system derived from the combined quartet system that was input,
      * a set of computed weights and the quartet system that was used to calculate these things.
-     * @throws QNetException Thrown if there were any unexpected issues with the QNET algorithm implementation
+     * @throws QNetException      Thrown if there were any unexpected issues with the QNET algorithm implementation
      * @throws OptimiserException Thrown if there was an issue running the optimiser when computing weights
      */
     public QNetResult execute(GroupedQuartetSystem groupedQuartetSystem, boolean logNormalise, double tolerance, Optimiser optimiser)
@@ -157,7 +160,7 @@ public class QNet extends RunnableTool {
     @Override
     public void run() {
 
-        try{
+        try {
 
             // Check we have something sensible to work with
             validateOptions();
@@ -180,7 +183,6 @@ public class QNet extends RunnableTool {
             CircularSplitSystem ss = result.createSplitSystem(null, QNetResult.SplitLimiter.STANDARD);
 
             new NexusWriter().writeSplitSystem(this.options.getOutput(), ss);
-
 
 
             this.trackerFinished(true);

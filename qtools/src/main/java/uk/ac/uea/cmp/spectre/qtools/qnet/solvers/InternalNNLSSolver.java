@@ -1,3 +1,19 @@
+/*
+ * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
+ * Copyright (C) 2014  UEA School of Computing Sciences
+ *
+ * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
+
 package uk.ac.uea.cmp.spectre.qtools.qnet.solvers;
 
 import org.slf4j.Logger;
@@ -121,8 +137,7 @@ public class InternalNNLSSolver {
                 if (isContained) {
 
                     w[t] = 0.0;
-                }
-                else {
+                } else {
 
                     hypotheses.add(sH);
                     break;
@@ -389,12 +404,13 @@ public class InternalNNLSSolver {
 
         /**
          * Checks if all indexed elements in z are greater than or equal to tolerance
+         *
          * @param z The list of weights
          * @return True if all indexed elements in w are less than or equal to the tolerance, otherwise false.
          */
         public boolean allGTTolerance(double[] z) {
 
-            for(Integer i : this) {
+            for (Integer i : this) {
 
                 if (z[i] <= tolerance) {
 
@@ -469,13 +485,14 @@ public class InternalNNLSSolver {
 
         /**
          * Checks if all indexed elements in w are less than or equal to tolerance
-         * @param w The list of weights
+         *
+         * @param w         The list of weights
          * @param tolerance The tolerance to allow
          * @return True if all indexed elements in w are less than or equal to the tolerance, otherwise false.
          */
         public boolean allLEQTolerance(double[] w, double tolerance) {
 
-            for(Integer i : this) {
+            for (Integer i : this) {
 
                 if (w[i] > tolerance) {
 
@@ -489,7 +506,7 @@ public class InternalNNLSSolver {
         public int getNbPositive(double[] w) {
 
             int nbPositive = 0;
-            for(Integer i : this) {
+            for (Integer i : this) {
                 if (w[i] > 0.0)
                     nbPositive++;
             }
@@ -501,7 +518,7 @@ public class InternalNNLSSolver {
             double max = Double.NEGATIVE_INFINITY;
 
             int index = -1;
-            for(Integer i : this) {
+            for (Integer i : this) {
 
                 if (w[i] > max) {
 

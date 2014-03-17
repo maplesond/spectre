@@ -52,6 +52,7 @@ public class Split implements Comparable<Split> {
 
     /**
      * Creates a new split merged from the two provided splits
+     *
      * @param s1
      * @param s2
      */
@@ -81,7 +82,7 @@ public class Split implements Comparable<Split> {
         if (this == o)
             return true;
 
-        Split other = (Split)o;
+        Split other = (Split) o;
 
         return new EqualsBuilder()
                 .append(aSide, other.aSide)
@@ -159,16 +160,13 @@ public class Split implements Comparable<Split> {
 
                 if (difASide == 0) {
                     return this.bSide.compareTo(o.bSide);
-                }
-                else {
+                } else {
                     return difASide;
                 }
-            }
-            else {
+            } else {
                 return diffWeight < 0.0 ? -1 : 1;
             }
-        }
-        else {
+        } else {
             return difNbTaxa;
         }
     }

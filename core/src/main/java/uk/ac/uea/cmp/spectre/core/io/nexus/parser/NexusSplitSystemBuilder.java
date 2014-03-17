@@ -85,8 +85,7 @@ public class NexusSplitSystemBuilder {
             ss = taxa != null ?
                     new CircularSplitSystem(splits, new IdentifierList(cycle)) :
                     new CircularSplitSystem(splits, new IdentifierList(cycle));
-        }
-        else {
+        } else {
             ss = taxa != null ?
                     new SimpleSplitSystem(taxa, splits) :
                     new SimpleSplitSystem(nbTaxa, splits);

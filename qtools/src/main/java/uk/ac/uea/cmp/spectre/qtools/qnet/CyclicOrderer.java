@@ -1,3 +1,19 @@
+/*
+ * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
+ * Copyright (C) 2014  UEA School of Computing Sciences
+ *
+ * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
+
 package uk.ac.uea.cmp.spectre.qtools.qnet;
 
 import org.apache.commons.lang3.time.StopWatch;
@@ -36,7 +52,8 @@ public class CyclicOrderer {
 
     /**
      * Computes a circular ordering from a combination of quartet systems
-     * @param taxa All of the taxa used in the merged quartet system
+     *
+     * @param taxa              All of the taxa used in the merged quartet system
      * @param theQuartetWeights The quartet groups mapped to the normalised weights
      * @return A circular ordering
      * @throws QNetException if there were any problems.
@@ -70,7 +87,7 @@ public class CyclicOrderer {
         log.debug("QNet Holders initialised");
 
         // Iterate N-3 times
-        int nbIterations = N-3;
+        int nbIterations = N - 3;
 
         log.info("Processing " + nbIterations + " path joining iterations");
         for (int p = 1; p <= nbIterations; p++) {
@@ -102,7 +119,7 @@ public class CyclicOrderer {
 
         List<IdentifierList> paths = new ArrayList<>();
 
-        for(Identifier taxon : taxa) {
+        for (Identifier taxon : taxa) {
 
             IdentifierList path = new IdentifierList();
             path.add(new Identifier(taxon));
@@ -146,7 +163,7 @@ public class CyclicOrderer {
         IdentifierList.Direction BACKWARD = IdentifierList.Direction.BACKWARD;
 
         // Perform the requested path join
-        switch(y) {
+        switch (y) {
             case 1:
                 join2(paths, a, BACKWARD, b, FORWARD);
                 break;
@@ -182,7 +199,7 @@ public class CyclicOrderer {
         IdentifierList.Direction BACKWARD = IdentifierList.Direction.BACKWARD;
 
         // Perform the requested path join
-        switch(y) {
+        switch (y) {
             case 1:
                 join3(taxaSets, i, FORWARD, j, FORWARD, k, FORWARD);
                 break;
@@ -213,7 +230,7 @@ public class CyclicOrderer {
     }
 
     protected List<IdentifierList> join2(List<IdentifierList> paths, int taxon1, IdentifierList.Direction reversed1,
-                               int taxon2, IdentifierList.Direction reversed2) throws QNetException {
+                                         int taxon2, IdentifierList.Direction reversed2) throws QNetException {
 
         IdentifierList tL1 = null, tL2 = null;
 
@@ -244,8 +261,8 @@ public class CyclicOrderer {
     }
 
     protected List<IdentifierList> join3(List<IdentifierList> paths, int taxon1, IdentifierList.Direction reversed1,
-                               int taxon2, IdentifierList.Direction reversed2,
-                               int taxon3, IdentifierList.Direction reversed3) throws QNetException {
+                                         int taxon2, IdentifierList.Direction reversed2,
+                                         int taxon3, IdentifierList.Direction reversed3) throws QNetException {
 
         IdentifierList tL1 = null, tL2 = null, tL3 = null;
 
@@ -281,6 +298,7 @@ public class CyclicOrderer {
 
     /**
      * Find a, b, a < b, in X so s (a, b) / n (a, b) maximal
+     *
      * @param X
      * @return "a" max amd "b" max
      */

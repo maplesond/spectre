@@ -1,8 +1,8 @@
 /*
- * Phylogenetics Tool suite
- * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
+ * Copyright (C) 2014  UEA School of Computing Sciences
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
@@ -19,86 +19,69 @@ package uk.ac.uea.cmp.spectre.flatnj.netvi;
 import java.util.*;
 
 /**
- *
  * @author balvociute
  */
-class ClusterPlacementOptimizerSimple extends ClusterPlacementOptimizer
-{
+class ClusterPlacementOptimizerSimple extends ClusterPlacementOptimizer {
 
-    public ClusterPlacementOptimizerSimple()
-    {
+    public ClusterPlacementOptimizerSimple() {
     }
 
     @Override
     public void placeClusterLabels(Set<Cluster> clusters,
                                    Map<Integer, Label> labels,
-                                   Window window)
-    {
+                                   Window window) {
         this.window = window;
-        
+
         Iterator<Cluster> clusterIt = clusters.iterator();
-        while(clusterIt.hasNext())
-        {        
+        while (clusterIt.hasNext()) {
             Cluster cluster = clusterIt.next();
             boolean leader = false;
             Iterator<Point> pIt = cluster.points.iterator();
-            while(pIt.hasNext())            
-            {
-                if(labels.get(pIt.next().id).sideLeader)
-                {
+            while (pIt.hasNext()) {
+                if (labels.get(pIt.next().id).sideLeader) {
                     leader = true;
                 }
             }
-            if(leader)
-            {
+            if (leader) {
                 pIt = cluster.points.iterator();
                 List<Point> pp = new LinkedList();
-                
+
                 Double topY = null;
                 Double botY = null;
                 int x = 0;
-                while(pIt.hasNext())            
-                {
+                while (pIt.hasNext()) {
                     Point p = pIt.next();
                     double y = p.getY();
                     x += p.getX();
-                    if(pp.isEmpty())
-                    {
+                    if (pp.isEmpty()) {
                         pp.add(p);
-                    }
-                    else
-                    {
-                        for(int i = 0; i < pp.size(); i ++)
-                        {
-                            if(y < pp.get(i).getY())
-                            {
+                    } else {
+                        for (int i = 0; i < pp.size(); i++) {
+                            if (y < pp.get(i).getY()) {
                                 pp.add(i, p);
                                 break;
                             }
-                            if(i == pp.size() - 1)
-                            {
+                            if (i == pp.size() - 1) {
                                 pp.add(p);
                                 break;
                             }
                         }
                     }
-                    if(topY == null || topY < y)
-                    {
+                    if (topY == null || topY < y) {
                         topY = y;
                     }
-                    if(botY == null || botY > y)
-                    {
+                    if (botY == null || botY > y) {
                         botY = y;
                     }
                 }
-                int y = (int) ((topY + botY - cluster.getHeight())*0.5);
+                int y = (int) ((topY + botY - cluster.getHeight()) * 0.5);
                 x /= pp.size();
-                
-                x = (x < window.midX) ? 0 : window.midX*2 - cluster.width;
-                
+
+                x = (x < window.midX) ? 0 : window.midX * 2 - cluster.width;
+
                 cluster.setLabelCoordinates(x, y);
             }
         }
     }
-    
+
 }

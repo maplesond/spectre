@@ -92,7 +92,7 @@ public class Identifier implements Comparable<Identifier> {
         if (!(o instanceof Identifier))
             return false;
 
-        Identifier other = (Identifier)o;
+        Identifier other = (Identifier) o;
         return new EqualsBuilder()
                 .append(this.name, other.name)
                 .append(this.id, other.id)
@@ -101,6 +101,7 @@ public class Identifier implements Comparable<Identifier> {
 
     /**
      * Natural ordering is first by id, then name
+     *
      * @param o
      * @return
      */
@@ -111,8 +112,7 @@ public class Identifier implements Comparable<Identifier> {
 
         if (idDiff == 0) {
             return this.name.compareTo(o.name);
-        }
-        else {
+        } else {
             return idDiff;
         }
     }

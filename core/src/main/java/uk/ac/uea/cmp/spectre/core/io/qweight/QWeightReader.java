@@ -71,8 +71,7 @@ public class QWeightReader extends AbstractPhygenReader {
         // Do the parsing
         try {
             parser.parse();
-        }
-        catch(RuntimeException e) {
+        } catch (RuntimeException e) {
             throw new IOException(e);
         }
 

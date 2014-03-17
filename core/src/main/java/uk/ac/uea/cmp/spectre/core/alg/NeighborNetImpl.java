@@ -88,11 +88,11 @@ public class NeighborNetImpl implements NeighborNet {
 
         LinkedList<Integer> order = new LinkedList<>();
 
-        for(Identifier i : c2vsMap.keySet()) {
+        for (Identifier i : c2vsMap.keySet()) {
             order.add(i.getId());
         }
 
-        while(!this.stackedVertexTriplets.isEmpty()) {
+        while (!this.stackedVertexTriplets.isEmpty()) {
 
             Integer max = Collections.max(order);
             int indexOfMax = order.indexOf(max);
@@ -102,13 +102,13 @@ public class NeighborNetImpl implements NeighborNet {
             VertexTriplet vt = this.stackedVertexTriplets.pop();
 
             order.add(indexOfMax, vt.vertex1.getId());
-            order.add(indexOfMax+1, vt.vertex2.getId());
-            order.add(indexOfMax+2, vt.vertex3.getId());
+            order.add(indexOfMax + 1, vt.vertex2.getId());
+            order.add(indexOfMax + 2, vt.vertex3.getId());
         }
 
         IdentifierList orderedTaxa = new IdentifierList();
 
-        for(Integer i : order) {
+        for (Integer i : order) {
             orderedTaxa.add(c2c.getTaxa().getById(i));
         }
 
@@ -118,14 +118,14 @@ public class NeighborNetImpl implements NeighborNet {
 
     protected void updateC2C() {
 
-        for(Map.Entry<Identifier, IdentifierList> components1 : c2vsMap.entrySet()) {
+        for (Map.Entry<Identifier, IdentifierList> components1 : c2vsMap.entrySet()) {
 
-            for(Map.Entry<Identifier, IdentifierList> components2 : c2vsMap.entrySet()) {
+            for (Map.Entry<Identifier, IdentifierList> components2 : c2vsMap.entrySet()) {
 
                 double sum1 = 0.0;
 
-                for(Identifier id1 : components1.getValue()) {
-                    for(Identifier id2 : components2.getValue()) {
+                for (Identifier id1 : components1.getValue()) {
+                    for (Identifier id2 : components2.getValue()) {
                         sum1 += v2v.getDistance(id1, id2);
                     }
                 }
@@ -140,13 +140,13 @@ public class NeighborNetImpl implements NeighborNet {
 
         IdentifierList activeTaxa = v2v.getTaxa();
 
-        for(Map.Entry<Identifier, IdentifierList> components1 : c2vsMap.entrySet()) {
+        for (Map.Entry<Identifier, IdentifierList> components1 : c2vsMap.entrySet()) {
 
-            for(Identifier activeTaxon : activeTaxa) {
+            for (Identifier activeTaxon : activeTaxa) {
 
                 double sum1 = 0.0;
 
-                for(Identifier id1 : components1.getValue()) {
+                for (Identifier id1 : components1.getValue()) {
                     sum1 += v2v.getDistance(id1, activeTaxon);
                 }
 
@@ -173,8 +173,7 @@ public class NeighborNetImpl implements NeighborNet {
 
         if (nbVerticies == 2) {
             return new ImmutablePair<>(vertexUnion.get(0), vertexUnion.get(1));
-        }
-        else if (nbVerticies == 3) {
+        } else if (nbVerticies == 3) {
 
             Identifier first = null;
             Identifier second = null;
@@ -187,28 +186,24 @@ public class NeighborNetImpl implements NeighborNet {
                 if (vertices2.get(0) == selectedVertices.getLeft() || vertices2.get(0) == selectedVertices.getRight()) {
                     second = vertices2.get(0);
                     third = vertices2.get(1);
-                }
-                else {
+                } else {
                     second = vertices2.get(1);
                     third = vertices2.get(0);
                 }
-            }
-            else {
+            } else {
                 first = vertices2.get(0);
 
                 if (vertices1.get(0) == selectedVertices.getLeft() || vertices1.get(0) == selectedVertices.getRight()) {
                     second = vertices1.get(0);
                     third = vertices1.get(1);
-                }
-                else {
+                } else {
                     second = vertices1.get(1);
                     third = vertices1.get(0);
                 }
             }
 
             return vertexTripletReduction(new VertexTriplet(first, second, third));
-        }
-        else { // Should be 4
+        } else { // Should be 4
 
             Identifier first = vertices1.get(0) == selectedVertices.getLeft() ?
                     vertices1.get(1) :
@@ -231,6 +226,7 @@ public class NeighborNetImpl implements NeighborNet {
 
     /**
      * Choose a pair of components that minimise the Q criterion from c2c
+     *
      * @return a pair of components that minimise the Q criterion
      */
     protected Pair<Identifier, Identifier> selectionStep1() {
@@ -238,7 +234,7 @@ public class NeighborNetImpl implements NeighborNet {
         Pair<Identifier, Identifier> bestPair = null;
         double minQ = Double.MAX_VALUE;
 
-        for(Map.Entry<Pair<Identifier,Identifier>, Double> entry : c2c.getMap().entrySet()) {
+        for (Map.Entry<Pair<Identifier, Identifier>, Double> entry : c2c.getMap().entrySet()) {
 
             Identifier id1 = entry.getKey().getLeft();
             Identifier id2 = entry.getKey().getRight();
@@ -274,9 +270,9 @@ public class NeighborNetImpl implements NeighborNet {
         vertexUnion.addAll(vertices1);
         vertexUnion.addAll(vertices2);
 
-        for(Identifier id1 : vertices1) {
+        for (Identifier id1 : vertices1) {
 
-            for(Identifier id2 : vertices2) {
+            for (Identifier id2 : vertices2) {
 
                 final double sumId1 = c2v.getDistances(id1, null).sum() - c2v.getDistance(id1, selectedComponents.getRight());
                 final double sumId2 = c2v.getDistances(id2, null).sum() - c2v.getDistance(id2, selectedComponents.getLeft());
@@ -284,7 +280,7 @@ public class NeighborNetImpl implements NeighborNet {
                 double sumVId1 = 0.0;
                 double sumVId2 = 0.0;
 
-                for(Identifier id3 : vertexUnion) {
+                for (Identifier id3 : vertexUnion) {
                     sumVId1 += c2v.getDistance(id1, id3);
                     sumVId2 += c2v.getDistance(id2, id3);
                 }
@@ -324,6 +320,7 @@ public class NeighborNetImpl implements NeighborNet {
     /**
      * Reduces the 3 selected vertices down to 2 new merged vertices.  These changes are reflected in the v2v matrix and
      * the 2 new merged vertices are returned
+     *
      * @param selectedVertices The three selected vertices to reduce
      * @return The two new vertices that represent the reduced input
      */
@@ -345,21 +342,21 @@ public class NeighborNetImpl implements NeighborNet {
         final Identifier vertex3 = selectedVertices.vertex3;
 
         // Iterate over all active vertices
-        for(Identifier v : v2v.getTaxa()) {
+        for (Identifier v : v2v.getTaxa()) {
 
             // Only process this vertex if it is not in the selected vertex list
             if (v != vertex1 && v != vertex2 && v != vertex3) {
 
                 v2v.setDistance(newVertex1, v,
-                                ((params.getAlpha() + params.getBeta()) * v2v.getDistance(vertex1, v)) +
+                        ((params.getAlpha() + params.getBeta()) * v2v.getDistance(vertex1, v)) +
                                 (params.getGamma() * v2v.getDistance(vertex2, v)));
 
                 v2v.setDistance(newVertex2, v,
-                                (params.getAlpha() * v2v.getDistance(vertex2, v)) +
+                        (params.getAlpha() * v2v.getDistance(vertex2, v)) +
                                 ((1 - params.getAlpha()) * v2v.getDistance(vertex3, v)));
 
                 v2v.setDistance(newVertex1, newVertex2,
-                                (params.getAlpha() * v2v.getDistance(vertex1, vertex2)) +
+                        (params.getAlpha() * v2v.getDistance(vertex1, vertex2)) +
                                 (params.getBeta() * v2v.getDistance(vertex1, vertex3)) +
                                 (params.getGamma() * v2v.getDistance(vertex2, vertex3)));
             }

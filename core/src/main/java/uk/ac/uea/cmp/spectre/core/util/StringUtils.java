@@ -5,8 +5,7 @@ package uk.ac.uea.cmp.spectre.core.util;
  */
 public class StringUtils {
 
-    public static String ConvertArabicToLetters(int num)
-    {
+    public static String ConvertArabicToLetters(int num) {
         String letters = "";
         while (num > 0) {
             num--;

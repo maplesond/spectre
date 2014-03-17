@@ -171,21 +171,21 @@ htmlhelp_basename = 'spectredoc'
 # -- Options for LaTeX output --------------------------------------------------
 
 latex_elements = {
-# The paper size ('letterpaper' or 'a4paper').
-#'papersize': 'letterpaper',
+    # The paper size ('letterpaper' or 'a4paper').
+    #'papersize': 'letterpaper',
 
-# The font size ('10pt', '11pt' or '12pt').
-#'pointsize': '10pt',
+    # The font size ('10pt', '11pt' or '12pt').
+    #'pointsize': '10pt',
 
-# Additional stuff for the LaTeX preamble.
-#'preamble': '',
+    # Additional stuff for the LaTeX preamble.
+    #'preamble': '',
 }
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'spectre.tex', u'Spectre Documentation',
-   u'Sarah Bastkowski, Daniel Mapleson, Monica Balvociute, Andreas Spillner', 'manual'),
+    ('index', 'spectre.tex', u'Spectre Documentation',
+     u'Sarah Bastkowski, Daniel Mapleson, Monica Balvociute, Andreas Spillner', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -228,9 +228,10 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'spectre', u'Spectre Documentation',
-   u'Sarah Bastkowski, Daniel Mapleson, Monica Balvociute, Andreas Spillner', 'spectre', 'One line description of project.',
-   'Miscellaneous'),
+    ('index', 'spectre', u'Spectre Documentation',
+     u'Sarah Bastkowski, Daniel Mapleson, Monica Balvociute, Andreas Spillner', 'spectre',
+     'One line description of project.',
+     'Miscellaneous'),
 ]
 
 # Documents to append as an appendix to all manuals.

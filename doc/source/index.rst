@@ -1,7 +1,7 @@
 .. spectre documentation master file, created by
-   sphinx-quickstart on Wed Dec 11 23:40:48 2013.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+sphinx-quickstart on Wed Dec 11 23:40:48 2013.
+You can adapt this file completely to your liking, but it should at least
+contain the root `toctree` directive.
 
 
 
@@ -12,14 +12,14 @@ Brief intro and logo here...
 
 
 .. toctree::
-   :numbered:
-   :maxdepth: 3
+:numbered:
+       :maxdepth: 3
 
-   introduction
-   dependencies
-   installation
-   developing
-   tools
+       introduction
+       dependencies
+       installation
+       developing
+       tools
 
 
 

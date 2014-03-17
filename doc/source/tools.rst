@@ -1,4 +1,3 @@
-
 .. _tools:
 
 Running the Tools
@@ -62,10 +61,10 @@ Tool Groups
 The tools within spectre are divided into sub-groups.  Those sub groups include:
 
 .. toctree::
-    :maxdepth: 1
+:maxdepth: 1
 
-    flatnj
-    network_tools
-    quartet_tools
-    padre
-    misc_tools
+        flatnj
+        network_tools
+        quartet_tools
+        padre
+        misc_tools

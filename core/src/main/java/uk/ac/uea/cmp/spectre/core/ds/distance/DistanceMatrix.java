@@ -49,6 +49,7 @@ public interface DistanceMatrix {
 
     /**
      * Sets the specified distance between the specified taxa
+     *
      * @param taxon1
      * @param taxon2
      * @param value
@@ -58,6 +59,7 @@ public interface DistanceMatrix {
 
     /**
      * Sets the specified distance between the specified taxa using their names
+     *
      * @param taxonName1
      * @param taxonName2
      * @param value
@@ -67,6 +69,7 @@ public interface DistanceMatrix {
 
     /**
      * Sets the specified distance between the specified taxa using their ids
+     *
      * @param taxonId1
      * @param taxonId2
      * @param value
@@ -107,7 +110,6 @@ public interface DistanceMatrix {
     double incrementDistance(final String taxon1Name, final String taxon2Name, final double increment);
 
 
-
     void addIdentifier(Identifier id);
 
 
@@ -127,17 +129,19 @@ public interface DistanceMatrix {
 
 
     DistanceList getDistances(Identifier taxon, Comparator<Identifier> comparator);
+
     DistanceList getDistances(int taxonId, Comparator<Identifier> comparator);
+
     DistanceList getDistances(String taxonName, Comparator<Identifier> comparator);
 
     /**
-     *
      * @return
      */
     List<DistanceList> getAllDistances();
 
     /**
      * Returns a list of distances for each taxon ordered using the specified Taxon comparator
+     *
      * @param comparator How to order the distance lists
      * @return A List of DistanceLists for each taxon in this DistanceMatrix
      */
@@ -146,12 +150,14 @@ public interface DistanceMatrix {
 
     /**
      * Returns a copy on the underlying matrix as a 2D double array
+     *
      * @return A copy of the distances represented as a 2D array.
      */
     double[][] getMatrix();
 
     /**
      * Returns a copy on the underlying matrix as a 2D double array
+     *
      * @param comparator How the taxa should be sorted.
      * @return A copy of the distances represented as a 2D array.
      */
@@ -168,18 +174,21 @@ public interface DistanceMatrix {
 
     /**
      * Removes all entries relating to the supplied taxon from the distance matrix
+     *
      * @param taxon
      */
     void removeTaxon(Identifier taxon);
 
     /**
      * Removes all entries relating to the supplied taxon, based on its id, from the distance matrix
+     *
      * @param taxonId
      */
     void removeTaxon(int taxonId);
 
     /**
      * Removes all entries relating to the supplied taxon, based on its name from the distance matrix
+     *
      * @param taxonName
      */
     void removeTaxon(String taxonName);
@@ -187,8 +196,9 @@ public interface DistanceMatrix {
 
     /**
      * Returns the map storing the distance matrix in non-redundant form
+     *
      * @return The map representing the distance matrix
      */
-    Map<Pair<Identifier,Identifier>, Double> getMap();
+    Map<Pair<Identifier, Identifier>, Double> getMap();
 
 }

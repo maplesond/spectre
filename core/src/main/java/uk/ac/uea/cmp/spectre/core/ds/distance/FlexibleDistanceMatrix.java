@@ -12,7 +12,7 @@ import java.util.*;
  */
 public class FlexibleDistanceMatrix implements DistanceMatrix {
 
-    private Map<Pair<Identifier,Identifier>, Double> matrix;
+    private Map<Pair<Identifier, Identifier>, Double> matrix;
     private IdentifierList taxa;
 
 
@@ -24,7 +24,7 @@ public class FlexibleDistanceMatrix implements DistanceMatrix {
 
         this.matrix = new HashMap<>();
         this.taxa = new IdentifierList(size);
-        for(Identifier id : this.taxa) {
+        for (Identifier id : this.taxa) {
             this.addIdentifier(id);
         }
     }
@@ -34,8 +34,8 @@ public class FlexibleDistanceMatrix implements DistanceMatrix {
         this.taxa = new IdentifierList(copy.getTaxa());
         this.matrix = new HashMap<>();
 
-        for(Identifier ti : this.taxa) {
-            for(Identifier tj : this.taxa) {
+        for (Identifier ti : this.taxa) {
+            for (Identifier tj : this.taxa) {
                 this.setDistance(ti, tj, copy.getDistance(ti, tj));
             }
         }
@@ -43,15 +43,15 @@ public class FlexibleDistanceMatrix implements DistanceMatrix {
 
     public FlexibleDistanceMatrix(IdentifierList taxa, double[][] distances) {
 
-        if(taxa.size() != distances.length) {
+        if (taxa.size() != distances.length) {
             throw new IllegalArgumentException("Taxa size is not the same as matrix size.  Taxa size: " +
                     taxa.size() + "; Matrix size: " + distances.length);
         }
 
         this.taxa = new IdentifierList(taxa);
         this.matrix = new HashMap<>();
-        for(int i = 0; i < taxa.size(); i++) {
-            for(int j = 0; j < taxa.size(); j++) {
+        for (int i = 0; i < taxa.size(); i++) {
+            for (int j = 0; j < taxa.size(); j++) {
                 this.setDistance(this.taxa.get(i), this.taxa.get(j), distances[i][j]);
             }
         }
@@ -103,7 +103,7 @@ public class FlexibleDistanceMatrix implements DistanceMatrix {
         if (!taxa.contains(id)) {
             this.taxa.add(id);
 
-            for(Identifier i : this.taxa) {
+            for (Identifier i : this.taxa) {
                 this.setDistance(i, id, 0.0);
             }
         }
@@ -180,7 +180,7 @@ public class FlexibleDistanceMatrix implements DistanceMatrix {
 
         IdentifierList sorted = comparator == null ? this.taxa : this.taxa.sort(comparator);
 
-        for(Identifier t : sorted) {
+        for (Identifier t : sorted) {
 
             if (t != taxon) {
                 dl.setDistance(t, this.getDistance(taxon, t));
@@ -213,7 +213,7 @@ public class FlexibleDistanceMatrix implements DistanceMatrix {
 
         List<DistanceList> allDistances = new ArrayList<>(this.size());
 
-        for(Identifier t : sorted) {
+        for (Identifier t : sorted) {
             allDistances.add(this.getDistances(t, comparator));
         }
 
@@ -232,11 +232,11 @@ public class FlexibleDistanceMatrix implements DistanceMatrix {
 
         IdentifierList sorted = comparator == null ? this.taxa : this.taxa.sort(comparator);
 
-        for(int i = 0; i < sorted.size(); i++) {
+        for (int i = 0; i < sorted.size(); i++) {
 
             Identifier ti = sorted.get(i);
 
-            for(int j = 0; j < sorted.size(); j++) {
+            for (int j = 0; j < sorted.size(); j++) {
 
                 Identifier tj = sorted.get(j);
 
@@ -259,14 +259,14 @@ public class FlexibleDistanceMatrix implements DistanceMatrix {
 
         List<Pair<Identifier, Identifier>> toRemove = new ArrayList<>();
 
-        for(Pair<Identifier,Identifier> key : this.matrix.keySet()) {
+        for (Pair<Identifier, Identifier> key : this.matrix.keySet()) {
 
             if (key.getLeft().equals(taxon) || key.getRight().equals(taxon)) {
                 toRemove.add(key);
             }
         }
 
-        for(int i = 0; i < toRemove.size(); i++) {
+        for (int i = 0; i < toRemove.size(); i++) {
             this.matrix.remove(toRemove.get(i));
         }
 

@@ -1,8 +1,8 @@
 /*
- * Phylogenetics Tool suite
- * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
+ * Copyright (C) 2014  UEA School of Computing Sciences
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
@@ -21,11 +21,9 @@ import java.awt.*;
 import java.util.Set;
 
 /**
- *
  * @author balvociute
  */
-public class Formating extends javax.swing.JFrame
-{
+public class Formating extends javax.swing.JFrame {
 
     JPanel drawing;
     boolean changeShape = false;
@@ -40,12 +38,11 @@ public class Formating extends javax.swing.JFrame
     /**
      * Creates new form Loading
      */
-    public Formating(JPanel drawing)
-    {
+    public Formating(JPanel drawing) {
         initComponents();
         this.drawing = drawing;
         jSpinnerSize.setSize(jSpinnerSize.getSize().height,
-                             jComboBoxShape.getSize().width);
+                jComboBoxShape.getSize().width);
         jSpinnerSize.setModel(new SpinnerNumberModel(1, 0, 50, 1));
         setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
     }
@@ -57,8 +54,7 @@ public class Formating extends javax.swing.JFrame
      */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents()
-    {
+    private void initComponents() {
 
         jColorChooserLine = new javax.swing.JColorChooser();
         jColorChooser2 = new javax.swing.JColorChooser();
@@ -88,11 +84,9 @@ public class Formating extends javax.swing.JFrame
         jLabel2.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         jLabel2.setText("Shape");
 
-        jComboBoxShape.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "","circle", "square"}));
-        jComboBoxShape.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        jComboBoxShape.setModel(new javax.swing.DefaultComboBoxModel(new String[]{"", "circle", "square"}));
+        jComboBoxShape.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jComboBoxShapeActionPerformed(evt);
             }
         });
@@ -100,17 +94,13 @@ public class Formating extends javax.swing.JFrame
         jLabel1.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         jLabel1.setText("Size");
 
-        jSpinnerSize.addMouseListener(new java.awt.event.MouseAdapter()
-        {
-            public void mouseClicked(java.awt.event.MouseEvent evt)
-            {
+        jSpinnerSize.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jSpinnerSizeMouseClicked(evt);
             }
         });
-        jSpinnerSize.addChangeListener(new javax.swing.event.ChangeListener()
-        {
-            public void stateChanged(javax.swing.event.ChangeEvent evt)
-            {
+        jSpinnerSize.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 jSpinnerSizeStateChanged(evt);
             }
         });
@@ -124,10 +114,8 @@ public class Formating extends javax.swing.JFrame
         jPanelLineColor.setBackground(new java.awt.Color(0, 0, 0));
         jPanelLineColor.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         jPanelLineColor.setPreferredSize(new java.awt.Dimension(20, 20));
-        jPanelLineColor.addMouseListener(new java.awt.event.MouseAdapter()
-        {
-            public void mouseClicked(java.awt.event.MouseEvent evt)
-            {
+        jPanelLineColor.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jPanelLineColorMouseClicked(evt);
             }
         });
@@ -135,21 +123,19 @@ public class Formating extends javax.swing.JFrame
         javax.swing.GroupLayout jPanelLineColorLayout = new javax.swing.GroupLayout(jPanelLineColor);
         jPanelLineColor.setLayout(jPanelLineColorLayout);
         jPanelLineColorLayout.setHorizontalGroup(
-            jPanelLineColorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 18, Short.MAX_VALUE)
+                jPanelLineColorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(0, 18, Short.MAX_VALUE)
         );
         jPanelLineColorLayout.setVerticalGroup(
-            jPanelLineColorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 18, Short.MAX_VALUE)
+                jPanelLineColorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(0, 18, Short.MAX_VALUE)
         );
 
         jPanelFillColor.setBackground(new java.awt.Color(51, 51, 51));
         jPanelFillColor.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         jPanelFillColor.setPreferredSize(new java.awt.Dimension(20, 20));
-        jPanelFillColor.addMouseListener(new java.awt.event.MouseAdapter()
-        {
-            public void mouseClicked(java.awt.event.MouseEvent evt)
-            {
+        jPanelFillColor.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jPanelFillColorMouseClicked(evt);
             }
         });
@@ -157,28 +143,24 @@ public class Formating extends javax.swing.JFrame
         javax.swing.GroupLayout jPanelFillColorLayout = new javax.swing.GroupLayout(jPanelFillColor);
         jPanelFillColor.setLayout(jPanelFillColorLayout);
         jPanelFillColorLayout.setHorizontalGroup(
-            jPanelFillColorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 18, Short.MAX_VALUE)
+                jPanelFillColorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(0, 18, Short.MAX_VALUE)
         );
         jPanelFillColorLayout.setVerticalGroup(
-            jPanelFillColorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 18, Short.MAX_VALUE)
+                jPanelFillColorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(0, 18, Short.MAX_VALUE)
         );
 
         jButtonFormat.setText("OK");
-        jButtonFormat.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        jButtonFormat.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonFormatActionPerformed(evt);
             }
         });
 
         jButtonCancel.setText("Cancel");
-        jButtonCancel.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        jButtonCancel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonCancelActionPerformed(evt);
             }
         });
@@ -190,51 +172,39 @@ public class Formating extends javax.swing.JFrame
         jLabel7.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         jLabel7.setText("Size");
 
-        jSpinnerFontSize.addMouseListener(new java.awt.event.MouseAdapter()
-        {
-            public void mouseClicked(java.awt.event.MouseEvent evt)
-            {
+        jSpinnerFontSize.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jSpinnerFontSizeMouseClicked(evt);
             }
         });
-        jSpinnerFontSize.addChangeListener(new javax.swing.event.ChangeListener()
-        {
-            public void stateChanged(javax.swing.event.ChangeEvent evt)
-            {
+        jSpinnerFontSize.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 jSpinnerFontSizeStateChanged(evt);
             }
         });
 
         jCheckBoxBold.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         jCheckBoxBold.setText("bold");
-        jCheckBoxBold.addChangeListener(new javax.swing.event.ChangeListener()
-        {
-            public void stateChanged(javax.swing.event.ChangeEvent evt)
-            {
+        jCheckBoxBold.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 jCheckBoxBoldStateChanged(evt);
             }
         });
-        jCheckBoxBold.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        jCheckBoxBold.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jCheckBoxBoldActionPerformed(evt);
             }
         });
 
         jCheckBoxItalic.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
         jCheckBoxItalic.setText("italic");
-        jCheckBoxItalic.addChangeListener(new javax.swing.event.ChangeListener()
-        {
-            public void stateChanged(javax.swing.event.ChangeEvent evt)
-            {
+        jCheckBoxItalic.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 jCheckBoxItalicStateChanged(evt);
             }
         });
-        jCheckBoxItalic.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        jCheckBoxItalic.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jCheckBoxItalicActionPerformed(evt);
             }
         });
@@ -244,100 +214,99 @@ public class Formating extends javax.swing.JFrame
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel6)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel2)
-                            .addComponent(jLabel1))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jSpinnerSize)
-                            .addComponent(jComboBoxShape, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel4)
-                            .addComponent(jLabel3))
-                        .addGap(6, 6, 6)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jPanelLineColor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jPanelFillColor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)))
-                .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 2, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel7)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jSpinnerFontSize, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jCheckBoxBold)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jCheckBoxItalic, javax.swing.GroupLayout.DEFAULT_SIZE, 74, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel5)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jSeparator1)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jButtonCancel)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButtonFormat)))
-                .addContainerGap())
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addComponent(jLabel6)
+                                                .addGap(0, 0, Short.MAX_VALUE))
+                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                                .addGap(0, 0, Short.MAX_VALUE)
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addComponent(jLabel2)
+                                                        .addComponent(jLabel1))
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                                        .addComponent(jSpinnerSize)
+                                                        .addComponent(jComboBoxShape, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addComponent(jLabel4)
+                                                        .addComponent(jLabel3))
+                                                .addGap(6, 6, 6)
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addComponent(jPanelLineColor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                        .addComponent(jPanelFillColor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)))
+                                .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 2, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addComponent(jLabel7)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                .addComponent(jSpinnerFontSize, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                .addComponent(jCheckBoxBold)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(jCheckBoxItalic, javax.swing.GroupLayout.DEFAULT_SIZE, 74, Short.MAX_VALUE))
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addComponent(jLabel5)
+                                                .addGap(0, 0, Short.MAX_VALUE))
+                                        .addComponent(jSeparator1)
+                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                                .addGap(0, 0, Short.MAX_VALUE)
+                                                .addComponent(jButtonCancel)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(jButtonFormat)))
+                                .addContainerGap())
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel5)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jLabel7)
-                                    .addComponent(jSpinnerFontSize, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jCheckBoxBold)
-                                    .addComponent(jCheckBoxItalic))
-                                .addGap(18, 18, 18)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jButtonCancel)
-                                    .addComponent(jButtonFormat))))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel6)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(jLabel2)
-                                .addComponent(jComboBoxShape, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jLabel3))
-                            .addComponent(jPanelLineColor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jPanelFillColor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(jLabel1)
-                                .addComponent(jSpinnerSize, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jLabel4)))
-                        .addGap(0, 0, Short.MAX_VALUE))))
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                        .addGroup(layout.createSequentialGroup()
+                                                                .addComponent(jLabel5)
+                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                                                        .addComponent(jLabel7)
+                                                                        .addComponent(jSpinnerFontSize, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                        .addComponent(jCheckBoxBold)
+                                                                        .addComponent(jCheckBoxItalic))
+                                                                .addGap(18, 18, 18)
+                                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                                                        .addComponent(jButtonCancel)
+                                                                        .addComponent(jButtonFormat))))
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addComponent(jLabel6)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                                                .addComponent(jLabel2)
+                                                                .addComponent(jComboBoxShape, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                .addComponent(jLabel3))
+                                                        .addComponent(jPanelLineColor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addComponent(jPanelFillColor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                                                .addComponent(jLabel1)
+                                                                .addComponent(jSpinnerSize, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                .addComponent(jLabel4)))
+                                                .addGap(0, 0, Short.MAX_VALUE))))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    public void setVisible()
-    {
-        Set<Point> points = ((Window)drawing).pointsToHighlight;
+    public void setVisible() {
+        Set<Point> points = ((Window) drawing).pointsToHighlight;
         Boolean round = null;
         String shape = "";
         Integer size = null;
@@ -354,11 +323,9 @@ public class Formating extends javax.swing.JFrame
         Boolean currentBold = null;
         Boolean italic = null;
         Boolean currentItalic = null;
-               
-        for(Point point : points)
-        {
-            if(round == null)
-            {
+
+        for (Point point : points) {
+            if (round == null) {
                 round = point.round;
                 shape = (round) ? "circle" : "square";
                 size = point.height;
@@ -373,43 +340,35 @@ public class Formating extends javax.swing.JFrame
                 currentFSize = fSize;
                 bold = (point.l.label.getFontStyle() == Font.BOLD);
                 currentBold = bold;
-                italic = (point.l.label.getFontStyle() == Font.ITALIC);  
+                italic = (point.l.label.getFontStyle() == Font.ITALIC);
                 currentItalic = italic;
             }
-            if(round != point.round)
-            {
+            if (round != point.round) {
                 shape = "";
             }
-            if(size != point.height)
-            {
+            if (size != point.height) {
                 currentSize = 0;
             }
-            if(bg != null && bg.getRGB() != point.getBg().getRGB())
-            {
+            if (bg != null && bg.getRGB() != point.getBg().getRGB()) {
                 currentBg = this.getBackground();
             }
-            if(fg != null && fg.getRGB() != point.getFg().getRGB())
-            {
+            if (fg != null && fg.getRGB() != point.getFg().getRGB()) {
                 currentFg = this.getBackground();
             }
-            if(fColor != point.l.label.getFontColor())
-            {
+            if (fColor != point.l.label.getFontColor()) {
                 currentFColor = this.getBackground();
             }
-            if(fSize != point.l.label.getFontSize())
-            {
+            if (fSize != point.l.label.getFontSize()) {
                 currentFSize = null;
             }
-            if(bold != (point.l.label.getFontStyle() == Font.BOLD))
-            {
+            if (bold != (point.l.label.getFontStyle() == Font.BOLD)) {
                 currentBold = false;
             }
-            if(italic != (point.l.label.getFontStyle() == Font.ITALIC))
-            {
+            if (italic != (point.l.label.getFontStyle() == Font.ITALIC)) {
                 currentItalic = false;
             }
         }
-        
+
         jComboBoxShape.setSelectedItem(shape);
         jSpinnerSize.setValue(currentSize);
         jPanelLineColor.setBackground(currentFg);
@@ -418,20 +377,19 @@ public class Formating extends javax.swing.JFrame
         jSpinnerFontSize.setValue(currentFSize);
         jCheckBoxBold.setSelected(currentBold);
         jCheckBoxItalic.setSelected(currentItalic);
-        
-        
+
+
         makeFormatingOptionsFalse();
         setLocationRelativeTo(drawing);
         repaint();
         setVisible(true);
         repaint();
     }
-    
+
     private void jPanelLineColorMouseClicked(java.awt.event.MouseEvent evt)//GEN-FIRST:event_jPanelLineColorMouseClicked
     {//GEN-HEADEREND:event_jPanelLineColorMouseClicked
         Color lineColor = JColorChooser.showDialog(this, "Line color", jPanelLineColor.getBackground());
-        if(lineColor != null)
-        {
+        if (lineColor != null) {
             jPanelLineColor.setBackground(lineColor);
             changeLineColor = true;
         }
@@ -440,8 +398,7 @@ public class Formating extends javax.swing.JFrame
     private void jPanelFillColorMouseClicked(java.awt.event.MouseEvent evt)//GEN-FIRST:event_jPanelFillColorMouseClicked
     {//GEN-HEADEREND:event_jPanelFillColorMouseClicked
         Color fillColor = JColorChooser.showDialog(this, "Line color", jPanelFillColor.getBackground());
-        if(fillColor != null)
-        {
+        if (fillColor != null) {
             jPanelFillColor.setBackground(fillColor);
             changeFillColor = true;
         }
@@ -462,7 +419,7 @@ public class Formating extends javax.swing.JFrame
                 Integer.parseInt(jSpinnerFontSize.getValue().toString()), changeFontSize,
                 jCheckBoxBold.isSelected(), changeBold,
                 jCheckBoxItalic.isSelected(), changeItalic
-                );
+        );
         setVisible(false);
     }//GEN-LAST:event_jButtonFormatActionPerformed
 
@@ -478,7 +435,7 @@ public class Formating extends javax.swing.JFrame
 
     private void jSpinnerSizeMouseClicked(java.awt.event.MouseEvent evt)//GEN-FIRST:event_jSpinnerSizeMouseClicked
     {//GEN-HEADEREND:event_jSpinnerSizeMouseClicked
-       
+
     }//GEN-LAST:event_jSpinnerSizeMouseClicked
 
     private void jSpinnerFontSizeMouseClicked(java.awt.event.MouseEvent evt)//GEN-FIRST:event_jSpinnerFontSizeMouseClicked
@@ -535,8 +492,7 @@ public class Formating extends javax.swing.JFrame
     private javax.swing.JSpinner jSpinnerSize;
     // End of variables declaration//GEN-END:variables
 
-    private void makeFormatingOptionsFalse()
-    {
+    private void makeFormatingOptionsFalse() {
         changeFillColor = false;
         changeLineColor = false;
         changeShape = false;

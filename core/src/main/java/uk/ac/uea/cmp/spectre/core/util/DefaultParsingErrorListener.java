@@ -39,6 +39,7 @@ public class DefaultParsingErrorListener implements ANTLRErrorListener {
 
     /**
      * Just rethrows exception
+     *
      * @param recognizer
      * @param offendingSymbol
      * @param line

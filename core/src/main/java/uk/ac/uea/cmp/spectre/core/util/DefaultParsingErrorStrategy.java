@@ -36,16 +36,13 @@ public class DefaultParsingErrorStrategy extends DefaultErrorStrategy {
             return; // don't report spurious errors
         }
         beginErrorCondition(recognizer);
-        if ( e instanceof NoViableAltException) {
+        if (e instanceof NoViableAltException) {
             reportNoViableAlternative(recognizer, (NoViableAltException) e);
-        }
-        else if ( e instanceof InputMismatchException) {
-            reportInputMismatch(recognizer, (InputMismatchException)e);
-        }
-        else if ( e instanceof FailedPredicateException ) {
-            reportFailedPredicate(recognizer, (FailedPredicateException)e);
-        }
-        else {
+        } else if (e instanceof InputMismatchException) {
+            reportInputMismatch(recognizer, (InputMismatchException) e);
+        } else if (e instanceof FailedPredicateException) {
+            reportFailedPredicate(recognizer, (FailedPredicateException) e);
+        } else {
             //System.err.println("unknown recognition error type: "+e.getClass().getName());
             recognizer.notifyErrorListeners(e.getOffendingToken(), e.getMessage(), e);
         }

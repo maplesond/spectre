@@ -38,7 +38,7 @@ public class NeighborNetOld {
      * @param distanceMatrix The Distance matrix to process
      * @return The computed split system
      */
-    public SplitSystem createCircularSplitSystem(final DistanceMatrix distanceMatrix){
+    public SplitSystem createCircularSplitSystem(final DistanceMatrix distanceMatrix) {
 
         return new CircularSplitSystem(distanceMatrix, this.computeCircularOrdering(distanceMatrix));
     }
@@ -53,8 +53,8 @@ public class NeighborNetOld {
 
         // Special case for small taxa sets: use the order they came in; otherwise run NN proper
         return distanceMatrix.size() <= MAX_TAXA_FOR_BASIC_ORDERING ?
-            distanceMatrix.getTaxa() :
-            executeNeighborNet(distanceMatrix);
+                distanceMatrix.getTaxa() :
+                executeNeighborNet(distanceMatrix);
     }
 
 
@@ -80,7 +80,7 @@ public class NeighborNetOld {
 
         // Return the ordered taxa
         IdentifierList ids = new IdentifierList();
-        for(int i = 0; i < nbTaxa; i++) {
+        for (int i = 0; i < nbTaxa; i++) {
             ids.add(distanceMatrix.getTaxa().getById(oneBasedOrdering[i]));
         }
 
@@ -101,7 +101,7 @@ public class NeighborNetOld {
 
         for (int i = 1; i <= nbTaxa; i++) {
             for (int j = 1; j <= nbTaxa; j++)
-                bigMatrix[i][j] = distanceMatrix.getDistance(i-1, j-1);
+                bigMatrix[i][j] = distanceMatrix.getDistance(i - 1, j - 1);
             Arrays.fill(bigMatrix[i], nbTaxa + 1, maxNbNodes, 0.0);
         }
 
@@ -113,6 +113,7 @@ public class NeighborNetOld {
 
     /**
      * Creates the initial NeighborNet Network as a doubly linked list which needs to be agglomerated.
+     *
      * @param nbTaxa Initial size of the network represented by the number of taxa.
      * @return Initialised network
      */
@@ -139,9 +140,9 @@ public class NeighborNetOld {
     /**
      * Agglomerates then expands the nodes.  Returns a 1-based circular ordering
      *
-     * @param D Distance matrix
+     * @param D        Distance matrix
      * @param netNodes Network to agglomerate
-     * @param nbTaxa Number of taxa in the network
+     * @param nbTaxa   Number of taxa in the network
      * @return Circular ordering for the agglomerated network
      */
     protected int[] agglomerateNodes(double D[][], NetNode netNodes, final int nbTaxa) {
@@ -289,22 +290,19 @@ public class NeighborNetOld {
                 // Both vertices are isolated...add edge {x,y}
                 agg2way(x, y);
                 nbClusters--;
-            }
-            else if (null == x.nbr) {
+            } else if (null == x.nbr) {
                 // X is isolated,  Y  is not isolated
                 agg3way(x, y, y.nbr, amalgamations, D, netNodes, nbNodes);
                 nbNodes += 2;
                 nbActiveNodes--;
                 nbClusters--;
-            }
-            else if ((null == y.nbr) || (nbActiveNodes == 4)) {
+            } else if ((null == y.nbr) || (nbActiveNodes == 4)) {
                 // Y is isolated, X is not isolated OR theres only four active nodes and none are isolated
                 agg3way(y, x, x.nbr, amalgamations, D, netNodes, nbNodes);
                 nbNodes += 2;
                 nbActiveNodes--;
                 nbClusters--;
-            }
-            else {
+            } else {
                 // Both nodes are connected to others and there are more than 4 active nodes
                 nbNodes = agg4way(x.nbr, x, y, y.nbr, amalgamations, D, netNodes, nbNodes);
                 nbActiveNodes -= 2;
@@ -328,10 +326,10 @@ public class NeighborNetOld {
 
     /**
      * Agglomerate 3 nodes: x,y and z; to give 2 new nodes: u and v
-     *
+     * <p/>
      * In terms of the linked list: we replace x and z by u and v and remove y from the linked list and replace y with
      * the new node z.  Returns a pointer to the node u
-     *
+     * <p/>
      * Note that this version doesn't update nbNodes, you need to
      * nbNodes += 2 after calling this!
      *
@@ -341,7 +339,7 @@ public class NeighborNetOld {
      * @return one of the new nodes: u
      */
     protected NetNode agg3way(NetNode x, NetNode y, NetNode z,
-                                   Stack<NetNode> amalgamations, double[][] D, NetNode netNodes, int nbNodes) {
+                              Stack<NetNode> amalgamations, double[][] D, NetNode netNodes, int nbNodes) {
 
         NetNode u = new NetNode();
         u.id = nbNodes + 1;
@@ -401,7 +399,7 @@ public class NeighborNetOld {
      * @return the new number of nodes
      */
     protected int agg4way(NetNode x2, NetNode x, NetNode y, NetNode y2,
-                               Stack<NetNode> amalgamations, double[][] D, NetNode netNodes, int nbNodes) {
+                          Stack<NetNode> amalgamations, double[][] D, NetNode netNodes, int nbNodes) {
 
         // Replace x2, x and y by two nodes equal to x2_prev.next and y_prev.next.
         NetNode u = agg3way(x2, x, y, amalgamations, D, netNodes, nbNodes);
@@ -425,7 +423,7 @@ public class NeighborNetOld {
      * @return the Rx value
      */
     protected double ComputeRx(NetNode z, NetNode Cx, NetNode Cy, double[][] D,
-                                    NetNode netNodes) {
+                               NetNode netNodes) {
         double Rx = 0.0;
 
         for (NetNode p = netNodes.next; p != null; p = p.next) {
@@ -444,9 +442,9 @@ public class NeighborNetOld {
     /**
      * Quickly expands the net nodes to obtain the ordering
      *
-     * @param nbTaxa    number of taxa
-     * @param amalgs    stack of amalgamations
-     * @param netNodes  the net nodes
+     * @param nbTaxa   number of taxa
+     * @param amalgs   stack of amalgamations
+     * @param netNodes the net nodes
      */
     protected int[] expandNodes(final int nbTaxa, Stack<NetNode> amalgs, NetNode netNodes) {
 
@@ -512,7 +510,7 @@ public class NeighborNetOld {
     /**
      * Represents a NeighborNet node and, by extension, network.  This data structure is implemented as a doubly linked
      * list.
-     *
+     * <p/>
      * For simplicity and speed we have not encapsulated the members of this class.
      */
     protected static class NetNode {

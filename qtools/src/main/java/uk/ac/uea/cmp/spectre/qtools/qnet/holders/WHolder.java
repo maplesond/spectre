@@ -1,8 +1,8 @@
 /*
- * Phylogenetics Tool suite
- * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
+ * Copyright (C) 2014  UEA School of Computing Sciences
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
@@ -72,8 +72,7 @@ public class WHolder {
                             int index = Quartet.over4(l - 1) + Quartet.over3(k - 1) + Quartet.over2(j - 1) + Quartet.over1(i - 1);
                             counts[index] = new Triplet<>(0, 0, 0);
                             weights[index] = new Triplet<>(0.0, 0.0, 0.0);
-                        }
-                        else {
+                        } else {
 
                             int count1 = 0;
                             double weight1 = 0.0;
@@ -150,8 +149,7 @@ public class WHolder {
             // both largest to the left or to the right
 
             position = 1;
-        }
-        else if (((i > k && i > l && ((j > l && j < k) || (j < l && j > k)))
+        } else if (((i > k && i > l && ((j > l && j < k) || (j < l && j > k)))
                 || (j > k && j > l && ((i > l && i < k) || (i < l && i > k))))
                 || (l > j && l > i && ((k > i && k < j) || (k < i && k > j)))
                 || (k > j && k > i && ((l > i && l < j) || (l < i && l > j)))) {
@@ -159,8 +157,7 @@ public class WHolder {
             // largest and third to the left or to the right
 
             position = 2;
-        }
-        else if ((i > k && i > l && (j < l && j < k))
+        } else if ((i > k && i > l && (j < l && j < k))
                 || (j > k && j > l && (i < l && i < k))
                 || (l > j && l > i && (k < i && k < j))
                 || (k > j && k > i && (l < i && l < j))) {

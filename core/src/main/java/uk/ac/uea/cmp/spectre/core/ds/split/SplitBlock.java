@@ -36,7 +36,7 @@ public class SplitBlock extends ArrayList<Integer> implements Comparable<SplitBl
         if (splitBlock == null || splitBlock.size() < 1)
             throw new IllegalArgumentException("SplitBlock must be of at least size 1");
 
-        for(Integer i : splitBlock) {
+        for (Integer i : splitBlock) {
             this.add(i.intValue());
         }
     }
@@ -48,7 +48,7 @@ public class SplitBlock extends ArrayList<Integer> implements Comparable<SplitBl
         if (splitBlock == null || splitBlock.size() < 1)
             throw new IllegalArgumentException("SplitBlock must be of at least size 1");
 
-        for(Integer i : splitBlock) {
+        for (Integer i : splitBlock) {
             this.add(i.intValue());
         }
 
@@ -109,7 +109,7 @@ public class SplitBlock extends ArrayList<Integer> implements Comparable<SplitBl
     public int hashCode() {
         HashCodeBuilder hcb = new HashCodeBuilder();
 
-        for(Integer i : this) {
+        for (Integer i : this) {
             hcb.append(i.intValue());
         }
 
@@ -125,14 +125,14 @@ public class SplitBlock extends ArrayList<Integer> implements Comparable<SplitBl
         if (this == o)
             return true;
 
-        SplitBlock other = (SplitBlock)o;
+        SplitBlock other = (SplitBlock) o;
 
         if (this.size() != other.size())
             return false;
 
         EqualsBuilder eb = new EqualsBuilder();
 
-        for(int i = 0; i < this.size(); i++) {
+        for (int i = 0; i < this.size(); i++) {
             eb.append(this.get(i).intValue(), other.get(i).intValue());
         }
 
@@ -164,7 +164,7 @@ public class SplitBlock extends ArrayList<Integer> implements Comparable<SplitBl
 
         int[] arr = new int[this.size()];
 
-        for(int i = 0; i < this.size(); i++) {
+        for (int i = 0; i < this.size(); i++) {
             arr[i] = this.get(i);
         }
 
@@ -194,11 +194,12 @@ public class SplitBlock extends ArrayList<Integer> implements Comparable<SplitBl
 
     /**
      * Copies elements from the provided splitblock and adds them to this splitblock
+     *
      * @param splitBlock
      */
     public void merge(SplitBlock splitBlock) {
 
-        for(Integer i : splitBlock) {
+        for (Integer i : splitBlock) {
             this.add(i.intValue());
         }
     }

@@ -1,4 +1,3 @@
-
 .. _padre_tools:
 
 PADRE - Package for Analyzing and Displaying Reticulate Evolution
@@ -50,13 +49,13 @@ edges by default. The Layout menu contains the options to switch to entirely
 slanted edges by selecting the Use rectangular edges option.
 
 .. figure:: images/padre-fig6.png
-    :width: 50 %
+:width: 50 %
 
     Figure 6: A tree represented with rectangular edges
 
 
 .. figure:: images/padre-fig7.png
-    :width: 50 %
+:width: 50 %
 
     Figure 7: The same tree presented in Figure 6 with slanted edges
 
@@ -138,7 +137,7 @@ from interaction vertex. In order to perform this operation, at least three
 edges which share the same head vertex need to be selected.
 
 .. figure:: images/padre-fig10.png
-    :width: 100 %
+:width: 100 %
 
     Figure 10: (Left) Before resolving the edges incoming into a vertex v. (Right) After performing this operation, a new vertex v0 is created.
 

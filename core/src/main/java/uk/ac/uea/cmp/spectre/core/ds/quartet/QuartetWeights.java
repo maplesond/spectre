@@ -4,12 +4,12 @@ import uk.ac.uea.cmp.spectre.core.math.tuple.Key;
 import uk.ac.uea.cmp.spectre.core.math.tuple.Triplet;
 
 /**
-* Created with IntelliJ IDEA.
-* User: maplesod
-* Date: 29/10/13
-* Time: 17:47
-* To change this template use File | Settings | File Templates.
-*/
+ * Created with IntelliJ IDEA.
+ * User: maplesod
+ * Date: 29/10/13
+ * Time: 17:47
+ * To change this template use File | Settings | File Templates.
+ */
 public class QuartetWeights extends Triplet<Double> {
 
     public QuartetWeights() {
@@ -17,7 +17,7 @@ public class QuartetWeights extends Triplet<Double> {
     }
 
     public QuartetWeights(double a, double b, double c) {
-        super(a,b,c);
+        super(a, b, c);
     }
 
     public QuartetWeights(Quartet q1, Quartet q2, double weight) {
@@ -34,7 +34,7 @@ public class QuartetWeights extends Triplet<Double> {
     @Override
     public boolean equals(Object o) {
 
-        return this.equals((QuartetWeights)o);
+        return this.equals((QuartetWeights) o);
     }
 
     public boolean equals(QuartetWeights quartetWeights) {
@@ -68,14 +68,11 @@ public class QuartetWeights extends Triplet<Double> {
 
         if (index == 0) {
             this.setA(weight);
-        }
-        else if (index == 1) {
+        } else if (index == 1) {
             this.setB(weight);
-        }
-        else if (index == 2) {
+        } else if (index == 2) {
             this.setC(weight);
-        }
-        else {
+        } else {
             throw new IllegalArgumentException("Invalid weight index: " + index);
         }
     }
@@ -92,11 +89,9 @@ public class QuartetWeights extends Triplet<Double> {
 
         if (((x == a || x == b) && (y == a || y == b)) || ((u == a || u == b) && (v == a || v == b))) {
             this.setA(newW);
-        }
-        else if (((x == a || x == b) && (u == a || u == b)) || ((y == a || y == b) && (v == a || v == b))) {
+        } else if (((x == a || x == b) && (u == a || u == b)) || ((y == a || y == b) && (v == a || v == b))) {
             this.setB(newW);
-        }
-        else if (((x == a || x == b) && (v == a || v == b)) || ((u == a || u == b) && (y == a || y == b))) {
+        } else if (((x == a || x == b) && (v == a || v == b)) || ((u == a || u == b) && (y == a || y == b))) {
             this.setC(newW);
         }
     }
@@ -104,6 +99,7 @@ public class QuartetWeights extends Triplet<Double> {
     /**
      * Determine which quartet to take. Use the unordered numbers, they
      * match one ordering or other
+     *
      * @param sorted
      * @param unsorted
      * @return The weight determined by considering q1 and q2
@@ -114,14 +110,12 @@ public class QuartetWeights extends Triplet<Double> {
                 ((unsorted.c == sorted.a || unsorted.c == sorted.b) && (unsorted.d == sorted.a || unsorted.d == sorted.b))) {
 
             return this.getA();
-        }
-        else if (((unsorted.a == sorted.a || unsorted.a ==  sorted.c) && (unsorted.b == sorted.a || unsorted.b == sorted.c)) ||
-                ((unsorted.c == sorted.a || unsorted.c ==  sorted.c) && (unsorted.d == sorted.a || unsorted.d == sorted.c))) {
+        } else if (((unsorted.a == sorted.a || unsorted.a == sorted.c) && (unsorted.b == sorted.a || unsorted.b == sorted.c)) ||
+                ((unsorted.c == sorted.a || unsorted.c == sorted.c) && (unsorted.d == sorted.a || unsorted.d == sorted.c))) {
 
             return this.getB();
-        }
-        else if (((unsorted.a == sorted.a || unsorted.a ==  sorted.d) && (unsorted.b == sorted.a || unsorted.b == sorted.d)) ||
-                ((unsorted.c == sorted.a || unsorted.c ==  sorted.d) && (unsorted.d == sorted.a || unsorted.d == sorted.d))) {
+        } else if (((unsorted.a == sorted.a || unsorted.a == sorted.d) && (unsorted.b == sorted.a || unsorted.b == sorted.d)) ||
+                ((unsorted.c == sorted.a || unsorted.c == sorted.d) && (unsorted.d == sorted.a || unsorted.d == sorted.d))) {
 
             return this.getC();
         }
@@ -149,8 +143,7 @@ public class QuartetWeights extends Triplet<Double> {
             this.setA(newA - min);
             this.setB(newB - min);
             this.setC(newC - min);
-        }
-        else {
+        } else {
             double max = Math.max(Math.max(newA, newB), newC);
 
             this.setA(max - newA);
@@ -172,7 +165,7 @@ public class QuartetWeights extends Triplet<Double> {
 
         // Sort taxa ascending
         int[] ta = Key.sortElements(t1, t2, t3, t4);
-        
+
         // Shortcuts to variables
         double a = this.getA();
         double b = this.getB();
@@ -316,6 +309,7 @@ public class QuartetWeights extends Triplet<Double> {
     /**
      * just a potentially weighted mean with this, quartets supported by few trees will be weak, although if the
      * trees are strong, they may be too
+     *
      * @param other
      * @param weight
      */
@@ -327,9 +321,6 @@ public class QuartetWeights extends Triplet<Double> {
 
         return this;
     }
-
-
-
 
 
     @Override

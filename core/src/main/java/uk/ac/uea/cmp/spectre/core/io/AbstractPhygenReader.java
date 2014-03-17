@@ -73,7 +73,7 @@ public abstract class AbstractPhygenReader implements PhygenReader {
             return true;
         }
 
-        for(String ext : this.commonFileExtensions()) {
+        for (String ext : this.commonFileExtensions()) {
             if (ext.equalsIgnoreCase(id))
                 return true;
         }
@@ -84,7 +84,7 @@ public abstract class AbstractPhygenReader implements PhygenReader {
     @Override
     public boolean acceptsDataTypes(List<PhygenDataType> phygenDataTypeList) {
 
-        for(PhygenDataType phygenDataType : phygenDataTypeList) {
+        for (PhygenDataType phygenDataType : phygenDataTypeList) {
             if (!this.acceptsDataType(phygenDataType)) {
                 return false;
             }

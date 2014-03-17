@@ -41,21 +41,21 @@ public class DistanceMatrixBuilder {
             @Override
             public void fillRow(int row, List<Double> elements, DistanceMatrix distanceMatrix) {
                 for (int j = 1; j <= elements.size(); j++) {
-                    distanceMatrix.setDistance(row, j, elements.get(j-1));
+                    distanceMatrix.setDistance(row, j, elements.get(j - 1));
                 }
             }
 
             @Override
             public double[] getRow(int row, DistanceMatrix distanceMatrix) {
-                return distanceMatrix.getMatrix()[row-1];
+                return distanceMatrix.getMatrix()[row - 1];
             }
         },
         LOWER {
             @Override
             public void fillRow(int row, List<Double> elements, DistanceMatrix distanceMatrix) {
                 for (int j = 1; j <= elements.size(); j++) {
-                    distanceMatrix.setDistance(row, j, elements.get(j-1));
-                    distanceMatrix.setDistance(j, row, elements.get(j-1));
+                    distanceMatrix.setDistance(row, j, elements.get(j - 1));
+                    distanceMatrix.setDistance(j, row, elements.get(j - 1));
                 }
             }
 
@@ -68,8 +68,8 @@ public class DistanceMatrixBuilder {
             @Override
             public void fillRow(int row, List<Double> elements, DistanceMatrix distanceMatrix) {
                 for (int j = 1; j <= elements.size(); j++) {
-                    distanceMatrix.setDistance(row, j + row, elements.get(j-1));
-                    distanceMatrix.setDistance(j + row, row, elements.get(j-1));
+                    distanceMatrix.setDistance(row, j + row, elements.get(j - 1));
+                    distanceMatrix.setDistance(j + row, row, elements.get(j - 1));
                 }
             }
 
@@ -82,6 +82,7 @@ public class DistanceMatrixBuilder {
 
 
         public abstract void fillRow(int row, List<Double> elements, DistanceMatrix distanceMatrix);
+
         public abstract double[] getRow(int row, DistanceMatrix distanceMatrix);
     }
 
@@ -143,7 +144,7 @@ public class DistanceMatrixBuilder {
             }
 
             // We should have covered all the bases here and ensured tf is non-null;
-            tf.fillRow(i+1, matrixLine, distanceMatrix);
+            tf.fillRow(i + 1, matrixLine, distanceMatrix);
         }
 
         // We didn't know it was upper triangular format before the second line so compute the first column now

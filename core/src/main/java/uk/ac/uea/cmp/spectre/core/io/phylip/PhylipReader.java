@@ -86,7 +86,6 @@ public class PhylipReader extends AbstractPhygenReader {
     }
 
 
-
     /**
      * Alternative Phylip parser which handles multi-line phylip files
      *

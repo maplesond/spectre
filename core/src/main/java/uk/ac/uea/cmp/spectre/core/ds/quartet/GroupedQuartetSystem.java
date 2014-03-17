@@ -80,7 +80,7 @@ public class GroupedQuartetSystem {
         this.sense = Sense.valueOf(quartetSystem.getSense().toString().toUpperCase());
         this.quartets = new WeightedQuartetGroupMap();
 
-        for(Map.Entry<Quartet, Double> entry : quartetSystem.getQuartets().entrySet()) {
+        for (Map.Entry<Quartet, Double> entry : quartetSystem.getQuartets().entrySet()) {
 
             Pair<Quartet, Integer> keys = entry.getKey().getGroupKeys();
 
@@ -122,9 +122,8 @@ public class GroupedQuartetSystem {
     }
 
 
-
     public void normaliseQuartets(boolean logscale) {
-       this.quartets.normalize(logscale, sense == Sense.MAX);
+        this.quartets.normalize(logscale, sense == Sense.MAX);
     }
 
     public List<Quartet> sortedQuartets() {

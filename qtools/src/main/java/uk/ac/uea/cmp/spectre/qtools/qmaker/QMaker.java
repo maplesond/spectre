@@ -1,8 +1,8 @@
 /*
- * Phylogenetics Tool suite
- * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
+ * Copyright (C) 2014  UEA School of Computing Sciences
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
@@ -59,7 +59,6 @@ public class QMaker extends PhygenTool {
     private File infoFile;
 
 
-
     @Override
     protected Options createInternalOptions() {
 
@@ -96,7 +95,7 @@ public class QMaker extends PhygenTool {
         }
 
         File[] inputFiles = new File[args.length];
-        for(int i = 0; i < args.length; i++) {
+        for (int i = 0; i < args.length; i++) {
             inputFiles[i] = new File(args[i].trim());
         }
 
@@ -108,8 +107,7 @@ public class QMaker extends PhygenTool {
 
             // Create the quartets from the input and save to file
             this.execute(inputFiles, optimiser, outputDir, prefix);
-        }
-        catch (OptimiserException oe) {
+        } catch (OptimiserException oe) {
             throw new IOException(oe);
         }
 
@@ -135,15 +133,15 @@ public class QMaker extends PhygenTool {
     }
 
 
-
     /**
      * Loads Quartet Networks from file, scales them, then combines them and writes the combined network to file.
-     * @param inputFiles The files containing the data to convert to quartet networks .
-     * @param optimiser The optimiser to use for scaling the quartet networks.
-     * @param outputDir The output directory in which the files will be saved.
+     *
+     * @param inputFiles   The files containing the data to convert to quartet networks .
+     * @param optimiser    The optimiser to use for scaling the quartet networks.
+     * @param outputDir    The output directory in which the files will be saved.
      * @param outputPrefix The prefix to be applied to all the output files.
      * @return A combination of quartet networks
-     * @throws IOException Thrown if there was an issue loading files.
+     * @throws IOException        Thrown if there was an issue loading files.
      * @throws OptimiserException Thrown if there was a problem scaling the quartet networks.
      */
     public GroupedQuartetSystem execute(File[] inputFiles, Optimiser optimiser, File outputDir, String outputPrefix) throws IOException, OptimiserException {
@@ -162,6 +160,7 @@ public class QMaker extends PhygenTool {
 
     /**
      * Loads Quartet Networks from file, then combines them
+     *
      * @param inputFiles The files containing the data to convert to quartet networks
      * @return A combination of quartet networks
      * @throws IOException Thrown if there was an issue loading files.
@@ -174,10 +173,11 @@ public class QMaker extends PhygenTool {
 
     /**
      * Loads Quartet Networks from file, scales them, then combines them
+     *
      * @param inputFiles The files containing the data to convert to quartet networks
-     * @param optimiser The optimiser to use for scaling the quartet networks.
+     * @param optimiser  The optimiser to use for scaling the quartet networks.
      * @return A combination of quartet networks
-     * @throws IOException Thrown if there was an issue loading files.
+     * @throws IOException        Thrown if there was an issue loading files.
      * @throws OptimiserException Thrown if there was a problem scaling the quartet networks.
      */
     public GroupedQuartetSystem execute(File[] inputFiles, Optimiser optimiser)
@@ -189,8 +189,9 @@ public class QMaker extends PhygenTool {
 
     /**
      * Scales a list of quartet networks and then combines them
+     *
      * @param quartetSystems A list of quartet networks
-     * @param optimiser The optimiser with which the qnet scaling will be performed.
+     * @param optimiser      The optimiser with which the qnet scaling will be performed.
      * @return A combination of quartet networks
      * @throws OptimiserException Thrown if there was an issue scaling the quartet networks
      */
@@ -207,6 +208,7 @@ public class QMaker extends PhygenTool {
 
     /**
      * Core execution routine for qmaker.  Takes in a list of quartet networks and combines them.
+     *
      * @param quartetSystems A list of quartet networks
      * @return A combination of quartet networks
      */
@@ -214,7 +216,7 @@ public class QMaker extends PhygenTool {
 
         // Combines networks
         QuartetSystemCombiner combiner = new QuartetSystemCombiner();
-        for(QuartetSystem qs : quartetSystems) {
+        for (QuartetSystem qs : quartetSystems) {
             combiner.combine(qs);
         }
 
@@ -229,6 +231,7 @@ public class QMaker extends PhygenTool {
 
     /**
      * Main entry point for Chopper
+     *
      * @param args
      */
     public static void main(String[] args) {

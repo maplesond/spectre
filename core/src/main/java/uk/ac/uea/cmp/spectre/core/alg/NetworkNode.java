@@ -5,7 +5,7 @@ import uk.ac.uea.cmp.spectre.core.ds.Identifier;
 /**
  * Represents a NeighborNet node.  Each node is part of a NetworkLayer, which is managed as a doubly linked list.  Each
  * NetworkNode also can point at up to two child nodes.
- *
+ * <p/>
  * For simplicity and speed we have not encapsulated the members of this class.
  */
 class NetworkNode {
@@ -25,7 +25,6 @@ class NetworkNode {
         this.Rx = 0;
         this.Sx = 0;
     }
-
 
 
     @Override

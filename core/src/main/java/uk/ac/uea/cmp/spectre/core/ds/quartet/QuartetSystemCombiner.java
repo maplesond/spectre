@@ -163,20 +163,20 @@ public class QuartetSystemCombiner {
                 lut.get(q.getB()),
                 lut.get(q.getC()),
                 lut.get(q.getD())
-                );
+        );
     }
 
     /**
      * Using the indices of the master taxa set, updates the new taxa set with the master's indicies
-     * @param allTaxa The combined taxa set
-     * @param subset The subset of taxa, which is a subset of the combined master taxa set.
-     * @returns Returns a new copy of subset, which has its indicies updated to reflect those in the master taxa set.
      *
+     * @param allTaxa The combined taxa set
+     * @param subset  The subset of taxa, which is a subset of the combined master taxa set.
+     * @returns Returns a new copy of subset, which has its indicies updated to reflect those in the master taxa set.
      */
     private Map<Integer, Integer> translateTaxaIndicies(IdentifierList allTaxa, IdentifierList subset, boolean subsetToMaster) {
 
         Map<Integer, Integer> lut = new HashMap<>();
-        for(Identifier t : subset) {
+        for (Identifier t : subset) {
             Identifier masterTaxon = allTaxa.getByName(t.getName());
 
             lut.put(
@@ -191,7 +191,7 @@ public class QuartetSystemCombiner {
 
         IdentifierList newTaxa = new IdentifierList();
 
-        for(Map.Entry<Integer, Integer> entry : lut.entrySet()) {
+        for (Map.Entry<Integer, Integer> entry : lut.entrySet()) {
             newTaxa.add(allTaxa.getById(entry.getValue()));
         }
 
@@ -206,7 +206,7 @@ public class QuartetSystemCombiner {
 
         List<IdentifierList> originalTaxaSets = new ArrayList<>();
 
-        for(QuartetSystem qnet : this.originalSystems) {
+        for (QuartetSystem qnet : this.originalSystems) {
             originalTaxaSets.add(qnet.getTaxa());
         }
 

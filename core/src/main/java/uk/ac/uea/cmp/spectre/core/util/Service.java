@@ -27,7 +27,8 @@ public interface Service {
 
     /**
      * The only thing that a service needs is a name to identify it
-     * @return  The name of this service
+     *
+     * @return The name of this service
      */
     String getName();
 }

@@ -1,8 +1,8 @@
 /*
- * Phylogenetics Tool suite
- * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
+ * Copyright (C) 2014  UEA School of Computing Sciences
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
@@ -101,8 +101,7 @@ public class THolder {
                                             weight += theQuartetWeights.containsKey(q) ?
                                                     theQuartetWeights.get(q) :
                                                     0.0;
-                                        }
-                                        else {
+                                        } else {
                                             throw new QNetException("Not sure if we are supposed to be here! :s");
                                         }
                                     }
@@ -110,8 +109,8 @@ public class THolder {
                             }
                         }
 
-                        counts[i-1][j-1][k-1] = count;
-                        weights[i-1][j-1][k-1] = weight;
+                        counts[i - 1][j - 1][k - 1] = count;
+                        weights[i - 1][j - 1][k - 1] = weight;
                     }
                 }
             }
@@ -119,11 +118,11 @@ public class THolder {
     }
 
     public double getWeight(int i, int j, int k) {
-        return weights[i-1][j-1][k-1];
+        return weights[i - 1][j - 1][k - 1];
     }
 
     public void setWeight(int i, int j, int k, double newT) {
-        weights[i-1][j-1][k-1] = newT;
+        weights[i - 1][j - 1][k - 1] = newT;
     }
 
 }

@@ -33,6 +33,7 @@ public class ScalingMatrix {
 
     /**
      * Creates the matrix of coefficients form a list of quartet networks
+     *
      * @param quartetSystemList
      */
     public ScalingMatrix(QuartetSystemList quartetSystemList) {
@@ -56,11 +57,11 @@ public class ScalingMatrix {
                 this.matrix[i][j] = computeLocalOffDiagonalElement(
                         new GroupedQuartetSystem(this.quartetSystemList.get(i)),
                         new GroupedQuartetSystem(this.quartetSystemList.get(j)));
-                this.matrix[j][i] = 1/this.matrix[i][j];
+                this.matrix[j][i] = 1 / this.matrix[i][j];
             }
         }
 
-        if(!this.perfectMatch) {
+        if (!this.perfectMatch) {
             this.recomputeMatrix();
         }
     }
@@ -100,6 +101,7 @@ public class ScalingMatrix {
 
     /**
      * Computes an array in which at position k we find the index of taxon k in tree i
+     *
      * @param taxalisti array with taxanames for tree i sorted increasingly by indices of taxa
      * @param taxalistj array with taxanames for tree j sorted increasingly by indices of taxa
      * @return Translated taxa indicies
@@ -131,6 +133,7 @@ public class ScalingMatrix {
 
     /**
      * Computes the contribution of tree number j to the diagonal element at position (i,i)
+     *
      * @param qni the quartet network of the tree for which we compute the diagonal element (i)
      * @param qnj the quartet network of the other tree (j)
      * @return Sum of the diagonals
@@ -165,17 +168,16 @@ public class ScalingMatrix {
                 for (int t3 = t2 + 1; t3 < (ntaxaj - 1); t3++) {
                     for (int t4 = t3 + 1; t4 < ntaxaj; t4++) {
 
-                        wvj = qnj.getQuartets().get(new Quartet((t1+1), (t2+1), (t3+1), (t4+1)).createSortedQuartet());
+                        wvj = qnj.getQuartets().get(new Quartet((t1 + 1), (t2 + 1), (t3 + 1), (t4 + 1)).createSortedQuartet());
 
-                        if(transind[t1]>= 0 && transind[t2]>= 0 && transind[t3]>= 0 && transind[t4]>= 0) {
-                            wvi = qni.getQuartets().get(new Quartet((transind[t1]+1), (transind[t2]+1), (transind[t3]+1), (transind[t4]+1)).createSortedQuartet());
-                        }
-                        else {
+                        if (transind[t1] >= 0 && transind[t2] >= 0 && transind[t3] >= 0 && transind[t4] >= 0) {
+                            wvi = qni.getQuartets().get(new Quartet((transind[t1] + 1), (transind[t2] + 1), (transind[t3] + 1), (transind[t4] + 1)).createSortedQuartet());
+                        } else {
                             wvi = null;
                         }
                         if (wvi != null && wvj != null) {
 
-                            QuartetWeights wviPermuted = wvi.permute((transind[t1]+1), (transind[t2]+1), (transind[t3]+1), (transind[t4]+1));
+                            QuartetWeights wviPermuted = wvi.permute((transind[t1] + 1), (transind[t2] + 1), (transind[t3] + 1), (transind[t4] + 1));
 
                             if (wviPermuted.scalarProduct(wvj) != 0.0) {
                                 part += wviPermuted.squaredLength();
@@ -191,8 +193,9 @@ public class ScalingMatrix {
 
     /**
      * Computes the diagonal elements of the coefficient matrix
+     *
      * @param quartetSystemList the list of quartet networks
-     * @param i index for the quartet network of the tree for which we compute the diagonal element
+     * @param i                 index for the quartet network of the tree for which we compute the diagonal element
      * @return Value of the diagonal element
      * @throws IOException
      */
@@ -218,6 +221,7 @@ public class ScalingMatrix {
 
     /**
      * Computes entry at position (i,j), i<j
+     *
      * @param qni quartet network of first tree (i)
      * @param qnj quartet network of second tree (j)
      * @return Value of the off diagonal element
@@ -248,20 +252,19 @@ public class ScalingMatrix {
                 for (int t3 = t2 + 1; t3 < (ntaxaj - 1); t3++) {
                     for (int t4 = t3 + 1; t4 < ntaxaj; t4++) {
 
-                        wvj = qnj.getQuartets().get(new Quartet((t1+1), (t2+1), (t3+1), (t4+1)).createSortedQuartet());
+                        wvj = qnj.getQuartets().get(new Quartet((t1 + 1), (t2 + 1), (t3 + 1), (t4 + 1)).createSortedQuartet());
 
-                        if(transind[t1]>= 0 && transind[t2]>= 0 && transind[t3]>= 0 && transind[t4]>= 0) {
+                        if (transind[t1] >= 0 && transind[t2] >= 0 && transind[t3] >= 0 && transind[t4] >= 0) {
 
                             //need to sort indices after translation, best in
                             //constructor of Key
                             wvi = qni.getQuartets().get(new Quartet((transind[t1] + 1), (transind[t2] + 1), (transind[t3] + 1), (transind[t4] + 1)).createSortedQuartet());
-                        }
-                        else {
+                        } else {
                             wvi = null;
                         }
 
                         if (wvi != null && wvj != null) {
-                            QuartetWeights wviPermuted = wvi.permute((transind[t1]+1), (transind[t2]+1), (transind[t3]+1), (transind[t4]+1));
+                            QuartetWeights wviPermuted = wvi.permute((transind[t1] + 1), (transind[t2] + 1), (transind[t3] + 1), (transind[t4] + 1));
                             coeff += wviPermuted.scalarProduct(wvj);
                         }
                     }
@@ -274,6 +277,7 @@ public class ScalingMatrix {
 
     /**
      * Computes entry at position (i,j), i<j
+     *
      * @param qni quartet network of first tree (i)
      * @param qnj quartet network of second tree (j)
      * @return Value of the off diagonal element
@@ -304,36 +308,32 @@ public class ScalingMatrix {
                 for (int t3 = t2 + 1; t3 < (ntaxaj - 1); t3++) {
                     for (int t4 = t3 + 1; t4 < ntaxaj; t4++) {
 
-                        wvj = qnj.getQuartets().get(new Quartet((t1+1), (t2+1), (t3+1), (t4+1)).createSortedQuartet());
+                        wvj = qnj.getQuartets().get(new Quartet((t1 + 1), (t2 + 1), (t3 + 1), (t4 + 1)).createSortedQuartet());
 
-                        if(transind[t1]>= 0 && transind[t2]>= 0 && transind[t3]>= 0 && transind[t4]>= 0) {
+                        if (transind[t1] >= 0 && transind[t2] >= 0 && transind[t3] >= 0 && transind[t4] >= 0) {
 
                             //need to sort indices after translation, best in
                             //constructor of Key
-                            wvi = qni.getQuartets().get(new Quartet((transind[t1]+1), (transind[t2]+1), (transind[t3]+1), (transind[t4]+1)).createSortedQuartet());
-                        }
-                        else {
+                            wvi = qni.getQuartets().get(new Quartet((transind[t1] + 1), (transind[t2] + 1), (transind[t3] + 1), (transind[t4] + 1)).createSortedQuartet());
+                        } else {
                             wvi = null;
                         }
-                            
+
                         if (wvi != null && wvj != null) {
 
                             //check first weight in triplet
-                            if(wvi.getA() == 0.0) {
-                                if(wvj.getA() > 0.0) {
+                            if (wvi.getA() == 0.0) {
+                                if (wvj.getA() > 0.0) {
                                     this.perfectMatch = false;
                                 }
-                            }
-                            else {
-                                if(wvj.getA() == 0.0) {
+                            } else {
+                                if (wvj.getA() == 0.0) {
                                     this.perfectMatch = false;
-                                }
-                                else {
-                                    if(coeff < 0.0) {
+                                } else {
+                                    if (coeff < 0.0) {
                                         coeff = wvi.getA() / wvj.getA();
-                                    }
-                                    else {
-                                        if(!Equality.approxEquals(coeff, wvi.getA() / wvj.getA(), LOCAL_TOLERANCE)) {
+                                    } else {
+                                        if (!Equality.approxEquals(coeff, wvi.getA() / wvj.getA(), LOCAL_TOLERANCE)) {
                                             this.perfectMatch = false;
                                         }
                                     }
@@ -341,21 +341,18 @@ public class ScalingMatrix {
                             }
 
                             //check second weight in triplet
-                            if(wvi.getB() == 0.0) {
-                                if(wvj.getB() > 0.0) {
+                            if (wvi.getB() == 0.0) {
+                                if (wvj.getB() > 0.0) {
                                     this.perfectMatch = false;
                                 }
-                            }
-                            else {
-                                if(wvj.getB() == 0.0) {
+                            } else {
+                                if (wvj.getB() == 0.0) {
                                     this.perfectMatch = false;
-                                }
-                                else {
-                                    if(coeff < 0.0) {
+                                } else {
+                                    if (coeff < 0.0) {
                                         coeff = wvi.getB() / wvj.getB();
-                                    }
-                                    else {
-                                        if(!Equality.approxEquals(coeff, wvi.getB() / wvj.getB(), LOCAL_TOLERANCE)) {
+                                    } else {
+                                        if (!Equality.approxEquals(coeff, wvi.getB() / wvj.getB(), LOCAL_TOLERANCE)) {
                                             this.perfectMatch = false;
                                         }
                                     }
@@ -363,21 +360,18 @@ public class ScalingMatrix {
                             }
 
                             //check third weight in triplet
-                            if(wvi.getC() == 0.0) {
-                                if(wvj.getC() > 0.0) {
+                            if (wvi.getC() == 0.0) {
+                                if (wvj.getC() > 0.0) {
                                     this.perfectMatch = false;
                                 }
-                            }
-                            else {
-                                if(wvj.getC() == 0.0) {
+                            } else {
+                                if (wvj.getC() == 0.0) {
                                     this.perfectMatch = false;
-                                }
-                                else {
-                                    if(coeff < 0.0) {
+                                } else {
+                                    if (coeff < 0.0) {
                                         coeff = wvi.getC() / wvj.getC();
-                                    }
-                                    else {
-                                        if(!Equality.approxEquals(coeff, wvi.getC() / wvj.getC(),LOCAL_TOLERANCE)) {
+                                    } else {
+                                        if (!Equality.approxEquals(coeff, wvi.getC() / wvj.getC(), LOCAL_TOLERANCE)) {
                                             this.perfectMatch = false;
                                         }
                                     }
@@ -400,7 +394,7 @@ public class ScalingMatrix {
         double[] s = new double[m.length];
 
         //initialize global scaling factors
-        for(int i=0; i < s.length; i++) {
+        for (int i = 0; i < s.length; i++) {
             s[i] = -1.0;
         }
 
@@ -412,25 +406,24 @@ public class ScalingMatrix {
         //a graph given its adjacency matrix. It can
         //happen that we find out that there is no
         //perfect match.
-        for(int i=0; i < s.length; i++) {
+        for (int i = 0; i < s.length; i++) {
 
             //check if i starts a new connected component
-            if(s[i] == -1.0) {
+            if (s[i] == -1.0) {
                 s[i] = 1.0;
                 reached.add(i);
             }
 
             //process all elements in the current connected component
-            while(!reached.isEmpty()) {
+            while (!reached.isEmpty()) {
                 int k = reached.remove(0);
-                for(int j=0; j < m.length; j++) {
-                    if(m[k][j] >= 0.0) {
-                        if(s[j] == -1.0) {
-                            s[j] = m[k][j]*s[k];
+                for (int j = 0; j < m.length; j++) {
+                    if (m[k][j] >= 0.0) {
+                        if (s[j] == -1.0) {
+                            s[j] = m[k][j] * s[k];
                             reached.add(j);
-                        }
-                        else {
-                            if(!uk.ac.tgac.metaopt.Equality.approxEquals(s[j], m[k][j] * s[k], LOCAL_TOLERANCE)) {
+                        } else {
+                            if (!uk.ac.tgac.metaopt.Equality.approxEquals(s[j], m[k][j] * s[k], LOCAL_TOLERANCE)) {
                                 this.noPerfectMatch();
                             }
                         }
@@ -440,14 +433,14 @@ public class ScalingMatrix {
         }
 
         //normalize global scaling factors
-        if(this.isPerfectMatch()) {
+        if (this.isPerfectMatch()) {
             double sum = 0.0;
 
-            for(int i = 0; i < s.length; i++) {
+            for (int i = 0; i < s.length; i++) {
                 sum += s[i];
             }
 
-            for(int i = 0; i < s.length; i++) {
+            for (int i = 0; i < s.length; i++) {
                 s[i] /= sum;
             }
         }
@@ -460,8 +453,8 @@ public class ScalingMatrix {
 
         StringBuilder sb = new StringBuilder();
 
-        for(int i = 0; i < matrix.length; i++) {
-            for(int j = 0; j < matrix.length; j++) {
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix.length; j++) {
                 sb.append(matrix[i][j] + " ");
             }
             sb.append("\n");

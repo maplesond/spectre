@@ -44,7 +44,7 @@ public class TreeLoader implements QLoader {
         QuartetSystemList sourceDataList = new QuartetSystemList();
 
         List<String> lines = FileUtils.readLines(file);
-        for(String line : lines) {
+        for (String line : lines) {
 
             NewickTree tree = new NewickTree(line);
 

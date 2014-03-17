@@ -34,7 +34,8 @@ public class CircularSplitSystem extends SimpleSplitSystem {
 
     /**
      * Creates a CircularSplitSystem using the specified splits and the given circular ordering
-     * @param splits The splits in this split system
+     *
+     * @param splits           The splits in this split system
      * @param circularOrdering The ordering of the taxa in this split system
      */
     public CircularSplitSystem(List<Split> splits, IdentifierList circularOrdering) {
@@ -45,6 +46,7 @@ public class CircularSplitSystem extends SimpleSplitSystem {
     /**
      * Creates a CircularSplitSystem from the given distance matrix.  Assumes the ordering should be based on numerically
      * ascending ID value.
+     *
      * @param distanceMatrix The distance matrix to base this split system on
      */
     public CircularSplitSystem(DistanceMatrix distanceMatrix) {
@@ -53,7 +55,8 @@ public class CircularSplitSystem extends SimpleSplitSystem {
 
     /**
      * Creates a CircularSplitSystem from the given distance matrix and specified circular ordering
-     * @param distanceMatrix The distance matrix to base this split system on
+     *
+     * @param distanceMatrix   The distance matrix to base this split system on
      * @param circularOrdering The ordering of the taxa in this split system
      */
     public CircularSplitSystem(DistanceMatrix distanceMatrix, IdentifierList circularOrdering) {

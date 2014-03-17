@@ -38,7 +38,7 @@ public class ScalingOptimiser {
             }
         }
 
-        for(int i = 0; i < variables.size(); i++) {
+        for (int i = 0; i < variables.size(); i++) {
             expr.addTerm(1.0, variables.get(i));
         }
 

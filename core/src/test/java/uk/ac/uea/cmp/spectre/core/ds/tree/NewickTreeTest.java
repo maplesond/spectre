@@ -100,12 +100,12 @@ public class NewickTreeTest {
         assertTrue(true);
     }
 
-    @Test(expected=RuntimeException.class)
+    @Test(expected = RuntimeException.class)
     public void testBadTokens() throws IOException {
         new NewickTree("giblets***dff2;");
     }
 
-    @Test(expected=RuntimeException.class)
+    @Test(expected = RuntimeException.class)
     public void testBadSyntax() throws IOException {
         new NewickTree(")))(((;");
     }

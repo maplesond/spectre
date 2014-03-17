@@ -1,8 +1,8 @@
 /*
- * Phylogenetics Tool suite
- * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
+ * Copyright (C) 2014  UEA School of Computing Sciences
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
@@ -29,6 +29,7 @@ public interface SecondaryProblem {
 
     /**
      * Creates the problem to solve from SuperQ input for this objective
+     *
      * @param nbTaxa
      * @param X
      * @param EtE
@@ -38,18 +39,21 @@ public interface SecondaryProblem {
 
     /**
      * Whether this problem requires a quadratic or linear objective to find a solution
+     *
      * @return The objective type
      */
     Objective.ObjectiveType getObjectiveType();
 
     /**
      * The identifier for this objective, which allows the user to easily identify and request this problem.
+     *
      * @return The identifier
      */
     String getName();
 
     /**
      * Whether or not this objective recognises the input identifier
+     *
      * @param id
      * @return True if accept identifier, false otherwise.
      */
