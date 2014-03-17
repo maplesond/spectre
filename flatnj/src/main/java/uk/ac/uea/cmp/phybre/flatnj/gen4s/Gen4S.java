@@ -33,6 +33,7 @@ import uk.ac.uea.cmp.phybre.flatnj.tools.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
 
 /**
  * Main class.
@@ -86,9 +87,9 @@ public class Gen4S
                 .withDescription("Character distance matrix for more accurate estimation. Default values for distance matrix " +
                         "are 0 - for identical characters and 1 - for different.").create("dm"));
 
-        options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_IN_BLOCK).isRequired().hasArg()
+        options.addOption(OptionBuilder.withArgName("block").withLongOpt(OPT_IN_BLOCK).hasArg()
                 .withDescription("Nexus block containing input data. Must be specified when \"-i\" options is used specifying a file in nexus format.  " +
-                        "May be one of the following:\n" + StringUtils.join(ALLOWED_BLOCKS, ", ")  + ".").create("b"));
+                        "May be one of the following:\n" + StringUtils.join(ALLOWED_BLOCKS, ", ") + ".").create("b"));
 
         options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_OUTPUT).hasArg()
                 .withDescription("Output file - Default value (\"" + DEFAULT_OUTPUT + "\")").create("o"));
@@ -132,42 +133,39 @@ public class Gen4S
             String inBlock = commandLine.hasOption(OPT_IN_BLOCK) ? commandLine.getOptionValue(OPT_IN_BLOCK) : null;
 
 
-            if (fastaFile != null)
-            {
+            if (fastaFile != null) {
                 readAlignment(fastaFile);
             }
-            if (distanceMatrixFile != null)
-            {
+            if (distanceMatrixFile != null) {
                 readDistanceMatrix(distanceMatrixFile);
             }
-            if (inFile != null)
-            {
+            if (inFile != null) {
+
+                if (inBlock == null) {
+                    throw new IllegalArgumentException("You specified that a nexus file should be input, so you must also " +
+                            "specify the specific nexus block to use in that file.");
+                }
+
                 String[] taxaLabels = null;
                 String blockLowerCase = inBlock.toLowerCase();
-                if(blockLowerCase.contentEquals("data") || blockLowerCase.contentEquals("characters"))
-                {
+                if(blockLowerCase.contentEquals("data") || blockLowerCase.contentEquals("characters")) {
                     taxaLabels = readAlignment(inBlock, inFile);
                 }
-                else if(blockLowerCase.contentEquals("locations"))
-                {
+                else if(blockLowerCase.contentEquals("locations")) {
                     taxaLabels = readLocations(inFile);
                 }
-                else if(blockLowerCase.contentEquals("splits"))
-                {
+                else if(blockLowerCase.contentEquals("splits")) {
                     readSplits(inFile);
                 }
 
-                if (taxaLabels != null)
-                {
+                if (taxaLabels != null) {
                     taxa = new Taxa(taxaLabels);
                 }
-                else
-                {
+                else {
                     readTaxa(inFile);
                 }
             }
-            if (taxa == null)
-            {
+            if (taxa == null) {
                 exitError("Error: No labels for the taxa were indicated.");
             }
 
@@ -177,9 +175,8 @@ public class Gen4S
             writeTaxa();
             writeQuadruples();
             writer.close();
-
-
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             System.err.println(e.getMessage());
             System.err.println(StringUtils.join(e.getStackTrace(), "\n"));
             System.exit(1);
@@ -230,7 +227,7 @@ public class Gen4S
 
     /**
      * Reads character distance matrix from DISTANCES block in nexus distance
-     * matrix file and initializes {@linkplain uk.ac.uea.cmp.phybre.core.ds.distance.ImmutableDistanceMatrix} object.
+     * matrix file and initializes {@linkplain uk.ac.uea.cmp.phybre.core.ds.distance.FlexibleDistanceMatrix} object.
      * 
      * @param distanceMatrixFile nexus file path.
      */

@@ -12,7 +12,7 @@ permanently to 4GB you would type something like this on a bash shell::
 
   export JAVA_OPTS='-Xmx4g'
 
-Should you only wish to set the memory for a particular instance of a phybre program (in this case ``superq-gui`` your
+Should you only wish to set the memory for a particular instance of a spectre program (in this case ``superq-gui`` your
 command would like this on a bash shell::
 
   JAVA_OPTS='-Xmx4g'; ./superq-gui
@@ -24,7 +24,7 @@ environment variable.
 Wrapping Scripts and Platform Support
 -------------------------------------
 
-We have tried to make all tools in phybre as platform independent as possible.  However, in order to use the java wrapping
+We have tried to make all tools in spectre as platform independent as possible.  However, in order to use the java wrapping
 scripts which simplify callling of the tools, we need to use different languages on different platforms.  On unix and mac
 platforms, these scripts have been generated without any extension, to make user experience of running the tools as close
 to that of running a native binary as possible.  However, on windows the scripts require a ``.bat`` extension.  Please keep
@@ -59,7 +59,7 @@ Apache
 Tool Groups
 -----------
 
-The tools within phybre are divided into sub-groups.  Those sub groups include:
+The tools within spectre are divided into sub-groups.  Those sub groups include:
 
 .. toctree::
     :maxdepth: 1
@@ -67,4 +67,5 @@ The tools within phybre are divided into sub-groups.  Those sub groups include:
     flatnj
     network_tools
     quartet_tools
+    padre
     misc_tools

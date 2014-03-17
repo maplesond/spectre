@@ -3,7 +3,7 @@
 Miscellaneous Tools
 ===================
 
-These tools were developed for particular tasks during the development of the phybre tools and are included here in case
+These tools were developed for particular tasks during the development of the spectre tools and are included here in case
 they are of use to others.
 
 

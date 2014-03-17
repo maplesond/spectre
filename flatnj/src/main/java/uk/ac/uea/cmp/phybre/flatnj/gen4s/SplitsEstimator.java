@@ -110,16 +110,16 @@ public class SplitsEstimator
         return weights;
     }
 
-    //TODO This needs double checking.  I modified the code for Distance Matrcies so that we use Strings rather than chars
+    //TODO This needs double checking.  I modified the code for Distance Matrices so that we use Strings rather than chars
     // to get the index of each row and column.   It seems like the original code used the ASCII value of the char to get
-    // the indicies position.  Need to double check that we are ok with 1-based numbers, possibly this should be changed
+    // the indices position.  Need to double check that we are ok with 1-based numbers, possibly this should be changed
     // to 0-based seeing as we are working with array indices.
     private D getD(char[] s)
     {
-        int id1 = this.dm.getTaxa().getByName(Character.toString(s[0])).getId();
-        int id2 = this.dm.getTaxa().getByName(Character.toString(s[1])).getId();
-        int id3 = this.dm.getTaxa().getByName(Character.toString(s[2])).getId();
-        int id4 = this.dm.getTaxa().getByName(Character.toString(s[3])).getId();
+        int id1 = this.dm != null ? this.dm.getTaxa().getByName(Character.toString(s[0])).getId() : (int)s[0]-min;
+        int id2 = this.dm != null ? this.dm.getTaxa().getByName(Character.toString(s[1])).getId() : (int)s[1]-min;
+        int id3 = this.dm != null ? this.dm.getTaxa().getByName(Character.toString(s[2])).getId() : (int)s[2]-min;
+        int id4 = this.dm != null ? this.dm.getTaxa().getByName(Character.toString(s[3])).getId() : (int)s[3]-min;
 
         D d;
         if(D[id1][id2][id3][id4] == null)

@@ -10,6 +10,8 @@ import uk.ac.uea.cmp.phybre.core.ds.split.CompatibleSplitSystem;
 import uk.ac.uea.cmp.phybre.core.ds.split.SimpleSplitSystem;
 import uk.ac.uea.cmp.phybre.core.ds.split.SplitSystem;
 
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Stack;
 
@@ -59,8 +61,8 @@ public class NeighborNetImpl implements NeighborNet {
         // DistanceMatrix between vertices and vertices (make deep copy from initial distance matrix)
         this.v2v = new FlexibleDistanceMatrix(distanceMatrix);
 
-        // Reduce down to 2 nodes
-        while (c2vsMap.size() >= 2) {
+        // Reduce down to a max of 3 nodes
+        while (c2vsMap.size() > 3) {
 
             // Choose a pair of components from c2c that minimise the Q criterion
             Pair<Identifier, Identifier> selectedComponents = this.selectionStep1();
@@ -72,13 +74,45 @@ public class NeighborNetImpl implements NeighborNet {
             // which vertices to reduce
             Pair<Identifier, Identifier> newVertices = this.reduce(selectedComponents, selectedVertices);
 
-            // Update the managed datastructures now that some vertices have been removed and replaced with new ones
+            // Update the managed data structures now that some vertices have been removed and replaced with new ones
             this.updateDataStructures(selectedComponents, newVertices);
         }
 
         // Expand back to taxa to get circular ordering
+        IdentifierList circularOrdering = expand();
 
-        return null;
+        return new CompatibleSplitSystem(null, distanceMatrix, circularOrdering);
+    }
+
+    protected IdentifierList expand() {
+
+        LinkedList<Integer> order = new LinkedList<>();
+
+        for(Identifier i : c2vsMap.keySet()) {
+            order.add(i.getId());
+        }
+
+        while(!this.stackedVertexTriplets.isEmpty()) {
+
+            Integer max = Collections.max(order);
+            int indexOfMax = order.indexOf(max);
+
+            order.remove(max);
+
+            VertexTriplet vt = this.stackedVertexTriplets.pop();
+
+            order.add(indexOfMax, vt.vertex1.getId());
+            order.add(indexOfMax+1, vt.vertex2.getId());
+            order.add(indexOfMax+2, vt.vertex3.getId());
+        }
+
+        IdentifierList orderedTaxa = new IdentifierList();
+
+        for(Integer i : order) {
+            orderedTaxa.add(c2c.getTaxa().getById(i));
+        }
+
+        return orderedTaxa;
     }
 
 

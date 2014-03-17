@@ -73,6 +73,27 @@
                         </configuration>
                     </execution>
                     <execution>
+                        <id>copy-resources</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <!-- copy the documentation in to the build dir -->
+                                <mkdir dir="${build-dir}/etc"/>
+                                <copy todir="${build-dir}/etc">
+                                    <fileset dir="${etc-dir}"/>
+                                </copy>
+                                <mkdir dir="${build-dir}/examples"/>
+                                <copy todir="${build-dir}/examples">
+                                    <fileset dir="${examples-dir}"/>
+                                </copy>
+                                <!--<copy file="${doc-dir}/build/latex/phygen.pdf" todir="${build-dir}/doc"/>-->
+                            </target>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>create-distributable</id>
                         <phase>install</phase>
                         <goals>

@@ -20,6 +20,8 @@
         <dist-dir>${project.basedir}/../build/dist</dist-dir>
         <build-dir>${project.basedir}/../build/${dist-name}</build-dir>
         <doc-dir>${project.basedir}/../doc</doc-dir>
+        <etc-dir>${project.basedir}/../etc</etc-dir>
+        <examples-dir>${project.basedir}/../examples</examples-dir>
     </properties>
 
     <!-- Licensing -->
@@ -33,9 +35,9 @@
     <!-- Developer Listing -->
     <developers>
         <developer>
-            <id>s.bastkowski</id>
-            <name>Sarah Bastkowski</name>
-            <email>sarah.bastkowski@tgac.ac.uk</email>
+            <id>maplesod</id>
+            <name>Daniel Mapleson</name>
+            <email>daniel.mapleson@tgac.ac.uk</email>
             <organization>TGAC</organization>
             <organizationUrl>http://www.tgac.ac.uk</organizationUrl>
             <roles>
@@ -43,9 +45,9 @@
             </roles>
         </developer>
         <developer>
-            <id>maplesod</id>
-            <name>Daniel Mapleson</name>
-            <email>daniel.mapleson@tgac.ac.uk</email>
+            <id>s.bastkowski</id>
+            <name>Sarah Bastkowski</name>
+            <email>sarah.bastkowski@tgac.ac.uk</email>
             <organization>TGAC</organization>
             <organizationUrl>http://www.tgac.ac.uk</organizationUrl>
             <roles>
@@ -66,6 +68,15 @@
             <name>Andreas Spillner</name>
             <email>anspliner@googlemail.com</email>
             <organization>Greifswald University</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>rad</id>
+            <name>Radoslaw Suchecki</name>
+            <email>r.suchecki@gmail.com</email>
+            <organization>University of Adelaide</organization>
             <roles>
                 <role>developer</role>
             </roles>
@@ -261,6 +272,7 @@
         <module>net</module>
         <module>qtools</module>
         <module>flatnj</module>
+        <module>padre</module>
 
         <!-- This gets executed last because it creates the distribution and the manual -->
         <module>dist</module>

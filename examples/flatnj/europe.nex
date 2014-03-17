@@ -1,0 +1,61 @@
+#NEXUS
+
+BEGIN Taxa;
+ DIMENSIONS ntax=24;
+ TAXLABELS
+  [1]	Minsk
+  [2]	Brussels
+  [3]	Copenhagen
+  [4]	Tallinn
+  [5]	Helsinki
+  [6]	Paris
+  [7]	Berlin
+  [8]	Athens
+  [9]	Budapest
+  [10]	Reykjavik
+  [11]	Dublin
+  [12]	Rome
+  [13]	Riga
+  [14]	Vilnius
+  [15]	Chisinau
+  [16]	Amsterdam
+  [17]	Warsaw
+  [18]	Lisbon
+  [19]	Bucharest
+  [20]	Moscow
+  [21]	Bratislava
+  [22]	Madrid
+  [23]	Stockholm
+  [24]	London
+ ;
+END;
+
+BEGIN locations;
+DIMENSIONS NTAX=24;
+MATRIX
+Minsk	53.9678	27.5766,
+Brussels	50.8371	4.3676,
+Copenhagen	55.6763	12.5681,
+Tallinn	59.4389	24.7545,
+Helsinki	60.1699	24.9384,
+Paris	48.8567	2.351,
+Berlin	52.5235	13.4115,
+Athens	37.9792	23.7166,
+Budapest	47.4984	19.0408,
+Reykjavik	64.1353	-21.8952,
+Dublin	53.3441	-6.2675,
+Rome	41.8955	12.4823,
+Riga	56.9465	24.1049,
+Vilnius	54.6896	25.2799,
+Chisinau	47.0167	28.8497,
+Amsterdam	52.3738	4.891,
+Warsaw	52.2297	21.0122,
+Lisbon	38.7072	-9.1355,
+Bucharest	44.4479	26.0979,
+Moscow	55.7558	37.6176,
+Bratislava	48.2116	17.1547,
+Madrid	40.4167	-3.7033,
+Stockholm	59.3328	18.0645,
+London	51.5002	-0.1262,
+;
+END;

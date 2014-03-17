@@ -128,7 +128,7 @@ public class QNet extends RunnableTool {
     public static void configureLogging() {
 
         // Setup logging
-        File propsFile = new File("logging.properties");
+        File propsFile = new File("etc/logging.properties");
 
         if (!propsFile.exists()) {
             BasicConfigurator.configure();

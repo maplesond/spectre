@@ -156,7 +156,7 @@ The original version of SuperQ was developed by:
 
 * Sarah Bastkowski
 
-The tools have been reengineered, optimised and integrated into phybre by:
+The tools have been reengineered, optimised and integrated into spectre by:
 
 * Daniel Mapleson
 
