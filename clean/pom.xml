@@ -19,8 +19,8 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>phybre</artifactId>
-        <groupId>uk.ac.uea.cmp.phybre</groupId>
+        <artifactId>spectre</artifactId>
+        <groupId>uk.ac.uea.cmp.spectre</groupId>
         <version>0.1.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -28,7 +28,7 @@
     <artifactId>clean</artifactId>
     <version>0.1.1</version>
 
-    <name>Phybre: Clean</name>
+    <name>Spectre: Clean</name>
 
 
     <build>

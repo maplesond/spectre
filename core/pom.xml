@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>uk.ac.uea.cmp.phybre</groupId>
-        <artifactId>phybre</artifactId>
+        <groupId>uk.ac.uea.cmp.spectre</groupId>
+        <artifactId>spectre</artifactId>
         <version>0.1.1</version>
     </parent>
 
@@ -14,7 +14,7 @@
     <version>0.1.1</version>
     <packaging>jar</packaging>
 
-    <name>Phybre: Core functionality</name>
+    <name>Spectre: Core functionality</name>
 
     <properties>
         <antlr-version>4.1</antlr-version>

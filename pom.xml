@@ -4,12 +4,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>uk.ac.uea.cmp.phybre</groupId>
-    <artifactId>phybre</artifactId>
+    <groupId>uk.ac.uea.cmp.spectre</groupId>
+    <artifactId>spectre</artifactId>
     <version>0.1.1</version>
     <packaging>pom</packaging>
 
-    <name>Phylogenetics Bundled Resources (PhyBRe)</name>
+    <name>Suite of PhylogEnetiC Tools for Reticulate Evolution</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -93,7 +93,7 @@
                 </os>
             </activation>
             <properties>
-                <phybre-platform>windows</phybre-platform>
+                <spectre-platform>windows</spectre-platform>
             </properties>
         </profile>
         <profile>
@@ -105,7 +105,7 @@
                 </os>
             </activation>
             <properties>
-                <phybre-platform>unix</phybre-platform>
+                <spectre-platform>unix</spectre-platform>
             </properties>
         </profile>
         <profile>
@@ -117,7 +117,7 @@
                 </os>
             </activation>
             <properties>
-                <phybre-platform>unix</phybre-platform>
+                <spectre-platform>unix</spectre-platform>
             </properties>
         </profile>
     </profiles>

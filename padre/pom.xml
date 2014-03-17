@@ -3,8 +3,8 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>phybre</artifactId>
-        <groupId>uk.ac.uea.cmp.phybre</groupId>
+        <artifactId>spectre</artifactId>
+        <groupId>uk.ac.uea.cmp.spectre</groupId>
         <version>0.1.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -12,7 +12,7 @@
     <artifactId>padre</artifactId>
     <version>2.0.1</version>
 
-    <name>Phybre: Padre</name>
+    <name>Spectre: Padre</name>
 
     <build>
 
@@ -37,7 +37,7 @@
                                 <transformer
                                         implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <!--<manifestEntries>
-                                        <Main-Class>uk.ac.uea.cmp.phybre.qtools.superq.SuperQCLI</Main-Class>
+                                        <Main-Class>uk.ac.uea.cmp.spectre.qtools.superq.SuperQCLI</Main-Class>
                                         <Build-Number>1</Build-Number>
                                     </manifestEntries>-->
                                 </transformer>
@@ -56,11 +56,11 @@
                 <!-- We create scripts for both CLI and GUI -->
                 <configuration>
                     <platforms>
-                        <platform>${phybre-platform}</platform>
+                        <platform>${spectre-platform}</platform>
                     </platforms>
                     <programs>
                         <!--<program>
-                            <mainClass>uk.ac.uea.cmp.phybre.qtools.superq.SuperQCLI</mainClass>
+                            <mainClass>uk.ac.uea.cmp.spectre.qtools.superq.SuperQCLI</mainClass>
                             <id>superq</id>
                         </program>-->
                     </programs>
@@ -97,7 +97,7 @@
         <!-- Spectre Core -->
 
         <dependency>
-            <groupId>uk.ac.uea.cmp.phybre</groupId>
+            <groupId>uk.ac.uea.cmp.spectre</groupId>
             <artifactId>core</artifactId>
             <version>0.1.1</version>
         </dependency>

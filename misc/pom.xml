@@ -19,8 +19,8 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>phybre</artifactId>
-        <groupId>uk.ac.uea.cmp.phybre</groupId>
+        <artifactId>spectre</artifactId>
+        <groupId>uk.ac.uea.cmp.spectre</groupId>
         <version>0.1.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -28,7 +28,7 @@
     <artifactId>misc</artifactId>
     <version>0.1.1</version>
 
-    <name>Phybre: Miscellaneous Tools</name>
+    <name>Spectre: Miscellaneous Tools</name>
 
     <build>
 
@@ -53,7 +53,7 @@
                                 <transformer
                                         implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <manifestEntries>
-                                        <Main-Class>uk.ac.uea.cmp.phybre.tools.ToolsCLI</Main-Class>
+                                        <Main-Class>uk.ac.uea.cmp.spectre.tools.ToolsCLI</Main-Class>
                                         <Build-Number>1</Build-Number>
                                     </manifestEntries>
                                 </transformer>
@@ -71,19 +71,19 @@
 
                 <configuration>
                     <platforms>
-                        <platform>${phybre-platform}</platform>
+                        <platform>${spectre-platform}</platform>
                     </platforms>
                     <programs>
                         <program>
-                            <mainClass>uk.ac.uea.cmp.phybre.tools.convertor.DistanceMatrixConvertor</mainClass>
+                            <mainClass>uk.ac.uea.cmp.spectre.tools.convertor.DistanceMatrixConvertor</mainClass>
                             <id>distmxconv</id>
                         </program>
                         <program>
-                            <mainClass>uk.ac.uea.cmp.phybre.tools.phycor.PhylipCorrector</mainClass>
+                            <mainClass>uk.ac.uea.cmp.spectre.tools.phycor.PhylipCorrector</mainClass>
                             <id>phycor</id>
                         </program>
                         <program>
-                            <mainClass>uk.ac.uea.cmp.phybre.tools.rdg.RandomDistanceGeneratorTool</mainClass>
+                            <mainClass>uk.ac.uea.cmp.spectre.tools.rdg.RandomDistanceGeneratorTool</mainClass>
                             <id>rdg</id>
                         </program>
                     </programs>
@@ -119,29 +119,14 @@
     <dependencies>
 
 
-        <!-- Phybre -->
+        <!-- Spectre -->
 
         <dependency>
-            <groupId>uk.ac.uea.cmp.phybre</groupId>
+            <groupId>uk.ac.uea.cmp.spectre</groupId>
             <artifactId>core</artifactId>
             <version>0.1.1</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.kohsuke.metainf-services</groupId>
-                    <artifactId>metainf-services</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
-
-
-        <!-- METAINF services -->
-
-        <dependency>
-            <groupId>org.kohsuke.metainf-services</groupId>
-            <artifactId>metainf-services</artifactId>
-            <version>1.1</version>
-        </dependency>
 
     </dependencies>
 

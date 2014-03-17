@@ -229,7 +229,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
   ('index', 'spectre', u'Spectre Documentation',
-   u'Sarah Bastkowski, Daniel Mapleson, Monica Balvociute, Andreas Spillner', 'phybre', 'One line description of project.',
+   u'Sarah Bastkowski, Daniel Mapleson, Monica Balvociute, Andreas Spillner', 'spectre', 'One line description of project.',
    'Miscellaneous'),
 ]
 
