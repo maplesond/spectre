@@ -1,8 +1,8 @@
 /*
- * Phylogenetics Tool suite
- * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
+ * Copyright (C) 2014  UEA School of Computing Sciences
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
@@ -67,8 +67,7 @@ public class SuperQCLI {
             if (superQ.failed()) {
                 log.error(superQ.getErrorMessage());
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.error(e.getMessage(), e);
             System.exit(3);
         }
@@ -119,7 +118,7 @@ public class SuperQCLI {
         if (commandLine.hasOption(OPT_INPUT)) {
             String[] args = commandLine.getOptionValues(OPT_INPUT);
             File[] inputFiles = new File[args.length];
-            for(int i = 0; i< args.length; i++) {
+            for (int i = 0; i < args.length; i++) {
                 inputFiles[i] = new File(args[i]);
             }
             sqOpts.setInputFiles(inputFiles);

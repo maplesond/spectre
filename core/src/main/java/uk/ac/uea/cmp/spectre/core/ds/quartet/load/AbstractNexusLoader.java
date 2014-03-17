@@ -9,7 +9,7 @@ public abstract class AbstractNexusLoader extends AbstractQLoader {
 
     @Override
     public boolean acceptsExtension(String ext) {
-        for(String fe : new NexusFileFilter().commonFileExtensions()) {
+        for (String fe : new NexusFileFilter().commonFileExtensions()) {
             if (fe.equalsIgnoreCase(ext)) {
                 return true;
             }

@@ -1,8 +1,8 @@
 /*
- * Phylogenetics Tool suite
- * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
+ * Copyright (C) 2014  UEA School of Computing Sciences
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
@@ -76,7 +76,6 @@ public class SuperQGUI extends JFrame implements ToolHost {
     private JLabel lblStatus;
     private JProgressBar progStatus;
 
-    
 
     private JDialog dialog = new JDialog(this, "SUPERQ");
     private JFrame gui = new JFrame("SUPERQ");
@@ -97,7 +96,6 @@ public class SuperQGUI extends JFrame implements ToolHost {
 
         this.go_control = new JobController(this.cmdRun, this.cmdCancel);
         setRunningStatus(false);
-
 
 
         // Overridden this... this should work without gurobi :s
@@ -397,7 +395,6 @@ public class SuperQGUI extends JFrame implements ToolHost {
         pnlOptions.add(pnlOutput);
 
 
-
         // ***** Layout *****
 
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -414,6 +411,7 @@ public class SuperQGUI extends JFrame implements ToolHost {
 
     /**
      * Choose file for output
+     *
      * @param evt
      */
     private void cmdSaveActionPerformed(java.awt.event.ActionEvent evt) {
@@ -448,8 +446,7 @@ public class SuperQGUI extends JFrame implements ToolHost {
             Optimiser opt = null;
             try {
                 opt = OptimiserFactory.getInstance().createOptimiserInstance(secondarySolver, null);
-            }
-            catch (OptimiserException oe) {
+            } catch (OptimiserException oe) {
                 showErrorDialog("Error trying to create an instance of the selected optimiser");
                 return;
             }
@@ -461,14 +458,14 @@ public class SuperQGUI extends JFrame implements ToolHost {
                                             Objective.ObjectiveType.QUADRATIC :
                                             Objective.ObjectiveType.LINEAR
                             ).toArray()));
-        }
-        else {
+        } else {
             cboSelectSecondaryObjective.setModel(new DefaultComboBoxModel());
         }
     }
 
     /**
      * Choose a file for input
+     *
      * @param evt
      */
     private void cmdInputActionPerformed(java.awt.event.ActionEvent evt) {
@@ -485,7 +482,7 @@ public class SuperQGUI extends JFrame implements ToolHost {
                 File[] files = fc.getSelectedFiles();
 
                 StringBuilder sb = new StringBuilder();
-                for(File f : files) {
+                for (File f : files) {
                     sb.append(f.getAbsolutePath());
                     sb.append("; ");
                 }
@@ -498,6 +495,7 @@ public class SuperQGUI extends JFrame implements ToolHost {
 
     /**
      * Start Super Q
+     *
      * @param evt
      */
     private void cmdRunActionPerformed(java.awt.event.ActionEvent evt) {
@@ -511,6 +509,7 @@ public class SuperQGUI extends JFrame implements ToolHost {
 
     /**
      * Setup SuperQ configuration using values specified in the GUI
+     *
      * @return SuperQ configuration
      */
     private SuperQOptions buildSuperQOptions() {
@@ -529,7 +528,7 @@ public class SuperQGUI extends JFrame implements ToolHost {
             String[] files = this.txtInput.getText().split(";");
 
             java.util.List<File> inputFiles = new ArrayList<>();
-            for(int i = 0; i < files.length; i++) {
+            for (int i = 0; i < files.length; i++) {
                 String path = files[i].trim();
 
                 if (!path.isEmpty()) {
@@ -558,7 +557,7 @@ public class SuperQGUI extends JFrame implements ToolHost {
             if (this.cboSelectSecondaryObjective.isEnabled()) {
                 options.setSecondaryProblem(
                         SecondaryProblemFactory.getInstance().createSecondaryObjective(
-                                (String)this.cboSelectSecondaryObjective.getSelectedItem()));
+                                (String) this.cboSelectSecondaryObjective.getSelectedItem()));
             }
 
             if (((String) this.cboSelectScalingSolver.getSelectedItem()).equalsIgnoreCase("off")) {
@@ -590,8 +589,7 @@ public class SuperQGUI extends JFrame implements ToolHost {
                 showErrorDialog("Could not create requested optimiser: " + (String) this.cboSelectSecondarySolver.getSelectedItem());
                 return null;
             }
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             showErrorDialog("Unexpected error occurred configuring SuperQ: " + e.getMessage());
             return null;
         }
@@ -627,9 +625,9 @@ public class SuperQGUI extends JFrame implements ToolHost {
     }
 
 
-
     /**
      * Main entry point for SuperQ when running in GUI mode.
+     *
      * @param args Program arguments... we expect nothing to be here.
      */
     public static void main(String args[]) {

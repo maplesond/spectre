@@ -1,8 +1,8 @@
 /*
- * Phylogenetics Tool suite
- * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
+ * Copyright (C) 2014  UEA School of Computing Sciences
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
@@ -40,6 +40,7 @@ public class WeightsComputer {
     /**
      * Calculate the split weights for such splits as are relevant.  That is, we first go through all relevant splits
      * and create a list of split indices.  There are n choose 2 - n splits i.e. n(n-1)/2 - n.
+     *
      * @param quartetSystem
      * @param circularOrdering
      * @param tolerance
@@ -89,8 +90,7 @@ public class WeightsComputer {
 
             log.info("Using " + optimiser.getIdentifier() + " to solve NNLS problem");
             solution = new ExternalNNLSSolver().optimise(optimiser, Etf, EtE.toArray()).getVariableValues();
-        }
-        else {
+        } else {
 
             // Tolerance level!  If set to negative previously, use default
             if (tolerance < -0.0) {
@@ -122,7 +122,7 @@ public class WeightsComputer {
             throw new QNetException("No solution found.  Can't process further.");
         }
 
-        for(int i = 0; i < solution.length; i++) {
+        for (int i = 0; i < solution.length; i++) {
 
             Double d = new Double(solution[i]);
 
@@ -187,8 +187,7 @@ public class WeightsComputer {
                     pP = p1;
                     q = q2;
                     qP = q1;
-                }
-                else if (p2 > p1) {
+                } else if (p2 > p1) {
 
                     // p2 is pP, q2 is qP
 
@@ -196,8 +195,7 @@ public class WeightsComputer {
                     pP = p2;
                     q = q1;
                     qP = q2;
-                }
-                else {
+                } else {
 
                     if (q1 > q2) {
 
@@ -207,8 +205,7 @@ public class WeightsComputer {
                         pP = p1;
                         q = q2;
                         qP = q1;
-                    }
-                    else if (q2 > q1) {
+                    } else if (q2 > q1) {
 
                         // p2 is pP, q2 is qP
 
@@ -216,8 +213,7 @@ public class WeightsComputer {
                         pP = p2;
                         q = q1;
                         qP = q2;
-                    }
-                    else {
+                    } else {
 
                         // identical - it shouldn't matter then
 
@@ -234,12 +230,10 @@ public class WeightsComputer {
                 if (qP <= q) {
 
                     value = pHolder.getP(pP, qP - 1, q, N + p - 1);
-                }
-                else if (pP < q && q < qP) {
+                } else if (pP < q && q < qP) {
 
                     value = pHolder.getP(pP, q - 1, qP, N + p - 1) + pHolder.getP(p, pP - 1, q, qP - 1);
-                }
-                else if (q <= pP) {
+                } else if (q <= pP) {
 
                     value = pHolder.getP(p, q - 1, pP, qP - 1);
                 }
@@ -285,8 +279,7 @@ public class WeightsComputer {
                             double aW = theQuartetWeights.getWeight(new Quartet(cA, cB, cC, cD));
 
                             gw[p - 1][p + 1][i - 1][j - 1] = aW;
-                        }
-                        else if (l == 3) {
+                        } else if (l == 3) {
 
                             int cA = c[p];
                             int cB = c[p + 2];
@@ -297,8 +290,7 @@ public class WeightsComputer {
 
                             gw[p - 1][p + 2][i - 1][j - 1] = aW
                                     + gw[p - 1][p + 1][i - 1][j - 1] + gw[p][p + 2][i - 1][j - 1];
-                        }
-                        else {
+                        } else {
 
                             int cA = c[p];
                             int cB = c[p + l - 1];
@@ -325,8 +317,7 @@ public class WeightsComputer {
                             double aW = theQuartetWeights.getWeight(new Quartet(cA, cB, cC, cD));
 
                             gw[p - 1][p + 1][i - 1][j - 1] = aW;
-                        }
-                        else if (l == 3) {
+                        } else if (l == 3) {
 
                             int cA = c[p];
                             int cB = c[p + 2];
@@ -337,8 +328,7 @@ public class WeightsComputer {
 
                             gw[p - 1][p + 2][i - 1][j - 1] = aW
                                     + gw[p - 1][p + 1][i - 1][j - 1] + gw[p][p + 2][i - 1][j - 1];
-                        }
-                        else {
+                        } else {
 
                             int cA = c[p];
                             int cB = c[p + l - 1];

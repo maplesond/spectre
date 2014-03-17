@@ -60,7 +60,7 @@ public class QWeightWriter extends AbstractPhygenWriter {
         }
 
         // Output the quartets and weights part
-        for(Quartet quartet : quartetSystem.sortedQuartets()) {
+        for (Quartet quartet : quartetSystem.sortedQuartets()) {
             out.write(quartet.toString(nF) + " " + quartetSystem.getQuartets().get(quartet).toString() + ";\n");
         }
 

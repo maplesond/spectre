@@ -1,8 +1,8 @@
 /*
- * Phylogenetics Tool suite
- * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
+ * Copyright (C) 2014  UEA School of Computing Sciences
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
@@ -19,17 +19,14 @@ package uk.ac.uea.cmp.spectre.flatnj.netvi;
 import uk.ac.uea.cmp.spectre.core.ui.gui.LookAndFeel;
 
 /**
- *
  * @author balvociute
  */
-public class ColoringOptions extends javax.swing.JDialog
-{
+public class ColoringOptions extends javax.swing.JDialog {
 
     /**
      * Creates new form OpenOptions
      */
-    public ColoringOptions(java.awt.Frame parent, boolean modal)
-    {
+    public ColoringOptions(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
         buttonGroupColoring.add(jRadioButtonAutoColoring);
@@ -43,8 +40,7 @@ public class ColoringOptions extends javax.swing.JDialog
      */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents()
-    {
+    private void initComponents() {
 
         buttonGroupColoring = new javax.swing.ButtonGroup();
         jRadioButtonKeepColoring = new javax.swing.JRadioButton();
@@ -59,10 +55,8 @@ public class ColoringOptions extends javax.swing.JDialog
         jRadioButtonAutoColoring.setText("Automatic coloring");
 
         jButtonOK.setText("OK");
-        jButtonOK.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        jButtonOK.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonOKActionPerformed(evt);
             }
         });
@@ -70,28 +64,28 @@ public class ColoringOptions extends javax.swing.JDialog
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jRadioButtonKeepColoring)
-                    .addComponent(jRadioButtonAutoColoring))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButtonOK)
-                .addContainerGap())
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jRadioButtonKeepColoring)
+                                        .addComponent(jRadioButtonAutoColoring))
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jButtonOK)
+                                .addContainerGap())
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jRadioButtonKeepColoring)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jRadioButtonAutoColoring)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButtonOK)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(jRadioButtonKeepColoring)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jRadioButtonAutoColoring)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jButtonOK)
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -105,22 +99,17 @@ public class ColoringOptions extends javax.swing.JDialog
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[])
-    {
+    public static void main(String args[]) {
         LookAndFeel.setLookAndFeel(LookAndFeel.NIMBUS);
 
         /* Create and display the dialog */
-        java.awt.EventQueue.invokeLater(new Runnable()
-        {
+        java.awt.EventQueue.invokeLater(new Runnable() {
             @Override
-            public void run()
-            {
+            public void run() {
                 ColoringOptions dialog = new ColoringOptions(new javax.swing.JFrame(), true);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter()
-                {
+                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
-                    public void windowClosing(java.awt.event.WindowEvent e)
-                    {
+                    public void windowClosing(java.awt.event.WindowEvent e) {
                         System.exit(0);
                     }
                 });
@@ -128,6 +117,7 @@ public class ColoringOptions extends javax.swing.JDialog
             }
         });
     }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroupColoring;
     private javax.swing.JButton jButtonOK;
@@ -135,8 +125,7 @@ public class ColoringOptions extends javax.swing.JDialog
     private javax.swing.JRadioButton jRadioButtonKeepColoring;
     // End of variables declaration//GEN-END:variables
 
-    Boolean changeColoring()
-    {
+    Boolean changeColoring() {
         return jRadioButtonAutoColoring.isSelected();
     }
 }

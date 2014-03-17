@@ -1,3 +1,19 @@
+/*
+ * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
+ * Copyright (C) 2014  UEA School of Computing Sciences
+ *
+ * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
+
 package uk.ac.uea.cmp.spectre.qtools.qnet.holders;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -57,8 +73,7 @@ public abstract class AbstractBasicHolder {
 
                     counts[index] = 0;
                     weights[index] = 0.0;
-                }
-                else {
+                } else {
 
                     // Do whatever custom initialisation is required
                     Pair<Integer, Double> countWeight = this.calcCountWeight(A, B);
@@ -72,6 +87,7 @@ public abstract class AbstractBasicHolder {
 
     /**
      * Calculates the counts and weights using 2 paths.
+     *
      * @param A The first path
      * @param B The second path
      * @return The count and weight for the 2 paths.
@@ -80,6 +96,7 @@ public abstract class AbstractBasicHolder {
 
     /**
      * Returns the weighted count at i, j.
+     *
      * @param i First 1-based index
      * @param j Second 1-based index
      * @return The weighted count at i, j
@@ -88,13 +105,14 @@ public abstract class AbstractBasicHolder {
 
         int count = this.getCount(i, j);
 
-        return count == 0 ? 0.0 : this.getWeight(i, j) / ((double)count);
+        return count == 0 ? 0.0 : this.getWeight(i, j) / ((double) count);
     }
 
     /**
      * Returns the count at i, j.  Indicies are 1-based.  Calculates the index by using quartet over2 on the largest
      * index and quartet over1 on the smallest index.
      * First 1-based index
+     *
      * @param j Second 1-based index
      * @return The count at i, j
      */
@@ -118,6 +136,7 @@ public abstract class AbstractBasicHolder {
     /**
      * Returns the weights at i, j.  Indicies are 1-based.  Calculates the index by using quartet over2 on the largest
      * index and quartet over1 on the smallest index.
+     *
      * @param i First 1-based index
      * @param j Second 1-based index
      * @return The weight at i, j

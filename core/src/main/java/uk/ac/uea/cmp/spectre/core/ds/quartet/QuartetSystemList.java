@@ -56,6 +56,7 @@ public class QuartetSystemList extends ArrayList<QuartetSystem> {
 
     /**
      * Creates a list of quartet networks initalised with a single element
+     *
      * @param initialElement
      */
     public QuartetSystemList(QuartetSystem initialElement) {
@@ -65,19 +66,21 @@ public class QuartetSystemList extends ArrayList<QuartetSystem> {
 
     /**
      * Creates a list of quartet networks, converted from a list of NewickTrees.
+     *
      * @param trees A list of newick trees
      */
     public QuartetSystemList(List<NewickTree> trees) {
 
         super();
 
-        for(NewickTree newickTree : trees) {
+        for (NewickTree newickTree : trees) {
             this.add(new QuartetSystem(newickTree));
         }
     }
 
     /**
      * Creates a list of quartet networks from a file source
+     *
      * @param inputFiles The files to load
      * @throws IOException Thrown if there were any issues loading the file.
      */
@@ -85,10 +88,10 @@ public class QuartetSystemList extends ArrayList<QuartetSystem> {
 
         super();
 
-        for(File file : inputFiles) {
+        for (File file : inputFiles) {
 
             int nbQuartetSystems = 0;
-            for(QuartetSystem qs : new QLoaderFactory().create(FilenameUtils.getExtension(file.getName())).load(file, 1.0)) {
+            for (QuartetSystem qs : new QLoaderFactory().create(FilenameUtils.getExtension(file.getName())).load(file, 1.0)) {
                 this.add(qs);
                 nbQuartetSystems++;
             }
@@ -101,7 +104,7 @@ public class QuartetSystemList extends ArrayList<QuartetSystem> {
 
         IdentifierList result = new IdentifierList();
 
-        for(QuartetSystem data : this) {
+        for (QuartetSystem data : this) {
             result.addAll(data.getTaxa());
         }
 
@@ -113,7 +116,7 @@ public class QuartetSystemList extends ArrayList<QuartetSystem> {
 
         List<IdentifierList> result = new ArrayList<>();
 
-        for(QuartetSystem data : this) {
+        for (QuartetSystem data : this) {
             result.add(data.getTaxa());
         }
 
@@ -131,7 +134,7 @@ public class QuartetSystemList extends ArrayList<QuartetSystem> {
 
         List<Double> weights = new ArrayList<>();
 
-        for(QuartetSystem data : this) {
+        for (QuartetSystem data : this) {
             weights.add(data.getWeight());
         }
 
@@ -144,14 +147,14 @@ public class QuartetSystemList extends ArrayList<QuartetSystem> {
         // Computes the matrix of coefficients
         ScalingMatrix matrix = new ScalingMatrix(this);
 
-        if(matrix.isPerfectMatch()) {
+        if (matrix.isPerfectMatch()) {
             double[] solution = matrix.computeFactorsDirectly();
-            if(matrix.isPerfectMatch()) {
+            if (matrix.isPerfectMatch()) {
                 this.scaleWeights(solution);
             }
         }
 
-        if(!matrix.isPerfectMatch()) {
+        if (!matrix.isPerfectMatch()) {
 
             matrix.recomputeMatrix();
 
@@ -169,6 +172,7 @@ public class QuartetSystemList extends ArrayList<QuartetSystem> {
 
     /**
      * Updates the quartet weights in the new input files (scales the weights before they are processed by Chopper)
+     *
      * @param w The weights to apply to the quartet networks.
      * @throws IOException
      */
@@ -184,7 +188,7 @@ public class QuartetSystemList extends ArrayList<QuartetSystem> {
 
             double weight = w[i];
 
-            for(Map.Entry<Quartet, Double> entry : qs.getQuartets().entrySet()) {
+            for (Map.Entry<Quartet, Double> entry : qs.getQuartets().entrySet()) {
                 entry.setValue(entry.getValue() * weight);
             }
         }
@@ -195,7 +199,7 @@ public class QuartetSystemList extends ArrayList<QuartetSystem> {
         File outputDir = outputPrefix.getParentFile();
         String prefix = outputPrefix.getName();
 
-        for(int i = 1; i <= this.size(); i++) {
+        for (int i = 1; i <= this.size(); i++) {
 
             File outputFile = new File(outputDir, prefix + i + ".qua");
 

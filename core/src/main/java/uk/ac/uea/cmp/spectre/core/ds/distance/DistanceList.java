@@ -17,6 +17,7 @@ public interface DistanceList {
 
     /**
      * Sets the distance to the specified taxon
+     *
      * @param taxon
      * @param value
      * @return The previous distance set between the two taxa, or 0.0 if the value has never been set before
@@ -25,6 +26,7 @@ public interface DistanceList {
 
     /**
      * Sets the distance to the specified taxon using its name
+     *
      * @param taxonName
      * @param value
      * @return The previous distance set between the two taxa, or 0.0 if the value has never been set before
@@ -33,6 +35,7 @@ public interface DistanceList {
 
     /**
      * Sets the distance to the specified taxa using its id
+     *
      * @param taxonId
      * @param value
      * @return The previous distance set between the two taxa, or 0.0 if the value has never been set before
@@ -70,6 +73,7 @@ public interface DistanceList {
 
     /**
      * Returns the taxon represented by this DistanceList
+     *
      * @return
      */
     Identifier getTaxon();
@@ -77,6 +81,7 @@ public interface DistanceList {
 
     /**
      * Gets all the other taxa targeted by this DistanceList
+     *
      * @return
      */
     IdentifierList getOtherTaxa();

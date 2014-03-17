@@ -1,8 +1,8 @@
 /*
- * Phylogenetics Tool suite
- * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
+ * Copyright (C) 2014  UEA School of Computing Sciences
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
@@ -68,7 +68,6 @@ public class EdgeHandling {
     }
 
 
-
     public AdjacentEdges retrieveAdjacents(Split split, SplitSystem sortedSplits, SplitDistanceMap splitDistanceMap) {
 
         // Get the edges on either side of the current split
@@ -117,7 +116,8 @@ public class EdgeHandling {
 
     /**
      * Finds the largest subsets of the all the edges in the split system that together make up the provided edge
-     * @param edge The edge to find subsets from
+     *
+     * @param edge        The edge to find subsets from
      * @param splitSystem The split system to search through to find the subsets.
      */
     private List<SplitBlock> findEdgeSubsets(SplitBlock edge, SplitSystem splitSystem) {
@@ -154,9 +154,10 @@ public class EdgeHandling {
 
     /**
      * Gets the largest edge that's a subset of the given edge
-     * @param edge The edge from which to find the largest subset
+     *
+     * @param edge     The edge from which to find the largest subset
      * @param firstRun Whether or not this is the first run
-     * @param ss The split system contains all the splits which we need to check
+     * @param ss       The split system contains all the splits which we need to check
      * @return The edge that is the largest subset of the given edge
      */
     private SplitBlock getLargestSplitBlock(SplitBlock edge, boolean firstRun, SplitSystem ss) {
@@ -184,10 +185,11 @@ public class EdgeHandling {
 
     /**
      * Determines whether or not the candidate edge is the largest valid subset of the edge that we have seen so far
-     * @param bigEdge The big edge from which we want to find subsets.
-     * @param candidate The candidate edge to check
+     *
+     * @param bigEdge      The big edge from which we want to find subsets.
+     * @param candidate    The candidate edge to check
      * @param largestSoFar The largest edge seen so far
-     * @param firstRun Whether or not this is the first run
+     * @param firstRun     Whether or not this is the first run
      * @return True if the candidate is valid and larger that the largest edge seen so far
      */
     private boolean isCandidateLargestValidSubset(SplitBlock bigEdge, SplitBlock candidate, SplitBlock largestSoFar, boolean firstRun) {

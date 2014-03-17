@@ -39,7 +39,7 @@ public class IdentifierList extends ArrayList<Identifier> {
     public IdentifierList(final int size) {
         this(false);
 
-        for(int i = 1; i <= size; i++) {
+        for (int i = 1; i <= size; i++) {
             this.add(new Identifier(i));
         }
     }
@@ -65,27 +65,28 @@ public class IdentifierList extends ArrayList<Identifier> {
 
         this(false);
         int i = 1;
-        for(String idName : names) {
+        for (String idName : names) {
             this.add(new Identifier(idName, i++));
         }
     }
 
     public IdentifierList(int[] idList) {
         this(false);
-        for(Integer i : idList) {
+        for (Integer i : idList) {
             this.add(new Identifier(i));
         }
     }
 
     public IdentifierList(List<Integer> idList) {
         this(false);
-        for(Integer i : idList) {
+        for (Integer i : idList) {
             this.add(new Identifier(i));
         }
     }
 
     /**
      * Copy constructor
+     *
      * @param identifierList
      */
     public IdentifierList(IdentifierList identifierList) {
@@ -94,7 +95,7 @@ public class IdentifierList extends ArrayList<Identifier> {
         this.names = new HashMap<>();
         this.numbers = new HashMap<>();
 
-        for(Identifier t : identifierList) {
+        for (Identifier t : identifierList) {
             this.add(new Identifier(t));
         }
     }
@@ -103,12 +104,12 @@ public class IdentifierList extends ArrayList<Identifier> {
     @Override
     public boolean equals(Object o) {
 
-        IdentifierList other = (IdentifierList)o;
+        IdentifierList other = (IdentifierList) o;
 
         if (other.size() != this.size())
             return false;
 
-        for(int i = 0; i < this.size(); i++) {
+        for (int i = 0; i < this.size(); i++) {
 
             if (!this.get(i).equals(other.get(i)))
                 return false;
@@ -121,6 +122,7 @@ public class IdentifierList extends ArrayList<Identifier> {
     /**
      * Will try to add a new identifier to the end of the list.  Throws an IllegalArgumentException if this
      * taxon name or id already exists
+     *
      * @param identifier The identifier to add
      * @return True if successfully added identifier to the list
      */
@@ -135,8 +137,7 @@ public class IdentifierList extends ArrayList<Identifier> {
             if (identifier.getId() == Identifier.DEFAULT_ID) {
                 this.maxId = this.getNextId();
                 identifier.setId(this.maxId);
-            }
-            else {
+            } else {
                 this.maxId = this.maxId > identifier.getId() ? this.maxId : identifier.getId();
             }
 
@@ -153,7 +154,8 @@ public class IdentifierList extends ArrayList<Identifier> {
     /**
      * Will try to insert a new identifier into the list at a specific location.  Throws an IllegalArgumentException if this
      * taxon name already exists
-     * @param index Location to insert new taxon
+     *
+     * @param index      Location to insert new taxon
      * @param identifier The taxon to insert
      */
     @Override
@@ -164,8 +166,7 @@ public class IdentifierList extends ArrayList<Identifier> {
             if (identifier.getId() == Identifier.DEFAULT_ID) {
                 this.maxId = this.getNextId();
                 identifier.setId(this.maxId);
-            }
-            else {
+            } else {
                 this.maxId = this.maxId > identifier.getId() ? this.maxId : identifier.getId();
             }
 
@@ -174,12 +175,10 @@ public class IdentifierList extends ArrayList<Identifier> {
                 this.names.put(identifier.getName(), identifier);
                 this.numbers.put(identifier.getId(), identifier);
                 super.add(index, identifier);
-            }
-            else {
+            } else {
                 throw new IllegalArgumentException("Identifier list already contains an identifier with the name: " + identifier.getName() + "; or number: " + identifier.getId());
             }
-        }
-        else {
+        } else {
             super.add(index, identifier);
         }
     }
@@ -187,27 +186,27 @@ public class IdentifierList extends ArrayList<Identifier> {
     /**
      * Adds identifiers from another IdentifierList into this IdentifierList.  Will ignore identifiers that are already present in this list.
      * The return flag indicates if all identifers were merged.
+     *
      * @param identifiers IdentifierList to merge into this list.
-     * @param retainIds If true, we keep the numbers of the original identifiers after merging.  If not then we ensure all identfier numbers
-     *                  in this list are unique.
+     * @param retainIds   If true, we keep the numbers of the original identifiers after merging.  If not then we ensure all identfier numbers
+     *                    in this list are unique.
      * @return True if all identifiers were merged.  False if some were not
      */
     public boolean addAll(Collection<? extends Identifier> identifiers, boolean retainIds) {
 
         int i = 0;
-        for(Identifier t : identifiers) {
+        for (Identifier t : identifiers) {
             if (!duplicatesAllowed) {
                 if (!this.names.containsKey(t.getName())) {
                     this.add(retainIds ?
                             t :
-                            new Identifier(t.getName(), this.size()+1));
+                            new Identifier(t.getName(), this.size() + 1));
                     i++;
                 }
-            }
-            else {
+            } else {
                 this.add(retainIds ?
                         t :
-                        new Identifier(t.getName(), this.size()+1));
+                        new Identifier(t.getName(), this.size() + 1));
                 i++;
             }
         }
@@ -216,6 +215,7 @@ public class IdentifierList extends ArrayList<Identifier> {
 
     /**
      * Overwrites the identifier at a specific position in the list with the one provided.
+     *
      * @param index
      * @param identifier
      * @return The identifier that's been set.
@@ -251,9 +251,9 @@ public class IdentifierList extends ArrayList<Identifier> {
 
     public boolean contains(Quadruple quad) {
         return this.contains(quad.getQ1())
-            && this.contains(quad.getQ2())
-            && this.contains(quad.getQ3())
-            && this.contains(quad.getQ4());
+                && this.contains(quad.getQ2())
+                && this.contains(quad.getQ3())
+                && this.contains(quad.getQ4());
     }
 
     public boolean containsName(String name) {
@@ -288,8 +288,8 @@ public class IdentifierList extends ArrayList<Identifier> {
 
         IdentifierList t = new IdentifierList();
 
-        for(int i = 0; i < expectedNbIdentifiers; i++) {
-            t.add(new Identifier(new String(Character.toString((char)(i + 65)))));
+        for (int i = 0; i < expectedNbIdentifiers; i++) {
+            t.add(new Identifier(new String(Character.toString((char) (i + 65)))));
         }
 
         return t;
@@ -297,7 +297,7 @@ public class IdentifierList extends ArrayList<Identifier> {
 
     public void setDefaultIndicies() {
         int i = 1;
-        for(Identifier id : this) {
+        for (Identifier id : this) {
             id.setId(i++);
         }
 
@@ -328,7 +328,6 @@ public class IdentifierList extends ArrayList<Identifier> {
     }
 
 
-
     public Identifier first() {
         return this.size() > 0 ? this.get(0) : null;
     }
@@ -340,7 +339,7 @@ public class IdentifierList extends ArrayList<Identifier> {
     public String[] getNames() {
         String[] nameArray = new String[this.size()];
 
-        for(int i = 0; i < this.size(); i++) {
+        for (int i = 0; i < this.size(); i++) {
             nameArray[i] = this.get(i).getName();
         }
 
@@ -350,7 +349,7 @@ public class IdentifierList extends ArrayList<Identifier> {
     public Set<String> getNameSet() {
         Set<String> nameSet = new LinkedHashSet<>(this.size());
 
-        for(int i = 0; i < this.size(); i++) {
+        for (int i = 0; i < this.size(); i++) {
             nameSet.add(this.get(i).getName());
         }
 
@@ -360,7 +359,7 @@ public class IdentifierList extends ArrayList<Identifier> {
     public int[] getNumbers() {
         int[] idArray = new int[this.size()];
 
-        for(int i = 0; i < this.size(); i++) {
+        for (int i = 0; i < this.size(); i++) {
             idArray[i] = this.get(i).getId();
         }
 
@@ -372,7 +371,7 @@ public class IdentifierList extends ArrayList<Identifier> {
 
         List<Integer> list = new LinkedList<>();
 
-        for(int i = 0; i < this.size(); i++) {
+        for (int i = 0; i < this.size(); i++) {
             list.add(this.get(i).getId());
         }
 
@@ -381,14 +380,16 @@ public class IdentifierList extends ArrayList<Identifier> {
 
     /**
      * Finds the maximum id already in the list and returns the next number
+     *
      * @return
      */
     public int getNextId() {
-        return this.maxId+1;
+        return this.maxId + 1;
     }
 
     /**
      * Finds the maximum id already in the list
+     *
      * @return
      */
     public int getMaxId() {
@@ -414,7 +415,7 @@ public class IdentifierList extends ArrayList<Identifier> {
 
                 sb.append("[");
                 int i = 0;
-                for(Identifier t : identifierList) {
+                for (Identifier t : identifierList) {
 
                     if (i != 0) {
                         sb.append(",");
@@ -435,7 +436,7 @@ public class IdentifierList extends ArrayList<Identifier> {
 
                 sb.append("[");
                 int i = 0;
-                for(Identifier t : identifierList) {
+                for (Identifier t : identifierList) {
 
                     if (i != 0) {
                         sb.append(",");
@@ -456,7 +457,7 @@ public class IdentifierList extends ArrayList<Identifier> {
 
                 sb.append("[");
                 int i = 0;
-                for(Identifier t : identifierList) {
+                for (Identifier t : identifierList) {
 
                     if (i != 0) {
                         sb.append(",");
@@ -475,13 +476,12 @@ public class IdentifierList extends ArrayList<Identifier> {
             public String toString(IdentifierList identifierList) {
                 if (identifierList.isEmpty()) {
                     return "";
-                }
-                else {
+                } else {
                     StringBuilder sb = new StringBuilder();
 
                     sb.append(identifierList.get(0));
 
-                    for(int i = 1; i < identifierList.size(); i++) {
+                    for (int i = 1; i < identifierList.size(); i++) {
                         sb.append(" ").append(identifierList.get(i));
                     }
 
@@ -498,27 +498,24 @@ public class IdentifierList extends ArrayList<Identifier> {
      * orientation
      */
     public static IdentifierList join(IdentifierList firstList, Direction firstDirection,
-                            IdentifierList secondList, Direction secondDirection) {
+                                      IdentifierList secondList, Direction secondDirection) {
 
         IdentifierList result = new IdentifierList();
 
         if (firstDirection == Direction.FORWARD) {
             result.addAll(firstList, true);
-        }
-        else {
+        } else {
             result.addAll(firstList.reverseOrdering(), true);
         }
 
         if (secondDirection == Direction.FORWARD) {
             result.addAll(secondList, true);
-        }
-        else if (secondDirection == Direction.BACKWARD) {
+        } else if (secondDirection == Direction.BACKWARD) {
             result.addAll(secondList.reverseOrdering(), true);
         }
 
         return result;
     }
-
 
 
     public IdentifierList sort(Comparator<Identifier> comparator) {
@@ -550,7 +547,7 @@ public class IdentifierList extends ArrayList<Identifier> {
         Map<Identifier, Integer> lut = new HashMap<>();
 
         int i = 0;
-        for(Identifier id : this) {
+        for (Identifier id : this) {
             lut.put(id, i++);
         }
 

@@ -30,6 +30,7 @@ public interface QLoader extends Service {
 
     /**
      * Loads a quartet network from a file
+     *
      * @param file The file to load
      * @return A quartet network
      * @throws IOException Thrown if there was a problem reading the file
@@ -38,7 +39,8 @@ public interface QLoader extends Service {
 
     /**
      * Loads a list of quartet networks from a file
-     * @param file The file to load
+     *
+     * @param file   The file to load
      * @param weight The weight to be applied to this file
      * @return A list of quartet networks
      * @throws IOException Thrown if there was a problem reading the file
@@ -48,6 +50,7 @@ public interface QLoader extends Service {
 
     /**
      * Returns true if this QLoader accepts the file extension, false otherwise.
+     *
      * @param ext The file extension to test
      * @return True if accepted, false if not.
      */

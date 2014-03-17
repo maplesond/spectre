@@ -1,8 +1,8 @@
 /*
- * Phylogenetics Tool suite
- * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
+ * Copyright (C) 2014  UEA School of Computing Sciences
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
@@ -25,37 +25,31 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- *
  * @author balvociute
  */
-class ClusterFinder
-{
-    
+class ClusterFinder {
+
     protected double splitSizeThr;
     protected LinkedList<Vertex> unclusteredVertices;
     protected Set<Cluster> clusters;
 
-    public ClusterFinder()
-    {
+    public ClusterFinder() {
         unclusteredVertices = new LinkedList<>();
         clusters = new HashSet<>();
     }
-    
-    
-    
+
+
     public Set<Cluster> findClusters(Network network,
                                      Map<Integer, Label> labels,
                                      Map<Integer, Vertex> vertices,
-                                     boolean changeColors)
-    {
+                                     boolean changeColors) {
         clusters = new HashSet();
-        for(Label l : labels.values())
-        {
+        for (Label l : labels.values()) {
             Cluster c = new Cluster();
             c.add(l.p, l, false);
             clusters.add(c);
         }
         return clusters;
     }
-    
+
 }

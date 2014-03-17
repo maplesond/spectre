@@ -17,6 +17,7 @@ public class CanonicalWeightedQuartetMap extends HashMap<Quartet, Double> {
 
     /**
      * Creates a weighted quartet map from a distance matrix
+     *
      * @param distanceMatrix The distance matrix to conver to quartets
      */
     public CanonicalWeightedQuartetMap(DistanceMatrix distanceMatrix) {
@@ -53,7 +54,7 @@ public class CanonicalWeightedQuartetMap extends HashMap<Quartet, Double> {
     public CanonicalWeightedQuartetMap(WeightedQuartetGroupMap groupMap) {
         super();
 
-        for(Map.Entry<Quartet, QuartetWeights> entry : groupMap.entrySet()) {
+        for (Map.Entry<Quartet, QuartetWeights> entry : groupMap.entrySet()) {
 
             Quartet sorted = entry.getKey();
             QuartetWeights weights = entry.getValue();
@@ -72,8 +73,9 @@ public class CanonicalWeightedQuartetMap extends HashMap<Quartet, Double> {
 
     /**
      * Scales the current quartet weight if quartet is already present.  If quartet is not present then we just set the weight.
+     *
      * @param quartet The quartet to scale
-     * @param weight The weight to apply
+     * @param weight  The weight to apply
      */
     public void scaleWeight(Quartet quartet, double weight) {
 
@@ -83,6 +85,7 @@ public class CanonicalWeightedQuartetMap extends HashMap<Quartet, Double> {
     /**
      * Divides quartet weights in this map with those in summer.  Summer must contain the same quartets or be a super set
      * of this hash map otherwise a null pointer exception will be thrown
+     *
      * @param other
      */
     public void divide(CanonicalWeightedQuartetMap other) {
@@ -130,7 +133,6 @@ public class CanonicalWeightedQuartetMap extends HashMap<Quartet, Double> {
             }
         }
     }
-
 
 
 }

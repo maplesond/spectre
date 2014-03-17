@@ -52,11 +52,9 @@ public class SymmetricMatrix {
 
         if (i > j) {
             triangle[Quartet.over2(i) + Quartet.over1(j)] = newW;
-        }
-        else if (j > i) {
+        } else if (j > i) {
             triangle[Quartet.over2(j) + Quartet.over1(i)] = newW;
-        }
-        else {
+        } else {
             diagonal[i] = newW;
         }
     }
@@ -64,8 +62,8 @@ public class SymmetricMatrix {
     public double getElementAt(int i, int j) {
 
         return i > j ?
-                    triangle[Quartet.over2(i) + Quartet.over1(j)] :
-                    j > i ?
+                triangle[Quartet.over2(i) + Quartet.over1(j)] :
+                j > i ?
                         triangle[Quartet.over2(j) + Quartet.over1(i)] :
                         diagonal[i];
 

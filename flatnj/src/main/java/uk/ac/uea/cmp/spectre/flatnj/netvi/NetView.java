@@ -1,8 +1,8 @@
 /*
- * Phylogenetics Tool suite
- * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
+ * Copyright (C) 2014  UEA School of Computing Sciences
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
@@ -46,36 +46,32 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- *
  * @author balvociute
  */
-public class NetView extends javax.swing.JFrame
-{
+public class NetView extends javax.swing.JFrame {
     private static Logger log = LoggerFactory.getLogger(NetView.class);
 
     private Point startPoint;
     private JFrame format;
     private JFrame formatLabels;
-    
+
     private String mainTitle = "NetView";
     private boolean resetlabelPositions = false;
     private NexusReader read;
-    
+
     private File networkFile = null;
     int nDots = 40;
-    
+
     private double filteringThr = 0.15;
-    
+
     /**
      * Creates new form NetVi
      */
-    public NetView() throws IOException
-    {
+    public NetView() throws IOException {
         prepareViewer();
     }
 
-    private void prepareViewer()
-    {
+    private void prepareViewer() {
         initComponents();
         preparePopupMenu();
         getContentPane().setBackground(Color.white);
@@ -86,7 +82,7 @@ public class NetView extends javax.swing.JFrame
         leaderButtons.add(jRadioButtonStraightLeaders);
         leaderButtons.add(jRadioButtonNoLeaders);
         format = new Formating(drawing);
-        formatLabels =  new FormatLabels(drawing);
+        formatLabels = new FormatLabels(drawing);
         //setLocationRelativeTo(null);
         ButtonGroup leaderLineTypes = new ButtonGroup();
         leaderLineTypes.add(jRadioButtonSolid);
@@ -94,8 +90,7 @@ public class NetView extends javax.swing.JFrame
         leaderLineTypes.add(jRadioButtonDotted);
     }
 
-    public NetView(Network network, File inFile, Taxa taxa)
-    {
+    public NetView(Network network, File inFile, Taxa taxa) {
         prepareViewer();
         directory = inFile.getPath();
         this.network = network;
@@ -110,8 +105,7 @@ public class NetView extends javax.swing.JFrame
      */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents()
-    {
+    private void initComponents() {
 
         popupMenu = new javax.swing.JPopupMenu();
         drawing = new Window(this);
@@ -153,46 +147,36 @@ public class NetView extends javax.swing.JFrame
         setTitle("NetVi");
         setForeground(java.awt.Color.white);
 
-        drawing.addMouseWheelListener(new java.awt.event.MouseWheelListener()
-        {
-            public void mouseWheelMoved(java.awt.event.MouseWheelEvent evt)
-            {
+        drawing.addMouseWheelListener(new java.awt.event.MouseWheelListener() {
+            public void mouseWheelMoved(java.awt.event.MouseWheelEvent evt) {
                 drawingMouseWheelMoved(evt);
             }
         });
-        drawing.addMouseListener(new java.awt.event.MouseAdapter()
-        {
-            public void mouseClicked(java.awt.event.MouseEvent evt)
-            {
+        drawing.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
                 drawingMouseClicked(evt);
             }
-            public void mousePressed(java.awt.event.MouseEvent evt)
-            {
+
+            public void mousePressed(java.awt.event.MouseEvent evt) {
                 drawingMousePressed(evt);
             }
-            public void mouseReleased(java.awt.event.MouseEvent evt)
-            {
+
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
                 drawingMouseReleased(evt);
             }
         });
-        drawing.addComponentListener(new java.awt.event.ComponentAdapter()
-        {
-            public void componentResized(java.awt.event.ComponentEvent evt)
-            {
+        drawing.addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentResized(java.awt.event.ComponentEvent evt) {
                 drawingComponentResized(evt);
             }
         });
-        drawing.addMouseMotionListener(new java.awt.event.MouseMotionAdapter()
-        {
-            public void mouseDragged(java.awt.event.MouseEvent evt)
-            {
+        drawing.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseDragged(java.awt.event.MouseEvent evt) {
                 drawingMouseDragged(evt);
             }
         });
-        drawing.addKeyListener(new java.awt.event.KeyAdapter()
-        {
-            public void keyPressed(java.awt.event.KeyEvent evt)
-            {
+        drawing.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
                 drawingKeyPressed(evt);
             }
         });
@@ -200,21 +184,19 @@ public class NetView extends javax.swing.JFrame
         javax.swing.GroupLayout drawingLayout = new javax.swing.GroupLayout(drawing);
         drawing.setLayout(drawingLayout);
         drawingLayout.setHorizontalGroup(
-            drawingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 513, Short.MAX_VALUE)
+                drawingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(0, 513, Short.MAX_VALUE)
         );
         drawingLayout.setVerticalGroup(
-            drawingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 322, Short.MAX_VALUE)
+                drawingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(0, 322, Short.MAX_VALUE)
         );
 
         jMenuFile.setText("File");
 
         openFile.setText("Open network");
-        openFile.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        openFile.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 openFileActionPerformed(evt);
             }
         });
@@ -222,40 +204,32 @@ public class NetView extends javax.swing.JFrame
 
         saveNetwork.setText("Save network");
         saveNetwork.setEnabled(false);
-        saveNetwork.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        saveNetwork.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 saveNetworkActionPerformed(evt);
             }
         });
         jMenuFile.add(saveNetwork);
 
         saveNetworkAs.setText("Save network as");
-        saveNetworkAs.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        saveNetworkAs.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 saveNetworkAsActionPerformed(evt);
             }
         });
         jMenuFile.add(saveNetworkAs);
 
         saveImage.setText("Save image as");
-        saveImage.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        saveImage.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 saveImageActionPerformed(evt);
             }
         });
         jMenuFile.add(saveImage);
 
         exitProgram.setText("Exit");
-        exitProgram.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        exitProgram.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 exitProgramActionPerformed(evt);
             }
         });
@@ -266,30 +240,24 @@ public class NetView extends javax.swing.JFrame
         jMenuEdit.setText("Edit");
 
         jMenuItemSelectAll.setText("Select all");
-        jMenuItemSelectAll.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        jMenuItemSelectAll.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemSelectAllActionPerformed(evt);
             }
         });
         jMenuEdit.add(jMenuItemSelectAll);
 
         jMenuItemFind.setText("Find");
-        jMenuItemFind.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        jMenuItemFind.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemFindActionPerformed(evt);
             }
         });
         jMenuEdit.add(jMenuItemFind);
 
         formatNodes.setText("Format selected nodes");
-        formatNodes.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        formatNodes.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 formatNodesActionPerformed(evt);
             }
         });
@@ -300,10 +268,8 @@ public class NetView extends javax.swing.JFrame
         jMenuLayout.setText("Layout");
 
         jMenuItemRotate.setText("Rotate");
-        jMenuItemRotate.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        jMenuItemRotate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemRotateActionPerformed(evt);
             }
         });
@@ -312,20 +278,16 @@ public class NetView extends javax.swing.JFrame
         jMenu6.setText("Flip");
 
         jMenuItemFlipHorizontal.setText("Horizontal");
-        jMenuItemFlipHorizontal.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        jMenuItemFlipHorizontal.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemFlipHorizontalActionPerformed(evt);
             }
         });
         jMenu6.add(jMenuItemFlipHorizontal);
 
         jMenuItemFlipVertical.setText("Vertical");
-        jMenuItemFlipVertical.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        jMenuItemFlipVertical.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemFlipVerticalActionPerformed(evt);
             }
         });
@@ -335,10 +297,8 @@ public class NetView extends javax.swing.JFrame
 
         jCheckBoxShowTrivial.setSelected(true);
         jCheckBoxShowTrivial.setText("Show trivial splits");
-        jCheckBoxShowTrivial.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        jCheckBoxShowTrivial.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jCheckBoxShowTrivialActionPerformed(evt);
             }
         });
@@ -346,20 +306,16 @@ public class NetView extends javax.swing.JFrame
 
         jCheckBoxShowLabels.setSelected(true);
         jCheckBoxShowLabels.setText("Show labels");
-        jCheckBoxShowLabels.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        jCheckBoxShowLabels.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jCheckBoxShowLabelsActionPerformed(evt);
             }
         });
         jMenuLayout.add(jCheckBoxShowLabels);
 
         jCheckBoxColorLabels.setText("Color labels");
-        jCheckBoxColorLabels.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        jCheckBoxColorLabels.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jCheckBoxColorLabelsActionPerformed(evt);
             }
         });
@@ -370,20 +326,16 @@ public class NetView extends javax.swing.JFrame
         jMenuLabeling.setText("Labeling");
 
         jCheckBoxFixLabelPositions.setText("Fix all label positions");
-        jCheckBoxFixLabelPositions.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        jCheckBoxFixLabelPositions.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jCheckBoxFixLabelPositionsActionPerformed(evt);
             }
         });
         jMenuLabeling.add(jCheckBoxFixLabelPositions);
 
         optimizeLabels.setText("Optimize labels");
-        optimizeLabels.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        optimizeLabels.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 optimizeLabelsActionPerformed(evt);
             }
         });
@@ -392,20 +344,16 @@ public class NetView extends javax.swing.JFrame
         jMenu4.setText("Leaders");
 
         jRadioButtonNoLeaders.setText("None");
-        jRadioButtonNoLeaders.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        jRadioButtonNoLeaders.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jRadioButtonNoLeadersActionPerformed(evt);
             }
         });
         jMenu4.add(jRadioButtonNoLeaders);
 
         jRadioButtonStraightLeaders.setText("Straight");
-        jRadioButtonStraightLeaders.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        jRadioButtonStraightLeaders.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jRadioButtonStraightLeadersActionPerformed(evt);
             }
         });
@@ -413,20 +361,16 @@ public class NetView extends javax.swing.JFrame
 
         jRadioButtonSlantedLeaders.setSelected(true);
         jRadioButtonSlantedLeaders.setText("Slanted");
-        jRadioButtonSlantedLeaders.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        jRadioButtonSlantedLeaders.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jRadioButtonSlantedLeadersActionPerformed(evt);
             }
         });
         jMenu4.add(jRadioButtonSlantedLeaders);
 
         jRadioButtonBendedLeaders.setText("Bended");
-        jRadioButtonBendedLeaders.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        jRadioButtonBendedLeaders.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jRadioButtonBendedLeadersActionPerformed(evt);
             }
         });
@@ -435,30 +379,24 @@ public class NetView extends javax.swing.JFrame
 
         jRadioButtonSolid.setSelected(true);
         jRadioButtonSolid.setText("Solid");
-        jRadioButtonSolid.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        jRadioButtonSolid.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jRadioButtonSolidActionPerformed(evt);
             }
         });
         jMenu4.add(jRadioButtonSolid);
 
         jRadioButtonDashed.setText("Dashed");
-        jRadioButtonDashed.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        jRadioButtonDashed.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jRadioButtonDashedActionPerformed(evt);
             }
         });
         jMenu4.add(jRadioButtonDashed);
 
         jRadioButtonDotted.setText("Dotted");
-        jRadioButtonDotted.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        jRadioButtonDotted.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jRadioButtonDottedActionPerformed(evt);
             }
         });
@@ -466,10 +404,8 @@ public class NetView extends javax.swing.JFrame
         jMenu4.add(jSeparator2);
 
         jMenuItemChangeLeaderColor.setText("Set color");
-        jMenuItemChangeLeaderColor.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
+        jMenuItemChangeLeaderColor.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemChangeLeaderColorActionPerformed(evt);
             }
         });
@@ -484,12 +420,12 @@ public class NetView extends javax.swing.JFrame
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(drawing, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(drawing, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(drawing, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(drawing, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
@@ -499,8 +435,7 @@ public class NetView extends javax.swing.JFrame
     {//GEN-HEADEREND:event_openFileActionPerformed
         JFileChooser fileChooser = new JFileChooser(directory);
         fileChooser.setMultiSelectionEnabled(false);
-        if(fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION)
-        {
+        if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
             File inFile = fileChooser.getSelectedFile();
             directory = inFile.getPath();
             openNetwork(inFile);
@@ -511,17 +446,14 @@ public class NetView extends javax.swing.JFrame
     {//GEN-HEADEREND:event_saveImageActionPerformed
         JFileChooser fileChooser = new JFileChooser(directory);
         fileChooser.setFileFilter(new FileNameExtensionFilter("pdf", "pdf"));
-        if(fileChooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION)
-        {
+        if (fileChooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
             File pdfFile = fileChooser.getSelectedFile();
-            
-            if (pdfFile != null)
-            {
+
+            if (pdfFile != null) {
                 directory = pdfFile.getPath();
                 try {
                     savePDF(pdfFile);
-                }
-                catch (DocumentException ex) {
+                } catch (DocumentException ex) {
                     log.error("Error saving PDF", ex);
                 }
             }
@@ -531,21 +463,17 @@ public class NetView extends javax.swing.JFrame
     private void saveNetworkAsActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_saveNetworkAsActionPerformed
     {//GEN-HEADEREND:event_saveNetworkAsActionPerformed
         JFileChooser fileChooser = new JFileChooser(directory);
-        if(fileChooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION)
-        {
+        if (fileChooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
             File fileToSave = fileChooser.getSelectedFile();
-            if(fileToSave != null)
-            {
+            if (fileToSave != null) {
                 directory = fileToSave.getPath();
                 int confirm = JOptionPane.YES_OPTION;
-                if(fileToSave.exists())
-                {
+                if (fileToSave.exists()) {
                     confirm = JOptionPane.showConfirmDialog(this, "File " + fileToSave.getName() +
-                                                        " already exists.\nOverwrite?", "Overwrite?",
-                                                        JOptionPane.YES_NO_OPTION);
+                            " already exists.\nOverwrite?", "Overwrite?",
+                            JOptionPane.YES_NO_OPTION);
                 }
-                if(confirm == JOptionPane.YES_OPTION)
-                {
+                if (confirm == JOptionPane.YES_OPTION) {
                     saveNetworkAs(fileToSave);
                 }
             }
@@ -554,8 +482,7 @@ public class NetView extends javax.swing.JFrame
 
     private void optimizeLabelsActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_optimizeLabelsActionPerformed
     {//GEN-HEADEREND:event_optimizeLabelsActionPerformed
-        if(network != null)
-        {
+        if (network != null) {
             drawing.resetLabelPositions(true);
             drawing.repaintOnResize();
         }
@@ -575,12 +502,9 @@ public class NetView extends javax.swing.JFrame
 
     private void formatNodesActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_formatNodesActionPerformed
     {//GEN-HEADEREND:event_formatNodesActionPerformed
-        if(drawing.isSelected())
-        {
-            ((Formating)format).setVisible();
-        }
-        else
-        {
+        if (drawing.isSelected()) {
+            ((Formating) format).setVisible();
+        } else {
             JOptionPane.showMessageDialog(this, "No nodes are selected.");
         }
     }//GEN-LAST:event_formatNodesActionPerformed
@@ -588,27 +512,18 @@ public class NetView extends javax.swing.JFrame
     private void drawingMouseDragged(java.awt.event.MouseEvent evt)//GEN-FIRST:event_drawingMouseDragged
     {//GEN-HEADEREND:event_drawingMouseDragged
         java.awt.Point endPoint = evt.getPoint();
-        if(!drawing.rotate)
-        {
-            if(network != null && drawing.isOnLabel())
-            {
+        if (!drawing.rotate) {
+            if (network != null && drawing.isOnLabel()) {
                 drawing.moveLabels(endPoint);
-            }
-            else if(network != null && drawing.isOnPoint())
-            {
+            } else if (network != null && drawing.isOnPoint()) {
                 drawing.moveTheVertex(endPoint);
-            }
-            else
-            {
+            } else {
                 drawing.setSelection(startPoint,
-                                               endPoint,
-                                               evt.isControlDown());
+                        endPoint,
+                        evt.isControlDown());
             }
-        }
-        else
-        {
-            if(network != null)
-            {
+        } else {
+            if (network != null) {
                 drawing.rotate(startPoint, endPoint);
             }
         }
@@ -622,8 +537,7 @@ public class NetView extends javax.swing.JFrame
 
     private void drawingMouseReleased(java.awt.event.MouseEvent evt)//GEN-FIRST:event_drawingMouseReleased
     {//GEN-HEADEREND:event_drawingMouseReleased
-        if(drawing.rotate)
-        {
+        if (drawing.rotate) {
             drawing.activateRotation(false);
         }
         drawing.removeSelectionRectangle();
@@ -633,8 +547,7 @@ public class NetView extends javax.swing.JFrame
     private void drawingMousePressed(java.awt.event.MouseEvent evt)//GEN-FIRST:event_drawingMousePressed
     {//GEN-HEADEREND:event_drawingMousePressed
         startPoint = evt.getPoint();
-        if(!drawing.markLabel(startPoint))
-        {
+        if (!drawing.markLabel(startPoint)) {
             drawing.markPoint(startPoint);
         }
     }//GEN-LAST:event_drawingMousePressed
@@ -642,12 +555,9 @@ public class NetView extends javax.swing.JFrame
     private void drawingMouseClicked(java.awt.event.MouseEvent evt)//GEN-FIRST:event_drawingMouseClicked
     {//GEN-HEADEREND:event_drawingMouseClicked
         java.awt.Point clickedPoint = evt.getPoint();
-        if(SwingUtilities.isRightMouseButton(evt))
-        {
+        if (SwingUtilities.isRightMouseButton(evt)) {
             popupMenu.show(drawing, clickedPoint.x, clickedPoint.y);
-        }
-        else
-        {
+        } else {
             drawing.setSelection(clickedPoint, evt.isControlDown());
         }
     }//GEN-LAST:event_drawingMouseClicked
@@ -686,7 +596,7 @@ public class NetView extends javax.swing.JFrame
 
     private void drawingKeyPressed(java.awt.event.KeyEvent evt)//GEN-FIRST:event_drawingKeyPressed
     {//GEN-HEADEREND:event_drawingKeyPressed
-        
+
     }//GEN-LAST:event_drawingKeyPressed
 
     private void jCheckBoxShowLabelsActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jCheckBoxShowLabelsActionPerformed
@@ -747,8 +657,7 @@ public class NetView extends javax.swing.JFrame
     private void jMenuItemChangeLeaderColorActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jMenuItemChangeLeaderColorActionPerformed
     {//GEN-HEADEREND:event_jMenuItemChangeLeaderColorActionPerformed
         Color newLeaderColor = JColorChooser.showDialog(this, "Font color", drawing.leaderColor);
-        if(newLeaderColor != null)
-        {
+        if (newLeaderColor != null) {
             config.setLeaderColor(newLeaderColor);
             drawing.leaderColor = newLeaderColor;
             drawing.repaint();
@@ -766,20 +675,17 @@ public class NetView extends javax.swing.JFrame
         drawing.fixLabels(!fix);
     }//GEN-LAST:event_jCheckBoxFixLabelPositionsActionPerformed
 
-    
+
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[])
-    {
+    public static void main(String args[]) {
         LookAndFeel.setLookAndFeel(LookAndFeel.NIMBUS);
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable()
-        {
+        java.awt.EventQueue.invokeLater(new Runnable() {
             @Override
-            public void run()
-            {
+            public void run() {
                 try {
                     new NetView().setVisible(true);
                 } catch (IOException ex) {
@@ -788,6 +694,7 @@ public class NetView extends javax.swing.JFrame
             }
         });
     }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private Window drawing;
     private javax.swing.JMenuItem exitProgram;
@@ -833,135 +740,117 @@ public class NetView extends javax.swing.JFrame
     private FindDIalog find = new FindDIalog(this, true);
     private ViewerConfig config = new ViewerConfig();
 
-    private static Network readNetwork(File inFile)
-    {
+    private static Network readNetwork(File inFile) {
         reader = new NexusReaderNetwork();
         return (Network) reader.readBlock(inFile.getAbsolutePath());
     }
 
-    private void readTaxa(String inFile)
-    {
+    private void readTaxa(String inFile) {
         reader = new NexusReaderTaxa();
         taxa = (Taxa) reader.readBlock(inFile);
     }
 
-    private void drawNetwork()
-    {
-        if(config != null)
-        {
+    private void drawNetwork() {
+        if (config != null) {
             this.setExtendedState(JFrame.NORMAL);
             this.setSize(config.getDimensions());
         }
         drawing.setGraph(network,
-                                   drawing.getWidth(),
-                                   drawing.getHeight(),
-                                   false,
-                                   (config != null) ? config.getRatio() : null);
-        
+                drawing.getWidth(),
+                drawing.getHeight(),
+                false,
+                (config != null) ? config.getRatio() : null);
+
         drawing.showTrivial(config.showTrivial());
         drawing.repaint();
     }
 
-    private void savePDF(File pdfFile) throws DocumentException
-    {
-        try
-        {
+    private void savePDF(File pdfFile) throws DocumentException {
+        try {
             Rectangle domensions = new Rectangle(0, 0, drawing.getWidth(), drawing.getHeight());
             Document d = new Document(domensions);
             PdfWriter writer = PdfWriter.getInstance(d, new FileOutputStream(pdfFile));
-            
+
             d.open();
             PdfContentByte cb = writer.getDirectContent();
-            
+
             DefaultFontMapper mapper = new DefaultFontMapper();
-            
+
             Graphics2D g2d = new PdfGraphics2D(cb, drawing.getWidth(), drawing.getHeight(), mapper, false, false, (float) 1.0);
 
             drawing.paint(g2d);
             g2d.dispose();
 
             d.close();
-        }
-        catch (IOException ex)
-        {
+        } catch (IOException ex) {
             System.err.println("Error writing image to the file.");
-        }
-        catch (DocumentException de)
-        {
+        } catch (DocumentException de) {
             System.err.println("Error1");
         }
     }
 
-    private void saveNetworkAs(File fileToSave)
-    {
+    private void saveNetworkAs(File fileToSave) {
         Writer writer = new Writer(fileToSave);
         writer.write(taxa);
         writer.write(network, taxa);
         writer.write(config, network.getLabeled());
         writer.close();
-        setTitle(mainTitle + ": " + fileToSave.getAbsolutePath()); 
+        setTitle(mainTitle + ": " + fileToSave.getAbsolutePath());
         saveNetwork.setEnabled(true);
         networkFile = fileToSave;
-   }
-    
-    public boolean fixedLabelPositions()
-    {
+    }
+
+    public boolean fixedLabelPositions() {
         return jMenuLabeling.isSelected();
     }
 
-    private void preparePopupMenu()
-    {
+    private void preparePopupMenu() {
         JMenuItem copySelectedTaxa = new JMenuItem("Copy selected labels");
         copySelectedTaxa.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C,
-                                                               java.awt.Event.CTRL_MASK));
+                java.awt.Event.CTRL_MASK));
         copySelectedTaxa.addActionListener(new ActionListener() {
 
             @Override
-            public void actionPerformed(ActionEvent e)
-            {
+            public void actionPerformed(ActionEvent e) {
                 drawing.copySelectedTaxa();
             }
         });
         popupMenu.add(copySelectedTaxa);
-        
+
         JMenuItem selectGroup = new JMenuItem("Select group");
         selectGroup.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_G,
-                                                          java.awt.Event.CTRL_MASK));
+                java.awt.Event.CTRL_MASK));
         selectGroup.addActionListener(new ActionListener() {
 
             @Override
-            public void actionPerformed(ActionEvent e)
-            {
+            public void actionPerformed(ActionEvent e) {
                 drawing.selectGroup();
             }
         });
         popupMenu.add(selectGroup);
-        
+
         JMenuItem group = new JMenuItem("Group selected");
         group.addActionListener(new ActionListener() {
 
             @Override
-            public void actionPerformed(ActionEvent e)
-            {
+            public void actionPerformed(ActionEvent e) {
                 drawing.makeGroup();
             }
         });
         popupMenu.add(group);
-        
+
         JMenuItem remove = new JMenuItem("Remove from group");
         remove.addActionListener(new ActionListener() {
 
             @Override
-            public void actionPerformed(ActionEvent e)
-            {
+            public void actionPerformed(ActionEvent e) {
                 drawing.removeFromGroup();
             }
         });
         popupMenu.add(remove);
     }
 
-    private void openNetwork(File inFile)
-    {
+    private void openNetwork(File inFile) {
         directory = inFile.getPath();
         network = readNetwork(inFile);
         readTaxa(inFile.getAbsolutePath());
@@ -970,10 +859,8 @@ public class NetView extends javax.swing.JFrame
         showNetwork(inFile);
     }
 
-    private void showNetwork(File inFile)
-    {
-        if(network != null)
-        {
+    private void showNetwork(File inFile) {
+        if (network != null) {
             readConfig(inFile.getAbsolutePath());
             setTitle(mainTitle + ": " + inFile.getAbsolutePath());
             drawNetwork();
@@ -981,88 +868,68 @@ public class NetView extends javax.swing.JFrame
         }
     }
 
-    public Window getDrawing()
-    {
+    public Window getDrawing() {
         return drawing;
     }
 
-    boolean showLabels()
-    {
+    boolean showLabels() {
         return jCheckBoxShowLabels.isSelected();
     }
 
-    boolean colorLabels()
-    {
+    boolean colorLabels() {
         return jCheckBoxColorLabels.isSelected();
     }
 
-    private void readConfig(String inFile)
-    {
+    private void readConfig(String inFile) {
         reader = new NexusReaderConfig();
         config = null;
         config = (ViewerConfig) reader.readBlock(inFile);
-        if(config != null)
-        {
+        if (config != null) {
             applyConfig(config);
-        }
-        else
-        {
+        } else {
             initConfig();
         }
     }
 
-    private void initConfig()
-    {
+    private void initConfig() {
         resetlabelPositions = true;
         String leaderType = null;
-        if(jRadioButtonBendedLeaders.isSelected())
-        {
+        if (jRadioButtonBendedLeaders.isSelected()) {
             leaderType = "bended";
-        }
-        else if(jRadioButtonSlantedLeaders.isSelected())
-        {
+        } else if (jRadioButtonSlantedLeaders.isSelected()) {
             leaderType = "slanted";
-        }
-        else if(jRadioButtonStraightLeaders.isSelected())
-        {
+        } else if (jRadioButtonStraightLeaders.isSelected()) {
             leaderType = "straight";
         }
         String leaderStroke = "solid";
-        if(jRadioButtonDashed.isSelected())
-        {
+        if (jRadioButtonDashed.isSelected()) {
             leaderStroke = "dashed";
-        }
-        else if(jRadioButtonDotted.isSelected())
-        {
+        } else if (jRadioButtonDotted.isSelected()) {
             leaderStroke = "dotted";
         }
-        
+
         config = new ViewerConfig(drawing.getSize(),
-                                  leaderType,
-                                  leaderStroke,
-                                  drawing.leaderColor,
-                                  jCheckBoxShowTrivial.isSelected(),
-                                  jCheckBoxShowLabels.isSelected(),
-                                  jCheckBoxColorLabels.isSelected(),
-                                  new HashSet<Integer>(),
-                                  null);
+                leaderType,
+                leaderStroke,
+                drawing.leaderColor,
+                jCheckBoxShowTrivial.isSelected(),
+                jCheckBoxShowLabels.isSelected(),
+                jCheckBoxColorLabels.isSelected(),
+                new HashSet<Integer>(),
+                null);
     }
 
-    boolean dashedLeaders()
-    {
+    boolean dashedLeaders() {
         return jRadioButtonDashed.isSelected();
     }
 
-    boolean dottedLeaders()
-    {
+    boolean dottedLeaders() {
         return jRadioButtonDotted.isSelected();
     }
 
-    private void applyConfig(ViewerConfig config)
-    {
+    private void applyConfig(ViewerConfig config) {
         String leaderType = config.getLeaderType();
-        switch (leaderType)
-        {
+        switch (leaderType) {
             case "straight":
                 jRadioButtonStraightLeaders.setSelected(true);
                 break;
@@ -1076,10 +943,9 @@ public class NetView extends javax.swing.JFrame
                 jRadioButtonNoLeaders.setSelected(true);
                 break;
         }
-        
+
         String stroke = config.getLeaderStroke();
-        switch (stroke)
-        {
+        switch (stroke) {
             case "dashed":
                 jRadioButtonDashed.setSelected(true);
                 break;
@@ -1090,49 +956,41 @@ public class NetView extends javax.swing.JFrame
                 jRadioButtonSolid.setSelected(true);
                 break;
         }
-        
+
         Color leaderColor = config.getLeaderColor();
-        if(leaderColor != null)
-        {
+        if (leaderColor != null) {
             drawing.leaderColor = leaderColor;
         }
-        
+
         jCheckBoxColorLabels.setSelected(config.colorLabels());
         jCheckBoxShowLabels.setSelected(config.showLabels());
         jCheckBoxShowTrivial.setSelected(config.showTrivial());
-        
+
         Set<Integer> fixed = config.getFixed();
-        for (Vertex vertex : network.getLabeled())
-        {
-            if(fixed.contains(vertex.getNxnum()))
-            {
+        for (Vertex vertex : network.getLabeled()) {
+            if (fixed.contains(vertex.getNxnum())) {
                 vertex.getLabel().movable = false;
             }
         }
     }
 
-    boolean leadersVisible()
-    {
+    boolean leadersVisible() {
         return !jRadioButtonNoLeaders.isSelected();
     }
 
-    boolean straightLeaders()
-    {
+    boolean straightLeaders() {
         return jRadioButtonStraightLeaders.isSelected();
     }
 
-    boolean bendedLeaders()
-    {
+    boolean bendedLeaders() {
         return jRadioButtonBendedLeaders.isSelected();
     }
 
-    boolean slantedLeaders()
-    {
+    boolean slantedLeaders() {
         return jRadioButtonSlantedLeaders.isSelected();
     }
 
-    void setRatio(double ratio)
-    {
+    void setRatio(double ratio) {
         config.setRatio(ratio);
     }
 

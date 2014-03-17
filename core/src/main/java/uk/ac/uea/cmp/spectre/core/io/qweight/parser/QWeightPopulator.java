@@ -193,7 +193,7 @@ public class QWeightPopulator implements QWeightListener {
         if (actualQuartets != expectedQuartets) {
 
             log.warn("Found the unexpected number of quartets in file.  Was expecting: " + expectedQuartets + " (calculated " +
-                     " from " + this.expectedTaxa + " taxa); found: " + actualQuartets);
+                    " from " + this.expectedTaxa + " taxa); found: " + actualQuartets);
         }
     }
 

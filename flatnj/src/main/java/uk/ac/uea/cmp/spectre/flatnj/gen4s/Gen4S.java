@@ -1,8 +1,8 @@
 /*
- * Phylogenetics Tool suite
- * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
+ * Copyright (C) 2014  UEA School of Computing Sciences
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
@@ -36,11 +36,10 @@ import java.io.IOException;
 
 /**
  * Main class.
- * 
+ *
  * @author balvociute
  */
-public class Gen4S
-{
+public class Gen4S {
 
     private static final String OPT_FASTA = "in_fasta";
     private static final String OPT_DIST_MTX = "distance_matrix";
@@ -48,7 +47,7 @@ public class Gen4S
     private static final String OPT_INPUT = "in";
     private static final String OPT_OUTPUT = "out";
 
-    private static final String[] ALLOWED_BLOCKS = new String[] {
+    private static final String[] ALLOWED_BLOCKS = new String[]{
             "characters",
             "data",
             "locations",
@@ -100,13 +99,12 @@ public class Gen4S
 
 
     /**
-     * Main method that reads in input data, computes 
+     * Main method that reads in input data, computes
      * {@link QuadrupleSystem} and save in the nexus output file.
-     * 
+     *
      * @param args the command line arguments
      */
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
         // Setup the command line options
         CommandLine commandLine = CommandLineHelper.startApp(createOptions(), "gen4s",
                 "Gen4S computes a system of 4-splits from input data (multiple sequence alignment,\n" +
@@ -147,20 +145,17 @@ public class Gen4S
 
                 String[] taxaLabels = null;
                 String blockLowerCase = inBlock.toLowerCase();
-                if(blockLowerCase.contentEquals("data") || blockLowerCase.contentEquals("characters")) {
+                if (blockLowerCase.contentEquals("data") || blockLowerCase.contentEquals("characters")) {
                     taxaLabels = readAlignment(inBlock, inFile);
-                }
-                else if(blockLowerCase.contentEquals("locations")) {
+                } else if (blockLowerCase.contentEquals("locations")) {
                     taxaLabels = readLocations(inFile);
-                }
-                else if(blockLowerCase.contentEquals("splits")) {
+                } else if (blockLowerCase.contentEquals("splits")) {
                     readSplits(inFile);
                 }
 
                 if (taxaLabels != null) {
                     taxa = new Taxa(taxaLabels);
-                }
-                else {
+                } else {
                     readTaxa(inFile);
                 }
             }
@@ -174,8 +169,7 @@ public class Gen4S
             writeTaxa();
             writeQuadruples();
             writer.close();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.err.println(e.getMessage());
             System.err.println(StringUtils.join(e.getStackTrace(), "\n"));
             System.exit(1);
@@ -183,16 +177,15 @@ public class Gen4S
     }
 
     /**
-     * Reads alignment from fasta file and initializes {@linkplain Alignment} 
+     * Reads alignment from fasta file and initializes {@linkplain Alignment}
      * and {@linkplain Taxa} objects.
-     * 
+     *
      * @param fastaFile fasta file path.
      */
     private static void readAlignment(File fastaFile) throws IOException {
         System.err.print(Utilities.addDots("Reading sequences ", nDots));
         a = new FastaReader().readAlignment(fastaFile);
-        if(a.getSequences().length == 0)
-        {
+        if (a.getSequences().length == 0) {
             System.err.println();
             exitError("Error: could not read sequence alignment from '" + fastaFile + "'");
         }
@@ -203,19 +196,17 @@ public class Gen4S
     /**
      * Reads alignment from a block in a nexus file and initializes
      * {@linkplain Alignment} object.
-     * 
-     * @param inBlock   name of the block that contains alignment. May be either 
-     *                  DATA or CHARACTERS.
-     * @param inFile    nexus file path.
+     *
+     * @param inBlock name of the block that contains alignment. May be either
+     *                DATA or CHARACTERS.
+     * @param inFile  nexus file path.
      * @return a {@linkplain String} array containing taxa names.
      */
-    private static String[] readAlignment(String inBlock, File inFile)
-    {
+    private static String[] readAlignment(String inBlock, File inFile) {
         String[] taxaLabels;
         System.err.print(Utilities.addDots("Reading sequences ", nDots));
         a = (Alignment) new NexusReaderAlignment(inBlock).readBlock(inFile.getAbsolutePath());
-        if(a == null)
-        {
+        if (a == null) {
             System.err.println();
             exitError("Error: could not read sequence alignment from '" + inFile + "'");
         }
@@ -227,7 +218,7 @@ public class Gen4S
     /**
      * Reads character distance matrix from DISTANCES block in nexus distance
      * matrix file and initializes {@linkplain uk.ac.uea.cmp.spectre.core.ds.distance.FlexibleDistanceMatrix} object.
-     * 
+     *
      * @param distanceMatrixFile nexus file path.
      */
     private static void readDistanceMatrix(File distanceMatrixFile) throws IOException {
@@ -240,12 +231,11 @@ public class Gen4S
     /**
      * Reads locations from LOCATIONS block in nexus input file and initializes
      * {@linkplain Locations} object.
-     * 
+     *
      * @param inFile nexus file path.
      * @return a {@linkplain String} array containing taxa names.
      */
-    private static String[] readLocations(File inFile)
-    {
+    private static String[] readLocations(File inFile) {
         String[] taxaLabels;
         System.err.print(Utilities.addDots("Reading locations ", nDots));
         loc = (Locations) new NexusReaderLocations().readBlock(inFile.getAbsolutePath());
@@ -257,23 +247,22 @@ public class Gen4S
     /**
      * Reads splits from SPLITS block in nexus input file and initializes
      * {@linkplain SplitSystem} object.
-     * 
+     *
      * @param inFile nexus file path.
      */
     private static void readSplits(File inFile) throws IOException {
         System.err.print(Utilities.addDots("Reading splits ", nDots));
-        ss = (SplitSystem)new NexusReaderSplits().readBlock(inFile.getAbsolutePath());
+        ss = (SplitSystem) new NexusReaderSplits().readBlock(inFile.getAbsolutePath());
         System.err.println(" done.");
     }
 
     /**
      * Reads taxa names from TAXA block in nexus input file and initializes
      * {@linkplain Taxa} object.
-     * 
-     * @param inFile 
+     *
+     * @param inFile
      */
-    private static void readTaxa(File inFile)
-    {
+    private static void readTaxa(File inFile) {
         System.err.print(Utilities.addDots("Reading taxa labels ", nDots));
         taxa = (Taxa) new NexusReaderTaxa().readBlock(inFile.getAbsolutePath());
         System.err.println(" done.");
@@ -282,19 +271,13 @@ public class Gen4S
     /**
      * Computes quadruple system from input data.
      */
-    private static void computeQuadruples()
-    {
+    private static void computeQuadruples() {
         System.err.print(Utilities.addDots("Computing system of 4-splits", nDots));
-        if (a != null)
-        {
+        if (a != null) {
             qsFactory = new QSFactoryAlignment(a, dm);
-        }
-        else if (loc != null)
-        {
+        } else if (loc != null) {
             qsFactory = new QSFactoryLocation(loc);
-        }
-        else if (ss != null)
-        {
+        } else if (ss != null) {
             qsFactory = new QSFactorySplitSystem(ss);
         }
         qs = qsFactory.computeQS();
@@ -304,18 +287,16 @@ public class Gen4S
     /**
      * Writes TAXA block to the nexus output file.
      */
-    private static void writeTaxa()
-    {
+    private static void writeTaxa() {
         System.err.print(Utilities.addDots("Writing TAXA block ", nDots));
         writer.write(taxa);
         System.err.println(" done.");
     }
-    
+
     /**
      * Writes QUADRUPLES block to the nexus output file.
      */
-    private static void writeQuadruples()
-    {
+    private static void writeQuadruples() {
         System.err.print(Utilities.addDots("Writing QUADRUPLES block ", nDots));
         writer.write(qs);
         System.err.println(" done.");
@@ -323,11 +304,10 @@ public class Gen4S
 
     /**
      * Halts the program.
-     * 
+     *
      * @param msg cause for exiting.
      */
-    private static void exitError(String msg)
-    {
+    private static void exitError(String msg) {
         System.err.println(msg);
         System.exit(1);
     }

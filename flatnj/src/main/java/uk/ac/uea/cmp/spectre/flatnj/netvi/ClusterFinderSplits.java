@@ -1,8 +1,8 @@
 /*
- * Phylogenetics Tool suite
- * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
+ * Copyright (C) 2014  UEA School of Computing Sciences
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
@@ -26,52 +26,45 @@ import java.util.*;
 import java.util.List;
 
 /**
- *
  * @author balvociute
  */
-public class ClusterFinderSplits extends ClusterFinder
-{
+public class ClusterFinderSplits extends ClusterFinder {
 
     @Override
     public Set<Cluster> findClusters(Network network,
                                      Map<Integer, Label> labels,
                                      Map<Integer, Vertex> vertices,
-                                     boolean changeColors)
-    {
+                                     boolean changeColors) {
         initializeClusterization(network, labels, vertices, changeColors);
-        
-        while(!unclusteredVertices.isEmpty())
-        {
+
+        while (!unclusteredVertices.isEmpty()) {
             iterateClusterization(network, labels, changeColors);
         }
         return clusters;
     }
-    
+
     void initializeClusterization(Network network,
-                                     Map<Integer, Label> labels,
-                                     Map<Integer, Vertex> vertices,
-                                     boolean changeColors)
-    {
+                                  Map<Integer, Label> labels,
+                                  Map<Integer, Vertex> vertices,
+                                  boolean changeColors) {
         unclusteredVertices = new LinkedList();
         clusters = new HashSet();
-        
+
         Iterator<Integer> idIt = labels.keySet().iterator();
-        while(idIt.hasNext())
-        {
+        while (idIt.hasNext()) {
             int id = idIt.next();
             Vertex v = vertices.get(id);
-            if(changeColors)
-            {
+            if (changeColors) {
                 v.setSize(7);
                 v.setBackgroundColor(Color.BLACK);
                 v.setLineColor(Color.BLACK);
             }
             unclusteredVertices.add(v);
         }
-        
+
         splitSizeThr = 0.0;
         int nSplits = 0;
-        
+
 //        Set<Integer> usedSplits = new HashSet();
 //        
 //        List<Edge> trivial = network.getTrivial();
@@ -91,8 +84,7 @@ public class ClusterFinderSplits extends ClusterFinder
 
     void iterateClusterization(Network network,
                                Map<Integer, Label> labels,
-                               boolean changeColors)
-    {        
+                               boolean changeColors) {
         Vertex vertex = unclusteredVertices.getFirst();
         List<Edge> trivial = network.getTrivial();
         List<GroupingNode> candidates = new LinkedList();
@@ -100,20 +92,17 @@ public class ClusterFinderSplits extends ClusterFinder
         candidates.add(firstGn);
         Cluster cluster = new Cluster();
         Set<Vertex> taken = new HashSet();
-        while(!candidates.isEmpty())
-        {
+        while (!candidates.isEmpty()) {
             List<GroupingNode> gnList = new LinkedList();
             GroupingNode candidate = candidates.remove(0);
             candidate.distanceFromStart = 0.0;
             gnList.add(candidate);
             Set<Edge> visited = new HashSet();
-            while(!gnList.isEmpty())
-            {
+            while (!gnList.isEmpty()) {
                 GroupingNode gn = gnList.remove(0);
                 Vertex v = gn.v;
                 taken.add(v);
-                if(v.getLabel() != null)
-                {
+                if (v.getLabel() != null) {
                     int id = v.getNxnum();
                     Label l = labels.get(id);
                     Point p = l.p;
@@ -121,25 +110,21 @@ public class ClusterFinderSplits extends ClusterFinder
                     unclusteredVertices.remove(v);
                 }
                 List<Edge> elist = v.getElist();
-                for(int i = 0; i < elist.size(); i ++)
-                {
+                for (int i = 0; i < elist.size(); i++) {
                     Edge e = elist.get(i);
-                    if(!e.visited)
-                    {
+                    if (!e.visited) {
                         Vertex w = e.getOther(v);
-                        
-                        double length = (trivial.contains(e) 
-                                         && network.trivialVisible()
-                                             || !trivial.contains(e))
-                                            ? e.length()
-                                            : 0.0;
+
+                        double length = (trivial.contains(e)
+                                && network.trivialVisible()
+                                || !trivial.contains(e))
+                                ? e.length()
+                                : 0.0;
                         GroupingNode gn2 = new GroupingNode(w, gn, length);
-                        if(gn2.distanceFromStart <= splitSizeThr)
-                        {
+                        if (gn2.distanceFromStart <= splitSizeThr) {
                             e.visited = true;
                             visited.add(e);
-                            if(w.getLabel() != null && !taken.contains(w))
-                            {
+                            if (w.getLabel() != null && !taken.contains(w)) {
                                 candidates.add(gn2);
                                 taken.add(w);
                             }
@@ -149,13 +134,12 @@ public class ClusterFinderSplits extends ClusterFinder
                 }
             }
             Iterator<Edge> visitedIt = visited.iterator();
-            while(visitedIt.hasNext())            
-            {
+            while (visitedIt.hasNext()) {
                 Edge edge = visitedIt.next();
                 edge.visited = false;
             }
         }
         clusters.add(cluster);
     }
-    
+
 }

@@ -79,8 +79,7 @@ public class NexusReader extends AbstractPhygenReader {
         // Do the parsing
         try {
             parser.parse();
-        }
-        catch(RuntimeException e) {
+        } catch (RuntimeException e) {
             throw new IOException("Error parsing: " + file.getAbsolutePath() + "; " + e.getMessage(), e);
         }
 
@@ -144,6 +143,7 @@ public class NexusReader extends AbstractPhygenReader {
     /**
      * Pulls out the circular ordering that should be present in the split block of the nexus file (assuming this represents
      * a circular split system)
+     *
      * @param file
      * @return A circular ordering
      * @throws IOException
@@ -160,6 +160,7 @@ public class NexusReader extends AbstractPhygenReader {
 
     /**
      * Just returns everything that was found in the nexus file
+     *
      * @param inFile
      * @return An object representing the contents of a nexus file.
      * @throws IOException

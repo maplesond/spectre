@@ -1,3 +1,19 @@
+/*
+ * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
+ * Copyright (C) 2014  UEA School of Computing Sciences
+ *
+ * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
+
 package uk.ac.uea.cmp.spectre.qtools.qnet.holders;
 
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
@@ -23,8 +39,9 @@ public class Holders {
 
     /**
      * Initialises all QNet Holders, using the supplied paths and quartets
-     * @param initalPaths The initial paths
-     * @param N The number of quartets
+     *
+     * @param initalPaths               The initial paths
+     * @param N                         The number of quartets
      * @param canonicalWeightedQuartets the canonical weighted quartets
      * @throws QNetException Thrown if there are any inconsistencies in the holder initialisation
      */
@@ -102,7 +119,6 @@ public class Holders {
     }
 
 
-
     public int selectJoin3(int i, int j, int k, double c) {
 
         double[] y8 = new double[8];
@@ -157,7 +173,7 @@ public class Holders {
 
         return CollectionUtils.findIndexOfMax(y8) + 1;
     }
-    
+
 
     public void update(int a, int b, int y, List<Integer> X) throws QNetException {
 
@@ -320,8 +336,9 @@ public class Holders {
 
     /**
      * Finds the first path that contains the specified ID
+     *
      * @param paths The list of paths to search
-     * @param id The id of the taxa to find
+     * @param id    The id of the taxa to find
      * @return The first path found containing the specified taxa ID, or null.
      */
     public static IdentifierList findFirstPathContainingId(List<IdentifierList> paths, int id) {

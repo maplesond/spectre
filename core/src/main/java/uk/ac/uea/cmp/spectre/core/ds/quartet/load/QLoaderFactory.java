@@ -13,12 +13,13 @@ public class QLoaderFactory extends SpiFactory<QLoader> {
 
     /**
      * This default method accepts an identifier if it equals the service's name, or if it matches the class names.
+     *
      * @param identifier
      * @param service
      * @return Whether the service accepts the given identifier
      */
     public boolean acceptsIdentifier(String identifier, QLoader service) {
-        return  service.acceptsExtension(identifier) ||
+        return service.acceptsExtension(identifier) ||
                 identifier.equalsIgnoreCase(service.getName()) ||
                 identifier.equalsIgnoreCase(service.getClass().getCanonicalName()) ||
                 identifier.equalsIgnoreCase(service.getClass().getName());

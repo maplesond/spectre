@@ -48,11 +48,9 @@ public class UpperTriangularMatrix {
 
         if (i > j) {
             // Do nothing
-        }
-        else if (j > i) {
+        } else if (j > i) {
             triangle[Quartet.over2(j) + Quartet.over1(i)] = newW;
-        }
-        else {
+        } else {
             diagonal[i] = newW;
         }
     }
@@ -62,8 +60,8 @@ public class UpperTriangularMatrix {
         return i > j ?
                 0.0 :
                 j > i ?
-                    triangle[Quartet.over2(j) + Quartet.over1(i)] :
-                    diagonal[i];
+                        triangle[Quartet.over2(j) + Quartet.over1(i)] :
+                        diagonal[i];
     }
 
 }

@@ -17,7 +17,7 @@ public class QWeightFileFilter extends FileFilter {
 
         String[] fileExtensions = commonFileExtensions();
 
-        for(String ext : fileExtensions) {
+        for (String ext : fileExtensions) {
             if (f.getName().endsWith(ext)) {
                 return true;
             }

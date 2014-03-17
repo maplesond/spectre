@@ -26,12 +26,13 @@ public class SplitDistanceMap extends LinkedHashMap<Split, Double> {
 
     /**
      * This will run in linear time.
+     *
      * @param splitBlock
      * @return
      */
     public Double getUsingSplitBlock(SplitBlock splitBlock) {
 
-        for(Split split : this.keySet()) {
+        for (Split split : this.keySet()) {
             if (split.getASide().equals(splitBlock) || split.getBSide().equals(splitBlock)) {
                 return this.get(split);
             }

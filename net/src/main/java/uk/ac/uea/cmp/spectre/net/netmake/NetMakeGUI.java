@@ -1,3 +1,19 @@
+/*
+ * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
+ * Copyright (C) 2014  UEA School of Computing Sciences
+ *
+ * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
+
 package uk.ac.uea.cmp.spectre.net.netmake;
 
 import org.slf4j.Logger;
@@ -56,7 +72,6 @@ public class NetMakeGUI extends JFrame implements ToolHost {
     private JButton cmdRun;
     private JLabel lblStatus;
     private JProgressBar progStatus;
-
 
 
     private JDialog dialog = new JDialog(this, TITLE);
@@ -329,7 +344,6 @@ public class NetMakeGUI extends JFrame implements ToolHost {
         pnlOptions.add(pnlOutput);
 
 
-
         // ***** Layout *****
 
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -346,6 +360,7 @@ public class NetMakeGUI extends JFrame implements ToolHost {
 
     /**
      * Choose file for output
+     *
      * @param evt
      */
     private void cmdOutputDirActionPerformed(java.awt.event.ActionEvent evt) {
@@ -367,6 +382,7 @@ public class NetMakeGUI extends JFrame implements ToolHost {
 
     /**
      * Choose a file for input
+     *
      * @param evt
      */
     private void cmdInputActionPerformed(java.awt.event.ActionEvent evt) {
@@ -387,6 +403,7 @@ public class NetMakeGUI extends JFrame implements ToolHost {
 
     /**
      * Start
+     *
      * @param evt
      */
     private void cmdRunActionPerformed(java.awt.event.ActionEvent evt) {
@@ -400,6 +417,7 @@ public class NetMakeGUI extends JFrame implements ToolHost {
 
     /**
      * Setup configuration using values specified in the GUI
+     *
      * @return configuration
      */
     private NetMakeOptions buildNetMakeOptions() {
@@ -412,8 +430,7 @@ public class NetMakeGUI extends JFrame implements ToolHost {
 
         try {
             options.setTreeParam(Double.parseDouble(this.txtWeight.getText()));
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             showErrorDialog("Tree param must be a real number.");
             return null;
         }
@@ -448,6 +465,7 @@ public class NetMakeGUI extends JFrame implements ToolHost {
 
     /**
      * Main entry point when running in GUI mode.
+     *
      * @param args Program arguments... we expect nothing to be here.
      */
     public static void main(String args[]) {

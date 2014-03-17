@@ -45,6 +45,7 @@ public interface PhygenReader {
 
     /**
      * Loads a list of Newick Trees from a file
+     *
      * @param file The file to read
      * @return A list of NewickTrees
      * @throws IOException
@@ -55,6 +56,7 @@ public interface PhygenReader {
 
     /**
      * Loads a split system from a file
+     *
      * @param file The file to read
      * @return A split system
      * @throws IOException
@@ -63,6 +65,7 @@ public interface PhygenReader {
 
     /**
      * Loads a quartet system from a file
+     *
      * @param file The file to read
      * @return A quartet system
      * @throws IOException
@@ -74,18 +77,21 @@ public interface PhygenReader {
 
     /**
      * Commonly used file extensions for this type of reader.
+     *
      * @return An array of strings representing commonly used file extensions for this reader.
      */
     String[] commonFileExtensions();
 
     /**
      * An identifier with which the client.
+     *
      * @return An identifier for this PhygenReader.
      */
     String getIdentifier();
 
     /**
      * Whether or not this phygen reader accepts the given identifier.
+     *
      * @param identifier The phygen reader identifier.
      * @return True if this PhygenReader recognises the identifier, false otherwise.
      */
@@ -93,6 +99,7 @@ public interface PhygenReader {
 
     /**
      * Whether or not this PhygenReader can handle the specified data type.
+     *
      * @param phygenDataType The data type.
      * @return True, if this PhygenReader can load the specified data type, false otherwise.
      */
@@ -100,6 +107,7 @@ public interface PhygenReader {
 
     /**
      * Whether or not this PhygenReader can handle the list of specified data types.
+     *
      * @param phygenDataTypeList A list of data types.
      * @return True, if this PhygenReader can load ALL the specified data types, false otherwise.
      */

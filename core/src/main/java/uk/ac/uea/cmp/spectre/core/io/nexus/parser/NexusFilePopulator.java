@@ -51,7 +51,6 @@ public class NexusFilePopulator implements NexusFileListener {
     private NexusQuartetNetworkBuilder quartetNetworkBuilder;
 
 
-
     public NexusFilePopulator(Nexus nexus, boolean verbose) {
         this.nexus = nexus;
         this.verbose = verbose;
@@ -205,7 +204,7 @@ public class NexusFilePopulator implements NexusFileListener {
 
         int nTax = -1;
 
-        if (ctx.dimensions_taxa() != null && ctx.dimensions_taxa().ntax() != null ) {
+        if (ctx.dimensions_taxa() != null && ctx.dimensions_taxa().ntax() != null) {
 
             NexusFileParser.NtaxContext ctxNtax = ctx.dimensions_taxa().ntax();
 
@@ -215,7 +214,7 @@ public class NexusFilePopulator implements NexusFileListener {
 
                 if (verbose && log.isDebugEnabled())
                     log.debug("Taxa Block: ntax:" + nTax);
-                }
+            }
         }
 
         IdentifierList taxa = this.nexus.getTaxa();
@@ -226,7 +225,7 @@ public class NexusFilePopulator implements NexusFileListener {
 
             NexusFileParser.Identifier_listContext idListCtx = ctx.taxlabels().identifier_list();
 
-            while(idListCtx != null && idListCtx.IDENTIFIER() != null) {
+            while (idListCtx != null && idListCtx.IDENTIFIER() != null) {
                 taxa.add(new Identifier(idListCtx.IDENTIFIER().getText()));
                 idListCtx = idListCtx.identifier_list();
             }
@@ -376,8 +375,7 @@ public class NexusFilePopulator implements NexusFileListener {
 
             if (ctx.properties_splits_name().getText().equalsIgnoreCase("cyclic")) {
                 this.splitSystemBuilder.setCyclic(true);
-            }
-            else if (ctx.properties_splits_name().getText().equalsIgnoreCase("fit")) {
+            } else if (ctx.properties_splits_name().getText().equalsIgnoreCase("fit")) {
                 this.splitSystemBuilder.setFit(Double.parseDouble(valStr));
             }
         }
@@ -613,12 +611,10 @@ public class NexusFilePopulator implements NexusFileListener {
                 if (ctxFormatItem.triangle() != null) {
                     String triangleString = ctxFormatItem.triangle().triangle_option().getText();
                     this.distanceMatrixBuilder.setTriangle(DistanceMatrixBuilder.Triangle.valueOf(triangleString.toUpperCase()));
-                }
-                else if (ctxFormatItem.diagonal() != null) {
+                } else if (ctxFormatItem.diagonal() != null) {
                     String diagonal = ctxFormatItem.diagonal().getText();
                     this.distanceMatrixBuilder.setDiagonal(diagonal.equals("diagonal"));
-                }
-                else if (ctxFormatItem.labels() != null) {
+                } else if (ctxFormatItem.labels() != null) {
 
                     if (ctxFormatItem.labels().labels_option() != null) {
                         String labelStr = ctxFormatItem.labels().labels_option().getText();
@@ -628,18 +624,14 @@ public class NexusFilePopulator implements NexusFileListener {
                         }
 
                         this.distanceMatrixBuilder.setLabels(DistanceMatrixBuilder.Labels.valueOf(labelStr.toUpperCase()));
-                    }
-                    else if (ctxFormatItem.labels().labels_header().getText().equalsIgnoreCase("nolabels")) {
+                    } else if (ctxFormatItem.labels().labels_header().getText().equalsIgnoreCase("nolabels")) {
                         this.distanceMatrixBuilder.setLabels(DistanceMatrixBuilder.Labels.NONE);
-                    }
-                    else {
+                    } else {
                         this.distanceMatrixBuilder.setLabels(DistanceMatrixBuilder.Labels.LEFT);
                     }
-                }
-                else if (ctxFormatItem.missing() != null) {
+                } else if (ctxFormatItem.missing() != null) {
                     // Not sure what to do with this.. leave it for now.
-                }
-                else if (ctxFormatItem.getText().equals("interleave")) {
+                } else if (ctxFormatItem.getText().equals("interleave")) {
                     this.distanceMatrixBuilder.setInterleave(true);
                 }
             }
@@ -918,9 +910,9 @@ public class NexusFilePopulator implements NexusFileListener {
     public void exitIntervals_splits(@NotNull NexusFileParser.Intervals_splitsContext ctx) {
         this.splitSystemBuilder.setHasIntervals(
                 ctx.boolean_option() == null ?
-                    true :
-                    ctx.boolean_option().getText().equalsIgnoreCase("true") ||
-                            ctx.boolean_option().getText().equalsIgnoreCase("yes")
+                        true :
+                        ctx.boolean_option().getText().equalsIgnoreCase("true") ||
+                                ctx.boolean_option().getText().equalsIgnoreCase("yes")
         );
     }
 
@@ -1445,7 +1437,7 @@ public class NexusFilePopulator implements NexusFileListener {
 
         NexusFileParser.Matrix_dataContext mtxData = ctx.matrix_data();
 
-        while(mtxData != null) {
+        while (mtxData != null) {
 
             if (ctx.matrix_data().IDENTIFIER() != null) {
                 String taxon = ctx.matrix_data().IDENTIFIER().getText();

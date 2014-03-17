@@ -1,8 +1,8 @@
 /*
- * Phylogenetics Tool suite
- * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
+ * Copyright (C) 2014  UEA School of Computing Sciences
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
@@ -24,66 +24,50 @@ import java.util.LinkedList;
 /**
  * Created by dan on 12/02/14.
  */
-public class NexusReaderLocations extends NexusReader
-{
+public class NexusReaderLocations extends NexusReader {
     LinkedList<Location> llist;
 
-    public NexusReaderLocations()
-    {
+    public NexusReaderLocations() {
         block = "locations";
     }
 
 
-
     @Override
-    protected void initializeDataStructures(Dimensions dimensions)
-    {
+    protected void initializeDataStructures(Dimensions dimensions) {
         llist = new LinkedList();
     }
 
     @Override
-    protected void parseLine(Format format)
-    {
+    protected void parseLine(Format format) {
         String taxLabel;
         double x;
         double y;
-        if(format.labels)
-        {
+        if (format.labels) {
             matched = scanner.findInLine("(\\S+)\\s+(\\S+)\\s+(\\S+)");
-            if(matched == null)
-            {
+            if (matched == null) {
                 System.err.println("Missing taxa label in the locations block:\n\t" + line);
                 System.exit(1);
             }
             taxLabel = scanner.match().group(1);
-            try
-            {
+            try {
                 x = Double.parseDouble(scanner.match().group(2));
                 y = Double.parseDouble(scanner.match().group(3));
                 llist.add(new Location(x, y, taxLabel));
-            }
-            catch(NumberFormatException nfe)
-            {
+            } catch (NumberFormatException nfe) {
                 System.err.println("Error while parsing coordinates in the LOCATIONS block. Coordinates must be real numbers:\n\t" + line);
                 System.exit(1);
             }
-        }
-        else
-        {
+        } else {
             matched = scanner.findInLine("(\\S+)\\s+(\\S+)");
-            if(matched == null)
-            {
+            if (matched == null) {
                 System.err.println("Wrong entry in a matrix of the LOCATIONS block: \n\t" + line);
                 System.exit(1);
             }
-            try
-            {
+            try {
                 x = Double.parseDouble(scanner.match().group(1));
                 y = Double.parseDouble(scanner.match().group(2));
                 llist.add(new Location(x, y));
-            }
-            catch(NumberFormatException nfe)
-            {
+            } catch (NumberFormatException nfe) {
                 System.err.println("Error while parsing coordinates in the LOCATIONS block. Coordinates must be real numbers:\n\t" + line);
                 System.exit(1);
             }
@@ -91,8 +75,7 @@ public class NexusReaderLocations extends NexusReader
     }
 
     @Override
-    protected Locations createObject(Dimensions dimensions, Cycle cycle, Draw draw)
-    {
+    protected Locations createObject(Dimensions dimensions, Cycle cycle, Draw draw) {
         Locations locations = new Locations(llist);
         return locations;
     }

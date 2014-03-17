@@ -1,8 +1,8 @@
 /*
- * Phylogenetics Tool suite
- * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
+ * Copyright (C) 2014  UEA School of Computing Sciences
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
@@ -18,28 +18,23 @@ package uk.ac.uea.cmp.spectre.flatnj.gen4s;
 
 /**
  * Multiple sequence alignment filter for illegal characters.
- * 
+ *
  * @author balvociute
  */
-public class AlignmentFilter
-{
+public class AlignmentFilter {
     /**
      * Checks if the <code>symbol</code> is in the alphabet.
-     * 
-     * @param   symbol a character to be checked.
-     * @return  true if <code>symbol</code> is in the alphabet and false
-     *          otherwise.
+     *
+     * @param symbol a character to be checked.
+     * @return true if <code>symbol</code> is in the alphabet and false
+     * otherwise.
      */
-    public boolean isAllowed(char symbol)
-    {
-        if(symbol == '-')
-        {
+    public boolean isAllowed(char symbol) {
+        if (symbol == '-') {
             return false;
-        }
-        else
-        {
+        } else {
             return true;
         }
     }
-   
+
 }

@@ -41,7 +41,7 @@ public class SplitUtils {
         List<Split> splits = new ArrayList<>();
 
         int i = 0;
-        for(SplitBlock splitBlock : splitBlocks) {
+        for (SplitBlock splitBlock : splitBlocks) {
             splits.add(new Split(splitBlock, nbTaxa, weights.get(i++)));
         }
 
@@ -72,6 +72,7 @@ public class SplitUtils {
 
     /**
      * Create a list of possible split indices from a given number of taxa
+     *
      * @param N The number of taxa
      * @return An array of split indices
      */

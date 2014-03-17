@@ -136,7 +136,7 @@ public class CollectionUtils {
 
         double maxVal = Double.NEGATIVE_INFINITY;
         int maxIndex = -1;
-        for(int i = 0; i < array.length; i++) {
+        for (int i = 0; i < array.length; i++) {
             if (array[i] > maxVal) {
                 maxIndex = i;
                 maxVal = array[i];
@@ -151,7 +151,7 @@ public class CollectionUtils {
 
         List<Integer> list = new LinkedList<>();
 
-        for(int i = 0; i < array.length; i++) {
+        for (int i = 0; i < array.length; i++) {
             list.add(array[i]);
         }
 
@@ -172,7 +172,7 @@ public class CollectionUtils {
 
         sb.append(array[0]);
 
-        for(int i = 1; i < array.length; i++) {
+        for (int i = 1; i < array.length; i++) {
             sb.append(separator).append(array[i]);
         }
 

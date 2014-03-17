@@ -1,4 +1,3 @@
-
 .. _quartet_tools:
 
 Quartet Tools

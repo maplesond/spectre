@@ -1,6 +1,6 @@
 /*
- * Phylogenetics Tool suite
- * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
+ * Copyright (C) 2014  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
@@ -37,7 +37,7 @@ import static junit.framework.TestCase.assertFalse;
 public class SuperQITCase {
 
     @Rule
-    public TemporaryFolder folder= new TemporaryFolder();
+    public TemporaryFolder folder = new TemporaryFolder();
 
     private File simpleOutput;
 
@@ -54,7 +54,7 @@ public class SuperQITCase {
     protected SuperQOptions createSimpleOptions(String inputResource, File output) throws OptimiserException {
 
         SuperQOptions options = new SuperQOptions(
-                new File[] {FileUtils.toFile(SuperQITCase.class.getResource(inputResource))},
+                new File[]{FileUtils.toFile(SuperQITCase.class.getResource(inputResource))},
                 output,
                 null,
                 null,

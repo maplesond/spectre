@@ -1,8 +1,8 @@
 /*
- * Phylogenetics Tool suite
- * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
+ * Copyright (C) 2014  UEA School of Computing Sciences
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
@@ -436,7 +436,7 @@ public class GreedyMEWeighting extends Weighting {
             //each element of the split
             for (int j = 0; j < splitASideI.size(); j++) {
                 for (int k = 0; k < nbTaxa; k++) {
-                    if (splitASideI.get(j) == k+1) {
+                    if (splitASideI.get(j) == k + 1) {
                         splited[k] = true;
                     }
                 }
@@ -447,7 +447,7 @@ public class GreedyMEWeighting extends Weighting {
             double sum = 0.0;
             for (int j = 0; j < splitASideI.size(); j++) {
                 for (int k = 1; k <= nbTaxa; k++) {
-                    if (splited[k-1] == false) {
+                    if (splited[k - 1] == false) {
                         sum += this.distanceMatrix.getDistance(splitASideI.get(j), k);
                     }
                 }

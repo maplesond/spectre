@@ -1,8 +1,8 @@
 /*
- * Phylogenetics Tool suite
- * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
+ * Copyright (C) 2014  UEA School of Computing Sciences
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
@@ -90,7 +90,7 @@ public class SuperQ extends RunnableTool {
             notifyUser("Converting input trees into a combined quartet system.  " +
                     (this.options.getScalingSolver() != null ? "(Scaling input (optimiser: " + this.options.getScalingSolver().getIdentifier() + ")" : ""));
 
-            GroupedQuartetSystem combinedQuartetSystem =  new QMaker().execute(
+            GroupedQuartetSystem combinedQuartetSystem = new QMaker().execute(
                     this.options.getInputFiles(),
                     this.options.getScalingSolver());
 
@@ -136,8 +136,7 @@ public class SuperQ extends RunnableTool {
                     for (int i = 0; i < solution.length; i++) {
                         solution[i] = solution[i] + solution2[i];
                     }
-                }
-                catch (OptimiserException use) {
+                } catch (OptimiserException use) {
                     log.warn("Secondary optimisation - Invalid solution.  Keeping original solution from first optimisation step.");
                 }
             }
@@ -186,7 +185,7 @@ public class SuperQ extends RunnableTool {
 
     /**
      * To be used only in conjunction with the MINIMA objective
-     *
+     * <p/>
      * NOTE: This might be broken... probably need to modify the coefficients of the problem internally for each run
      *
      * @param problem

@@ -1,8 +1,8 @@
 /*
- * Phylogenetics Tool suite
- * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
+ * Copyright (C) 2014  UEA School of Computing Sciences
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
@@ -68,6 +68,7 @@ public class Scaling extends PhygenTool {
 
     /**
      * Executes scaler using command line input
+     *
      * @param commandLine
      * @throws IOException
      */
@@ -84,7 +85,7 @@ public class Scaling extends PhygenTool {
         }
 
         File[] inputFiles = new File[args.length];
-        for(int i = 0; i < args.length; i++) {
+        for (int i = 0; i < args.length; i++) {
             inputFiles[i] = new File(args[i].trim());
         }
 
@@ -105,8 +106,9 @@ public class Scaling extends PhygenTool {
 
     /**
      * Scales a list of quartet networks loaded from a file and then writes scaled networks to file.
-     * @param inputFiles The file to load
-     * @param optimiser The optimiser to use for scaling
+     *
+     * @param inputFiles   The file to load
+     * @param optimiser    The optimiser to use for scaling
      * @param outputPrefix The location for output files to be created
      * @throws OptimiserException
      * @throws IOException
@@ -119,8 +121,9 @@ public class Scaling extends PhygenTool {
 
     /**
      * Scales a list of quartet networks loaded from a file
+     *
      * @param inputFiles The files to load
-     * @param optimiser The optimiser to use for scaling
+     * @param optimiser  The optimiser to use for scaling
      * @return A scaled list of quartet networks.
      * @throws OptimiserException
      * @throws IOException
@@ -133,6 +136,7 @@ public class Scaling extends PhygenTool {
 
     /**
      * Main entry point for the scaling program
+     *
      * @param args
      */
     public static void main(String[] args) {

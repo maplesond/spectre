@@ -1,8 +1,8 @@
 /*
- * Phylogenetics Tool suite
- * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
+ * Copyright (C) 2014  UEA School of Computing Sciences
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
@@ -22,63 +22,56 @@ import uk.ac.uea.cmp.spectre.flatnj.ds.SplitSystem;
 
 /**
  * Quadruple system factory from split system.
- * 
+ *
  * @author balvociute
  */
-public class QSFactorySplitSystem implements QSFactory
-{
+public class QSFactorySplitSystem implements QSFactory {
     /**
-     * {@linkplain SplitSystem} to be used for the estimation of 
+     * {@linkplain SplitSystem} to be used for the estimation of
      * {@link QuadrupleSystem}.
      */
     private SplitSystem ss;
-    
+
     /**
-     * {@linkplain boolean} splits matrix that indicates which taxa are 
+     * {@linkplain boolean} splits matrix that indicates which taxa are
      * separated by each split.
      */
     private boolean[][] splits;
     /**
-     * {@linkplain double} array with weights of all splits in the 
+     * {@linkplain double} array with weights of all splits in the
      * ss.
      */
     private double[] weights;
 
     /**
-     * Constructs {@linkplain QSFactoryLocation} object that will use 
+     * Constructs {@linkplain QSFactoryLocation} object that will use
      * {@linkplain  SplitSystem} to compute new {@link QuadrupleSystem}.
-     * 
+     *
      * @param ss a {@linkplain SplitSystem} object to be used for the estimation of
      *           {@link QuadrupleSystem}.
      */
-    public QSFactorySplitSystem(SplitSystem ss)
-    {
+    public QSFactorySplitSystem(SplitSystem ss) {
         this.ss = ss;
     }
 
     @Override
-    public QuadrupleSystem computeQS()
-    {
+    public QuadrupleSystem computeQS() {
         int nTaxa = ss.getnTaxa();
         splits = ss.getSplits();
         weights = ss.getWeights();
-        
+
         QuadrupleSystem qs = new QuadrupleSystem(nTaxa);
 
         int[] inTaxa = new int[4];
         double[] inWeights = new double[7];
 
-        for (int i1 = 0; i1 < nTaxa - 3; i1++)
-        {
+        for (int i1 = 0; i1 < nTaxa - 3; i1++) {
             inTaxa[0] = i1;
-            for (int i2 = i1 + 1; i2 < nTaxa - 2; i2++)
-            {
+            for (int i2 = i1 + 1; i2 < nTaxa - 2; i2++) {
                 inTaxa[1] = i2;
-                for (int i3 = i2 + 1; i3 < nTaxa - 1; i3++)
-                {
+                for (int i3 = i2 + 1; i3 < nTaxa - 1; i3++) {
                     inTaxa[2] = i3;
-                    for (int i4 = i3 + 1; i4 < nTaxa; i4++)
-                    {
+                    for (int i4 = i3 + 1; i4 < nTaxa; i4++) {
                         inTaxa[3] = i4;
 
                         //We now compute the induced weights for the quartet splits.
@@ -97,15 +90,15 @@ public class QSFactorySplitSystem implements QSFactory
         }
         return qs;
     }
-    
+
     /**
      * Computes weight of a quadruple split described by parameters i1..i6. Taxa
      * with index i1 must be in the same partition as taxa with index i2, i3 as
-     * i4 and i5 must be in the different partition from i6. For example, to 
+     * i4 and i5 must be in the different partition from i6. For example, to
      * estimate weight of quadruple split a|bcd, i1 = b, i2 = c, i3 = c, i4 = d
-     * and i5 = a, i6 = b; For split ab|cd indexes would be: i1 = a, i2 = b, 
+     * and i5 = a, i6 = b; For split ab|cd indexes would be: i1 = a, i2 = b,
      * i3 = c, i4 = d and i5 = a, i6 = c.
-     * 
+     *
      * @param i1 index of taxa.
      * @param i2 index of taxa.
      * @param i3 index of taxa.
@@ -114,17 +107,14 @@ public class QSFactorySplitSystem implements QSFactory
      * @param i6 index of taxa.
      * @return {@linkplain double} quadruple split weight.
      */
-    private double computeWeight(int i1, int i2, int i3, int i4, int i5, int i6)
-    {
+    private double computeWeight(int i1, int i2, int i3, int i4, int i5, int i6) {
         double w = 0.0;
-        for (int m = 0; m < splits.length; m++)
-        {
-            if (((splits[m][i1] == splits[m][i2]) && (splits[m][i3] == splits[m][i4])) && (splits[m][i5] != splits[m][i6]))
-            {
+        for (int m = 0; m < splits.length; m++) {
+            if (((splits[m][i1] == splits[m][i2]) && (splits[m][i3] == splits[m][i4])) && (splits[m][i5] != splits[m][i6])) {
                 w += weights[m];
             }
         }
         return w;
     }
-    
+
 }

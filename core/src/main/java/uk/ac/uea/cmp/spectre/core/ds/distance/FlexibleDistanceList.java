@@ -25,7 +25,6 @@ public class FlexibleDistanceList extends HashMap<Identifier, Double> implements
     }
 
 
-
     @Override
     public Double put(Identifier key, Double value) {
 
@@ -43,7 +42,6 @@ public class FlexibleDistanceList extends HashMap<Identifier, Double> implements
         this.otherTaxa.remove(key);
         return super.remove(key);
     }
-
 
 
     @Override
@@ -111,7 +109,7 @@ public class FlexibleDistanceList extends HashMap<Identifier, Double> implements
 
         double sum = 0.0;
 
-        for(Double value : this.values()) {
+        for (Double value : this.values()) {
             sum += value;
         }
 

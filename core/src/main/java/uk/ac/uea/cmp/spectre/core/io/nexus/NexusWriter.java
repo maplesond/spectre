@@ -37,6 +37,7 @@ import java.io.IOException;
  * StringBuilder and the client can append content into this as they like.  This means that the whole file content is
  * stored in memory before writing to disk.  This could be a problem on low-memory systems, or if processing large files.
  * Consider optimising if we memory related problems are encountered.
+ *
  * @author Dan
  */
 public class NexusWriter extends AbstractPhygenWriter implements Appendable {
@@ -52,7 +53,6 @@ public class NexusWriter extends AbstractPhygenWriter implements Appendable {
     public NexusWriter() {
         this.fileContent = new StringBuilder(2048);
     }
-
 
 
     /**
@@ -87,10 +87,10 @@ public class NexusWriter extends AbstractPhygenWriter implements Appendable {
 
         // Construct file content
         this.appendHeader()
-            .appendLine()
-            .append(distanceMatrix.getTaxa())
-            .appendLine()
-            .append(distanceMatrix);
+                .appendLine()
+                .append(distanceMatrix.getTaxa())
+                .appendLine()
+                .append(distanceMatrix);
 
         // Save to disk
         this.write(file);
@@ -107,12 +107,12 @@ public class NexusWriter extends AbstractPhygenWriter implements Appendable {
 
         if (nexusData.getTaxa() != null) {
             this.appendLine()
-                .append(nexusData.getTaxa());
+                    .append(nexusData.getTaxa());
         }
 
         if (nexusData.getDistanceMatrix() != null) {
             this.appendLine()
-                .append(nexusData.getDistanceMatrix());
+                    .append(nexusData.getDistanceMatrix());
         }
 
         /*if (nexusData.getCycle() != null) {
@@ -175,17 +175,15 @@ public class NexusWriter extends AbstractPhygenWriter implements Appendable {
     }
 
 
-
-
-
     /**
      * Uses a buffer to stream file content into the specified file.
+     *
      * @param file
      * @throws IOException
      */
     public void write(File file) throws IOException {
 
-        try(BufferedWriter writer = new BufferedWriter(new FileWriter(file.getAbsoluteFile()))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file.getAbsoluteFile()))) {
             writer.write(this.fileContent.toString());
         }
     }

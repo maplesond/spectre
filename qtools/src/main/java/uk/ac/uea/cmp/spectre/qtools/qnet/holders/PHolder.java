@@ -1,8 +1,8 @@
 /*
- * Phylogenetics Tool suite
- * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
+ * Copyright (C) 2014  UEA School of Computing Sciences
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
@@ -46,8 +46,9 @@ public class PHolder {
      * the information file, then we fill up the same structure from the provided loops and then access below to get the
      * informative interval combinatorics... it is basically defined like outer and inner interval of two types and
      * existence value for each quadruple.
+     *
      * @param quartetSystem The quartet system
-     * @param c The circular ordering of taxa ids
+     * @param c             The circular ordering of taxa ids
      */
     public PHolder(GroupedQuartetSystem quartetSystem, IdentifierList c) {
 
@@ -67,7 +68,7 @@ public class PHolder {
         }*/
 
         // load r values
-        for(Map.Entry<Quartet, QuartetWeights> entry : quartetSystem.getQuartets().entrySet()) {
+        for (Map.Entry<Quartet, QuartetWeights> entry : quartetSystem.getQuartets().entrySet()) {
 
             this.setR(
                     entry.getKey().getA(),
@@ -95,8 +96,7 @@ public class PHolder {
                             if (this.getR(iA + 1, iB + 1, iC + 1, iD + 1, c)) {
 
                                 this.setQ(iA, iB, iC, iD, 1);
-                            }
-                            else {
+                            } else {
 
                                 this.setQ(iA, iB, iC, iD, 0);
                             }
@@ -140,8 +140,7 @@ public class PHolder {
 
                             this.setQ(iB, iB + 2, iC, iA + N, this.getQ(iB + 1, iB + 2, iC, iA + N)
                                     + this.getQ(iB, iB + 1, iC, iA + N) + 1);
-                        }
-                        else {
+                        } else {
 
                             this.setQ(iB, iB + 2, iC, iA + N, this.getQ(iB + 1, iB + 2, iC, iA + N)
                                     + this.getQ(iB, iB + 1, iC, iA + N));
@@ -166,8 +165,7 @@ public class PHolder {
                                 this.setQ(iA, iA + iD, iB, iC, this.getQ(iA + 1, iA + iD, iB, iC)
                                         + this.getQ(iA, iA + iD - 1, iB, iC)
                                         - this.getQ(iA + 1, iA + iD - 1, iB, iC) + 1);
-                            }
-                            else {
+                            } else {
 
                                 this.setQ(iA, iA + iD, iB, iC, this.getQ(iA + 1, iA + iD, iB, iC)
                                         + this.getQ(iA, iA + iD - 1, iB, iC)
@@ -183,8 +181,7 @@ public class PHolder {
                                 this.setQ(iB, iB + iD, iC, iA + N, this.getQ(iB + 1, iB + iD, iC, iA + N)
                                         + this.getQ(iB, iB + iD - 1, iC, iA + N)
                                         - this.getQ(iB + 1, iB + iD - 1, iC, iA + N) + 1);
-                            }
-                            else {
+                            } else {
 
                                 this.setQ(iB, iB + iD, iC, iA + N, this.getQ(iB + 1, iB + iD, iC, iA + N)
                                         + this.getQ(iB, iB + iD - 1, iC, iA + N)
@@ -335,8 +332,7 @@ public class PHolder {
             // we work with out of d - n, a, b, c
 
             return data[Quartet.over1(d - nbTaxa - 1) + Quartet.over2(a - 1) + Quartet.over3(b - 1) + Quartet.over4(c - 1)].getOuterP();
-        }
-        else {
+        } else {
 
             // we work with in of a, b, c, d
 
@@ -349,8 +345,8 @@ public class PHolder {
         // we assume size-order and one-upmanship
         // we check for d > N
         return d > nbTaxa ?
-            data[Quartet.over1(d - nbTaxa - 1) + Quartet.over2(a - 1) + Quartet.over3(b - 1) + Quartet.over4(c - 1)].getOuterQ() :
-            data[Quartet.over1(a - 1) + Quartet.over2(b - 1) + Quartet.over3(c - 1) + Quartet.over4(d - 1)].getInnerQ();
+                data[Quartet.over1(d - nbTaxa - 1) + Quartet.over2(a - 1) + Quartet.over3(b - 1) + Quartet.over4(c - 1)].getOuterQ() :
+                data[Quartet.over1(a - 1) + Quartet.over2(b - 1) + Quartet.over3(c - 1) + Quartet.over4(d - 1)].getInnerQ();
     }
 
     public boolean getR(int a, int b, int c, int d, IdentifierList cT) {
@@ -388,8 +384,8 @@ public class PHolder {
         // we check for d > N
 
         return d > nbTaxa ?
-            data[Quartet.over1(d - nbTaxa - 1) + Quartet.over2(a - 1) + Quartet.over3(b - 1) + Quartet.over4(c - 1)].getR() :
-            data[Quartet.over1(a - 1) + Quartet.over2(b - 1) + Quartet.over3(c - 1) + Quartet.over4(d - 1)].getR();
+                data[Quartet.over1(d - nbTaxa - 1) + Quartet.over2(a - 1) + Quartet.over3(b - 1) + Quartet.over4(c - 1)].getR() :
+                data[Quartet.over1(a - 1) + Quartet.over2(b - 1) + Quartet.over3(c - 1) + Quartet.over4(d - 1)].getR();
     }
 
 
@@ -402,8 +398,7 @@ public class PHolder {
             // if requesting something after the last (remembering we have one-upmanship
             // we work with out of d - n, a, b, c
             data[Quartet.over1(d - nbTaxa - 1) + Quartet.over2(a - 1) + Quartet.over3(b - 1) + Quartet.over4(c - 1)].setOuterP(newW);
-        }
-        else {
+        } else {
             // we work with in of a, b, c, d
             data[Quartet.over1(a - 1) + Quartet.over2(b - 1) + Quartet.over3(c - 1) + Quartet.over4(d - 1)].setInnerP(newW);
         }
@@ -419,8 +414,7 @@ public class PHolder {
             // if requesting something after the last (remembering we have one-upmanship
             // we work with out of d - n, a, b, c
             data[Quartet.over1(d - nbTaxa - 1) + Quartet.over2(a - 1) + Quartet.over3(b - 1) + Quartet.over4(c - 1)].setOuterQ(newW);
-        }
-        else {
+        } else {
 
             // we work with in of a, b, c, d
             data[Quartet.over1(a - 1) + Quartet.over2(b - 1) + Quartet.over3(c - 1) + Quartet.over4(d - 1)].setInnerQ(newW);
@@ -437,8 +431,7 @@ public class PHolder {
             // if requesting something after the last (remembering we have one-upmanship
             // we work with out of d - n, a, b, c
             data[Quartet.over1(d - nbTaxa - 1) + Quartet.over2(a - 1) + Quartet.over3(b - 1) + Quartet.over4(c - 1)].setR(newW);
-        }
-        else {
+        } else {
 
             // we work with in of a, b, c, d
             data[Quartet.over1(a - 1) + Quartet.over2(b - 1) + Quartet.over3(c - 1) + Quartet.over4(d - 1)].setR(newW);
@@ -516,7 +509,6 @@ public class PHolder {
             this.innerP = innerP;
         }
     }
-
 
 
 }

@@ -69,6 +69,7 @@ public abstract class NewickNode {
 
     /**
      * Walks the tree and returns the taxa list.  May throw an IllegalArgumentException if there are duplicate taxa
+     *
      * @return The taxa found from this node.
      */
     public IdentifierList findAllTaxa() {
@@ -79,7 +80,7 @@ public abstract class NewickNode {
             taxa.add(this.taxon);
         }
 
-        for(NewickNode node : this.branches) {
+        for (NewickNode node : this.branches) {
             node.getTaxa(taxa);
         }
 
@@ -95,7 +96,7 @@ public abstract class NewickNode {
             taxa.add(this.taxon);
         }
 
-        for(NewickNode node : this.branches) {
+        for (NewickNode node : this.branches) {
             node.getTaxa(taxa);
         }
     }
@@ -116,7 +117,7 @@ public abstract class NewickNode {
         if (!this.isLeaf() && (this.taxon != null && !this.taxon.isEmpty()))
             return true;
 
-        for(NewickNode node : this.branches) {
+        for (NewickNode node : this.branches) {
             if (node.hasNonLeafNames())
                 return true;
         }
@@ -126,7 +127,7 @@ public abstract class NewickNode {
 
     public boolean allHaveLengths() {
 
-        for(NewickNode node : this.branches) {
+        for (NewickNode node : this.branches) {
             if (!node.allHaveLengths(true))
                 return false;
         }
@@ -139,7 +140,7 @@ public abstract class NewickNode {
         if (this.length == 0.0)
             return false;
 
-        for(NewickNode node : this.branches) {
+        for (NewickNode node : this.branches) {
             if (!node.allHaveLengths(false)) {
                 return false;
             }
@@ -150,10 +151,10 @@ public abstract class NewickNode {
 
     public void setIndiciesToExternalTaxaList(IdentifierList externalTaxaList) {
         if (this.taxon != null && !this.taxon.getName().isEmpty()) {
-            this.taxon.setId(externalTaxaList.indexOf(this.taxon)+1);
+            this.taxon.setId(externalTaxaList.indexOf(this.taxon) + 1);
         }
 
-        for(NewickNode node : this.branches) {
+        for (NewickNode node : this.branches) {
             node.setIndiciesToExternalTaxaList(externalTaxaList);
         }
     }
@@ -205,13 +206,14 @@ public abstract class NewickNode {
     /**
      * We take all splits (those here, and those in the branches) and add their weights to the quartets. Weights are
      * defined regardless, so... = 1 for no weights
-     * @param qW The quartet weights to update
+     *
+     * @param qW        The quartet weights to update
      * @param remainder The taxa that are not found in this node
      * @return Calculated quartet weights for this node
      */
     protected CanonicalWeightedQuartetMap split(CanonicalWeightedQuartetMap qW, IdentifierList remainder) {
 
-        for(int i = 0; i < this.branches.size(); i++) {
+        for (int i = 0; i < this.branches.size(); i++) {
 
             NewickNode branch = this.branches.get(i);
             double w = branch.getLength();
@@ -219,7 +221,7 @@ public abstract class NewickNode {
             IdentifierList setA = branch.findAllTaxa();
             IdentifierList setB = new IdentifierList(remainder);
 
-            for(NewickNode otherBranch : this.branches) {
+            for (NewickNode otherBranch : this.branches) {
 
                 if (branch != otherBranch) {
                     setB.addAll(otherBranch.findAllTaxa(), true);

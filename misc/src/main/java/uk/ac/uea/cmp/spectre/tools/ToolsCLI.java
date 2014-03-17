@@ -1,8 +1,8 @@
 /*
- * Phylogenetics Tool suite
- * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
+ * Copyright (C) 2014  UEA School of Computing Sciences
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
@@ -46,7 +46,7 @@ public class ToolsCLI {
                 createOptions(),
                 "phygentools",
                 "Miscellaneous Phylogenetic Tools\n" +
-                "A collection of tools: " + phygenToolFactory.listServicesAsString());
+                        "A collection of tools: " + phygenToolFactory.listServicesAsString());
     }
 
 
@@ -61,15 +61,13 @@ public class ToolsCLI {
 
             if (cmdLine.getArgList().isEmpty() || cmdLine.getArgs()[0].equalsIgnoreCase(OPT_HELP)) {
                 printHelp();
-            }
-            else {
+            } else {
                 // Required arguments
                 PhygenTool phygenTool = phygenToolFactory.create(cmdLine.getArgs()[0]);
 
                 if (phygenTool == null) {
                     throw new ParseException("Requested tool not found: " + cmdLine.getOptionValue(cmdLine.getArgs()[0]));
-                }
-                else {
+                } else {
                     phygenTool.execute(ArrayUtils.subarray(cmdLine.getArgs(), 1, cmdLine.getArgs().length));
                 }
             }

@@ -12,7 +12,7 @@ class Network extends HashMap<Identifier, IdentifierList> {
 
     public Network(IdentifierList taxa) {
 
-        for(Identifier t : taxa) {
+        for (Identifier t : taxa) {
             IdentifierList newTaxa = new IdentifierList();
             newTaxa.add(t);
             this.put(t, newTaxa);
@@ -21,12 +21,12 @@ class Network extends HashMap<Identifier, IdentifierList> {
 
     public Identifier createNextIdentifier() {
 
-        int maxId=0;
+        int maxId = 0;
 
-        for(Identifier t : this.keySet()) {
+        for (Identifier t : this.keySet()) {
             maxId = maxId < t.getId() ? t.getId() : maxId;
         }
 
-        return new Identifier(maxId+1);
+        return new Identifier(maxId + 1);
     }
 }

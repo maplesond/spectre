@@ -1,8 +1,8 @@
 /*
- * Phylogenetics Tool suite
- * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
+ * Copyright (C) 2014  UEA School of Computing Sciences
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
@@ -65,6 +65,7 @@ public class WeightCalculatorImpl implements WeightCalculator {
      * Ensures all variables are non-negative (are these actually required?  Might want to try removing these and see
      * if we get the same result, as we have already requested that the variables are non-negative.  Probably these
      * constraints will just slow the solver down.)
+     *
      * @param variables
      * @return
      */

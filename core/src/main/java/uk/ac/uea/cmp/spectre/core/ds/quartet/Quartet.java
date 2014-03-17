@@ -28,9 +28,8 @@ import java.util.List;
  * Objects of this class are used as keys in the hashmap that associates sorts 4-tuples of taxa with the corresponding
  * weights of the three quartets.  Assumes the quartets are sorted when created.  If not, the sort method is available
  * to sort the indices.
- *
+ * <p/>
  * A quartet is always stored in its canonical form: the left pair must contain the smallest taxa id of the quadruple
- *
  */
 public class Quartet implements Comparable {
 
@@ -55,9 +54,10 @@ public class Quartet implements Comparable {
 
     /**
      * Copy constructor.
-     *
+     * <p/>
      * Note: We do not reuse the other constructor here as we already know that the other quartet must be distinct and
      * in canonical form.  Therefore we can save some time here by just directly copying the variables.
+     *
      * @param q
      */
     public Quartet(Quartet q) {
@@ -71,6 +71,7 @@ public class Quartet implements Comparable {
     /**
      * This method is critical for setting up quartets.  It converts the taxa ids into their quartet canonical form.  This
      * means that the first taxa id should be the minimum for the quadruple, whilst maintaining the input pairings.
+     *
      * @param a
      * @param b
      * @param c
@@ -114,6 +115,7 @@ public class Quartet implements Comparable {
 
     /**
      * This method checks whether or not for given taxa are distinct. The assumption is that a <= b <= c <= d holds.
+     *
      * @param a
      * @param b
      * @param c
@@ -213,6 +215,7 @@ public class Quartet implements Comparable {
     /**
      * Using the indices in the quartet it is possible to work out where in a list of quartets in a quartet system that
      * this particular quartet should be placed
+     *
      * @return The index to use for this quartet.
      */
     public int getIndex() {
@@ -294,8 +297,7 @@ public class Quartet implements Comparable {
 
         if (this.equals(sorted)) {
             index = 0;
-        }
-        else {
+        } else {
 
             int[] array = new int[]{a, b, c, d};
 

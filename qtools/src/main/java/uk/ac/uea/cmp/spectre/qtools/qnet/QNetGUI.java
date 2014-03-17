@@ -1,8 +1,8 @@
 /*
- * Phylogenetics Tool suite
- * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
+ * Copyright (C) 2014  UEA School of Computing Sciences
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
@@ -70,7 +70,6 @@ public class QNetGUI extends JFrame implements ToolHost {
     private JButton cmdRun;
     private JLabel lblStatus;
     private JProgressBar progStatus;
-
 
 
     private JDialog dialog = new JDialog(this, TITLE);
@@ -332,7 +331,6 @@ public class QNetGUI extends JFrame implements ToolHost {
         pnlOptions.add(pnlOutput);
 
 
-
         // ***** Layout *****
 
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -349,6 +347,7 @@ public class QNetGUI extends JFrame implements ToolHost {
 
     /**
      * Choose file for output
+     *
      * @param evt
      */
     private void cmdSaveActionPerformed(java.awt.event.ActionEvent evt) {
@@ -370,6 +369,7 @@ public class QNetGUI extends JFrame implements ToolHost {
 
     /**
      * Choose a file for input
+     *
      * @param evt
      */
     private void cmdInputActionPerformed(java.awt.event.ActionEvent evt) {
@@ -391,6 +391,7 @@ public class QNetGUI extends JFrame implements ToolHost {
 
     /**
      * Start Super Q
+     *
      * @param evt
      */
     private void cmdRunActionPerformed(java.awt.event.ActionEvent evt) {
@@ -416,11 +417,12 @@ public class QNetGUI extends JFrame implements ToolHost {
 
     /**
      * Setup SuperQ configuration using values specified in the GUI
+     *
      * @return SuperQ configuration
      */
     private QNetOptions buildQNetOptions() {
 
-        QNetOptions options= new QNetOptions();
+        QNetOptions options = new QNetOptions();
 
         File input_file = new File(this.txtInput.getText().replaceAll("(^\")|(\"$)", ""));
         options.setInput(input_file);
@@ -436,14 +438,12 @@ public class QNetGUI extends JFrame implements ToolHost {
             double tolerance = -1.0;
             try {
                 tolerance = Double.parseDouble(this.txtTolerance.getText());
-            }
-            catch(Exception e) {
+            } catch (Exception e) {
                 showErrorDialog("Tolerance must be a real number.");
                 return null;
             }
             options.setTolerance(tolerance);
-        }
-        else {
+        } else {
             try {
                 options.setOptimiser(
                         OptimiserFactory.getInstance().createOptimiserInstance(
@@ -481,6 +481,7 @@ public class QNetGUI extends JFrame implements ToolHost {
 
     /**
      * Main entry point for SuperQ when running in GUI mode.
+     *
      * @param args Program arguments... we expect nothing to be here.
      */
     public static void main(String args[]) {

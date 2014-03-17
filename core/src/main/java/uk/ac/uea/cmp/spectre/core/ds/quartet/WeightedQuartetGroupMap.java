@@ -35,11 +35,12 @@ public class WeightedQuartetGroupMap extends HashMap<Quartet, QuartetWeights> {
 
     /**
      * Creates a weighted quartet group map from a map of canonical quartets to weights
+     *
      * @param qMap The map of canonical quartets mapped to single weights
      */
     public WeightedQuartetGroupMap(CanonicalWeightedQuartetMap qMap) {
 
-        for(Map.Entry<Quartet, Double> entry : qMap.entrySet()) {
+        for (Map.Entry<Quartet, Double> entry : qMap.entrySet()) {
 
             this.put(entry.getKey(), entry.getValue());
         }
@@ -48,6 +49,7 @@ public class WeightedQuartetGroupMap extends HashMap<Quartet, QuartetWeights> {
 
     /**
      * Adds a weighted quartet into the hash map.
+     *
      * @param quartet
      * @param weight
      */
@@ -65,8 +67,7 @@ public class WeightedQuartetGroupMap extends HashMap<Quartet, QuartetWeights> {
         if (weights != null) {
             weights.set(index, weight);
             return weights;
-        }
-        else {
+        } else {
             QuartetWeights qw = new QuartetWeights();
             qw.set(index, weight);
 
@@ -77,6 +78,7 @@ public class WeightedQuartetGroupMap extends HashMap<Quartet, QuartetWeights> {
 
     /**
      * Already given the weights, so just dump these where they should be in the hash
+     *
      * @param quartet
      * @param weights
      */
@@ -102,14 +104,14 @@ public class WeightedQuartetGroupMap extends HashMap<Quartet, QuartetWeights> {
 
         if (this.containsKey(sorted)) {
             this.put(sorted, this.getWeight(sorted, index) + increment);
-        }
-        else {
+        } else {
             this.put(sorted, index, increment);
         }
     }
 
     /**
      * Gets the length of a specific quartet.  If the quartet is not in the hash then simply return 0.0.
+     *
      * @param q The quartet to find in the hash.
      * @return The weight of the specified quartet if found in the hash, 0.0 otherwise.
      */
@@ -122,13 +124,14 @@ public class WeightedQuartetGroupMap extends HashMap<Quartet, QuartetWeights> {
 
     public double getWeight(Quartet sorted, int index) {
 
-        return this.containsKey(sorted) ? this.get(sorted).get(index+1) : 0.0;
+        return this.containsKey(sorted) ? this.get(sorted).get(index + 1) : 0.0;
     }
 
     /**
      * Normalises all the quartet weights in this hash map
+     *
      * @param logscale Normalise using natural log scale, or not
-     * @param useMax Use max or min
+     * @param useMax   Use max or min
      */
     public void normalize(boolean logscale, boolean useMax) {
 

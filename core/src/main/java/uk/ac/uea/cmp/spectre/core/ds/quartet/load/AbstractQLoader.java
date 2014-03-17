@@ -13,7 +13,8 @@ public abstract class AbstractQLoader implements QLoader {
     /**
      * By default we assume that there is only one quartet network loaded by this QLoader.  That being the case for
      * this method, we just add that network into a new network list and set the weight for the network.
-     * @param file The file to load
+     *
+     * @param file   The file to load
      * @param weight The weight to be applied to this file
      * @return A quartet network with a single weighted element
      * @throws IOException

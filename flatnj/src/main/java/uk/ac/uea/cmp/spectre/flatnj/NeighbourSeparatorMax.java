@@ -1,8 +1,8 @@
 /*
- * Phylogenetics Tool suite
- * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
+ * Copyright (C) 2014  UEA School of Computing Sciences
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
@@ -87,17 +87,15 @@ public class NeighbourSeparatorMax implements NeighbourSeparator {
      * Scores candidate permutation sequences.
      *
      * @param taxonRepresentingAgglomeratedPair
-     *
      * @param taxonA
      * @param taxonB
      * @param neighbours
      * @param agglomeratedPermutationSequence
-     *
-     * @param bestSoFar            best score obtained so far.
-     * @param qs                   quadruple system.
-     * @param possiblePermutations array of candidate permutation sequences.
-     * @param currentPermutation   index of the current candidate
-     *                             permutation sequence.
+     * @param bestSoFar                         best score obtained so far.
+     * @param qs                                quadruple system.
+     * @param possiblePermutations              array of candidate permutation sequences.
+     * @param currentPermutation                index of the current candidate
+     *                                          permutation sequence.
      * @return best score found.
      */
     protected double findOptimalPermutationSequence(
@@ -157,22 +155,19 @@ public class NeighbourSeparatorMax implements NeighbourSeparator {
      * permutation sequence. The neighbors are swapped immediately after
      * the l-th swap the agglomerated element was involved in.
      *
-     * @param taxonRepresentingAgglomeratedPair
-     *                                     the taxon that represents the
-     *                                     agglomerated pair.
-     * @param a                            the taxon in the agglomerated pair that comes first in the
-     *                                     initial sequence.
-     * @param b                            the taxon in the agglomerated pair that comes second in the
-     *                                     initial sequence.
-     * @param neighbours                   a pair of neighbors.
-     * @param swapAfterWhichNeighboursShouldBeSwaped
-     *                                     index of the swap
-     * @param agglomeratedPermutationSequence
-     *                                     permutation sequence before
-     *                                     neighbor separation.
-     * @param tmpScoredPermutationSequence scored permutation sequence.
+     * @param taxonRepresentingAgglomeratedPair      the taxon that represents the
+     *                                               agglomerated pair.
+     * @param a                                      the taxon in the agglomerated pair that comes first in the
+     *                                               initial sequence.
+     * @param b                                      the taxon in the agglomerated pair that comes second in the
+     *                                               initial sequence.
+     * @param neighbours                             a pair of neighbors.
+     * @param swapAfterWhichNeighboursShouldBeSwaped index of the swap
+     * @param agglomeratedPermutationSequence        permutation sequence before
+     *                                               neighbor separation.
+     * @param tmpScoredPermutationSequence           scored permutation sequence.
      * @return optimal permutation sequence after the separation of the
-     *         neighbors.
+     * neighbors.
      */
     protected PermutationSequence generatePermutationSequence(
             int taxonRepresentingAgglomeratedPair,

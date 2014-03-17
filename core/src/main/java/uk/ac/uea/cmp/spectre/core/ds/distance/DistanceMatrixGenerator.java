@@ -22,6 +22,7 @@ public interface DistanceMatrixGenerator {
 
     /**
      * Generates a distance matrix of size 'n'
+     *
      * @param n The size of the distance matrix to generate
      * @return A new distance matrix of size 'n'
      */
