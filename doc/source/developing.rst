@@ -1,62 +1,102 @@
 .. _developing:
 
-Developing:
-===========
+Developing the codebase
+=======================
 
-Most modern IDEs support maven project structures, so there should be no reason to change IDEs, however, they may need a maven plugin installed.  The exact details of how to open a maven project will vary from IDE to IDE but it should be a simple process of just opening an existing project and pointing the IDE to the pom.xml in the root directory of the PhygenSuite.  This should open all child modules within the master project.
-
-Within the parent maven project for phybre there is a single “pom.xml” which describes common properties for all child modules.  This file contains details such as project details, developer list, compiler settings, unit test configuration, common dependencies and some common jar packaging settings. Beyond the pom.xml there are the child modules themselves, which each have their own pom.xml describing their specific configuration.  A short summary of each module follows:
-
-
-Core:
------
-
-Contains classes that are used by other modules, that contain some kind of general functionality which means they can be used in different situations.  These classes were broken down into sub groups based on their specific kind of functionality as follows:
-
-ds - Data structures - Commonly used phylogenetic data structures relating to concepts such as: Splits, Trees, Networks, Distances and Quartets
-io - Input and Output - Classes that help loading and saving common phylogenetic file formats.  Specifically, Nexus and Phylip format.
-math - Maths - Classes related to common mathematical data structures and algorithms such as basic statistics, matrix algebra, and storing of tuples.
-ui - User interface - Supporting classes to help with both command line interfaces and graphical user interfaces
-util - Miscellaneous utilities - Anything we might conceivably want to reuse that doesn’t fit elsewhere.
+Spectre is designed to be open source and easy to extend, maintain and develop by the community.  This section of the
+manual will help you work with the codebase, whether you just plan to use our core library in your own java application
+or want to modify or extend our codebase.
 
 
-FlatNJ:
---------
+Making your own apps using our core library
+-------------------------------------------
 
-Constructs a flat split system from quardruples.
+If you wish to use our core library within your own applications then we recommend that you use maven for our own project.
+You can then include our library as a maven dependency by adding the following snippet into the dependencies section in
+your pom.xml::
 
+  <dependency>
+    <groupId>uk.ac.uea.cmp.spectre</groupId>
+    <artifactId>core</artifactId>
+    <version>0.1.1</version>
+  </dependency>
 
+Currently, you will also need to add our public maven repository to your pom as well.  This is a temporary measure until
+we can get our core library in maven central (at which point you will not need to add our public facing maven server).
+This snippet should be added to the repositories section of your pom.xml (if the repositories section does not already
+exist then create it)::
 
-Netmake:
---------
-
-Creates a compatible split system and a circular ordering from a distance matrix and either a single weighting or a hybrid weighting configuration.
-
-
-Netme:
-------
-
-Constructs a minimum evolution tree from the specified network with its implied circular order.
-
-
-Phygentools:
-------------
-
-Miscellaneous tools that might be useful for the user, and might be used directly by other modules.  These include:
-Chopper - Breaks down trees into Quartets
-Convertor - Converts phylip to nexus format and vice versa (note this can be a lossy conversion)
-PhylipCorrector - Modifies phylip files.... ???
-Random Distance Generator Tool - Creates phylip or nexus files with a randomly generated distance matrix
-Scaler - Scales trees within a set of trees
+  <repository>
+    <id>tgac-repo</id>
+    <name>TGAC Maven Repository</name>
+    <url>https://repos.tgac.ac.uk/maven/repo</url>
+  </repository>
 
 
-Qnet:
------
+And that's it!  You should now automatically download the library when you import maven changes or run your maven build
+cycle.
 
-Constructs a circular split system from a set of quartets.
+The rest of this section assumes you want to modify or extend the spectre codebase.
 
 
-SuperQ:
--------
+Version Control
+---------------
 
-Constructs a circular split system from a set of weighted or unweighted partial trees by using quartets.
+The source code for spectre is version controlled using GIT.  The public repository is hosted on github at
+https://github.com/maplesond/spectre.git
+
+If you plan to make contributions directly to the spectre codebase and want to work closely with us on a new tool or
+feature then please email daniel.mapleson@tgac.ac.uk about your planned changes.  He can grant you write access to the
+codebase.  We use the `Git-Flow <http://nvie.com/posts/a-successful-git-branching-model/>`_ branching
+model in order to make it easier to work on the codebase as a team.  The main takeaway message here is do NOT commit
+changes directly to the master branch as this might effect the stability of the suite for everyone!  To make managing the
+branches easier we recommend a gitflow aware client tool, such as `SmartGIT <http://www.syntevo.com/smartgithg/>`_.
+
+However, for most external developers we recommend you `fork <https://help.github.com/articles/fork-a-repo/>`_
+our github repository.  You are then free to use whichever branching model you like in your own fork.  If you want to
+merge back changes to the original codebase then do so using the `pull request <https://help.github.com/articles/using-pull-requests>`_
+mechanism.
+
+
+
+Integrated Development Environments
+-----------------------------------
+
+Spectre was developed in the Java programming language and has become a relatively large project.  Because Java is a relatively
+verbose language (as compared to a language like python), we strongly recommend using an Integrated Development Environment
+(IDE).  This will enable you to easily visualise the project structure, navigate around the code, refactor code and generally be
+productive.
+
+Spectre was developed using the `IntelliJ <http://www.jetbrains.com/idea/>`_ IDE, and whilst this is our preferred IDE, we do not store the
+IntelliJ project files in the repository.  Instead we use maven to manage the project structure, making the spectre
+codebase IDE agnostic, so you should be able to use whichever Java IDE you are most familiar with.  Most modern Java IDEs,
+and all those that have a wide user base, will also support maven project object models (POMs).  The exact details of how to
+load spectre will vary from IDE to IDE but it should be as simple as opening an existing project and selecting the pom.xml
+in the root directory of spectre.  The IDE should then load the project structure.  You should now be ready to view, modify
+or extend the codebase.
+
+
+Project Structure
+-----------------
+
+Within the parent maven project for spectre there is a single “pom.xml” which describes common properties for all child
+modules.  This file contains details such as project details, developer list, compiler settings, unit test configuration,
+common dependencies and some common jar packaging settings. Beyond the pom.xml there are the child modules themselves,
+which each have their own pom.xml describing their specific configuration.  Broadly speaking the project is structured
+into two main areas: *core* and *apps*.
+
+**Core** Contains classes that are used by other modules, that contain some kind of general functionality which means they can be
+used in different situations.  These classes were broken down into sub groups based on their specific kind of functionality
+as follows:
+
+* Data structures (ds) - Commonly used phylogenetic data structures relating to concepts such as: Splits, Trees, Networks, Distances and Quartets
+* Input and Output (io) - Classes that help loading and saving common phylogenetic file formats.  Specifically, Nexus and Phylip format.
+* Maths (math) - Classes related to common mathematical data structures and algorithms such as basic statistics, matrix algebra, and storing of tuples.
+* User interface (ui) - Supporting classes to help with both command line interfaces and graphical user interfaces
+* Miscellaneous utilities (util) - Anything we might conceivably want to reuse that does not fit elsewhere.
+
+**Apps** Contains all the applications managed by spectre.  Most of these apps rely heavily on the *core* library.
+
+
+
+
