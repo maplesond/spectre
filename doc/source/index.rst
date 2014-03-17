@@ -8,18 +8,26 @@ contain the root `toctree` directive.
 Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
 ==============================================================
 
-Brief intro and logo here...
-
+The aim of this project was to create a single project that contains a number of reusable tools for modelling and
+visualising reticulate evolution via phylogenetic trees and networks.
 
 .. toctree::
-:numbered:
-       :maxdepth: 3
+    :numbered:
+    :maxdepth: 3
 
-       introduction
-       dependencies
-       installation
-       developing
-       tools
+    introduction
+    installation
+    tools
+    developing
+
+
+.. _issues:
+
+Issues
+======
+
+Should you discover any issues with spectre, or wish to request a new feature please raise a ticket at https://github.com/maplesond/spectre/issues.
+Alternatively, contact Daniel Mapleson at: daniel.mapleson@tgac.ac.uk
 
 
 
@@ -82,7 +90,7 @@ QNet
 Acknowledgements
 ================
 
-add some stuff here.  UEA and TGAC.  Any funding, etc.
+TODO: add some stuff here.  UEA and TGAC.  Any funding, etc...
 
 
 .. _contact:
@@ -90,9 +98,10 @@ add some stuff here.  UEA and TGAC.  Any funding, etc.
 Contact
 =======
 
-* Sarah Bastkowski - TGAC
 * Daniel Mapleson -TGAC
+* Sarah Bastkowski - TGAC
 * Monica Balvociute - ??
+* Radoslaw Suchecki - University of Adelaide
+* Katharina Huber - UEA
 * Andreas Spillner - Universitat de Griefswald
 * Vincent Moulton - UEA
-* Radoslaw
