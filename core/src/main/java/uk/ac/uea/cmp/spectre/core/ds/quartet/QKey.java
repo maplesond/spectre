@@ -13,13 +13,13 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package uk.ac.uea.cmp.spectre.core.math.tuple;
+package uk.ac.uea.cmp.spectre.core.ds.quartet;
 
 /**
  * Objects of this class are used as keys in the hashmap that associates sorts
  * 4-tuples of taxa with the corresponding weights of the three quartets
  */
-public class Key {
+public class QKey {
     //indices of the four taxa
     //increasingly sorted
 
@@ -28,7 +28,7 @@ public class Key {
     public int t3;
     public int t4;
 
-    public Key(int t1, int t2, int t3, int t4) {
+    public QKey(int t1, int t2, int t3, int t4) {
         //elements must be sorted increasingly first
         int[] sorted = sortElements(t1, t2, t3, t4);
         this.t1 = sorted[0];
@@ -71,7 +71,7 @@ public class Key {
             return false;
         }
         //know it will be a Key
-        Key tmp = (Key) obj;
+        QKey tmp = (QKey) obj;
         if ((tmp.t1 == this.t1) && (tmp.t2 == this.t2) && (tmp.t3 == this.t3) && (tmp.t4 == this.t4)) {
             return true;
         } else {

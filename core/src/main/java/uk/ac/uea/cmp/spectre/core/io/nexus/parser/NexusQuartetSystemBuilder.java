@@ -29,9 +29,9 @@ import uk.ac.uea.cmp.spectre.core.ds.quartet.WeightedQuartetGroupMap;
  * Time: 21:33
  * To change this template use File | Settings | File Templates.
  */
-public class NexusQuartetNetworkBuilder {
+public class NexusQuartetSystemBuilder {
 
-    private static Logger log = LoggerFactory.getLogger(NexusQuartetNetworkBuilder.class);
+    private static Logger log = LoggerFactory.getLogger(NexusQuartetSystemBuilder.class);
 
     private int expectedNbTaxa;
     private IdentifierList taxa;
@@ -39,7 +39,7 @@ public class NexusQuartetNetworkBuilder {
     private WeightedQuartetGroupMap weightedQuartets;
 
 
-    public NexusQuartetNetworkBuilder() {
+    public NexusQuartetSystemBuilder() {
         this.expectedNbTaxa = 0;
         this.taxa = null;
         this.weight = 1.0;

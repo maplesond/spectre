@@ -27,26 +27,6 @@ import java.util.List;
  */
 public class Statistics {
 
-    public static double sumDoubles(List<Double> list) {
-        double sum = 0.0;
-
-        for (Double val : list) {
-            sum += val.doubleValue();
-        }
-
-        return sum;
-    }
-
-    public static double sumDoubles(double[] array) {
-        double sum = 0.0;
-
-        for (int i = 0; i < array.length; i++) {
-            sum += array[i];
-        }
-
-        return sum;
-    }
-
     public static double mean(double[] array) {
 
         return sumDoubles(array) / array.length;
@@ -78,7 +58,30 @@ public class Statistics {
     }
 
 
-    public static double sumIntegers(List<Integer> list) {
+    // ****** Summing lists and arrays *******
+
+    public static double sumDoubles(List<Double> list) {
+        double sum = 0.0;
+
+        for (Double val : list) {
+            sum += val.doubleValue();
+        }
+
+        return sum;
+    }
+
+    public static double sumDoubles(double[] array) {
+        double sum = 0.0;
+
+        for (int i = 0; i < array.length; i++) {
+            sum += array[i];
+        }
+
+        return sum;
+    }
+
+
+    public static int sumIntegers(List<Integer> list) {
         int sum = 0;
 
         for (Integer val : list) {
@@ -88,7 +91,7 @@ public class Statistics {
         return sum;
     }
 
-    public static double sumIntegers(int[] array) {
+    public static int sumIntegers(int[] array) {
         int sum = 0;
 
         for (int i = 0; i < array.length; i++) {
@@ -109,7 +112,7 @@ public class Statistics {
         return sum;
     }
 
-    public static double sumLongs(long[] array) {
+    public static long sumLongs(long[] array) {
         long sum = 0L;
 
         for (int i = 0; i < array.length; i++) {

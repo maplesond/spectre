@@ -48,7 +48,8 @@ public class NexusFilePopulator implements NexusFileListener {
 
     private DistanceMatrixBuilder distanceMatrixBuilder;
     private NexusSplitSystemBuilder splitSystemBuilder;
-    private NexusQuartetNetworkBuilder quartetNetworkBuilder;
+    private NexusQuartetSystemBuilder quartetSystemBuilder;
+    private NexusNetworkBuilder networkBuilder;
 
 
     public NexusFilePopulator(Nexus nexus, boolean verbose) {
@@ -56,7 +57,7 @@ public class NexusFilePopulator implements NexusFileListener {
         this.verbose = verbose;
         this.distanceMatrixBuilder = new DistanceMatrixBuilder();
         this.splitSystemBuilder = new NexusSplitSystemBuilder();
-        this.quartetNetworkBuilder = new NexusQuartetNetworkBuilder();
+        this.quartetSystemBuilder = new NexusQuartetSystemBuilder();
     }
 
     @Override

@@ -22,14 +22,14 @@ import uk.ac.tgac.metaopt.Optimiser;
 import uk.ac.tgac.metaopt.OptimiserException;
 import uk.ac.tgac.metaopt.OptimiserFactory;
 import uk.ac.uea.cmp.spectre.core.io.nexus.NexusFileFilter;
-import uk.ac.uea.cmp.spectre.core.ui.gui.JobController;
-import uk.ac.uea.cmp.spectre.core.ui.gui.StatusTracker;
-import uk.ac.uea.cmp.spectre.core.ui.gui.ToolHost;
+import uk.ac.uea.cmp.spectre.core.ui.gui.*;
+import uk.ac.uea.cmp.spectre.flatnj.netvi.NetView;
 import uk.ac.uea.cmp.spectre.qtools.superq.problems.SecondaryProblemFactory;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.io.File;
 import java.util.ArrayList;
 
@@ -73,28 +73,33 @@ public class SuperQGUI extends JFrame implements ToolHost {
     private JPanel pnlControlButtons;
     private JButton cmdCancel;
     private JButton cmdRun;
+    private JButton cmdViewOutput;
     private JLabel lblStatus;
     private JProgressBar progStatus;
 
 
-    private JDialog dialog = new JDialog(this, "SUPERQ");
-    private JFrame gui = new JFrame("SUPERQ");
+    private JDialog dialog;
+    private JFrame gui;
     private JobController go_control;
     private SuperQRunner superqRunner;
+    private File lastOutput;
 
     public SuperQGUI() {
+
+        this.dialog = new JDialog(this, "SUPERQ");
+        this.gui = new JFrame("SUPERQ");
+        this.lastOutput = null;
 
         this.setPreferredSize(new Dimension(600, 500));
 
         initComponents();
         setTitle("SUPERQ");
 
-        cmdRun.setEnabled(true);
-        txtFilter.setEnabled(false);
+        this.txtFilter.setEnabled(false);
 
         this.superqRunner = new SuperQRunner(this);
 
-        this.go_control = new JobController(this.cmdRun, this.cmdCancel);
+        this.go_control = new JobControllerWithView(this.cmdRun, this.cmdCancel, this.cmdViewOutput);
         setRunningStatus(false);
 
 
@@ -361,14 +366,29 @@ public class SuperQGUI extends JFrame implements ToolHost {
                 cmdRunActionPerformed(evt);
             }
         });
+        cmdRun.setEnabled(true);
 
         cmdCancel = new JButton();
         cmdCancel.setText("Cancel");
+        cmdCancel.setToolTipText("Stop SuperQ at next opportunity");
+
+        cmdViewOutput = new JButton();
+        cmdViewOutput.setText("View Network");
+        cmdViewOutput.setToolTipText("Visualise the produced network in NetView");
+        cmdViewOutput.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmdViewActionPerformed(evt);
+            }
+        });
+        cmdViewOutput.setEnabled(false);
+
 
         pnlControlButtons = new JPanel();
         pnlControlButtons.setLayout(new BoxLayout(pnlControlButtons, BoxLayout.LINE_AXIS));
         pnlControlButtons.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
         pnlControlButtons.add(Box.createHorizontalGlue());
+        pnlControlButtons.add(cmdViewOutput);
+        pnlControlButtons.add(Box.createRigidArea(new Dimension(10, 0)));
         pnlControlButtons.add(cmdRun);
         pnlControlButtons.add(Box.createRigidArea(new Dimension(10, 0)));
         pnlControlButtons.add(cmdCancel);
@@ -502,9 +522,21 @@ public class SuperQGUI extends JFrame implements ToolHost {
 
         SuperQOptions options = buildSuperQOptions();
 
-        if (options != null)
-            this.superqRunner.runSuperQ(options, new StatusTracker(this.progStatus, this.lblStatus));
+        if (options != null) {
+            this.lastOutput = options.getOutputFile();
+            this.superqRunner.runSuperQ(options, new StatusTrackerWithView(this.progStatus, this.lblStatus, this.cmdViewOutput));
+        }
 
+    }
+
+    /**
+     * Start netviewer on superq output
+     *
+     * @param evt
+     */
+    private void cmdViewActionPerformed(ActionEvent evt) {
+
+        NetView.startWithInput(this.lastOutput);
     }
 
     /**

@@ -90,6 +90,12 @@ public class NetView extends javax.swing.JFrame {
         leaderLineTypes.add(jRadioButtonDotted);
     }
 
+    public NetView(File inFile) throws IOException {
+        prepareViewer();
+        directory = inFile.getPath();
+        openNetwork(inFile);
+    }
+
     public NetView(Network network, File inFile, Taxa taxa) {
         prepareViewer();
         directory = inFile.getPath();
@@ -675,6 +681,25 @@ public class NetView extends javax.swing.JFrame {
         drawing.fixLabels(!fix);
     }//GEN-LAST:event_jCheckBoxFixLabelPositionsActionPerformed
 
+
+    /**
+     * @param input the input file to load and display
+     */
+    public static void startWithInput(final File input) {
+        LookAndFeel.setLookAndFeel(LookAndFeel.NIMBUS);
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    new NetView(input).setVisible(true);
+                } catch (IOException ex) {
+                    log.error("Problem occured while running NetView", ex);
+                }
+            }
+        });
+    }
 
     /**
      * @param args the command line arguments

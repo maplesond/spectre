@@ -1,6 +1,5 @@
 package uk.ac.uea.cmp.spectre.core.ds.quartet;
 
-import uk.ac.uea.cmp.spectre.core.math.tuple.Key;
 import uk.ac.uea.cmp.spectre.core.math.tuple.Triplet;
 
 /**
@@ -164,7 +163,7 @@ public class QuartetWeights extends Triplet<Double> {
     public QuartetWeights permute(int t1, int t2, int t3, int t4) {
 
         // Sort taxa ascending
-        int[] ta = Key.sortElements(t1, t2, t3, t4);
+        int[] ta = QKey.sortElements(t1, t2, t3, t4);
 
         // Shortcuts to variables
         double a = this.getA();
