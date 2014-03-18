@@ -92,12 +92,12 @@
 
     <dependencies>
 
-        <!-- PhyGen -->
+        <!-- Spectre -->
 
         <dependency>
             <groupId>uk.ac.uea.cmp.spectre</groupId>
             <artifactId>core</artifactId>
-            <version>0.1.1</version>
+            <version>${spectre-version}</version>
         </dependency>
 
 

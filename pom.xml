@@ -28,6 +28,7 @@
     <name>Suite of PhylogEnetiC Tools for Reticulate Evolution</name>
 
     <properties>
+        <spectre-version>0.2.0</spectre-version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java-version>1.7</java-version>
