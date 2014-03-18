@@ -14,7 +14,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.flatnj.fdraw;
+package uk.ac.uea.cmp.spectre.core.ds.network;
 
 
 import java.awt.*;
@@ -24,27 +24,31 @@ public class Vertex {
     //List of the edges that are incident to this vertex.
     //The edges are sorted clockwise around the vertex.
 
-    LinkedList<Edge> elist = null;
+    private LinkedList<Edge> elist;
+
     //The list of taxa associated to the vertex.
-    LinkedList<Integer> taxa = null;
+    private LinkedList<Integer> taxa;
+
     //Coordinates of the vertex in the drawing.
-    double x = 0.0;
-    double y = 0.0;
+    private double x;
+    private double y;
+
     //number of vertex in nexus file
-    int nxnum = 0;
+    private int nxnum = 0;
+
     //flags used in various methods when traversing the
     //splitsgraph and so on
-    boolean visited = false;
+    private boolean visited;
 
-    int width = 0;
-    int height = 0;
+    private int width = 0;
+    private int height = 0;
 
-    Color bgColor = Color.BLACK;
-    Color fgColor = Color.BLACK;
+    private Color bgColor = Color.BLACK;
+    private Color fgColor = Color.BLACK;
 
-    String shape = null;
+    private String shape = null;
 
-    Label label;
+    private Label label;
 
     //Constructor.
     public Vertex(double xcoord, double ycoord) {
@@ -56,11 +60,11 @@ public class Vertex {
     }
 
     //Methods to add an edge to the list of incident edges.
-    void add_edge_before_first(Edge e) {
+    public void add_edge_before_first(Edge e) {
         elist.addFirst(e);
     }
 
-    void add_edge_after_last(Edge e) {
+    public void add_edge_after_last(Edge e) {
         elist.addLast(e);
     }
 
@@ -68,6 +72,11 @@ public class Vertex {
     public String toString() {
         return nxnum + " [" + x + ", " + y + "] : " + elist.size();
     }
+
+    public String toSimpleString() {
+        return nxnum + " [" + x + ", " + y + "]";
+    }
+
 
     public void setBackgroundColor(Color color) {
         bgColor = color;
@@ -81,6 +90,10 @@ public class Vertex {
 
     public Edge getFirstEdge() {
         return elist.getFirst();
+    }
+
+    public void setTaxa(LinkedList<Integer> taxa) {
+        this.taxa = taxa;
     }
 
     public LinkedList<Integer> getTaxa() {
@@ -172,5 +185,17 @@ public class Vertex {
 
     public void setY(double y) {
         this.y = y;
+    }
+
+    public boolean isVisited() {
+        return visited;
+    }
+
+    public void setVisited(boolean visited) {
+        this.visited = visited;
+    }
+
+    public double calcDistanceTo(Vertex v) {
+        return Math.sqrt((this.x - v.x) * (this.x - v.x) + (this.y - v.y) * (this.y - v.y));
     }
 }

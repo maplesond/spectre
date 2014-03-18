@@ -16,11 +16,10 @@
 
 package uk.ac.uea.cmp.spectre.flatnj.netvi;
 
+import uk.ac.uea.cmp.spectre.core.ds.network.*;
 import uk.ac.uea.cmp.spectre.flatnj.ds.Leaders;
 import uk.ac.uea.cmp.spectre.flatnj.ds.Network;
 import uk.ac.uea.cmp.spectre.flatnj.fdraw.AngleCalculatorSimple;
-import uk.ac.uea.cmp.spectre.flatnj.fdraw.Edge;
-import uk.ac.uea.cmp.spectre.flatnj.fdraw.Vertex;
 import uk.ac.uea.cmp.spectre.flatnj.tools.Utilities;
 
 import javax.swing.*;

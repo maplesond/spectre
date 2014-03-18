@@ -16,6 +16,8 @@
 
 package uk.ac.uea.cmp.spectre.flatnj.fdraw;
 
+import uk.ac.uea.cmp.spectre.core.ds.network.Edge;
+
 import java.util.LinkedList;
 
 /*
@@ -44,13 +46,14 @@ public class AngleCalculatorMaximalArea extends AngleCalculatorSimple {
             Edge e1 = b.e1;
             Edge e2 = b.e2;
 
-            double alphaSi = getAngle(e1.top, e1.bot, e2.bot);
+            double alphaSi = getAngle(e1.getTop(), e1.getBot(), e2.getBot());
 
             minDown = (minDown == null || minDown > alphaSi) ? alphaSi : minDown;
             minUp = (minUp == null || minUp > Math.PI - alphaSi) ? Math.PI - alphaSi : minUp;
 
             //double a = Math.sqrt((e1.top.x - e1.bot.x) * (e1.top.x - e1.bot.x) + (e1.top.y - e1.bot.y) * (e1.top.y - e1.bot.y));
-            double c = Math.sqrt((e1.bot.x - e2.bot.x) * (e1.bot.x - e2.bot.x) + (e1.bot.y - e2.bot.y) * (e1.bot.y - e2.bot.y));
+            double c = Math.sqrt((e1.getBot().getX() - e2.getBot().getX()) * (e1.getBot().getX() - e2.getBot().getX()) +
+                    (e1.getBot().getY() - e2.getBot().getY()) * (e1.getBot().getY() - e2.getBot().getY()));
             A += c * Math.cos(alphaSi);
             B += c * Math.sin(alphaSi);
 

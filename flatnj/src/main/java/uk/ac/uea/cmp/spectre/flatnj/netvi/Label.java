@@ -33,7 +33,7 @@ public class Label extends Element {
     String name;
     boolean sideLeader = true;
 
-    uk.ac.uea.cmp.spectre.flatnj.fdraw.Label label;
+    uk.ac.uea.cmp.spectre.core.ds.network.Label label;
 
     Cluster cluster;
 
@@ -53,7 +53,7 @@ public class Label extends Element {
      * @param label
      * @param drawing
      */
-    public Label(uk.ac.uea.cmp.spectre.flatnj.fdraw.Label label, Window drawing) {
+    public Label(uk.ac.uea.cmp.spectre.core.ds.network.Label label, Window drawing) {
         name = label.getName();
         this.label = label;
         this.mainFrame = drawing;

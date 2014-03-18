@@ -29,7 +29,7 @@ import uk.ac.uea.cmp.spectre.core.ui.gui.LookAndFeel;
 import uk.ac.uea.cmp.spectre.flatnj.ds.Leaders;
 import uk.ac.uea.cmp.spectre.flatnj.ds.Network;
 import uk.ac.uea.cmp.spectre.flatnj.ds.Taxa;
-import uk.ac.uea.cmp.spectre.flatnj.fdraw.Vertex;
+import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
 import uk.ac.uea.cmp.spectre.flatnj.fdraw.ViewerConfig;
 import uk.ac.uea.cmp.spectre.flatnj.tools.*;
 

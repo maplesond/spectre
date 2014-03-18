@@ -19,6 +19,8 @@ package uk.ac.uea.cmp.spectre.flatnj.fdraw;
 //This class is used to store the edges
 //of a box in the network
 
+import uk.ac.uea.cmp.spectre.core.ds.network.Edge;
+
 public class NetworkBox {
     Edge e1 = null;
     Edge e2 = null;

@@ -17,6 +17,7 @@
 package uk.ac.uea.cmp.spectre.flatnj.fdraw;
 
 
+import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
 import uk.ac.uea.cmp.spectre.flatnj.ds.Network;
 
 import java.util.LinkedList;

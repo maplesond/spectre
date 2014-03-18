@@ -16,7 +16,7 @@
 
 package uk.ac.uea.cmp.spectre.flatnj.netvi;
 
-import uk.ac.uea.cmp.spectre.flatnj.fdraw.Edge;
+import uk.ac.uea.cmp.spectre.core.ds.network.Edge;
 import uk.ac.uea.cmp.spectre.flatnj.fdraw.Translocator;
 
 import java.awt.*;

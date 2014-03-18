@@ -14,7 +14,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.flatnj.fdraw;
+package uk.ac.uea.cmp.spectre.core.ds.network;
 
 import sun.swing.SwingUtilities2;
 
@@ -25,14 +25,15 @@ import java.awt.*;
  * @author balvociute
  */
 public class Label {
-    String name;
-    Vertex v;
-    double offsetX = 1;
-    double offsetY = 1;
 
-    int height;
-    int width;
-    Color bgColor;
+    private String name;
+    private Vertex v;
+    private double offsetX = 1;
+    private double offsetY = 1;
+
+    private int height;
+    private int width;
+    private Color bgColor;
     private Color fontColor = Color.BLACK;
     private String fontFamily = Font.DIALOG;
     private String fontStyle = "plain";

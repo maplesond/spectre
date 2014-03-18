@@ -17,7 +17,7 @@
 package uk.ac.uea.cmp.spectre.flatnj.netvi;
 
 
-import uk.ac.uea.cmp.spectre.flatnj.fdraw.Vertex;
+import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
 
 /**
  * @author balvociute

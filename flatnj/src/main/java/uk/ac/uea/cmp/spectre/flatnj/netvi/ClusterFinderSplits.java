@@ -17,9 +17,8 @@
 package uk.ac.uea.cmp.spectre.flatnj.netvi;
 
 
+import uk.ac.uea.cmp.spectre.core.ds.network.*;
 import uk.ac.uea.cmp.spectre.flatnj.ds.Network;
-import uk.ac.uea.cmp.spectre.flatnj.fdraw.Edge;
-import uk.ac.uea.cmp.spectre.flatnj.fdraw.Vertex;
 
 import java.awt.*;
 import java.util.*;
@@ -112,7 +111,7 @@ public class ClusterFinderSplits extends ClusterFinder {
                 List<Edge> elist = v.getElist();
                 for (int i = 0; i < elist.size(); i++) {
                     Edge e = elist.get(i);
-                    if (!e.visited) {
+                    if (!e.isVisited()) {
                         Vertex w = e.getOther(v);
 
                         double length = (trivial.contains(e)
@@ -122,7 +121,7 @@ public class ClusterFinderSplits extends ClusterFinder {
                                 : 0.0;
                         GroupingNode gn2 = new GroupingNode(w, gn, length);
                         if (gn2.distanceFromStart <= splitSizeThr) {
-                            e.visited = true;
+                            e.setVisited(true);
                             visited.add(e);
                             if (w.getLabel() != null && !taken.contains(w)) {
                                 candidates.add(gn2);
@@ -136,7 +135,7 @@ public class ClusterFinderSplits extends ClusterFinder {
             Iterator<Edge> visitedIt = visited.iterator();
             while (visitedIt.hasNext()) {
                 Edge edge = visitedIt.next();
-                edge.visited = false;
+                edge.setVisited(false);
             }
         }
         clusters.add(cluster);
