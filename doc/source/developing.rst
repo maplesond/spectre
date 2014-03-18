@@ -11,6 +11,9 @@ or want to modify or extend our codebase.
 Making your own apps using our core library
 -------------------------------------------
 
+IMPORTANT NOTE: We have not deployed the core library onto a maven server yet, so this particular section should be read as a wish
+list for the future... it may be complicated by metaopt as we can't easily get JOptimiser, GLPK or gurobi into maven.
+
 If you wish to use our core library within your own applications then we recommend that you use maven for our own project.
 You can then include our library as a maven dependency by adding the following snippet into the dependencies section in
 your pom.xml::
@@ -18,7 +21,7 @@ your pom.xml::
   <dependency>
     <groupId>uk.ac.uea.cmp.spectre</groupId>
     <artifactId>core</artifactId>
-    <version>0.1.1</version>
+    <version>[PUT-VERSION-HERE]</version>
   </dependency>
 
 Currently, you will also need to add our public maven repository to your pom as well.  This is a temporary measure until
@@ -67,7 +70,7 @@ verbose language (as compared to a language like python), we strongly recommend 
 (IDE).  This will enable you to easily visualise the project structure, navigate around the code, refactor code and generally be
 productive.
 
-Spectre was developed using the `IntelliJ <http://www.jetbrains.com/idea/>`_ IDE, and whilst this is our preferred IDE, we do not store the
+Spectre was developed using the `IntelliJ <http://www.jetbrains.com/idea/>`_ IDE, but, while this is our preferred IDE, we do not store the
 IntelliJ project files in the repository.  Instead we use maven to manage the project structure, making the spectre
 codebase IDE agnostic, so you should be able to use whichever Java IDE you are most familiar with.  Most modern Java IDEs,
 and all those that have a wide user base, will also support maven project object models (POMs).  The exact details of how to
@@ -89,11 +92,25 @@ into two main areas: *core* and *apps*.
 used in different situations.  These classes were broken down into sub groups based on their specific kind of functionality
 as follows:
 
-* Data structures (ds) - Commonly used phylogenetic data structures relating to concepts such as: Splits, Trees, Networks, Distances and Quartets
-* Input and Output (io) - Classes that help loading and saving common phylogenetic file formats.  Specifically, Nexus and Phylip format.
-* Maths (math) - Classes related to common mathematical data structures and algorithms such as basic statistics, matrix algebra, and storing of tuples.
-* User interface (ui) - Supporting classes to help with both command line interfaces and graphical user interfaces
-* Miscellaneous utilities (util) - Anything we might conceivably want to reuse that does not fit elsewhere.
++--------------------+--------------+------------------------------------------------------------------+
+| Class Group        | Package name | Description                                                      |
++====================+==============+==================================================================+
+| Algorithms         | alg          | Implementations of Phylogenetic Algorithms                       |
++--------------------+--------------+----------+-------------------------------------------------------+
+| Data structures    | ds           | Phylogenetic data structures relating to concepts such as:       |
+|                    |              |  Splits, Trees, Networks, Distances and Quartets                 |
++--------------------+--------------+------------------------------------------------------------------+
+| File Handling      | io           | Loading and saving common phylogenetic file formats.             |
+|                    |              | Specifically, Nexus and Phylip format.                           |
++--------------------+--------------+------------------------------------------------------------------+
+| Mathematics        | math         | Math related functionality such as basic statistics, matrix      |
+|                    |              | algebra, and storing of tuples.                                  |
++--------------------+--------------+------------------------------------------------------------------+
+| User Interface     | ui           | Functionality to help with Command Line Interfaces and Graphical |
+|                    |              | interfaces                                                       |
++--------------------+--------------+------------------------------------------------------------------+
+| Misc Utils         | util         | Miscellaneous functionality                                      |
++--------------------+--------------+------------------------------------------------------------------+
 
 **Apps** Contains all the applications managed by spectre.  Most of these apps rely heavily on the *core* library.
 

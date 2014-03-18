@@ -37,8 +37,8 @@ the method described in (Spillner et al. 2011), an almost planar split network i
 drawing of the network use a split network viewer, e.g. SplitsTree (Huson and Bryant, 2006).
 
 When running FlatNJ for large datasets, it is recommended to allocate more RAM for the heap space. Otherwise an
-OutOfMemoryError may occur. Heap space can be increased using the Java VM options ``-Xms`` or ``-Xmx``. See _tools for
-more information on how to adjust these options.
+OutOfMemoryError may occur. Heap space can be increased using the Java VM options ``-Xms`` or ``-Xmx``. See :ref:`tools` for
+more information on how to adjust these options with spectre scripts.
 
 The split network is constructed from a system of 4-splits. The input system of 4-splits must be provided using
 the ``-i/--in <nexus file>`` option and the output is written to the file indicated by the ``-o/--out <nexus file>``
@@ -168,6 +168,12 @@ All weights must be written in the same line.
 Networks
 ~~~~~~~~
 
-The resulting split networks are saved in a NETWORK block. These can then be displayed by, for example, opening
-them in SplitsTree.
+The resulting split networks are saved in a NETWORK block. These can then be displayed by opening them in NetView (see
+next section).
+
+
+NetView
+-------
+
+
 

@@ -1,9 +1,3 @@
-.. spectre documentation master file, created by
-sphinx-quickstart on Wed Dec 11 23:40:48 2013.
-You can adapt this file completely to your liking, but it should at least
-contain the root `toctree` directive.
-
-
 
 Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
 ==============================================================
@@ -85,23 +79,49 @@ QNet
                 Molecular Biology and Evolution Volume 24, Issue 2
 
 
-.. _acknowledgements:
 
-Acknowledgements
-================
-
-TODO: add some stuff here.  UEA and TGAC.  Any funding, etc...
-
-
-.. _contact:
-
-Contact
+Credits
 =======
 
-* Daniel Mapleson -TGAC
-* Sarah Bastkowski - TGAC
-* Monica Balvociute - ??
-* Radoslaw Suchecki - University of Adelaide
-* Katharina Huber - UEA
-* Andreas Spillner - Universitat de Griefswald
-* Vincent Moulton - UEA
+Spectre is a multi-institute, world-wide collaboration.  Active contributors to spectre are listed in the following table
+(in publication order):
+
++--------------------------+-------------------------------+-----------------------------------+-----------------------------------------------------------------------------+
+| Name                     | Email                         | Current Institute                 | Contribution                                                                |
++==========================+===============================+===================================+=============================================================================+
+| Daniel Mapleson          | daniel.mapleson@tgac.ac.uk    | The Genome Analysis Centre (TGAC) | General software development, testing, optimisation and codebase management |
++--------------------------+-------------------------------+-----------------------------------+-----------------------------------------------------------------------------+
+| Sarah Bastkowski         | sarah.bastkowski@tgac.ac.uk   | The Genome Analysis Centre (TGAC) | SuperQ, NetMake, NetME, NeighborNet Implementation, Algorithms, Optimisers  |
++--------------------------+-------------------------------+-----------------------------------+-----------------------------------------------------------------------------+
+| Monica Balvociute        | ???                           | University of Otago               | Gen4S, FlatNJ, NetView                                                      |
++--------------------------+-------------------------------+-----------------------------------+-----------------------------------------------------------------------------+
+| Radoslaw Suchecki        | r.suchecki@gmail.com          | University of Adelaide            | PADRE                                                                       |
++--------------------------+-------------------------------+-----------------------------------+-----------------------------------------------------------------------------+
+| Katharina Huber          | k.huber@uea.ac.uk             | University of East Anglia (UEA)   | PADRE                                                                       |
++--------------------------+-------------------------------+-----------------------------------+-----------------------------------------------------------------------------+
+| Andreas Spilner          | anspillner@gmail.com          | University of Greifswald          | Mathematics, Algorithms, Optimisers, Spectre development                    |
++--------------------------+-------------------------------+-----------------------------------+-----------------------------------------------------------------------------+
+| Vincent Moulton          | vincent.moulton@cmp.uea.ac.uk | University of East Anglia (UEA)   | Mathematics, Algorithms                                                     |
++--------------------------+-------------------------------+-----------------------------------+-----------------------------------------------------------------------------+
+
+
+In addition, the people that contributed to the original tools which are now contained within spectre are listed in the following
+table (in alphabetical order):
+
++-------------------------------+----------------------------------------+
+| Name                          | Contribution                           |
++===============================+========================================+
+| Anja Boegershausen            | SuperQ                                 |
++-------------------------------+----------------------------------------+
+| Kristoffer Forslund           | QNet                                   |
++-------------------------------+----------------------------------------+
+| Stephan Gruenewald            | QNet, SuperQ                           |
++-------------------------------+----------------------------------------+
+| Martin Lott                   | PADRE                                  |
++-------------------------------+----------------------------------------+
+| Bengt Oxelman                 | PADRE                                  |
++-------------------------------+----------------------------------------+
+
+TODO: Add a list of any relevant funding bodies here....
+
+

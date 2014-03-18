@@ -1,7 +1,7 @@
-.. _installing:
+.. _installation:
 
-Installing
-==========
+Installation
+============
 
 Spectre can be installed either from a distributable tarball, or from source via a `git clone`. These steps for both
 methods are described in the following sections.
