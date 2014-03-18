@@ -21,7 +21,7 @@
     <parent>
         <artifactId>spectre</artifactId>
         <groupId>uk.ac.uea.cmp.spectre</groupId>
-        <version>0.2.0</version>
+        <version>0.2.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -144,14 +144,14 @@
         <dependency>
             <groupId>uk.ac.uea.cmp.spectre</groupId>
             <artifactId>core</artifactId>
-            <version>0.1.1</version>
+            <version>${spectre-version}</version>
         </dependency>
 
 
         <dependency>
             <groupId>uk.ac.uea.cmp.spectre</groupId>
             <artifactId>misc</artifactId>
-            <version>0.1.1</version>
+            <version>${spectre-version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>uk.ac.uea.cmp.spectre</groupId>

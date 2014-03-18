@@ -22,12 +22,13 @@
 
     <groupId>uk.ac.uea.cmp.spectre</groupId>
     <artifactId>spectre</artifactId>
-    <version>0.2.0</version>
+    <version>0.2.1</version>
     <packaging>pom</packaging>
 
     <name>Suite of PhylogEnetiC Tools for Reticulate Evolution</name>
 
     <properties>
+        <spectre-version>0.2.1</spectre-version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java-version>1.7</java-version>
@@ -74,7 +75,7 @@
             <id>balvociute</id>
             <name>Monica Balvociute</name>
             <email>mokana@gmail.com</email>
-            <organization>Greifswald University</organization>
+            <organization>New Zealand</organization>
             <roles>
                 <role>developer</role>
             </roles>
