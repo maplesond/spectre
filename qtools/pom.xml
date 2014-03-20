@@ -52,6 +52,11 @@
                         <program>
                             <mainClass>uk.ac.uea.cmp.spectre.qtools.superq.SuperQCLI</mainClass>
                             <id>superq</id>
+                            <jvmSettings>
+                                <extraArguments>
+                                    <extraArgument>-Djava.awt.headless=true</extraArgument>
+                                </extraArguments>
+                            </jvmSettings>
                         </program>
                         <program>
                             <mainClass>uk.ac.uea.cmp.spectre.qtools.superq.SuperQGUI</mainClass>
@@ -60,6 +65,11 @@
                         <program>
                             <mainClass>uk.ac.uea.cmp.spectre.qtools.qnet.QNetCLI</mainClass>
                             <id>qnet</id>
+                            <jvmSettings>
+                                <extraArguments>
+                                    <extraArgument>-Djava.awt.headless=true</extraArgument>
+                                </extraArguments>
+                            </jvmSettings>
                         </program>
                         <program>
                             <mainClass>uk.ac.uea.cmp.spectre.qtools.qnet.QNetGUI</mainClass>
@@ -68,14 +78,29 @@
                         <program>
                             <mainClass>uk.ac.uea.cmp.spectre.qtools.qmaker.QMaker</mainClass>
                             <id>qmaker</id>
+                            <jvmSettings>
+                                <extraArguments>
+                                    <extraArgument>-Djava.awt.headless=true</extraArgument>
+                                </extraArguments>
+                            </jvmSettings>
                         </program>
                         <program>
                             <mainClass>uk.ac.uea.cmp.spectre.qtools.scale.Scaling</mainClass>
                             <id>scaling</id>
+                            <jvmSettings>
+                                <extraArguments>
+                                    <extraArgument>-Djava.awt.headless=true</extraArgument>
+                                </extraArguments>
+                            </jvmSettings>
                         </program>
                         <program>
                             <mainClass>uk.ac.uea.cmp.spectre.qtools.sfilter.SFilter</mainClass>
                             <id>sfilter</id>
+                            <jvmSettings>
+                                <extraArguments>
+                                    <extraArgument>-Djava.awt.headless=true</extraArgument>
+                                </extraArguments>
+                            </jvmSettings>
                         </program>
                     </programs>
                 </configuration>

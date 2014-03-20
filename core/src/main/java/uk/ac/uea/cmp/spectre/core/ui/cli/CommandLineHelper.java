@@ -29,7 +29,7 @@ public class CommandLineHelper {
     public static final int DEFAULT_WIDTH = 100;
     public static final String DEFAULT_FOOTER = "Created in collaboration by the University of East Anglia (UEA), The " +
             "Genome Analysis Centre (TGAC) and the University of Greifswald, as part of the " +
-            "Phylogenetics Bundled Resources (PhyBRe)";
+            "Suite of PhylogEnetiCs Tools for Reticulate Evolution (SPECTRE)";
 
     public static final String OPT_HELP = "help";
     public static final Option HELP_OPTION = new Option("?", OPT_HELP, false, "Print this message.");

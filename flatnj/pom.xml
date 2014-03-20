@@ -51,10 +51,20 @@
                         <program>
                             <mainClass>uk.ac.uea.cmp.spectre.flatnj.FlatNJ</mainClass>
                             <id>flatnj</id>
+                            <jvmSettings>
+                                <extraArguments>
+                                    <extraArgument>-Djava.awt.headless=true</extraArgument>
+                                </extraArguments>
+                            </jvmSettings>
                         </program>
                         <program>
                             <mainClass>uk.ac.uea.cmp.spectre.flatnj.gen4s.Gen4S</mainClass>
                             <id>gen4s</id>
+                            <jvmSettings>
+                                <extraArguments>
+                                    <extraArgument>-Djava.awt.headless=true</extraArgument>
+                                </extraArguments>
+                            </jvmSettings>
                         </program>
                         <program>
                             <mainClass>uk.ac.uea.cmp.spectre.flatnj.netvi.NetView</mainClass>

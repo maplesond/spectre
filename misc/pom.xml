@@ -37,32 +37,6 @@
 
         <plugins>
 
-            <!-- Creates an executable jar with all dependencies built in -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>2.2</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <transformers>
-                                <transformer
-                                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <manifestEntries>
-                                        <Main-Class>uk.ac.uea.cmp.spectre.tools.ToolsCLI</Main-Class>
-                                        <Build-Number>1</Build-Number>
-                                    </manifestEntries>
-                                </transformer>
-                            </transformers>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
             <!-- Creates scripts for all platforms that allow the user to easily execute this tool -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -73,6 +47,7 @@
                     <platforms>
                         <platform>${spectre-platform}</platform>
                     </platforms>
+                    <extraJvmArguments>-Djava.awt.headless=true</extraJvmArguments>
                     <programs>
                         <program>
                             <mainClass>uk.ac.uea.cmp.spectre.tools.convertor.DistanceMatrixConvertor</mainClass>
