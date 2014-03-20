@@ -459,13 +459,26 @@ vertices_network_data :
     | vertices_network_entry ',' vertices_network_data
     ;
 
-vertices_network_entry :
-      INT FLOAT FLOAT vertices_2d_data
-    | INT FLOAT FLOAT vertices_3d_data
+vertices_network_entry : INT FLOAT FLOAT vertex_options;
+
+vertex_options :
+      // Empty
+    | vertex_option vertex_options
     ;
 
-vertices_2d_data : 's' '=' IDENTIFIER 'b' '=' INT INT INT;
-vertices_3d_data : 'w' '=' INT 'h' '=' INT 'b' '=' INT INT INT;
+vertex_option : nv_shape | nv_width | nv_height | nv_b | nv_color_fg | nv_color_bg;
+
+nv_shape : 's' '=' IDENTIFIER;
+
+nv_width : 'w' '=' INT;
+
+nv_height : 'h' '=' INT;
+
+nv_b : 'b' '=' INT INT INT;
+
+nv_color_fg : 'fg' '=' INT INT INT;
+
+nv_color_bg : 'bg' '=' INT INT INT;
 
 
 vlabels_network :
@@ -480,13 +493,29 @@ vlabels_network_data :
    | vlabels_network_entry ',' vlabels_network_data
    ;
 
-vlabels_network_entry : vlabels_network_label vlabels_data;
+vlabels_network_entry : vlabels_network_label vlabels_options;
 
 vlabels_network_label : INT '\'' IDENTIFIER '\'';
 
-vlabels_data :
-      'l' '=' INT 'x' '=' INT 'y' '=' INT 'f' '=' '\'' IDENTIFIER '\''
-    | 'x' '=' INT 'y' '=' INT 'f' '=' '\'' IDENTIFIER '\'';
+vlabels_options :
+      // Empty
+    | vlabels_option vlabels_options
+    ;
+
+vlabels_option : nl_l | nl_x | nl_y | nl_font;
+
+nl_l : 'l' '=' INT;
+
+nl_x : 'x' '=' INT;
+
+nl_y : 'y' '=' INT;
+
+nl_font : 'f' '=' '\'' IDENTIFIER '\'';
+
+nl_color_lc : 'lc' '=' INT INT INT;
+
+nl_color_bg : 'lk' '=' INT INT INT;
+
 
 edges_network :
       // Empty
@@ -500,7 +529,22 @@ edges_network_data :
     | edges_network_entry ',' edges_network_data
     ;
 
-edges_network_entry : INT INT INT 's' '=' INT 'w' '=' FLOAT;
+edges_network_entry : INT INT INT edges_network_options;
+
+edges_network_options :
+      //Empty
+    | edges_network_option edges_network_options
+    ;
+
+edges_network_option : ne_split | ne_width | ne_color | ne_unknown;
+
+ne_split : 's' '=' INT;
+
+ne_unknown : 'w' '=' FLOAT;
+
+ne_width : 'l' '=' INT;
+
+ne_color : 'fg' '=' INT INT INT;
 
 
 // ----------------------------------------------------------------------------

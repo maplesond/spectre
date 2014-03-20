@@ -18,6 +18,7 @@ package uk.ac.uea.cmp.spectre.core.io.nexus;
 
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
+import uk.ac.uea.cmp.spectre.core.ds.network.Network;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 
 import java.util.ArrayList;
@@ -36,12 +37,14 @@ public class Nexus {
     private DistanceMatrix distanceMatrix;
     private SplitSystem splitSystem;
     private List<Integer> cycle;
+    private Network network;
 
     public Nexus() {
         this.taxa = new IdentifierList();
         this.distanceMatrix = null;
         this.cycle = new ArrayList<>();
         this.splitSystem = null;
+        this.network = null;
     }
 
     public void setTaxa(IdentifierList taxa) {
@@ -89,6 +92,13 @@ public class Nexus {
         return this.cycle.get(i);
     }
 
+    public Network getNetwork() {
+        return network;
+    }
+
+    public void setNetwork(Network network) {
+        this.network = network;
+    }
 
     /*public Nexus filter(double threshold) {
 

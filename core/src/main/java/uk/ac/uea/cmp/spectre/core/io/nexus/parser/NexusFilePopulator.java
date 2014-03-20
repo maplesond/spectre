@@ -25,9 +25,13 @@ import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.spectre.core.ds.Identifier;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrixBuilder;
+import uk.ac.uea.cmp.spectre.core.ds.network.Edge;
+import uk.ac.uea.cmp.spectre.core.ds.network.Label;
+import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitBlock;
 import uk.ac.uea.cmp.spectre.core.io.nexus.Nexus;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -58,6 +62,7 @@ public class NexusFilePopulator implements NexusFileListener {
         this.distanceMatrixBuilder = new DistanceMatrixBuilder();
         this.splitSystemBuilder = new NexusSplitSystemBuilder();
         this.quartetSystemBuilder = new NexusQuartetSystemBuilder();
+        this.networkBuilder = new NexusNetworkBuilder();
     }
 
     @Override
@@ -123,6 +128,11 @@ public class NexusFilePopulator implements NexusFileListener {
     @Override
     public void exitDimensions_network(@NotNull NexusFileParser.Dimensions_networkContext ctx) {
 
+        int nbExpectedTaxa = Integer.parseInt(ctx.ntax().INT().getText());
+        int nbExpectedEdges = Integer.parseInt(ctx.nedges().INT().getText());
+        int nbExpectedVertices = Integer.parseInt(ctx.nvertices().INT().getText());
+
+        this.networkBuilder.setExpectedDimensions(nbExpectedTaxa, nbExpectedVertices, nbExpectedEdges);
     }
 
     @Override
@@ -183,6 +193,17 @@ public class NexusFilePopulator implements NexusFileListener {
     @Override
     public void exitMatrix_quartets_data(@NotNull NexusFileParser.Matrix_quartets_dataContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void enterNv_width(@NotNull NexusFileParser.Nv_widthContext ctx) {
+
+    }
+
+    @Override
+    public void exitNv_width(@NotNull NexusFileParser.Nv_widthContext ctx) {
+
+        this.networkBuilder.getCurrentVertex().setWidth(Integer.parseInt(ctx.INT().getText()));
     }
 
     @Override
@@ -320,14 +341,15 @@ public class NexusFilePopulator implements NexusFileListener {
     }
 
     @Override
-    public void enterVertices_2d_data(@NotNull NexusFileParser.Vertices_2d_dataContext ctx) {
+    public void enterVertex_options(@NotNull NexusFileParser.Vertex_optionsContext ctx) {
 
     }
 
     @Override
-    public void exitVertices_2d_data(@NotNull NexusFileParser.Vertices_2d_dataContext ctx) {
+    public void exitVertex_options(@NotNull NexusFileParser.Vertex_optionsContext ctx) {
 
     }
+
 
     @Override
     public void enterMatrix_splits_data(@NotNull NexusFileParser.Matrix_splits_dataContext ctx) {
@@ -383,6 +405,16 @@ public class NexusFilePopulator implements NexusFileListener {
     }
 
     @Override
+    public void enterNl_color_lc(@NotNull NexusFileParser.Nl_color_lcContext ctx) {
+
+    }
+
+    @Override
+    public void exitNl_color_lc(@NotNull NexusFileParser.Nl_color_lcContext ctx) {
+
+    }
+
+    @Override
     public void enterDiagonal(@NotNull NexusFileParser.DiagonalContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -390,6 +422,29 @@ public class NexusFilePopulator implements NexusFileListener {
     @Override
     public void exitDiagonal(@NotNull NexusFileParser.DiagonalContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void enterNl_font(@NotNull NexusFileParser.Nl_fontContext ctx) {
+
+    }
+
+    @Override
+    public void exitNl_font(@NotNull NexusFileParser.Nl_fontContext ctx) {
+
+        String fontString = ctx.IDENTIFIER().getText();
+
+        String[] parts = fontString.split("-");
+
+        String family = parts[0];
+        String type = parts[1];
+        int size = Integer.parseInt(parts[2]);
+
+        Label label = this.networkBuilder.getCurrentLabel();
+
+        label.setFontFamily(family);
+        label.setFontStyle(type);
+        label.setFontSize(size);
     }
 
     @Override
@@ -450,6 +505,7 @@ public class NexusFilePopulator implements NexusFileListener {
     @Override
     public void exitRotate_network(@NotNull NexusFileParser.Rotate_networkContext ctx) {
 
+        this.networkBuilder.setRotateAbout(Float.parseFloat(ctx.FLOAT().getText()));
     }
 
     @Override
@@ -561,6 +617,16 @@ public class NexusFilePopulator implements NexusFileListener {
     }
 
     @Override
+    public void enterEdges_network_option(@NotNull NexusFileParser.Edges_network_optionContext ctx) {
+
+    }
+
+    @Override
+    public void exitEdges_network_option(@NotNull NexusFileParser.Edges_network_optionContext ctx) {
+
+    }
+
+    @Override
     public void enterDimensions_splits(@NotNull NexusFileParser.Dimensions_splitsContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -583,6 +649,17 @@ public class NexusFilePopulator implements NexusFileListener {
                 this.splitSystemBuilder.setExpectedNbSplits(Integer.parseInt(ctx.nsplits().INT().getText()));
             }
         }
+    }
+
+    @Override
+    public void enterNv_shape(@NotNull NexusFileParser.Nv_shapeContext ctx) {
+
+    }
+
+    @Override
+    public void exitNv_shape(@NotNull NexusFileParser.Nv_shapeContext ctx) {
+
+        this.networkBuilder.getCurrentVertex().setShape(ctx.getText());
     }
 
     @Override
@@ -762,6 +839,16 @@ public class NexusFilePopulator implements NexusFileListener {
     }
 
     @Override
+    public void enterNl_color_bg(@NotNull NexusFileParser.Nl_color_bgContext ctx) {
+
+    }
+
+    @Override
+    public void exitNl_color_bg(@NotNull NexusFileParser.Nl_color_bgContext ctx) {
+
+    }
+
+    @Override
     public void enterNewtaxa(@NotNull NexusFileParser.NewtaxaContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -830,6 +917,7 @@ public class NexusFilePopulator implements NexusFileListener {
     @Override
     public void exitDraw_network(@NotNull NexusFileParser.Draw_networkContext ctx) {
 
+        this.networkBuilder.setDrawToScale(true);
     }
 
     @Override
@@ -840,6 +928,16 @@ public class NexusFilePopulator implements NexusFileListener {
     @Override
     public void exitNvertices(@NotNull NexusFileParser.NverticesContext ctx) {
 
+    }
+
+    @Override
+    public void enterNe_unknown(@NotNull NexusFileParser.Ne_unknownContext ctx) {
+
+    }
+
+    @Override
+    public void exitNe_unknown(@NotNull NexusFileParser.Ne_unknownContext ctx) {
+        // Not sure what to do with this one
     }
 
     @Override
@@ -860,6 +958,13 @@ public class NexusFilePopulator implements NexusFileListener {
     @Override
     public void exitVlabels_network_label(@NotNull NexusFileParser.Vlabels_network_labelContext ctx) {
 
+        Label label = this.networkBuilder.getCurrentLabel();
+
+        int id = Integer.parseInt(ctx.INT().getText());
+        String name = ctx.IDENTIFIER().getText();
+
+        label.setName(name);
+        label.setVertexId(id);
     }
 
     @Override
@@ -875,11 +980,32 @@ public class NexusFilePopulator implements NexusFileListener {
     @Override
     public void enterVlabels_network_entry(@NotNull NexusFileParser.Vlabels_network_entryContext ctx) {
 
+        Label label = new Label();
+
+        this.networkBuilder.setCurrentLabel(label);
     }
 
     @Override
     public void exitVlabels_network_entry(@NotNull NexusFileParser.Vlabels_network_entryContext ctx) {
 
+        // Create a link between the vertex and the label
+        this.networkBuilder.getVertices().get(this.networkBuilder.getCurrentLabel().getVertexId()).setLabel(this.networkBuilder.getCurrentLabel());
+
+        // Add the label to the map
+        this.networkBuilder.getLabels().put(this.networkBuilder.getCurrentLabel().getVertexId(), this.networkBuilder.getCurrentLabel());
+    }
+
+    @Override
+    public void enterNl_l(@NotNull NexusFileParser.Nl_lContext ctx) {
+
+    }
+
+    @Override
+    public void exitNl_l(@NotNull NexusFileParser.Nl_lContext ctx) {
+
+        // Not sure what to do with this for the moment
+
+        // this.networkBuilder.getCurrentLabel()
     }
 
     @Override
@@ -1028,6 +1154,26 @@ public class NexusFilePopulator implements NexusFileListener {
     }
 
     @Override
+    public void enterNl_y(@NotNull NexusFileParser.Nl_yContext ctx) {
+
+    }
+
+    @Override
+    public void exitNl_y(@NotNull NexusFileParser.Nl_yContext ctx) {
+        this.networkBuilder.getCurrentLabel().setOffsetY(Integer.parseInt(ctx.INT().getText()));
+    }
+
+    @Override
+    public void enterNv_b(@NotNull NexusFileParser.Nv_bContext ctx) {
+
+    }
+
+    @Override
+    public void exitNv_b(@NotNull NexusFileParser.Nv_bContext ctx) {
+        // Not sure what this is so we'll ignore it for now...
+    }
+
+    @Override
     public void enterNetwork_block_header(@NotNull NexusFileParser.Network_block_headerContext ctx) {
 
     }
@@ -1055,6 +1201,16 @@ public class NexusFilePopulator implements NexusFileListener {
     @Override
     public void exitScale_network(@NotNull NexusFileParser.Scale_networkContext ctx) {
 
+    }
+
+    @Override
+    public void enterNv_height(@NotNull NexusFileParser.Nv_heightContext ctx) {
+
+    }
+
+    @Override
+    public void exitNv_height(@NotNull NexusFileParser.Nv_heightContext ctx) {
+        this.networkBuilder.getCurrentVertex().setHeight(Integer.parseInt(ctx.INT().getText()));
     }
 
     @Override
@@ -1105,6 +1261,21 @@ public class NexusFilePopulator implements NexusFileListener {
     @Override
     public void exitBlock_network(@NotNull NexusFileParser.Block_networkContext ctx) {
 
+        this.nexus.setNetwork(this.networkBuilder.createNetwork());
+    }
+
+    @Override
+    public void enterNv_color_fg(@NotNull NexusFileParser.Nv_color_fgContext ctx) {
+
+    }
+
+    @Override
+    public void exitNv_color_fg(@NotNull NexusFileParser.Nv_color_fgContext ctx) {
+        this.networkBuilder.getCurrentVertex().setLineColor(
+                new Color(
+                        Integer.parseInt(ctx.INT(0).getText()),
+                        Integer.parseInt(ctx.INT(1).getText()),
+                        Integer.parseInt(ctx.INT(2).getText())));
     }
 
     @Override
@@ -1135,6 +1306,16 @@ public class NexusFilePopulator implements NexusFileListener {
     @Override
     public void exitTree_header(@NotNull NexusFileParser.Tree_headerContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void enterNl_x(@NotNull NexusFileParser.Nl_xContext ctx) {
+
+    }
+
+    @Override
+    public void exitNl_x(@NotNull NexusFileParser.Nl_xContext ctx) {
+        this.networkBuilder.getCurrentLabel().setOffsetX(Integer.parseInt(ctx.INT().getText()));
     }
 
     @Override
@@ -1178,6 +1359,16 @@ public class NexusFilePopulator implements NexusFileListener {
     }
 
     @Override
+    public void enterEdges_network_options(@NotNull NexusFileParser.Edges_network_optionsContext ctx) {
+
+    }
+
+    @Override
+    public void exitEdges_network_options(@NotNull NexusFileParser.Edges_network_optionsContext ctx) {
+
+    }
+
+    @Override
     public void enterTranslate_header(@NotNull NexusFileParser.Translate_headerContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -1194,6 +1385,16 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitDimensions_taxa(@NotNull NexusFileParser.Dimensions_taxaContext ctx) {
+
+    }
+
+    @Override
+    public void enterVertex_option(@NotNull NexusFileParser.Vertex_optionContext ctx) {
+
+    }
+
+    @Override
+    public void exitVertex_option(@NotNull NexusFileParser.Vertex_optionContext ctx) {
 
     }
 
@@ -1218,6 +1419,21 @@ public class NexusFilePopulator implements NexusFileListener {
     }
 
     @Override
+    public void enterNv_color_bg(@NotNull NexusFileParser.Nv_color_bgContext ctx) {
+
+    }
+
+    @Override
+    public void exitNv_color_bg(@NotNull NexusFileParser.Nv_color_bgContext ctx) {
+        this.networkBuilder.getCurrentVertex().setBackgroundColor(
+                new Color(
+                        Integer.parseInt(ctx.INT(0).getText()),
+                        Integer.parseInt(ctx.INT(1).getText()),
+                        Integer.parseInt(ctx.INT(2).getText()))
+        );
+    }
+
+    @Override
     public void enterStar(@NotNull NexusFileParser.StarContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -1228,13 +1444,47 @@ public class NexusFilePopulator implements NexusFileListener {
     }
 
     @Override
-    public void enterEdges_network_entry(@NotNull NexusFileParser.Edges_network_entryContext ctx) {
+    public void enterNe_color(@NotNull NexusFileParser.Ne_colorContext ctx) {
 
+    }
+
+    @Override
+    public void exitNe_color(@NotNull NexusFileParser.Ne_colorContext ctx) {
+        this.networkBuilder.getCurrentEdge().setColor(
+                new Color(
+                        Integer.parseInt(ctx.INT(0).getText()),
+                        Integer.parseInt(ctx.INT(1).getText()),
+                        Integer.parseInt(ctx.INT(2).getText()))
+        );
+    }
+
+    @Override
+    public void enterEdges_network_entry(@NotNull NexusFileParser.Edges_network_entryContext ctx) {
+        Edge edge = new Edge();
+
+        this.networkBuilder.setCurrentEdge(edge);
     }
 
     @Override
     public void exitEdges_network_entry(@NotNull NexusFileParser.Edges_network_entryContext ctx) {
 
+        int id = Integer.parseInt(ctx.INT().get(0).getText());
+        int top = Integer.parseInt(ctx.INT().get(1).getText());
+        int bot = Integer.parseInt(ctx.INT().get(2).getText());
+
+        Edge edge = this.networkBuilder.getCurrentEdge();
+
+        Vertex vTop = this.networkBuilder.getVertices().get(top);
+        Vertex vBot = this.networkBuilder.getVertices().get(bot);
+
+        vBot.getElist().add(edge);
+        vTop.getElist().add(edge);
+
+        edge.setNxnum(id);
+        edge.setTop(vTop);
+        edge.setBot(vBot);
+
+        this.networkBuilder.getEdges().put(this.networkBuilder.getCurrentEdge().getNxnum(), edge);
     }
 
     @Override
@@ -1244,6 +1494,16 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitAssumptions_data_entry(@NotNull NexusFileParser.Assumptions_data_entryContext ctx) {
+
+    }
+
+    @Override
+    public void enterVlabels_option(@NotNull NexusFileParser.Vlabels_optionContext ctx) {
+
+    }
+
+    @Override
+    public void exitVlabels_option(@NotNull NexusFileParser.Vlabels_optionContext ctx) {
 
     }
 
@@ -1260,11 +1520,25 @@ public class NexusFilePopulator implements NexusFileListener {
     @Override
     public void enterVertices_network_entry(@NotNull NexusFileParser.Vertices_network_entryContext ctx) {
 
+        Vertex v = new Vertex();
+
+        this.networkBuilder.setCurrentVertex(v);
     }
 
     @Override
     public void exitVertices_network_entry(@NotNull NexusFileParser.Vertices_network_entryContext ctx) {
 
+        int id = Integer.parseInt(ctx.INT().getText());
+        double x = Double.parseDouble(ctx.FLOAT(0).getText());
+        double y = Double.parseDouble(ctx.FLOAT(1).getText());
+
+        Vertex v = this.networkBuilder.getCurrentVertex();
+
+        v.setX(x);
+        v.setY(y);
+        v.setNxnum(id);
+
+        this.networkBuilder.getVertices().put(id, v);
     }
 
     @Override
@@ -1470,12 +1744,12 @@ public class NexusFilePopulator implements NexusFileListener {
     }
 
     @Override
-    public void enterVlabels_data(@NotNull NexusFileParser.Vlabels_dataContext ctx) {
+    public void enterVlabels_options(@NotNull NexusFileParser.Vlabels_optionsContext ctx) {
 
     }
 
     @Override
-    public void exitVlabels_data(@NotNull NexusFileParser.Vlabels_dataContext ctx) {
+    public void exitVlabels_options(@NotNull NexusFileParser.Vlabels_optionsContext ctx) {
 
     }
 
@@ -1497,6 +1771,16 @@ public class NexusFilePopulator implements NexusFileListener {
     @Override
     public void exitTaxlabels_header(@NotNull NexusFileParser.Taxlabels_headerContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void enterNe_width(@NotNull NexusFileParser.Ne_widthContext ctx) {
+
+    }
+
+    @Override
+    public void exitNe_width(@NotNull NexusFileParser.Ne_widthContext ctx) {
+        this.networkBuilder.getCurrentEdge().setWidth(Integer.parseInt(ctx.INT().getText()));
     }
 
     @Override
@@ -1540,16 +1824,6 @@ public class NexusFilePopulator implements NexusFileListener {
     }
 
     @Override
-    public void enterVertices_3d_data(@NotNull NexusFileParser.Vertices_3d_dataContext ctx) {
-
-    }
-
-    @Override
-    public void exitVertices_3d_data(@NotNull NexusFileParser.Vertices_3d_dataContext ctx) {
-
-    }
-
-    @Override
     public void enterNewtaxa_optional(@NotNull NexusFileParser.Newtaxa_optionalContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -1576,6 +1850,16 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitTranslate_network_entry(@NotNull NexusFileParser.Translate_network_entryContext ctx) {
+
+    }
+
+    @Override
+    public void enterNe_split(@NotNull NexusFileParser.Ne_splitContext ctx) {
+
+    }
+
+    @Override
+    public void exitNe_split(@NotNull NexusFileParser.Ne_splitContext ctx) {
 
     }
 

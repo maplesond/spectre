@@ -25,35 +25,39 @@ import java.util.ListIterator;
 public class Edge implements Comparable<Edge> {
 
     // Endpoints of the edge.
-    private Vertex top = null;
-    private Vertex bot = null;
+    private Vertex top;
+    private Vertex bot;
 
     // Index of the split associated to the edge.
-    private int idxsplit = 0;
+    private int idxsplit;
 
-    // Number of edges in nexus file
-    // TODO: Should this really be in here???
-    private int nxnum = 0;
+    // Index of edge
+    private int nxnum;
 
     // Time stamp, used to keep track of the order from left to right
-    private int timestp = 0;
+    private int timestp;
 
     //Flags used when traversing the splitsgraph
-    private boolean visited = false;
+    private boolean visited;
 
-    private int width = 1;
-    private Color color = Color.black;
-    private boolean compatible = false;
+    private int width;
+    private Color color;
+    private boolean compatible;
 
-    //Constructor.
+    public Edge() {
+        this(null, null, 0, 0);
+    }
+
     public Edge(Vertex t, Vertex b, int idx, int time) {
         top = t;
         bot = b;
         idxsplit = idx;
         timestp = time;
         visited = false;
+        width = 1;
+        color = Color.black;
+        compatible = false;
     }
-
 
     public void setNxnum(int nxnum) {
         this.nxnum = nxnum;
@@ -67,6 +71,15 @@ public class Edge implements Comparable<Edge> {
     @Override
     public String toString() {
         return "Nr. " + nxnum + "\nSplit: " + idxsplit + "\nBot: " + bot.toSimpleString() + "\nTop: " + top.toSimpleString() + "\n";
+    }
+
+
+    public void setTop(Vertex top) {
+        this.top = top;
+    }
+
+    public void setBot(Vertex bot) {
+        this.bot = bot;
     }
 
     public void setColor(Color c) {

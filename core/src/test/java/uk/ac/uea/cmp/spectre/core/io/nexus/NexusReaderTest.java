@@ -19,12 +19,18 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
+import uk.ac.uea.cmp.spectre.core.ds.network.Edge;
+import uk.ac.uea.cmp.spectre.core.ds.network.Label;
+import uk.ac.uea.cmp.spectre.core.ds.network.Network;
+import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
 import uk.ac.uea.cmp.spectre.core.ds.split.Split;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -189,6 +195,25 @@ public class NexusReaderTest {
         Nexus nexus = new NexusReader().parse(testFile);
 
         assertNotNull(nexus);
+
+        Network network = nexus.getNetwork();
+
+        assertNotNull(network);
+
+        List<Vertex> vertices = network.getVertices();
+
+        assertNotNull(vertices);
+        assertFalse(vertices.isEmpty());
+
+        List<Label> labels = network.getLabels();
+
+        assertNotNull(labels);
+        assertFalse(labels.isEmpty());
+
+        List<Edge> edges = network.getEdges();
+
+        assertNotNull(edges);
+        assertFalse(edges.isEmpty());
 
     }
 }

@@ -27,7 +27,7 @@
     </parent>
 
     <artifactId>core</artifactId>
-    <version>${spectre-version}</version>
+    <version>0.2.1</version>
     <packaging>jar</packaging>
 
     <name>Spectre: Core functionality</name>

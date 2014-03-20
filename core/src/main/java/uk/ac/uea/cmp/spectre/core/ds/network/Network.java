@@ -18,6 +18,8 @@ package uk.ac.uea.cmp.spectre.core.ds.network;
 
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 
+import java.util.List;
+
 /**
  * Created by dan on 18/03/14.
  */
@@ -25,9 +27,9 @@ public interface Network {
 
     IdentifierList getTaxa();
 
-    //Vertices getVertices();
+    List<Vertex> getVertices();
 
-    //Edges getEdges();
+    List<Edge> getEdges();
 
-    //Labels getLabels();
+    List<Label> getLabels();
 }

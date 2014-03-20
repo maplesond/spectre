@@ -22,9 +22,9 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 
 public class Vertex {
+
     //List of the edges that are incident to this vertex.
     //The edges are sorted clockwise around the vertex.
-
     private LinkedList<Edge> elist;
 
     //The list of taxa associated to the vertex.
@@ -51,7 +51,11 @@ public class Vertex {
 
     private Label label;
 
-    //Constructor.
+
+    public Vertex() {
+        this (0.0, 0.0);
+    }
+
     public Vertex(double xcoord, double ycoord) {
         x = xcoord;
         y = ycoord;
@@ -219,8 +223,10 @@ public class Vertex {
         return vlist;
     }
 
-    //Auxiliary method used to collect the vertices
-    //in the network.
+    /**
+     * Ausxilary method used to collect the attached vertices.  Populates the provided linked list.
+     * @param vlist List of vertices to populate
+     */
     private void collectVertices(LinkedList<Vertex> vlist) {
         LinkedList<Vertex> tobeexplored = new LinkedList<>();
         tobeexplored.addLast(this);
@@ -249,8 +255,12 @@ public class Vertex {
         }
     }
 
-    //This method collects the edges that represent a
-    //given split in the network.
+
+    /**
+     * This method collects the edges that represent a given split in the network.
+     * @param s
+     * @return
+     */
     public LinkedList<Edge> collectEdgesForSplit(int s) {
         LinkedList elistall = this.elist.getFirst().collectEdges();
         ListIterator iter = elistall.listIterator();

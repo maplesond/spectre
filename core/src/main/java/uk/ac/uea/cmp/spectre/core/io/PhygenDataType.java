@@ -30,5 +30,6 @@ public enum PhygenDataType {
     TREE,
     CIRCULAR_ORDERING,
     SPLITS,
-    QUARTETS;
+    QUARTETS,
+    NETWORK;
 }

@@ -27,7 +27,11 @@ import java.awt.*;
 public class Label {
 
     private String name;
-    private Vertex v;
+
+    private int vertexId;
+
+    private Vertex vertex;
+
     private double offsetX = 1;
     private double offsetY = 1;
 
@@ -85,8 +89,20 @@ public class Label {
         return offsetY;
     }
 
-    void setVertex(Vertex vertex) {
-        v = vertex;
+    public int getVertexId() {
+        return vertexId;
+    }
+
+    public void setVertexId(int vertexId) {
+        this.vertexId = vertexId;
+    }
+
+    public Vertex getVertex() {
+        return vertex;
+    }
+
+    public void setVertex(Vertex vertex) {
+        this.vertex = vertex;
     }
 
     public void setBackgoundColor(Color c) {

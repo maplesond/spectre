@@ -32,6 +32,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Vector;
 
 import static uk.ac.uea.cmp.spectre.core.ui.gui.LookAndFeel.NIMBUS;
 import static uk.ac.uea.cmp.spectre.core.ui.gui.LookAndFeel.setLookAndFeel;
@@ -176,7 +177,7 @@ public class SuperQGUI extends JFrame implements ToolHost {
         java.util.List<String> scalingSolvers = OptimiserFactory.getInstance().listOperationalOptimisers(Objective.ObjectiveType.QUADRATIC);
         scalingSolvers.add(0, "Off");
 
-        cboSelectScalingSolver.setModel(new DefaultComboBoxModel(scalingSolvers.toArray()));
+        cboSelectScalingSolver.setModel(new DefaultComboBoxModel<>(new Vector<>(scalingSolvers)));
         cboSelectScalingSolver.setToolTipText(SuperQOptions.DESC_SCALING_SOLVER);
 
         lblSelectScalingSolver.setText("Select scaling optimiser:");
@@ -186,7 +187,7 @@ public class SuperQGUI extends JFrame implements ToolHost {
         java.util.List<String> primarySolvers = OptimiserFactory.getInstance().listOperationalOptimisers(Objective.ObjectiveType.QUADRATIC);
         primarySolvers.add(0, "Internal");
 
-        cboSelectPrimarySolver.setModel(new DefaultComboBoxModel(primarySolvers.toArray()));
+        cboSelectPrimarySolver.setModel(new DefaultComboBoxModel<>(new Vector<>(primarySolvers)));
         cboSelectPrimarySolver.setToolTipText(SuperQOptions.DESC_PRIMARY_SOLVER);
 
         lblSelectPrimarySolver.setText("Select primary optimiser:");
@@ -195,7 +196,7 @@ public class SuperQGUI extends JFrame implements ToolHost {
         java.util.List<String> secondarySolvers = OptimiserFactory.getInstance().listOperationalOptimisers();
         secondarySolvers.add(0, "Off");
 
-        cboSelectSecondarySolver.setModel(new DefaultComboBoxModel(secondarySolvers.toArray()));
+        cboSelectSecondarySolver.setModel(new DefaultComboBoxModel<>(new Vector<>(secondarySolvers)));
         cboSelectSecondarySolver.setToolTipText(SuperQOptions.DESC_SECONDARY_SOLVER);
         cboSelectSecondarySolver.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -472,14 +473,14 @@ public class SuperQGUI extends JFrame implements ToolHost {
             }
 
             cboSelectSecondaryObjective.setModel(
-                    new DefaultComboBoxModel(
+                    new DefaultComboBoxModel<>(new Vector<>(
                             SecondaryProblemFactory.getInstance().listObjectivesByIdentifier(
                                     opt.acceptsObjectiveType(Objective.ObjectiveType.QUADRATIC) ?
                                             Objective.ObjectiveType.QUADRATIC :
                                             Objective.ObjectiveType.LINEAR
-                            ).toArray()));
+                            ))));
         } else {
-            cboSelectSecondaryObjective.setModel(new DefaultComboBoxModel());
+            cboSelectSecondaryObjective.setModel(new DefaultComboBoxModel<String>());
         }
     }
 
