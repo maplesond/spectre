@@ -17,6 +17,9 @@
 package uk.ac.uea.cmp.spectre.core.ds.network;
 
 import java.awt.*;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.ListIterator;
 
 
 public class Edge implements Comparable<Edge> {
@@ -152,4 +155,53 @@ public class Edge implements Comparable<Edge> {
             return 0;
         }
     }
+
+    private void collectEdges(LinkedList<Edge> elist) {
+        LinkedList<Edge> tobeexplored = new LinkedList<>();
+        tobeexplored.addLast(this);
+        this.setVisited(true);
+
+        Edge g, h;
+
+        while (tobeexplored.size() > 0) {
+            g = tobeexplored.removeFirst();
+            elist.addLast(g);
+            Iterator iter = ((g.getTop()).getElist()).iterator();
+            while (iter.hasNext()) {
+                h = (Edge) iter.next();
+                if (h.isVisited() == false) {
+                    tobeexplored.addLast(h);
+                    h.setVisited(true);
+                }
+            }
+            iter = ((g.getBot()).getElist()).iterator();
+            while (iter.hasNext()) {
+                h = (Edge) iter.next();
+                if (h.isVisited() == false) {
+                    tobeexplored.addLast(h);
+                    h.setVisited(true);
+                }
+            }
+        }
+    }
+
+    /**
+     * This method computes a list of the edges in the split network.
+     * @return
+     */
+    public LinkedList<Edge> collectEdges() {
+        LinkedList<Edge> elist = new LinkedList<>();
+        this.collectEdges(elist);
+        ListIterator iter = elist.listIterator(0);
+        int i = 1;
+        Edge h;
+        while (iter.hasNext()) {
+            h = (Edge) iter.next();
+            h.setVisited(false);
+            h.setNxnum(i);
+            i++;
+        }
+        return elist;
+    }
+
 }

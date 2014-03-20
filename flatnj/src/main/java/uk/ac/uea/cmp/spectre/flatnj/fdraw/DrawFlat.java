@@ -63,7 +63,7 @@ public class DrawFlat {
     //in the trimmed network. Again this method is
     //provided as a public method for testing purposes.
     public static Vertex trim_network(Vertex v) {
-        LinkedList vlist = collect_vertices(v);
+        LinkedList vlist = v.collectVertices();
         ListIterator viter = vlist.listIterator();
         ListIterator eiter = null;
         Vertex u = null;
@@ -131,7 +131,7 @@ public class DrawFlat {
             //System.out.print("Split " + i + " "); 
             if (pseq.active[i] && is_trivial(pseq, i, ssyst)) {
                 //System.out.println("is trivial");
-                LinkedList elist = collect_edges_for_split(i, u);
+                LinkedList elist = u.collectEdgesForSplit(i);
                 //System.out.println(elist.size() + " edges collected");
                 e = flip_cubes(v, pseq, elist, ssyst, taxaname);
                 //System.out.println("Cubes flipped");
@@ -1709,21 +1709,7 @@ public class DrawFlat {
         }
     }
 
-    //This method collects the edges that represent a
-    //given split in the network.
-    public static LinkedList<Edge> collect_edges_for_split(int s, Vertex v) {
-        LinkedList elistall = collect_edges((Edge) (v.getElist()).getFirst());
-        ListIterator iter = elistall.listIterator();
-        LinkedList elist = new LinkedList();
-        Edge e = null;
-        while (iter.hasNext()) {
-            e = (Edge) iter.next();
-            if (e.getIdxsplit() == s) {
-                elist.add(e);
-            }
-        }
-        return elist;
-    }
+
 
     //This method collects the edges that represent a
     //given split in the network.
@@ -2105,105 +2091,6 @@ public class DrawFlat {
         return v;
     }
 
-    //Auxiliary method used to collect the vertices
-    //in the network.
-    private static void aux_collect_vertices(Vertex v, LinkedList<Vertex> vlist) {
-        LinkedList<Vertex> tobeexplored = new LinkedList<>();
-        tobeexplored.addLast(v);
-        v.setVisited(true);
-        Vertex u = null;
-        Edge e = null;
-
-        while (tobeexplored.size() > 0) {
-            u = (Vertex) tobeexplored.removeFirst();
-            vlist.addLast(u);
-            ListIterator iter = (u.getElist()).listIterator();
-            while (iter.hasNext()) {
-                e = (Edge) iter.next();
-                if (u == e.getTop()) {
-                    if ((e.getBot()).isVisited() == false) {
-                        tobeexplored.addLast(e.getBot());
-                        (e.getBot()).setVisited(true);
-                    }
-                } else {
-                    if ((e.getTop()).isVisited() == false) {
-                        tobeexplored.addLast(e.getTop());
-                        (e.getTop()).setVisited(true);
-                    }
-                }
-            }
-        }
-    }
-
-    //This method computes a list of the vertices 
-    //in the split network
-    public static LinkedList<Vertex> collect_vertices(Vertex v) {
-        LinkedList vlist = new LinkedList();
-        if (v == null) {
-            System.out.println("Start vertex is null -- stop here");
-            System.exit(0);
-        }
-        aux_collect_vertices(v, vlist);
-        ListIterator iter = vlist.listIterator(0);
-        int i = 1;
-        Vertex u = null;
-        while (iter.hasNext()) {
-            u = (Vertex) iter.next();
-            u.setVisited(false);
-            u.setNxnum(i);
-            i++;
-        }
-        return vlist;
-    }
-
-    //Auxiliary method used to collect the edges
-    //in the split network.
-    private static void aux_collect_edges(Edge e, LinkedList<Edge> elist) {
-        LinkedList<Edge> tobeexplored = new LinkedList<>();
-        tobeexplored.addLast(e);
-        e.setVisited(true);
-
-        Edge g = null;
-        Edge h = null;
-
-        while (tobeexplored.size() > 0) {
-            g = tobeexplored.removeFirst();
-            elist.addLast(g);
-            Iterator iter = ((g.getTop()).getElist()).iterator();
-            while (iter.hasNext()) {
-                h = (Edge) iter.next();
-                if (h.isVisited() == false) {
-                    tobeexplored.addLast(h);
-                    h.setVisited(true);
-                }
-            }
-            iter = ((g.getBot()).getElist()).iterator();
-            while (iter.hasNext()) {
-                h = (Edge) iter.next();
-                if (h.isVisited() == false) {
-                    tobeexplored.addLast(h);
-                    h.setVisited(true);
-                }
-            }
-        }
-    }
-
-    //This method computes a list of the edges 
-    //in the split network.
-    public static LinkedList<Edge> collect_edges(Edge e) {
-        LinkedList<Edge> elist = new LinkedList<>();
-        aux_collect_edges(e, elist);
-        ListIterator iter = elist.listIterator(0);
-        int i = 1;
-        Edge h = null;
-        while (iter.hasNext()) {
-            h = (Edge) iter.next();
-            h.setVisited(false);
-            h.setNxnum(i);
-            i++;
-        }
-        return elist;
-    }
 
     private static void log_splitedges(TreeSet[] splitedges, String mes) {
         int i = 0;

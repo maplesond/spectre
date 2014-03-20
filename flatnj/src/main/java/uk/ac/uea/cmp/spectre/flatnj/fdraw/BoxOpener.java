@@ -47,7 +47,7 @@ public class BoxOpener {
         Double maxAngle = null;
         for (int i = 0; i < activeSplits.length; i++) {
             int S = activeSplits[i];
-            LinkedList<Edge> edges = DrawFlat.collect_edges_for_split(S, v);
+            LinkedList<Edge> edges = v.collectEdgesForSplit(S);
             if (edges.size() > 1) {
                 double angle = open(activeSplits, S, ss, edges, splitedges, v, vertices, network);
                 if (maxAngle == null || maxAngle < angle) {
@@ -62,7 +62,7 @@ public class BoxOpener {
         boolean foundSplit = false;
         while (!foundSplit) {
             int S = activeSplits[nr++];
-            LinkedList<Edge> edges = DrawFlat.collect_edges_for_split(S, v);
+            LinkedList<Edge> edges = v.collectEdgesForSplit(S);
             if (edges.size() > 1) {
                 foundSplit = true;
                 open(activeSplits, S, ss, edges, splitedges, v, vertices, network);

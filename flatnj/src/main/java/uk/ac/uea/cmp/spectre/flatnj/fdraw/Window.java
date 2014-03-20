@@ -96,12 +96,12 @@ public class Window extends JPanel {
 
 
     public void setGraph(Vertex net, double[] corners, int w, int h) {
-        LinkedList<Edge> edges = DrawFlat.collect_edges(net.getFirstEdge());
+        LinkedList<Edge> edges = net.getFirstEdge().collectEdges();
 
         lines = new int[edges.size()][5];
         Set<Integer[]> p = new HashSet<>();
 
-        corners = Utilities.getCorners(DrawFlat.collect_vertices(net));
+        corners = Utilities.getCorners(net.collectVertices());
 
         minX = corners[0];
         double maxX = corners[1];
@@ -121,7 +121,7 @@ public class Window extends JPanel {
             lines[i][4] = e.getWidth();
         }
 
-        LinkedList<Vertex> vertices = DrawFlat.collect_vertices(net);
+        LinkedList<Vertex> vertices = net.collectVertices();
         for (int i = 0; i < vertices.size(); i++) {
             Vertex v = vertices.get(i);
             if (v.getTaxa().size() > 0) {

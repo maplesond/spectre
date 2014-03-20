@@ -38,7 +38,7 @@ public class LayoutOptimizer {
         SplitSystemDraw ss = new SplitSystemDraw(ps);
 
         //Collect all vertices
-        LinkedList<Vertex> vertices = DrawFlat.collect_vertices(v);
+        LinkedList<Vertex> vertices = v.collectVertices();
 
         //Initialize array used to store indices of active splits only
         int[] activeSplits = Collector.collectIndicesOfActiveSplits(ps);

@@ -102,7 +102,7 @@ public class CompatibleCorrector {
     public Vertex addEdgesforExternalTrivialSplits(Vertex v, PermutationSequenceDraw pseq) {
         Double minW = null;
 
-        LinkedList<Edge> allEdges = DrawFlat.collect_edges(v.getElist().getFirst());
+        LinkedList<Edge> allEdges = v.getElist().getFirst().collectEdges();
         for (int i = 0; i < allEdges.size(); i++) {
             minW = ((minW == null || minW > allEdges.get(i).length()) ? allEdges.get(i).length() : minW);
         }
@@ -263,7 +263,7 @@ public class CompatibleCorrector {
     }
 
     private int getHighestNexusId(Edge e) {
-        LinkedList<Edge> edges = DrawFlat.collect_edges(e);
+        LinkedList<Edge> edges = e.collectEdges();
         int max = -1;
         for (int i = 0; i < edges.size(); i++) {
             Edge current = edges.get(i);
@@ -334,7 +334,7 @@ public class CompatibleCorrector {
     }
 
     private Vertex computeCenterPoint(Vertex net) {
-        double[] corners = Utilities.getCorners(DrawFlat.collect_vertices(net));
+        double[] corners = Utilities.getCorners(net.collectVertices());
         double x = 0.5 * (corners[0] + corners[1]);
         double y = 0.5 * (corners[2] + corners[3]);
         return new Vertex(x, y);
@@ -811,14 +811,14 @@ public class CompatibleCorrector {
                 if (!moved) {
                     bestAngle = angleCalculator.optimizedAngleForCompatible(v, w, e, bottomExternal, topExternal);
                     topEdges.add(e);
-                    moved = tryRotating(v, bottomEdges, topEdges, 0 - bestAngle, DrawFlat.collect_vertices(V));
+                    moved = tryRotating(v, bottomEdges, topEdges, 0 - bestAngle, V.collectVertices());
                     if (moved) {
                         corrected = bestAngle;
                     }
                     topEdges.remove(e);
                     bestAngle = angleCalculator.optimizedAngleForCompatible(w, v, e, topExternal, bottomExternal);
                     bottomEdges.add(e);
-                    boolean moved2 = tryRotating(w, topEdges, bottomEdges, 0 - bestAngle, DrawFlat.collect_vertices(V));
+                    boolean moved2 = tryRotating(w, topEdges, bottomEdges, 0 - bestAngle, V.collectVertices());
                     if (moved2) {
                         corrected = bestAngle;
                         moved = moved2;
@@ -827,12 +827,12 @@ public class CompatibleCorrector {
                 }
                 if (!moved) {
                     bestAngle = angleCalculator.computeMiddleAngleForTrivial(e, e.getBot(), e.getTop());
-                    moved = tryAngle(v, w, e, tmp, topEdges, bottomEdges, bestAngle, DrawFlat.collect_vertices(V));
+                    moved = tryAngle(v, w, e, tmp, topEdges, bottomEdges, bestAngle, V.collectVertices());
                     if (moved && (corrected == null || corrected < bestAngle)) {
                         corrected = bestAngle;
                     }
                     bestAngle = angleCalculator.computeMiddleAngleForTrivial(e, e.getTop(), e.getBot());
-                    boolean moved2 = tryAngle(w, v, e, tmp, bottomEdges, topEdges, bestAngle, DrawFlat.collect_vertices(V));
+                    boolean moved2 = tryAngle(w, v, e, tmp, bottomEdges, topEdges, bestAngle, V.collectVertices());
                     if (moved2 && (corrected == null || corrected < bestAngle)) {
                         corrected = bestAngle;
                         moved = moved2;

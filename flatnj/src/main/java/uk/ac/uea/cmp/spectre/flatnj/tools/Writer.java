@@ -275,8 +275,8 @@ public class Writer {
         Vertex v;
         Edge e;
 
-        List<Vertex> vertices = DrawFlat.collect_vertices(net);
-        List<Edge> edges = DrawFlat.collect_edges(net.getFirstEdge());
+        List<Vertex> vertices = net.collectVertices();
+        List<Edge> edges = net.getFirstEdge().collectEdges();
 
         writeLine();
         writeLine("BEGIN Network;");

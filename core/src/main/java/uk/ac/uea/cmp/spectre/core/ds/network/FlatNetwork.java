@@ -19,15 +19,13 @@ package uk.ac.uea.cmp.spectre.core.ds.network;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 
 /**
- * Created by dan on 18/03/14.
+ * Created by dan on 20/03/14.
  */
-public interface Network {
+public class FlatNetwork implements Network {
 
-    IdentifierList getTaxa();
 
-    //Vertices getVertices();
-
-    //Edges getEdges();
-
-    //Labels getLabels();
+    @Override
+    public IdentifierList getTaxa() {
+        return null;
+    }
 }

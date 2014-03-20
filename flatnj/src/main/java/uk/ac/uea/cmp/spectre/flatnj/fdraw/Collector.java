@@ -35,8 +35,8 @@ public class Collector {
     private static LinkedList<Edge> externalEdges = null;
 
     public static LinkedList<Edge> collectAllTrivial(Vertex v) {
-        LinkedList<Edge> edges = DrawFlat.collect_edges(v.getElist().getFirst());
-        LinkedList<Vertex> vertices = DrawFlat.collect_vertices(v);
+        LinkedList<Edge> edges = v.getElist().getFirst().collectEdges();
+        LinkedList<Vertex> vertices = v.collectVertices();
         LinkedList<Edge> trivial = new LinkedList<>();
         for (int i = 0; i < vertices.size(); i++) {
             Vertex w = vertices.get(i);
@@ -313,7 +313,7 @@ public class Collector {
         TreeSet<Edge>[] splitedges = new TreeSet[ps.nswaps];
 
         for (int i = 0; i < ps.active.length; i++) {
-            LinkedList<Edge> edges = DrawFlat.collect_edges_for_split(i, v);
+            LinkedList<Edge> edges = v.collectEdgesForSplit(i);
             splitedges[i] = new TreeSet<>();
             for (int k = 0; k < edges.size(); k++) {
                 splitedges[i].add(edges.get(k));
@@ -404,7 +404,7 @@ public class Collector {
             verticesInBalloons[i] = new LinkedList<>();
         }
 
-        LinkedList<Vertex> vertices = DrawFlat.collect_vertices(v);
+        LinkedList<Vertex> vertices = v.collectVertices();
 
         for (int i = 0; i < vertices.size(); i++) {
             Vertex w = vertices.get(i);
@@ -514,7 +514,7 @@ public class Collector {
         if (externalEdges != null) {
             return new LinkedList(externalEdges);
         }
-        List<Vertex> vertices = DrawFlat.collect_vertices(V);
+        List<Vertex> vertices = V.collectVertices();
 
         Vertex v = V;
 
@@ -596,11 +596,11 @@ public class Collector {
     }
 
     static LinkedList<Edge> collectAllCompatibleNonTrivial(Vertex V) {
-        LinkedList<Edge> edges = DrawFlat.collect_edges(V.getFirstEdge());
+        LinkedList<Edge> edges = V.getFirstEdge().collectEdges();
         LinkedList<Edge> compatible = new LinkedList<>();
         for (int i = 0; i < edges.size(); i++) {
             Edge e = edges.get(i);
-            if (e.getBot().getElist().size() > 1 && e.getTop().getElist().size() > 1 && DrawFlat.collect_edges_for_split(e.getIdxsplit(), V).size() == 1) {
+            if (e.getBot().getElist().size() > 1 && e.getTop().getElist().size() > 1 && V.collectEdgesForSplit(e.getIdxsplit()).size() == 1) {
                 compatible.add(e);
             }
         }

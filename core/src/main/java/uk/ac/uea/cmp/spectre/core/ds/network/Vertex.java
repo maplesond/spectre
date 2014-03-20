@@ -19,6 +19,7 @@ package uk.ac.uea.cmp.spectre.core.ds.network;
 
 import java.awt.*;
 import java.util.LinkedList;
+import java.util.ListIterator;
 
 public class Vertex {
     //List of the edges that are incident to this vertex.
@@ -197,5 +198,70 @@ public class Vertex {
 
     public double calcDistanceTo(Vertex v) {
         return Math.sqrt((this.x - v.x) * (this.x - v.x) + (this.y - v.y) * (this.y - v.y));
+    }
+
+    /**
+     * Returns all the vertices attached to this vertex as a LinkedList
+     * @return A linked list of all attached vertices
+     */
+    public LinkedList<Vertex> collectVertices() {
+        LinkedList vlist = new LinkedList();
+        collectVertices(vlist);
+        ListIterator iter = vlist.listIterator(0);
+        int i = 1;
+        Vertex u;
+        while (iter.hasNext()) {
+            u = (Vertex) iter.next();
+            u.setVisited(false);
+            u.setNxnum(i);
+            i++;
+        }
+        return vlist;
+    }
+
+    //Auxiliary method used to collect the vertices
+    //in the network.
+    private void collectVertices(LinkedList<Vertex> vlist) {
+        LinkedList<Vertex> tobeexplored = new LinkedList<>();
+        tobeexplored.addLast(this);
+        this.setVisited(true);
+        Vertex u;
+        Edge e;
+
+        while (tobeexplored.size() > 0) {
+            u = (Vertex) tobeexplored.removeFirst();
+            vlist.addLast(u);
+            ListIterator iter = (u.getElist()).listIterator();
+            while (iter.hasNext()) {
+                e = (Edge) iter.next();
+                if (u == e.getTop()) {
+                    if ((e.getBot()).isVisited() == false) {
+                        tobeexplored.addLast(e.getBot());
+                        (e.getBot()).setVisited(true);
+                    }
+                } else {
+                    if ((e.getTop()).isVisited() == false) {
+                        tobeexplored.addLast(e.getTop());
+                        (e.getTop()).setVisited(true);
+                    }
+                }
+            }
+        }
+    }
+
+    //This method collects the edges that represent a
+    //given split in the network.
+    public LinkedList<Edge> collectEdgesForSplit(int s) {
+        LinkedList elistall = this.elist.getFirst().collectEdges();
+        ListIterator iter = elistall.listIterator();
+        LinkedList elist = new LinkedList();
+        Edge e;
+        while (iter.hasNext()) {
+            e = (Edge) iter.next();
+            if (e.getIdxsplit() == s) {
+                elist.add(e);
+            }
+        }
+        return elist;
     }
 }

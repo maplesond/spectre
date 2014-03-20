@@ -45,7 +45,7 @@ public class Network {
     boolean trivialVisible = true;
 
     public Network(Vertex v) {
-        allVertices = DrawFlat.collect_vertices(v);
+        allVertices = v.collectVertices();
         labeledVertices = new LinkedList<>();
         for (int i = 0; i < allVertices.size(); i++) {
             Vertex w = allVertices.get(i);
@@ -54,7 +54,7 @@ public class Network {
             }
         }
 
-        allEdges = DrawFlat.collect_edges(v.getFirstEdge());
+        allEdges = v.getFirstEdge().collectEdges();
         externalEdges = Collector.externalEdges(v);
         trivialEdges = new LinkedList<>();
         internalEdges = new LinkedList<>();
@@ -71,7 +71,7 @@ public class Network {
         }
         for (int i = 0; i < externalEdges.size(); i++) {
             Edge e = externalEdges.get(i);
-            List<Edge> split = DrawFlat.collect_edges_for_split(e.getIdxsplit(), v);
+            List<Edge> split = v.collectEdgesForSplit(e.getIdxsplit());
             if (split.size() == 1 && e.getBot().getElist().size() > 1 && e.getTop().getElist().size() > 1) {
                 e.setCompatible(true);
             }
