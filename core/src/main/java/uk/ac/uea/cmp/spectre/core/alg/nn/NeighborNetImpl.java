@@ -1,4 +1,4 @@
-package uk.ac.uea.cmp.spectre.core.alg;
+package uk.ac.uea.cmp.spectre.core.alg.nn;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;

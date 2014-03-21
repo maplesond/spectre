@@ -1,4 +1,4 @@
-package uk.ac.uea.cmp.spectre.core.alg;
+package uk.ac.uea.cmp.spectre.core.alg.nn;
 
 import uk.ac.uea.cmp.spectre.core.ds.Identifier;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
@@ -6,11 +6,11 @@ import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import java.util.HashMap;
 
 /**
- * Created by dan on 02/03/14.
+ * Created by dan on 12/03/14.
  */
-class Network extends HashMap<Identifier, IdentifierList> {
+public class Component2VertexSetMap extends HashMap<Identifier, IdentifierList> {
 
-    public Network(IdentifierList taxa) {
+    public Component2VertexSetMap(IdentifierList taxa) {
 
         for (Identifier t : taxa) {
             IdentifierList newTaxa = new IdentifierList();
@@ -24,7 +24,9 @@ class Network extends HashMap<Identifier, IdentifierList> {
         int maxId = 0;
 
         for (Identifier t : this.keySet()) {
-            maxId = maxId < t.getId() ? t.getId() : maxId;
+            if (maxId < t.getId()) {
+                maxId = t.getId();
+            }
         }
 
         return new Identifier(maxId + 1);

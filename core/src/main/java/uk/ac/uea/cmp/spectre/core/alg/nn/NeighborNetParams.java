@@ -1,4 +1,4 @@
-package uk.ac.uea.cmp.spectre.core.alg;
+package uk.ac.uea.cmp.spectre.core.alg.nn;
 
 /**
  * Created by dan on 09/03/14.

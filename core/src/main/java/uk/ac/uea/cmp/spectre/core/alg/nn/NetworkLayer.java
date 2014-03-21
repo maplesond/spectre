@@ -1,4 +1,4 @@
-package uk.ac.uea.cmp.spectre.core.alg;
+package uk.ac.uea.cmp.spectre.core.alg.nn;
 
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 
