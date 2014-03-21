@@ -16,7 +16,7 @@
 
 package uk.ac.uea.cmp.spectre.flatnj.netvi;
 
-import uk.ac.uea.cmp.spectre.core.ds.network.*;
+import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
 
 import java.awt.*;
 import java.util.Collection;

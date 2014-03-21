@@ -18,8 +18,8 @@ package uk.ac.uea.cmp.spectre.core.ds.network;
 
 
 import java.awt.*;
-import java.util.*;
-import java.util.List;
+import java.util.LinkedList;
+import java.util.ListIterator;
 
 public class Vertex {
 
@@ -261,15 +261,15 @@ public class Vertex {
 
     /**
      * This method collects the edges that represent a given split in the network.
-     * @param s
-     * @return
+     * @param splitIndex The split index to find
+     * @return A list of edges attached to this vertex that have the associated split index
      */
-    public EdgeList collectEdgesForSplit(int s) {
+    public EdgeList collectEdgesForSplit(int splitIndex) {
 
         EdgeList elist = new EdgeList();
 
         for (Edge e : this.elist.getFirst().collectEdges()) {
-            if (e.getIdxsplit() == s) {
+            if (e.getIdxsplit() == splitIndex) {
                 elist.add(e);
             }
         }
@@ -407,7 +407,7 @@ public class Vertex {
      * @param v1
      * @param a
      * @param v2
-     * @return
+     * @return The angle between the vertices
      */
     public static double getClockwiseAngle(Vertex v1, Vertex a, Vertex v2) {
 

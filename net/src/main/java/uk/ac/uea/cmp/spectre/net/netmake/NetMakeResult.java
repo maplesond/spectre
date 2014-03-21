@@ -16,7 +16,7 @@
 
 package uk.ac.uea.cmp.spectre.net.netmake;
 
-import uk.ac.uea.cmp.spectre.core.ds.split.CompatibleSplitSystem;
+import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.spectre.core.io.PhygenWriter;
 import uk.ac.uea.cmp.spectre.core.io.PhygenWriterFactory;
 
@@ -29,19 +29,19 @@ import java.io.IOException;
  */
 public class NetMakeResult {
 
-    private CompatibleSplitSystem tree;
-    private CircularSplitSystem network;
+    private SplitSystem tree;
+    private SplitSystem network;
 
-    public NetMakeResult(CompatibleSplitSystem tree, CircularSplitSystem network) {
+    public NetMakeResult(SplitSystem tree, SplitSystem network) {
         this.tree = tree;
         this.network = network;
     }
 
-    public CompatibleSplitSystem getTree() {
+    public SplitSystem getTree() {
         return tree;
     }
 
-    public CircularSplitSystem getNetwork() {
+    public SplitSystem getNetwork() {
         return network;
     }
 

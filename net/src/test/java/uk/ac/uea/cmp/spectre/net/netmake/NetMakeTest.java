@@ -24,7 +24,7 @@ import org.junit.Test;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.distance.FlexibleDistanceMatrix;
-import uk.ac.uea.cmp.spectre.core.ds.split.CompatibleSplitSystem;
+import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.spectre.net.netmake.weighting.GreedyMEWeighting;
 import uk.ac.uea.cmp.spectre.net.netmake.weighting.TSPWeighting;
 
@@ -63,7 +63,7 @@ public class NetMakeTest {
 
         NetMakeResult result = new NetMake().execute(distanceMatrix, new GreedyMEWeighting(distanceMatrix), new TSPWeighting(distanceMatrix.size()));
 
-        CompatibleSplitSystem tree = result.getTree();
+        SplitSystem tree = result.getTree();
 
        /* assertTrue(tree.getNbSplits() == 11);
 

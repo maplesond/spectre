@@ -15,7 +15,6 @@
  */
 package uk.ac.uea.cmp.spectre.qtools.superq;
 
-import uk.ac.uea.cmp.spectre.core.ui.gui.StatusTracker;
 import uk.ac.uea.cmp.spectre.core.ui.gui.StatusTrackerWithView;
 import uk.ac.uea.cmp.spectre.core.ui.gui.ToolHost;
 import uk.ac.uea.cmp.spectre.core.ui.gui.ToolRunner;

@@ -6,7 +6,6 @@ import uk.ac.uea.cmp.spectre.core.ds.Identifier;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.distance.FlexibleDistanceMatrix;
-import uk.ac.uea.cmp.spectre.core.ds.split.CompatibleSplitSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.SpectreSplitSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 
@@ -38,7 +37,7 @@ public class NeighborNetImpl implements NeighborNet {
 
 
     @Override
-    public CompatibleSplitSystem execute(DistanceMatrix distanceMatrix, NeighborNetParams params) {
+    public SplitSystem execute(DistanceMatrix distanceMatrix, NeighborNetParams params) {
 
         // We store intermediary triplets of nodes on a stack
         this.stackedVertexTriplets = new Stack<>();
@@ -81,7 +80,7 @@ public class NeighborNetImpl implements NeighborNet {
         // Expand back to taxa to get circular ordering
         IdentifierList circularOrdering = expand();
 
-        return new CompatibleSplitSystem(null, distanceMatrix, circularOrdering);
+        return new SpectreSplitSystem(distanceMatrix, circularOrdering, SpectreSplitSystem.LeastSquaresCalculator.TREE_IN_CYCLE);
     }
 
     protected IdentifierList expand() {

@@ -17,10 +17,10 @@
 package uk.ac.uea.cmp.spectre.flatnj.tools;
 
 import uk.ac.uea.cmp.spectre.core.ds.Alignment;
-import uk.ac.uea.cmp.spectre.flatnj.ds.PermutationSequence;
-import uk.ac.uea.cmp.spectre.flatnj.ds.SplitSystem;
 import uk.ac.uea.cmp.spectre.core.ds.network.Label;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
+import uk.ac.uea.cmp.spectre.flatnj.ds.PermutationSequence;
+import uk.ac.uea.cmp.spectre.flatnj.ds.SplitSystem;
 
 import java.awt.*;
 import java.io.File;

@@ -25,11 +25,11 @@ import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
 import uk.ac.uea.cmp.spectre.core.ui.gui.LookAndFeel;
 import uk.ac.uea.cmp.spectre.flatnj.ds.Leaders;
 import uk.ac.uea.cmp.spectre.flatnj.ds.Network;
 import uk.ac.uea.cmp.spectre.flatnj.ds.Taxa;
-import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
 import uk.ac.uea.cmp.spectre.flatnj.fdraw.ViewerConfig;
 import uk.ac.uea.cmp.spectre.flatnj.tools.*;
 

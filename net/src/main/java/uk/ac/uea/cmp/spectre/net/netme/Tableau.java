@@ -17,9 +17,10 @@ package uk.ac.uea.cmp.spectre.net.netme;
 
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
-import uk.ac.uea.cmp.spectre.core.ds.split.CompatibleSplitSystem;
+import uk.ac.uea.cmp.spectre.core.ds.split.SpectreSplitSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.Split;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitBlock;
+import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,12 +64,12 @@ public class Tableau<E> {
         //this.components.addAll(copy.components);
     }
 
-    public CircularSplitSystem convertToSplitSystem(DistanceMatrix distanceMatrix) {
+    public SplitSystem convertToSplitSystem(DistanceMatrix distanceMatrix) {
 
         return convertToSplitSystem(distanceMatrix, distanceMatrix.getTaxa().sortById());
     }
 
-    public CompatibleSplitSystem convertToSplitSystem(DistanceMatrix distanceMatrix, IdentifierList circularOrdering) {
+    public SplitSystem convertToSplitSystem(DistanceMatrix distanceMatrix, IdentifierList circularOrdering) {
 
         List<Split> splits = new ArrayList<>();
 
@@ -91,7 +92,7 @@ public class Tableau<E> {
             splits.add(new Split(new SplitBlock(copyRow), distanceMatrix.size()));
         }
 
-        return new CompatibleSplitSystem(splits, distanceMatrix, circularOrdering);
+        return new SpectreSplitSystem(distanceMatrix, circularOrdering, SpectreSplitSystem.LeastSquaresCalculator.TREE_IN_CYCLE, splits);
     }
 
     /**

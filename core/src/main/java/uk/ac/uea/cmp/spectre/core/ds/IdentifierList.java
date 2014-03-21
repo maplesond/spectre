@@ -381,7 +381,7 @@ public class IdentifierList extends ArrayList<Identifier> {
     /**
      * Finds the maximum id already in the list and returns the next number
      *
-     * @return
+     * @return The next available id, which might be used to add another unique taxon into this list
      */
     public int getNextId() {
         return this.maxId + 1;
@@ -390,7 +390,7 @@ public class IdentifierList extends ArrayList<Identifier> {
     /**
      * Finds the maximum id already in the list
      *
-     * @return
+     * @return The largest taxon id stored in this list
      */
     public int getMaxId() {
         return this.maxId;

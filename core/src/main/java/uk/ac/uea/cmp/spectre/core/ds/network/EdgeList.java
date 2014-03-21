@@ -18,7 +18,6 @@ package uk.ac.uea.cmp.spectre.core.ds.network;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Created by dan on 20/03/14.

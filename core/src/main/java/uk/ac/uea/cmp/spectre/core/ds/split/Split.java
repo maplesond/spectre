@@ -226,5 +226,8 @@ public class Split implements Comparable<Split> {
         return this.aSide.size() == 1 || this.bSide.size() == 1;
     }
 
-
+    @Override
+    public String toString() {
+        return "{" + this.aSide.toString() + " | " + this.bSide.toString() + "} : " + this.weight;
+    }
 }

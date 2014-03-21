@@ -102,8 +102,8 @@ public class Identifier implements Comparable<Identifier> {
     /**
      * Natural ordering is first by id, then name
      *
-     * @param o
-     * @return
+     * @param o The identifier to compare to
+     * @return Indication of whether this identifier is less than, equal to or greater than the given identifier
      */
     @Override
     public int compareTo(Identifier o) {

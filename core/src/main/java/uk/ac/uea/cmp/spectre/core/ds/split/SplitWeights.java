@@ -67,7 +67,13 @@ public class SplitWeights {
         return this.weights.length;
     }
 
+    /**
+     * Returns true if the weight is positive and greater than 0.0
+     * @param i
+     * @param j
+     * @return Whether the weight at the specified position is positive
+     */
     public boolean hasWeightAt(final int i, final int j) {
-        return this.weights[i][j] != 0.0;
+        return this.weights[i][j] > 0.0;
     }
 }

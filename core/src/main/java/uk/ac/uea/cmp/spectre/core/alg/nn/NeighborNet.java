@@ -1,7 +1,7 @@
 package uk.ac.uea.cmp.spectre.core.alg.nn;
 
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
-import uk.ac.uea.cmp.spectre.core.ds.split.CompatibleSplitSystem;
+import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 
 /**
  * Created by dan on 27/02/14.
@@ -17,5 +17,5 @@ public interface NeighborNet {
      * @param params         Alpha, Beta and Gamma parameters
      * @return The result of neighbornet, a compatible split system
      */
-    CompatibleSplitSystem execute(DistanceMatrix distanceMatrix, NeighborNetParams params);
+    SplitSystem execute(DistanceMatrix distanceMatrix, NeighborNetParams params);
 }

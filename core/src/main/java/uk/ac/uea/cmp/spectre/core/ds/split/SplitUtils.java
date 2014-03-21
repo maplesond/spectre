@@ -76,9 +76,9 @@ public class SplitUtils {
      * @param N The number of taxa
      * @return An array of split indices
      */
-    public static Pair<Integer, Integer>[] createSplitIndices(final int N) {
+    public static List<Pair<Integer, Integer>> createSplitIndices(final int N) {
 
-        Pair<Integer, Integer>[] splitIndices = new ImmutablePair[calcMaxSplits(N)];
+        List<Pair<Integer, Integer>> splitIndices = new ArrayList<>(calcMaxSplits(N));
 
         int n = 0;
 
@@ -88,7 +88,7 @@ public class SplitUtils {
 
                 if (i != 1 || j != N) {
                     // valid split
-                    splitIndices[n++] = new ImmutablePair<>(i, j);
+                    splitIndices.add(n++, new ImmutablePair<>(i, j));
                 }
             }
         }

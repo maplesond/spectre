@@ -18,7 +18,6 @@ package uk.ac.uea.cmp.spectre.flatnj.ds;
 
 import uk.ac.uea.cmp.spectre.core.ds.network.*;
 import uk.ac.uea.cmp.spectre.core.ds.network.Label;
-import uk.ac.uea.cmp.spectre.flatnj.fdraw.Collector;
 import uk.ac.uea.cmp.spectre.flatnj.fdraw.DrawFlat;
 
 import java.util.*;

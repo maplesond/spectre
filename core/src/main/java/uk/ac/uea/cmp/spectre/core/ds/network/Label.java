@@ -16,8 +16,6 @@
 
 package uk.ac.uea.cmp.spectre.core.ds.network;
 
-import sun.swing.SwingUtilities2;
-
 import java.awt.*;
 
 
@@ -170,7 +168,7 @@ public class Label {
 
     private void initFont() {
         font = new Font(fontFamily, getFontStyle(), fontSize);
-        fontMetrics = SwingUtilities2.getFontMetrics(null, font);
+        fontMetrics = new Canvas().getFontMetrics(font);
         if (name != null) {
             width = fontMetrics.stringWidth(name);
             height = fontMetrics.getHeight();

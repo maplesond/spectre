@@ -37,25 +37,25 @@ public class SpectreSplitSystem implements SplitSystem {
 
     /**
      * Creates a split system using the specified ordered taxa, and creates a set of trivial splits to start with.
-     * @param taxa The taxa contained in this split system
+     * @param orderedTaxa The ordered taxa contained in this split system
      */
-    public SpectreSplitSystem(IdentifierList taxa) {
-        this(taxa.sortById(), SplitUtils.createTrivialSplits(taxa, 1.0));
+    public SpectreSplitSystem(IdentifierList orderedTaxa) {
+        this(orderedTaxa, SplitUtils.createTrivialSplits(orderedTaxa, 1.0));
     }
 
     /**
-     * Creates a split system using the specified taxa and splits.
-     * @param taxa The taxa contained in this split system
-     * @param splits The splits making up the split system
+     * Creates a split system using the specified ordered taxa and pre-made splits.
+     * @param orderedTaxa The ordered taxa contained in this split system
+     * @param splits The pre-made splits making up the split system
      */
-    public SpectreSplitSystem(IdentifierList taxa, List<Split> splits) {
-        this.orderedTaxa = taxa.sortById();
+    public SpectreSplitSystem(IdentifierList orderedTaxa, List<Split> splits) {
+        this.orderedTaxa = orderedTaxa;
         this.splits = splits;
     }
 
     /**
      * Creates a SplitSystem from the given distance matrix.  Assumes the taxa ordering should be based on numerically
-     * ascending ID value.
+     * ascending ID value.  Uses circular least squares for calculating the split weights
      *
      * @param distanceMatrix The distance matrix to base this split system on
      */
@@ -63,43 +63,80 @@ public class SpectreSplitSystem implements SplitSystem {
         this(distanceMatrix, distanceMatrix.getTaxa().sortById());
     }
 
+    /**
+     * Creates a SplitSystem from the given distance matrix using the specified taxa ordering.  Uses circular least
+     * squares for calculating the split weights
+     *
+     * @param distanceMatrix    The distance matrix to base this split system on
+     * @param orderedTaxa       The ordering of the taxa in this split system
+     */
+    public SpectreSplitSystem(DistanceMatrix distanceMatrix, IdentifierList orderedTaxa) {
+        this(distanceMatrix, orderedTaxa, LeastSquaresCalculator.CIRCULAR);
+    }
+
+    /**
+     * Creates a SplitSystem from the given distance matrix using the specified split weights calculator.
+     * Assumes the taxa ordering should be based on numerically ascending ID value.
+     *
+     * @param distanceMatrix The distance matrix to base this split system on
+     * @param calculator The calculator to use for calculating the split weights
+     */
+    public SpectreSplitSystem(DistanceMatrix distanceMatrix, LeastSquaresCalculator calculator) {
+        this(distanceMatrix, distanceMatrix.getTaxa().sortById(), calculator);
+    }
+
 
     /**
      * Creates a CircularSplitSystem from the given distance matrix and specified circular ordering
      *
-     * @param distanceMatrix   The distance matrix to base this split system on
-     * @param circularOrdering The ordering of the taxa in this split system
+     * @param distanceMatrix    The distance matrix to base this split system on
+     * @param circularOrdering  The ordering of the taxa in this split system
+     * @param calculator        The calculator to use for calculating the split weights
      */
-    public SpectreSplitSystem(DistanceMatrix distanceMatrix, IdentifierList circularOrdering) {
+    public SpectreSplitSystem(DistanceMatrix distanceMatrix, IdentifierList circularOrdering, LeastSquaresCalculator calculator) {
 
-        this(circularOrdering, new ArrayList<Split>());
+        this(distanceMatrix, circularOrdering, calculator, new ArrayList<Split>());
+    }
 
-        int n = circularOrdering.size();
+    /**
+     *
+     * @param distanceMatrix    The distance matrix to base this split system on
+     * @param circularOrdering  The ordering of the taxa in this split system
+     * @param calculator        The calculator to use for calculating the split weights
+     * @param splits            The pre-made splits making up the split system
+     */
+    public SpectreSplitSystem(DistanceMatrix distanceMatrix, IdentifierList circularOrdering, LeastSquaresCalculator calculator, List<Split> splits) {
 
-        if (n != distanceMatrix.size()) {
+        this(circularOrdering, splits);
+
+        if (circularOrdering.size() != distanceMatrix.size()) {
             throw new IllegalArgumentException("Distance matrix and circular ordering are not the same size");
         }
 
-        SplitWeights splitWeights = this.calculateSplitWeighting(distanceMatrix, circularOrdering);
-
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                if (splitWeights.hasWeightAt(j, i)) {
-
-                    ArrayList<Integer> sb = new ArrayList<>();
-                    for (int k = i + 1; k < j + 1; k++) {
-                        sb.add(circularOrdering.get(k).getId());
-                    }
-
-                    this.addSplit(new Split(new SplitBlock(sb), n, splitWeights.getAt(j, i)));
-                }
-            }
-        }
+        this.reweight(calculator.calculate(distanceMatrix, circularOrdering, splits));
     }
 
+    /**
+     * Copy constructor
+     * @param splitSystem
+     */
     public SpectreSplitSystem(SplitSystem splitSystem) {
         this(new IdentifierList(splitSystem.getOrderedTaxa()), new ArrayList<>(splitSystem.getSplits()));
     }
+
+
+
+
+
+    public SpectreSplitSystem(SplitSystem unweightedSplitSystem, TreeSplitWeights treeWeights) {
+
+        // Create a copy of the split system
+        this(unweightedSplitSystem);
+
+        // Reweight the split system using the provided tree weights
+        this.reweight(treeWeights);
+    }
+
 
     @Override
     public List<Split> getSplits() {
@@ -201,29 +238,6 @@ public class SpectreSplitSystem implements SplitSystem {
     }
 
 
-    /*public void convertToIndicies() {
-        for (int i = 0; i < splits.size(); i++) {
-            String split = splits.get(i);
-
-            StringBuilder sb = new StringBuilder();
-
-            String[] taxon = split.split(" ");
-
-            for (String taxa : taxon) {
-                int idx = names.indexOf(taxa);
-
-                if (idx == -1) {
-                    throw new IllegalStateException("This shouldn't have happened!");
-                }
-
-                sb.append(Integer.toString(idx + 1)).append(" ");
-            }
-
-            splits.set(i, sb.toString().trim());
-        }
-    }*/
-
-
     @Override
     public SplitSystem filterByWeight(double threshold) {
 
@@ -294,36 +308,91 @@ public class SpectreSplitSystem implements SplitSystem {
 
     @Override
     public boolean isCircular() {
+
+        //TODO Need to implement a proper check here
+
         return false;
     }
 
 
     @Override
     public boolean isCompatible() {
-        return false;
-    }
 
+        //TODO: Need to implement this properly
+
+        // Variables for counting the number of occurrences of patterns
+        int count11 = 0;
+        int count10 = 0;
+        int count01 = 0;
+        int count00 = 0;
+
+        /*for (int i = 0; i < this.getNbTaxa(); i++) {
+            if ((splits[a][i] == true) && (splits[b][i] == true)) {
+                count11++;
+            }
+            if ((splits[a][i] == true) && (splits[b][i] == false)) {
+                count10++;
+            }
+            if ((splits[a][i] == false) && (splits[b][i] == true)) {
+                count01++;
+            }
+            if ((splits[a][i] == false) && (splits[b][i] == false)) {
+                count00++;
+            }
+        }*/
+
+        return count11 == 0 || count10 == 0 || count01 == 0 || count00 == 0;
+    }
 
 
     /**
-     * Calculates the weights of this full circular split system.  The length determines
-     * which splits will be returned.  This works by reordering the distance matrix by the circular ordering and then
-     * running the circular least squares algorithm on that matrix.
+     * Deletes all splits and recalculates them.  All splits must have a positive length
      *
-     * @return Split weights matrix
+     * @param treeWeights
      */
-    protected SplitWeights calculateSplitWeighting(DistanceMatrix distanceMatrix, IdentifierList circularOrdering) {
-        int n = distanceMatrix.size();
+    protected void reweight(SplitWeights treeWeights) {
 
-        // Reorder the distance matrix
-        double[][] permutedDistances = new double[n][n];
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                permutedDistances[i][j] = distanceMatrix.getDistance(circularOrdering.get(i), circularOrdering.get(j));
-            }
+        int n = this.getNbTaxa();
+
+        // Clear out any splits
+        if (this.splits == null) {
+            this.splits = new ArrayList<>();
+        }
+        else {
+            this.splits.clear();
         }
 
-        return new CircularNNLS().circularLeastSquares(permutedDistances, n);
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                if (treeWeights.getAt(j, i) > 0.0) {
+
+                    ArrayList<Integer> sb = new ArrayList<>();
+                    for (int k = i + 1; k < j + 1; k++) {
+                        sb.add(this.getOrderedTaxa().get(k).getId());
+                    }
+
+                    this.addSplit(new Split(new SplitBlock(sb), n, treeWeights.getAt(j, i)));
+                }
+            }
+        }
     }
 
+
+    public static enum LeastSquaresCalculator {
+
+        CIRCULAR {
+            @Override
+            public SplitWeights calculate(DistanceMatrix distanceMatrix, IdentifierList circularOrdering, List<Split> splits) {
+                return  new CircularNNLS().circularLeastSquares(distanceMatrix, circularOrdering);
+            }
+        },
+        TREE_IN_CYCLE {
+            @Override
+            public SplitWeights calculate(DistanceMatrix distanceMatrix, IdentifierList circularOrdering, List<Split> splits) {
+                return new CircularNNLS().treeInCycleLeastSquares(distanceMatrix, circularOrdering, splits);
+            }
+        };
+
+        public abstract SplitWeights calculate(DistanceMatrix distanceMatrix, IdentifierList circularOrdering, List<Split> splits);
+    }
 }

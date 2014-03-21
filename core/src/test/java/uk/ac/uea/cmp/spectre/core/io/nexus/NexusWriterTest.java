@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import uk.ac.uea.cmp.spectre.core.ds.distance.FlexibleDistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.split.SpectreSplitSystem;
+import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,7 +50,7 @@ public class NexusWriterTest {
 
         final int size = 5;
 
-        SpectreSplitSystem ss = new SpectreSplitSystem(new FlexibleDistanceMatrix(size));
+        SplitSystem ss = new SpectreSplitSystem(new FlexibleDistanceMatrix(size));
 
         new NexusWriter().writeSplitSystem(outputFile, ss);
 
@@ -59,7 +60,7 @@ public class NexusWriterTest {
         List<String> lines = FileUtils.readLines(outputFile);
 
         // Check we have the number of lines we were expecting
-        assertTrue(lines.size() == 21);
+        assertTrue(lines.size() == 20);
     }
 
     @Test
@@ -70,7 +71,7 @@ public class NexusWriterTest {
 
         final int size = 5;
 
-        SpectreSplitSystem ss = new SpectreSplitSystem(new FlexibleDistanceMatrix(size));
+        SplitSystem ss = new SpectreSplitSystem(new FlexibleDistanceMatrix(size));
 
 
         /*new NexusWriter().writeTree(outputFile, ss, ss.calculateTreeWeighting(distanceMatrix));

@@ -17,7 +17,7 @@
 package uk.ac.uea.cmp.spectre.net.netme;
 
 import org.apache.commons.io.FileUtils;
-import uk.ac.uea.cmp.spectre.core.ds.split.CompatibleSplitSystem;
+import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.spectre.core.io.nexus.NexusWriter;
 
 import java.io.File;
@@ -32,21 +32,21 @@ import java.io.IOException;
  */
 public class NetMEResult {
 
-    private CompatibleSplitSystem originalMETree;
-    private CompatibleSplitSystem meTree;
+    private SplitSystem originalMETree;
+    private SplitSystem meTree;
     private String stats;
 
-    public NetMEResult(CompatibleSplitSystem originalMETree, CompatibleSplitSystem meTree, String stats) {
+    public NetMEResult(SplitSystem originalMETree, SplitSystem meTree, String stats) {
         this.originalMETree = originalMETree;
         this.meTree = meTree;
         this.stats = stats;
     }
 
-    public CompatibleSplitSystem getMeTree() {
+    public SplitSystem getMeTree() {
         return meTree;
     }
 
-    public CompatibleSplitSystem getOriginalMETree() {
+    public SplitSystem getOriginalMETree() {
         return originalMETree;
     }
 

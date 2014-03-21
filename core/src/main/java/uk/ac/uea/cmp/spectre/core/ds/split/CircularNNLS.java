@@ -15,10 +15,11 @@
  */
 package uk.ac.uea.cmp.spectre.core.ds.split;
 
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import uk.ac.uea.cmp.spectre.core.ds.Identifier;
+import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
+import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
+
+import java.util.*;
 
 /**
  * Given a circular ordering and a distance matrix, computes the unconstrained or constrained least square weighted
@@ -745,12 +746,14 @@ public class CircularNNLS {
     /**
      * This method computes the least squares weights for the splits
      *
-     * @param dist distance matrix, the entries are permuted such that the ordering 0,1,2,...,(ntax-1) is the circular
-     *             ordering for the full circular split system we want to compute weights for.
-     * @param ntax number of taxa, taxa are numbered 0,1,2,...,(ntax-1)
+     * @param distanceMatrix distance matrix (ordering not important)
+     * @param circularOrdering The ordering of elements in the distance matrix
      * @return The split weights calculated by this method
      */
-    public SplitWeights circularLeastSquares(double[][] dist, int ntax) {
+    public SplitWeights circularLeastSquares(DistanceMatrix distanceMatrix, IdentifierList circularOrdering) {
+
+        final int ntax = distanceMatrix.size();
+        double[][] dist = createPermutedDistancesMatrix(distanceMatrix, circularOrdering);
         double[][] W = new double[ntax][ntax];
         double[][] splitWeights = new double[ntax][ntax];
 
@@ -760,7 +763,11 @@ public class CircularNNLS {
         return new SplitWeights(splitWeights);
     }
 
-    public TreeSplitWeights treeInCycleLeastSquares(double[][] dist, boolean[][] flag, int ntax) {
+    public SplitWeights treeInCycleLeastSquares(DistanceMatrix distanceMatrix, IdentifierList circularOrdering, List<Split> splits) {
+        final int ntax = distanceMatrix.size();
+        double[][] dist = createPermutedDistancesMatrix(distanceMatrix, circularOrdering);
+        boolean[][] flag = createFlags(circularOrdering, splits);
+
         double[][] W = new double[ntax][ntax];
         double[][] treeSplitWeights = new double[ntax][ntax];
 
@@ -769,6 +776,50 @@ public class CircularNNLS {
 
         return new TreeSplitWeights(treeSplitWeights);
     }
+
+    private double[][] createPermutedDistancesMatrix(DistanceMatrix distanceMatrix, IdentifierList circularOrdering) {
+
+        int n = distanceMatrix.size();
+
+        // Reorder the distance matrix
+        double[][] permutedDistances = new double[n][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                permutedDistances[i][j] = distanceMatrix.getDistance(circularOrdering.get(i), circularOrdering.get(j));
+            }
+        }
+
+        return permutedDistances;
+    }
+
+    private boolean[][] createFlags(IdentifierList circularOrdering, List<Split> splits) {
+
+        final int n = circularOrdering.size();
+        boolean[][] flag = new boolean[n][n];
+
+        Map<Identifier, Integer> translation = circularOrdering.createLookup();
+
+        for (int i = 0; i < splits.size(); i++) {
+
+            SplitBlock sb = splits.get(i).getASide();
+
+            int k = translation.get(circularOrdering.getById(sb.getFirst()));
+            int l = translation.get(circularOrdering.getById(sb.getLast()));
+
+            if (k == 0) {
+                flag[n - 1][l] = true;
+            } else {
+                if ((l < n - 1) && (k > l)) {
+                    flag[k - 1][l] = true;
+                } else {
+                    flag[l][k - 1] = true;
+                }
+            }
+        }
+
+        return flag;
+    }
+
 
     class DoubleIntInt implements Comparator<DoubleIntInt> {
         double d;

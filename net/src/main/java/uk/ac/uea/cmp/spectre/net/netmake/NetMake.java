@@ -27,7 +27,10 @@ import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.distance.FlexibleDistanceMatrix;
-import uk.ac.uea.cmp.spectre.core.ds.split.*;
+import uk.ac.uea.cmp.spectre.core.ds.split.SpectreSplitSystem;
+import uk.ac.uea.cmp.spectre.core.ds.split.SplitBlock;
+import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
+import uk.ac.uea.cmp.spectre.core.ds.split.SplitUtils;
 import uk.ac.uea.cmp.spectre.core.io.PhygenReader;
 import uk.ac.uea.cmp.spectre.core.io.PhygenReaderFactory;
 import uk.ac.uea.cmp.spectre.core.ui.gui.RunnableTool;
@@ -166,9 +169,9 @@ public class NetMake extends RunnableTool {
         IdentifierList permutation = this.createCircularOrdering(components);
         organiseSplits(treeSplits, permutation);
 
-        // Set tree split system
-        CompatibleSplitSystem tree = new CompatibleSplitSystem(treeSplits.getSplits(), distanceMatrix, permutation);
-        CircularSplitSystem network = new CircularSplitSystem(distanceMatrix, permutation);
+        // Create tree and network split systems
+        SplitSystem tree = new SpectreSplitSystem(distanceMatrix, permutation, SpectreSplitSystem.LeastSquaresCalculator.TREE_IN_CYCLE, treeSplits.getSplits());
+        SplitSystem network = new SpectreSplitSystem(distanceMatrix, permutation, SpectreSplitSystem.LeastSquaresCalculator.CIRCULAR);
 
         return new NetMakeResult(tree, network);
     }

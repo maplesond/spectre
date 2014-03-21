@@ -16,10 +16,10 @@
 
 package uk.ac.uea.cmp.spectre.flatnj.tools;
 
-import uk.ac.uea.cmp.spectre.flatnj.ds.Network;
 import uk.ac.uea.cmp.spectre.core.ds.network.Edge;
 import uk.ac.uea.cmp.spectre.core.ds.network.Label;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
+import uk.ac.uea.cmp.spectre.flatnj.ds.Network;
 
 import java.awt.*;
 import java.util.Scanner;

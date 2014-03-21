@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import uk.ac.tgac.metaopt.Objective;
 import uk.ac.tgac.metaopt.Optimiser;
 import uk.ac.tgac.metaopt.OptimiserFactory;
+import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.spectre.core.io.nexus.NexusWriter;
 import uk.ac.uea.cmp.spectre.core.ui.cli.CommandLineHelper;
 
@@ -96,7 +97,7 @@ public class QNetCLI {
             QNetResult result = new QNet().execute(input, log, tolerance, optimiser);
 
             // Create a split system in standard mode
-            CircularSplitSystem ss = result.createSplitSystem(null, QNetResult.SplitLimiter.STANDARD);
+            SplitSystem ss = result.createSplitSystem(null, QNetResult.SplitLimiter.STANDARD);
 
             // Write the split system out in nexus format
             new NexusWriter().writeSplitSystem(output, ss);

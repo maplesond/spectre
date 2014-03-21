@@ -19,7 +19,6 @@ package uk.ac.uea.cmp.spectre.core.ds.network;
 import java.awt.*;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.ListIterator;
 
 
 public class Edge implements Comparable<Edge> {

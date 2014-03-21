@@ -40,7 +40,7 @@ public class NeighborNetOld {
      */
     public SplitSystem createCircularSplitSystem(final DistanceMatrix distanceMatrix) {
 
-        return new SpectreSplitSystem(distanceMatrix, this.computeCircularOrdering(distanceMatrix));
+        return new SpectreSplitSystem(distanceMatrix, this.computeCircularOrdering(distanceMatrix), SpectreSplitSystem.LeastSquaresCalculator.TREE_IN_CYCLE);
     }
 
     /**

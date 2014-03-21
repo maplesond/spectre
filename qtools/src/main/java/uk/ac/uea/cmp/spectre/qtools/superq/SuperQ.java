@@ -24,6 +24,7 @@ import uk.ac.tgac.metaopt.Optimiser;
 import uk.ac.tgac.metaopt.OptimiserException;
 import uk.ac.tgac.metaopt.Problem;
 import uk.ac.uea.cmp.spectre.core.ds.quartet.GroupedQuartetSystem;
+import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.spectre.core.io.nexus.Nexus;
 import uk.ac.uea.cmp.spectre.core.io.nexus.NexusReader;
 import uk.ac.uea.cmp.spectre.core.io.nexus.NexusWriter;
@@ -140,7 +141,7 @@ public class SuperQ extends RunnableTool {
                 }
             }
 
-            CircularSplitSystem ss = qnetResult.createSplitSystem(null, QNetResult.SplitLimiter.STANDARD);
+            SplitSystem ss = qnetResult.createSplitSystem(null, QNetResult.SplitLimiter.STANDARD);
 
             rt.gc();
             log.debug("FREE MEM - after computing weights: " + rt.freeMemory());

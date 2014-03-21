@@ -51,7 +51,7 @@ public class NetMakeGUI extends JFrame implements ToolHost {
 
     private JPanel pnlWeightings;
     private JLabel lblWeighting1;
-    private JComboBox<String> cboWeighting1;
+    private JComboBox<Weightings> cboWeighting1;
     private JLabel lblWeighting2;
     private JComboBox<String> cboWeighting2;
     private JLabel lblWeight;
@@ -149,13 +149,13 @@ public class NetMakeGUI extends JFrame implements ToolHost {
         txtWeight = new JTextField();
         lblWeight = new JLabel();
 
-        cboWeighting1.setModel(new DefaultComboBoxModel(Weightings.values()));
+        cboWeighting1.setModel(new DefaultComboBoxModel<>(Weightings.values()));
         cboWeighting1.setToolTipText(NetMakeOptions.DESC_WEIGHTINGS_1);
 
         lblWeighting1.setText("Select weight type 1:");
         lblWeighting1.setToolTipText(NetMakeOptions.DESC_WEIGHTINGS_1);
 
-        cboWeighting2.setModel(new DefaultComboBoxModel(Weightings.stringValuesWithNone()));
+        cboWeighting2.setModel(new DefaultComboBoxModel<>(Weightings.stringValuesWithNone()));
         cboWeighting2.setToolTipText(NetMakeOptions.DESC_WEIGHTINGS_2);
 
         lblWeighting2.setText("Select weight type 2:");

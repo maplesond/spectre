@@ -82,7 +82,7 @@ public class FlatNetwork implements Network {
 
     public List<Edge> externalEdges(List<Vertex> vertices) {
         if (externalEdges != null) {
-            return new LinkedList(externalEdges);
+            return new LinkedList<>(externalEdges);
         }
 
         Vertex v = vertices.get(0);
@@ -158,7 +158,7 @@ public class FlatNetwork implements Network {
             v = W2;
         }
 
-        this.externalEdges = new LinkedList(ext);
+        this.externalEdges = new LinkedList<>(ext);
 
 
         return ext;
@@ -166,7 +166,7 @@ public class FlatNetwork implements Network {
 
     public LinkedList<Edge> collectExternalEdges(Vertex v1) {
         if (externalEdges != null) {
-            return new LinkedList(externalEdges);
+            return new LinkedList<>(externalEdges);
         }
         List<Vertex> vertices = v1.collectVertices();
 
@@ -243,7 +243,7 @@ public class FlatNetwork implements Network {
             v = W2;
         }
 
-        externalEdges = new LinkedList(ext);
+        externalEdges = new LinkedList<>(ext);
 
 
         return ext;

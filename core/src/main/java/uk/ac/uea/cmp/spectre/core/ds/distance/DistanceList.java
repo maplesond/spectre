@@ -74,7 +74,7 @@ public interface DistanceList {
     /**
      * Returns the taxon represented by this DistanceList
      *
-     * @return
+     * @return The taxon master taxon to which all distances in this list relate to
      */
     Identifier getTaxon();
 
@@ -82,7 +82,7 @@ public interface DistanceList {
     /**
      * Gets all the other taxa targeted by this DistanceList
      *
-     * @return
+     * @return The list of all taxa that this taxon relates to
      */
     IdentifierList getOtherTaxa();
 

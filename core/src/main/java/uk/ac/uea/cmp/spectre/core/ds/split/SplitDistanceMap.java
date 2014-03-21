@@ -25,10 +25,11 @@ public class SplitDistanceMap extends LinkedHashMap<Split, Double> {
     }
 
     /**
-     * This will run in linear time.
+     * Get the weight of the split that has the associated split block.
+     * Note: This will run in linear time.
      *
-     * @param splitBlock
-     * @return
+     * @param splitBlock The split block to find amongst the splits in this map
+     * @return The weight of the split associated with the split block, or null if the split was not found.
      */
     public Double getUsingSplitBlock(SplitBlock splitBlock) {
 

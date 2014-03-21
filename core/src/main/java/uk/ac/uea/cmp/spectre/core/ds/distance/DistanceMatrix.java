@@ -135,6 +135,7 @@ public interface DistanceMatrix {
     DistanceList getDistances(String taxonName, Comparator<Identifier> comparator);
 
     /**
+     * Returns a list of DistanceList for all taxa in this matrix
      * @return
      */
     List<DistanceList> getAllDistances();
