@@ -20,7 +20,7 @@ import uk.ac.tgac.metaopt.Optimiser;
 
 /**
  * Computes split weights in the resulting {@linkplain  uk.ac.uea.cmp.spectre.flatnj.ds.PermutationSequence} or
- * {@linkplain  uk.ac.uea.cmp.spectre.core.ds.split.SimpleSplitSystem} depending on actual class chosen.
+ * {@linkplain  uk.ac.uea.cmp.spectre.core.ds.split.SpectreSplitSystem} depending on actual class chosen.
  *
  * @author balvociute
  */

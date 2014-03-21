@@ -20,8 +20,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import uk.ac.uea.cmp.spectre.core.ds.distance.FlexibleDistanceMatrix;
-import uk.ac.uea.cmp.spectre.core.ds.split.CircularSplitSystem;
-import uk.ac.uea.cmp.spectre.core.ds.split.SimpleSplitSystem;
+import uk.ac.uea.cmp.spectre.core.ds.split.SpectreSplitSystem;
 
 import java.io.File;
 import java.io.IOException;
@@ -50,7 +49,7 @@ public class NexusWriterTest {
 
         final int size = 5;
 
-        SimpleSplitSystem ss = new CircularSplitSystem(new FlexibleDistanceMatrix(size));
+        SpectreSplitSystem ss = new SpectreSplitSystem(new FlexibleDistanceMatrix(size));
 
         new NexusWriter().writeSplitSystem(outputFile, ss);
 
@@ -71,7 +70,7 @@ public class NexusWriterTest {
 
         final int size = 5;
 
-        SimpleSplitSystem ss = new CircularSplitSystem(new FlexibleDistanceMatrix(size));
+        SpectreSplitSystem ss = new SpectreSplitSystem(new FlexibleDistanceMatrix(size));
 
 
         /*new NexusWriter().writeTree(outputFile, ss, ss.calculateTreeWeighting(distanceMatrix));

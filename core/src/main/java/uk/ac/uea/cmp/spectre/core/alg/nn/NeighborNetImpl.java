@@ -7,7 +7,7 @@ import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.distance.FlexibleDistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.split.CompatibleSplitSystem;
-import uk.ac.uea.cmp.spectre.core.ds.split.SimpleSplitSystem;
+import uk.ac.uea.cmp.spectre.core.ds.split.SpectreSplitSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 
 import java.util.Collections;
@@ -47,7 +47,7 @@ public class NeighborNetImpl implements NeighborNet {
         this.params = params;
 
         // Creates a simple split system with trivial splits from the given distance matrix
-        SplitSystem treeSplits = new SimpleSplitSystem(distanceMatrix.getTaxa());
+        SplitSystem treeSplits = new SpectreSplitSystem(distanceMatrix.getTaxa());
 
         // Setup the component to vertexset map.  Initialise using a one to one mapping of each taxon to itself.
         this.c2vsMap = new Component2VertexSetMap(distanceMatrix.getTaxa());

@@ -46,7 +46,7 @@ public class NexusSplitsLoader extends AbstractNexusLoader {
             qW.addSplit(split);
         }
 
-        return new QuartetSystem(splitSystem.getTaxa(), 1.0, qW);
+        return new QuartetSystem(splitSystem.getOrderedTaxa(), 1.0, qW);
     }
 
     @Override

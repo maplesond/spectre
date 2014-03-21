@@ -25,7 +25,6 @@ import uk.ac.tgac.metaopt.OptimiserException;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.quartet.GroupedQuartetSystem;
 import uk.ac.uea.cmp.spectre.core.ds.quartet.load.QWeightLoader;
-import uk.ac.uea.cmp.spectre.core.ds.split.CircularSplitSystem;
 import uk.ac.uea.cmp.spectre.core.io.nexus.NexusWriter;
 import uk.ac.uea.cmp.spectre.core.ui.gui.RunnableTool;
 import uk.ac.uea.cmp.spectre.core.ui.gui.StatusTracker;

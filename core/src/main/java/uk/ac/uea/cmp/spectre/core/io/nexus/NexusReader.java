@@ -155,7 +155,7 @@ public class NexusReader extends AbstractPhygenReader {
         SplitSystem splitSystem = this.parse(file).getSplitSystem();
 
         return splitSystem.isCircular() ?
-                splitSystem.getCircularOrdering() :
+                splitSystem.getOrderedTaxa() :
                 null;
     }
 

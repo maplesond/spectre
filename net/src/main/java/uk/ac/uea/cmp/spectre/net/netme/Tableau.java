@@ -17,7 +17,6 @@ package uk.ac.uea.cmp.spectre.net.netme;
 
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
-import uk.ac.uea.cmp.spectre.core.ds.split.CircularSplitSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.CompatibleSplitSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.Split;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitBlock;

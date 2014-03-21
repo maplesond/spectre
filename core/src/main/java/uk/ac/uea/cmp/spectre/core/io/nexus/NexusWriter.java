@@ -71,7 +71,7 @@ public class NexusWriter extends AbstractPhygenWriter implements Appendable {
         // Construct file content
         this.appendHeader()
                 .appendLine()
-                .append(ss.getTaxa())
+                .append(ss.getOrderedTaxa().sortById())
                 .appendLine()
                 .append(ss);
 
@@ -256,7 +256,7 @@ public class NexusWriter extends AbstractPhygenWriter implements Appendable {
         this.appendLine(" FORMAT labels=no weights=" + (ss.isWeighted() ? "yes" : "no") + " confidences=no intervals=no;");
         this.appendLine(" PROPERTIES fit=-1.0" + (ss.isCompatible() ? " weakly_compatible" : "") + (ss.isCircular() ? " cyclic" : "") + ";");
         if (ss.isCircular()) {
-            this.appendLine(" CYCLE " + ss.getCircularOrdering().toString(IdentifierList.IdentifierFormat.NEXUS_CIRCULAR_ORDERING) + ";");
+            this.appendLine(" CYCLE " + ss.getOrderedTaxa().toString(IdentifierList.IdentifierFormat.NEXUS_CIRCULAR_ORDERING) + ";");
         }
 
         this.appendLine(" MATRIX");

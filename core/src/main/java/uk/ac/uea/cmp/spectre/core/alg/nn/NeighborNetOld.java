@@ -18,7 +18,7 @@ package uk.ac.uea.cmp.spectre.core.alg.nn;
 
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
-import uk.ac.uea.cmp.spectre.core.ds.split.CircularSplitSystem;
+import uk.ac.uea.cmp.spectre.core.ds.split.SpectreSplitSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 
 import java.util.Arrays;
@@ -40,7 +40,7 @@ public class NeighborNetOld {
      */
     public SplitSystem createCircularSplitSystem(final DistanceMatrix distanceMatrix) {
 
-        return new CircularSplitSystem(distanceMatrix, this.computeCircularOrdering(distanceMatrix));
+        return new SpectreSplitSystem(distanceMatrix, this.computeCircularOrdering(distanceMatrix));
     }
 
     /**

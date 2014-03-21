@@ -44,7 +44,7 @@ public interface SplitSystem {
      *
      * @return The taxa
      */
-    IdentifierList getTaxa();
+    IdentifierList getOrderedTaxa();
 
 
     // **** Standard split methods ****
@@ -121,7 +121,8 @@ public interface SplitSystem {
     SplitSystem filterByWeight(double threshold);
 
 
-    // **** Methods related to circular ordering ****
+
+    // **** Interrogation methods that try to detect split system properties ****
 
     /**
      * Whether or not this split system is a circular split system
@@ -130,15 +131,6 @@ public interface SplitSystem {
      */
     boolean isCircular();
 
-    /**
-     * Gets the circular ordering associated with this split system.
-     *
-     * @return The circular ordering, or null if this is not a circular split system.
-     */
-    IdentifierList getCircularOrdering();
-
-
-    // **** Methods related to compatible split system ****
 
     /**
      * Whether or not this split system is a compatible split system

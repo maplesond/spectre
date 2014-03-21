@@ -16,7 +16,6 @@
 
 package uk.ac.uea.cmp.spectre.net.netmake;
 
-import uk.ac.uea.cmp.spectre.core.ds.split.CircularSplitSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.CompatibleSplitSystem;
 import uk.ac.uea.cmp.spectre.core.io.PhygenWriter;
 import uk.ac.uea.cmp.spectre.core.io.PhygenWriterFactory;

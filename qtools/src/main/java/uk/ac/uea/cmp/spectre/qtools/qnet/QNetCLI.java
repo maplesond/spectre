@@ -25,7 +25,6 @@ import org.slf4j.LoggerFactory;
 import uk.ac.tgac.metaopt.Objective;
 import uk.ac.tgac.metaopt.Optimiser;
 import uk.ac.tgac.metaopt.OptimiserFactory;
-import uk.ac.uea.cmp.spectre.core.ds.split.CircularSplitSystem;
 import uk.ac.uea.cmp.spectre.core.io.nexus.NexusWriter;
 import uk.ac.uea.cmp.spectre.core.ui.cli.CommandLineHelper;
 

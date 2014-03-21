@@ -29,7 +29,6 @@ import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.quartet.GroupedQuartetSystem;
 import uk.ac.uea.cmp.spectre.core.ds.quartet.QuartetSystem;
 import uk.ac.uea.cmp.spectre.core.ds.quartet.QuartetSystemList;
-import uk.ac.uea.cmp.spectre.core.ds.split.CircularSplitSystem;
 import uk.ac.uea.cmp.spectre.core.ds.tree.newick.NewickTree;
 import uk.ac.uea.cmp.spectre.qtools.qmaker.QMaker;
 

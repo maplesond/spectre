@@ -141,7 +141,7 @@ public class NexusReaderTest {
 
         assertNotNull(ss);
 
-        IdentifierList co = ss.getCircularOrdering();
+        IdentifierList co = ss.getOrderedTaxa();
 
         assertNotNull(co);
         assertTrue(co.size() == 6);
@@ -173,7 +173,7 @@ public class NexusReaderTest {
 
         assertNotNull(ss);
 
-        IdentifierList co = ss.getCircularOrdering();
+        IdentifierList co = ss.getOrderedTaxa();
 
         assertNotNull(co);
         assertTrue(co.size() == 6);

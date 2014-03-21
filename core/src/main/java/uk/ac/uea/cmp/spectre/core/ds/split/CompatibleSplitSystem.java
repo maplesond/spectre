@@ -26,11 +26,11 @@ import java.util.Map;
 /**
  * A Compatible Split System can be represented by a tree
  */
-public class CompatibleSplitSystem extends CircularSplitSystem {
+public class CompatibleSplitSystem extends SpectreSplitSystem {
 
     public CompatibleSplitSystem(List<Split> splits, DistanceMatrix distanceMatrix, IdentifierList sortedTaxa) {
 
-        super(splits, sortedTaxa);
+        super(sortedTaxa, splits);
 
         if (sortedTaxa.size() != distanceMatrix.size()) {
             throw new IllegalArgumentException("Distance matrix and circular ordering are not the same size");
@@ -41,14 +41,11 @@ public class CompatibleSplitSystem extends CircularSplitSystem {
         reweight(this.calculateSplitWeighting(distanceMatrix, sortedTaxa));
     }
 
-    public CompatibleSplitSystem(CircularSplitSystem splitSystem) {
 
-        super(splitSystem.copySplits(), new IdentifierList(splitSystem.getCircularOrdering()));
-    }
 
-    public CompatibleSplitSystem(CircularSplitSystem unweightedSplitSystem, TreeSplitWeights treeWeights) {
+    public CompatibleSplitSystem(SplitSystem unweightedSplitSystem, TreeSplitWeights treeWeights) {
 
-        this(unweightedSplitSystem); //new Taxa(unweightedSplitSystem.getTaxa()), unweightedSplitSystem.copySplits(), unweightedSplitSystem.getCircularOrdering().copy());
+        super(unweightedSplitSystem); //new Taxa(unweightedSplitSystem.getTaxa()), unweightedSplitSystem.copySplits(), unweightedSplitSystem.getCircularOrdering().copy());
 
         reweight(treeWeights);
     }
@@ -69,7 +66,7 @@ public class CompatibleSplitSystem extends CircularSplitSystem {
 
                     ArrayList<Integer> sb = new ArrayList<>();
                     for (int k = i + 1; k < j + 1; k++) {
-                        sb.add(this.getCircularOrdering().get(k).getId());
+                        sb.add(this.getOrderedTaxa().get(k).getId());
                     }
 
                     this.addSplit(new Split(new SplitBlock(sb), n, treeWeights.getAt(j, i)));

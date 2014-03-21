@@ -19,7 +19,6 @@ package uk.ac.uea.cmp.spectre.qtools.qnet;
 import org.apache.commons.lang3.tuple.Pair;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.quartet.GroupedQuartetSystem;
-import uk.ac.uea.cmp.spectre.core.ds.split.CircularSplitSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.Split;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitBlock;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitUtils;

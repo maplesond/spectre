@@ -92,10 +92,10 @@ public class NetMake extends RunnableTool {
         final NetMakeOptions.RunMode runMode = NetMakeOptions.getRunMode(weighting1, weighting2);
 
         // Creates a set of trivial splits for ...
-        SplitSystem components = new SimpleSplitSystem(taxa, SplitUtils.createTrivialSplits(taxa, 1.0));
+        SplitSystem components = new SpectreSplitSystem(taxa, SplitUtils.createTrivialSplits(taxa, 1.0));
 
         // Creates a simple split system with trivial splits from the given distance matrix
-        SplitSystem treeSplits = new SimpleSplitSystem(taxa, SplitUtils.createTrivialSplits(taxa, 1.0));
+        SplitSystem treeSplits = new SpectreSplitSystem(taxa, SplitUtils.createTrivialSplits(taxa, 1.0));
 
         // DistanceMatrix between components (make deep copy from initial distance matrix)
         DistanceMatrix c2c = new FlexibleDistanceMatrix(distanceMatrix);
