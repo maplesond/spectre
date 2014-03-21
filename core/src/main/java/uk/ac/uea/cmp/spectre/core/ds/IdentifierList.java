@@ -479,10 +479,10 @@ public class IdentifierList extends ArrayList<Identifier> {
                 } else {
                     StringBuilder sb = new StringBuilder();
 
-                    sb.append(identifierList.get(0));
+                    sb.append(identifierList.get(0).getId());
 
                     for (int i = 1; i < identifierList.size(); i++) {
-                        sb.append(" ").append(identifierList.get(i));
+                        sb.append(" ").append(identifierList.get(i).getId());
                     }
 
                     return sb.toString();

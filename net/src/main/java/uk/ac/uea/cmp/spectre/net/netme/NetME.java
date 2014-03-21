@@ -108,11 +108,13 @@ public class NetME extends RunnableTool {
             // Load circular ordering from the provided nexus file
             IdentifierList circularOrdering = new NexusReader().extractCircOrdering(this.options.getCircularOrderingFile());
 
-            String circularOrderingMessage = "loaded from file " + this.options.getCircularOrderingFile().getAbsolutePath();
+            if (circularOrdering == null) {
+                throw new IllegalStateException("The split system is not circular that was loaded from: " + this.options.getCircularOrderingFile().getAbsolutePath());
+            }
 
-            log.info("Circular ordering " + circularOrderingMessage);
+            log.info("Circular Ordering Loaded from file: " + this.options.getCircularOrderingFile().getAbsolutePath());
 
-            this.notifyUser("Processing data");
+            this.notifyUser("Processing data...");
 
             NetMEResult netMeResult = this.execute(distanceMatrix, circularOrdering);
 

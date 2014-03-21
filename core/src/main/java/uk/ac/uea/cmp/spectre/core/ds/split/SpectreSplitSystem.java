@@ -309,9 +309,13 @@ public class SpectreSplitSystem implements SplitSystem {
     @Override
     public boolean isCircular() {
 
-        //TODO Need to implement a proper check here
+        for(Split s : this.getSplits()) {
+            if (!s.isCircular(this.orderedTaxa)) {
+                return false;
+            }
+        }
 
-        return false;
+        return true;
     }
 
 
@@ -327,10 +331,8 @@ public class SpectreSplitSystem implements SplitSystem {
 
         for(Split a : this.getSplits()) {
             for(Split b : this.getSplits()) {
-                if (a != b) {
-                    if (!a.isCompatible(b)) {
-                        return false;
-                    }
+                if (a != b && !a.isCompatible(b)) {
+                    return false;
                 }
             }
         }

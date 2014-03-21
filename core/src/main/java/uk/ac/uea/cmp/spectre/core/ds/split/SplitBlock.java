@@ -18,6 +18,8 @@ package uk.ac.uea.cmp.spectre.core.ds.split;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import uk.ac.uea.cmp.spectre.core.ds.Identifier;
+import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -255,5 +257,30 @@ public class SplitBlock extends ArrayList<Integer> implements Comparable<SplitBl
         }
 
         return false;
+    }
+
+    public boolean isContiguousWithOrdering(IdentifierList ordering) {
+
+        Identifier first = ordering.getById(this.getFirst());
+
+        if (first == null) {
+            throw new IllegalStateException("Could not find first index in split block (" + this.getFirst() + "), in the circular ordering: " + ordering.toString());
+        }
+
+        int index = ordering.indexOf(first);
+
+        for(int i = index, j = 0; j < this.size(); i++, j++) {
+
+            // Got to the end of the ordered taxa so go back to the start
+            if (i >= ordering.size()) {
+                i = 0;
+            }
+
+            if (this.get(j) != ordering.get(i).getId()) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

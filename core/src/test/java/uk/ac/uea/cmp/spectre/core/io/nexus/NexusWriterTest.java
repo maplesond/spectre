@@ -60,7 +60,7 @@ public class NexusWriterTest {
         List<String> lines = FileUtils.readLines(outputFile);
 
         // Check we have the number of lines we were expecting
-        assertTrue(lines.size() == 20);
+        assertTrue(lines.size() == 21);
     }
 
     @Test

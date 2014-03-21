@@ -17,6 +17,7 @@ package uk.ac.uea.cmp.spectre.core.ds.split;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 
 
@@ -231,10 +232,17 @@ public class Split implements Comparable<Split> {
         return "{" + this.aSide.toString() + " | " + this.bSide.toString() + "} : " + this.weight;
     }
 
+    /**
+     * Check to see if this split is compatible with another split.  This returns true (compatible) if one of the four
+     * intersections A1 n A2, A1 n B2, A2 n B1 or A2 n B2 is empty.  Otherwise this returns false (incompatible).
+     * @param other The other split to test
+     * @return True if compatible, false if incompatible
+     */
     public boolean isCompatible(Split other) {
 
-        if (this.getNbTaxa() != other.getNbTaxa())
+        if (this.getNbTaxa() != other.getNbTaxa()) {
             throw new IllegalArgumentException("Comparing splits that have different numbers of taxa!");
+        }
 
         SplitBlock thisASide = this.getASide();
         SplitBlock thisBSide = this.getBSide();
@@ -245,5 +253,24 @@ public class Split implements Comparable<Split> {
         // the case then these two splits are compatible
         return  !thisASide.containsAny(otherASide) || !thisASide.containsAny(otherBSide) ||
                 !thisBSide.containsAny(otherASide) || !thisBSide.containsAny(otherBSide);
+    }
+
+    /**
+     * Check to see if this split is consistent with the given ordering, hence is circular.
+     *
+     * Note, that this only checks if this split is consistent with the given circular ordering.  It is still possible
+     * for this method to return false but the split to be part of a circular split system that has a different ordering.
+     *
+     * @param ordering The ordering of taxa to test this split against
+     * @return True, if this split is circular, false if not.
+     */
+    public boolean isCircular(IdentifierList ordering) {
+
+        if (ordering.size() != this.getNbTaxa()) {
+            throw new IllegalArgumentException("This split represents a different number of taxa (" + this.getNbTaxa() + ") to the circular ordering provided (" + ordering.size() + ")");
+        }
+
+        // Just check the A side for now... get's confusing if we need to start looking at the B side too.
+        return this.getASide().isContiguousWithOrdering(ordering);
     }
 }
