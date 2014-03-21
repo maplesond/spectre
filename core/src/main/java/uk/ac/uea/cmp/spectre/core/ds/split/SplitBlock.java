@@ -245,4 +245,15 @@ public class SplitBlock extends ArrayList<Integer> implements Comparable<SplitBl
         EXTERNAL,
         INTERNAL
     }
+
+    public boolean containsAny(SplitBlock other) {
+
+        for(Integer i : other) {
+            if (this.contains(i)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

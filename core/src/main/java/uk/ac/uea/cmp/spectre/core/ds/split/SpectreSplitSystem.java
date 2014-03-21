@@ -315,33 +315,27 @@ public class SpectreSplitSystem implements SplitSystem {
     }
 
 
+    /**
+     * Checks to see that all pairs of splits in this split system are compatible.
+     *
+     * If this is true, then this split system can be represented as a tree.
+     *
+     * @return True if all pairs of splits are compatible, false otherwise.
+     */
     @Override
     public boolean isCompatible() {
 
-        //TODO: Need to implement this properly
+        for(Split a : this.getSplits()) {
+            for(Split b : this.getSplits()) {
+                if (a != b) {
+                    if (!a.isCompatible(b)) {
+                        return false;
+                    }
+                }
+            }
+        }
 
-        // Variables for counting the number of occurrences of patterns
-        int count11 = 0;
-        int count10 = 0;
-        int count01 = 0;
-        int count00 = 0;
-
-        /*for (int i = 0; i < this.getNbTaxa(); i++) {
-            if ((splits[a][i] == true) && (splits[b][i] == true)) {
-                count11++;
-            }
-            if ((splits[a][i] == true) && (splits[b][i] == false)) {
-                count10++;
-            }
-            if ((splits[a][i] == false) && (splits[b][i] == true)) {
-                count01++;
-            }
-            if ((splits[a][i] == false) && (splits[b][i] == false)) {
-                count00++;
-            }
-        }*/
-
-        return count11 == 0 || count10 == 0 || count01 == 0 || count00 == 0;
+        return true;
     }
 
 

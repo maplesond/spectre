@@ -230,4 +230,20 @@ public class Split implements Comparable<Split> {
     public String toString() {
         return "{" + this.aSide.toString() + " | " + this.bSide.toString() + "} : " + this.weight;
     }
+
+    public boolean isCompatible(Split other) {
+
+        if (this.getNbTaxa() != other.getNbTaxa())
+            throw new IllegalArgumentException("Comparing splits that have different numbers of taxa!");
+
+        SplitBlock thisASide = this.getASide();
+        SplitBlock thisBSide = this.getBSide();
+        SplitBlock otherASide = other.getASide();
+        SplitBlock otherBSide = other.getBSide();
+
+        // Check to see that at least one pair of split block doesn't contain any taxa found in the other.  If that's
+        // the case then these two splits are compatible
+        return  !thisASide.containsAny(otherASide) || !thisASide.containsAny(otherBSide) ||
+                !thisBSide.containsAny(otherASide) || !thisBSide.containsAny(otherBSide);
+    }
 }
