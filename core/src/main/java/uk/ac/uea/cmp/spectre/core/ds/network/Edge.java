@@ -170,20 +170,20 @@ public class Edge implements Comparable<Edge> {
     }
 
     private void collectEdges(LinkedList<Edge> elist) {
-        LinkedList<Edge> tobeexplored = new LinkedList<>();
-        tobeexplored.addLast(this);
+        LinkedList<Edge> toBeExplored = new LinkedList<>();
+        toBeExplored.addLast(this);
         this.setVisited(true);
 
         Edge g, h;
 
-        while (tobeexplored.size() > 0) {
-            g = tobeexplored.removeFirst();
+        while (toBeExplored.size() > 0) {
+            g = toBeExplored.removeFirst();
             elist.addLast(g);
             Iterator iter = ((g.getTop()).getElist()).iterator();
             while (iter.hasNext()) {
                 h = (Edge) iter.next();
                 if (h.isVisited() == false) {
-                    tobeexplored.addLast(h);
+                    toBeExplored.addLast(h);
                     h.setVisited(true);
                 }
             }
@@ -191,7 +191,7 @@ public class Edge implements Comparable<Edge> {
             while (iter.hasNext()) {
                 h = (Edge) iter.next();
                 if (h.isVisited() == false) {
-                    tobeexplored.addLast(h);
+                    toBeExplored.addLast(h);
                     h.setVisited(true);
                 }
             }
@@ -202,18 +202,17 @@ public class Edge implements Comparable<Edge> {
      * This method computes a list of the edges in the split network.
      * @return
      */
-    public LinkedList<Edge> collectEdges() {
-        LinkedList<Edge> elist = new LinkedList<>();
+    public EdgeList collectEdges() {
+
+        EdgeList elist = new EdgeList();
         this.collectEdges(elist);
-        ListIterator iter = elist.listIterator(0);
+
         int i = 1;
-        Edge h;
-        while (iter.hasNext()) {
-            h = (Edge) iter.next();
-            h.setVisited(false);
-            h.setNxnum(i);
-            i++;
+        for(Edge e : elist) {
+            e.setVisited(false);
+            e.setNxnum(i++);
         }
+
         return elist;
     }
 

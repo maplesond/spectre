@@ -67,16 +67,16 @@ public class AngleCalculatorSimple implements AngleCalculator {
             Vertex bDefenderRight = findDefenderOnTheRight(bottom, top, bottomVertices);
 
             //Determine all four safe angles
-            double bAngleLeft = getClockwiseAngle(bDefenderLeft, bottom, bStrikerLeft);
-            double bAngleRight = getClockwiseAngle(bStrikerRight, bottom, bDefenderRight);
+            double bAngleLeft = Vertex.getClockwiseAngle(bDefenderLeft, bottom, bStrikerLeft);
+            double bAngleRight = Vertex.getClockwiseAngle(bStrikerRight, bottom, bDefenderRight);
 
             Vertex tStrikerLeft = findStrikerOnTheLeft(top, bottom, bottomVertices);
             Vertex tStrikerRight = findStrikerOnTheRight(top, bottom, bottomVertices);
             Vertex tDefenderLeft = findDefenderOnTheLeft(top, bottom, topVertices);
             Vertex tDefenderRight = findDefenderOnTheRight(top, bottom, topVertices);
             //Determine all four safe angles
-            double tAngleLeft = getClockwiseAngle(tDefenderLeft, top, tStrikerLeft);
-            double tAngleRight = getClockwiseAngle(tStrikerRight, top, tDefenderRight);
+            double tAngleLeft = Vertex.getClockwiseAngle(tDefenderLeft, top, tStrikerLeft);
+            double tAngleRight = Vertex.getClockwiseAngle(tStrikerRight, top, tDefenderRight);
 
 
             //System.out.println("\n" + bAngleLeft + " " + bAngleRight + " | " + tAngleLeft + " " + tAngleRight );
@@ -182,7 +182,7 @@ public class AngleCalculatorSimple implements AngleCalculator {
     public double getAngle(Vertex v1, Vertex a, Vertex v2) {
         double angle;
 
-        angle = Math.min(getClockwiseAngle(v1, a, v2), getClockwiseAngle(v2, a, v1));
+        angle = Math.min(Vertex.getClockwiseAngle(v1, a, v2), Vertex.getClockwiseAngle(v2, a, v1));
 
         return angle;
     }
@@ -228,7 +228,7 @@ public class AngleCalculatorSimple implements AngleCalculator {
         Iterator<Vertex> vertices = bottomVertices.iterator();
         while (vertices.hasNext()) {
             Vertex v = vertices.next();
-            double angle = getClockwiseAngle(top, bot, v);
+            double angle = Vertex.getClockwiseAngle(top, bot, v);
             if (angle <= angleThreshold && (defender == null || minAngle > angle)) {
                 defender = v;
                 minAngle = angle;
@@ -244,7 +244,7 @@ public class AngleCalculatorSimple implements AngleCalculator {
         Iterator<Vertex> vertices = bottomVertices.iterator();
         while (vertices.hasNext()) {
             Vertex v = vertices.next();
-            double angle = getClockwiseAngle(v, bot, top);
+            double angle = Vertex.getClockwiseAngle(v, bot, top);
             if (angle <= angleThreshold && (defender == null || minAngle > angle)) {
                 defender = v;
                 minAngle = angle;
@@ -262,7 +262,7 @@ public class AngleCalculatorSimple implements AngleCalculator {
         while (vertices.hasNext()) {
             Vertex w = vertices.next();
             if (w != top) {
-                double angle = getClockwiseAngle(w, w, top);
+                double angle = Vertex.getClockwiseAngle(w, w, top);
                 if (angle <= angleThreshold && (defender == null || minAngle > angle)) {
                     defender = w;
                     minAngle = angle;
@@ -279,7 +279,7 @@ public class AngleCalculatorSimple implements AngleCalculator {
         Iterator<Vertex> vertices = topVertices.iterator();
         while (vertices.hasNext()) {
             Vertex v = vertices.next();
-            double angle = getClockwiseAngle(top, bot, v);
+            double angle = Vertex.getClockwiseAngle(top, bot, v);
             if (angle <= angleThreshold && (striker == null || maxAngle < angle)) {
                 striker = v;
                 maxAngle = angle;
@@ -295,7 +295,7 @@ public class AngleCalculatorSimple implements AngleCalculator {
         Iterator<Vertex> vertices = topVertices.iterator();
         while (vertices.hasNext()) {
             Vertex v = vertices.next();
-            double angle = getClockwiseAngle(v, bot, top);
+            double angle = Vertex.getClockwiseAngle(v, bot, top);
             if (angle <= angleThreshold && (striker == null || maxAngle < angle)) {
                 striker = v;
                 maxAngle = angle;
@@ -305,30 +305,6 @@ public class AngleCalculatorSimple implements AngleCalculator {
         return striker;
     }
 
-    public static double getClockwiseAngle(Vertex v1, Vertex a, Vertex v2) {
-
-        double v1X = v1.getX();
-        double v1Y = v1.getY();
-        double v2X = v2.getX();
-        double v2Y = v2.getY();
-        double aX = a.getX();
-        double aY = a.getY();
-
-        double angle;
-        if (v1X == v2X && v1Y == v2Y) {
-            angle = 0;
-        } else if ((v1X == aX && v1Y == aY) || (v2X == aX && v2Y == aY)) {
-            angle = Math.PI;
-        } else {
-            if (v1.calcDistanceTo(a) == 0 || v2.calcDistanceTo(a) == 0) {
-                angle = 0;
-            } else {
-                angle = Math.atan2((v1Y - aY), (v1X - aX)) - Math.atan2((v2Y - aY), (v2X - aX));
-                angle = (angle + 2 * Math.PI) % (2 * Math.PI);
-            }
-        }
-        return angle;
-    }
 
     @Override
     public double getSafeAngleBot(double deltaAlpha, Edge leftmost, Edge rightmost, Set<Vertex> bottomVertices, Set<Vertex> topVertices) {
@@ -341,8 +317,8 @@ public class AngleCalculatorSimple implements AngleCalculator {
         Vertex bDefenderRight = findDefenderOnTheRight(rightmost.getBot(), rightmost.getTop(), bottomVertices);
 
         //Determine all four safe angles
-        double bAngleLeft = getClockwiseAngle(bDefenderLeft, leftmost.getBot(), bStrikerLeft);
-        double bAngleRight = getClockwiseAngle(bStrikerRight, rightmost.getBot(), bDefenderRight);
+        double bAngleLeft = Vertex.getClockwiseAngle(bDefenderLeft, leftmost.getBot(), bStrikerLeft);
+        double bAngleRight = Vertex.getClockwiseAngle(bStrikerRight, rightmost.getBot(), bDefenderRight);
 
         if (bAngleLeft <= Math.PI && bAngleRight <= Math.PI) {
             safeAngle = Math.min(bAngleLeft, bAngleRight);
@@ -362,8 +338,8 @@ public class AngleCalculatorSimple implements AngleCalculator {
         Vertex tDefenderRight = findDefenderOnTheLeft(rightmost.getTop(), rightmost.getBot(), topVertices);
 
         //Determine all four safe angles
-        double tAngleLeft = getClockwiseAngle(tStrikerLeft, leftmost.getTop(), tDefenderLeft);
-        double tAngleRight = getClockwiseAngle(tDefenderRight, rightmost.getTop(), tStrikerRight);
+        double tAngleLeft = Vertex.getClockwiseAngle(tStrikerLeft, leftmost.getTop(), tDefenderLeft);
+        double tAngleRight = Vertex.getClockwiseAngle(tDefenderRight, rightmost.getTop(), tStrikerRight);
 
         if (tAngleRight <= Math.PI && tAngleLeft <= Math.PI) {
             safeAngle = Math.min(tAngleRight, tAngleLeft);
@@ -397,8 +373,8 @@ public class AngleCalculatorSimple implements AngleCalculator {
         for (int i = 0; i < around.size(); i++) {
             Edge e = around.get(i);
             Vertex ev = (e.getBot() == v) ? e.getTop() : e.getBot();
-            double edgeSplitAngle = AngleCalculatorSimple.getClockwiseAngle(ev, v, w);
-            double splitEdgeAngle = AngleCalculatorSimple.getClockwiseAngle(w, v, ev);
+            double edgeSplitAngle = Vertex.getClockwiseAngle(ev, v, w);
+            double splitEdgeAngle = Vertex.getClockwiseAngle(w, v, ev);
 
             if (left == null || angleLeft > edgeSplitAngle) {
                 left = e;
@@ -445,8 +421,8 @@ public class AngleCalculatorSimple implements AngleCalculator {
         Vertex sL = findStrikerOnTheLeft(v, w, topVertices);
 
 
-        double aR = getClockwiseAngle(sR, v, dR);
-        double aL = getClockwiseAngle(dL, v, sL);
+        double aR = Vertex.getClockwiseAngle(sR, v, dR);
+        double aL = Vertex.getClockwiseAngle(dL, v, sL);
 
         double A = (aL - aR) / 2;
 
@@ -535,7 +511,7 @@ public class AngleCalculatorSimple implements AngleCalculator {
             double[] c2 = (i == sortedIntersections.size() - 1)
                     ? sortedIntersections.get(0)
                     : sortedIntersections.get(i + 1);
-            double angle = getClockwiseAngle(new Vertex(c2[0], c2[1]),
+            double angle = Vertex.getClockwiseAngle(new Vertex(c2[0], c2[1]),
                     v,
                     new Vertex(c1[0], c1[1]));
             double middle = angle / 2.0;
@@ -547,7 +523,7 @@ public class AngleCalculatorSimple implements AngleCalculator {
 
                 if ((!cc.pointInsideNetwork(c0, network.getExternal()) && outside) ||
                         (cc.pointInsideNetwork(c0, network.getExternal()) && !outside)) {
-                    angles.add(getClockwiseAngle(c0, v, w));
+                    angles.add(Vertex.getClockwiseAngle(c0, v, w));
                     //window.markPoint(c0, 2);
                 }
             }
@@ -581,7 +557,7 @@ public class AngleCalculatorSimple implements AngleCalculator {
         while (intIt.hasNext()) {
             double[] p = intIt.next();
             points[index] = p;
-            angles[index++] = getClockwiseAngle(w, v, new Vertex(p[0], p[1]));
+            angles[index++] = Vertex.getClockwiseAngle(w, v, new Vertex(p[0], p[1]));
         }
         for (int i = 0; i < points.length; i++) {
             if (i == 0) {

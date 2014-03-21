@@ -181,7 +181,7 @@ public class NexusNetworkBuilder {
 
         network.setVertices(new LinkedList<>(this.vertices.values()));
         network.setVertexLabels(new LinkedList<>(this.labels.values()));
-        network.setEdges(new LinkedList<>(this.edges.values()));
+        network.setEdges(new EdgeList(this.edges.values()));
 
         return network;
     }

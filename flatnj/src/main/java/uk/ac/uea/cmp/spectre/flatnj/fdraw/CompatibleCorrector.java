@@ -17,6 +17,7 @@
 package uk.ac.uea.cmp.spectre.flatnj.fdraw;
 
 import uk.ac.uea.cmp.spectre.core.ds.network.Edge;
+import uk.ac.uea.cmp.spectre.core.ds.network.EdgeList;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
 import uk.ac.uea.cmp.spectre.flatnj.ds.Network;
 import uk.ac.uea.cmp.spectre.flatnj.tools.Utilities;
@@ -366,7 +367,7 @@ public class CompatibleCorrector {
         Vertex striker = angleCalculatorSimple.findStrikerOnTheRight(v, w1, vertices1);
         Vertex defender = angleCalculatorSimple.findDefenderOnTheRight(v, w2, vertices2);
 
-        double alpha = AngleCalculatorSimple.getClockwiseAngle(striker, v, defender) * 0.5;
+        double alpha = Vertex.getClockwiseAngle(striker, v, defender) * 0.5;
         double xt = w2.getX() - v.getX();
         double yt = w2.getY() - v.getY();
 
@@ -577,7 +578,7 @@ public class CompatibleCorrector {
         while (eIt.hasNext()) {
             Edge e = eIt.next();
             Vertex c = (e.getTop().getElist().size() == 1) ? e.getBot() : e.getTop();
-            angles[index++] = AngleCalculatorSimple.getClockwiseAngle(w, v, c);
+            angles[index++] = Vertex.getClockwiseAngle(w, v, c);
         }
         for (int i = 0; i < angles.length; i++) {
             if (i == 0) {
@@ -764,7 +765,7 @@ public class CompatibleCorrector {
     }
 
     public double moveCompatible(Vertex V, int iterations, Window window, Network network) {
-        List<Edge> compatible = network.getCompatible();
+        List<Edge> compatible = new EdgeList(network.getEdges()).getCompatible();
         List<Edge> external = network.getExternal();
         external.addAll(network.getTrivial());
 

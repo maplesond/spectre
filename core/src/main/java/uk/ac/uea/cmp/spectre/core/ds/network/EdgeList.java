@@ -16,20 +16,30 @@
 
 package uk.ac.uea.cmp.spectre.core.ds.network;
 
-import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
-
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Created by dan on 18/03/14.
+ * Created by dan on 20/03/14.
  */
-public interface Network {
+public class EdgeList extends LinkedList<Edge> {
 
-    IdentifierList getTaxa();
+    public EdgeList() {
+        super();
+    }
 
-    List<Vertex> getVertices();
+    public EdgeList(Collection<Edge> e) {
+        super(e);
+    }
 
-    EdgeList getEdges();
-
-    List<Label> getLabels();
+    public EdgeList getCompatible() {
+        EdgeList compatible = new EdgeList();
+        for (Edge e : this) {
+            if (e.isCompatible()) {
+                compatible.add(e);
+            }
+        }
+        return compatible;
+    }
 }

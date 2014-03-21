@@ -18,6 +18,7 @@ package uk.ac.uea.cmp.spectre.core.ds.network;
 
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -29,12 +30,18 @@ public class FlatNetwork implements Network {
 
     private List<Vertex> vertices;
     private List<Label> vertexLabels;
-    private List<Edge> edges;
+    private EdgeList edges;
+
+    /**
+     * The external edges may take some time to calculate.  This variable is essentially a cache of the results of that
+     * computation, if it is requested.
+     */
+    private LinkedList<Edge> externalEdges = null;
 
     public FlatNetwork() {
         this.vertices = new LinkedList<>();
         this.vertexLabels = new LinkedList<>();
-        this.edges = new LinkedList<>();
+        this.edges = new EdgeList();
     }
 
     @Override
@@ -51,12 +58,12 @@ public class FlatNetwork implements Network {
         return vertices;
     }
 
-    public void setEdges(List<Edge> edges) {
+    public void setEdges(EdgeList edges) {
         this.edges = edges;
     }
 
     @Override
-    public List<Edge> getEdges() {
+    public EdgeList getEdges() {
         return this.edges;
     }
 
@@ -72,6 +79,176 @@ public class FlatNetwork implements Network {
     public List<Label> getLabels() {
         return this.vertexLabels;
     }
+
+    public List<Edge> externalEdges(List<Vertex> vertices) {
+        if (externalEdges != null) {
+            return new LinkedList(externalEdges);
+        }
+
+        Vertex v = vertices.get(0);
+
+        Iterator<Vertex> vertexIt = vertices.iterator();
+        while (vertexIt.hasNext()) {
+            Vertex vertex = vertexIt.next();
+            if (v.getX() > vertex.getX()) {
+                v = vertex;
+            }
+        }
+
+        Edge first = null;
+
+        LinkedList<Edge> ext = new LinkedList<>();
+        Vertex w = null;
+
+        if (v.getElist().size() == 1) {
+            w = (v.getElist().getFirst().getBot() == v) ? v.getElist().getFirst().getTop() : v.getElist().getFirst().getBot();
+            first = v.getElist().getFirst();
+
+            Vertex t = w;
+            w = v;
+            v = t;
+        } else {
+            java.util.List<Edge> elist = v.getElist();
+
+            for (int i = 0; i < elist.size(); i++) {
+                Vertex ww = null;
+                Vertex w0 = (elist.get(i).getBot() == v) ? elist.get(i).getTop() : elist.get(i).getBot();
+                double angle = 0;
+                for (int j = 0; j < elist.size(); j++) {
+                    if (i != j) {
+                        Vertex w1 = (elist.get(j).getBot() == v) ? elist.get(j).getTop() : elist.get(j).getBot();
+                        double currentAngle = Vertex.getClockwiseAngle(w0, v, w1);
+                        if (ww == null || currentAngle < angle) {
+                            ww = w0;
+                            angle = currentAngle;
+                            first = elist.get(i);
+                        }
+                    }
+                }
+                if (angle > Math.PI) {
+                    w = ww;
+                    break;
+                }
+            }
+        }
+
+        Edge currentE = first;
+
+        boolean roundMade = false;
+
+        while (currentE != first || !roundMade) {
+            roundMade = true;
+            LinkedList<Edge> vIn = v.getElist();
+            double minAngle = 2 * Math.PI;
+            Edge nextE = null;
+            Vertex W2 = null;
+            for (int i = 0; i < vIn.size(); i++) {
+                Edge e = vIn.get(i);
+                Vertex w2 = (e.getBot() == v) ? e.getTop() : e.getBot();
+                double angle = (currentE == e) ? 2 * Math.PI : Vertex.getClockwiseAngle(w, v, w2);
+                if (nextE == null || minAngle > angle) {
+                    nextE = e;
+                    minAngle = angle;
+                    W2 = w2;
+                }
+            }
+            ext.add(nextE);
+            currentE = nextE;
+            w = v;
+            v = W2;
+        }
+
+        this.externalEdges = new LinkedList(ext);
+
+
+        return ext;
+    }
+
+    public LinkedList<Edge> collectExternalEdges(Vertex v1) {
+        if (externalEdges != null) {
+            return new LinkedList(externalEdges);
+        }
+        List<Vertex> vertices = v1.collectVertices();
+
+        Vertex v = v1;
+
+        Iterator<Vertex> vertexIt = vertices.iterator();
+        while (vertexIt.hasNext()) {
+            Vertex vertex = vertexIt.next();
+            if (v.getX() > vertex.getX()) {
+                v = vertex;
+            }
+        }
+
+        Edge first = null;
+
+        LinkedList<Edge> ext = new LinkedList<>();
+        Vertex w = null;
+
+        if (v.getElist().size() == 1) {
+            w = (v.getElist().getFirst().getBot() == v) ? v.getElist().getFirst().getTop() : v.getElist().getFirst().getBot();
+            first = v.getElist().getFirst();
+
+            Vertex t = w;
+            w = v;
+            v = t;
+        } else {
+            List<Edge> elist = v.getElist();
+
+            for (int i = 0; i < elist.size(); i++) {
+                Vertex ww = null;
+                Vertex w0 = (elist.get(i).getBot() == v) ? elist.get(i).getTop() : elist.get(i).getBot();
+                double angle = 0;
+                for (int j = 0; j < elist.size(); j++) {
+                    if (i != j) {
+                        Vertex w1 = (elist.get(j).getBot() == v) ? elist.get(j).getTop() : elist.get(j).getBot();
+                        double currentAngle = Vertex.getClockwiseAngle(w0, v, w1);
+                        if (ww == null || currentAngle < angle) {
+                            ww = w0;
+                            angle = currentAngle;
+                            first = elist.get(i);
+                        }
+                    }
+                }
+                if (angle > Math.PI) {
+                    w = ww;
+                    break;
+                }
+            }
+        }
+
+        Edge currentE = first;
+
+        boolean roundMade = false;
+
+        while (currentE != first || !roundMade) {
+            roundMade = true;
+            LinkedList<Edge> vIn = v.getElist();
+            double minAngle = 2 * Math.PI;
+            Edge nextE = null;
+            Vertex W2 = null;
+            for (int i = 0; i < vIn.size(); i++) {
+                Edge e = vIn.get(i);
+                Vertex w2 = (e.getBot() == v) ? e.getTop() : e.getBot();
+                double angle = (currentE == e) ? 2 * Math.PI : Vertex.getClockwiseAngle(w, v, w2);
+                if (nextE == null || minAngle > angle) {
+                    nextE = e;
+                    minAngle = angle;
+                    W2 = w2;
+                }
+            }
+            ext.add(nextE);
+            currentE = nextE;
+            w = v;
+            v = W2;
+        }
+
+        externalEdges = new LinkedList(ext);
+
+
+        return ext;
+    }
+
 
 
 }

@@ -580,7 +580,7 @@ public class Window extends JPanel {
 
                 Point p2 = points.get(c.getNxnum());
 
-                double angle = AngleCalculatorSimple.getClockwiseAngle(
+                double angle = Vertex.getClockwiseAngle(
                         new Vertex(directionPoint.x, directionPoint.y),
                         new Vertex(p2.getX(), p2.getY()),
                         new Vertex(selectedPoint.getX(), selectedPoint.getY()));
@@ -743,7 +743,7 @@ public class Window extends JPanel {
 
     void rotate(java.awt.Point startPoint, java.awt.Point endPoint) {
         startPoint = (lastPoint != null) ? lastPoint : startPoint;
-        double angle = AngleCalculatorSimple.getClockwiseAngle(
+        double angle = Vertex.getClockwiseAngle(
                 new Vertex(endPoint.x, endPoint.y),
                 new Vertex(midX, midY),
                 new Vertex(startPoint.getX(), startPoint.getY()));

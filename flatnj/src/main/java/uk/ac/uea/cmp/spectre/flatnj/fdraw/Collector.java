@@ -32,20 +32,8 @@ import java.util.*;
  */
 public class Collector {
 
-    private static LinkedList<Edge> externalEdges = null;
 
-    public static LinkedList<Edge> collectAllTrivial(Vertex v) {
-        LinkedList<Edge> edges = v.getElist().getFirst().collectEdges();
-        LinkedList<Vertex> vertices = v.collectVertices();
-        LinkedList<Edge> trivial = new LinkedList<>();
-        for (int i = 0; i < vertices.size(); i++) {
-            Vertex w = vertices.get(i);
-            if (w.getElist().size() == 1) {
-                trivial.add(w.getElist().getFirst());
-            }
-        }
-        return trivial;
-    }
+
 
     public static void getExternalEdges(Collection<Edge> edges, Edge e1, Vertex a, Edge e2) {
         Edge current = e1;
@@ -93,7 +81,7 @@ public class Collector {
                 Edge e = incidentEdges.get(i);
                 if (e.length() > 0) {
                     Vertex b2 = (e.getTop() == a) ? e.getBot() : e.getTop();
-                    double angle = (b1 != b2) ? AngleCalculatorSimple.getClockwiseAngle(b1, a, b2) : 2 * Math.PI;
+                    double angle = (b1 != b2) ? Vertex.getClockwiseAngle(b1, a, b2) : 2 * Math.PI;
                     if (closest == null || minAngle > angle) {
                         closest = e;
                         minAngle = angle;
@@ -158,7 +146,7 @@ public class Collector {
                 Edge e = incidentEdges.get(i);
                 if (e.length() > 0) {
                     Vertex b2 = (e.getTop() == a) ? e.getBot() : e.getTop();
-                    double angle = (b1 != b2) ? AngleCalculatorSimple.getClockwiseAngle(b1, a, b2) : 2 * Math.PI;
+                    double angle = (b1 != b2) ? Vertex.getClockwiseAngle(b1, a, b2) : 2 * Math.PI;
                     if (closest == null || minAngle > angle) {
                         closest = e;
                         minAngle = angle;
@@ -216,26 +204,12 @@ public class Collector {
         return edges;
     }
 
-    public static LinkedList<Edge> collectAllExternalEdges(Vertex v, boolean withTrivial) {
-        LinkedList<Edge> trivialEdges = collectAllTrivial(v);
 
-        LinkedList<Edge> external = externalEdges(v);
-
-        if (!withTrivial) {
-            for (int i = 0; i < trivialEdges.size(); i++) {
-                //while is used to assure that all copies of each trivial split are
-                //deleted from chain of external edges.
-                while (external.remove(trivialEdges.get(i))) ;
-            }
-        }
-
-        return external;
-    }
 
     public static LinkedList<LinkedList<Edge>> collectBallons(double angleThreshold, Vertex v) {
         LinkedList<LinkedList<Edge>> balloons = new LinkedList<>();
 
-        LinkedList<Edge> external = Collector.collectAllExternalEdges(v, false);
+        LinkedList<Edge> external = v.collectAllExternalEdges(false);
 
         Vertex startVertex = (external.get(0).getBot() == external.get(1).getBot() || external.get(0).getBot() == external.get(1).getTop()) ? external.get(0).getTop() : external.get(0).getBot();
 
@@ -247,7 +221,7 @@ public class Collector {
         Vertex v2 = (external.getFirst().getBot() == startVertex) ? external.getFirst().getTop() : external.getFirst().getBot();
         Vertex a = startVertex;
 
-        if (AngleCalculatorSimple.getClockwiseAngle(v1, startVertex, v2) < angleThreshold) {
+        if (Vertex.getClockwiseAngle(v1, startVertex, v2) < angleThreshold) {
             startingPoint = startVertex;
             startingEdge = external.getFirst();
             terminalEdge = external.getLast();
@@ -260,7 +234,7 @@ public class Collector {
                 v1 = a;
                 a = v2;
                 v2 = (e.getTop() == a) ? e.getBot() : e.getTop();
-                if (AngleCalculatorSimple.getClockwiseAngle(v1, a, v2) < angleThreshold) {
+                if (Vertex.getClockwiseAngle(v1, a, v2) < angleThreshold) {
                     startingPoint = a;
                     startingEdge = e;
                     terminalEdge = external.get(i - 1);
@@ -289,7 +263,7 @@ public class Collector {
                 before = current;
                 current = external.get(index);
                 v2 = (current.getBot() == a) ? current.getTop() : current.getBot();
-                double angle = (v1 == v2) ? 2 * Math.PI : AngleCalculatorSimple.getClockwiseAngle(v1, a, v2);
+                double angle = (v1 == v2) ? 2 * Math.PI : Vertex.getClockwiseAngle(v1, a, v2);
                 if (angle < angleThreshold) {
                     balloonCount++;
                     balloons.add(new LinkedList<Edge>());
@@ -384,7 +358,7 @@ public class Collector {
                 Edge e = incidentEdges.get(i);
                 if (e.length() > 0) {
                     Vertex b2 = (e.getTop() == a) ? e.getBot() : e.getTop();
-                    double angle = (b1 != b2) ? AngleCalculatorSimple.getClockwiseAngle(b1, a, b2) : 2 * Math.PI;
+                    double angle = (b1 != b2) ? Vertex.getClockwiseAngle(b1, a, b2) : 2 * Math.PI;
                     if (closest == null || minAngle > angle) {
                         closest = e;
                         minAngle = angle;
@@ -510,90 +484,7 @@ public class Collector {
         return Math.min(a, b);
     }
 
-    public static LinkedList<Edge> externalEdges(Vertex V) {
-        if (externalEdges != null) {
-            return new LinkedList(externalEdges);
-        }
-        List<Vertex> vertices = V.collectVertices();
 
-        Vertex v = V;
-
-        Iterator<Vertex> vertexIt = vertices.iterator();
-        while (vertexIt.hasNext()) {
-            Vertex vertex = vertexIt.next();
-            if (v.getX() > vertex.getX()) {
-                v = vertex;
-            }
-        }
-
-        Edge first = null;
-
-        LinkedList<Edge> ext = new LinkedList<>();
-        Vertex w = null;
-
-        if (v.getElist().size() == 1) {
-            w = (v.getElist().getFirst().getBot() == v) ? v.getElist().getFirst().getTop() : v.getElist().getFirst().getBot();
-            first = v.getElist().getFirst();
-
-            Vertex t = w;
-            w = v;
-            v = t;
-        } else {
-            List<Edge> elist = v.getElist();
-
-            for (int i = 0; i < elist.size(); i++) {
-                Vertex ww = null;
-                Vertex w0 = (elist.get(i).getBot() == v) ? elist.get(i).getTop() : elist.get(i).getBot();
-                double angle = 0;
-                for (int j = 0; j < elist.size(); j++) {
-                    if (i != j) {
-                        Vertex w1 = (elist.get(j).getBot() == v) ? elist.get(j).getTop() : elist.get(j).getBot();
-                        double currentAngle = AngleCalculatorSimple.getClockwiseAngle(w0, v, w1);
-                        if (ww == null || currentAngle < angle) {
-                            ww = w0;
-                            angle = currentAngle;
-                            first = elist.get(i);
-                        }
-                    }
-                }
-                if (angle > Math.PI) {
-                    w = ww;
-                    break;
-                }
-            }
-        }
-
-        Edge currentE = first;
-
-        boolean roundMade = false;
-
-        while (currentE != first || !roundMade) {
-            roundMade = true;
-            LinkedList<Edge> vIn = v.getElist();
-            double minAngle = 2 * Math.PI;
-            Edge nextE = null;
-            Vertex W2 = null;
-            for (int i = 0; i < vIn.size(); i++) {
-                Edge e = vIn.get(i);
-                Vertex w2 = (e.getBot() == v) ? e.getTop() : e.getBot();
-                double angle = (currentE == e) ? 2 * Math.PI : AngleCalculatorSimple.getClockwiseAngle(w, v, w2);
-                if (nextE == null || minAngle > angle) {
-                    nextE = e;
-                    minAngle = angle;
-                    W2 = w2;
-                }
-            }
-            ext.add(nextE);
-            currentE = nextE;
-            w = v;
-            v = W2;
-        }
-
-        externalEdges = new LinkedList(ext);
-
-
-        return ext;
-    }
 
     static LinkedList<Edge> collectAllCompatibleNonTrivial(Vertex V) {
         LinkedList<Edge> edges = V.getFirstEdge().collectEdges();
@@ -645,91 +536,5 @@ public class Collector {
         }
     }
 
-    public static List<Edge> externalEdges(List<Vertex> vertices) {
-        if (externalEdges != null) {
-            return new LinkedList(externalEdges);
-        }
 
-        Vertex v = vertices.get(0);
-
-        Iterator<Vertex> vertexIt = vertices.iterator();
-        while (vertexIt.hasNext()) {
-            Vertex vertex = vertexIt.next();
-            if (v.getX() > vertex.getX()) {
-                v = vertex;
-            }
-        }
-
-        Edge first = null;
-
-        LinkedList<Edge> ext = new LinkedList<>();
-        Vertex w = null;
-
-        if (v.getElist().size() == 1) {
-            w = (v.getElist().getFirst().getBot() == v) ? v.getElist().getFirst().getTop() : v.getElist().getFirst().getBot();
-            first = v.getElist().getFirst();
-
-            Vertex t = w;
-            w = v;
-            v = t;
-        } else {
-            List<Edge> elist = v.getElist();
-
-            for (int i = 0; i < elist.size(); i++) {
-                Vertex ww = null;
-                Vertex w0 = (elist.get(i).getBot() == v) ? elist.get(i).getTop() : elist.get(i).getBot();
-                double angle = 0;
-                for (int j = 0; j < elist.size(); j++) {
-                    if (i != j) {
-                        Vertex w1 = (elist.get(j).getBot() == v) ? elist.get(j).getTop() : elist.get(j).getBot();
-                        double currentAngle = AngleCalculatorSimple.getClockwiseAngle(w0, v, w1);
-                        if (ww == null || currentAngle < angle) {
-                            ww = w0;
-                            angle = currentAngle;
-                            first = elist.get(i);
-                        }
-                    }
-                }
-                if (angle > Math.PI) {
-                    w = ww;
-                    break;
-                }
-            }
-        }
-
-        Edge currentE = first;
-
-        boolean roundMade = false;
-
-        while (currentE != first || !roundMade) {
-            roundMade = true;
-            LinkedList<Edge> vIn = v.getElist();
-            double minAngle = 2 * Math.PI;
-            Edge nextE = null;
-            Vertex W2 = null;
-            for (int i = 0; i < vIn.size(); i++) {
-                Edge e = vIn.get(i);
-                Vertex w2 = (e.getBot() == v) ? e.getTop() : e.getBot();
-                double angle = (currentE == e) ? 2 * Math.PI : AngleCalculatorSimple.getClockwiseAngle(w, v, w2);
-                if (nextE == null || minAngle > angle) {
-                    nextE = e;
-                    minAngle = angle;
-                    W2 = w2;
-                }
-            }
-            ext.add(nextE);
-            currentE = nextE;
-            w = v;
-            v = W2;
-        }
-
-        externalEdges = new LinkedList(ext);
-
-
-        return ext;
-    }
-
-    public static void reset() {
-        externalEdges = null;
-    }
 }

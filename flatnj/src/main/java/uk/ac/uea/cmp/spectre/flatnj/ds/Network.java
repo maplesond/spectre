@@ -27,7 +27,7 @@ import java.util.*;
  * @author balvociute
  */
 public class Network {
-    private List<Vertex> allVertices;
+    private VertexList allVertices;
     private List<Vertex> labeledVertices;
 
     private List<Edge> allEdges;
@@ -55,7 +55,7 @@ public class Network {
         }
 
         allEdges = v.getFirstEdge().collectEdges();
-        externalEdges = Collector.externalEdges(v);
+        externalEdges = v.collectExternalEdges();
         trivialEdges = new LinkedList<>();
         internalEdges = new LinkedList<>();
         for (int i = 0; i < allEdges.size(); i++) {
@@ -79,7 +79,7 @@ public class Network {
     }
 
     public Network(Vertex[] vertices, Edge[] edges) {
-        allVertices = new LinkedList<>();
+        allVertices = new VertexList();
         allVertices.addAll(Arrays.asList(vertices));
 
         labeledVertices = new LinkedList<>();
@@ -92,7 +92,7 @@ public class Network {
 
         allEdges = new LinkedList<>();
         allEdges.addAll(Arrays.asList(edges));
-        externalEdges = Collector.externalEdges(allVertices);
+        externalEdges = allVertices.collectExternalEdges();
         trivialEdges = new LinkedList<>();
         internalEdges = new LinkedList<>();
         for (Iterator<Edge> it = allEdges.iterator(); it.hasNext(); ) {
@@ -142,9 +142,8 @@ public class Network {
     }
 
     public void removeVertices(LinkedList<Vertex> vertices) {
-        Iterator<Vertex> vertexIt = vertices.iterator();
-        while (vertexIt.hasNext()) {
-            labeledVertices.remove(vertexIt.next());
+        for(Vertex v : vertices) {
+            labeledVertices.remove(v);
         }
     }
 
@@ -335,15 +334,9 @@ public class Network {
     }
 
     public List<Edge> getCompatible() {
-        List<Edge> compatible = new LinkedList<>();
-        for (int i = 0; i < allEdges.size(); i++) {
-            Edge e = allEdges.get(i);
-            if (e.isCompatible()) {
-                compatible.add(e);
-            }
-        }
-        return compatible;
+        return new EdgeList(this.allEdges).getCompatible();
     }
+
 
     public void setLabeled(List<Vertex> labeled) {
         this.labeledVertices = labeled;
