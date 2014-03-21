@@ -21,15 +21,21 @@ import uk.ac.uea.cmp.spectre.core.ds.Alignment;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrixBuilder;
+import uk.ac.uea.cmp.spectre.core.ds.network.Edge;
+import uk.ac.uea.cmp.spectre.core.ds.network.Label;
+import uk.ac.uea.cmp.spectre.core.ds.network.Network;
+import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
 import uk.ac.uea.cmp.spectre.core.ds.split.Split;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitBlock;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.spectre.core.io.AbstractPhygenWriter;
 
+import java.awt.*;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Used to handle streaming data to Nexus format file from SplitSystem objects and other splits and length data. Can
@@ -272,6 +278,86 @@ public class NexusWriter extends AbstractPhygenWriter implements Appendable {
         }
         this.appendLine(";");
         this.appendLine("END; [Splits]");
+        return this;
+    }
+
+
+    public NexusWriter append(Network network) {
+
+        int nTaxa = network.getNbTaxa();
+
+        List<Vertex> vertices = network.getVertices();
+        List<Edge> edges = network.getEdges();
+
+        this.appendLine("BEGIN Network;");
+        this.appendLine("DIMENSIONS ntax=" + nTaxa + " nvertices=" + vertices.size() + " nedges=" + edges.size() + ";");
+        this.appendLine("DRAW to_scale;");
+        this.appendLine("TRANSLATE");
+
+        //write translate section
+        for(Vertex v : vertices) {
+            if (v.getTaxa().size() > 0) {
+                String line = String.valueOf((v.getNxnum()));
+                for(Integer i : v.getTaxa()) {
+                    line += " '" + i + "'";
+                }
+                line += ",";
+                this.appendLine(line);
+            }
+        }
+        this.appendLine(";");
+        //write vertices section
+        this.appendLine("VERTICES");
+        for(Vertex v : vertices) {
+
+            Color bg = v.getBackgroundColor();
+            Color fg = v.getLineColor();
+            String shape = (v.getShape() == null) ? "" : " s=" + v.getShape();
+            String line = (v.getNxnum() + 1) + " " + v.getX() + " " + v.getY() + " w=" + v.getWidth() + " h=" + v.getHeight() + shape;
+            if (!fg.equals(Color.BLACK)) {
+                line = line.concat(" fg=" + fg.getRed() + " " + fg.getGreen() + " " + fg.getBlue());
+            }
+            if (!bg.equals(Color.BLACK)) {
+                line = line.concat(" bg=" + bg.getRed() + " " + bg.getGreen() + " " + bg.getBlue());
+            }
+            this.appendLine(line + ",");
+        }
+        this.appendLine(";");
+        //write vertex labels section
+        this.appendLine("VLABELS");
+        for(Vertex v : vertices) {
+            if (v.getTaxa().size() > 0) {
+                String label = new String();
+                for(Integer i : v.getTaxa()) {
+                    label = (i + ", ").concat(label);
+                }
+                label = label.substring(0, label.length() - 2);
+                this.appendLine((v.getNxnum() + 1) + " '" + label + "' x=2 y=2 f='Dialog-PLAIN-10',");
+            } else if (v.getLabel() != null) {
+                Label l = v.getLabel();
+                String label = (v.getNxnum() + 1) + " '" + l.getName() + "' x=" + ((int) l.getOffsetX()) + " y=" + ((int) l.getOffsetY()) + " f='" + l.getFontFamily() + "-" + l.getFontStyle() + "-" + l.getFontSize() + "'";
+                if (l.getFontColor() != null) {
+                    Color c = l.getFontColor();
+                    label = label.concat(" lc=" + c.getRed() + " " + c.getGreen() + " " + c.getBlue());
+                }
+                if (l.getBackgroundColor() != null) {
+                    Color c = l.getBackgroundColor();
+                    label = label.concat(" lk=" + c.getRed() + " " + c.getGreen() + " " + c.getBlue());
+                }
+                label = label.concat(",");
+                this.appendLine(label);
+            }
+        }
+        this.appendLine(";");
+        //Write the edges.
+        this.appendLine("EDGES");
+        for(Edge e : edges) {
+            Color c = e.getColor();
+            this.appendLine((e.getNxnum() + 1) + " " + ((e.getTop()).getNxnum() + 1) + " " + ((e.getBot()).getNxnum() + 1) + " s=" + (e.getIdxsplit() + 1) + " l=" + e.getWidth() + " fg=" + c.getRed() + " " + c.getGreen() + " " + c.getBlue() + ",");
+        }
+        this.appendLine(";");
+        this.appendLine("END;");
+
         return this;
     }
 

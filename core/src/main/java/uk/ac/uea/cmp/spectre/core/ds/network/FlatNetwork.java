@@ -80,6 +80,11 @@ public class FlatNetwork implements Network {
         return this.vertexLabels;
     }
 
+    @Override
+    public int getNbTaxa() {
+        return this.getLabels().size();
+    }
+
     public List<Edge> externalEdges(List<Vertex> vertices) {
         if (externalEdges != null) {
             return new LinkedList<>(externalEdges);

@@ -32,4 +32,6 @@ public interface Network {
     EdgeList getEdges();
 
     List<Label> getLabels();
+
+    int getNbTaxa();
 }
