@@ -88,12 +88,26 @@ block_declaration :
 block_taxa :
     taxa_header ';'
     dimensions_taxa
-    taxlabels;
+    tax_labels
+    tax_info;
 
 taxa_header : 'taxa' | 'Taxa' | 'TAXA';
 
 dimensions_taxa : dimensions ntax ';';
 
+tax_info :
+     // Empty
+    | tax_info_header tax_info_entries
+    ;
+
+tax_info_header : 'taxinfo' | 'TAXINFO';
+
+tax_info_entries :
+     //Empty
+    | tax_info_entry tax_info_entries
+    ;
+
+tax_info_entry : IDENTIFIER;
 
 
 
@@ -105,7 +119,7 @@ block_distances :
     distances_header ';'
     dimensions_distances
     format_distances
-    taxlabels_optional
+    tax_labels_optional
     matrix_header matrix_data ';';
 
 distances_header : 'distances' | 'Distances' | 'DISTANCES';
@@ -606,7 +620,9 @@ identifier_list :
 // Any character except any of the following: \n\s()[]{}<>/\,;:=*^'"
 missing : 'missing' '=' LETTER_US;
 
-ntax : 'ntax' '=' INT;
+ntax : ntax_header '=' INT;
+
+ntax_header : 'ntax' | 'NTAX';
 
 newtaxa :
       'newtaxa' ntax
@@ -636,17 +652,17 @@ star :
     | '*'
     ;
 
-taxlabels :
-      taxlabels_header IDENTIFIER identifier_list ';'
-    | taxlabels_header '\'' IDENTIFIER '\'' identifier_list ';'
+tax_labels :
+      tax_labels_header IDENTIFIER identifier_list ';'
+    | tax_labels_header '\'' IDENTIFIER '\'' identifier_list ';'
     ;
 
-taxlabels_optional :
+tax_labels_optional :
     // Empty
-    | taxlabels
+    | tax_labels
     ;
 
-taxlabels_header : 'taxlabels' | 'TAXLABELS';
+tax_labels_header : 'taxlabels' | 'TAXLABELS';
 
 
 number : INT | FLOAT;

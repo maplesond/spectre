@@ -241,11 +241,11 @@ public class NexusFilePopulator implements NexusFileListener {
 
         IdentifierList taxa = this.nexus.getTaxa();
 
-        if (ctx.taxlabels() != null) {
+        if (ctx.tax_labels() != null) {
 
-            taxa.add(new Identifier(ctx.taxlabels().IDENTIFIER().getText()));
+            taxa.add(new Identifier(ctx.tax_labels().IDENTIFIER().getText()));
 
-            NexusFileParser.Identifier_listContext idListCtx = ctx.taxlabels().identifier_list();
+            NexusFileParser.Identifier_listContext idListCtx = ctx.tax_labels().identifier_list();
 
             while (idListCtx != null && idListCtx.IDENTIFIER() != null) {
                 taxa.add(new Identifier(idListCtx.IDENTIFIER().getText()));
@@ -338,6 +338,16 @@ public class NexusFilePopulator implements NexusFileListener {
                         ctx.boolean_option().getText().equalsIgnoreCase("true") ||
                                 ctx.boolean_option().getText().equalsIgnoreCase("yes")
         );
+    }
+
+    @Override
+    public void enterTax_info_header(@NotNull NexusFileParser.Tax_info_headerContext ctx) {
+
+    }
+
+    @Override
+    public void exitTax_info_header(@NotNull NexusFileParser.Tax_info_headerContext ctx) {
+
     }
 
     @Override
@@ -719,16 +729,6 @@ public class NexusFilePopulator implements NexusFileListener {
     }
 
     @Override
-    public void enterTaxlabels_optional(@NotNull NexusFileParser.Taxlabels_optionalContext ctx) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void exitTaxlabels_optional(@NotNull NexusFileParser.Taxlabels_optionalContext ctx) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
     public void enterBlock_declaration(@NotNull NexusFileParser.Block_declarationContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -805,6 +805,16 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitVlabels_network(@NotNull NexusFileParser.Vlabels_networkContext ctx) {
+
+    }
+
+    @Override
+    public void enterTax_labels_optional(@NotNull NexusFileParser.Tax_labels_optionalContext ctx) {
+
+    }
+
+    @Override
+    public void exitTax_labels_optional(@NotNull NexusFileParser.Tax_labels_optionalContext ctx) {
 
     }
 
@@ -978,6 +988,16 @@ public class NexusFilePopulator implements NexusFileListener {
     }
 
     @Override
+    public void enterTax_labels_header(@NotNull NexusFileParser.Tax_labels_headerContext ctx) {
+
+    }
+
+    @Override
+    public void exitTax_labels_header(@NotNull NexusFileParser.Tax_labels_headerContext ctx) {
+
+    }
+
+    @Override
     public void enterVlabels_network_entry(@NotNull NexusFileParser.Vlabels_network_entryContext ctx) {
 
         Label label = new Label();
@@ -1074,13 +1094,23 @@ public class NexusFilePopulator implements NexusFileListener {
     }
 
     @Override
-    public void enterTaxlabels(@NotNull NexusFileParser.TaxlabelsContext ctx) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    public void enterNtax_header(@NotNull NexusFileParser.Ntax_headerContext ctx) {
+
     }
 
     @Override
-    public void exitTaxlabels(@NotNull NexusFileParser.TaxlabelsContext ctx) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    public void exitNtax_header(@NotNull NexusFileParser.Ntax_headerContext ctx) {
+
+    }
+
+    @Override
+    public void enterTax_labels(@NotNull NexusFileParser.Tax_labelsContext ctx) {
+
+    }
+
+    @Override
+    public void exitTax_labels(@NotNull NexusFileParser.Tax_labelsContext ctx) {
+
     }
 
     @Override
@@ -1121,6 +1151,26 @@ public class NexusFilePopulator implements NexusFileListener {
     @Override
     public void exitV_quartet(@NotNull NexusFileParser.V_quartetContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void enterTax_info_entries(@NotNull NexusFileParser.Tax_info_entriesContext ctx) {
+
+    }
+
+    @Override
+    public void exitTax_info_entries(@NotNull NexusFileParser.Tax_info_entriesContext ctx) {
+
+    }
+
+    @Override
+    public void enterTax_info(@NotNull NexusFileParser.Tax_infoContext ctx) {
+
+    }
+
+    @Override
+    public void exitTax_info(@NotNull NexusFileParser.Tax_infoContext ctx) {
+
     }
 
     @Override
@@ -1365,6 +1415,16 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitEdges_network_options(@NotNull NexusFileParser.Edges_network_optionsContext ctx) {
+
+    }
+
+    @Override
+    public void enterTax_info_entry(@NotNull NexusFileParser.Tax_info_entryContext ctx) {
+
+    }
+
+    @Override
+    public void exitTax_info_entry(@NotNull NexusFileParser.Tax_info_entryContext ctx) {
 
     }
 
@@ -1760,16 +1820,6 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitTranslate(@NotNull NexusFileParser.TranslateContext ctx) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void enterTaxlabels_header(@NotNull NexusFileParser.Taxlabels_headerContext ctx) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void exitTaxlabels_header(@NotNull NexusFileParser.Taxlabels_headerContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
