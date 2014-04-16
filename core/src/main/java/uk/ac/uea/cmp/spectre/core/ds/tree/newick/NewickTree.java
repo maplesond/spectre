@@ -19,6 +19,7 @@ package uk.ac.uea.cmp.spectre.core.ds.tree.newick;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
+import uk.ac.uea.cmp.spectre.core.ds.Identifier;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.quartet.CanonicalWeightedQuartetMap;
 import uk.ac.uea.cmp.spectre.core.ds.tree.newick.parser.NewickTreeLexer;
@@ -96,6 +97,26 @@ public class NewickTree extends NewickNode {
         //TODO apply scaling factor  ???
     }
 
+    public void applyPrefixToNames(String prefix) {
+        if (this.branches.isEmpty())
+            return;
+
+        for(Identifier id : this.taxa) {
+            id.setName(prefix + id.getName());
+        }
+    }
+
+    @Override
+    public String toString() {
+
+        if (this.branches.isEmpty())
+            return "";
+
+        if (this.branches.size() != 1)
+            return "";
+
+        return this.getFirstBranch() + ";";
+    }
 
     @Override
     public boolean isBinary() {

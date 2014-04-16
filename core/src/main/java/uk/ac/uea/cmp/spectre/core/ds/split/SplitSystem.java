@@ -93,6 +93,19 @@ public interface SplitSystem {
      */
     Split mergeSplits(final int i, final int j);
 
+    /**
+     * Whether or not this splitsystem contains the specified split.
+     * @param s Split to test
+     * @return True if this split system contains the split, otherwise false.
+     */
+    boolean contains(Split s);
+
+    /**
+     * Whether or not this splitsystem contains the specified splitblock.
+     * @param sb Splitblock to test
+     * @return True if this split system contains the splitblock, otherwise false.
+     */
+    boolean contains(SplitBlock sb);
 
     // **** Methods related to split weights ****
 

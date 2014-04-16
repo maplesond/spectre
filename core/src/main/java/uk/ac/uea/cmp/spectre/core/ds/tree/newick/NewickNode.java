@@ -101,6 +101,37 @@ public abstract class NewickNode {
         }
     }
 
+    @Override
+    public String toString() {
+
+        StringBuilder sb = new StringBuilder();
+
+        if (this.branches.isEmpty()) {
+            sb.append(this.taxon.getName());
+        }
+        else {
+
+            sb.append("(");
+            sb.append(this.branches.get(0).toString());
+
+            for (int i = 1; i < this.branches.size(); i++) {
+                sb.append(",");
+                sb.append(this.branches.get(i).toString());
+            }
+
+            sb.append(")");
+
+            if (taxon != null) {
+                sb.append(this.taxon.getName());
+            }
+        }
+
+        sb.append(":");
+        sb.append(length);
+
+        return sb.toString();
+    }
+
     public boolean isBinary() {
 
         if (this.isLeaf())

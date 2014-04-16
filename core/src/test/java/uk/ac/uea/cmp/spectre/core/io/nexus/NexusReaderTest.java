@@ -214,4 +214,14 @@ public class NexusReaderTest {
         assertFalse(edges.isEmpty());
 
     }
+
+    @Test
+    public void testSPR32() throws IOException {
+
+        File testFile = FileUtils.toFile(NexusReaderTest.class.getResource("/SPR32.nex"));
+
+        Nexus nexus = new NexusReader().parse(testFile);
+
+        assertTrue(nexus.getTaxa().size() == 32);
+    }
 }

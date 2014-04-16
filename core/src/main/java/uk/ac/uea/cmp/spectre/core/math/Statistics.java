@@ -27,13 +27,35 @@ import java.util.List;
  */
 public class Statistics {
 
-    public static double mean(double[] array) {
+    // ****** Mean of various arrays *******
 
-        return sumDoubles(array) / array.length;
+    public static double mean(int[] array)      { return (double)sumIntegers(array) / (double)array.length; }
+    public static double mean(long[] array)     { return (double)sumLongs(array) / (double)array.length; }
+    public static double mean(double[] array)   { return sumDoubles(array) / (double)array.length; }
+
+    public static double variance(int[] array)      { return variance(array, mean(array)); }
+    public static double variance(long[] array)     { return variance(array, mean(array)); }
+    public static double variance(double[] array)   { return variance(array, mean(array)); }
+
+
+    // ****** Variance of various arrays *******
+
+    public static double variance(int[] array, double mean) {
+
+        double variance = 0.0;
+        for (int i : array) {
+            variance += (mean - (double)i) * (mean - (double)i);
+        }
+        return variance / array.length;
     }
 
-    public static double variance(double[] array) {
-        return variance(array, mean(array));
+    public static double variance(long[] array, double mean) {
+
+        double variance = 0.0;
+        for (long l : array) {
+            variance += (mean - (double)l) * (mean - (double)l);
+        }
+        return variance / array.length;
     }
 
     public static double variance(double[] array, double mean) {
@@ -45,17 +67,25 @@ public class Statistics {
         return variance / array.length;
     }
 
-    public static double stddev(double[] array) {
-        return stddev(variance(array));
-    }
 
-    public static double stddev(double[] array, double mean) {
-        return stddev(variance(array, mean));
-    }
+    // ****** Standard Deviation of various arrays *******
 
-    public static double stddev(double variance) {
-        return Math.sqrt(variance);
-    }
+    public static double stddev(int[] array)                    { return stddev(variance(array)); }
+    public static double stddev(long[] array)                   { return stddev(variance(array)); }
+    public static double stddev(double[] array)                 { return stddev(variance(array)); }
+    public static double stddev(int[] array, double mean)       { return stddev(variance(array, mean)); }
+    public static double stddev(long[] array, double mean)      { return stddev(variance(array, mean)); }
+    public static double stddev(double[] array, double mean)    { return stddev(variance(array, mean)); }
+    public static double stddev(double variance)                { return Math.sqrt(variance); }
+
+
+    // ****** Standard Error of various arrays ******
+
+    public static double stderr(int[] array)                    { return stderr(stddev(array), array.length); }
+    public static double stderr(long[] array)                   { return stderr(stddev(array), array.length); }
+    public static double stderr(double[] array)                 { return stderr(stddev(array), array.length); }
+    public static double stderr(double stddev, int n)           { return stddev / Math.sqrt(n); }
+
 
 
     // ****** Summing lists and arrays *******

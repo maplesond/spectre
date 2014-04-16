@@ -144,4 +144,5 @@ public class SuperQOptions {
     public void setVerbose(boolean verbose) {
         this.verbose = verbose;
     }
+
 }

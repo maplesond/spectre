@@ -17,11 +17,16 @@
 package uk.ac.uea.cmp.spectre.qtools.superq;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import uk.ac.tgac.metaopt.Optimiser;
 import uk.ac.tgac.metaopt.OptimiserException;
+import uk.ac.tgac.metaopt.external.JOptimizer;
 
 import java.io.File;
 
@@ -46,8 +51,8 @@ public class SuperQITCase {
         simpleOutput = folder.newFolder("simple");
 
         // Uncomment this line if you want to see output.
-        //BasicConfigurator.configure();
-        //LogManager.getRootLogger().setLevel(Level.INFO);
+        BasicConfigurator.configure();
+        LogManager.getRootLogger().setLevel(Level.INFO);
     }
 
 
@@ -158,6 +163,28 @@ public class SuperQITCase {
         SuperQOptions options = this.createSimpleOptions(
                 "/arabidopsis/flowers.script",
                 new File(simpleOutput, "arabidopsis.out"));
+
+        SuperQ superQ = new SuperQ(options);
+
+        superQ.run();
+
+        if (superQ.failed()) {
+            System.err.println(superQ.getFullErrorMessage());
+        }
+
+        assertFalse(superQ.failed());
+    }
+
+    //@Test
+    public void testSPR32() throws OptimiserException {
+
+        Optimiser opt = new JOptimizer();
+
+        SuperQOptions options = new SuperQOptions();
+        options.setInputFiles(new File[]{FileUtils.toFile(SuperQITCase.class.getResource("/simple/SPR_32.tre"))});
+        options.setOutputFile(new File(simpleOutput, "SPR_32.out.nex"));
+        options.setPrimarySolver(opt);
+        options.setFilter(0.001);
 
         SuperQ superQ = new SuperQ(options);
 

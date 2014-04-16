@@ -125,9 +125,6 @@ public class SpectreSplitSystem implements SplitSystem {
     }
 
 
-
-
-
     public SpectreSplitSystem(SplitSystem unweightedSplitSystem, TreeSplitWeights treeWeights) {
 
         // Create a copy of the split system
@@ -195,6 +192,34 @@ public class SpectreSplitSystem implements SplitSystem {
     }
 
 
+    @Override
+    public boolean contains(Split split) {
+
+        Split ss = split.makeSortedCopy();
+
+        for(Split s : this.getSplits()) {
+            if (s.makeSortedCopy().equals(ss)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+
+    @Override
+    public boolean contains(SplitBlock sb) {
+
+        SplitBlock ssb = sb.makeSortedCopy();
+
+        for(Split s : this.getSplits()) {
+            if (s.getASide().makeSortedCopy().equals(ssb) || s.getBSide().makeSortedCopy().equals(ssb)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     /**
      * Appends a split at a specified position in this split system

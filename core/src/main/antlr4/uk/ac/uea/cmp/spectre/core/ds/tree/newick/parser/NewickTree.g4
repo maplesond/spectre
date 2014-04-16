@@ -24,7 +24,7 @@ WEIGHT  : ';' DIGIT+ '.' DIGIT+   // match 1. 39. 3.14159 etc... (but no negativ
 
 fragment DIGIT : [0-9];     // match single digit
 fragment LETTER : [a-zA-Z];
-fragment OTHER : [_-@#~];
+fragment OTHER : '_' | '-' | '@' | '#' | '~';
 
 // We're going to ignore all white space characters
 WS : [ \t\r\n]+ -> skip;

@@ -105,6 +105,11 @@ public class CyclicOrderer {
         // Now, the lists should contain the desired circular ordering, convert those into a circular ordering object
         IdentifierList circularOrdering = new IdentifierList(paths.get(0).getNumbers());
 
+        // Apply the original taxa names to the circular ordering
+        for(Identifier id : circularOrdering) {
+            id.setName(taxa.getById(id.getId()).getName());
+        }
+
         log.info("QNet circular ordering computed:");
         log.info(" IDs:   " + circularOrdering.toString(IdentifierList.IdentifierFormat.BY_ID));
         log.info(" Names: " + circularOrdering.toString(IdentifierList.IdentifierFormat.BY_NAME));
