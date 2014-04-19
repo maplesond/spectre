@@ -14,7 +14,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.core.math;
+package uk.ac.uea.cmp.spectre.core.math.stats;
 
 import java.util.List;
 
@@ -26,6 +26,59 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public class Statistics {
+
+    private String desc;
+    private double sum;
+    private double mean;
+    private double stddev;
+
+    public Statistics(String desc, int[] counts) {
+
+        this.desc = desc;
+        this.sum = Statistics.sumIntegers(counts);
+        this.mean = Statistics.mean(counts);
+        this.stddev = Statistics.stddev(counts, mean);
+    }
+
+    public Statistics(String desc, double[] counts) {
+
+        this.desc = desc;
+        this.sum = Statistics.sumDoubles(counts);
+        this.mean = Statistics.mean(counts);
+        this.stddev = Statistics.stddev(counts, mean);
+    }
+
+
+    public String getDesc() {
+        return desc;
+    }
+
+    public double getSum() {
+        return sum;
+    }
+
+    public double getMean() {
+        return mean;
+    }
+
+    public double getStddev() {
+        return stddev;
+    }
+
+    public static String createHeaderString(String prefix) {
+        return prefix != null ?
+                prefix + "sum\t" + prefix + "mean\t" + prefix + "std_dev" :
+                "sum\tmean\tstd_dev";
+
+    }
+
+    public String createTabSeparatedString() {
+        return sum + "\t" + mean + "\t" + stddev;
+    }
+
+
+    // ***** Static functions ********
+
 
     // ****** Mean of various arrays *******
 
@@ -85,7 +138,6 @@ public class Statistics {
     public static double stderr(long[] array)                   { return stderr(stddev(array), array.length); }
     public static double stderr(double[] array)                 { return stderr(stddev(array), array.length); }
     public static double stderr(double stddev, int n)           { return stddev / Math.sqrt(n); }
-
 
 
     // ****** Summing lists and arrays *******

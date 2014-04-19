@@ -11,13 +11,13 @@ options
 
 WORD : (LETTER | OTHER | DIGIT)+;
 
-LENGTH  : ':' DIGIT+ '.' DIGIT*   // match 1. 39. 3.14159 etc... (but no negative numbers)
-        | ':' DIGIT* '.' DIGIT+
+LENGTH  : ':' DIGIT+ '.' DIGIT* (EXP)?   // match 1. 39. 3.14159 etc... (but no negative numbers)
+        | ':' DIGIT* '.' DIGIT+ (EXP)?
         | ':' DIGIT+
         ;
 
-WEIGHT  : ';' DIGIT+ '.' DIGIT+   // match 1. 39. 3.14159 etc... (but no negative numbers)
-        | ';' DIGIT* '.' DIGIT*
+WEIGHT  : ';' DIGIT+ '.' DIGIT+ (EXP)?  // match 1. 39. 3.14159 etc... (but no negative numbers)
+        | ';' DIGIT* '.' DIGIT* (EXP)?
         | ';' DIGIT+
         ;
 
@@ -25,6 +25,7 @@ WEIGHT  : ';' DIGIT+ '.' DIGIT+   // match 1. 39. 3.14159 etc... (but no negativ
 fragment DIGIT : [0-9];     // match single digit
 fragment LETTER : [a-zA-Z];
 fragment OTHER : '_' | '-' | '@' | '#' | '~';
+fragment EXP : ('e' | 'E') ('-')? DIGIT+;
 
 // We're going to ignore all white space characters
 WS : [ \t\r\n]+ -> skip;

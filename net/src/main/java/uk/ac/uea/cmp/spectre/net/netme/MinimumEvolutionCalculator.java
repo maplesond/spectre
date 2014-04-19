@@ -21,7 +21,7 @@ import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.split.SpectreSplitSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.TreeSplitWeights;
-import uk.ac.uea.cmp.spectre.core.math.Statistics;
+import uk.ac.uea.cmp.spectre.core.math.stats.Statistics;
 
 import java.util.ArrayList;
 

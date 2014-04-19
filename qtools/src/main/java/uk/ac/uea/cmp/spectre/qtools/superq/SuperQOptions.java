@@ -52,6 +52,11 @@ public class SuperQOptions {
             "The format is detected automatically according " +
             "to the file extension (e.g., Newick: .tre, script: .script)";
 
+
+    public static final Double DEFAULT_FILTER = 0.1;
+    public static final boolean DEFAULT_VERBOSE = false;
+
+
     private File[] inputFiles;
     private File outputFile;
     private Optimiser scalingSolver;
@@ -64,7 +69,7 @@ public class SuperQOptions {
     public SuperQOptions() throws OptimiserException {
         this(null, null,
                 null, null, null, null,
-                null, false);
+                DEFAULT_FILTER, DEFAULT_VERBOSE);
     }
 
     public SuperQOptions(File[] inputFiles, File outputFile,

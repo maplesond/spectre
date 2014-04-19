@@ -164,4 +164,12 @@ public class NewickTreeTest {
         assertTrue(true);
     }
 
+    @Test
+    public void testExp() throws IOException {
+        NewickTree nt = new NewickTree("(A:0.1E-2,B:0.2e5,(C:0.3,D:0.4)E:0.5)F;");
+        String str = nt.toString();
+
+        assertTrue(true);
+    }
+
 }

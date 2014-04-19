@@ -25,7 +25,7 @@ import uk.ac.uea.cmp.spectre.core.ds.split.Split;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitBlock;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitDistanceMap;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
-import uk.ac.uea.cmp.spectre.core.math.Statistics;
+import uk.ac.uea.cmp.spectre.core.math.stats.Statistics;
 import uk.ac.uea.cmp.spectre.net.netmake.EdgeHandling;
 import uk.ac.uea.cmp.spectre.net.netmake.SummedDistanceList;
 

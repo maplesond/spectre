@@ -101,6 +101,15 @@ public abstract class NewickNode {
         }
     }
 
+    public void setAllLengthsTo(double length) {
+
+        this.length = length;
+
+        for(NewickNode n : this.branches) {
+            n.setAllLengthsTo(length);
+        }
+    }
+
     @Override
     public String toString() {
 
