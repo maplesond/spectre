@@ -13,11 +13,15 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-package uk.ac.uea.cmp.spectre.core.ds.split;
+package uk.ac.uea.cmp.spectre.core.alg;
 
 import uk.ac.uea.cmp.spectre.core.ds.Identifier;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
+import uk.ac.uea.cmp.spectre.core.ds.split.Split;
+import uk.ac.uea.cmp.spectre.core.ds.split.SplitBlock;
+import uk.ac.uea.cmp.spectre.core.ds.split.SplitWeights;
+import uk.ac.uea.cmp.spectre.core.ds.split.TreeSplitWeights;
 
 import java.util.*;
 

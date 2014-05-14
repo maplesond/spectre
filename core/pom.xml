@@ -80,15 +80,6 @@
             <groupId>org.kohsuke.metainf-services</groupId>
             <artifactId>metainf-services</artifactId>
             <version>1.1</version>
-            <optional>true</optional>
-        </dependency>
-
-        <!-- Meta optimizer -->
-
-        <dependency>
-            <groupId>uk.ac.tgac.metaopt</groupId>
-            <artifactId>metaopt</artifactId>
-            <version>0.1</version>
         </dependency>
 
 

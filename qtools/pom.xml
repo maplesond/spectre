@@ -146,6 +146,14 @@
             <version>${spectre-version}</version>
         </dependency>
 
+        <!-- Meta optimizer -->
+
+        <dependency>
+            <groupId>uk.ac.tgac.metaopt</groupId>
+            <artifactId>metaopt</artifactId>
+            <version>0.1</version>
+        </dependency>
+
 
         <dependency>
             <groupId>uk.ac.uea.cmp.spectre</groupId>

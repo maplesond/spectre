@@ -15,6 +15,7 @@
  */
 package uk.ac.uea.cmp.spectre.core.ds.split;
 
+import uk.ac.uea.cmp.spectre.core.alg.CircularNNLS;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 

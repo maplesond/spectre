@@ -14,7 +14,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.core.ds.quartet.scale;
+package uk.ac.uea.cmp.spectre.qtools.scale;
 
 import uk.ac.tgac.metaopt.*;
 
@@ -31,6 +31,7 @@ public class ScalingOptimiser {
     public ScalingOptimiser(Optimiser optimiser) {
         this.optimiser = optimiser;
     }
+
 
     public Solution optimise(double[][] h) throws OptimiserException {
 
