@@ -85,7 +85,7 @@ public class WeightedQuartetGroupMap extends HashMap<Quartet, QuartetWeights> {
     @Override
     public QuartetWeights put(Quartet quartet, QuartetWeights weights) {
 
-        Quartet sorted = quartet.createSortedQuartet();
+        Quartet sorted = quartet.createSortedCopy();
 
         super.put(sorted, weights);
 

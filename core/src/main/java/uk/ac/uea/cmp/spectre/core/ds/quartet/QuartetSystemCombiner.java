@@ -100,7 +100,7 @@ public class QuartetSystemCombiner {
 
                     for (int d = c + 1; d <= N; d++) {
 
-                        if (summer.get(new Quartet(a, b, c, d)) > 0.0) {
+                        if (summer.get(new SpectreQuartet(a, b, c, d)) > 0.0) {
 
                             out.write("quartet: " + nF.format(a) + " " + nF.format(b) + " " + nF.format(c) + " " + nF.format(d)
                                     + " weights: "
@@ -158,7 +158,7 @@ public class QuartetSystemCombiner {
 
     private Quartet translateQuartet(Quartet q, Map<Integer, Integer> lut) {
 
-        return new Quartet(
+        return new SpectreQuartet(
                 lut.get(q.getA()),
                 lut.get(q.getB()),
                 lut.get(q.getC()),

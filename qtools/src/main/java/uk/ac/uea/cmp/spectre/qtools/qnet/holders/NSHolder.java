@@ -20,6 +20,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.quartet.CanonicalWeightedQuartetMap;
 import uk.ac.uea.cmp.spectre.core.ds.quartet.Quartet;
+import uk.ac.uea.cmp.spectre.core.ds.quartet.QuartetUtils;
+import uk.ac.uea.cmp.spectre.core.ds.quartet.SpectreQuartet;
 import uk.ac.uea.cmp.spectre.qtools.qnet.QNetException;
 
 import java.util.List;
@@ -68,9 +70,9 @@ public class NSHolder extends AbstractBasicHolder {
 
                                     // DAN:  Add this check, which wasn't here before, because we are now stricter with regards to
                                     // what is and what isn't a quartet
-                                    if (Quartet.areDistinct(yA, yB, yC, yD)) {
+                                    if (QuartetUtils.areDistinct(yA, yB, yC, yD)) {
 
-                                        Quartet q = new Quartet(yA, yB, yC, yD);
+                                        Quartet q = new SpectreQuartet(yA, yB, yC, yD);
 
                                         count++;
                                         weight += theQuartetWeights.containsKey(q) ?

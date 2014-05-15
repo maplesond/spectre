@@ -60,7 +60,7 @@ public class GroupedQuartetSystem {
         this.sense = Sense.MAX;
         this.quartets = quartets;
 
-        final int expectedNbQuartets = Quartet.over4(taxa.size());
+        final int expectedNbQuartets = QuartetUtils.over4(taxa.size());
 
         if (this.quartets.size() != expectedNbQuartets) {
             throw new IllegalArgumentException("Found unexpected number of quartets.  Something went wrong creating the " +

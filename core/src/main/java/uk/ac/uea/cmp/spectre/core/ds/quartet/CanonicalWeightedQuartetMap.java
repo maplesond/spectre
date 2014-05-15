@@ -58,9 +58,9 @@ public class CanonicalWeightedQuartetMap extends HashMap<Quartet, Double> {
 
                         double min = Math.min(w1, Math.min(w2, w3));
 
-                        this.put(new Quartet(a + 1, b + 1, c + 1, d + 1), w1 - min);
-                        this.put(new Quartet(a + 1, c + 1, b + 1, d + 1), w2 - min);
-                        this.put(new Quartet(a + 1, d + 1, b + 1, c + 1), w3 - min);
+                        this.put(new SpectreQuartet(a + 1, b + 1, c + 1, d + 1), w1 - min);
+                        this.put(new SpectreQuartet(a + 1, c + 1, b + 1, d + 1), w2 - min);
+                        this.put(new SpectreQuartet(a + 1, d + 1, b + 1, c + 1), w3 - min);
                     }
                 }
             }
@@ -75,9 +75,9 @@ public class CanonicalWeightedQuartetMap extends HashMap<Quartet, Double> {
             Quartet sorted = entry.getKey();
             QuartetWeights weights = entry.getValue();
 
-            this.put(new Quartet(sorted), weights.getA());
-            this.put(new Quartet(sorted.getA(), sorted.getC(), sorted.getB(), sorted.getD()), weights.getB());
-            this.put(new Quartet(sorted.getA(), sorted.getD(), sorted.getB(), sorted.getC()), weights.getC());
+            this.put(new SpectreQuartet(sorted), weights.getA());
+            this.put(new SpectreQuartet(sorted.getA(), sorted.getC(), sorted.getB(), sorted.getD()), weights.getB());
+            this.put(new SpectreQuartet(sorted.getA(), sorted.getD(), sorted.getB(), sorted.getC()), weights.getC());
         }
     }
 
@@ -142,7 +142,7 @@ public class CanonicalWeightedQuartetMap extends HashMap<Quartet, Double> {
                             int b1 = setB[iB1];
                             int b2 = setB[iB2];
 
-                            this.incrementWeight(new Quartet(a1, a2, b1, b2), split.getWeight());
+                            this.incrementWeight(new SpectreQuartet(a1, a2, b1, b2), split.getWeight());
                         }
                     }
                 }

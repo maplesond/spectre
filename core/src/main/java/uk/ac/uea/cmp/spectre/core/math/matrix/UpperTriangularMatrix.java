@@ -15,7 +15,7 @@
  */
 package uk.ac.uea.cmp.spectre.core.math.matrix;
 
-import uk.ac.uea.cmp.spectre.core.ds.quartet.Quartet;
+import uk.ac.uea.cmp.spectre.core.ds.quartet.QuartetUtils;
 
 /**
  * Created by IntelliJ IDEA. User: Analysis Date: 2004-jul-11 Time: 19:08:50 To
@@ -30,7 +30,7 @@ public class UpperTriangularMatrix {
     public UpperTriangularMatrix(int size) {
 
         this.size = size;
-        final int triangleSize = Quartet.over2(size) + Quartet.over1(size);
+        final int triangleSize = QuartetUtils.over2(size) + QuartetUtils.over1(size);
 
         this.diagonal = new double[size];
         this.triangle = new double[triangleSize];
@@ -49,7 +49,7 @@ public class UpperTriangularMatrix {
         if (i > j) {
             // Do nothing
         } else if (j > i) {
-            triangle[Quartet.over2(j) + Quartet.over1(i)] = newW;
+            triangle[QuartetUtils.over2(j) + QuartetUtils.over1(i)] = newW;
         } else {
             diagonal[i] = newW;
         }
@@ -60,7 +60,7 @@ public class UpperTriangularMatrix {
         return i > j ?
                 0.0 :
                 j > i ?
-                        triangle[Quartet.over2(j) + Quartet.over1(i)] :
+                        triangle[QuartetUtils.over2(j) + QuartetUtils.over1(i)] :
                         diagonal[i];
     }
 
