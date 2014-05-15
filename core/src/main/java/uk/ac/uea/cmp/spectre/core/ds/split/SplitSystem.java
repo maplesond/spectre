@@ -27,7 +27,7 @@ import java.util.List;
  * Time: 13:11
  * To change this template use File | Settings | File Templates.
  */
-public interface SplitSystem {
+public interface SplitSystem extends List<Split> {
 
 
     // **** Taxa methods ****
@@ -48,35 +48,6 @@ public interface SplitSystem {
 
 
     // **** Standard split methods ****
-
-    /**
-     * Gets the number of splits in this split system
-     *
-     * @return The number of splits
-     */
-    int getNbSplits();
-
-    /**
-     * Gets the splits in this split system
-     *
-     * @return The splits
-     */
-    List<Split> getSplits();
-
-    /**
-     * Get the split at the specified index
-     *
-     * @param i The index
-     * @return The split at the given index
-     */
-    Split getSplitAt(final int i);
-
-    /**
-     * Adds a split to the end of current list of splits managed by this split system
-     *
-     * @param split The split to add
-     */
-    void addSplit(Split split);
 
     /**
      * Removes the last split in the split system
@@ -105,7 +76,7 @@ public interface SplitSystem {
      * @param sb Splitblock to test
      * @return True if this split system contains the splitblock, otherwise false.
      */
-    boolean contains(SplitBlock sb);
+    //boolean contains(SplitBlock sb);
 
     // **** Methods related to split weights ****
 

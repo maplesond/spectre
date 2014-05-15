@@ -42,7 +42,7 @@ public class SplitUtils {
 
         int i = 0;
         for (SplitBlock splitBlock : splitBlocks) {
-            splits.add(new Split(splitBlock, nbTaxa, weights.get(i++)));
+            splits.add(new SpectreSplit(splitBlock, nbTaxa, weights.get(i++)));
         }
 
         return splits;
@@ -101,7 +101,7 @@ public class SplitUtils {
 
         for (Identifier taxon : taxa) {
 
-            splits.add(new Split(new SplitBlock(new int[]{taxon.getId()}), taxa.size(), weight));
+            splits.add(new SpectreSplit(new SpectreSplitBlock(new int[]{taxon.getId()}), taxa.size(), weight));
         }
 
         return splits;
@@ -113,7 +113,7 @@ public class SplitUtils {
 
         for (int i = 1; i <= nbTaxa; i++) {
 
-            splits.add(new Split(new SplitBlock(new int[]{i}), nbTaxa, weight));
+            splits.add(new SpectreSplit(new SpectreSplitBlock(new int[]{i}), nbTaxa, weight));
         }
 
         return splits;

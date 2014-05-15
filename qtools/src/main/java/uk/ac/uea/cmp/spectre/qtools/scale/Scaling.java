@@ -22,14 +22,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.tgac.metaopt.*;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.Quartet;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.QuartetSystem;
 import uk.ac.uea.cmp.spectre.core.ds.quartet.QuartetSystemList;
 import uk.ac.uea.cmp.spectre.tools.PhygenTool;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
 
 public class Scaling extends PhygenTool {
 

@@ -22,9 +22,8 @@ import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SpectreSplitSystem implements SplitSystem {
+public class SpectreSplitSystem extends ArrayList<Split> implements SplitSystem {
 
-    private List<Split> splits;
     private IdentifierList orderedTaxa;
 
     /**
@@ -51,7 +50,10 @@ public class SpectreSplitSystem implements SplitSystem {
      */
     public SpectreSplitSystem(IdentifierList orderedTaxa, List<Split> splits) {
         this.orderedTaxa = orderedTaxa;
-        this.splits = splits;
+
+        for(Split s : splits) {
+            this.add(s);
+        }
     }
 
     /**
@@ -122,7 +124,7 @@ public class SpectreSplitSystem implements SplitSystem {
      * @param splitSystem
      */
     public SpectreSplitSystem(SplitSystem splitSystem) {
-        this(new IdentifierList(splitSystem.getOrderedTaxa()), new ArrayList<>(splitSystem.getSplits()));
+        this(new IdentifierList(splitSystem.getOrderedTaxa()), new ArrayList<>(splitSystem));
     }
 
 
@@ -133,16 +135,6 @@ public class SpectreSplitSystem implements SplitSystem {
 
         // Reweight the split system using the provided tree weights
         this.reweight(treeWeights);
-    }
-
-
-    @Override
-    public List<Split> getSplits() {
-        return splits;
-    }
-
-    protected void setSplits(List<Split> splits) {
-        this.splits = splits;
     }
 
 
@@ -161,45 +153,24 @@ public class SpectreSplitSystem implements SplitSystem {
     }
 
     @Override
-    public void addSplit(Split split) {
-        this.splits.add(split);
-    }
-
-    @Override
     public void removeLastSplit() {
-        this.splits.remove(this.splits.size() - 1);
-    }
-
-    @Override
-    public Split getSplitAt(int index) {
-        return this.splits.get(index);
+        this.remove(this.size() - 1);
     }
 
     public int getLastSplitIndex() {
-        return this.splits.size() - 1;
+        return this.size() - 1;
     }
 
     public Split getLastSplit() {
-        return this.getSplitAt(this.getLastSplitIndex());
-    }
-
-    @Override
-    public int getNbSplits() {
-        return this.splits.size();
-    }
-
-    public void removeSplit(int index) {
-        this.splits.remove(index);
+        return this.get(this.getLastSplitIndex());
     }
 
 
     @Override
     public boolean contains(Split split) {
 
-        Split ss = split.makeSortedCopy();
-
-        for(Split s : this.getSplits()) {
-            if (s.makeSortedCopy().equals(ss)) {
+        for(Split s : this) {
+            if (s.equals(split)) {
                 return true;
             }
         }
@@ -208,19 +179,19 @@ public class SpectreSplitSystem implements SplitSystem {
     }
 
 
-    @Override
+    /*@Override
     public boolean contains(SplitBlock sb) {
 
         SplitBlock ssb = sb.makeSortedCopy();
 
         for(Split s : this.getSplits()) {
-            if (s.getASide().makeSortedCopy().equals(ssb) || s.getBSide().makeSortedCopy().equals(ssb)) {
+            if (s.equals(ssb) || s.getBSide().makeSortedCopy().equals(ssb)) {
                 return true;
             }
         }
 
         return false;
-    }
+    }     */
 
     /**
      * Appends a split at a specified position in this split system
@@ -232,25 +203,14 @@ public class SpectreSplitSystem implements SplitSystem {
      */
     @Override
     public Split mergeSplits(int index1, int index2) {
-        Split split1 = this.getSplitAt(index1);
-        Split split2 = this.getSplitAt(index2);
+        Split split1 = this.get(index1);
+        Split split2 = this.get(index2);
 
-        split1.merge(split2);
+        split1.mergeASides(split2);
 
-        this.splits.remove(index2);
+        this.remove(index2);
 
         return split1;
-    }
-
-    public List<Split> copySplits() {
-
-        List<Split> ss = new ArrayList<>();
-
-        for (Split s : this.splits) {
-            ss.add(s.copy());
-        }
-
-        return ss;
     }
 
     @Override
@@ -260,7 +220,7 @@ public class SpectreSplitSystem implements SplitSystem {
 
     @Override
     public double getWeightAt(int i) {
-        return this.getSplitAt(i).getWeight();
+        return this.get(i).getWeight();
     }
 
 
@@ -269,7 +229,7 @@ public class SpectreSplitSystem implements SplitSystem {
 
         int N = this.getNbTaxa();
 
-        int nbSplits = this.getNbSplits();
+        int nbSplits = this.size();
         boolean[] splitExists = new boolean[nbSplits];
 
         int existingSplits = 0;
@@ -278,7 +238,7 @@ public class SpectreSplitSystem implements SplitSystem {
 
             double maxWeight = 0.0;
 
-            SplitBlock setA = this.getSplitAt(i).getASide();
+            SplitBlock setA = this.get(i).getASide();
 
             // trivial splits are always shown, and added later
 
@@ -288,7 +248,7 @@ public class SpectreSplitSystem implements SplitSystem {
 
                     if (i != j) {
 
-                        SplitBlock setB = this.getSplitAt(j).getBSide();
+                        SplitBlock setB = this.get(j).getBSide();
                         SplitBlock tempList = setB.copy();
 
                         tempList.retainAll(setA);
@@ -316,18 +276,21 @@ public class SpectreSplitSystem implements SplitSystem {
 
         for (int i = 0; i < nbSplits; i++) {
             if (splitExists[i]) {
-                filteredSplits.add(this.getSplitAt(i));
+                filteredSplits.add(this.get(i));
             }
         }
 
         double mw = SplitUtils.meanOfWeights(filteredSplits);
 
         for (int i = 0; i < N; i++) {
-            filteredSplits.add(new Split(new SplitBlock(new int[]{i + 1}), this.getNbTaxa(), mw));
+            filteredSplits.add(new SpectreSplit(new SpectreSplitBlock(new int[]{i + 1}), this.getNbTaxa(), mw));
         }
 
         // Overwrites the current set of splits with the filtered splits
-        this.splits = filteredSplits;
+        this.clear();
+        for(Split s : filteredSplits) {
+            this.add(s);
+        }
 
         return this;
     }
@@ -335,7 +298,7 @@ public class SpectreSplitSystem implements SplitSystem {
     @Override
     public boolean isCircular() {
 
-        for(Split s : this.getSplits()) {
+        for(Split s : this) {
             if (!s.isCircular(this.orderedTaxa)) {
                 return false;
             }
@@ -355,8 +318,8 @@ public class SpectreSplitSystem implements SplitSystem {
     @Override
     public boolean isCompatible() {
 
-        for(Split a : this.getSplits()) {
-            for(Split b : this.getSplits()) {
+        for(Split a : this) {
+            for(Split b : this) {
                 if (a != b && !a.isCompatible(b)) {
                     return false;
                 }
@@ -377,12 +340,7 @@ public class SpectreSplitSystem implements SplitSystem {
         int n = this.getNbTaxa();
 
         // Clear out any splits
-        if (this.splits == null) {
-            this.splits = new ArrayList<>();
-        }
-        else {
-            this.splits.clear();
-        }
+        this.clear();
 
         for (int i = 0; i < n; i++) {
             for (int j = i + 1; j < n; j++) {
@@ -393,7 +351,7 @@ public class SpectreSplitSystem implements SplitSystem {
                         sb.add(this.getOrderedTaxa().get(k).getId());
                     }
 
-                    this.addSplit(new Split(new SplitBlock(sb), n, treeWeights.getAt(j, i)));
+                    this.add(new SpectreSplit(new SpectreSplitBlock(sb), n, treeWeights.getAt(j, i)));
                 }
             }
         }

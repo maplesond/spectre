@@ -88,8 +88,8 @@ public class NexusSplitSystemBuilder {
                     new SpectreSplitSystem(nbTaxa, splits);
         }
 
-        if (expectedNbSplits != 0 && ss.getNbSplits() != expectedNbSplits) {
-            log.warn("Expected number of splits (" + expectedNbSplits + ") is different from the number of found splits (" + ss.getNbSplits() + ").");
+        if (expectedNbSplits != 0 && ss.size() != expectedNbSplits) {
+            log.warn("Expected number of splits (" + expectedNbSplits + ") is different from the number of found splits (" + ss.size() + ").");
         }
 
         return ss;

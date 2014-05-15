@@ -42,7 +42,7 @@ public class NexusSplitsLoader extends AbstractNexusLoader {
         CanonicalWeightedQuartetMap qW = new CanonicalWeightedQuartetMap();
 
         // Add each split to the quartet weights
-        for (Split split : splitSystem.getSplits()) {
+        for (Split split : splitSystem) {
             qW.addSplit(split);
         }
 

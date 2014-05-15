@@ -96,7 +96,7 @@ public class QNetITCase {
         SplitSystem ss = result.createSplitSystem(null, QNetResult.SplitLimiter.STANDARD);
 
         // Check splits
-        assertTrue(ss.getNbSplits() == 7);
+        assertTrue(ss.size() == 7);
         assertTrue(Equality.approxEquals(ss.getWeightAt(0), 1.0));
         assertTrue(Equality.approxEquals(ss.getWeightAt(1), 1.0));
     }
@@ -135,7 +135,7 @@ public class QNetITCase {
 
         SplitSystem ss = result.createSplitSystem(null, QNetResult.SplitLimiter.STANDARD);
 
-        assertTrue(ss.getNbSplits() == 8);
+        assertTrue(ss.size() == 8);
         assertTrue(ss.getWeightAt(0) == 4.0);
         assertTrue(ss.getWeightAt(1) == 1.75);
         assertTrue(ss.getWeightAt(2) == 1.75);

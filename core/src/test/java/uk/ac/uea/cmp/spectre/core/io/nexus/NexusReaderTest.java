@@ -146,8 +146,8 @@ public class NexusReaderTest {
         assertTrue(co.get(2).getId() == 6);
 
 
-        assertTrue(ss.getNbSplits() == 9);
-        Split s = ss.getSplitAt(7);
+        assertTrue(ss.size() == 9);
+        Split s = ss.get(7);
 
         assertNotNull(s);
         assertTrue(s.getWeight() == 6.951241628977932E-4);
@@ -178,8 +178,8 @@ public class NexusReaderTest {
         assertTrue(co.get(2).getId() == 6);
 
 
-        assertTrue(ss.getNbSplits() == 9);
-        Split s = ss.getSplitAt(7);
+        assertTrue(ss.size() == 9);
+        Split s = ss.get(7);
 
         assertNotNull(s);
         assertTrue(s.getWeight() == 6.951241628977932E-4);

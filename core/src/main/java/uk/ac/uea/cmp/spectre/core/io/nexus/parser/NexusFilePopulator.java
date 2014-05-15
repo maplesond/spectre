@@ -28,7 +28,7 @@ import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrixBuilder;
 import uk.ac.uea.cmp.spectre.core.ds.network.Edge;
 import uk.ac.uea.cmp.spectre.core.ds.network.Label;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
-import uk.ac.uea.cmp.spectre.core.ds.split.SplitBlock;
+import uk.ac.uea.cmp.spectre.core.ds.split.SpectreSplitBlock;
 import uk.ac.uea.cmp.spectre.core.io.nexus.Nexus;
 
 import java.awt.*;
@@ -390,7 +390,7 @@ public class NexusFilePopulator implements NexusFileListener {
                 ctxList = ctxList.matrix_splits_list();
             }
 
-            this.splitSystemBuilder.addSplit(new SplitBlock(setA), weight);
+            this.splitSystemBuilder.addSplit(new SpectreSplitBlock(setA), weight);
         }
     }
 

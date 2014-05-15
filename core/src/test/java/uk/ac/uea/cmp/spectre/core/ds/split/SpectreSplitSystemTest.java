@@ -35,13 +35,13 @@ public class SpectreSplitSystemTest {
 
         final int nbTaxa = 5;
 
-        splits.add(new Split(new SplitBlock(new int[]{1}), nbTaxa));
-        splits.add(new Split(new SplitBlock(new int[]{2}), nbTaxa));
-        splits.add(new Split(new SplitBlock(new int[]{3}), nbTaxa));
-        splits.add(new Split(new SplitBlock(new int[]{4}), nbTaxa));
-        splits.add(new Split(new SplitBlock(new int[]{5}), nbTaxa));
-        splits.add(new Split(new SplitBlock(new int[]{1,2}), nbTaxa));
-        splits.add(new Split(new SplitBlock(new int[]{4,5}), nbTaxa));
+        splits.add(new SpectreSplit(new SpectreSplitBlock(new int[]{1}), nbTaxa));
+        splits.add(new SpectreSplit(new SpectreSplitBlock(new int[]{2}), nbTaxa));
+        splits.add(new SpectreSplit(new SpectreSplitBlock(new int[]{3}), nbTaxa));
+        splits.add(new SpectreSplit(new SpectreSplitBlock(new int[]{4}), nbTaxa));
+        splits.add(new SpectreSplit(new SpectreSplitBlock(new int[]{5}), nbTaxa));
+        splits.add(new SpectreSplit(new SpectreSplitBlock(new int[]{1,2}), nbTaxa));
+        splits.add(new SpectreSplit(new SpectreSplitBlock(new int[]{4,5}), nbTaxa));
 
         SplitSystem ss = new SpectreSplitSystem(nbTaxa, splits);
 
@@ -57,15 +57,15 @@ public class SpectreSplitSystemTest {
 
         final int nbTaxa = 5;
 
-        splits.add(new Split(new SplitBlock(new int[]{1}), nbTaxa));
-        splits.add(new Split(new SplitBlock(new int[]{2}), nbTaxa));
-        splits.add(new Split(new SplitBlock(new int[]{3}), nbTaxa));
-        splits.add(new Split(new SplitBlock(new int[]{4}), nbTaxa));
-        splits.add(new Split(new SplitBlock(new int[]{5}), nbTaxa));
-        splits.add(new Split(new SplitBlock(new int[]{1,5}), nbTaxa));
-        splits.add(new Split(new SplitBlock(new int[]{2,4}), nbTaxa));
-        splits.add(new Split(new SplitBlock(new int[]{1,2}), nbTaxa));
-        splits.add(new Split(new SplitBlock(new int[]{4,5}), nbTaxa));
+        splits.add(new SpectreSplit(new SpectreSplitBlock(new int[]{1}), nbTaxa));
+        splits.add(new SpectreSplit(new SpectreSplitBlock(new int[]{2}), nbTaxa));
+        splits.add(new SpectreSplit(new SpectreSplitBlock(new int[]{3}), nbTaxa));
+        splits.add(new SpectreSplit(new SpectreSplitBlock(new int[]{4}), nbTaxa));
+        splits.add(new SpectreSplit(new SpectreSplitBlock(new int[]{5}), nbTaxa));
+        splits.add(new SpectreSplit(new SpectreSplitBlock(new int[]{1,5}), nbTaxa));
+        splits.add(new SpectreSplit(new SpectreSplitBlock(new int[]{2,4}), nbTaxa));
+        splits.add(new SpectreSplit(new SpectreSplitBlock(new int[]{1,2}), nbTaxa));
+        splits.add(new SpectreSplit(new SpectreSplitBlock(new int[]{4,5}), nbTaxa));
 
         SplitSystem ss = new SpectreSplitSystem(nbTaxa, splits);
 

@@ -112,7 +112,7 @@ public class NetMake extends RunnableTool {
                 null;
 
         // Loop until components has only one entry left.
-        while (components.getNbSplits() > 2) {
+        while (components.size() > 2) {
 
             // The pair should be splits with the shortest tree length between them
             Pair<Integer, Integer> selectedComponents = runMode == NetMakeOptions.RunMode.HYBRID_GREEDYME ?
@@ -127,8 +127,8 @@ public class NetMake extends RunnableTool {
             int sv1 = selectedVerticies.getLeft();
             int sv2 = selectedVerticies.getRight();
 
-            SplitBlock sc1Split = components.getSplitAt(sc1).getASide();
-            SplitBlock sc2Split = components.getSplitAt(sc2).getASide();
+            SplitBlock sc1Split = components.get(sc1).getASide();
+            SplitBlock sc2Split = components.get(sc2).getASide();
 
             // Merging of components
             if (sc1Split.getFirst() == sv1) {
@@ -143,7 +143,7 @@ public class NetMake extends RunnableTool {
             }
 
             // Add new component/split to Split list
-            treeSplits.addSplit(components.getSplitAt(sc1).copy());
+            treeSplits.add(components.get(sc1).copy());
 
             // Update component to component distanceMatrix (assuming not in GreedyME mode)
             if (runMode != NetMakeOptions.RunMode.HYBRID_GREEDYME)
@@ -170,7 +170,7 @@ public class NetMake extends RunnableTool {
         organiseSplits(treeSplits, permutation);
 
         // Create tree and network split systems
-        SplitSystem tree = new SpectreSplitSystem(distanceMatrix, permutation, SpectreSplitSystem.LeastSquaresCalculator.TREE_IN_CYCLE, treeSplits.getSplits());
+        SplitSystem tree = new SpectreSplitSystem(distanceMatrix, permutation, SpectreSplitSystem.LeastSquaresCalculator.TREE_IN_CYCLE, treeSplits);
         SplitSystem network = new SpectreSplitSystem(distanceMatrix, permutation, SpectreSplitSystem.LeastSquaresCalculator.CIRCULAR);
 
         return new NetMakeResult(tree, network);
@@ -179,7 +179,7 @@ public class NetMake extends RunnableTool {
     protected Pair<Integer, Integer> selectionStep1(final DistanceMatrix c2c, final SplitSystem components) {
 
         final int nbTaxa = c2c.size();
-        final int nbSplits = components.getNbSplits();
+        final int nbSplits = components.size();
 
         double min1 = Double.POSITIVE_INFINITY;
         double[] sum1 = new double[nbTaxa];
@@ -228,8 +228,8 @@ public class NetMake extends RunnableTool {
         int sc1 = selectedComponents.getKey();
         int sc2 = selectedComponents.getValue();
 
-        SplitBlock splitBlockSc1 = components.getSplitAt(sc1).getASide();
-        SplitBlock splitBlockSc2 = components.getSplitAt(sc2).getASide();
+        SplitBlock splitBlockSc1 = components.get(sc1).getASide();
+        SplitBlock splitBlockSc2 = components.get(sc2).getASide();
 
         /*
          * second selection step for vertices with
@@ -245,7 +245,7 @@ public class NetMake extends RunnableTool {
                 int vertex_last1 = 1;
                 int vertex_last2 = 1;
 
-                for (int k = 0; k < components.getNbSplits(); k++) {
+                for (int k = 0; k < components.size(); k++) {
                     if ((k != sc1) && (k != sc2)) {
                         sum1 += c2v.getDistance(splitBlockSc1.get(i), k + 1);
                     }
@@ -280,7 +280,7 @@ public class NetMake extends RunnableTool {
                 int outerVertices2 = splitBlockSc2.size() == 1 ? 1 : 2;
 
                 final double totalSum = sum1 - sum2 - sum3 - sum4;
-                final double topPart = components.getNbSplits() - 4 + outerVertices1
+                final double topPart = components.size() - 4 + outerVertices1
                         + outerVertices2;
 
                 double qDist = topPart * distanceMatrix.getDistance(splitBlockSc1.get(i), splitBlockSc2.get(j)) - totalSum;
@@ -302,7 +302,7 @@ public class NetMake extends RunnableTool {
 
     protected void updateC2C(DistanceMatrix c2c, Weighting w, SplitSystem components, DistanceMatrix distanceMatrix) {
 
-        final int nbSplits = components.getNbSplits();
+        final int nbSplits = components.size();
 
         for (int i = 0; i < nbSplits; i++) {
             for (int j = 0; j < nbSplits; j++) {
@@ -311,8 +311,8 @@ public class NetMake extends RunnableTool {
                 } else {
                     double aComponentDistance = 0.0;
 
-                    SplitBlock sbI = components.getSplitAt(i).getASide();
-                    SplitBlock sbJ = components.getSplitAt(j).getASide();
+                    SplitBlock sbI = components.get(i).getASide();
+                    SplitBlock sbJ = components.get(j).getASide();
 
                     for (int k = 0; k < sbI.size(); k++) {
                         for (int m = 0; m < sbJ.size(); m++) {
@@ -336,7 +336,7 @@ public class NetMake extends RunnableTool {
         int position = -1;
         final int sc1 = selectedComponents.getKey();
 
-        SplitBlock sb1 = components.getSplitAt(sc1).getASide();
+        SplitBlock sb1 = components.get(sc1).getASide();
         int componentSplitPosition = sb1.size();
 
         for (int i = 0; i < distanceMatrix.size(); i++) {
@@ -353,10 +353,10 @@ public class NetMake extends RunnableTool {
                     }
                 }
             }
-            for (int j = 0; j < components.getNbSplits(); j++) {
+            for (int j = 0; j < components.size(); j++) {
                 double aComponentVertexDistance = 0.;
                 int k = 0;
-                SplitBlock sbJ = components.getSplitAt(j).getASide();
+                SplitBlock sbJ = components.get(j).getASide();
 
                 while (k < sbJ.size()) {
                     if (sbJ.get(k) - 1 == i) {
@@ -381,9 +381,9 @@ public class NetMake extends RunnableTool {
 
         IdentifierList permutationInvert = permutation.reverseOrdering();
 
-        for (int i = 0; i < splits.getNbSplits(); i++) {
+        for (int i = 0; i < splits.size(); i++) {
 
-            SplitBlock sb = splits.getSplitAt(i).getASide();
+            SplitBlock sb = splits.get(i).getASide();
 
             int k = permutationInvert.get(sb.getFirst() - 1).getId();
             int l = permutationInvert.get(sb.getLast() - 1).getId();
@@ -398,7 +398,7 @@ public class NetMake extends RunnableTool {
 
         ArrayList<Integer> help = new ArrayList<>();
         for (int j = 0; j < 2; j++) {
-            SplitBlock sbJ = components.getSplitAt(j).getASide();
+            SplitBlock sbJ = components.get(j).getASide();
             for (int i = 0; i < sbJ.size(); i++) {
                 help.add(sbJ.get(i));
             }

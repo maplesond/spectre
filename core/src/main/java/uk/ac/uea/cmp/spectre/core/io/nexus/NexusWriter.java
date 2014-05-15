@@ -26,7 +26,6 @@ import uk.ac.uea.cmp.spectre.core.ds.network.Label;
 import uk.ac.uea.cmp.spectre.core.ds.network.Network;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
 import uk.ac.uea.cmp.spectre.core.ds.split.Split;
-import uk.ac.uea.cmp.spectre.core.ds.split.SplitBlock;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.spectre.core.io.AbstractPhygenWriter;
 
@@ -258,7 +257,7 @@ public class NexusWriter extends AbstractPhygenWriter implements Appendable {
     public NexusWriter append(SplitSystem ss) {
 
         this.appendLine("BEGIN Splits;");
-        this.appendLine(" DIMENSIONS ntax=" + ss.getNbTaxa() + " nsplits=" + ss.getNbSplits() + ";");
+        this.appendLine(" DIMENSIONS ntax=" + ss.getNbTaxa() + " nsplits=" + ss.size() + ";");
         this.appendLine(" FORMAT labels=no weights=" + (ss.isWeighted() ? "yes" : "no") + " confidences=no intervals=no;");
         this.appendLine(" PROPERTIES fit=-1.0" + (ss.isCompatible() ? " weakly_compatible" : "") + (ss.isCircular() ? " cyclic" : "") + ";");
         if (ss.isCircular()) {
@@ -268,12 +267,11 @@ public class NexusWriter extends AbstractPhygenWriter implements Appendable {
         this.appendLine(" MATRIX");
         int currentSplitIndex = 1;
 
-        for (int i = 0; i < ss.getNbSplits(); i++) {
-            Split s = ss.getSplits().get(i);
-            SplitBlock sb = s.getASide();
+        for (Split s : ss) {
+            String aSide = StringUtils.join(s.getASideAsIntArray(), " ");
 
             if (!ss.isWeighted() || s.getWeight() != 0.0) {
-                this.appendLine("  [" + currentSplitIndex++ + ", size=" + sb.size() + "]\t" + s.getWeight() + "\t" + sb.toString() + ",");
+                this.appendLine("  [" + currentSplitIndex++ + ", size=" + s.getASideSize() + "]\t" + s.getWeight() + "\t" + aSide + ",");
             }
         }
         this.appendLine(";");

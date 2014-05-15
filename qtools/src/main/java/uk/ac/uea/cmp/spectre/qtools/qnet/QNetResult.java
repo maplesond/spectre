@@ -81,7 +81,7 @@ public class QNetResult {
                 nbValidSplits++;
                 totalWeight += solution[i];
 
-                splits.add(new Split(new SplitBlock(list), N, solution[i]));
+                splits.add(new SpectreSplit(new SpectreSplitBlock(list), N, solution[i]));
             }
         }
 

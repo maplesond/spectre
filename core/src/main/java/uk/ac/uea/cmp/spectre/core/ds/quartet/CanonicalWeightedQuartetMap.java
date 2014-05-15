@@ -120,13 +120,13 @@ public class CanonicalWeightedQuartetMap extends HashMap<Quartet, Double> {
         if (!split.onExternalEdge()) {
 
             // so, for all quartets in here, add the length to their value
-            final int aSize = split.getASide().size();
-            final int bSize = split.getBSide().size();
+            final int aSize = split.getASideSize();
+            final int bSize = split.getBSideSize();
 
             // I think it will work out a little faster doing things this way... if that turns out not to be true consider
             // optimising this.
-            int[] setA = split.getASide().toIntArray();
-            int[] setB = split.getBSide().toIntArray();
+            int[] setA = split.getASideAsIntArray();
+            int[] setB = split.getBSideAsIntArray();
 
             for (int iA1 = 0; iA1 < aSize - 1; iA1++) {
 

@@ -1,0 +1,300 @@
+/*
+ * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
+ * Copyright (C) 2014  UEA School of Computing Sciences
+ *
+ * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
+package uk.ac.uea.cmp.spectre.core.ds.split;
+
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
+import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
+
+
+/**
+ * Created with IntelliJ IDEA.
+ * User: Sarah_2
+ * Date: 24/04/13
+ * Time: 16:34
+ * To change this template use File | Settings | File Templates.
+ */
+public class SpectreSplit implements Split {
+
+    private SplitBlock aSide;
+    private SplitBlock bSide;
+    private int nbTaxa;
+    private double weight;
+
+    public SpectreSplit(SplitBlock aSide, int nbTaxa) {
+        this(aSide, nbTaxa, 1.0);
+    }
+
+    public SpectreSplit(SplitBlock aSide, int nbTaxa, double weight) {
+        this.aSide = aSide;
+        this.nbTaxa = nbTaxa;
+        this.bSide = aSide.makeComplement(nbTaxa);
+        this.weight = weight;
+    }
+
+
+    public SpectreSplit(Split split) {
+        this(split.getASide().copy(), split.getNbTaxa());
+    }
+
+    /**
+     * Creates a new split merged from the two provided splits
+     *
+     * @param s1
+     * @param s2
+     */
+    public SpectreSplit(Split s1, Split s2) {
+        this(s1.getASide().copy(), s1.getNbTaxa());
+        this.mergeASides(s2);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return new HashCodeBuilder()
+                .append(aSide)
+                .append(bSide)
+                .append(nbTaxa)
+                .append(weight)
+                .toHashCode();
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+
+        if (o == null)
+            return false;
+
+        if (this == o)
+            return true;
+
+        SpectreSplit other = (SpectreSplit) o;
+
+        return new EqualsBuilder()
+                .append(aSide, other.aSide)
+                .append(bSide, other.bSide)
+                .append(nbTaxa, other.nbTaxa)
+                .append(weight, other.weight)
+                .isEquals();
+    }
+
+
+    public SplitBlock getASide() {
+        return aSide;
+    }
+
+    public SplitBlock getBSide() {
+        return bSide;
+    }
+
+    public int getNbTaxa() {
+        return nbTaxa;
+    }
+
+    public double getWeight() {
+        return weight;
+    }
+
+    @Override
+    public int getASideFirst() {
+        return this.aSide.getFirst();
+    }
+
+    @Override
+    public int getASideLast() {
+        return this.aSide.getLast();
+    }
+
+    @Override
+    public int getASideSize() {
+        return this.aSide.size();
+    }
+
+    @Override
+    public int getBSideSize() {
+        return this.bSide.size();
+    }
+
+    @Override
+    public int[] getASideAsIntArray() {
+        return this.aSide.toIntArray();
+    }
+
+    @Override
+    public int[] getBSideAsIntArray() {
+        return this.bSide.toIntArray();
+    }
+
+    public void setWeight(double weight) {
+        this.weight = weight;
+    }
+
+    public void sort() {
+
+        this.aSide.sort();
+        this.bSide.sort();
+    }
+
+    public int getSplitElement(SplitSide side, int index) {
+        return side.getSplitElement(this, index);
+    }
+
+    @Override
+    public void mergeASides(Split split) {
+        this.aSide.merge(split.getASide());
+        this.bSide = aSide.makeComplement(this.nbTaxa);
+    }
+
+    @Override
+    public Split copy() {
+        return new SpectreSplit(this.getASide().copy(), this.nbTaxa);
+    }
+
+    public SpectreSplit makeSortedCopy() {
+
+        SpectreSplit copy = new SpectreSplit(this);
+        copy.sort();
+        return copy;
+    }
+
+    @Override
+    public int compareTo(Split o) {
+
+        if (o == null)
+            throw new NullPointerException("The split to compare is null");
+
+        if (o == this)
+            return 0;
+
+        int difNbTaxa = this.getNbTaxa() - o.getNbTaxa();
+
+        if (difNbTaxa == 0) {
+
+            double diffWeight = this.weight - o.getWeight();
+
+            if (diffWeight == 0.0) {
+
+                int difASide = this.aSide.compareTo(o.getASide());
+
+                if (difASide == 0) {
+                    return this.bSide.compareTo(o.getBSide());
+                } else {
+                    return difASide;
+                }
+            } else {
+                return diffWeight < 0.0 ? -1 : 1;
+            }
+        } else {
+            return difNbTaxa;
+        }
+    }
+
+
+
+    /**
+     * Summed up distanceMatrix from all elements on the A side to all elements on the B side.
+     *
+     * @return P
+     */
+    public double calculateP(DistanceMatrix distanceMatrix) {
+
+        boolean splited[] = new boolean[this.nbTaxa];
+        for (int h = 0; h < splited.length; h++) {
+            splited[h] = false;
+        }
+
+        // Array stores the info which elements are on one side each element of the split
+        for (int j = 0; j < this.aSide.size(); j++) {
+            for (int k = 0; k < this.nbTaxa; k++) {
+                if (this.aSide.get(j) == k) {
+                    splited[k] = true;
+                }
+            }
+        }
+
+        // Sums up all distanceMatrix from the elements on the one side of the edge to the other side
+        double p = 0.0;
+
+        for (int j = 0; j < this.aSide.size(); j++) {
+            for (int k = 0; k < this.nbTaxa; k++) {
+                if (splited[k] == false) {
+                    p += distanceMatrix.getDistance(this.aSide.get(j), k);
+                }
+            }
+        }
+
+        return p;
+    }
+
+    public boolean onExternalEdge() {
+        return this.aSide.size() == 1 || this.bSide.size() == 1;
+    }
+
+    @Override
+    public String toString() {
+        return "{" + this.aSide.toString() + " | " + this.bSide.toString() + "} : " + this.weight;
+    }
+
+    /**
+     * Check to see if this split is compatible with another split.  This returns true (compatible) if one of the four
+     * intersections A1 n A2, A1 n B2, A2 n B1 or A2 n B2 is empty.  Otherwise this returns false (incompatible).
+     * @param other The other split to test
+     * @return True if compatible, false if incompatible
+     */
+    public boolean isCompatible(Split other) {
+
+        if (!(other instanceof SpectreSplit)) {
+            throw new IllegalArgumentException("Can't check compatibility of splits of different types.");
+        }
+
+        SpectreSplit o = (SpectreSplit)other;
+
+        if (this.getNbTaxa() != o.getNbTaxa()) {
+            throw new IllegalArgumentException("Comparing splits that have different numbers of taxa!");
+        }
+
+        SplitBlock thisASide = this.getASide();
+        SplitBlock thisBSide = this.getBSide();
+        SplitBlock otherASide = o.getASide();
+        SplitBlock otherBSide = o.getBSide();
+
+        // Check to see that at least one pair of split block doesn't contain any taxa found in the other.  If that's
+        // the case then these two splits are compatible
+        return  !thisASide.containsAny(otherASide) || !thisASide.containsAny(otherBSide) ||
+                !thisBSide.containsAny(otherASide) || !thisBSide.containsAny(otherBSide);
+    }
+
+    /**
+     * Check to see if this split is consistent with the given ordering, hence is circular.
+     *
+     * Note, that this only checks if this split is consistent with the given circular ordering.  It is still possible
+     * for this method to return false but the split to be part of a circular split system that has a different ordering.
+     *
+     * @param ordering The ordering of taxa to test this split against
+     * @return True, if this split is circular, false if not.
+     */
+    public boolean isCircular(IdentifierList ordering) {
+
+        if (ordering.size() != this.getNbTaxa()) {
+            throw new IllegalArgumentException("This split represents a different number of taxa (" + this.getNbTaxa() + ") to the circular ordering provided (" + ordering.size() + ")");
+        }
+
+        // Just check the A side for now... get's confusing if we need to start looking at the B side too.
+        return this.aSide.isContiguousWithOrdering(ordering);
+    }
+}

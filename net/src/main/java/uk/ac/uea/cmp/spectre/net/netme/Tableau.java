@@ -17,10 +17,7 @@ package uk.ac.uea.cmp.spectre.net.netme;
 
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
-import uk.ac.uea.cmp.spectre.core.ds.split.SpectreSplitSystem;
-import uk.ac.uea.cmp.spectre.core.ds.split.Split;
-import uk.ac.uea.cmp.spectre.core.ds.split.SplitBlock;
-import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
+import uk.ac.uea.cmp.spectre.core.ds.split.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -89,7 +86,7 @@ public class Tableau<E> {
                 copyRow[j] = Integer.parseInt(e.toString());  // 1-base the value from the tableau
             }
 
-            splits.add(new Split(new SplitBlock(copyRow), distanceMatrix.size()));
+            splits.add(new SpectreSplit(new SpectreSplitBlock(copyRow), distanceMatrix.size()));
         }
 
         return new SpectreSplitSystem(distanceMatrix, circularOrdering, SpectreSplitSystem.LeastSquaresCalculator.TREE_IN_CYCLE, splits);
