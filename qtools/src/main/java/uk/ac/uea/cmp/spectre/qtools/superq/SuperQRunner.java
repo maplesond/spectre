@@ -15,7 +15,7 @@
  */
 package uk.ac.uea.cmp.spectre.qtools.superq;
 
-import uk.ac.uea.cmp.spectre.core.ui.gui.StatusTracker;
+import uk.ac.uea.cmp.spectre.core.ui.gui.StatusTrackerWithView;
 import uk.ac.uea.cmp.spectre.core.ui.gui.ToolHost;
 import uk.ac.uea.cmp.spectre.core.ui.gui.ToolRunner;
 
@@ -35,7 +35,7 @@ public class SuperQRunner extends ToolRunner {
         return null;
     }
 
-    public void runSuperQ(SuperQOptions params, StatusTracker tracker) {
+    public void runSuperQ(SuperQOptions params, StatusTrackerWithView tracker) {
         try {
             SuperQ m_engine = new SuperQ(params, tracker);
             this.run(m_engine);

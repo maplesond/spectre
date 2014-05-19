@@ -1,8 +1,8 @@
 /*
- * Phylogenetics Tool suite
- * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
+ * Copyright (C) 2014  UEA School of Computing Sciences
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
@@ -15,234 +15,90 @@
  */
 package uk.ac.uea.cmp.spectre.core.ds.split;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
+import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 /**
- * @author Sarah
+ * @author Dan
  */
-public class SplitBlock extends ArrayList<Integer> implements Comparable<SplitBlock> {
-
-    public SplitBlock(Collection<Integer> splitBlock) {
-
-        super();
-
-        if (splitBlock == null || splitBlock.size() < 1)
-            throw new IllegalArgumentException("SplitBlock must be of at least size 1");
-
-        for (Integer i : splitBlock) {
-            this.add(i.intValue());
-        }
-    }
-
-    public SplitBlock(SplitBlock splitBlock) {
-
-        super();
-
-        if (splitBlock == null || splitBlock.size() < 1)
-            throw new IllegalArgumentException("SplitBlock must be of at least size 1");
-
-        for (Integer i : splitBlock) {
-            this.add(i.intValue());
-        }
-
-    }
-
-    public SplitBlock(int[] splitBlock) {
-
-        super();
-
-        if (splitBlock == null || splitBlock.length < 1)
-            throw new IllegalArgumentException("SplitBlock must be of at least size 1");
-
-        for (int i : splitBlock) {
-            this.add(i);
-        }
-    }
-
-    public SplitBlock(String s) {
-
-        super();
-
-        String[] parts = s.split(" ");
-
-
-        int[] raw = new int[parts.length];
-        for (int i = 0; i < parts.length; i++) {
-            raw[i] = Integer.parseInt(parts[i]);
-        }
-        if (parts.length == 1) {
-            this.add(raw[0]);
-        }
-
-        if (parts.length > 1) {
-            int overlap = -1;
-            for (int i = 1; i < parts.length; i++) {
-                if (raw[i] != raw[i - 1] + 1) {
-                    overlap = i;
-                    break;
-                }
-            }
-
-            if (overlap != -1) {
-                for (int i = overlap; i < raw.length; i++) {
-                    this.add(raw[i]);
-                }
-                for (int i = 0; i < overlap; i++) {
-                    this.add(raw[i]);
-                }
-            } else {
-                for (int i = 0; i < raw.length; i++) {
-                    this.add(raw[i]);
-                }
-            }
-        }
-    }
-
-    @Override
-    public int hashCode() {
-        HashCodeBuilder hcb = new HashCodeBuilder();
-
-        for (Integer i : this) {
-            hcb.append(i.intValue());
-        }
-
-        return hcb.toHashCode();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-
-        if (o == null)
-            return false;
-
-        if (this == o)
-            return true;
-
-        SplitBlock other = (SplitBlock) o;
-
-        if (this.size() != other.size())
-            return false;
-
-        EqualsBuilder eb = new EqualsBuilder();
-
-        for (int i = 0; i < this.size(); i++) {
-            eb.append(this.get(i).intValue(), other.get(i).intValue());
-        }
-
-        return eb.isEquals();
-    }
-
-    @Override
-    public String toString() {
-        return StringUtils.join(this, " ");
-    }
-
-    @Override
-    public int compareTo(SplitBlock o) {
-
-        if (this.size() == 0 && o.size() == 0)
-            return 0;
-        else if (this.size() == 0 && o.size() > 0)
-            return -1;
-        else if (this.size() > 0 && o.size() == 0)
-            return 1;
-        else {
-            int diff = this.getFirst() - o.getFirst();
-
-            return diff == 0 ? this.size() - o.size() : diff;
-        }
-    }
-
-    public int[] toIntArray() {
-
-        int[] arr = new int[this.size()];
-
-        for (int i = 0; i < this.size(); i++) {
-            arr[i] = this.get(i);
-        }
-
-        return arr;
-    }
-
-
-    public SplitBlock makeComplement(int nbTaxa) {
-        ArrayList<Integer> complement = new ArrayList<>();
-        for (int i = 1; i <= nbTaxa; i++) {
-            if (this.contains(i) == false) {
-                complement.add(i);
-            }
-        }
-
-        return new SplitBlock(complement);
-    }
-
-
-    public int getFirst() {
-        return this.get(0);
-    }
-
-    public int getLast() {
-        return this.get(this.size() - 1);
-    }
-
-    /**
-     * Copies elements from the provided splitblock and adds them to this splitblock
-     *
-     * @param splitBlock
-     */
-    public void merge(SplitBlock splitBlock) {
-
-        for (Integer i : splitBlock) {
-            this.add(i.intValue());
-        }
-    }
-
-    public SplitBlock copy() {
-        List<Integer> copy = new ArrayList<>();
-
-        for (Integer i : this) {
-            copy.add(i.intValue());
-        }
-
-        return new SplitBlock(copy);
-    }
-
-    public void sort() {
-        Collections.sort(this);
-    }
-
-    public SplitBlock makeSortedCopy() {
-
-        SplitBlock copy = this.copy();
-        copy.sort();
-        return copy;
-    }
-
-    public void reverse() {
-        Collections.reverse(this);
-    }
-
-    public SplitBlock makeReversedCopy() {
-
-        SplitBlock copy = this.copy();
-        copy.reverse();
-        return copy;
-    }
-
-
-    public EdgeType getType() {
-        return this.size() == 1 ? EdgeType.EXTERNAL : EdgeType.INTERNAL;
-    }
+public interface SplitBlock extends List<Integer>, Comparable<SplitBlock> {
 
     public enum EdgeType {
         EXTERNAL,
         INTERNAL
     }
+
+    /**
+     * Whether or not this split block might represent an external of internal edge
+     * @return EdgeType.EXTERNAL, or EdgeType.INTERNAL.
+     */
+    EdgeType getType();
+
+    /**
+     * Create a new (deep) copy of this split block.
+     * @return A new copy of this split block.
+     */
+    SplitBlock copy();
+
+    /**
+     * Creates a new (deep) copy of this split block that has the taxa indicies sorted ascending numerically
+     * @return A sorted copy of this split block.
+     */
+    SplitBlock makeSortedCopy();
+
+    /**
+     * Sorts the taxa indices in this split block into ascending numerical order
+     */
+    void sort();
+
+    /**
+     * Reverses the order of the taxa indices in this split block.
+     */
+    void reverse();
+
+    /**
+     * Merges the contents of the given split block with this split block.
+     * @param splitBlock The split block to merge
+     */
+    void merge(SplitBlock splitBlock);
+
+    /**
+     * Get the first element in this split block
+     * @return
+     */
+    int getFirst();
+
+    /**
+     * Get the last element in this split block
+     * @return
+     */
+    int getLast();
+
+    /**
+     * Checks if this split block contains any elements from the given split block.
+     * @param other The split block with elements to check
+     * @return True if this split block contains any elements from the given split block, false otherwise.
+     */
+    boolean containsAny(SplitBlock other);
+
+    /**
+     * Checks to see if this split block is ordered in a way that is contiguous with the specified circular ordering.
+     * @param ordering The circular ordering
+     * @return True if this split block is contiguous with the given circular ordering, false otherwise.
+     */
+    boolean isContiguousWithOrdering(IdentifierList ordering);
+
+    /**
+     * Create a representation of this split block as an int array.
+     * @return This split block as an int[]
+     */
+    int[] toIntArray();
+
+    /**
+     * Generates the complement of this split block assuming the taxa set has the given number of taxa
+     * @param nbTaxa The number of taxa in the complete taxa set
+     * @return The complement of this split block
+     */
+    SplitBlock makeComplement(int nbTaxa);
 }

@@ -1,7 +1,7 @@
-.. _installing:
+.. _installation:
 
-Installing
-==========
+Installation
+============
 
 Spectre can be installed either from a distributable tarball, or from source via a `git clone`. These steps for both
 methods are described in the following sections.
@@ -23,7 +23,7 @@ The installation process from tarball is simple.  The first step is acquire the 
 Then unpacking the compressed tarball to a directory of your choice.  The unpack command is: ``tar -xvf spectre-<version>.tar.gz``.
 This will create a sub-directory called ``spectre-<version>`` and in there should be the following further sub-directories:
 
-* bin - contains scripts allowing the user to easily run all the tools.  In general, the scripts are all command line tools except for those having a ``-gui`` suffix.  Scripts for all platforms are available, in general, those with no extension should work on linux and mac platforms, and those with a ``.bat`` extension should run on windows.
+* bin - contains scripts allowing the user to easily run all the tools.  In general, the scripts are all command line tools except for those having a ``-gui`` suffix.  Scripts for all platforms are available, in general, those with no extension should work on linux and mac platforms, and those with a ``.bat`` extension should run on windows.  TODO: Actually, we currently we only produce scripts for the detected platform... we should add a linux/mac and windows distribution on github for each version
 * doc - a html, pdf and text copy of the complete manual
 * etc - contains examples and configuration files
 * examples - Example files to help you get started with the spectre tools
@@ -54,6 +54,7 @@ make sure the metaopt library has been added to your local maven repository.  Af
 spectre installation.
 
 Now type the following::
+
   git clone https://github.com/maplesond/spectre.git
   cd spectre
   mvn clean install

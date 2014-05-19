@@ -16,6 +16,9 @@
 
 package uk.ac.uea.cmp.spectre.flatnj.fdraw;
 
+import uk.ac.uea.cmp.spectre.core.ds.network.Edge;
+import uk.ac.uea.cmp.spectre.core.ds.network.EdgeList;
+import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
 import uk.ac.uea.cmp.spectre.flatnj.ds.Network;
 import uk.ac.uea.cmp.spectre.flatnj.tools.Utilities;
 
@@ -57,10 +60,10 @@ public class CompatibleCorrector {
         if (Translocator.noCollisions(edges, topEdges, bottomEdges, deltaAlpha)) {
             Translocator.changeCoordinates(edges, deltaAlpha);
             for (int i = 0; i < vertices.size(); i++) {
-                vertices.get(i).visited = false;
-                LinkedList<Edge> vEd = vertices.get(i).elist;
+                vertices.get(i).setVisited(false);
+                LinkedList<Edge> vEd = vertices.get(i).getElist();
                 for (int k = 0; k < vEd.size(); k++) {
-                    vEd.get(k).visited = false;
+                    vEd.get(k).setVisited(false);
                 }
             }
             return deltaAlpha;
@@ -71,8 +74,8 @@ public class CompatibleCorrector {
     public double correctAngles(LinkedList<Edge> edges, LinkedList<Vertex> vertices) {
         Edge split = edges.getFirst();
 
-        Vertex bottom = split.bot;
-        Vertex top = split.top;
+        Vertex bottom = split.getBot();
+        Vertex top = split.getTop();
 
         Vertex v = bottom;
         Vertex w = top;
@@ -86,10 +89,10 @@ public class CompatibleCorrector {
         if (Translocator.noCollisions(edges, topEdges, bottomEdges, deltaAlpha)) {
             Translocator.changeCoordinates(edges, deltaAlpha);
             for (int i = 0; i < vertices.size(); i++) {
-                vertices.get(i).visited = false;
-                LinkedList<Edge> vEd = vertices.get(i).elist;
+                vertices.get(i).setVisited(false);
+                LinkedList<Edge> vEd = vertices.get(i).getElist();
                 for (int k = 0; k < vEd.size(); k++) {
-                    vEd.get(k).visited = false;
+                    vEd.get(k).setVisited(false);
                 }
             }
             return deltaAlpha;
@@ -100,25 +103,25 @@ public class CompatibleCorrector {
     public Vertex addEdgesforExternalTrivialSplits(Vertex v, PermutationSequenceDraw pseq) {
         Double minW = null;
 
-        LinkedList<Edge> allEdges = DrawFlat.collect_edges(v.elist.getFirst());
+        LinkedList<Edge> allEdges = v.getElist().getFirst().collectEdges();
         for (int i = 0; i < allEdges.size(); i++) {
             minW = ((minW == null || minW > allEdges.get(i).length()) ? allEdges.get(i).length() : minW);
         }
         minW /= 10;
 
         Set<Edge> externalEdges = new HashSet<>();
-        Collector.getExternalEdges(externalEdges, v.elist.getFirst(), v, v.elist.getFirst());
+        Collector.getExternalEdges(externalEdges, v.getElist().getFirst(), v, v.getElist().getFirst());
 
         double[] trivial = pseq.trivial;
         if (trivial != null) {
-            Set<Vertex> externalVertices = Collector.getExternalVertices(v.elist.getFirst(), v.elist.getFirst().top, v.elist.getFirst());
-            externalVertices.addAll(Collector.getExternalVertices(v.elist.getFirst(), v.elist.getFirst().bot, v.elist.getFirst()));
+            Set<Vertex> externalVertices = Collector.getExternalVertices(v.getElist().getFirst(), v.getElist().getFirst().getTop(), v.getElist().getFirst());
+            externalVertices.addAll(Collector.getExternalVertices(v.getElist().getFirst(), v.getElist().getFirst().getBot(), v.getElist().getFirst()));
             Iterator<Vertex> it = externalVertices.iterator();
             while (it.hasNext()) {
                 Vertex vertex = it.next();
                 int partitions = 0;
-                for (int i = 0; i < vertex.taxa.size(); i++) {
-                    int taxaNr = vertex.taxa.get(i);
+                for (int i = 0; i < vertex.getTaxa().size(); i++) {
+                    int taxaNr = vertex.getTaxa().get(i);
                     double w = trivial[taxaNr];
                     if (w > 0) {
                         partitions++;
@@ -163,8 +166,8 @@ public class CompatibleCorrector {
             Edge e;
 
             double anglePlus = 0.0; //is used in order to avoid edge overlaping
-            if (v.taxa.size() > 0) {
-                LinkedList<Integer> taxa = v.taxa;
+            if (v.getTaxa().size() > 0) {
+                LinkedList<Integer> taxa = v.getTaxa();
 
                 for (int t = taxa.size() - 1; t >= 0; t--) {
                     Integer taxon = taxa.get(t);
@@ -176,12 +179,12 @@ public class CompatibleCorrector {
                     if (length > 0) {
                         taxa.remove(taxon);
 
-                        w = new Vertex(v.x, v.y);
+                        w = new Vertex(v.getX(), v.getY());
                         e = new Edge(v, w, ++lastSplit, 0);
-                        v.elist.add(e);
-                        w.elist.add(e);
-                        w.taxa = new LinkedList<>();
-                        w.taxa.add(taxon);
+                        v.getElist().add(e);
+                        w.getElist().add(e);
+                        w.setTaxa(new LinkedList<Integer>());
+                        w.getTaxa().add(taxon);
                         oldVertices.add(v);
                         newVertices.add(w);
 
@@ -191,53 +194,53 @@ public class CompatibleCorrector {
 
                         anglePlus += 0.05;
 
-                        if (v.y >= c.y) {
-                            y = v.y + length * sinAlpha;
+                        if (v.getY() >= c.getY()) {
+                            y = v.getY() + length * sinAlpha;
                         } else {
-                            y = v.y - length * sinAlpha;
+                            y = v.getY() - length * sinAlpha;
                         }
 
                         double cosAlpha = Math.cos(alpha);
 
-                        if (w.x >= c.x) {
-                            x = v.x + length * cosAlpha;
+                        if (w.getX() >= c.getX()) {
+                            x = v.getX() + length * cosAlpha;
                         } else {
-                            x = v.x - length * cosAlpha;
+                            x = v.getX() - length * cosAlpha;
                         }
 
-                        w.x = x;
-                        w.y = y;
-                    } else if (length == 0 && v.elist.size() == 1) {
+                        w.setX(x);
+                        w.setY(y);
+                    } else if (length == 0 && v.getElist().size() == 1) {
 
-                        Edge ee = v.elist.getFirst();
+                        Edge ee = v.getElist().getFirst();
 
                         length = ee.length();
 
                         w = v;
 
-                        v = (ee.bot == w) ? ee.top : ee.bot;
+                        v = (ee.getBot() == w) ? ee.getTop() : ee.getBot();
 
                         double sinAlpha = getSinusAlpha(v, c);
                         double alpha = Math.asin(sinAlpha);
                         sinAlpha = Math.sin(alpha + anglePlus);
 
                         anglePlus += 0.05;
-                        if (v.y >= c.y) {
-                            y = v.y + length * sinAlpha;
+                        if (v.getY() >= c.getY()) {
+                            y = v.getY() + length * sinAlpha;
                         } else {
-                            y = v.y - length * sinAlpha;
+                            y = v.getY() - length * sinAlpha;
                         }
 
                         double cosAlpha = Math.cos(alpha);
 
-                        if (w.x >= c.x) {
-                            x = v.x + length * cosAlpha;
+                        if (w.getX() >= c.getX()) {
+                            x = v.getX() + length * cosAlpha;
                         } else {
-                            x = v.x - length * cosAlpha;
+                            x = v.getX() - length * cosAlpha;
                         }
 
-                        w.x = x;
-                        w.y = y;
+                        w.setX(x);
+                        w.setY(y);
                     }
                 }
             }
@@ -261,11 +264,11 @@ public class CompatibleCorrector {
     }
 
     private int getHighestNexusId(Edge e) {
-        LinkedList<Edge> edges = DrawFlat.collect_edges(e);
+        LinkedList<Edge> edges = e.collectEdges();
         int max = -1;
         for (int i = 0; i < edges.size(); i++) {
             Edge current = edges.get(i);
-            max = (max < current.idxsplit) ? current.idxsplit : max;
+            max = (max < current.getIdxsplit()) ? current.getIdxsplit() : max;
         }
         return max;
     }
@@ -287,34 +290,34 @@ public class CompatibleCorrector {
 
             for (int j = 0; j < vertices.size(); j++) {
                 Vertex w = vertices.get(j);
-                if (w.elist.size() == 1) {
-                    Edge e = w.elist.getFirst();
+                if (w.getElist().size() == 1) {
+                    Edge e = w.getElist().getFirst();
 
                     double x;
                     double y;
-                    Vertex v = (e.top == w) ? e.bot : e.top;
+                    Vertex v = (e.getTop() == w) ? e.getBot() : e.getTop();
                     double sinAlpha = getSinusAlpha(v, c);
 
 
                     double length = e.length();
-                    if (v.y >= c.y) {
-                        y = v.y + length * sinAlpha;
+                    if (v.getY() >= c.getY()) {
+                        y = v.getY() + length * sinAlpha;
                     } else {
-                        y = v.y - length * sinAlpha;
+                        y = v.getY() - length * sinAlpha;
                     }
 
                     double cosAlpha = getCosinusAlpha(v, c);
 
-                    if (v.x >= c.x) {
-                        x = v.x + length * cosAlpha;
+                    if (v.getX() >= c.getX()) {
+                        x = v.getX() + length * cosAlpha;
                     } else {
-                        x = v.x - length * cosAlpha;
+                        x = v.getX() - length * cosAlpha;
                     }
 
-                    if (!Translocator.twoLinesCrosses(v.x, v.y, x, y, new HashSet<>(allEdges))
-                            && !Translocator.twoLinesCrosses(w.x, w.y, x, y, new HashSet<>(allEdges))) {
-                        w.x = x;
-                        w.y = y;
+                    if (!Translocator.twoLinesCrosses(v.getX(), v.getY(), x, y, new HashSet<>(allEdges))
+                            && !Translocator.twoLinesCrosses(w.getX(), w.getY(), x, y, new HashSet<>(allEdges))) {
+                        w.setX(x);
+                        w.setY(y);
                     }
                 }
             }
@@ -322,17 +325,17 @@ public class CompatibleCorrector {
     }
 
     private double getSinusAlpha(Vertex v, Vertex c) {
-        double sinAlpha = Math.abs(v.y - c.y) / Math.sqrt((v.x - c.x) * (v.x - c.x) + (v.y - c.y) * (v.y - c.y));
+        double sinAlpha = Math.abs(v.getY() - c.getY()) / Math.sqrt((v.getX() - c.getX()) * (v.getX() - c.getX()) + (v.getY() - c.getY()) * (v.getY() - c.getY()));
         return sinAlpha;
     }
 
     private double getCosinusAlpha(Vertex v, Vertex c) {
-        double sinAlpha = Math.abs(v.x - c.x) / Math.sqrt((v.x - c.x) * (v.x - c.x) + (v.y - c.y) * (v.y - c.y));
+        double sinAlpha = Math.abs(v.getX() - c.getX()) / Math.sqrt((v.getX() - c.getX()) * (v.getX() - c.getX()) + (v.getY() - c.getY()) * (v.getY() - c.getY()));
         return sinAlpha;
     }
 
     private Vertex computeCenterPoint(Vertex net) {
-        double[] corners = Utilities.getCorners(DrawFlat.collect_vertices(net));
+        double[] corners = Utilities.getCorners(net.collectVertices());
         double x = 0.5 * (corners[0] + corners[1]);
         double y = 0.5 * (corners[2] + corners[3]);
         return new Vertex(x, y);
@@ -353,9 +356,9 @@ public class CompatibleCorrector {
         Set<Vertex> vertices1 = getVerticesFromEdges(edges1);
         Set<Vertex> vertices2 = getVerticesFromEdges(edges2);
 
-        Vertex v = (beforeLast.bot == fist.bot || beforeLast.bot == fist.top) ? beforeLast.bot : beforeLast.top;
-        Vertex w1 = (beforeLast.bot == v) ? beforeLast.top : beforeLast.bot;
-        Vertex w2 = (fist.bot == v) ? fist.top : fist.bot;
+        Vertex v = (beforeLast.getBot() == fist.getBot() || beforeLast.getBot() == fist.getTop()) ? beforeLast.getBot() : beforeLast.getTop();
+        Vertex w1 = (beforeLast.getBot() == v) ? beforeLast.getTop() : beforeLast.getBot();
+        Vertex w2 = (fist.getBot() == v) ? fist.getTop() : fist.getBot();
 
         vertices1.remove(v);
         vertices2.remove(v);
@@ -364,12 +367,12 @@ public class CompatibleCorrector {
         Vertex striker = angleCalculatorSimple.findStrikerOnTheRight(v, w1, vertices1);
         Vertex defender = angleCalculatorSimple.findDefenderOnTheRight(v, w2, vertices2);
 
-        double alpha = AngleCalculatorSimple.getClockwiseAngle(striker, v, defender) * 0.5;
-        double xt = w2.x - v.x;
-        double yt = w2.y - v.y;
+        double alpha = Vertex.getClockwiseAngle(striker, v, defender) * 0.5;
+        double xt = w2.getX() - v.getX();
+        double yt = w2.getY() - v.getY();
 
-        double x = xt * Math.cos(alpha) - yt * Math.sin(alpha) + v.x;
-        double y = xt * Math.sin(alpha) + yt * Math.cos(alpha) + v.y;
+        double x = xt * Math.cos(alpha) - yt * Math.sin(alpha) + v.getX();
+        double y = xt * Math.sin(alpha) + yt * Math.cos(alpha) + v.getY();
 
         return new Line(v, new Vertex(x, y));
 
@@ -378,8 +381,8 @@ public class CompatibleCorrector {
     private Set<Vertex> getVerticesFromEdges(LinkedList<Edge> edges) {
         Set<Vertex> vertices = new HashSet<>();
         for (int i = 0; i < edges.size(); i++) {
-            vertices.add(edges.get(i).bot);
-            vertices.add(edges.get(i).top);
+            vertices.add(edges.get(i).getBot());
+            vertices.add(edges.get(i).getTop());
         }
         return vertices;
     }
@@ -391,7 +394,7 @@ public class CompatibleCorrector {
                 LinkedList<Edge> edges = new LinkedList<>();
                 edges.add(e);
                 double moved = 0.0;
-                if (e.top.elist.size() == 1 || e.bot.elist.size() == 1) {
+                if (e.getTop().getElist().size() == 1 || e.getBot().getElist().size() == 1) {
                     moved = correctAnglesForTrivial(edges, vertices);
                 }
                 if (moved == 0) {
@@ -410,15 +413,15 @@ public class CompatibleCorrector {
     }
 
     private int castRay(Vertex c, List<Edge> edges) {
-        Line ray = new Line(c, new Vertex(c.x + 1, c.y + 1));
+        Line ray = new Line(c, new Vertex(c.getX() + 1, c.getY() + 1));
         int crossings = 0;
         Iterator<Edge> edgeIterator = edges.iterator();
         while (edgeIterator.hasNext()) {
             Edge e = edgeIterator.next();
-            if (!e.compatible) {
+            if (!e.isCompatible()) {
                 Line eLine = new Line(e);
                 Vertex intP = intersection(ray, eLine);
-                if (Math.signum(intP.x - e.top.x) != Math.signum(intP.x - e.bot.x) && intP.x > c.x && intP.y > c.y) {
+                if (Math.signum(intP.getX() - e.getTop().getX()) != Math.signum(intP.getX() - e.getBot().getX()) && intP.getX() > c.getX() && intP.getY() > c.getY()) {
                     crossings++;
                 }
             }
@@ -444,7 +447,7 @@ public class CompatibleCorrector {
 
         for (int i = 0; i < trivial.size(); i++) {
             Edge e = trivial.get(i);
-            vertices.add(e.bot.elist.size() == 1 ? e.bot : e.top);
+            vertices.add(e.getBot().getElist().size() == 1 ? e.getBot() : e.getTop());
         }
 
         double[] corners = Utilities.getCorners(network.getVertices());
@@ -478,7 +481,7 @@ public class CompatibleCorrector {
                 Edge e = orderedTrivial.get(j);
 
                 if (e.length() > 0) {
-                    Vertex v = (e.bot.elist.size() == 1) ? e.top : e.bot;
+                    Vertex v = (e.getBot().getElist().size() == 1) ? e.getTop() : e.getBot();
                     Vertex w = e.getOther(v);
 
                     List<Edge> edges = new LinkedList(network.getExternal());
@@ -498,7 +501,7 @@ public class CompatibleCorrector {
 
                     //Score current position
                     //trivial.remove(e);
-                    Score currentScore = getScore(w, v.x, v.y, w.x, w.y, trivial, e, inner, external, network.getLabeled());
+                    Score currentScore = getScore(w, v.getX(), v.getY(), w.getX(), w.getY(), trivial, e, inner, external, network.getLabeled());
 
 
                     //Score all angles in the environment
@@ -526,22 +529,22 @@ public class CompatibleCorrector {
                     if (best != -1) {
                         if (window != null) {
                             double[] point = new double[3];
-                            point[0] = w.x;
-                            point[1] = w.y;
-                            point[2] = w.height;
+                            point[0] = w.getX();
+                            point[1] = w.getY();
+                            point[2] = w.getHeight();
 
                             double[] line = new double[4];
-                            line[0] = w.x;
-                            line[1] = w.y;
-                            line[2] = v.x;
-                            line[3] = v.y;
+                            line[0] = w.getX();
+                            line[1] = w.getY();
+                            line[2] = v.getX();
+                            line[3] = v.getY();
 
                             po.add(point);
                             li.add(line);
                         }
 
-                        w.x = scores[best].newX;
-                        w.y = scores[best].newY;
+                        w.setX(scores[best].newX);
+                        w.setY(scores[best].newY);
 
                         corrected++;
                         sign = '*';
@@ -574,8 +577,8 @@ public class CompatibleCorrector {
         int index = 0;
         while (eIt.hasNext()) {
             Edge e = eIt.next();
-            Vertex c = (e.top.elist.size() == 1) ? e.bot : e.top;
-            angles[index++] = AngleCalculatorSimple.getClockwiseAngle(w, v, c);
+            Vertex c = (e.getTop().getElist().size() == 1) ? e.getBot() : e.getTop();
+            angles[index++] = Vertex.getClockwiseAngle(w, v, c);
         }
         for (int i = 0; i < angles.length; i++) {
             if (i == 0) {
@@ -602,15 +605,15 @@ public class CompatibleCorrector {
     private Score[] scoreAngles(Vertex v, Vertex w, double[] environment, List<Edge> trivial, Edge e, List<Edge> inner, List<Edge> external, List<Vertex> labeled) {
         Score[] scores = new Score[environment.length];
 
-        double xt = w.x - v.x;
-        double yt = w.y - v.y;
+        double xt = w.getX() - v.getX();
+        double yt = w.getY() - v.getY();
 
         for (int i = 0; i < environment.length; i++) {
             double angle = environment[i];
-            double newX = xt * Math.cos(angle) - yt * Math.sin(angle) + v.x;
-            double newY = xt * Math.sin(angle) + yt * Math.cos(angle) + v.y;
+            double newX = xt * Math.cos(angle) - yt * Math.sin(angle) + v.getX();
+            double newY = xt * Math.sin(angle) + yt * Math.cos(angle) + v.getY();
 
-            scores[i] = getScore(w, v.x, v.y, newX, newY, trivial, e, inner, external, labeled);
+            scores[i] = getScore(w, v.getX(), v.getY(), newX, newY, trivial, e, inner, external, labeled);
             scores[i].newX = newX;
             scores[i].newY = newY;
         }
@@ -668,9 +671,9 @@ public class CompatibleCorrector {
         double score = 0.0;
         for (int i = 0; i < external.size(); i++) {
             Edge e = external.get(i);
-            Vertex c = Translocator.getIntersectionPoint(x, y, x1, y1, e.bot.x, e.bot.y, e.top.x, e.top.y);
+            Vertex c = Translocator.getIntersectionPoint(x, y, x1, y1, e.getBot().getX(), e.getBot().getY(), e.getTop().getX(), e.getTop().getY());
             if (c != null) {
-                score = AngleCalculatorSimple.distance(new Vertex(x1, y1), c);
+                score = new Vertex(x1, y1).calcDistanceTo(c);
             }
         }
         return score;
@@ -680,13 +683,13 @@ public class CompatibleCorrector {
         Double score = null;
         int atAll = 0;
         double threshold = Math.PI / 2.0;
-        Vertex v = (e.bot.x == x && e.bot.y == y) ? e.bot : e.top;
+        Vertex v = (e.getBot().getX() == x && e.getBot().getY() == y) ? e.getBot() : e.getTop();
         Vertex w = new Vertex(x1, y1);
-        LinkedList<Edge> incident = v.elist;
+        LinkedList<Edge> incident = v.getElist();
         for (int i = 0; i < incident.size(); i++) {
             Edge ee = incident.get(i);
             if (e != ee) {
-                Vertex w2 = (ee.bot == v) ? ee.top : ee.bot;
+                Vertex w2 = (ee.getBot() == v) ? ee.getTop() : ee.getBot();
                 double angle = angleCalculator.getAngle(w, v, w2);
 
                 score = (score == null || score > angle) ? angle : score;
@@ -702,7 +705,7 @@ public class CompatibleCorrector {
         for (int i = 0; i < edges.size(); i++) {
             Edge ee = edges.get(i);
             if (ee.length() > 0) {
-                if (Translocator.cross(x, y, x1, y1, ee.bot.x, ee.bot.y, ee.top.x, ee.top.y)) {
+                if (Translocator.cross(x, y, x1, y1, ee.getBot().getX(), ee.getBot().getY(), ee.getTop().getX(), ee.getTop().getY())) {
                     score += punishment;
                 }
             }
@@ -719,10 +722,10 @@ public class CompatibleCorrector {
             Edge ee = iterator.next();
             if (ee != e) {
                 Vertex v1;
-                if (e.bot.x == x && e.bot.y == y) {
-                    v1 = e.bot;
+                if (e.getBot().getX() == x && e.getBot().getY() == y) {
+                    v1 = e.getBot();
                 } else {
-                    v1 = e.top;
+                    v1 = e.getTop();
                 }
                 Vertex v2 = new Vertex(x1, y1);
 
@@ -742,7 +745,7 @@ public class CompatibleCorrector {
         while (iterator.hasNext()) {
             Vertex w = iterator.next();
             if (w != v) {
-                double dist = AngleCalculatorSimple.distance(new Vertex(x, y), w);
+                double dist = new Vertex(x, y).calcDistanceTo(w);
                 if (score == null || score > dist) {
                     score = dist;
                 }
@@ -754,7 +757,7 @@ public class CompatibleCorrector {
     public boolean pointNotInTheSet(Vertex vertex, List<Edge> edges) {
         for (int i = 0; i < edges.size(); i++) {
             Edge e = edges.get(i);
-            if ((e.bot.x == vertex.x && e.bot.y == vertex.y) || (e.top.x == vertex.x && e.top.y == vertex.y)) {
+            if ((e.getBot().getX() == vertex.getX() && e.getBot().getY() == vertex.getY()) || (e.getTop().getX() == vertex.getX() && e.getTop().getY() == vertex.getY())) {
                 return false;
             }
         }
@@ -762,7 +765,7 @@ public class CompatibleCorrector {
     }
 
     public double moveCompatible(Vertex V, int iterations, Window window, Network network) {
-        List<Edge> compatible = network.getCompatible();
+        List<Edge> compatible = new EdgeList(network.getEdges()).getCompatible();
         List<Edge> external = network.getExternal();
         external.addAll(network.getTrivial());
 
@@ -790,8 +793,8 @@ public class CompatibleCorrector {
                     }
                 }
 
-                Vertex v = e.bot;
-                Vertex w = e.top;
+                Vertex v = e.getBot();
+                Vertex w = e.getTop();
 
                 double bestAngle;
 
@@ -809,14 +812,14 @@ public class CompatibleCorrector {
                 if (!moved) {
                     bestAngle = angleCalculator.optimizedAngleForCompatible(v, w, e, bottomExternal, topExternal);
                     topEdges.add(e);
-                    moved = tryRotating(v, bottomEdges, topEdges, 0 - bestAngle, DrawFlat.collect_vertices(V));
+                    moved = tryRotating(v, bottomEdges, topEdges, 0 - bestAngle, V.collectVertices());
                     if (moved) {
                         corrected = bestAngle;
                     }
                     topEdges.remove(e);
                     bestAngle = angleCalculator.optimizedAngleForCompatible(w, v, e, topExternal, bottomExternal);
                     bottomEdges.add(e);
-                    boolean moved2 = tryRotating(w, topEdges, bottomEdges, 0 - bestAngle, DrawFlat.collect_vertices(V));
+                    boolean moved2 = tryRotating(w, topEdges, bottomEdges, 0 - bestAngle, V.collectVertices());
                     if (moved2) {
                         corrected = bestAngle;
                         moved = moved2;
@@ -824,13 +827,13 @@ public class CompatibleCorrector {
                     bottomEdges.remove(e);
                 }
                 if (!moved) {
-                    bestAngle = angleCalculator.computeMiddleAngleForTrivial(e, e.bot, e.top);
-                    moved = tryAngle(v, w, e, tmp, topEdges, bottomEdges, bestAngle, DrawFlat.collect_vertices(V));
+                    bestAngle = angleCalculator.computeMiddleAngleForTrivial(e, e.getBot(), e.getTop());
+                    moved = tryAngle(v, w, e, tmp, topEdges, bottomEdges, bestAngle, V.collectVertices());
                     if (moved && (corrected == null || corrected < bestAngle)) {
                         corrected = bestAngle;
                     }
-                    bestAngle = angleCalculator.computeMiddleAngleForTrivial(e, e.top, e.bot);
-                    boolean moved2 = tryAngle(w, v, e, tmp, bottomEdges, topEdges, bestAngle, DrawFlat.collect_vertices(V));
+                    bestAngle = angleCalculator.computeMiddleAngleForTrivial(e, e.getTop(), e.getBot());
+                    boolean moved2 = tryAngle(w, v, e, tmp, bottomEdges, topEdges, bestAngle, V.collectVertices());
                     if (moved2 && (corrected == null || corrected < bestAngle)) {
                         corrected = bestAngle;
                         moved = moved2;
@@ -867,10 +870,10 @@ public class CompatibleCorrector {
             Translocator.changeCoordinates(bot, top, edges, deltaAlpha);
             moved = true;
             for (int i = 0; i < vertices.size(); i++) {
-                vertices.get(i).visited = false;
-                LinkedList<Edge> vEd = vertices.get(i).elist;
+                vertices.get(i).setVisited(false);
+                LinkedList<Edge> vEd = vertices.get(i).getElist();
                 for (int k = 0; k < vEd.size(); k++) {
-                    vEd.get(k).visited = false;
+                    vEd.get(k).setVisited(false);
                 }
             }
 
@@ -886,10 +889,10 @@ public class CompatibleCorrector {
             Translocator.rotateAll(bot, bottomEdges, deltaAlpha);
             moved = true;
             for (int i = 0; i < vertices.size(); i++) {
-                vertices.get(i).visited = false;
-                LinkedList<Edge> vEd = vertices.get(i).elist;
+                vertices.get(i).setVisited(false);
+                LinkedList<Edge> vEd = vertices.get(i).getElist();
                 for (int k = 0; k < vEd.size(); k++) {
-                    vEd.get(k).visited = false;
+                    vEd.get(k).setVisited(false);
                 }
             }
 
@@ -905,7 +908,7 @@ public class CompatibleCorrector {
         double Y;
         double X;
 
-        if (y >= C.y) {
+        if (y >= C.getY()) {
             Y = y + length * sinAlpha;
         } else {
             Y = y - length * sinAlpha;
@@ -913,7 +916,7 @@ public class CompatibleCorrector {
 
         double cosAlpha = Math.cos(alpha);
 
-        if (x >= C.x) {
+        if (x >= C.getX()) {
             X = x + length * cosAlpha;
         } else {
             X = x - length * cosAlpha;
@@ -1025,7 +1028,7 @@ public class CompatibleCorrector {
         }
 
         private Line(Edge e) {
-            setAB(e.bot, e.top);
+            setAB(e.getBot(), e.getTop());
         }
 
         private Line(double x1, double y1, double x2, double y2) {
@@ -1034,8 +1037,8 @@ public class CompatibleCorrector {
         }
 
         private void setAB(Vertex v, Vertex w) {
-            a = (v.y - w.y) / (v.x - w.x);
-            b = v.y - a * v.x;
+            a = (v.getY() - w.getY()) / (v.getX() - w.getX());
+            b = v.getY() - a * v.getX();
         }
 
         public boolean equals(Line l2) {

@@ -21,7 +21,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
-import uk.ac.uea.cmp.spectre.core.ds.split.SimpleSplitSystem;
+import uk.ac.uea.cmp.spectre.core.ds.split.SpectreSplitSystem;
 import uk.ac.uea.cmp.spectre.core.io.PhygenReader;
 import uk.ac.uea.cmp.spectre.core.io.PhygenReaderFactory;
 import uk.ac.uea.cmp.spectre.core.io.nexus.NexusWriter;
@@ -98,7 +98,7 @@ public class RandomNeighbourNetFits {
         return generatedFiles;
     }
 
-    protected double getFitStatistic(DistanceMatrix distanceMatrix, SimpleSplitSystem aNetwork) {
+    protected double getFitStatistic(DistanceMatrix distanceMatrix, SpectreSplitSystem aNetwork) {
         /*double fit = 0.;
         int t = distanceMatrix.size();
         double sum1 = 0.;

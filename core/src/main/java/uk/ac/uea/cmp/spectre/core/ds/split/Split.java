@@ -1,186 +1,25 @@
-/*
- * Phylogenetics Tool suite
- * Copyright (C) 2013  UEA CMP Phylogenetics Group
- *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
- * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
- * later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
- * details.
- *
- * You should have received a copy of the GNU General Public License along with this program.  If not, see
- * <http://www.gnu.org/licenses/>.
- */
 package uk.ac.uea.cmp.spectre.core.ds.split;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
-
+import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 
 /**
- * Created with IntelliJ IDEA.
- * User: Sarah_2
- * Date: 24/04/13
- * Time: 16:34
- * To change this template use File | Settings | File Templates.
+ * Created by maplesod on 14/05/14.
  */
-public class Split implements Comparable<Split> {
-
-    private SplitBlock aSide;
-    private SplitBlock bSide;
-    private int nbTaxa;
-    private double weight;
-
-    public Split(SplitBlock aSide, int nbTaxa) {
-        this(aSide, nbTaxa, 1.0);
-    }
-
-    public Split(SplitBlock aSide, int nbTaxa, double weight) {
-        this.aSide = aSide;
-        this.nbTaxa = nbTaxa;
-        this.bSide = aSide.makeComplement(nbTaxa);
-        this.weight = weight;
-    }
-
-
-    public Split(Split split) {
-        this(split.aSide.copy(), split.nbTaxa);
-    }
+public interface Split extends Comparable<Split> {
 
     /**
-     * Creates a new split merged from the two provided splits
-     *
-     * @param s1
-     * @param s2
+     * A helpful enum for getting elements from a given side of the split
      */
-    public Split(Split s1, Split s2) {
-        this(s1.aSide.copy(), s1.nbTaxa);
-        this.merge(s2);
-    }
-
-    @Override
-    public int hashCode() {
-
-        return new HashCodeBuilder()
-                .append(aSide)
-                .append(bSide)
-                .append(nbTaxa)
-                .append(weight)
-                .toHashCode();
-    }
-
-
-    @Override
-    public boolean equals(Object o) {
-
-        if (o == null)
-            return false;
-
-        if (this == o)
-            return true;
-
-        Split other = (Split) o;
-
-        return new EqualsBuilder()
-                .append(aSide, other.aSide)
-                .append(bSide, other.bSide)
-                .append(nbTaxa, other.nbTaxa)
-                .append(weight, other.weight)
-                .isEquals();
-    }
-
-    public SplitBlock getASide() {
-        return aSide;
-    }
-
-    public SplitBlock getBSide() {
-        return bSide;
-    }
-
-    public int getNbTaxa() {
-        return nbTaxa;
-    }
-
-    public double getWeight() {
-        return weight;
-    }
-
-    public void setWeight(double weight) {
-        this.weight = weight;
-    }
-
-    public void sort() {
-
-        this.aSide.sort();
-        this.bSide.sort();
-    }
-
-    public int getSplitElement(SplitSide side, int index) {
-        return side.getSplitElement(this, index);
-    }
-
-    public void merge(Split split) {
-        this.aSide.merge(split.getASide());
-        this.bSide = aSide.makeComplement(this.nbTaxa);
-    }
-
-    public Split copy() {
-
-        return new Split(this.getASide().copy(), this.nbTaxa);
-    }
-
-    public Split makeSortedCopy() {
-
-        Split copy = new Split(this);
-        copy.sort();
-        return copy;
-    }
-
-    @Override
-    public int compareTo(Split o) {
-
-        if (o == null)
-            throw new NullPointerException("The split to compare is null");
-
-        if (o == this)
-            return 0;
-
-        int difNbTaxa = this.getNbTaxa() - o.getNbTaxa();
-
-        if (difNbTaxa == 0) {
-
-            double diffWeight = this.weight - o.weight;
-
-            if (diffWeight == 0.0) {
-
-                int difASide = this.aSide.compareTo(o.aSide);
-
-                if (difASide == 0) {
-                    return this.bSide.compareTo(o.bSide);
-                } else {
-                    return difASide;
-                }
-            } else {
-                return diffWeight < 0.0 ? -1 : 1;
-            }
-        } else {
-            return difNbTaxa;
-        }
-    }
-
     public enum SplitSide {
 
         A_SIDE {
             public int getSplitElement(Split split, int index) {
-                return split.aSide.get(index);
+                return split.getASide().get(index);
             }
         },
         B_SIDE {
             public int getSplitElement(Split split, int index) {
-                return split.bSide.get(index);
+                return split.getBSide().get(index);
             }
         };
 
@@ -188,43 +27,108 @@ public class Split implements Comparable<Split> {
     }
 
     /**
-     * Summed up distanceMatrix from all elements on the A side to all elements on the B side.
-     *
-     * @return P
+     * Create a new (deep) copy of this split.
+     * @return A new copy of this split.
      */
-    public double calculateP(DistanceMatrix distanceMatrix) {
-
-        boolean splited[] = new boolean[this.nbTaxa];
-        for (int h = 0; h < splited.length; h++) {
-            splited[h] = false;
-        }
-
-        // Array stores the info which elements are on one side each element of the split
-        for (int j = 0; j < this.aSide.size(); j++) {
-            for (int k = 0; k < this.nbTaxa; k++) {
-                if (this.aSide.get(j) == k) {
-                    splited[k] = true;
-                }
-            }
-        }
-
-        // Sums up all distanceMatrix from the elements on the one side of the edge to the other side
-        double p = 0.0;
-
-        for (int j = 0; j < this.aSide.size(); j++) {
-            for (int k = 0; k < this.nbTaxa; k++) {
-                if (splited[k] == false) {
-                    p += distanceMatrix.getDistance(this.aSide.get(j), k);
-                }
-            }
-        }
-
-        return p;
-    }
-
-    public boolean onExternalEdge() {
-        return this.aSide.size() == 1 || this.bSide.size() == 1;
-    }
+    Split copy();
 
 
+    /**
+     * Get the weight given by this split
+     * @return The split weight
+     */
+    double getWeight();
+
+
+    /**
+     * Get the number of taxa in this split.  This should be the sum of the number of taxa on both the A side and B side
+     * of the split.
+     * @return The number of taxa represented by this split.
+     */
+    int getNbTaxa();
+
+    /**
+     * Retrieves the first taxon id stored on the A side
+     * @return The first taxon id stored on the A side
+     */
+    int getASideFirst();
+
+    /**
+     * Retrieves the last taxon id stored on the A side
+     * @return The last taxon id stored on the A side
+     */
+    int getASideLast();
+
+    /**
+     * Get the side of the A side of this split
+     * @return A side size
+     */
+    int getASideSize();
+
+    /**
+     * Get the side of the B side of this split
+     * @return B side size
+     */
+    int getBSideSize();
+
+    /**
+     * Retreives the A side as a SplitBlock
+     * @return The A side of the split
+     */
+    SplitBlock getASide();
+
+    /**
+     * Retreives the B side as a SplitBlock.
+     * @return The B side of the split
+     */
+    SplitBlock getBSide();
+
+    /**
+     * Gets an array of integers representing the taxa indicies on the split's A side.
+     * @return A Side as int[].
+     */
+    int[] getASideAsIntArray();
+
+    /**
+     * Gets an array of integers representing the taxa indicies on the split's A side.
+     * @return B Side as int[].
+     */
+    int[] getBSideAsIntArray();
+
+
+    /**
+     * Combines the taxa on the a side of this and the given split.  Then should rebuild the b side according to the remaining
+     * taxa.
+     * @param split The split to merge with this split
+     */
+    void mergeASides(Split split);
+
+
+
+
+
+    /**
+     * Returns true if one side of this split contains only a single taxon.
+     * @return True if one side of this split contains only a single taxon, otherwise false.
+     */
+    boolean onExternalEdge();
+
+    /**
+     * Check to see if this split is compatible with another split.  This returns true (compatible) if one of the four
+     * intersections A1 n A2, A1 n B2, A2 n B1 or A2 n B2 is empty.  Otherwise this returns false (incompatible).
+     * @param other The other split to test
+     * @return True if compatible, false if incompatible
+     */
+    boolean isCompatible(Split other);
+
+    /**
+     * Check to see if this split is consistent with the given ordering, hence is circular.
+     *
+     * Note, that this only checks if this split is consistent with the given circular ordering.  It is still possible
+     * for this method to return false but the split to be part of a circular split system that has a different ordering.
+     *
+     * @param ordering The ordering of taxa to test this split against
+     * @return True, if this split is circular, false if not.
+     */
+    boolean isCircular(IdentifierList ordering);
 }

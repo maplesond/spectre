@@ -18,9 +18,10 @@ package uk.ac.uea.cmp.spectre.net.netme;
 
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
-import uk.ac.uea.cmp.spectre.core.ds.split.CompatibleSplitSystem;
+import uk.ac.uea.cmp.spectre.core.ds.split.SpectreSplitSystem;
+import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.TreeSplitWeights;
-import uk.ac.uea.cmp.spectre.core.math.Statistics;
+import uk.ac.uea.cmp.spectre.core.math.stats.Statistics;
 
 import java.util.ArrayList;
 
@@ -43,9 +44,9 @@ public class MinimumEvolutionCalculator {
         TreeAndWeights treeAndWeights = this.calculateME(distanceMatrix, circularOrdering);
 
         //the ME tree + weights from OLS (\in R^+)
-        CompatibleSplitSystem meTree = treeAndWeights.getTree().convertToSplitSystem(distanceMatrix, circularOrdering);
+        SplitSystem meTree = treeAndWeights.getTree().convertToSplitSystem(distanceMatrix, circularOrdering);
         //The ME tree + original weights (\in R)
-        CompatibleSplitSystem originalMETree = new CompatibleSplitSystem(meTree, treeAndWeights.getTreeWeights());
+        SplitSystem originalMETree = new SpectreSplitSystem(meTree, treeAndWeights.getTreeWeights());
 
         // Compile stats
         double treeLength = treeAndWeights.getTreeWeights().calcTreeLength();

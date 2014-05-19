@@ -18,15 +18,19 @@ package uk.ac.uea.cmp.spectre.flatnj.tools;
 
 import uk.ac.uea.cmp.spectre.core.ds.Alignment;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
+import uk.ac.uea.cmp.spectre.core.ds.network.Edge;
+import uk.ac.uea.cmp.spectre.core.ds.network.Label;
+import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
 import uk.ac.uea.cmp.spectre.flatnj.ds.*;
-import uk.ac.uea.cmp.spectre.flatnj.fdraw.*;
-import uk.ac.uea.cmp.spectre.flatnj.fdraw.Label;
+import uk.ac.uea.cmp.spectre.flatnj.fdraw.ViewerConfig;
 
 import java.awt.*;
 import java.io.*;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
+
+import uk.ac.uea.cmp.spectre.core.ds.network.Label;
 
 /**
  * @author balvociute
@@ -273,8 +277,8 @@ public class Writer {
         Vertex v;
         Edge e;
 
-        List<Vertex> vertices = DrawFlat.collect_vertices(net);
-        List<Edge> edges = DrawFlat.collect_edges(net.getFirstEdge());
+        List<Vertex> vertices = net.collectVertices();
+        List<Edge> edges = net.getFirstEdge().collectEdges();
 
         writeLine();
         writeLine("BEGIN Network;");

@@ -16,10 +16,9 @@
 
 package uk.ac.uea.cmp.spectre.flatnj.ds;
 
-import uk.ac.uea.cmp.spectre.flatnj.fdraw.Collector;
+import uk.ac.uea.cmp.spectre.core.ds.network.*;
+import uk.ac.uea.cmp.spectre.core.ds.network.Label;
 import uk.ac.uea.cmp.spectre.flatnj.fdraw.DrawFlat;
-import uk.ac.uea.cmp.spectre.flatnj.fdraw.Edge;
-import uk.ac.uea.cmp.spectre.flatnj.fdraw.Vertex;
 
 import java.util.*;
 
@@ -27,7 +26,7 @@ import java.util.*;
  * @author balvociute
  */
 public class Network {
-    private List<Vertex> allVertices;
+    private VertexList allVertices;
     private List<Vertex> labeledVertices;
 
     private List<Edge> allEdges;
@@ -45,7 +44,7 @@ public class Network {
     boolean trivialVisible = true;
 
     public Network(Vertex v) {
-        allVertices = DrawFlat.collect_vertices(v);
+        allVertices = v.collectVertices();
         labeledVertices = new LinkedList<>();
         for (int i = 0; i < allVertices.size(); i++) {
             Vertex w = allVertices.get(i);
@@ -54,8 +53,8 @@ public class Network {
             }
         }
 
-        allEdges = DrawFlat.collect_edges(v.getFirstEdge());
-        externalEdges = Collector.externalEdges(v);
+        allEdges = v.getFirstEdge().collectEdges();
+        externalEdges = v.collectExternalEdges();
         trivialEdges = new LinkedList<>();
         internalEdges = new LinkedList<>();
         for (int i = 0; i < allEdges.size(); i++) {
@@ -71,15 +70,15 @@ public class Network {
         }
         for (int i = 0; i < externalEdges.size(); i++) {
             Edge e = externalEdges.get(i);
-            List<Edge> split = DrawFlat.collect_edges_for_split(e.getIdxsplit(), v);
+            List<Edge> split = v.collectEdgesForSplit(e.getIdxsplit());
             if (split.size() == 1 && e.getBot().getElist().size() > 1 && e.getTop().getElist().size() > 1) {
-                e.compatible = true;
+                e.setCompatible(true);
             }
         }
     }
 
     public Network(Vertex[] vertices, Edge[] edges) {
-        allVertices = new LinkedList<>();
+        allVertices = new VertexList();
         allVertices.addAll(Arrays.asList(vertices));
 
         labeledVertices = new LinkedList<>();
@@ -92,7 +91,7 @@ public class Network {
 
         allEdges = new LinkedList<>();
         allEdges.addAll(Arrays.asList(edges));
-        externalEdges = Collector.externalEdges(allVertices);
+        externalEdges = allVertices.collectExternalEdges();
         trivialEdges = new LinkedList<>();
         internalEdges = new LinkedList<>();
         for (Iterator<Edge> it = allEdges.iterator(); it.hasNext(); ) {
@@ -112,7 +111,7 @@ public class Network {
             Edge e = externalEdges.get(i);
             List<Edge> split = DrawFlat.collect_edges_for_split(e.getIdxsplit(), allEdges);
             if (split.size() == 1 && e.getBot().getElist().size() > 1 && e.getTop().getElist().size() > 1) {
-                e.compatible = true;
+                e.setCompatible(true);
             }
         }
     }
@@ -142,9 +141,8 @@ public class Network {
     }
 
     public void removeVertices(LinkedList<Vertex> vertices) {
-        Iterator<Vertex> vertexIt = vertices.iterator();
-        while (vertexIt.hasNext()) {
-            labeledVertices.remove(vertexIt.next());
+        for(Vertex v : vertices) {
+            labeledVertices.remove(v);
         }
     }
 
@@ -248,7 +246,7 @@ public class Network {
     public Map<Integer, boolean[]> getSplits() {
         List<String> allLabels = new LinkedList<>();
         for (int i = 0; i < labeledVertices.size(); i++) {
-            uk.ac.uea.cmp.spectre.flatnj.fdraw.Label l = labeledVertices.get(i).getLabel();
+            uk.ac.uea.cmp.spectre.core.ds.network.Label l = labeledVertices.get(i).getLabel();
             if (l != null) {
                 String[] labels = l.getName().split("\\s*,\\s*");
                 for (int j = 0; j < labels.length; j++) {
@@ -282,7 +280,7 @@ public class Network {
             int sId = sIt.next();
             List<Edge> eIt = splits.get(sId);
             for (int i = 0; i < eIt.size(); i++) {
-                eIt.get(i).visited = true;
+                eIt.get(i).setVisited(true);
             }
             List<Vertex> vv = new LinkedList<>();
             vv.add(eIt.get(0).getBot());
@@ -290,7 +288,7 @@ public class Network {
             while (!vv.isEmpty()) {
                 Vertex v = vv.remove(0);
 
-                uk.ac.uea.cmp.spectre.flatnj.fdraw.Label l = v.getLabel();
+                Label l = v.getLabel();
                 if (l != null) {
                     String[] labels = l.getName().split("\\s*,\\s*");
                     for (int i = 0; i < labels.length; i++) {
@@ -301,15 +299,15 @@ public class Network {
                 List<Edge> edges = v.getElist();
                 for (int i = 0; i < edges.size(); i++) {
                     Edge e = edges.get(i);
-                    if (!e.visited) {
+                    if (!e.isVisited()) {
                         vv.add(e.getOther(v));
-                        e.visited = true;
+                        e.setVisited(true);
                     }
                 }
             }
 
             for (int i = 0; i < allEdges.size(); i++) {
-                allEdges.get(i).visited = false;
+                allEdges.get(i).setVisited(false);
             }
 
             if (!intSplit[0]) {
@@ -335,15 +333,9 @@ public class Network {
     }
 
     public List<Edge> getCompatible() {
-        List<Edge> compatible = new LinkedList<>();
-        for (int i = 0; i < allEdges.size(); i++) {
-            Edge e = allEdges.get(i);
-            if (e.compatible) {
-                compatible.add(e);
-            }
-        }
-        return compatible;
+        return new EdgeList(this.allEdges).getCompatible();
     }
+
 
     public void setLabeled(List<Vertex> labeled) {
         this.labeledVertices = labeled;

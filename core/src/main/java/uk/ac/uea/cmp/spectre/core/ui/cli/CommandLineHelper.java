@@ -1,8 +1,8 @@
 /*
- * Phylogenetics Tool suite
- * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
+ * Copyright (C) 2014  UEA School of Computing Sciences
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
@@ -29,7 +29,7 @@ public class CommandLineHelper {
     public static final int DEFAULT_WIDTH = 100;
     public static final String DEFAULT_FOOTER = "Created in collaboration by the University of East Anglia (UEA), The " +
             "Genome Analysis Centre (TGAC) and the University of Greifswald, as part of the " +
-            "Phylogenetics Bundled Resources (PhyBRe)";
+            "Suite of PhylogEnetiCs Tools for Reticulate Evolution (SPECTRE)";
 
     public static final String OPT_HELP = "help";
     public static final Option HELP_OPTION = new Option("?", OPT_HELP, false, "Print this message.");

@@ -29,7 +29,7 @@ import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.quartet.GroupedQuartetSystem;
 import uk.ac.uea.cmp.spectre.core.ds.quartet.QuartetSystem;
 import uk.ac.uea.cmp.spectre.core.ds.quartet.QuartetSystemList;
-import uk.ac.uea.cmp.spectre.core.ds.split.CircularSplitSystem;
+import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.spectre.core.ds.tree.newick.NewickTree;
 import uk.ac.uea.cmp.spectre.qtools.qmaker.QMaker;
 
@@ -93,10 +93,10 @@ public class QNetITCase {
         assertTrue(Equality.approxEquals(result.getComputedWeights().getSolution(), new double[]{0.0, 0.0, 0.0, 1.0, 1.0}));
 
         // Generate splits
-        CircularSplitSystem ss = result.createSplitSystem(null, QNetResult.SplitLimiter.STANDARD);
+        SplitSystem ss = result.createSplitSystem(null, QNetResult.SplitLimiter.STANDARD);
 
         // Check splits
-        assertTrue(ss.getNbSplits() == 7);
+        assertTrue(ss.size() == 7);
         assertTrue(Equality.approxEquals(ss.getWeightAt(0), 1.0));
         assertTrue(Equality.approxEquals(ss.getWeightAt(1), 1.0));
     }
@@ -116,7 +116,7 @@ public class QNetITCase {
         assertTrue(Equality.approxEquals(result.getComputedWeights().getSolution(), new double[]{0.0, 0.0, 0.0, 1.0, 1.0}));
 
         // Generate splits
-        CircularSplitSystem ss = result.createSplitSystem(null, QNetResult.SplitLimiter.STANDARD);
+        SplitSystem ss = result.createSplitSystem(null, QNetResult.SplitLimiter.STANDARD);
 
         // Check splits
         /*assertTrue(ss.getNbSplits() == 7);
@@ -133,9 +133,9 @@ public class QNetITCase {
         // Check circular ordering
         assertTrue(result.getCircularOrdering().equals(new IdentifierList(new int[]{3, 1, 2, 4, 5})));
 
-        CircularSplitSystem ss = result.createSplitSystem(null, QNetResult.SplitLimiter.STANDARD);
+        SplitSystem ss = result.createSplitSystem(null, QNetResult.SplitLimiter.STANDARD);
 
-        assertTrue(ss.getNbSplits() == 8);
+        assertTrue(ss.size() == 8);
         assertTrue(ss.getWeightAt(0) == 4.0);
         assertTrue(ss.getWeightAt(1) == 1.75);
         assertTrue(ss.getWeightAt(2) == 1.75);
@@ -151,7 +151,7 @@ public class QNetITCase {
         assertTrue(ArrayUtils.isEquals(result.getCircularOrdering().toArray(),
                 new int[]{3, 1, 2, 4, 5}));
 
-        CircularSplitSystem ss = result.createSplitSystem(null, QNetResult.SplitLimiter.STANDARD);
+        SplitSystem ss = result.createSplitSystem(null, QNetResult.SplitLimiter.STANDARD);
 
 
         assertTrue(true);

@@ -30,6 +30,7 @@ import uk.ac.uea.cmp.spectre.core.ds.quartet.QuartetSystem;
 import uk.ac.uea.cmp.spectre.core.ds.quartet.QuartetSystemCombiner;
 import uk.ac.uea.cmp.spectre.core.ds.quartet.QuartetSystemList;
 import uk.ac.uea.cmp.spectre.core.io.qweight.QWeightWriter;
+import uk.ac.uea.cmp.spectre.qtools.scale.Scaling;
 import uk.ac.uea.cmp.spectre.tools.PhygenTool;
 
 import java.io.File;
@@ -200,7 +201,7 @@ public class QMaker extends PhygenTool {
 
         // Scale the quartet systems only if an optimiser is provided
         if (optimiser != null) {
-            quartetSystems.scaleWeights(optimiser);
+            new Scaling().execute(quartetSystems, optimiser);
         }
 
         return this.execute(quartetSystems);

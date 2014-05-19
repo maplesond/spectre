@@ -1,3 +1,19 @@
+/*
+ * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
+ * Copyright (C) 2014  UEA School of Computing Sciences
+ *
+ * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
+
 package uk.ac.uea.cmp.spectre.core.ds.quartet;
 
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
@@ -42,9 +58,9 @@ public class CanonicalWeightedQuartetMap extends HashMap<Quartet, Double> {
 
                         double min = Math.min(w1, Math.min(w2, w3));
 
-                        this.put(new Quartet(a + 1, b + 1, c + 1, d + 1), w1 - min);
-                        this.put(new Quartet(a + 1, c + 1, b + 1, d + 1), w2 - min);
-                        this.put(new Quartet(a + 1, d + 1, b + 1, c + 1), w3 - min);
+                        this.put(new SpectreQuartet(a + 1, b + 1, c + 1, d + 1), w1 - min);
+                        this.put(new SpectreQuartet(a + 1, c + 1, b + 1, d + 1), w2 - min);
+                        this.put(new SpectreQuartet(a + 1, d + 1, b + 1, c + 1), w3 - min);
                     }
                 }
             }
@@ -59,9 +75,9 @@ public class CanonicalWeightedQuartetMap extends HashMap<Quartet, Double> {
             Quartet sorted = entry.getKey();
             QuartetWeights weights = entry.getValue();
 
-            this.put(new Quartet(sorted), weights.getA());
-            this.put(new Quartet(sorted.getA(), sorted.getC(), sorted.getB(), sorted.getD()), weights.getB());
-            this.put(new Quartet(sorted.getA(), sorted.getD(), sorted.getB(), sorted.getC()), weights.getC());
+            this.put(new SpectreQuartet(sorted), weights.getA());
+            this.put(new SpectreQuartet(sorted.getA(), sorted.getC(), sorted.getB(), sorted.getD()), weights.getB());
+            this.put(new SpectreQuartet(sorted.getA(), sorted.getD(), sorted.getB(), sorted.getC()), weights.getC());
         }
     }
 
@@ -104,13 +120,13 @@ public class CanonicalWeightedQuartetMap extends HashMap<Quartet, Double> {
         if (!split.onExternalEdge()) {
 
             // so, for all quartets in here, add the length to their value
-            final int aSize = split.getASide().size();
-            final int bSize = split.getBSide().size();
+            final int aSize = split.getASideSize();
+            final int bSize = split.getBSideSize();
 
             // I think it will work out a little faster doing things this way... if that turns out not to be true consider
             // optimising this.
-            int[] setA = split.getASide().toIntArray();
-            int[] setB = split.getBSide().toIntArray();
+            int[] setA = split.getASideAsIntArray();
+            int[] setB = split.getBSideAsIntArray();
 
             for (int iA1 = 0; iA1 < aSize - 1; iA1++) {
 
@@ -126,7 +142,7 @@ public class CanonicalWeightedQuartetMap extends HashMap<Quartet, Double> {
                             int b1 = setB[iB1];
                             int b2 = setB[iB2];
 
-                            this.incrementWeight(new Quartet(a1, a2, b1, b2), split.getWeight());
+                            this.incrementWeight(new SpectreQuartet(a1, a2, b1, b2), split.getWeight());
                         }
                     }
                 }

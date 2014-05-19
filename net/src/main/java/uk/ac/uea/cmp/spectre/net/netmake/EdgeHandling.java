@@ -169,7 +169,7 @@ public class EdgeHandling {
 
         SplitBlock largest = null;
 
-        for (Split split : ss.getSplits()) {
+        for (Split split : ss) {
 
             if (this.isCandidateLargestValidSubset(edge, split.getASide(), largest, firstRun)) {
                 largest = split.getASide();

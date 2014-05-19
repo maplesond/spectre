@@ -17,6 +17,8 @@
 package uk.ac.uea.cmp.spectre.flatnj.fdraw;
 
 
+import uk.ac.uea.cmp.spectre.core.ds.network.Edge;
+import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
 import uk.ac.uea.cmp.spectre.flatnj.ds.Taxa;
 
 import java.util.*;
@@ -61,7 +63,7 @@ public class DrawFlat {
     //in the trimmed network. Again this method is
     //provided as a public method for testing purposes.
     public static Vertex trim_network(Vertex v) {
-        LinkedList vlist = collect_vertices(v);
+        LinkedList vlist = v.collectVertices();
         ListIterator viter = vlist.listIterator();
         ListIterator eiter = null;
         Vertex u = null;
@@ -72,7 +74,7 @@ public class DrawFlat {
 
         while (viter.hasNext()) {
             u = (Vertex) viter.next();
-            if ((u.taxa.size() > 0) || (u.elist.size() > 2)) {
+            if ((u.getTaxa().size() > 0) || (u.getElist().size() > 2)) {
                 viter.remove();
             }
         }
@@ -83,20 +85,20 @@ public class DrawFlat {
             while (viter.hasNext()) {
                 u = (Vertex) viter.next();
                 viter.remove();
-                eiter = u.elist.listIterator();
+                eiter = u.getElist().listIterator();
                 while (eiter.hasNext()) {
                     e = (Edge) eiter.next();
-                    if (u == e.bot) {
-                        e.top.elist.remove(e);
-                        w = e.top;
-                        if (((w.taxa.size() == 0) && (w.elist.size() < 3))
+                    if (u == e.getBot()) {
+                        e.getTop().getElist().remove(e);
+                        w = e.getTop();
+                        if (((w.getTaxa().size() == 0) && (w.getElist().size() < 3))
                                 && (vlist.contains(w) == false)) {
                             viter.add(w);
                         }
                     } else {
-                        e.bot.elist.remove(e);
-                        w = e.bot;
-                        if (((w.taxa.size() == 0) && (w.elist.size() < 3))
+                        e.getBot().getElist().remove(e);
+                        w = e.getBot();
+                        if (((w.getTaxa().size() == 0) && (w.getElist().size() < 3))
                                 && (vlist.contains(w) == false)) {
                             viter.add(w);
                         }
@@ -129,7 +131,7 @@ public class DrawFlat {
             //System.out.print("Split " + i + " "); 
             if (pseq.active[i] && is_trivial(pseq, i, ssyst)) {
                 //System.out.println("is trivial");
-                LinkedList elist = collect_edges_for_split(i, u);
+                LinkedList elist = u.collectEdgesForSplit(i);
                 //System.out.println(elist.size() + " edges collected");
                 e = flip_cubes(v, pseq, elist, ssyst, taxaname);
                 //System.out.println("Cubes flipped");
@@ -152,7 +154,7 @@ public class DrawFlat {
         LinkedList<Vertex> vlist = collect_vertices(v);
         LinkedList<Edge> elist = null;
         if (vlist.size() > 1) {
-            elist = collect_edges((Edge) (v.elist).getFirst());
+            elist = collect_edges((Edge) (v.getElist()).getFirst());
         } else {
             elist = new LinkedList();
         }
@@ -337,10 +339,10 @@ public class DrawFlat {
         while (iter.hasNext()) {
             e1 = (Edge) iter.next();
             if (e1 != h) {
-                f1 = (Edge) e1.top.elist.get((e1.top.elist.indexOf(e1) + e1.top.elist.size() - 1) % e1.top.elist.size());
-                f2 = (Edge) e1.bot.elist.get((e1.bot.elist.indexOf(e1) + 1) % e1.bot.elist.size());
+                f1 = (Edge) e1.getTop().getElist().get((e1.getTop().getElist().indexOf(e1) + e1.getTop().getElist().size() - 1) % e1.getTop().getElist().size());
+                f2 = (Edge) e1.getBot().getElist().get((e1.getBot().getElist().indexOf(e1) + 1) % e1.getBot().getElist().size());
 
-                if (f1.idxsplit == b) {
+                if (f1.getIdxsplit() == b) {
                     netbox = new NetworkBox(e1, (Edge) iter.next(), f1, f2);
                     break;
                 }
@@ -380,7 +382,7 @@ public class DrawFlat {
         //System.out.print("Collect edges -- ");
 
         //determine direction in which we collect edges
-        if (netbox.f1.timestp < netbox.f2.timestp) {
+        if (netbox.f1.getTimestp() < netbox.f2.getTimestp()) {
             if (pattern == 1) {
                 dira = -1;
                 dirb = 1;
@@ -464,29 +466,29 @@ public class DrawFlat {
 
         Edge g = null;
 
-        if (h1.timestp < h2.timestp) {
+        if (h1.getTimestp() < h2.getTimestp()) {
             if (dirs == -1) {
-                stopstp = h2.timestp;
+                stopstp = h2.getTimestp();
             } else {
-                stopstp = h1.timestp;
+                stopstp = h1.getTimestp();
             }
         } else {
             if (dirs == -1) {
-                stopstp = h1.timestp;
+                stopstp = h1.getTimestp();
             } else {
-                stopstp = h2.timestp;
+                stopstp = h2.getTimestp();
             }
         }
 
         if (dirs == -1) {
             while (iter.hasNext()) {
                 g = (Edge) iter.next();
-                if (g.timestp < stopstp) {
+                if (g.getTimestp() < stopstp) {
                     elists.addFirst(g);
                     if (parts == 1) {
-                        crosslists.addFirst(g.top.elist.get((g.top.elist.indexOf(g) + g.top.elist.size() - 1) % g.top.elist.size()));
+                        crosslists.addFirst(g.getTop().getElist().get((g.getTop().getElist().indexOf(g) + g.getTop().getElist().size() - 1) % g.getTop().getElist().size()));
                     } else {
-                        crosslists.addFirst(g.bot.elist.get((g.bot.elist.indexOf(g) + 1) % g.bot.elist.size()));
+                        crosslists.addFirst(g.getBot().getElist().get((g.getBot().getElist().indexOf(g) + 1) % g.getBot().getElist().size()));
                     }
                 } else {
                     break;
@@ -495,12 +497,12 @@ public class DrawFlat {
         } else {
             while (iter.hasNext()) {
                 g = (Edge) iter.next();
-                if (g.timestp > stopstp) {
+                if (g.getTimestp() > stopstp) {
                     elists.addLast(g);
                     if (parts == 1) {
-                        crosslists.addLast((Edge) g.top.elist.get((g.top.elist.indexOf(g) + 1) % g.top.elist.size()));
+                        crosslists.addLast((Edge) g.getTop().getElist().get((g.getTop().getElist().indexOf(g) + 1) % g.getTop().getElist().size()));
                     } else {
-                        crosslists.addLast((Edge) g.bot.elist.get((g.bot.elist.indexOf(g) + g.bot.elist.size() - 1) % g.bot.elist.size()));
+                        crosslists.addLast((Edge) g.getBot().getElist().get((g.getBot().getElist().indexOf(g) + g.getBot().getElist().size() - 1) % g.getBot().getElist().size()));
                     }
                 }
             }
@@ -524,14 +526,14 @@ public class DrawFlat {
             e = (Edge) itera.next();
             //System.out.println(e);
 
-            if (e.idxsplit == b) {
+            if (e.getIdxsplit() == b) {
                 crossboth.addLast(e);
             } else {
                 iterb = crosslistb.listIterator();
 
                 while (iterb.hasNext()) {
                     f = (Edge) iterb.next();
-                    if (e.idxsplit == f.idxsplit) {
+                    if (e.getIdxsplit() == f.getIdxsplit()) {
                         crossboth.addLast(e);
                         break;
                     } else {
@@ -556,45 +558,45 @@ public class DrawFlat {
 
         //first eliminate the edges that correspond to splits that cross a
         if (dira == -1) {
-            SortedSet head = splitedges[e.idxsplit].headSet(e);
+            SortedSet head = splitedges[e.getIdxsplit()].headSet(e);
             Iterator headiter = head.iterator();
             while (headiter.hasNext()) {
                 h = (Edge) headiter.next();
-                g1 = h.top.elist.get((h.top.elist.indexOf(h) + (h.top.elist.size() - 1)) % h.top.elist.size());
-                g2 = h.bot.elist.get((h.bot.elist.indexOf(h) + 1) % h.bot.elist.size());
+                g1 = h.getTop().getElist().get((h.getTop().getElist().indexOf(h) + (h.getTop().getElist().size() - 1)) % h.getTop().getElist().size());
+                g2 = h.getBot().getElist().get((h.getBot().getElist().indexOf(h) + 1) % h.getBot().getElist().size());
 
-                if ((parta == 1) && (g1.timestp < g2.timestp)) {
+                if ((parta == 1) && (g1.getTimestp() < g2.getTimestp())) {
                     while (true) {
-                        g = (Edge) splitedges[g1.idxsplit].last();
-                        if (g.timestp > g1.timestp) {
-                            splitedges[g1.idxsplit].remove(g);
+                        g = (Edge) splitedges[g1.getIdxsplit()].last();
+                        if (g.getTimestp() > g1.getTimestp()) {
+                            splitedges[g1.getIdxsplit()].remove(g);
                         } else {
                             break;
                         }
                     }
-                } else if ((parta == 1) && (g1.timestp > g2.timestp)) {
+                } else if ((parta == 1) && (g1.getTimestp() > g2.getTimestp())) {
                     while (true) {
-                        g = (Edge) splitedges[g1.idxsplit].first();
-                        if (g.timestp < g1.timestp) {
-                            splitedges[g1.idxsplit].remove(g);
+                        g = (Edge) splitedges[g1.getIdxsplit()].first();
+                        if (g.getTimestp() < g1.getTimestp()) {
+                            splitedges[g1.getIdxsplit()].remove(g);
                         } else {
                             break;
                         }
                     }
-                } else if ((parta == 0) && (g1.timestp < g2.timestp)) {
+                } else if ((parta == 0) && (g1.getTimestp() < g2.getTimestp())) {
                     while (true) {
-                        g = (Edge) splitedges[g2.idxsplit].first();
-                        if (g.timestp < g2.timestp) {
-                            splitedges[g2.idxsplit].remove(g);
+                        g = (Edge) splitedges[g2.getIdxsplit()].first();
+                        if (g.getTimestp() < g2.getTimestp()) {
+                            splitedges[g2.getIdxsplit()].remove(g);
                         } else {
                             break;
                         }
                     }
-                } else if ((parta == 0) && (g1.timestp > g2.timestp)) {
+                } else if ((parta == 0) && (g1.getTimestp() > g2.getTimestp())) {
                     while (true) {
-                        g = (Edge) splitedges[g2.idxsplit].last();
-                        if (g.timestp > g2.timestp) {
-                            splitedges[g2.idxsplit].remove(g);
+                        g = (Edge) splitedges[g2.getIdxsplit()].last();
+                        if (g.getTimestp() > g2.getTimestp()) {
+                            splitedges[g2.getIdxsplit()].remove(g);
                         } else {
                             break;
                         }
@@ -602,47 +604,47 @@ public class DrawFlat {
                 }
             }
         } else {
-            SortedSet tail = splitedges[e.idxsplit].tailSet(e);
+            SortedSet tail = splitedges[e.getIdxsplit()].tailSet(e);
             Iterator tailiter = tail.iterator();
             //tail contains e!!!
             h = (Edge) tailiter.next();
             while (tailiter.hasNext()) {
                 h = (Edge) tailiter.next();
-                g1 = h.top.elist.get((h.top.elist.indexOf(h) + 1) % h.top.elist.size());
-                g2 = h.bot.elist.get((h.bot.elist.indexOf(h) + (h.bot.elist.size() - 1)) % h.bot.elist.size());
+                g1 = h.getTop().getElist().get((h.getTop().getElist().indexOf(h) + 1) % h.getTop().getElist().size());
+                g2 = h.getBot().getElist().get((h.getBot().getElist().indexOf(h) + (h.getBot().getElist().size() - 1)) % h.getBot().getElist().size());
 
-                if ((parta == 1) && (g1.timestp < g2.timestp)) {
+                if ((parta == 1) && (g1.getTimestp() < g2.getTimestp())) {
                     while (true) {
-                        g = (Edge) splitedges[g1.idxsplit].last();
-                        if (g.timestp > g1.timestp) {
-                            splitedges[g1.idxsplit].remove(g);
+                        g = (Edge) splitedges[g1.getIdxsplit()].last();
+                        if (g.getTimestp() > g1.getTimestp()) {
+                            splitedges[g1.getIdxsplit()].remove(g);
                         } else {
                             break;
                         }
                     }
-                } else if ((parta == 1) && (g1.timestp > g2.timestp)) {
+                } else if ((parta == 1) && (g1.getTimestp() > g2.getTimestp())) {
                     while (true) {
-                        g = (Edge) splitedges[g1.idxsplit].first();
-                        if (g.timestp < g1.timestp) {
-                            splitedges[g1.idxsplit].remove(g);
+                        g = (Edge) splitedges[g1.getIdxsplit()].first();
+                        if (g.getTimestp() < g1.getTimestp()) {
+                            splitedges[g1.getIdxsplit()].remove(g);
                         } else {
                             break;
                         }
                     }
-                } else if ((parta == 0) && (g1.timestp < g2.timestp)) {
+                } else if ((parta == 0) && (g1.getTimestp() < g2.getTimestp())) {
                     while (true) {
-                        g = (Edge) splitedges[g2.idxsplit].first();
-                        if (g.timestp < g2.timestp) {
-                            splitedges[g2.idxsplit].remove(g);
+                        g = (Edge) splitedges[g2.getIdxsplit()].first();
+                        if (g.getTimestp() < g2.getTimestp()) {
+                            splitedges[g2.getIdxsplit()].remove(g);
                         } else {
                             break;
                         }
                     }
-                } else if ((parta == 0) && (g1.timestp > g2.timestp)) {
+                } else if ((parta == 0) && (g1.getTimestp() > g2.getTimestp())) {
                     while (true) {
-                        g = (Edge) splitedges[g2.idxsplit].last();
-                        if (g.timestp > g2.timestp) {
-                            splitedges[g2.idxsplit].remove(g);
+                        g = (Edge) splitedges[g2.getIdxsplit()].last();
+                        if (g.getTimestp() > g2.getTimestp()) {
+                            splitedges[g2.getIdxsplit()].remove(g);
                         } else {
                             break;
                         }
@@ -655,45 +657,45 @@ public class DrawFlat {
 
         //next eliminate edges that correspond to splits thath cross b
         if (dirb == -1) {
-            SortedSet head = splitedges[f.idxsplit].headSet(f);
+            SortedSet head = splitedges[f.getIdxsplit()].headSet(f);
             Iterator headiter = head.iterator();
             while (headiter.hasNext()) {
                 h = (Edge) headiter.next();
-                g1 = h.top.elist.get((h.top.elist.indexOf(h) + (h.top.elist.size() - 1)) % h.top.elist.size());
-                g2 = h.bot.elist.get((h.bot.elist.indexOf(h) + 1) % h.bot.elist.size());
+                g1 = h.getTop().getElist().get((h.getTop().getElist().indexOf(h) + (h.getTop().getElist().size() - 1)) % h.getTop().getElist().size());
+                g2 = h.getBot().getElist().get((h.getBot().getElist().indexOf(h) + 1) % h.getBot().getElist().size());
 
-                if ((partb == 1) && (g1.timestp < g2.timestp)) {
+                if ((partb == 1) && (g1.getTimestp() < g2.getTimestp())) {
                     while (true) {
-                        g = (Edge) splitedges[g1.idxsplit].last();
-                        if (g.timestp > g1.timestp) {
-                            splitedges[g1.idxsplit].remove(g);
+                        g = (Edge) splitedges[g1.getIdxsplit()].last();
+                        if (g.getTimestp() > g1.getTimestp()) {
+                            splitedges[g1.getIdxsplit()].remove(g);
                         } else {
                             break;
                         }
                     }
-                } else if ((partb == 1) && (g1.timestp > g2.timestp)) {
+                } else if ((partb == 1) && (g1.getTimestp() > g2.getTimestp())) {
                     while (true) {
-                        g = (Edge) splitedges[g1.idxsplit].first();
-                        if (g.timestp < g1.timestp) {
-                            splitedges[g1.idxsplit].remove(g);
+                        g = (Edge) splitedges[g1.getIdxsplit()].first();
+                        if (g.getTimestp() < g1.getTimestp()) {
+                            splitedges[g1.getIdxsplit()].remove(g);
                         } else {
                             break;
                         }
                     }
-                } else if ((partb == 0) && (g1.timestp < g2.timestp)) {
+                } else if ((partb == 0) && (g1.getTimestp() < g2.getTimestp())) {
                     while (true) {
-                        g = (Edge) splitedges[g2.idxsplit].first();
-                        if (g.timestp < g2.timestp) {
-                            splitedges[g2.idxsplit].remove(g);
+                        g = (Edge) splitedges[g2.getIdxsplit()].first();
+                        if (g.getTimestp() < g2.getTimestp()) {
+                            splitedges[g2.getIdxsplit()].remove(g);
                         } else {
                             break;
                         }
                     }
-                } else if ((partb == 0) && (g1.timestp > g2.timestp)) {
+                } else if ((partb == 0) && (g1.getTimestp() > g2.getTimestp())) {
                     while (true) {
-                        g = (Edge) splitedges[g2.idxsplit].last();
-                        if (g.timestp > g2.timestp) {
-                            splitedges[g2.idxsplit].remove(g);
+                        g = (Edge) splitedges[g2.getIdxsplit()].last();
+                        if (g.getTimestp() > g2.getTimestp()) {
+                            splitedges[g2.getIdxsplit()].remove(g);
                         } else {
                             break;
                         }
@@ -701,47 +703,47 @@ public class DrawFlat {
                 }
             }
         } else {
-            SortedSet tail = splitedges[f.idxsplit].tailSet(f);
+            SortedSet tail = splitedges[f.getIdxsplit()].tailSet(f);
             Iterator tailiter = tail.iterator();
             //tail contains f!!!
             h = (Edge) tailiter.next();
             while (tailiter.hasNext()) {
                 h = (Edge) tailiter.next();
-                g1 = h.top.elist.get((h.top.elist.indexOf(h) + 1) % h.top.elist.size());
-                g2 = h.bot.elist.get((h.bot.elist.indexOf(h) + (h.bot.elist.size() - 1)) % h.bot.elist.size());
+                g1 = h.getTop().getElist().get((h.getTop().getElist().indexOf(h) + 1) % h.getTop().getElist().size());
+                g2 = h.getBot().getElist().get((h.getBot().getElist().indexOf(h) + (h.getBot().getElist().size() - 1)) % h.getBot().getElist().size());
 
-                if ((partb == 1) && (g1.timestp < g2.timestp)) {
+                if ((partb == 1) && (g1.getTimestp() < g2.getTimestp())) {
                     while (true) {
-                        g = (Edge) splitedges[g1.idxsplit].last();
-                        if (g.timestp > g1.timestp) {
-                            splitedges[g1.idxsplit].remove(g);
+                        g = (Edge) splitedges[g1.getIdxsplit()].last();
+                        if (g.getTimestp() > g1.getTimestp()) {
+                            splitedges[g1.getIdxsplit()].remove(g);
                         } else {
                             break;
                         }
                     }
-                } else if ((partb == 1) && (g1.timestp > g2.timestp)) {
+                } else if ((partb == 1) && (g1.getTimestp() > g2.getTimestp())) {
                     while (true) {
-                        g = (Edge) splitedges[g1.idxsplit].first();
-                        if (g.timestp < g1.timestp) {
-                            splitedges[g1.idxsplit].remove(g);
+                        g = (Edge) splitedges[g1.getIdxsplit()].first();
+                        if (g.getTimestp() < g1.getTimestp()) {
+                            splitedges[g1.getIdxsplit()].remove(g);
                         } else {
                             break;
                         }
                     }
-                } else if ((partb == 0) && (g1.timestp < g2.timestp)) {
+                } else if ((partb == 0) && (g1.getTimestp() < g2.getTimestp())) {
                     while (true) {
-                        g = (Edge) splitedges[g2.idxsplit].first();
-                        if (g.timestp < g2.timestp) {
-                            splitedges[g2.idxsplit].remove(g);
+                        g = (Edge) splitedges[g2.getIdxsplit()].first();
+                        if (g.getTimestp() < g2.getTimestp()) {
+                            splitedges[g2.getIdxsplit()].remove(g);
                         } else {
                             break;
                         }
                     }
-                } else if ((partb == 0) && (g1.timestp > g2.timestp)) {
+                } else if ((partb == 0) && (g1.getTimestp() > g2.getTimestp())) {
                     while (true) {
-                        g = (Edge) splitedges[g2.idxsplit].last();
-                        if (g.timestp > g2.timestp) {
-                            splitedges[g2.idxsplit].remove(g);
+                        g = (Edge) splitedges[g2.getIdxsplit()].last();
+                        if (g.getTimestp() > g2.getTimestp()) {
+                            splitedges[g2.getIdxsplit()].remove(g);
                         } else {
                             break;
                         }
@@ -754,14 +756,14 @@ public class DrawFlat {
         if (dira == -1) {
             while (true) {
                 g = (Edge) splitedges[a].first();
-                if (g.timestp <= e.timestp) {
+                if (g.getTimestp() <= e.getTimestp()) {
                     splitedges[a].remove(g);
                     if (parta == 1) {
-                        g.top.elist.remove(g);
-                        u = g.top;
+                        g.getTop().getElist().remove(g);
+                        u = g.getTop();
                     } else {
-                        g.bot.elist.remove(g);
-                        u = g.bot;
+                        g.getBot().getElist().remove(g);
+                        u = g.getBot();
                     }
                 } else {
                     break;
@@ -770,14 +772,14 @@ public class DrawFlat {
         } else {
             while (true) {
                 g = (Edge) splitedges[a].last();
-                if (g.timestp >= e.timestp) {
+                if (g.getTimestp() >= e.getTimestp()) {
                     splitedges[a].remove(g);
                     if (parta == 1) {
-                        g.top.elist.remove(g);
-                        u = g.top;
+                        g.getTop().getElist().remove(g);
+                        u = g.getTop();
                     } else {
-                        g.bot.elist.remove(g);
-                        u = g.bot;
+                        g.getBot().getElist().remove(g);
+                        u = g.getBot();
                     }
                 } else {
                     break;
@@ -788,12 +790,12 @@ public class DrawFlat {
         if (dirb == -1) {
             while (true) {
                 g = (Edge) splitedges[b].first();
-                if (g.timestp <= f.timestp) {
+                if (g.getTimestp() <= f.getTimestp()) {
                     splitedges[b].remove(g);
                     if (partb == 1) {
-                        g.top.elist.remove(g);
+                        g.getTop().getElist().remove(g);
                     } else {
-                        g.bot.elist.remove(g);
+                        g.getBot().getElist().remove(g);
                     }
                 } else {
                     break;
@@ -802,11 +804,11 @@ public class DrawFlat {
         } else {
             while (true) {
                 g = (Edge) splitedges[b].last();
-                if (g.timestp >= f.timestp) {
+                if (g.getTimestp() >= f.getTimestp()) {
                     if (partb == 1) {
-                        g.top.elist.remove(g);
+                        g.getTop().getElist().remove(g);
                     } else {
-                        g.bot.elist.remove(g);
+                        g.getBot().getElist().remove(g);
                     }
                     splitedges[b].remove(g);
                 } else {
@@ -854,7 +856,7 @@ public class DrawFlat {
             indexf = go_to_first_crossing(f, a, crossindices, listf, splitedges);
 
             //triangle found?
-            if ((indexe == f.idxsplit) && (indexf == e.idxsplit)) {
+            if ((indexe == f.getIdxsplit()) && (indexf == e.getIdxsplit())) {
                 cleanlist.addAll(listf);
                 break;
             } else {
@@ -862,7 +864,7 @@ public class DrawFlat {
             }
         }
 
-        return e.idxsplit;
+        return e.getIdxsplit();
     }
 
     //This method walks through the network to the
@@ -872,25 +874,25 @@ public class DrawFlat {
         int sidx = 0;
 
         //first check in which direction we need to go
-        SortedSet testtail = splitedges[e.idxsplit].tailSet(e);
+        SortedSet testtail = splitedges[e.getIdxsplit()].tailSet(e);
 
         Edge f = null;
 
         if (testtail.size() == 1) {
             dire = -1;
-        } else if (a == (e.bot.elist.get((e.bot.elist.indexOf(e) + 1) % e.bot.elist.size())).idxsplit) {
+        } else if (a == (e.getBot().getElist().get((e.getBot().getElist().indexOf(e) + 1) % e.getBot().getElist().size())).getIdxsplit()) {
             dire = 1;
         } else {
             dire = -1;
         }
 
         if (dire == 1) {
-            SortedSet tail = splitedges[e.idxsplit].tailSet(e);
+            SortedSet tail = splitedges[e.getIdxsplit()].tailSet(e);
             Iterator tailiter = tail.iterator();
             f = (Edge) tailiter.next();
             while (tailiter.hasNext()) {
                 f = (Edge) tailiter.next();
-                sidx = (f.top.elist.get((f.top.elist.indexOf(f) + 1) % f.top.elist.size())).idxsplit;
+                sidx = (f.getTop().getElist().get((f.getTop().getElist().indexOf(f) + 1) % f.getTop().getElist().size())).getIdxsplit();
                 if (crossindices.contains(new Integer(sidx))) {
                     return sidx;
                 } else {
@@ -898,7 +900,7 @@ public class DrawFlat {
                 }
             }
         } else {
-            SortedSet head = splitedges[e.idxsplit].headSet(e);
+            SortedSet head = splitedges[e.getIdxsplit()].headSet(e);
             Iterator headiter = head.iterator();
             LinkedList reverse = new LinkedList();
 
@@ -912,7 +914,7 @@ public class DrawFlat {
 
             while (reviter.hasNext()) {
                 f = (Edge) reviter.next();
-                sidx = ((Edge) f.bot.elist.get((f.bot.elist.indexOf(f) + 1) % f.bot.elist.size())).idxsplit;
+                sidx = ((Edge) f.getBot().getElist().get((f.getBot().getElist().indexOf(f) + 1) % f.getBot().getElist().size())).getIdxsplit();
                 if (crossindices.contains(new Integer(sidx))) {
                     return sidx;
                 } else {
@@ -935,7 +937,7 @@ public class DrawFlat {
 
         while (crossiter.hasNext()) {
             e = (Edge) crossiter.next();
-            index = new Integer(e.idxsplit);
+            index = new Integer(e.getIdxsplit());
             crossindices.add(index);
         }
     }
@@ -951,13 +953,13 @@ public class DrawFlat {
         int dire = 0;
 
         //first check in which direction we need to go
-        SortedSet testtail = splitedges[e.idxsplit].tailSet(e);
+        SortedSet testtail = splitedges[e.getIdxsplit()].tailSet(e);
 
         Edge f = null;
 
         if (testtail.size() == 1) {
             dire = 1;
-        } else if (a == (e.bot.elist.get((e.bot.elist.indexOf(e) + 1) % e.bot.elist.size())).idxsplit) {
+        } else if (a == (e.getBot().getElist().get((e.getBot().getElist().indexOf(e) + 1) % e.getBot().getElist().size())).getIdxsplit()) {
             dire = -1;
         } else {
             dire = 1;
@@ -1044,118 +1046,118 @@ public class DrawFlat {
             //find a flippable cube
             while (iter.hasNext()) {
                 e = (Edge) iter.next();
-                v = e.top;
-                if (v.elist.size() == 3) {
-                    e1 = v.elist.get((v.elist.indexOf(e) + 2) % 3);
-                    e2 = v.elist.get((v.elist.indexOf(e) + 1) % 3);
-                    v5 = e.bot;
-                    if (v == e2.bot) {
-                        v1 = e2.top;
+                v = e.getTop();
+                if (v.getElist().size() == 3) {
+                    e1 = v.getElist().get((v.getElist().indexOf(e) + 2) % 3);
+                    e2 = v.getElist().get((v.getElist().indexOf(e) + 1) % 3);
+                    v5 = e.getBot();
+                    if (v == e2.getBot()) {
+                        v1 = e2.getTop();
                     } else {
-                        v1 = e2.bot;
+                        v1 = e2.getBot();
                     }
-                    if (v == e1.bot) {
-                        v3 = e1.top;
+                    if (v == e1.getBot()) {
+                        v3 = e1.getTop();
                     } else {
-                        v3 = e1.bot;
+                        v3 = e1.getBot();
                     }
-                    e3 = v3.elist.get((v3.elist.indexOf(e1) + 1) % v3.elist.size());
-                    e4 = v1.elist.get((v1.elist.indexOf(e2) + v1.elist.size() - 1) % v1.elist.size());
-                    e5 = v1.elist.get((v1.elist.indexOf(e2) + 1) % v1.elist.size());
-                    e6 = v5.elist.get((v5.elist.indexOf(e) + v5.elist.size() - 1) % v5.elist.size());
-                    e7 = v5.elist.get((v5.elist.indexOf(e) + 1) % v5.elist.size());
-                    e8 = v3.elist.get((v3.elist.indexOf(e1) + v3.elist.size() - 1) % v3.elist.size());
-                    if (v1 == e4.bot) {
-                        v2 = e4.top;
+                    e3 = v3.getElist().get((v3.getElist().indexOf(e1) + 1) % v3.getElist().size());
+                    e4 = v1.getElist().get((v1.getElist().indexOf(e2) + v1.getElist().size() - 1) % v1.getElist().size());
+                    e5 = v1.getElist().get((v1.getElist().indexOf(e2) + 1) % v1.getElist().size());
+                    e6 = v5.getElist().get((v5.getElist().indexOf(e) + v5.getElist().size() - 1) % v5.getElist().size());
+                    e7 = v5.getElist().get((v5.getElist().indexOf(e) + 1) % v5.getElist().size());
+                    e8 = v3.getElist().get((v3.getElist().indexOf(e1) + v3.getElist().size() - 1) % v3.getElist().size());
+                    if (v1 == e4.getBot()) {
+                        v2 = e4.getTop();
                     } else {
-                        v2 = e4.bot;
+                        v2 = e4.getBot();
                     }
-                    if (v3 == e3.bot) {
-                        v4 = e3.top;
+                    if (v3 == e3.getBot()) {
+                        v4 = e3.getTop();
                     } else {
-                        v4 = e3.bot;
+                        v4 = e3.getBot();
                     }
-                    if (v3 == e8.bot) {
-                        v6 = e8.top;
+                    if (v3 == e8.getBot()) {
+                        v6 = e8.getTop();
                     } else {
-                        v6 = e8.bot;
+                        v6 = e8.getBot();
                     }
-                    if (v5 == e7.bot) {
-                        v7 = e7.top;
+                    if (v5 == e7.getBot()) {
+                        v7 = e7.getTop();
                     } else {
-                        v7 = e7.bot;
+                        v7 = e7.getBot();
                     }
-                    if (v5 == e6.bot) {
-                        v8 = e6.top;
+                    if (v5 == e6.getBot()) {
+                        v8 = e6.getTop();
                     } else {
-                        v8 = e6.bot;
+                        v8 = e6.getBot();
                     }
-                    if (v1 == e5.bot) {
-                        v9 = e5.top;
+                    if (v1 == e5.getBot()) {
+                        v9 = e5.getTop();
                     } else {
-                        v9 = e5.bot;
+                        v9 = e5.getBot();
                     }
                     if ((v2 == v4)
                             && (v6 == v7)
                             && (v8 == v9)
-                            && (e.idxsplit == e5.idxsplit)
-                            && (e.idxsplit == e8.idxsplit)
-                            && (e2.idxsplit == e3.idxsplit)
-                            && (e2.idxsplit == e6.idxsplit)
-                            && (e1.idxsplit == e4.idxsplit)
-                            && (e1.idxsplit == e7.idxsplit)) {
+                            && (e.getIdxsplit() == e5.getIdxsplit())
+                            && (e.getIdxsplit() == e8.getIdxsplit())
+                            && (e2.getIdxsplit() == e3.getIdxsplit())
+                            && (e2.getIdxsplit() == e6.getIdxsplit())
+                            && (e1.getIdxsplit() == e4.getIdxsplit())
+                            && (e1.getIdxsplit() == e7.getIdxsplit())) {
                         break;
                     }
                 }
             }
 
             //flip cube
-            v1.elist.remove(e2);
-            v3.elist.remove(e1);
-            v5.elist.remove(e);
-            v.elist.clear();
-            v.x = v2.x + (v5.x - v.x);
-            v.y = v2.y + (v5.y - v.y);
-            if (v8 == e6.top) {
-                h1 = new Edge(v, v6, e6.idxsplit, e2.timestp);
+            v1.getElist().remove(e2);
+            v3.getElist().remove(e1);
+            v5.getElist().remove(e);
+            v.getElist().clear();
+            v.setX(v2.getX() + (v5.getX() - v.getX()));
+            v.setY(v2.getY() + (v5.getY() - v.getY()));
+            if (v8 == e6.getTop()) {
+                h1 = new Edge(v, v6, e6.getIdxsplit(), e2.getTimestp());
             } else {
-                h1 = new Edge(v6, v, e6.idxsplit, e2.timestp);
+                h1 = new Edge(v6, v, e6.getIdxsplit(), e2.getTimestp());
             }
-            v6.elist.add(v6.elist.indexOf(e7) + 1, h1);
-            v.elist.addLast(h1);
-            if (v6 == e7.top) {
-                h2 = new Edge(v, v8, e7.idxsplit, e1.timestp);
+            v6.getElist().add(v6.getElist().indexOf(e7) + 1, h1);
+            v.getElist().addLast(h1);
+            if (v6 == e7.getTop()) {
+                h2 = new Edge(v, v8, e7.getIdxsplit(), e1.getTimestp());
             } else {
-                h2 = new Edge(v8, v, e7.idxsplit, e1.timestp);
+                h2 = new Edge(v8, v, e7.getIdxsplit(), e1.getTimestp());
             }
-            v8.elist.add(v8.elist.indexOf(e5) + 1, h2);
-            v.elist.addLast(h2);
-            h3 = new Edge(v2, v, e.idxsplit, e.timestp);
-            v2.elist.add(v2.elist.indexOf(e3) + 1, h3);
-            v.elist.addLast(h3);
+            v8.getElist().add(v8.getElist().indexOf(e5) + 1, h2);
+            v.getElist().addLast(h2);
+            h3 = new Edge(v2, v, e.getIdxsplit(), e.getTimestp());
+            v2.getElist().add(v2.getElist().indexOf(e3) + 1, h3);
+            v.getElist().addLast(h3);
 
             //System.out.println("Size of elist before update: " + elist.size());
 
             //update lists of edges accordingly
-            splitedges[e.idxsplit].remove(e);
-            splitedges[e.idxsplit].add(h3);
-            splitedges[e2.idxsplit].remove(e2);
-            splitedges[e2.idxsplit].add(h1);
-            splitedges[e1.idxsplit].remove(e1);
-            splitedges[e1.idxsplit].add(h2);
+            splitedges[e.getIdxsplit()].remove(e);
+            splitedges[e.getIdxsplit()].add(h3);
+            splitedges[e2.getIdxsplit()].remove(e2);
+            splitedges[e2.getIdxsplit()].add(h1);
+            splitedges[e1.getIdxsplit()].remove(e1);
+            splitedges[e1.getIdxsplit()].add(h2);
 
             if (parta == 1) {
                 if (dira == -1) {
                     elist.add(elist.indexOf(e) + 1, h3);
                     elist.remove(e);
-                    if ((e6.idxsplit == a) && (e7.idxsplit != s)) {
+                    if ((e6.getIdxsplit() == a) && (e7.getIdxsplit() != s)) {
                         elist.removeFirst();
                         crossboth.add(crossboth.indexOf(e5) + 1, h3);
                         crossboth.remove(e5);
                         elista.add(elista.indexOf(e2) + 1, h1);
                         elista.remove(e2);
                     }
-                    if ((e6.idxsplit == a) && (e7.idxsplit == s) && (s == b)) {
+                    if ((e6.getIdxsplit() == a) && (e7.getIdxsplit() == s) && (s == b)) {
                         elist.removeFirst();
                         crossboth.remove(e5);
                         crossboth.add(crossboth.indexOf(e4) + 1, h2);
@@ -1163,7 +1165,7 @@ public class DrawFlat {
                         elista.remove(e2);
                         elistb.remove(e1);
                     }
-                    if ((e6.idxsplit == a) && (e7.idxsplit == s) && (s != b)) {
+                    if ((e6.getIdxsplit() == a) && (e7.getIdxsplit() == s) && (s != b)) {
                         elist.removeFirst();
                         crossboth.add(crossboth.indexOf(e4) + 1, h3);
                         crossboth.remove(e4);
@@ -1172,26 +1174,26 @@ public class DrawFlat {
                         elista.add(elista.indexOf(e2) + 1, h1);
                         elista.remove(e2);
                     }
-                    if ((e6.idxsplit != a) && (e7.idxsplit == s) && (s == b)) {
+                    if ((e6.getIdxsplit() != a) && (e7.getIdxsplit() == s) && (s == b)) {
                         elist.removeLast();
                         elistb.add(elistb.indexOf(e1) + 1, h2);
                         elistb.remove(e1);
                     }
-                    if ((e6.idxsplit != a) && (e7.idxsplit == s) && (s != b)) {
+                    if ((e6.getIdxsplit() != a) && (e7.getIdxsplit() == s) && (s != b)) {
                         elist.removeLast();
                     }
                 } else {
                     elist.add(elist.indexOf(e) + 1, h3);
                     elist.remove(e);
 
-                    if ((e7.idxsplit == a) && (e6.idxsplit != s)) {
+                    if ((e7.getIdxsplit() == a) && (e6.getIdxsplit() != s)) {
                         elist.removeFirst();
                         crossboth.add(crossboth.indexOf(e8) + 1, h3);
                         crossboth.remove(e8);
                         elista.add(elista.indexOf(e1) + 1, h2);
                         elista.remove(e1);
                     }
-                    if ((e7.idxsplit == a) && (e6.idxsplit == s) && (s == b)) {
+                    if ((e7.getIdxsplit() == a) && (e6.getIdxsplit() == s) && (s == b)) {
                         elist.removeFirst();
                         crossboth.remove(e8);
                         crossboth.add(crossboth.indexOf(e3) + 1, h1);
@@ -1199,7 +1201,7 @@ public class DrawFlat {
                         elista.remove(e1);
                         elistb.remove(e2);
                     }
-                    if ((e7.idxsplit == a) && (e6.idxsplit == s) && (s != b)) {
+                    if ((e7.getIdxsplit() == a) && (e6.getIdxsplit() == s) && (s != b)) {
                         elist.removeFirst();
                         crossboth.add(crossboth.indexOf(e3) + 1, h3);
                         crossboth.remove(e3);
@@ -1208,12 +1210,12 @@ public class DrawFlat {
                         elista.add(elista.indexOf(e1) + 1, h2);
                         elista.remove(e1);
                     }
-                    if ((e7.idxsplit != a) && (e6.idxsplit == s) && (s == b)) {
+                    if ((e7.getIdxsplit() != a) && (e6.getIdxsplit() == s) && (s == b)) {
                         elist.removeLast();
                         elistb.add(elistb.indexOf(e2) + 1, h1);
                         elistb.remove(e2);
                     }
-                    if ((e7.idxsplit != a) && (e6.idxsplit == s) && (s != b)) {
+                    if ((e7.getIdxsplit() != a) && (e6.getIdxsplit() == s) && (s != b)) {
                         elist.removeLast();
                     }
                 }
@@ -1222,14 +1224,14 @@ public class DrawFlat {
                     elist.add(elist.indexOf(e) + 1, h3);
                     elist.remove(e);
 
-                    if ((e7.idxsplit == a) && (e6.idxsplit != s)) {
+                    if ((e7.getIdxsplit() == a) && (e6.getIdxsplit() != s)) {
                         elist.removeFirst();
                         crossboth.add(crossboth.indexOf(e8) + 1, h3);
                         crossboth.remove(e8);
                         elista.add(elista.indexOf(e1) + 1, h2);
                         elista.remove(e1);
                     }
-                    if ((e7.idxsplit == a) && (e6.idxsplit == s) && (s == b)) {
+                    if ((e7.getIdxsplit() == a) && (e6.getIdxsplit() == s) && (s == b)) {
                         elist.removeFirst();
                         crossboth.remove(e8);
                         crossboth.add(crossboth.indexOf(e3) + 1, h1);
@@ -1237,7 +1239,7 @@ public class DrawFlat {
                         elista.remove(e1);
                         elistb.remove(e2);
                     }
-                    if ((e7.idxsplit == a) && (e6.idxsplit == s) && (s != b)) {
+                    if ((e7.getIdxsplit() == a) && (e6.getIdxsplit() == s) && (s != b)) {
                         elist.removeFirst();
                         crossboth.add(crossboth.indexOf(e3) + 1, h3);
                         crossboth.remove(e3);
@@ -1246,25 +1248,25 @@ public class DrawFlat {
                         elista.add(elista.indexOf(e1) + 1, h2);
                         elista.remove(e1);
                     }
-                    if ((e7.idxsplit != a) && (e6.idxsplit == s) && (s == b)) {
+                    if ((e7.getIdxsplit() != a) && (e6.getIdxsplit() == s) && (s == b)) {
                         elist.removeLast();
                         elistb.add(elistb.indexOf(e2) + 1, h1);
                         elistb.remove(e2);
                     }
-                    if ((e7.idxsplit != a) && (e6.idxsplit == s) && (s != b)) {
+                    if ((e7.getIdxsplit() != a) && (e6.getIdxsplit() == s) && (s != b)) {
                         elist.removeLast();
                     }
                 } else {
                     elist.add(elist.indexOf(e) + 1, h3);
                     elist.remove(e);
-                    if ((e6.idxsplit == a) && (e7.idxsplit != s)) {
+                    if ((e6.getIdxsplit() == a) && (e7.getIdxsplit() != s)) {
                         elist.removeFirst();
                         crossboth.add(crossboth.indexOf(e5) + 1, h3);
                         crossboth.remove(e5);
                         elista.add(elista.indexOf(e2) + 1, h1);
                         elista.remove(e2);
                     }
-                    if ((e6.idxsplit == a) && (e7.idxsplit == s) && (s == b)) {
+                    if ((e6.getIdxsplit() == a) && (e7.getIdxsplit() == s) && (s == b)) {
                         elist.removeFirst();
                         crossboth.remove(e5);
                         crossboth.add(crossboth.indexOf(e4) + 1, h2);
@@ -1272,7 +1274,7 @@ public class DrawFlat {
                         elista.remove(e2);
                         elistb.remove(e1);
                     }
-                    if ((e6.idxsplit == a) && (e7.idxsplit == s) && (s != b)) {
+                    if ((e6.getIdxsplit() == a) && (e7.getIdxsplit() == s) && (s != b)) {
                         elist.removeFirst();
                         crossboth.add(crossboth.indexOf(e4) + 1, h3);
                         crossboth.remove(e4);
@@ -1281,12 +1283,12 @@ public class DrawFlat {
                         elista.add(elista.indexOf(e2) + 1, h1);
                         elista.remove(e2);
                     }
-                    if ((e6.idxsplit != a) && (e7.idxsplit == s) && (s == b)) {
+                    if ((e6.getIdxsplit() != a) && (e7.getIdxsplit() == s) && (s == b)) {
                         elist.removeLast();
                         elistb.add(elistb.indexOf(e1) + 1, h2);
                         elistb.remove(e1);
                     }
-                    if ((e6.idxsplit != a) && (e7.idxsplit == s) && (s != b)) {
+                    if ((e6.getIdxsplit() != a) && (e7.getIdxsplit() == s) && (s != b)) {
                         elist.removeLast();
                     }
                 }
@@ -1299,105 +1301,105 @@ public class DrawFlat {
             //find flippable cube
             while (iter.hasNext()) {
                 e = (Edge) iter.next();
-                v = e.bot;
-                if (v.elist.size() == 3) {
-                    e1 = (Edge) v.elist.get((v.elist.indexOf(e) + 2) % 3);
-                    e2 = (Edge) v.elist.get((v.elist.indexOf(e) + 1) % 3);
-                    v5 = e.top;
-                    if (v == e2.bot) {
-                        v1 = e2.top;
+                v = e.getBot();
+                if (v.getElist().size() == 3) {
+                    e1 = (Edge) v.getElist().get((v.getElist().indexOf(e) + 2) % 3);
+                    e2 = (Edge) v.getElist().get((v.getElist().indexOf(e) + 1) % 3);
+                    v5 = e.getTop();
+                    if (v == e2.getBot()) {
+                        v1 = e2.getTop();
                     } else {
-                        v1 = e2.bot;
+                        v1 = e2.getBot();
                     }
-                    if (v == e1.bot) {
-                        v3 = e1.top;
+                    if (v == e1.getBot()) {
+                        v3 = e1.getTop();
                     } else {
-                        v3 = e1.bot;
+                        v3 = e1.getBot();
                     }
-                    e3 = v3.elist.get((v3.elist.indexOf(e1) + 1) % v3.elist.size());
-                    e4 = v1.elist.get((v1.elist.indexOf(e2) + v1.elist.size() - 1) % v1.elist.size());
-                    e5 = v1.elist.get((v1.elist.indexOf(e2) + 1) % v1.elist.size());
-                    e6 = v5.elist.get((v5.elist.indexOf(e) + v5.elist.size() - 1) % v5.elist.size());
-                    e7 = v5.elist.get((v5.elist.indexOf(e) + 1) % v5.elist.size());
-                    e8 = v3.elist.get((v3.elist.indexOf(e1) + v3.elist.size() - 1) % v3.elist.size());
-                    if (v1 == e4.bot) {
-                        v2 = e4.top;
+                    e3 = v3.getElist().get((v3.getElist().indexOf(e1) + 1) % v3.getElist().size());
+                    e4 = v1.getElist().get((v1.getElist().indexOf(e2) + v1.getElist().size() - 1) % v1.getElist().size());
+                    e5 = v1.getElist().get((v1.getElist().indexOf(e2) + 1) % v1.getElist().size());
+                    e6 = v5.getElist().get((v5.getElist().indexOf(e) + v5.getElist().size() - 1) % v5.getElist().size());
+                    e7 = v5.getElist().get((v5.getElist().indexOf(e) + 1) % v5.getElist().size());
+                    e8 = v3.getElist().get((v3.getElist().indexOf(e1) + v3.getElist().size() - 1) % v3.getElist().size());
+                    if (v1 == e4.getBot()) {
+                        v2 = e4.getTop();
                     } else {
-                        v2 = e4.bot;
+                        v2 = e4.getBot();
                     }
-                    if (v3 == e3.bot) {
-                        v4 = e3.top;
+                    if (v3 == e3.getBot()) {
+                        v4 = e3.getTop();
                     } else {
-                        v4 = e3.bot;
+                        v4 = e3.getBot();
                     }
-                    if (v3 == e8.bot) {
-                        v6 = e8.top;
+                    if (v3 == e8.getBot()) {
+                        v6 = e8.getTop();
                     } else {
-                        v6 = e8.bot;
+                        v6 = e8.getBot();
                     }
-                    if (v5 == e7.bot) {
-                        v7 = e7.top;
+                    if (v5 == e7.getBot()) {
+                        v7 = e7.getTop();
                     } else {
-                        v7 = e7.bot;
+                        v7 = e7.getBot();
                     }
-                    if (v5 == e6.bot) {
-                        v8 = e6.top;
+                    if (v5 == e6.getBot()) {
+                        v8 = e6.getTop();
                     } else {
-                        v8 = e6.bot;
+                        v8 = e6.getBot();
                     }
-                    if (v1 == e5.bot) {
-                        v9 = e5.top;
+                    if (v1 == e5.getBot()) {
+                        v9 = e5.getTop();
                     } else {
-                        v9 = e5.bot;
+                        v9 = e5.getBot();
                     }
                     if ((v2 == v4)
                             && (v6 == v7)
                             && (v8 == v9)
-                            && (e.idxsplit == e5.idxsplit)
-                            && (e.idxsplit == e8.idxsplit)
-                            && (e2.idxsplit == e3.idxsplit)
-                            && (e2.idxsplit == e6.idxsplit)
-                            && (e1.idxsplit == e4.idxsplit)
-                            && (e1.idxsplit == e7.idxsplit)) {
+                            && (e.getIdxsplit() == e5.getIdxsplit())
+                            && (e.getIdxsplit() == e8.getIdxsplit())
+                            && (e2.getIdxsplit() == e3.getIdxsplit())
+                            && (e2.getIdxsplit() == e6.getIdxsplit())
+                            && (e1.getIdxsplit() == e4.getIdxsplit())
+                            && (e1.getIdxsplit() == e7.getIdxsplit())) {
                         break;
                     }
                 }
             }
 
             //flip cube
-            v1.elist.remove(e2);
-            v3.elist.remove(e1);
-            v5.elist.remove(e);
-            v.elist.clear();
-            v.x = v2.x + (v5.x - v.x);
-            v.y = v2.y + (v5.y - v.y);
-            if (v8 == e6.top) {
-                h1 = new Edge(v, v6, e6.idxsplit, e2.timestp);
+            v1.getElist().remove(e2);
+            v3.getElist().remove(e1);
+            v5.getElist().remove(e);
+            v.getElist().clear();
+            v.setX(v2.getX() + (v5.getX() - v.getX()));
+            v.setY(v2.getY() + (v5.getY() - v.getY()));
+            if (v8 == e6.getTop()) {
+                h1 = new Edge(v, v6, e6.getIdxsplit(), e2.getTimestp());
             } else {
-                h1 = new Edge(v6, v, e6.idxsplit, e2.timestp);
+                h1 = new Edge(v6, v, e6.getIdxsplit(), e2.getTimestp());
             }
-            v6.elist.add(v6.elist.indexOf(e7) + 1, h1);
-            v.elist.addLast(h1);
-            if (v6 == e7.top) {
-                h2 = new Edge(v, v8, e7.idxsplit, e1.timestp);
+            v6.getElist().add(v6.getElist().indexOf(e7) + 1, h1);
+            v.getElist().addLast(h1);
+            if (v6 == e7.getTop()) {
+                h2 = new Edge(v, v8, e7.getIdxsplit(), e1.getTimestp());
             } else {
-                h2 = new Edge(v8, v, e7.idxsplit, e1.timestp);
+                h2 = new Edge(v8, v, e7.getIdxsplit(), e1.getTimestp());
             }
-            v8.elist.add(v8.elist.indexOf(e5) + 1, h2);
-            v.elist.addLast(h2);
-            h3 = new Edge(v, v2, e.idxsplit, e.timestp);
-            v2.elist.add(v2.elist.indexOf(e3) + 1, h3);
-            v.elist.addLast(h3);
+            v8.getElist().add(v8.getElist().indexOf(e5) + 1, h2);
+            v.getElist().addLast(h2);
+            h3 = new Edge(v, v2, e.getIdxsplit(), e.getTimestp());
+            v2.getElist().add(v2.getElist().indexOf(e3) + 1, h3);
+            v.getElist().addLast(h3);
 
             //System.out.println("Size of elist before update: " + elist.size());
 
             //update lists of edges accordingly
-            splitedges[e.idxsplit].remove(e);
-            splitedges[e.idxsplit].add(h3);
-            splitedges[e2.idxsplit].remove(e2);
-            splitedges[e2.idxsplit].add(h1);
-            splitedges[e1.idxsplit].remove(e1);
-            splitedges[e1.idxsplit].add(h2);
+            splitedges[e.getIdxsplit()].remove(e);
+            splitedges[e.getIdxsplit()].add(h3);
+            splitedges[e2.getIdxsplit()].remove(e2);
+            splitedges[e2.getIdxsplit()].add(h1);
+            splitedges[e1.getIdxsplit()].remove(e1);
+            splitedges[e1.getIdxsplit()].add(h2);
 
             if (parta == 1) {
                 if (dira == -1) {
@@ -1405,14 +1407,14 @@ public class DrawFlat {
                     elist.remove(e);
                     //System.out.println("Size of elist after first update: " + elist.size()); 
 
-                    if ((e6.idxsplit == a) && (e7.idxsplit != s)) {
+                    if ((e6.getIdxsplit() == a) && (e7.getIdxsplit() != s)) {
                         elist.removeFirst();
                         crossboth.add(crossboth.indexOf(e5) + 1, h3);
                         crossboth.remove(e5);
                         elista.add(elista.indexOf(e2) + 1, h1);
                         elista.remove(e2);
                     }
-                    if ((e6.idxsplit == a) && (e7.idxsplit == s) && (s == b)) {
+                    if ((e6.getIdxsplit() == a) && (e7.getIdxsplit() == s) && (s == b)) {
                         elist.removeFirst();
                         crossboth.remove(e5);
                         crossboth.add(crossboth.indexOf(e4) + 1, h2);
@@ -1420,7 +1422,7 @@ public class DrawFlat {
                         elista.remove(e2);
                         elistb.remove(e1);
                     }
-                    if ((e6.idxsplit == a) && (e7.idxsplit == s) && (s != b)) {
+                    if ((e6.getIdxsplit() == a) && (e7.getIdxsplit() == s) && (s != b)) {
                         elist.removeFirst();
                         crossboth.add(crossboth.indexOf(e4) + 1, h3);
                         crossboth.remove(e4);
@@ -1429,26 +1431,26 @@ public class DrawFlat {
                         elista.add(elista.indexOf(e2) + 1, h1);
                         elista.remove(e2);
                     }
-                    if ((e6.idxsplit != a) && (e7.idxsplit == s) && (s == b)) {
+                    if ((e6.getIdxsplit() != a) && (e7.getIdxsplit() == s) && (s == b)) {
                         elist.removeLast();
                         elistb.add(elistb.indexOf(e1) + 1, h2);
                         elistb.remove(e1);
                     }
-                    if ((e6.idxsplit != a) && (e7.idxsplit == s) && (s != b)) {
+                    if ((e6.getIdxsplit() != a) && (e7.getIdxsplit() == s) && (s != b)) {
                         elist.removeLast();
                     }
                 } else {
                     elist.add(elist.indexOf(e) + 1, h3);
                     elist.remove(e);
 
-                    if ((e7.idxsplit == a) && (e6.idxsplit != s)) {
+                    if ((e7.getIdxsplit() == a) && (e6.getIdxsplit() != s)) {
                         elist.removeFirst();
                         crossboth.add(crossboth.indexOf(e8) + 1, h3);
                         crossboth.remove(e8);
                         elista.add(elista.indexOf(e1) + 1, h2);
                         elista.remove(e1);
                     }
-                    if ((e7.idxsplit == a) && (e6.idxsplit == s) && (s == b)) {
+                    if ((e7.getIdxsplit() == a) && (e6.getIdxsplit() == s) && (s == b)) {
                         elist.removeFirst();
                         crossboth.remove(e8);
                         crossboth.add(crossboth.indexOf(e3) + 1, h1);
@@ -1456,7 +1458,7 @@ public class DrawFlat {
                         elista.remove(e1);
                         elistb.remove(e2);
                     }
-                    if ((e7.idxsplit == a) && (e6.idxsplit == s) && (s != b)) {
+                    if ((e7.getIdxsplit() == a) && (e6.getIdxsplit() == s) && (s != b)) {
                         elist.removeFirst();
                         crossboth.add(crossboth.indexOf(e3) + 1, h3);
                         crossboth.remove(e3);
@@ -1465,12 +1467,12 @@ public class DrawFlat {
                         elista.add(elista.indexOf(e1) + 1, h2);
                         elista.remove(e1);
                     }
-                    if ((e7.idxsplit != a) && (e6.idxsplit == s) && (s == b)) {
+                    if ((e7.getIdxsplit() != a) && (e6.getIdxsplit() == s) && (s == b)) {
                         elist.removeLast();
                         elistb.add(elistb.indexOf(e2) + 1, h1);
                         elistb.remove(e2);
                     }
-                    if ((e7.idxsplit != a) && (e6.idxsplit == s) && (s != b)) {
+                    if ((e7.getIdxsplit() != a) && (e6.getIdxsplit() == s) && (s != b)) {
                         elist.removeLast();
                     }
                 }
@@ -1479,14 +1481,14 @@ public class DrawFlat {
                     elist.add(elist.indexOf(e) + 1, h3);
                     elist.remove(e);
 
-                    if ((e7.idxsplit == a) && (e6.idxsplit != s)) {
+                    if ((e7.getIdxsplit() == a) && (e6.getIdxsplit() != s)) {
                         elist.removeFirst();
                         crossboth.add(crossboth.indexOf(e8) + 1, h3);
                         crossboth.remove(e8);
                         elista.add(elista.indexOf(e1) + 1, h2);
                         elista.remove(e1);
                     }
-                    if ((e7.idxsplit == a) && (e6.idxsplit == s) && (s == b)) {
+                    if ((e7.getIdxsplit() == a) && (e6.getIdxsplit() == s) && (s == b)) {
                         elist.removeFirst();
                         crossboth.remove(e8);
                         crossboth.add(crossboth.indexOf(e3) + 1, h1);
@@ -1494,7 +1496,7 @@ public class DrawFlat {
                         elista.remove(e1);
                         elistb.remove(e2);
                     }
-                    if ((e7.idxsplit == a) && (e6.idxsplit == s) && (s != b)) {
+                    if ((e7.getIdxsplit() == a) && (e6.getIdxsplit() == s) && (s != b)) {
                         elist.removeFirst();
                         crossboth.add(crossboth.indexOf(e3) + 1, h3);
                         crossboth.remove(e3);
@@ -1503,25 +1505,25 @@ public class DrawFlat {
                         elista.add(elista.indexOf(e1) + 1, h2);
                         elista.remove(e1);
                     }
-                    if ((e7.idxsplit != a) && (e6.idxsplit == s) && (s == b)) {
+                    if ((e7.getIdxsplit() != a) && (e6.getIdxsplit() == s) && (s == b)) {
                         elist.removeLast();
                         elistb.add(elistb.indexOf(e2) + 1, h1);
                         elistb.remove(e2);
                     }
-                    if ((e7.idxsplit != a) && (e6.idxsplit == s) && (s != b)) {
+                    if ((e7.getIdxsplit() != a) && (e6.getIdxsplit() == s) && (s != b)) {
                         elist.removeLast();
                     }
                 } else {
                     elist.add(elist.indexOf(e) + 1, h3);
                     elist.remove(e);
-                    if ((e6.idxsplit == a) && (e7.idxsplit != s)) {
+                    if ((e6.getIdxsplit() == a) && (e7.getIdxsplit() != s)) {
                         elist.removeFirst();
                         crossboth.add(crossboth.indexOf(e5) + 1, h3);
                         crossboth.remove(e5);
                         elista.add(elista.indexOf(e2) + 1, h1);
                         elista.remove(e2);
                     }
-                    if ((e6.idxsplit == a) && (e7.idxsplit == s) && (s == b)) {
+                    if ((e6.getIdxsplit() == a) && (e7.getIdxsplit() == s) && (s == b)) {
                         elist.removeFirst();
                         crossboth.remove(e5);
                         crossboth.add(crossboth.indexOf(e4) + 1, h2);
@@ -1529,7 +1531,7 @@ public class DrawFlat {
                         elista.remove(e2);
                         elistb.remove(e1);
                     }
-                    if ((e6.idxsplit == a) && (e7.idxsplit == s) && (s != b)) {
+                    if ((e6.getIdxsplit() == a) && (e7.getIdxsplit() == s) && (s != b)) {
                         elist.removeFirst();
                         crossboth.add(crossboth.indexOf(e4) + 1, h3);
                         crossboth.remove(e4);
@@ -1538,12 +1540,12 @@ public class DrawFlat {
                         elista.add(elista.indexOf(e2) + 1, h1);
                         elista.remove(e2);
                     }
-                    if ((e6.idxsplit != a) && (e7.idxsplit == s) && (s == b)) {
+                    if ((e6.getIdxsplit() != a) && (e7.getIdxsplit() == s) && (s == b)) {
                         elist.removeLast();
                         elistb.add(elistb.indexOf(e1) + 1, h2);
                         elistb.remove(e1);
                     }
-                    if ((e6.idxsplit != a) && (e7.idxsplit == s) && (s != b)) {
+                    if ((e6.getIdxsplit() != a) && (e7.getIdxsplit() == s) && (s != b)) {
                         elist.removeLast();
                     }
                 }
@@ -1555,7 +1557,7 @@ public class DrawFlat {
     //that form the left boundary of the resulting
     //split network before trimming away unlabeled 
     //degree two vertices and pushing out trivial splits.
-    private static Edge[] leftmost_edges(PermutationSequenceDraw pseq, TreeSet[] splitedges) {
+    private static Edge[] leftmost_edges(PermutationSequenceDraw pseq, TreeSet<Edge>[] splitedges) {
         int i = 0;
         int j = 0;
         double dx = 0.0;
@@ -1573,7 +1575,7 @@ public class DrawFlat {
 
         for (i = 0; i < pseq.nswaps; i++) {
             //create new set for edges associated to this split
-            splitedges[i] = new TreeSet(new EdgeComparator());
+            splitedges[i] = new TreeSet<>();
 
             if (pseq.active[i]) {
                 dx = -Math.cos(((j + 1) * Math.PI) / (pseq.nActive + 1));
@@ -1624,22 +1626,22 @@ public class DrawFlat {
                     //test if the splits associated to edges
                     //chain[j-1] and chain[j] must be inverted
 
-                    if (ssyst.splits[chain[j - 1].idxsplit][pseq.initSequ[i]] == 0
-                            && ssyst.splits[chain[j].idxsplit][pseq.initSequ[i]] == 1) {
-                        dx = (chain[j].bot).x - (chain[j].top).x;
-                        dy = (chain[j].bot).y - (chain[j].top).y;
+                    if (ssyst.splits[chain[j - 1].getIdxsplit()][pseq.initSequ[i]] == 0
+                            && ssyst.splits[chain[j].getIdxsplit()][pseq.initSequ[i]] == 1) {
+                        dx = (chain[j].getBot()).getX() - (chain[j].getTop()).getX();
+                        dy = (chain[j].getBot()).getY() - (chain[j].getTop()).getY();
 
-                        v = new Vertex((chain[j - 1].top).x + dx, (chain[j - 1].top).y + dy);
-                        e1 = new Edge(chain[j - 1].top, v, chain[j].idxsplit, chain[j].timestp + 1);
-                        splitedges[e1.idxsplit].add(e1);
-                        e2 = new Edge(v, chain[j].bot, chain[j - 1].idxsplit, chain[j - 1].timestp + 1);
-                        splitedges[e2.idxsplit].add(e2);
+                        v = new Vertex((chain[j - 1].getTop()).getX() + dx, (chain[j - 1].getTop()).getY() + dy);
+                        e1 = new Edge(chain[j - 1].getTop(), v, chain[j].getIdxsplit(), chain[j].getTimestp() + 1);
+                        splitedges[e1.getIdxsplit()].add(e1);
+                        e2 = new Edge(v, chain[j].getBot(), chain[j - 1].getIdxsplit(), chain[j - 1].getTimestp() + 1);
+                        splitedges[e2.getIdxsplit()].add(e2);
                         chain[j - 1] = e1;
                         chain[j] = e2;
                         v.add_edge_before_first(e2);
                         v.add_edge_after_last(e1);
-                        (e1.top).add_edge_before_first(e1);
-                        (e2.bot).add_edge_after_last(e2);
+                        (e1.getTop()).add_edge_before_first(e1);
+                        (e2.getBot()).add_edge_after_last(e2);
                         inverted = true;
                     }
                 }
@@ -1652,28 +1654,28 @@ public class DrawFlat {
                 if (v == null) {
                     v = new Vertex(0.0, 0.0);
                 }
-                v.taxa.add(new Integer(pseq.initSequ[i]));
+                v.getTaxa().add(new Integer(pseq.initSequ[i]));
                 pseq.representedby[pseq.initSequ[i]] = 0;
                 if (pseq.initSequ[i] != 0) {
                     pseq.activeTaxa[pseq.initSequ[i]] = false;
                 }
                 pseq.nclasses = 1;
             } else {
-                v = chain[0].top;
+                v = chain[0].getTop();
                 for (j = 0; j < chain.length; j++) {
-                    if (ssyst.splits[chain[j].idxsplit][pseq.initSequ[i]] == 0) {
-                        (chain[j].top).taxa.addLast(new Integer(pseq.initSequ[i]));
-                        if (chain[j].top.taxa.size() > 1) {
-                            pseq.representedby[pseq.initSequ[i]] = ((Integer) (chain[j].top.taxa.getFirst())).intValue();
+                    if (ssyst.splits[chain[j].getIdxsplit()][pseq.initSequ[i]] == 0) {
+                        (chain[j].getTop()).getTaxa().addLast(new Integer(pseq.initSequ[i]));
+                        if (chain[j].getTop().getTaxa().size() > 1) {
+                            pseq.representedby[pseq.initSequ[i]] = ((Integer) (chain[j].getTop().getTaxa().getFirst())).intValue();
                             pseq.activeTaxa[pseq.initSequ[i]] = false;
                             pseq.nclasses--;
                         }
                         break;
                     } else {
                         if (j == (chain.length - 1)) {
-                            (chain[j].bot).taxa.addLast(new Integer(pseq.initSequ[i]));
-                            if (chain[j].bot.taxa.size() > 1) {
-                                pseq.representedby[pseq.initSequ[i]] = ((Integer) chain[j].bot.taxa.getFirst()).intValue();
+                            (chain[j].getBot()).getTaxa().addLast(new Integer(pseq.initSequ[i]));
+                            if (chain[j].getBot().getTaxa().size() > 1) {
+                                pseq.representedby[pseq.initSequ[i]] = ((Integer) chain[j].getBot().getTaxa().getFirst()).intValue();
                                 pseq.activeTaxa[pseq.initSequ[i]] = false;
                                 pseq.nclasses--;
                             }
@@ -1707,21 +1709,7 @@ public class DrawFlat {
         }
     }
 
-    //This method collects the edges that represent a
-    //given split in the network.
-    public static LinkedList<Edge> collect_edges_for_split(int s, Vertex v) {
-        LinkedList elistall = collect_edges((Edge) (v.elist).getFirst());
-        ListIterator iter = elistall.listIterator();
-        LinkedList elist = new LinkedList();
-        Edge e = null;
-        while (iter.hasNext()) {
-            e = (Edge) iter.next();
-            if (e.idxsplit == s) {
-                elist.add(e);
-            }
-        }
-        return elist;
-    }
+
 
     //This method collects the edges that represent a
     //given split in the network.
@@ -1732,7 +1720,7 @@ public class DrawFlat {
         while (iter.hasNext()) {
             e = (Edge) iter.next();
             if (e != null) {
-                if (e.idxsplit == s) {
+                if (e.getIdxsplit() == s) {
                     elist.add(e);
                 }
             }
@@ -1782,19 +1770,19 @@ public class DrawFlat {
         ListIterator iter = null;
         Edge h = null;
 
-        if (ssyst.splits[((Edge) elist.getFirst()).idxsplit][taxon] == 0) {
+        if (ssyst.splits[((Edge) elist.getFirst()).getIdxsplit()][taxon] == 0) {
             if (e == null) {
                 iter = elist.listIterator();
                 while (iter.hasNext()) {
                     h = (Edge) iter.next();
-                    if (h.top.taxa.contains(new Integer(taxon))) {
+                    if (h.getTop().getTaxa().contains(new Integer(taxon))) {
                         break;
                     } else {
                         h = null;
                     }
                 }
             } else {
-                if (e.top.taxa.contains(new Integer(taxon))) {
+                if (e.getTop().getTaxa().contains(new Integer(taxon))) {
                     h = e;
                 }
             }
@@ -1803,14 +1791,14 @@ public class DrawFlat {
                 iter = elist.listIterator();
                 while (iter.hasNext()) {
                     h = (Edge) iter.next();
-                    if (h.bot.taxa.contains(new Integer(taxon))) {
+                    if (h.getBot().getTaxa().contains(new Integer(taxon))) {
                         break;
                     } else {
                         h = null;
                     }
                 }
             } else {
-                if (e.bot.taxa.contains(new Integer(taxon))) {
+                if (e.getBot().getTaxa().contains(new Integer(taxon))) {
                     h = e;
                 }
             }
@@ -1844,188 +1832,188 @@ public class DrawFlat {
 
         ListIterator iter = null;
 
-        if (ssyst.splits[((Edge) elist.getFirst()).idxsplit][taxon] == 0) {
+        if (ssyst.splits[((Edge) elist.getFirst()).getIdxsplit()][taxon] == 0) {
             iter = elist.listIterator();
             while (iter.hasNext()) {
                 e = (Edge) iter.next();
-                v = e.top;
-                if (v.elist.size() == 3) {
-                    e1 = v.elist.get((v.elist.indexOf(e) + 2) % 3);
-                    e2 = v.elist.get((v.elist.indexOf(e) + 1) % 3);
-                    v5 = e.bot;
-                    if (v == e2.bot) {
-                        v1 = e2.top;
+                v = e.getTop();
+                if (v.getElist().size() == 3) {
+                    e1 = v.getElist().get((v.getElist().indexOf(e) + 2) % 3);
+                    e2 = v.getElist().get((v.getElist().indexOf(e) + 1) % 3);
+                    v5 = e.getBot();
+                    if (v == e2.getBot()) {
+                        v1 = e2.getTop();
                     } else {
-                        v1 = e2.bot;
+                        v1 = e2.getBot();
                     }
-                    if (v == e1.bot) {
-                        v3 = e1.top;
+                    if (v == e1.getBot()) {
+                        v3 = e1.getTop();
                     } else {
-                        v3 = e1.bot;
+                        v3 = e1.getBot();
                     }
-                    e3 = v3.elist.get((v3.elist.indexOf(e1) + 1) % v3.elist.size());
-                    e4 = v1.elist.get((v1.elist.indexOf(e2) + v1.elist.size() - 1) % v1.elist.size());
-                    e5 = v1.elist.get((v1.elist.indexOf(e2) + 1) % v1.elist.size());
-                    e6 = v5.elist.get((v5.elist.indexOf(e) + v5.elist.size() - 1) % v5.elist.size());
-                    e7 = v5.elist.get((v5.elist.indexOf(e) + 1) % v5.elist.size());
-                    e8 = v3.elist.get((v3.elist.indexOf(e1) + v3.elist.size() - 1) % v3.elist.size());
-                    if (v1 == e4.bot) {
-                        v2 = e4.top;
+                    e3 = v3.getElist().get((v3.getElist().indexOf(e1) + 1) % v3.getElist().size());
+                    e4 = v1.getElist().get((v1.getElist().indexOf(e2) + v1.getElist().size() - 1) % v1.getElist().size());
+                    e5 = v1.getElist().get((v1.getElist().indexOf(e2) + 1) % v1.getElist().size());
+                    e6 = v5.getElist().get((v5.getElist().indexOf(e) + v5.getElist().size() - 1) % v5.getElist().size());
+                    e7 = v5.getElist().get((v5.getElist().indexOf(e) + 1) % v5.getElist().size());
+                    e8 = v3.getElist().get((v3.getElist().indexOf(e1) + v3.getElist().size() - 1) % v3.getElist().size());
+                    if (v1 == e4.getBot()) {
+                        v2 = e4.getTop();
                     } else {
-                        v2 = e4.bot;
+                        v2 = e4.getBot();
                     }
-                    if (v3 == e3.bot) {
-                        v4 = e3.top;
+                    if (v3 == e3.getBot()) {
+                        v4 = e3.getTop();
                     } else {
-                        v4 = e3.bot;
+                        v4 = e3.getBot();
                     }
-                    if (v3 == e8.bot) {
-                        v6 = e8.top;
+                    if (v3 == e8.getBot()) {
+                        v6 = e8.getTop();
                     } else {
-                        v6 = e8.bot;
+                        v6 = e8.getBot();
                     }
-                    if (v5 == e7.bot) {
-                        v7 = e7.top;
+                    if (v5 == e7.getBot()) {
+                        v7 = e7.getTop();
                     } else {
-                        v7 = e7.bot;
+                        v7 = e7.getBot();
                     }
-                    if (v5 == e6.bot) {
-                        v8 = e6.top;
+                    if (v5 == e6.getBot()) {
+                        v8 = e6.getTop();
                     } else {
-                        v8 = e6.bot;
+                        v8 = e6.getBot();
                     }
-                    if (v1 == e5.bot) {
-                        v9 = e5.top;
+                    if (v1 == e5.getBot()) {
+                        v9 = e5.getTop();
                     } else {
-                        v9 = e5.bot;
+                        v9 = e5.getBot();
                     }
                     if ((v2 == v4)
                             && (v6 == v7)
                             && (v8 == v9)
-                            && (e.idxsplit == e5.idxsplit)
-                            && (e.idxsplit == e8.idxsplit)
-                            && (e2.idxsplit == e3.idxsplit)
-                            && (e2.idxsplit == e6.idxsplit)
-                            && (e1.idxsplit == e4.idxsplit)
-                            && (e1.idxsplit == e7.idxsplit)) {
+                            && (e.getIdxsplit() == e5.getIdxsplit())
+                            && (e.getIdxsplit() == e8.getIdxsplit())
+                            && (e2.getIdxsplit() == e3.getIdxsplit())
+                            && (e2.getIdxsplit() == e6.getIdxsplit())
+                            && (e1.getIdxsplit() == e4.getIdxsplit())
+                            && (e1.getIdxsplit() == e7.getIdxsplit())) {
                         break;
                     }
                 }
             }
-            v1.elist.remove(e2);
-            v3.elist.remove(e1);
-            v5.elist.remove(e);
-            v.elist.clear();
-            v.x = v2.x + (v5.x - v.x);
-            v.y = v2.y + (v5.y - v.y);
-            if (v8 == e6.top) {
-                h = new Edge(v, v6, e6.idxsplit, e2.timestp);
+            v1.getElist().remove(e2);
+            v3.getElist().remove(e1);
+            v5.getElist().remove(e);
+            v.getElist().clear();
+            v.setX(v2.getX() + (v5.getX() - v.getX()));
+            v.setY(v2.getY() + (v5.getY() - v.getY()));
+            if (v8 == e6.getTop()) {
+                h = new Edge(v, v6, e6.getIdxsplit(), e2.getTimestp());
             } else {
-                h = new Edge(v6, v, e6.idxsplit, e2.timestp);
+                h = new Edge(v6, v, e6.getIdxsplit(), e2.getTimestp());
             }
-            v6.elist.add(v6.elist.indexOf(e7) + 1, h);
-            v.elist.addLast(h);
-            if (v6 == e7.top) {
-                h = new Edge(v, v8, e7.idxsplit, e1.timestp);
+            v6.getElist().add(v6.getElist().indexOf(e7) + 1, h);
+            v.getElist().addLast(h);
+            if (v6 == e7.getTop()) {
+                h = new Edge(v, v8, e7.getIdxsplit(), e1.getTimestp());
             } else {
-                h = new Edge(v8, v, e7.idxsplit, e1.timestp);
+                h = new Edge(v8, v, e7.getIdxsplit(), e1.getTimestp());
             }
-            v8.elist.add(v8.elist.indexOf(e5) + 1, h);
-            v.elist.addLast(h);
-            h = new Edge(v2, v, e.idxsplit, e.timestp);
-            v2.elist.add(v2.elist.indexOf(e3) + 1, h);
-            v.elist.addLast(h);
+            v8.getElist().add(v8.getElist().indexOf(e5) + 1, h);
+            v.getElist().addLast(h);
+            h = new Edge(v2, v, e.getIdxsplit(), e.getTimestp());
+            v2.getElist().add(v2.getElist().indexOf(e3) + 1, h);
+            v.getElist().addLast(h);
         } else {
             iter = elist.listIterator();
             while (iter.hasNext()) {
                 e = (Edge) iter.next();
-                v = e.bot;
-                if (v.elist.size() == 3) {
-                    e1 = (Edge) v.elist.get((v.elist.indexOf(e) + 2) % 3);
-                    e2 = (Edge) v.elist.get((v.elist.indexOf(e) + 1) % 3);
-                    v5 = e.top;
-                    if (v == e2.bot) {
-                        v1 = e2.top;
+                v = e.getBot();
+                if (v.getElist().size() == 3) {
+                    e1 = (Edge) v.getElist().get((v.getElist().indexOf(e) + 2) % 3);
+                    e2 = (Edge) v.getElist().get((v.getElist().indexOf(e) + 1) % 3);
+                    v5 = e.getTop();
+                    if (v == e2.getBot()) {
+                        v1 = e2.getTop();
                     } else {
-                        v1 = e2.bot;
+                        v1 = e2.getBot();
                     }
-                    if (v == e1.bot) {
-                        v3 = e1.top;
+                    if (v == e1.getBot()) {
+                        v3 = e1.getTop();
                     } else {
-                        v3 = e1.bot;
+                        v3 = e1.getBot();
                     }
-                    e3 = v3.elist.get((v3.elist.indexOf(e1) + 1) % v3.elist.size());
-                    e4 = v1.elist.get((v1.elist.indexOf(e2) + v1.elist.size() - 1) % v1.elist.size());
-                    e5 = v1.elist.get((v1.elist.indexOf(e2) + 1) % v1.elist.size());
-                    e6 = v5.elist.get((v5.elist.indexOf(e) + v5.elist.size() - 1) % v5.elist.size());
-                    e7 = v5.elist.get((v5.elist.indexOf(e) + 1) % v5.elist.size());
-                    e8 = v3.elist.get((v3.elist.indexOf(e1) + v3.elist.size() - 1) % v3.elist.size());
-                    if (v1 == e4.bot) {
-                        v2 = e4.top;
+                    e3 = v3.getElist().get((v3.getElist().indexOf(e1) + 1) % v3.getElist().size());
+                    e4 = v1.getElist().get((v1.getElist().indexOf(e2) + v1.getElist().size() - 1) % v1.getElist().size());
+                    e5 = v1.getElist().get((v1.getElist().indexOf(e2) + 1) % v1.getElist().size());
+                    e6 = v5.getElist().get((v5.getElist().indexOf(e) + v5.getElist().size() - 1) % v5.getElist().size());
+                    e7 = v5.getElist().get((v5.getElist().indexOf(e) + 1) % v5.getElist().size());
+                    e8 = v3.getElist().get((v3.getElist().indexOf(e1) + v3.getElist().size() - 1) % v3.getElist().size());
+                    if (v1 == e4.getBot()) {
+                        v2 = e4.getTop();
                     } else {
-                        v2 = e4.bot;
+                        v2 = e4.getBot();
                     }
-                    if (v3 == e3.bot) {
-                        v4 = e3.top;
+                    if (v3 == e3.getBot()) {
+                        v4 = e3.getTop();
                     } else {
-                        v4 = e3.bot;
+                        v4 = e3.getBot();
                     }
-                    if (v3 == e8.bot) {
-                        v6 = e8.top;
+                    if (v3 == e8.getBot()) {
+                        v6 = e8.getTop();
                     } else {
-                        v6 = e8.bot;
+                        v6 = e8.getBot();
                     }
-                    if (v5 == e7.bot) {
-                        v7 = e7.top;
+                    if (v5 == e7.getBot()) {
+                        v7 = e7.getTop();
                     } else {
-                        v7 = e7.bot;
+                        v7 = e7.getBot();
                     }
-                    if (v5 == e6.bot) {
-                        v8 = e6.top;
+                    if (v5 == e6.getBot()) {
+                        v8 = e6.getTop();
                     } else {
-                        v8 = e6.bot;
+                        v8 = e6.getBot();
                     }
-                    if (v1 == e5.bot) {
-                        v9 = e5.top;
+                    if (v1 == e5.getBot()) {
+                        v9 = e5.getTop();
                     } else {
-                        v9 = e5.bot;
+                        v9 = e5.getBot();
                     }
                     if ((v2 == v4)
                             && (v6 == v7)
                             && (v8 == v9)
-                            && (e.idxsplit == e5.idxsplit)
-                            && (e.idxsplit == e8.idxsplit)
-                            && (e2.idxsplit == e3.idxsplit)
-                            && (e2.idxsplit == e6.idxsplit)
-                            && (e1.idxsplit == e4.idxsplit)
-                            && (e1.idxsplit == e7.idxsplit)) {
+                            && (e.getIdxsplit() == e5.getIdxsplit())
+                            && (e.getIdxsplit() == e8.getIdxsplit())
+                            && (e2.getIdxsplit() == e3.getIdxsplit())
+                            && (e2.getIdxsplit() == e6.getIdxsplit())
+                            && (e1.getIdxsplit() == e4.getIdxsplit())
+                            && (e1.getIdxsplit() == e7.getIdxsplit())) {
                         break;
                     }
                 }
             }
-            v1.elist.remove(e2);
-            v3.elist.remove(e1);
-            v5.elist.remove(e);
-            v.elist.clear();
-            v.x = v2.x + (v5.x - v.x);
-            v.y = v2.y + (v5.y - v.y);
-            if (v8 == e6.top) {
-                h = new Edge(v, v6, e6.idxsplit, e2.timestp);
+            v1.getElist().remove(e2);
+            v3.getElist().remove(e1);
+            v5.getElist().remove(e);
+            v.getElist().clear();
+            v.setX(v2.getX() + (v5.getX() - v.getX()));
+            v.setY(v2.getY() + (v5.getY() - v.getY()));
+            if (v8 == e6.getTop()) {
+                h = new Edge(v, v6, e6.getIdxsplit(), e2.getTimestp());
             } else {
-                h = new Edge(v6, v, e6.idxsplit, e2.timestp);
+                h = new Edge(v6, v, e6.getIdxsplit(), e2.getTimestp());
             }
-            v6.elist.add(v6.elist.indexOf(e7) + 1, h);
-            v.elist.addLast(h);
-            if (v6 == e7.top) {
-                h = new Edge(v, v8, e7.idxsplit, e1.timestp);
+            v6.getElist().add(v6.getElist().indexOf(e7) + 1, h);
+            v.getElist().addLast(h);
+            if (v6 == e7.getTop()) {
+                h = new Edge(v, v8, e7.getIdxsplit(), e1.getTimestp());
             } else {
-                h = new Edge(v8, v, e7.idxsplit, e1.timestp);
+                h = new Edge(v8, v, e7.getIdxsplit(), e1.getTimestp());
             }
-            v8.elist.add(v8.elist.indexOf(e5) + 1, h);
-            v.elist.addLast(h);
-            h = new Edge(v, v2, e.idxsplit, e.timestp);
-            v2.elist.add(v2.elist.indexOf(e3) + 1, h);
-            v.elist.addLast(h);
+            v8.getElist().add(v8.getElist().indexOf(e5) + 1, h);
+            v.getElist().addLast(h);
+            h = new Edge(v, v2, e.getIdxsplit(), e.getTimestp());
+            v2.getElist().add(v2.getElist().indexOf(e3) + 1, h);
+            v.getElist().addLast(h);
         }
 
         elist.remove(e);
@@ -2040,7 +2028,7 @@ public class DrawFlat {
     private static Edge flip_cubes(Vertex v, PermutationSequenceDraw pseq, LinkedList<Edge> elist, SplitSystemDraw ssyst, String[] taxaname) {
         Edge e = null;
         ListIterator iter = null;
-        int taxon = find_taxon_index(pseq, ((Edge) elist.getFirst()).idxsplit, ssyst);
+        int taxon = find_taxon_index(pseq, ((Edge) elist.getFirst()).getIdxsplit(), ssyst);
         int i = 0;
         int k = 0;
         int a = 0;
@@ -2074,134 +2062,35 @@ public class DrawFlat {
         Vertex v = null;
         Edge h = null;
         ListIterator iter = null;
-        int taxon = find_taxon_index(pseq, e.idxsplit, ssyst);
+        int taxon = find_taxon_index(pseq, e.getIdxsplit(), ssyst);
 
-        if (ssyst.splits[((Edge) elist.getFirst()).idxsplit][taxon] == 0) {
-            v = e.top;
+        if (ssyst.splits[((Edge) elist.getFirst()).getIdxsplit()][taxon] == 0) {
+            v = e.getTop();
             iter = elist.listIterator();
             while (iter.hasNext()) {
                 h = (Edge) iter.next();
                 if (e != h) {
-                    h.bot.elist.remove(h);
+                    h.getBot().getElist().remove(h);
                 }
             }
-            v.elist.clear();
-            v.elist.addFirst(e);
+            v.getElist().clear();
+            v.getElist().addFirst(e);
         } else {
-            v = e.bot;
+            v = e.getBot();
             iter = elist.listIterator();
             while (iter.hasNext()) {
                 h = (Edge) iter.next();
                 if (e != h) {
-                    h.top.elist.remove(h);
+                    h.getTop().getElist().remove(h);
                 }
             }
-            v.elist.clear();
-            v.elist.addFirst(e);
+            v.getElist().clear();
+            v.getElist().addFirst(e);
         }
 
         return v;
     }
 
-    //Auxiliary method used to collect the vertices
-    //in the network.
-    private static void aux_collect_vertices(Vertex v, LinkedList<Vertex> vlist) {
-        LinkedList<Vertex> tobeexplored = new LinkedList<>();
-        tobeexplored.addLast(v);
-        v.visited = true;
-        Vertex u = null;
-        Edge e = null;
-
-        while (tobeexplored.size() > 0) {
-            u = (Vertex) tobeexplored.removeFirst();
-            vlist.addLast(u);
-            ListIterator iter = (u.elist).listIterator();
-            while (iter.hasNext()) {
-                e = (Edge) iter.next();
-                if (u == e.top) {
-                    if ((e.bot).visited == false) {
-                        tobeexplored.addLast(e.bot);
-                        (e.bot).visited = true;
-                    }
-                } else {
-                    if ((e.top).visited == false) {
-                        tobeexplored.addLast(e.top);
-                        (e.top).visited = true;
-                    }
-                }
-            }
-        }
-    }
-
-    //This method computes a list of the vertices 
-    //in the split network
-    public static LinkedList<Vertex> collect_vertices(Vertex v) {
-        LinkedList vlist = new LinkedList();
-        if (v == null) {
-            System.out.println("Start vertex is null -- stop here");
-            System.exit(0);
-        }
-        aux_collect_vertices(v, vlist);
-        ListIterator iter = vlist.listIterator(0);
-        int i = 1;
-        Vertex u = null;
-        while (iter.hasNext()) {
-            u = (Vertex) iter.next();
-            u.visited = false;
-            u.nxnum = i;
-            i++;
-        }
-        return vlist;
-    }
-
-    //Auxiliary method used to collect the edges
-    //in the split network.
-    private static void aux_collect_edges(Edge e, LinkedList<Edge> elist) {
-        LinkedList<Edge> tobeexplored = new LinkedList<>();
-        tobeexplored.addLast(e);
-        e.visited = true;
-
-        Edge g = null;
-        Edge h = null;
-
-        while (tobeexplored.size() > 0) {
-            g = tobeexplored.removeFirst();
-            elist.addLast(g);
-            Iterator iter = ((g.top).elist).iterator();
-            while (iter.hasNext()) {
-                h = (Edge) iter.next();
-                if (h.visited == false) {
-                    tobeexplored.addLast(h);
-                    h.visited = true;
-                }
-            }
-            iter = ((g.bot).elist).iterator();
-            while (iter.hasNext()) {
-                h = (Edge) iter.next();
-                if (h.visited == false) {
-                    tobeexplored.addLast(h);
-                    h.visited = true;
-                }
-            }
-        }
-    }
-
-    //This method computes a list of the edges 
-    //in the split network.
-    public static LinkedList<Edge> collect_edges(Edge e) {
-        LinkedList<Edge> elist = new LinkedList<>();
-        aux_collect_edges(e, elist);
-        ListIterator iter = elist.listIterator(0);
-        int i = 1;
-        Edge h = null;
-        while (iter.hasNext()) {
-            h = (Edge) iter.next();
-            h.visited = false;
-            h.nxnum = i;
-            i++;
-        }
-        return elist;
-    }
 
     private static void log_splitedges(TreeSet[] splitedges, String mes) {
         int i = 0;
@@ -2215,7 +2104,7 @@ public class DrawFlat {
             System.out.print("Split " + i + ":");
             while (iter.hasNext()) {
                 f = (Edge) iter.next();
-                System.out.print(" " + f.timestp);
+                System.out.print(" " + f.getTimestp());
             }
             System.out.println("");
         }
@@ -2227,7 +2116,7 @@ public class DrawFlat {
          * splitedges[i].iterator();
          *
          * System.out.print("Split " + i + ":"); while(iter.hasNext()) { f =
-         * (Edge)iter.next(); System.out.print(" " + f.idxsplit); }
+         * (Edge)iter.next(); System.out.print(" " + f.getIdxsplit()); }
          * System.out.println(""); }
          */
     }
@@ -2244,7 +2133,7 @@ public class DrawFlat {
 
         while (iter.hasNext()) {
             f = (Edge) iter.next();
-            System.out.print(" " + f.timestp);
+            System.out.print(" " + f.getTimestp());
         }
         System.out.println("");
     }
@@ -2261,7 +2150,7 @@ public class DrawFlat {
 
         while (iter.hasNext()) {
             f = (Edge) iter.next();
-            System.out.print(" " + f.idxsplit);
+            System.out.print(" " + f.getIdxsplit());
         }
         System.out.println("");
     }

@@ -1,8 +1,8 @@
 /*
- * Phylogenetics Tool suite
- * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
+ * Copyright (C) 2014  UEA School of Computing Sciences
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
@@ -18,6 +18,7 @@ package uk.ac.uea.cmp.spectre.core.io.nexus;
 
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
+import uk.ac.uea.cmp.spectre.core.ds.network.Network;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 
 import java.util.ArrayList;
@@ -36,12 +37,14 @@ public class Nexus {
     private DistanceMatrix distanceMatrix;
     private SplitSystem splitSystem;
     private List<Integer> cycle;
+    private Network network;
 
     public Nexus() {
         this.taxa = new IdentifierList();
         this.distanceMatrix = null;
         this.cycle = new ArrayList<>();
         this.splitSystem = null;
+        this.network = null;
     }
 
     public void setTaxa(IdentifierList taxa) {
@@ -89,6 +92,13 @@ public class Nexus {
         return this.cycle.get(i);
     }
 
+    public Network getNetwork() {
+        return network;
+    }
+
+    public void setNetwork(Network network) {
+        this.network = network;
+    }
 
     /*public Nexus filter(double threshold) {
 

@@ -24,13 +24,15 @@ import uk.ac.tgac.metaopt.Optimiser;
 import uk.ac.tgac.metaopt.OptimiserException;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.quartet.GroupedQuartetSystem;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.Quartet;
+import uk.ac.uea.cmp.spectre.core.ds.quartet.SpectreQuartet;
 import uk.ac.uea.cmp.spectre.core.ds.quartet.WeightedQuartetGroupMap;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitUtils;
 import uk.ac.uea.cmp.spectre.core.math.matrix.SymmetricMatrix;
 import uk.ac.uea.cmp.spectre.qtools.qnet.holders.PHolder;
 import uk.ac.uea.cmp.spectre.qtools.qnet.solvers.ExternalNNLSSolver;
 import uk.ac.uea.cmp.spectre.qtools.qnet.solvers.InternalNNLSSolver;
+
+import java.util.List;
 
 public class WeightsComputer {
 
@@ -65,7 +67,7 @@ public class WeightsComputer {
 
         final int N = circularOrdering.size();
 
-        Pair<Integer, Integer>[] splitIndices = SplitUtils.createSplitIndices(N);
+        List<Pair<Integer, Integer>> splitIndices = SplitUtils.createSplitIndices(N);
 
         // Initialise PHolder using the quartet system.
         PHolder pHolder = new PHolder(quartetSystem, circularOrdering);
@@ -139,9 +141,9 @@ public class WeightsComputer {
         throw new QNetException("Solution has 0.0 for all variables!");
     }
 
-    private SymmetricMatrix initEtE(final int N, Pair<Integer, Integer>[] splitIndices, PHolder pHolder) {
+    private SymmetricMatrix initEtE(final int N, List<Pair<Integer, Integer>> splitIndices, PHolder pHolder) {
 
-        final int maxSplits = splitIndices.length;
+        final int maxSplits = splitIndices.size();
 
         SymmetricMatrix EtE = new SymmetricMatrix(maxSplits);
 
@@ -149,12 +151,14 @@ public class WeightsComputer {
 
             for (int j = 0; j < i + 1; j++) {
 
+                Pair<Integer, Integer> siI = splitIndices.get(i);
+                Pair<Integer, Integer> siJ = splitIndices.get(j);
 
-                //TODO Check this is right to 0-base theese indices
-                int p1 = splitIndices[i].getLeft();
-                int q1 = splitIndices[i].getRight();
-                int p2 = splitIndices[j].getLeft();
-                int q2 = splitIndices[j].getRight();
+                //TODO Check this is right to 0-base these indices
+                int p1 = siI.getLeft();
+                int q1 = siI.getRight();
+                int p2 = siJ.getLeft();
+                int q2 = siJ.getRight();
 
                 /*
                  * // what happens here if the end-problematic // cases are
@@ -276,7 +280,7 @@ public class WeightsComputer {
                             int cC = c[i - 1];
                             int cD = c[j - 1];
 
-                            double aW = theQuartetWeights.getWeight(new Quartet(cA, cB, cC, cD));
+                            double aW = theQuartetWeights.getWeight(new SpectreQuartet(cA, cB, cC, cD));
 
                             gw[p - 1][p + 1][i - 1][j - 1] = aW;
                         } else if (l == 3) {
@@ -286,7 +290,7 @@ public class WeightsComputer {
                             int cC = c[i - 1];
                             int cD = c[j - 1];
 
-                            double aW = theQuartetWeights.getWeight(new Quartet(cA, cB, cC, cD));
+                            double aW = theQuartetWeights.getWeight(new SpectreQuartet(cA, cB, cC, cD));
 
                             gw[p - 1][p + 2][i - 1][j - 1] = aW
                                     + gw[p - 1][p + 1][i - 1][j - 1] + gw[p][p + 2][i - 1][j - 1];
@@ -297,7 +301,7 @@ public class WeightsComputer {
                             int cC = c[i - 1];
                             int cD = c[j - 1];
 
-                            double aW = theQuartetWeights.getWeight(new Quartet(cA, cB, cC, cD));
+                            double aW = theQuartetWeights.getWeight(new SpectreQuartet(cA, cB, cC, cD));
 
                             gw[p - 1][p + l - 1][i - 1][j - 1] = aW
                                     + gw[p - 1][p + l - 2][i - 1][j - 1] + gw[p][p + l - 1][i - 1][j - 1]
@@ -314,7 +318,7 @@ public class WeightsComputer {
                             int cC = c[i - 1];
                             int cD = c[j - 1];
 
-                            double aW = theQuartetWeights.getWeight(new Quartet(cA, cB, cC, cD));
+                            double aW = theQuartetWeights.getWeight(new SpectreQuartet(cA, cB, cC, cD));
 
                             gw[p - 1][p + 1][i - 1][j - 1] = aW;
                         } else if (l == 3) {
@@ -324,7 +328,7 @@ public class WeightsComputer {
                             int cC = c[i - 1];
                             int cD = c[j - 1];
 
-                            double aW = theQuartetWeights.getWeight(new Quartet(cA, cB, cC, cD));
+                            double aW = theQuartetWeights.getWeight(new SpectreQuartet(cA, cB, cC, cD));
 
                             gw[p - 1][p + 2][i - 1][j - 1] = aW
                                     + gw[p - 1][p + 1][i - 1][j - 1] + gw[p][p + 2][i - 1][j - 1];
@@ -335,7 +339,7 @@ public class WeightsComputer {
                             int cC = c[i - 1];
                             int cD = c[j - 1];
 
-                            double aW = theQuartetWeights.getWeight(new Quartet(cA, cB, cC, cD));
+                            double aW = theQuartetWeights.getWeight(new SpectreQuartet(cA, cB, cC, cD));
 
                             gw[p - 1][p + l - 1][i - 1][j - 1] = aW
                                     + gw[p - 1][p + l - 2][i - 1][j - 1] + gw[p][p + l - 1][i - 1][j - 1]
@@ -355,7 +359,7 @@ public class WeightsComputer {
                             int cC = c[i - 1];
                             int cD = c[j - 1];
 
-                            double aW = theQuartetWeights.getWeight(new Quartet(cA, cB, cC, cD));
+                            double aW = theQuartetWeights.getWeight(new SpectreQuartet(cA, cB, cC, cD));
 
                             gw[p - 1][p + 1][i - 1][j - 1] = aW;
 
@@ -366,7 +370,7 @@ public class WeightsComputer {
                             int cC = c[i - 1];
                             int cD = c[j - 1];
 
-                            double aW = theQuartetWeights.getWeight(new Quartet(cA, cB, cC, cD));
+                            double aW = theQuartetWeights.getWeight(new SpectreQuartet(cA, cB, cC, cD));
 
                             gw[p - 1][p + 2][i - 1][j - 1] = aW
                                     + gw[p - 1][p + 1][i - 1][j - 1] + gw[p][p + 2][i - 1][j - 1];
@@ -378,7 +382,7 @@ public class WeightsComputer {
                             int cC = c[i - 1];
                             int cD = c[j - 1];
 
-                            double aW = theQuartetWeights.getWeight(new Quartet(cA, cB, cC, cD));
+                            double aW = theQuartetWeights.getWeight(new SpectreQuartet(cA, cB, cC, cD));
 
                             gw[p - 1][p + l - 1][i - 1][j - 1] = aW
                                     + gw[p - 1][p + l - 2][i - 1][j - 1] + gw[p][p + l - 1][i - 1][j - 1]
@@ -394,12 +398,12 @@ public class WeightsComputer {
     }
 
 
-    private double[] initEtf(Pair<Integer, Integer>[] splitIndices, GroupedQuartetSystem quartetSystem, IdentifierList circularOrdering) {
+    private double[] initEtf(List<Pair<Integer, Integer>> splitIndices, GroupedQuartetSystem quartetSystem, IdentifierList circularOrdering) {
 
         final int N = quartetSystem.getTaxa().size();
         final int maxSplits = SplitUtils.calcMaxSplits(N);
 
-        if (splitIndices.length != maxSplits) {
+        if (splitIndices.size() != maxSplits) {
             throw new IllegalArgumentException("Size of split indices and quartet system's taxa are different");
         }
 
@@ -409,8 +413,8 @@ public class WeightsComputer {
 
         for (int a = 0; a < maxSplits; a++) {
 
-            final int p = splitIndices[a].getLeft();
-            final int q = splitIndices[a].getRight();
+            final int p = splitIndices.get(a).getLeft();
+            final int q = splitIndices.get(a).getRight();
 
             double sum = 0.0;
 

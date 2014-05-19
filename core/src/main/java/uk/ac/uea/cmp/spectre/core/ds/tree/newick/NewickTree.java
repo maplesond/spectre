@@ -1,6 +1,6 @@
 /*
- * Phylogenetics Tool suite
- * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
+ * Copyright (C) 2014  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
@@ -19,6 +19,7 @@ package uk.ac.uea.cmp.spectre.core.ds.tree.newick;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
+import uk.ac.uea.cmp.spectre.core.ds.Identifier;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.quartet.CanonicalWeightedQuartetMap;
 import uk.ac.uea.cmp.spectre.core.ds.tree.newick.parser.NewickTreeLexer;
@@ -96,6 +97,26 @@ public class NewickTree extends NewickNode {
         //TODO apply scaling factor  ???
     }
 
+    public void applyPrefixToNames(String prefix) {
+        if (this.branches.isEmpty())
+            return;
+
+        for(Identifier id : this.taxa) {
+            id.setName(prefix + id.getName());
+        }
+    }
+
+    @Override
+    public String toString() {
+
+        if (this.branches.isEmpty())
+            return "";
+
+        if (this.branches.size() != 1)
+            return "";
+
+        return this.getFirstBranch() + ";";
+    }
 
     @Override
     public boolean isBinary() {

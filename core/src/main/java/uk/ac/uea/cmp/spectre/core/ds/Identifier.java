@@ -1,6 +1,6 @@
 /*
- * Phylogenetics Tool suite
- * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
+ * Copyright (C) 2014  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
@@ -102,8 +102,8 @@ public class Identifier implements Comparable<Identifier> {
     /**
      * Natural ordering is first by id, then name
      *
-     * @param o
-     * @return
+     * @param o The identifier to compare to
+     * @return Indication of whether this identifier is less than, equal to or greater than the given identifier
      */
     @Override
     public int compareTo(Identifier o) {

@@ -19,10 +19,7 @@ package uk.ac.uea.cmp.spectre.qtools.qnet;
 import org.apache.commons.lang3.tuple.Pair;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.quartet.GroupedQuartetSystem;
-import uk.ac.uea.cmp.spectre.core.ds.split.CircularSplitSystem;
-import uk.ac.uea.cmp.spectre.core.ds.split.Split;
-import uk.ac.uea.cmp.spectre.core.ds.split.SplitBlock;
-import uk.ac.uea.cmp.spectre.core.ds.split.SplitUtils;
+import uk.ac.uea.cmp.spectre.core.ds.split.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +51,7 @@ public class QNetResult {
         return quartetSystem;
     }
 
-    public CircularSplitSystem createSplitSystem(double[] limit, SplitLimiter mode) {
+    public SplitSystem createSplitSystem(double[] limit, SplitLimiter mode) {
 
         // Setup shortcuts
         IdentifierList taxa = this.quartetSystem.getTaxa();
@@ -63,7 +60,7 @@ public class QNetResult {
         double[] solution = this.computedWeights.getSolution();
 
         // Create the basic split indices
-        Pair<Integer, Integer>[] splitIndices = SplitUtils.createSplitIndices(N);
+        List<Pair<Integer, Integer>> splitIndices = SplitUtils.createSplitIndices(N);
 
         List<Split> splits = new ArrayList<>();
         double totalWeight = 0.0;
@@ -72,7 +69,7 @@ public class QNetResult {
 
             if (mode.validSplit(solution[i], limit != null ? limit[i] : 0.0)) {
 
-                Pair<Integer, Integer> sI = splitIndices[i];
+                Pair<Integer, Integer> sI = splitIndices.get(i);
 
                 List<Integer> list = new ArrayList<>();
 
@@ -84,7 +81,7 @@ public class QNetResult {
                 nbValidSplits++;
                 totalWeight += solution[i];
 
-                splits.add(new Split(new SplitBlock(list), N, solution[i]));
+                splits.add(new SpectreSplit(new SpectreSplitBlock(list), N, solution[i]));
             }
         }
 
@@ -97,7 +94,14 @@ public class QNetResult {
         // Now add all the trivial splits
         splits.addAll(SplitUtils.createTrivialSplits(taxa, meanWeight));
 
-        return new CircularSplitSystem(splits, this.circularOrdering);
+        SplitSystem circularSplitSystem = new SpectreSplitSystem(this.circularOrdering, splits);
+
+        // Verify this is a circular split system
+        if (!circularSplitSystem.isCircular()) {
+            throw new IllegalStateException("Created split system is not circular!");
+        }
+
+        return circularSplitSystem;
     }
 
     public static enum SplitLimiter {

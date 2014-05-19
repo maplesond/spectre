@@ -18,6 +18,7 @@ package uk.ac.uea.cmp.spectre.qtools.qnet.holders;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.quartet.GroupedQuartetSystem;
 import uk.ac.uea.cmp.spectre.core.ds.quartet.Quartet;
+import uk.ac.uea.cmp.spectre.core.ds.quartet.QuartetUtils;
 import uk.ac.uea.cmp.spectre.core.ds.quartet.QuartetWeights;
 
 import java.util.Arrays;
@@ -301,7 +302,7 @@ public class PHolder {
      */
     public void ensureCapacity(int N) {
 
-        data = new PHContent[Quartet.over4(N)];
+        data = new PHContent[QuartetUtils.over4(N)];
         nbTaxa = N;
     }
 
@@ -331,12 +332,12 @@ public class PHolder {
 
             // we work with out of d - n, a, b, c
 
-            return data[Quartet.over1(d - nbTaxa - 1) + Quartet.over2(a - 1) + Quartet.over3(b - 1) + Quartet.over4(c - 1)].getOuterP();
+            return data[QuartetUtils.sumOvers(d - nbTaxa - 1, a - 1, b - 1, c - 1)].getOuterP();
         } else {
 
             // we work with in of a, b, c, d
 
-            return data[Quartet.over1(a - 1) + Quartet.over2(b - 1) + Quartet.over3(c - 1) + Quartet.over4(d - 1)].getInnerP();
+            return data[QuartetUtils.sumOvers(a - 1, b - 1, c - 1, d - 1)].getInnerP();
         }
     }
 
@@ -345,8 +346,8 @@ public class PHolder {
         // we assume size-order and one-upmanship
         // we check for d > N
         return d > nbTaxa ?
-                data[Quartet.over1(d - nbTaxa - 1) + Quartet.over2(a - 1) + Quartet.over3(b - 1) + Quartet.over4(c - 1)].getOuterQ() :
-                data[Quartet.over1(a - 1) + Quartet.over2(b - 1) + Quartet.over3(c - 1) + Quartet.over4(d - 1)].getInnerQ();
+                data[QuartetUtils.sumOvers(d - nbTaxa - 1, a - 1, b - 1, c - 1)].getOuterQ() :
+                data[QuartetUtils.sumOvers(a - 1, b - 1, c - 1, d - 1)].getInnerQ();
     }
 
     public boolean getR(int a, int b, int c, int d, IdentifierList cT) {
@@ -384,8 +385,8 @@ public class PHolder {
         // we check for d > N
 
         return d > nbTaxa ?
-                data[Quartet.over1(d - nbTaxa - 1) + Quartet.over2(a - 1) + Quartet.over3(b - 1) + Quartet.over4(c - 1)].getR() :
-                data[Quartet.over1(a - 1) + Quartet.over2(b - 1) + Quartet.over3(c - 1) + Quartet.over4(d - 1)].getR();
+                data[QuartetUtils.sumOvers(d - nbTaxa - 1, a - 1, b - 1, c - 1)].getR() :
+                data[QuartetUtils.sumOvers(a - 1, b - 1, c - 1, d - 1)].getR();
     }
 
 
@@ -397,10 +398,10 @@ public class PHolder {
 
             // if requesting something after the last (remembering we have one-upmanship
             // we work with out of d - n, a, b, c
-            data[Quartet.over1(d - nbTaxa - 1) + Quartet.over2(a - 1) + Quartet.over3(b - 1) + Quartet.over4(c - 1)].setOuterP(newW);
+            data[QuartetUtils.sumOvers(d - nbTaxa - 1, a - 1, b - 1, c - 1)].setOuterP(newW);
         } else {
             // we work with in of a, b, c, d
-            data[Quartet.over1(a - 1) + Quartet.over2(b - 1) + Quartet.over3(c - 1) + Quartet.over4(d - 1)].setInnerP(newW);
+            data[QuartetUtils.sumOvers(a - 1, b - 1, c - 1, d - 1)].setInnerP(newW);
         }
     }
 
@@ -413,11 +414,11 @@ public class PHolder {
 
             // if requesting something after the last (remembering we have one-upmanship
             // we work with out of d - n, a, b, c
-            data[Quartet.over1(d - nbTaxa - 1) + Quartet.over2(a - 1) + Quartet.over3(b - 1) + Quartet.over4(c - 1)].setOuterQ(newW);
+            data[QuartetUtils.sumOvers(d - nbTaxa - 1, a - 1, b - 1, c - 1)].setOuterQ(newW);
         } else {
 
             // we work with in of a, b, c, d
-            data[Quartet.over1(a - 1) + Quartet.over2(b - 1) + Quartet.over3(c - 1) + Quartet.over4(d - 1)].setInnerQ(newW);
+            data[QuartetUtils.sumOvers(a - 1, b - 1, c - 1, d - 1)].setInnerQ(newW);
         }
     }
 
@@ -430,11 +431,11 @@ public class PHolder {
 
             // if requesting something after the last (remembering we have one-upmanship
             // we work with out of d - n, a, b, c
-            data[Quartet.over1(d - nbTaxa - 1) + Quartet.over2(a - 1) + Quartet.over3(b - 1) + Quartet.over4(c - 1)].setR(newW);
+            data[QuartetUtils.sumOvers(d - nbTaxa - 1, a - 1, b - 1, c - 1)].setR(newW);
         } else {
 
             // we work with in of a, b, c, d
-            data[Quartet.over1(a - 1) + Quartet.over2(b - 1) + Quartet.over3(c - 1) + Quartet.over4(d - 1)].setR(newW);
+            data[QuartetUtils.sumOvers(a - 1, b - 1, c - 1, d - 1)].setR(newW);
         }
     }
 

@@ -17,7 +17,8 @@ package uk.ac.uea.cmp.spectre.qtools.qnet.holders;
 
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.quartet.CanonicalWeightedQuartetMap;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.Quartet;
+import uk.ac.uea.cmp.spectre.core.ds.quartet.QuartetUtils;
+import uk.ac.uea.cmp.spectre.core.ds.quartet.SpectreQuartet;
 import uk.ac.uea.cmp.spectre.core.math.tuple.Triplet;
 import uk.ac.uea.cmp.spectre.qtools.qnet.QNetException;
 
@@ -30,10 +31,10 @@ public class WHolder {
 
     public WHolder(List<IdentifierList> paths, int N, CanonicalWeightedQuartetMap quartetMap) throws QNetException {
 
-        this.counts = new Triplet[Quartet.over4(N)];
-        this.weights = new Triplet[Quartet.over4(N)];
+        this.counts = new Triplet[QuartetUtils.over4(N)];
+        this.weights = new Triplet[QuartetUtils.over4(N)];
 
-        for (int n = 0; n < Quartet.over4(N); n++) {
+        for (int n = 0; n < QuartetUtils.over4(N); n++) {
 
             this.counts[n] = new Triplet<>(0, 0, 0);
             this.weights[n] = new Triplet<>(0.0, 0.0, 0.0);
@@ -69,7 +70,7 @@ public class WHolder {
 
                             // if on the same path, no quartets meet the conditions
 
-                            int index = Quartet.over4(l - 1) + Quartet.over3(k - 1) + Quartet.over2(j - 1) + Quartet.over1(i - 1);
+                            int index = QuartetUtils.sumOvers(i - 1, j - 1, k - 1, l - 1);
                             counts[index] = new Triplet<>(0, 0, 0);
                             weights[index] = new Triplet<>(0.0, 0.0, 0.0);
                         } else {
@@ -97,9 +98,9 @@ public class WHolder {
                                             int yC = C.get(xC).getId();
                                             int yD = D.get(xD).getId();
 
-                                            Quartet q1 = new Quartet(yA, yB, yC, yD);
-                                            Quartet q2 = new Quartet(yA, yC, yB, yD);
-                                            Quartet q3 = new Quartet(yA, yD, yB, yC);
+                                            SpectreQuartet q1 = new SpectreQuartet(yA, yB, yC, yD);
+                                            SpectreQuartet q2 = new SpectreQuartet(yA, yC, yB, yD);
+                                            SpectreQuartet q3 = new SpectreQuartet(yA, yD, yB, yC);
 
 
                                             count1++;
@@ -122,7 +123,7 @@ public class WHolder {
                                 }
                             }
 
-                            int index = Quartet.over4(l - 1) + Quartet.over3(k - 1) + Quartet.over2(j - 1) + Quartet.over1(i - 1);
+                            int index = QuartetUtils.sumOvers(i - 1, j - 1, k - 1, l - 1);
 
                             counts[index] = new Triplet<>(count1, count2, count3);
                             weights[index] = new Triplet<>(weight1, weight2, weight3);
@@ -220,9 +221,7 @@ public class WHolder {
             v = m;
         }
 
-        return weights[Quartet.over4(x - 1) + Quartet.over3(y - 1)
-                + Quartet.over2(u - 1) + Quartet.over1(v - 1)].get(position);
-
+        return weights[QuartetUtils.sumOvers(v - 1, u - 1, y - 1, x - 1)].get(position);
     }
 
     public void setW(int i, int j, int k, int l, double newW) {
@@ -309,13 +308,11 @@ public class WHolder {
             v = m;
         }
 
-        Triplet t = weights[Quartet.over4(x - 1) + Quartet.over3(y - 1)
-                + Quartet.over2(u - 1) + Quartet.over1(v - 1)];
+        Triplet t = weights[QuartetUtils.sumOvers(v - 1, u - 1, y - 1, x - 1)];
 
         t.set(position, newW);
 
-        weights[Quartet.over4(x - 1) + Quartet.over3(y - 1)
-                + Quartet.over2(u - 1) + Quartet.over1(v - 1)] = t;
+        weights[QuartetUtils.sumOvers(v - 1, u - 1, y - 1, x - 1)] = t;
 
     }
 

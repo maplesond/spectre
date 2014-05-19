@@ -16,6 +16,8 @@
 
 package uk.ac.uea.cmp.spectre.flatnj.fdraw;
 
+import uk.ac.uea.cmp.spectre.core.ds.network.Edge;
+import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
 import uk.ac.uea.cmp.spectre.flatnj.ds.Network;
 
 import java.util.LinkedList;
@@ -45,7 +47,7 @@ public class BoxOpener {
         Double maxAngle = null;
         for (int i = 0; i < activeSplits.length; i++) {
             int S = activeSplits[i];
-            LinkedList<Edge> edges = DrawFlat.collect_edges_for_split(S, v);
+            LinkedList<Edge> edges = v.collectEdgesForSplit(S);
             if (edges.size() > 1) {
                 double angle = open(activeSplits, S, ss, edges, splitedges, v, vertices, network);
                 if (maxAngle == null || maxAngle < angle) {
@@ -60,7 +62,7 @@ public class BoxOpener {
         boolean foundSplit = false;
         while (!foundSplit) {
             int S = activeSplits[nr++];
-            LinkedList<Edge> edges = DrawFlat.collect_edges_for_split(S, v);
+            LinkedList<Edge> edges = v.collectEdgesForSplit(S);
             if (edges.size() > 1) {
                 foundSplit = true;
                 open(activeSplits, S, ss, edges, splitedges, v, vertices, network);
@@ -105,9 +107,9 @@ public class BoxOpener {
                 Set<Edge> bottomEdges = Collector.getAllEdges(edges, false);
 
 
-                moved = tryAngle(edges.getFirst().bot, edges.getFirst().top, edges.getFirst(), edges, topEdges, bottomEdges, deltaAlpha, vertices);
+                moved = tryAngle(edges.getFirst().getBot(), edges.getFirst().getTop(), edges.getFirst(), edges, topEdges, bottomEdges, deltaAlpha, vertices);
                 if (!moved) {
-                    moved = tryAngle(edges.getFirst().top, edges.getFirst().bot, edges.getFirst(), edges, bottomEdges, topEdges, deltaAlpha, vertices);
+                    moved = tryAngle(edges.getFirst().getTop(), edges.getFirst().getBot(), edges.getFirst(), edges, bottomEdges, topEdges, deltaAlpha, vertices);
                 }
 
                 if (!moved) {
@@ -116,15 +118,15 @@ public class BoxOpener {
                     Edge leftmost = boxesSorted.getFirst().e1;
                     Edge rightmost = boxesSorted.getLast().e2;
                     //Collect all external egdes that are below current split
-                    Set<Edge> bottomExternalEdges = network.getExternalEdges(rightmost, rightmost.top, leftmost);
+                    Set<Edge> bottomExternalEdges = network.getExternalEdges(rightmost, rightmost.getTop(), leftmost);
                     //Collect all the external edges that are above 
-                    Set<Edge> topExternalEdges = network.getExternalEdges(leftmost, leftmost.bot, rightmost);
+                    Set<Edge> topExternalEdges = network.getExternalEdges(leftmost, leftmost.getBot(), rightmost);
 
 
                     //Collect all the external vertices that are below the current split
-                    Set<Vertex> bottomVertices = Collector.getExternalVertices(rightmost, rightmost.top, leftmost);
+                    Set<Vertex> bottomVertices = Collector.getExternalVertices(rightmost, rightmost.getTop(), leftmost);
                     //Collect all the external vertices that are above
-                    Set<Vertex> topVertices = Collector.getExternalVertices(leftmost, leftmost.bot, rightmost);
+                    Set<Vertex> topVertices = Collector.getExternalVertices(leftmost, leftmost.getBot(), rightmost);
 
 
                     //Check if any of the 'bottom' vertices are above the split and
@@ -134,13 +136,13 @@ public class BoxOpener {
                         double safeAngleTop = angleCalculator.getSafeAngleTop(deltaAlpha, leftmost, rightmost, bottomVertices, topVertices);
 
                         if (safeAngleBot != 0) {
-                            moved = tryAngle(edges.getFirst().bot, edges.getFirst().top, edges.getFirst(), edges, topEdges, bottomEdges, safeAngleBot, vertices);
+                            moved = tryAngle(edges.getFirst().getBot(), edges.getFirst().getTop(), edges.getFirst(), edges, topEdges, bottomEdges, safeAngleBot, vertices);
                             if (moved) {
                                 deltaAlpha = safeAngleBot;
                             }
                         }
                         if (!moved && safeAngleTop != 0) {
-                            moved = tryAngle(edges.getFirst().top, edges.getFirst().bot, edges.getFirst(), edges, bottomEdges, topEdges, safeAngleTop, vertices);
+                            moved = tryAngle(edges.getFirst().getTop(), edges.getFirst().getBot(), edges.getFirst(), edges, bottomEdges, topEdges, safeAngleTop, vertices);
                             if (moved) {
                                 deltaAlpha = safeAngleTop;
                             }
@@ -165,10 +167,10 @@ public class BoxOpener {
             Translocator.changeCoordinates(bot, top, edges, deltaAlpha);
             moved = true;
             for (int i = 0; i < vertices.size(); i++) {
-                vertices.get(i).visited = false;
-                LinkedList<Edge> vEd = vertices.get(i).elist;
+                vertices.get(i).setVisited(false);
+                LinkedList<Edge> vEd = vertices.get(i).getElist();
                 for (int k = 0; k < vEd.size(); k++) {
-                    vEd.get(k).visited = false;
+                    vEd.get(k).setVisited(false);
                 }
             }
 
@@ -185,7 +187,7 @@ public class BoxOpener {
 
 
         //Angle that will be added to the current one
-        double deltaAlpha = angleCalculator.computeMiddleAngleForTrivial(e, e.bot, e.top);
+        double deltaAlpha = angleCalculator.computeMiddleAngleForTrivial(e, e.getBot(), e.getTop());
 
 
         if (deltaAlpha != 0) {
@@ -198,10 +200,10 @@ public class BoxOpener {
             if (Translocator.noCollisions(edges, topEdges, bottomEdges, angleWithGap)) {
                 Translocator.changeCoordinates(edges, deltaAlpha);
                 for (int i = 0; i < vertices.size(); i++) {
-                    vertices.get(i).visited = false;
-                    LinkedList<Edge> vEd = vertices.get(i).elist;
+                    vertices.get(i).setVisited(false);
+                    LinkedList<Edge> vEd = vertices.get(i).getElist();
                     for (int k = 0; k < vEd.size(); k++) {
-                        vEd.get(k).visited = false;
+                        vEd.get(k).setVisited(false);
                     }
                 }
             }
@@ -231,11 +233,11 @@ public class BoxOpener {
                     NetworkBox currentNotInserted = boxes.get(i);
                     for (int k = 0; k < boxesSorted.size(); k++) {
                         NetworkBox currentInserted = boxesSorted.get(k);
-                        if (currentNotInserted.e1.bot.equals(currentInserted.e2.bot)) {
+                        if (currentNotInserted.e1.getBot().equals(currentInserted.e2.getBot())) {
                             boxesSorted.add(k + 1, currentNotInserted);
                             boxes.remove(currentNotInserted);
                             break;
-                        } else if (currentNotInserted.e2.bot.equals(currentInserted.e1.bot)) {
+                        } else if (currentNotInserted.e2.getBot().equals(currentInserted.e1.getBot())) {
                             boxesSorted.add(k, currentNotInserted);
                             boxes.remove(currentNotInserted);
                             break;

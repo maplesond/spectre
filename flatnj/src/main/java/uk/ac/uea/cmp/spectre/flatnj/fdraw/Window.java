@@ -16,6 +16,8 @@
 
 package uk.ac.uea.cmp.spectre.flatnj.fdraw;
 
+import uk.ac.uea.cmp.spectre.core.ds.network.Edge;
+import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
 import uk.ac.uea.cmp.spectre.flatnj.tools.Utilities;
 
 import javax.swing.*;
@@ -94,12 +96,12 @@ public class Window extends JPanel {
 
 
     public void setGraph(Vertex net, double[] corners, int w, int h) {
-        LinkedList<Edge> edges = DrawFlat.collect_edges(net.getFirstEdge());
+        LinkedList<Edge> edges = net.getFirstEdge().collectEdges();
 
         lines = new int[edges.size()][5];
         Set<Integer[]> p = new HashSet<>();
 
-        corners = Utilities.getCorners(DrawFlat.collect_vertices(net));
+        corners = Utilities.getCorners(net.collectVertices());
 
         minX = corners[0];
         double maxX = corners[1];
@@ -112,29 +114,29 @@ public class Window extends JPanel {
 
         for (int i = 0; i < edges.size(); i++) {
             Edge e = edges.get(i);
-            lines[i][0] = (int) ((e.bot.x - minX) * ratio) + addX;
-            lines[i][1] = (int) ((e.bot.y - minY) * ratio) + addY;
-            lines[i][2] = (int) ((e.top.x - minX) * ratio) + addX;
-            lines[i][3] = (int) ((e.top.y - minY) * ratio) + addY;
+            lines[i][0] = (int) ((e.getBot().getX() - minX) * ratio) + addX;
+            lines[i][1] = (int) ((e.getBot().getY() - minY) * ratio) + addY;
+            lines[i][2] = (int) ((e.getTop().getX() - minX) * ratio) + addX;
+            lines[i][3] = (int) ((e.getTop().getY() - minY) * ratio) + addY;
             lines[i][4] = e.getWidth();
         }
 
-        LinkedList<Vertex> vertices = DrawFlat.collect_vertices(net);
+        LinkedList<Vertex> vertices = net.collectVertices();
         for (int i = 0; i < vertices.size(); i++) {
             Vertex v = vertices.get(i);
-            if (v.taxa.size() > 0) {
+            if (v.getTaxa().size() > 0) {
                 Integer[] xy = new Integer[3];
-                xy[0] = (int) ((v.x - minX) * ratio) + addX;
-                xy[1] = (int) ((v.y - minY) * ratio) + addY;
+                xy[0] = (int) ((v.getX() - minX) * ratio) + addX;
+                xy[1] = (int) ((v.getY() - minY) * ratio) + addY;
                 xy[2] = 7;
                 p.add(xy);
             }
-            if (v.elist.size() == 1) {
-                Edge e = v.elist.getFirst();
-                Vertex vi = (e.top == v) ? e.bot : e.top;
+            if (v.getElist().size() == 1) {
+                Edge e = v.getElist().getFirst();
+                Vertex vi = (e.getTop() == v) ? e.getBot() : e.getTop();
                 Integer[] xy = new Integer[3];
-                xy[0] = (int) ((vi.x - minX) * ratio) + addX;
-                xy[1] = (int) ((vi.y - minY) * ratio) + addY;
+                xy[0] = (int) ((vi.getX() - minX) * ratio) + addX;
+                xy[1] = (int) ((vi.getY() - minY) * ratio) + addY;
                 xy[2] = 5;
                 p.add(xy);
             }
@@ -188,8 +190,8 @@ public class Window extends JPanel {
 
     void markPoint(Vertex c0, int color) {
         double[] p = new double[3];
-        p[0] = c0.x;
-        p[1] = c0.y;
+        p[0] = c0.getX();
+        p[1] = c0.getY();
         p[2] = color;
         pointsToMark.add(p);
         this.repaint();

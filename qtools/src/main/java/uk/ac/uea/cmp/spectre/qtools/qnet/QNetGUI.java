@@ -29,6 +29,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.util.Vector;
 
 import static uk.ac.uea.cmp.spectre.core.ui.gui.LookAndFeel.NIMBUS;
 import static uk.ac.uea.cmp.spectre.core.ui.gui.LookAndFeel.setLookAndFeel;
@@ -160,7 +161,7 @@ public class QNetGUI extends JFrame implements ToolHost {
         java.util.List<String> optimisers = OptimiserFactory.getInstance().listOperationalOptimisers(Objective.ObjectiveType.QUADRATIC);
         optimisers.add(0, "Internal");
 
-        cboSolver.setModel(new DefaultComboBoxModel(optimisers.toArray()));
+        cboSolver.setModel(new DefaultComboBoxModel<>(new Vector<>(optimisers)));
         cboSolver.setToolTipText(QNetOptions.DESC_OPTIMISER);
         cboSolver.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

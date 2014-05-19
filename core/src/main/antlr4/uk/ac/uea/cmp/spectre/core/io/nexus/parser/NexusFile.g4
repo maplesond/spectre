@@ -18,12 +18,12 @@ FLOAT : ('-')? DIGIT* '.' DIGIT+ ('E' ('-')? DIGIT+)?;
 // A token satisfing the regular expression [_\w]+[\d\w\._]*. Note that an single
 //  _ is considered a valid identifier. In most contexts a single _ means a
 //  "don't care identifier", simmilar to the _ meaning in prolog.
-IDENTIFIER : (LETTER_US | DIGIT | '.' | '-' )+;
+IDENTIFIER : LETTER_US+ (LETTER_US | DIGIT | '.' | '-' )*;
 
 fragment DIGIT : [0-9];     // match single digit
 fragment NZ_DIGIT : [1-9];
 fragment LETTER : [a-zA-Z];
-LETTER_US : [a-zA-Z_];
+LETTER_US : [a-zA-Z] | '_';
 
 // A String must consist of either lower or uppercase A-z characters, nothing fancy.  So we don't allow numbers or whitespace.
 //WORD : LETTER+
@@ -88,12 +88,26 @@ block_declaration :
 block_taxa :
     taxa_header ';'
     dimensions_taxa
-    taxlabels;
+    tax_labels
+    tax_info;
 
 taxa_header : 'taxa' | 'Taxa' | 'TAXA';
 
 dimensions_taxa : dimensions ntax ';';
 
+tax_info :
+     // Empty
+    | tax_info_header tax_info_entries
+    ;
+
+tax_info_header : 'taxinfo' | 'TAXINFO';
+
+tax_info_entries :
+     //Empty
+    | tax_info_entry tax_info_entries
+    ;
+
+tax_info_entry : IDENTIFIER;
 
 
 
@@ -105,7 +119,7 @@ block_distances :
     distances_header ';'
     dimensions_distances
     format_distances
-    taxlabels_optional
+    tax_labels_optional
     matrix_header matrix_data ';';
 
 distances_header : 'distances' | 'Distances' | 'DISTANCES';
@@ -233,6 +247,7 @@ properties_splits_item : properties_splits_name ('=' number)?;
 properties_splits_name :
       'fit'
     | 'cyclic'
+    | 'weakly_compatible'
     ;
 
 cycle :
@@ -459,13 +474,26 @@ vertices_network_data :
     | vertices_network_entry ',' vertices_network_data
     ;
 
-vertices_network_entry :
-      INT FLOAT FLOAT vertices_2d_data
-    | INT FLOAT FLOAT vertices_3d_data
+vertices_network_entry : INT FLOAT FLOAT vertex_options;
+
+vertex_options :
+      // Empty
+    | vertex_option vertex_options
     ;
 
-vertices_2d_data : 's' '=' IDENTIFIER 'b' '=' INT INT INT;
-vertices_3d_data : 'w' '=' INT 'h' '=' INT 'b' '=' INT INT INT;
+vertex_option : nv_shape | nv_width | nv_height | nv_b | nv_color_fg | nv_color_bg;
+
+nv_shape : 's' '=' IDENTIFIER;
+
+nv_width : 'w' '=' INT;
+
+nv_height : 'h' '=' INT;
+
+nv_b : 'b' '=' INT INT INT;
+
+nv_color_fg : 'fg' '=' INT INT INT;
+
+nv_color_bg : 'bg' '=' INT INT INT;
 
 
 vlabels_network :
@@ -480,13 +508,29 @@ vlabels_network_data :
    | vlabels_network_entry ',' vlabels_network_data
    ;
 
-vlabels_network_entry : vlabels_network_label vlabels_data;
+vlabels_network_entry : vlabels_network_label vlabels_options;
 
 vlabels_network_label : INT '\'' IDENTIFIER '\'';
 
-vlabels_data :
-      'l' '=' INT 'x' '=' INT 'y' '=' INT 'f' '=' '\'' IDENTIFIER '\''
-    | 'x' '=' INT 'y' '=' INT 'f' '=' '\'' IDENTIFIER '\'';
+vlabels_options :
+      // Empty
+    | vlabels_option vlabels_options
+    ;
+
+vlabels_option : nl_l | nl_x | nl_y | nl_font;
+
+nl_l : 'l' '=' INT;
+
+nl_x : 'x' '=' INT;
+
+nl_y : 'y' '=' INT;
+
+nl_font : 'f' '=' '\'' IDENTIFIER '\'';
+
+nl_color_lc : 'lc' '=' INT INT INT;
+
+nl_color_bg : 'lk' '=' INT INT INT;
+
 
 edges_network :
       // Empty
@@ -500,7 +544,22 @@ edges_network_data :
     | edges_network_entry ',' edges_network_data
     ;
 
-edges_network_entry : INT INT INT 's' '=' INT 'w' '=' FLOAT;
+edges_network_entry : INT INT INT edges_network_options;
+
+edges_network_options :
+      //Empty
+    | edges_network_option edges_network_options
+    ;
+
+edges_network_option : ne_split | ne_width | ne_color | ne_unknown;
+
+ne_split : 's' '=' INT;
+
+ne_unknown : 'w' '=' FLOAT;
+
+ne_width : 'l' '=' INT;
+
+ne_color : 'fg' '=' INT INT INT;
 
 
 // ----------------------------------------------------------------------------
@@ -562,7 +621,9 @@ identifier_list :
 // Any character except any of the following: \n\s()[]{}<>/\,;:=*^'"
 missing : 'missing' '=' LETTER_US;
 
-ntax : 'ntax' '=' INT;
+ntax : ntax_header '=' INT;
+
+ntax_header : 'ntax' | 'NTAX';
 
 newtaxa :
       'newtaxa' ntax
@@ -592,17 +653,17 @@ star :
     | '*'
     ;
 
-taxlabels :
-      taxlabels_header IDENTIFIER identifier_list ';'
-    | taxlabels_header '\'' IDENTIFIER '\'' identifier_list ';'
+tax_labels :
+      tax_labels_header IDENTIFIER identifier_list ';'
+    | tax_labels_header '\'' IDENTIFIER '\'' identifier_list ';'
     ;
 
-taxlabels_optional :
+tax_labels_optional :
     // Empty
-    | taxlabels
+    | tax_labels
     ;
 
-taxlabels_header : 'taxlabels' | 'TAXLABELS';
+tax_labels_header : 'taxlabels' | 'TAXLABELS';
 
 
 number : INT | FLOAT;

@@ -1,6 +1,6 @@
 /*
- * Phylogenetics Tool suite
- * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
+ * Copyright (C) 2014  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
@@ -19,7 +19,7 @@ package uk.ac.uea.cmp.spectre.core.ds.tree.newick;
 import uk.ac.uea.cmp.spectre.core.ds.Identifier;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.quartet.CanonicalWeightedQuartetMap;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.Quartet;
+import uk.ac.uea.cmp.spectre.core.ds.quartet.SpectreQuartet;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -99,6 +99,46 @@ public abstract class NewickNode {
         for (NewickNode node : this.branches) {
             node.getTaxa(taxa);
         }
+    }
+
+    public void setAllLengthsTo(double length) {
+
+        this.length = length;
+
+        for(NewickNode n : this.branches) {
+            n.setAllLengthsTo(length);
+        }
+    }
+
+    @Override
+    public String toString() {
+
+        StringBuilder sb = new StringBuilder();
+
+        if (this.branches.isEmpty()) {
+            sb.append(this.taxon.getName());
+        }
+        else {
+
+            sb.append("(");
+            sb.append(this.branches.get(0).toString());
+
+            for (int i = 1; i < this.branches.size(); i++) {
+                sb.append(",");
+                sb.append(this.branches.get(i).toString());
+            }
+
+            sb.append(")");
+
+            if (taxon != null) {
+                sb.append(this.taxon.getName());
+            }
+        }
+
+        sb.append(":");
+        sb.append(length);
+
+        return sb.toString();
     }
 
     public boolean isBinary() {
@@ -249,7 +289,7 @@ public abstract class NewickNode {
                                 int b1 = setB.get(iB1).getId();
                                 int b2 = setB.get(iB2).getId();
 
-                                qW.incrementWeight(new Quartet(a1, a2, b1, b2), w);
+                                qW.incrementWeight(new SpectreQuartet(a1, a2, b1, b2), w);
                             }
                         }
                     }

@@ -1,8 +1,8 @@
 /*
- * Phylogenetics Tool suite
- * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
+ * Copyright (C) 2014  UEA School of Computing Sciences
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
@@ -15,7 +15,7 @@
  */
 package uk.ac.uea.cmp.spectre.core.math.matrix;
 
-import uk.ac.uea.cmp.spectre.core.ds.quartet.Quartet;
+import uk.ac.uea.cmp.spectre.core.ds.quartet.QuartetUtils;
 
 /**
  * Created by IntelliJ IDEA. User: Analysis Date: 2004-jul-11 Time: 19:08:50 To
@@ -32,13 +32,13 @@ public class SymmetricMatrix {
         this.size = size;
 
         diagonal = new double[size];
-        triangle = new double[Quartet.over2(size)];
+        triangle = new double[QuartetUtils.over2(size)];
 
         for (int n = 0; n < size; n++) {
             diagonal[n] = 0.0;
         }
 
-        for (int n = 0; n < Quartet.over2(size); n++) {
+        for (int n = 0; n < QuartetUtils.over2(size); n++) {
             triangle[n] = 0.0;
         }
 
@@ -51,9 +51,9 @@ public class SymmetricMatrix {
     public void setElementAt(int i, int j, double newW) {
 
         if (i > j) {
-            triangle[Quartet.over2(i) + Quartet.over1(j)] = newW;
+            triangle[QuartetUtils.over2(i) + QuartetUtils.over1(j)] = newW;
         } else if (j > i) {
-            triangle[Quartet.over2(j) + Quartet.over1(i)] = newW;
+            triangle[QuartetUtils.over2(j) + QuartetUtils.over1(i)] = newW;
         } else {
             diagonal[i] = newW;
         }
@@ -62,9 +62,9 @@ public class SymmetricMatrix {
     public double getElementAt(int i, int j) {
 
         return i > j ?
-                triangle[Quartet.over2(i) + Quartet.over1(j)] :
+                triangle[QuartetUtils.over2(i) + QuartetUtils.over1(j)] :
                 j > i ?
-                        triangle[Quartet.over2(j) + Quartet.over1(i)] :
+                        triangle[QuartetUtils.over2(j) + QuartetUtils.over1(i)] :
                         diagonal[i];
 
     }

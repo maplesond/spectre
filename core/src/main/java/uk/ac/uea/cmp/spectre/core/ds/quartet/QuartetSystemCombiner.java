@@ -1,8 +1,8 @@
 /*
- * Phylogenetics Tool suite
- * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
+ * Copyright (C) 2014  UEA School of Computing Sciences
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
@@ -100,7 +100,7 @@ public class QuartetSystemCombiner {
 
                     for (int d = c + 1; d <= N; d++) {
 
-                        if (summer.get(new Quartet(a, b, c, d)) > 0.0) {
+                        if (summer.get(new SpectreQuartet(a, b, c, d)) > 0.0) {
 
                             out.write("quartet: " + nF.format(a) + " " + nF.format(b) + " " + nF.format(c) + " " + nF.format(d)
                                     + " weights: "
@@ -158,7 +158,7 @@ public class QuartetSystemCombiner {
 
     private Quartet translateQuartet(Quartet q, Map<Integer, Integer> lut) {
 
-        return new Quartet(
+        return new SpectreQuartet(
                 lut.get(q.getA()),
                 lut.get(q.getB()),
                 lut.get(q.getC()),

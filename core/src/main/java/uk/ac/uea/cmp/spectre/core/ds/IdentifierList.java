@@ -1,6 +1,6 @@
 /*
- * Phylogenetics Tool suite
- * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
+ * Copyright (C) 2014  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
@@ -381,7 +381,7 @@ public class IdentifierList extends ArrayList<Identifier> {
     /**
      * Finds the maximum id already in the list and returns the next number
      *
-     * @return
+     * @return The next available id, which might be used to add another unique taxon into this list
      */
     public int getNextId() {
         return this.maxId + 1;
@@ -390,7 +390,7 @@ public class IdentifierList extends ArrayList<Identifier> {
     /**
      * Finds the maximum id already in the list
      *
-     * @return
+     * @return The largest taxon id stored in this list
      */
     public int getMaxId() {
         return this.maxId;
@@ -479,10 +479,10 @@ public class IdentifierList extends ArrayList<Identifier> {
                 } else {
                     StringBuilder sb = new StringBuilder();
 
-                    sb.append(identifierList.get(0));
+                    sb.append(identifierList.get(0).getId());
 
                     for (int i = 1; i < identifierList.size(); i++) {
-                        sb.append(" ").append(identifierList.get(i));
+                        sb.append(" ").append(identifierList.get(i).getId());
                     }
 
                     return sb.toString();

@@ -19,7 +19,7 @@ package uk.ac.uea.cmp.spectre.qtools.qnet.holders;
 import org.apache.commons.lang3.tuple.Pair;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.quartet.CanonicalWeightedQuartetMap;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.Quartet;
+import uk.ac.uea.cmp.spectre.core.ds.quartet.QuartetUtils;
 import uk.ac.uea.cmp.spectre.qtools.qnet.QNetException;
 
 import java.util.List;
@@ -45,7 +45,7 @@ public abstract class AbstractBasicHolder {
         this.paths = paths;
         this.theQuartetWeights = theQuartetWeights;
 
-        final int size = Quartet.over2(N);
+        final int size = QuartetUtils.over2(N);
 
         counts = new int[size];
         weights = new double[size];
@@ -66,7 +66,7 @@ public abstract class AbstractBasicHolder {
                 }
 
                 // 0-base the indicies and use Quartet overs to calculate the index to use
-                int index = Quartet.over2(j - 1) + Quartet.over1(i - 1);
+                int index = QuartetUtils.over2(j - 1) + QuartetUtils.over1(i - 1);
 
                 // if on the same path, no quartets meet the conditions
                 if (A == B) {
@@ -121,7 +121,7 @@ public abstract class AbstractBasicHolder {
         int x = Math.max(i, j) - 1;
         int y = Math.min(i, j) - 1;
 
-        return counts[Quartet.over2(x) + Quartet.over1(y)];
+        return counts[QuartetUtils.over2(x) + QuartetUtils.over1(y)];
     }
 
 
@@ -130,7 +130,7 @@ public abstract class AbstractBasicHolder {
         int x = Math.max(i, j) - 1;
         int y = Math.min(i, j) - 1;
 
-        counts[Quartet.over2(x) + Quartet.over1(y)] = count;
+        counts[QuartetUtils.over2(x) + QuartetUtils.over1(y)] = count;
     }
 
     /**
@@ -146,7 +146,7 @@ public abstract class AbstractBasicHolder {
         int x = Math.max(i, j) - 1;
         int y = Math.min(i, j) - 1;
 
-        return weights[Quartet.over2(x) + Quartet.over1(y)];
+        return weights[QuartetUtils.over2(x) + QuartetUtils.over1(y)];
     }
 
     public void setWeight(int i, int j, double weight) {
@@ -154,6 +154,6 @@ public abstract class AbstractBasicHolder {
         int x = Math.max(i, j) - 1;
         int y = Math.min(i, j) - 1;
 
-        weights[Quartet.over2(x) + Quartet.over1(y)] = weight;
+        weights[QuartetUtils.over2(x) + QuartetUtils.over1(y)] = weight;
     }
 }

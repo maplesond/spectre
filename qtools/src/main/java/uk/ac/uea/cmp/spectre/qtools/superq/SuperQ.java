@@ -24,12 +24,12 @@ import uk.ac.tgac.metaopt.Optimiser;
 import uk.ac.tgac.metaopt.OptimiserException;
 import uk.ac.tgac.metaopt.Problem;
 import uk.ac.uea.cmp.spectre.core.ds.quartet.GroupedQuartetSystem;
-import uk.ac.uea.cmp.spectre.core.ds.split.CircularSplitSystem;
+import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.spectre.core.io.nexus.Nexus;
 import uk.ac.uea.cmp.spectre.core.io.nexus.NexusReader;
 import uk.ac.uea.cmp.spectre.core.io.nexus.NexusWriter;
 import uk.ac.uea.cmp.spectre.core.ui.gui.RunnableTool;
-import uk.ac.uea.cmp.spectre.core.ui.gui.StatusTracker;
+import uk.ac.uea.cmp.spectre.core.ui.gui.StatusTrackerWithView;
 import uk.ac.uea.cmp.spectre.qtools.qmaker.QMaker;
 import uk.ac.uea.cmp.spectre.qtools.qnet.QNet;
 import uk.ac.uea.cmp.spectre.qtools.qnet.QNetResult;
@@ -46,7 +46,7 @@ public class SuperQ extends RunnableTool {
         this(options, null);
     }
 
-    public SuperQ(SuperQOptions options, StatusTracker tracker) {
+    public SuperQ(SuperQOptions options, StatusTrackerWithView tracker) {
 
         super(tracker);
         this.options = options;
@@ -141,7 +141,7 @@ public class SuperQ extends RunnableTool {
                 }
             }
 
-            CircularSplitSystem ss = qnetResult.createSplitSystem(null, QNetResult.SplitLimiter.STANDARD);
+            SplitSystem ss = qnetResult.createSplitSystem(null, QNetResult.SplitLimiter.STANDARD);
 
             rt.gc();
             log.debug("FREE MEM - after computing weights: " + rt.freeMemory());
@@ -165,7 +165,6 @@ public class SuperQ extends RunnableTool {
 
             notifyUser("Saving weights to file: " + outputFile.getAbsolutePath());
             new NexusWriter().writeSplitSystem(outputFile, ss);
-
 
             this.trackerFinished(true);
 

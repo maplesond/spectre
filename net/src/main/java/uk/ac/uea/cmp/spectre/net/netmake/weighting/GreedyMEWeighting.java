@@ -21,11 +21,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
-import uk.ac.uea.cmp.spectre.core.ds.split.Split;
-import uk.ac.uea.cmp.spectre.core.ds.split.SplitBlock;
-import uk.ac.uea.cmp.spectre.core.ds.split.SplitDistanceMap;
-import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
-import uk.ac.uea.cmp.spectre.core.math.Statistics;
+import uk.ac.uea.cmp.spectre.core.ds.split.*;
+import uk.ac.uea.cmp.spectre.core.math.stats.Statistics;
 import uk.ac.uea.cmp.spectre.net.netmake.EdgeHandling;
 import uk.ac.uea.cmp.spectre.net.netmake.SummedDistanceList;
 
@@ -64,7 +61,7 @@ public class GreedyMEWeighting extends Weighting {
 
         Pair<Integer, Integer> bestSplits = null;
 
-        final int nbSplits = splitsCreation.getNbSplits();
+        final int nbSplits = splitsCreation.size();
 
         log.debug(nbSplits + " cherries to produce");
 
@@ -74,7 +71,7 @@ public class GreedyMEWeighting extends Weighting {
             for (int j = i + 1; j < nbSplits; j++) {
 
                 // Create a new merged split i and j from splits creation and add into ss
-                splits.addSplit(new Split(splitsCreation.getSplitAt(i), splitsCreation.getSplitAt(j)));
+                splits.add(new SpectreSplit(splitsCreation.get(i), splitsCreation.get(j)));
 
 
                 // If we've created a split which contains the entire taxa set then remove it
@@ -82,7 +79,7 @@ public class GreedyMEWeighting extends Weighting {
                     splits.removeRow(splits.rows() - 1);
                 } */
 
-                log.debug("  Number of splits: " + splits.getNbSplits());
+                log.debug("  Number of splits: " + splits.size());
 
                 double treeLength = this.calculateTreeLength(splits);
 
@@ -394,15 +391,15 @@ public class GreedyMEWeighting extends Weighting {
 
     public List<Double> getEdgeWeights(SplitSystem splits) {
 
-        log.debug("  Calculating " + splits.getNbSplits() + " Edge Weights...");
+        log.debug("  Calculating " + splits.size() + " Edge Weights...");
 
         ArrayList<Double> edgeWeights = new ArrayList<>();
 
         SplitDistanceMap splitDistanceMap = this.calculateP(splits);
 
-        for (int i = 0; i < splits.getNbSplits(); i++) {
+        for (int i = 0; i < splits.size(); i++) {
 
-            Split splitI = splits.getSplitAt(i);
+            Split splitI = splits.get(i);
 
             EdgeHandling.AdjacentEdges aEdgeAdjacents = new EdgeHandling().retrieveAdjacents(splitI, splits, splitDistanceMap);
 
@@ -426,7 +423,7 @@ public class GreedyMEWeighting extends Weighting {
         SplitDistanceMap map = new SplitDistanceMap();
 
         //for each split, determine how many elements are on each side of the split
-        for (Split split : splitSystem.getSplits()) {
+        for (Split split : splitSystem) {
 
             boolean splited[] = new boolean[nbTaxa];
 

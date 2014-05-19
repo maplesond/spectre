@@ -21,10 +21,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.tgac.metaopt.Objective;
-import uk.ac.tgac.metaopt.Optimiser;
-import uk.ac.tgac.metaopt.OptimiserException;
-import uk.ac.tgac.metaopt.OptimiserFactory;
+import uk.ac.tgac.metaopt.*;
 import uk.ac.uea.cmp.spectre.core.ds.quartet.QuartetSystemList;
 import uk.ac.uea.cmp.spectre.tools.PhygenTool;
 
@@ -130,8 +127,44 @@ public class Scaling extends PhygenTool {
      */
     public QuartetSystemList execute(File[] inputFiles, Optimiser optimiser) throws OptimiserException, IOException {
 
-        return new QuartetSystemList(inputFiles).scaleWeights(optimiser);
+        return this.execute(new QuartetSystemList(inputFiles), optimiser);
     }
+
+    /**
+     * Scales a list of quartet networks loaded from a file
+     *
+     * @param qList The list of quartet systems to scale
+     * @param optimiser  The optimiser to use for scaling
+     * @return A scaled list of quartet networks.
+     * @throws OptimiserException
+     */
+    public QuartetSystemList execute(QuartetSystemList qList, Optimiser optimiser) throws OptimiserException {
+
+        // Computes the matrix of coefficients
+        ScalingMatrix matrix = new ScalingMatrix(qList);
+
+        if (matrix.isPerfectMatch()) {
+            double[] solution = matrix.computeFactorsDirectly();
+            if (matrix.isPerfectMatch()) {
+                qList.scaleWeights(solution);
+            }
+        }
+
+        if (!matrix.isPerfectMatch()) {
+
+            matrix.recomputeMatrix();
+
+            //Create the problem from the coefficients and run the solver to get the optimal solution
+            Solution solution = new ScalingOptimiser(optimiser).optimise(matrix.getMatrix());
+
+            // Updates quartet weights
+            qList.scaleWeights(solution.getVariableValues());
+        }
+
+        // Just return this as a convenience to the client.
+        return qList;
+    }
+
 
 
     /**

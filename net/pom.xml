@@ -21,12 +21,12 @@
     <parent>
         <artifactId>spectre</artifactId>
         <groupId>uk.ac.uea.cmp.spectre</groupId>
-        <version>0.2.1</version>
+        <version>0.2.2</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>net</artifactId>
-    <version>0.2.0</version>
+    <version>0.2.2</version>
 
     <name>Spectre: Network Tools</name>
 
@@ -52,6 +52,11 @@
                         <program>
                             <mainClass>uk.ac.uea.cmp.spectre.net.netmake.NetMakeCLI</mainClass>
                             <id>netmake</id>
+                            <jvmSettings>
+                                <extraArguments>
+                                    <extraArgument>-Djava.awt.headless=true</extraArgument>
+                                </extraArguments>
+                            </jvmSettings>
                         </program>
                         <program>
                             <mainClass>uk.ac.uea.cmp.spectre.net.netmake.NetMakeGUI</mainClass>
@@ -60,6 +65,11 @@
                         <program>
                             <mainClass>uk.ac.uea.cmp.spectre.net.netme.NetMECLI</mainClass>
                             <id>netme</id>
+                            <jvmSettings>
+                                <extraArguments>
+                                    <extraArgument>-Djava.awt.headless=true</extraArgument>
+                                </extraArguments>
+                            </jvmSettings>
                         </program>
                         <program>
                             <mainClass>uk.ac.uea.cmp.spectre.net.netme.NetMEGUI</mainClass>

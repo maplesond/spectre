@@ -25,7 +25,7 @@ import uk.ac.uea.cmp.spectre.flatnj.ds.QuadrupleSystem;
  */
 public interface QuadrupleAgglomerator {
     /**
-     * Agglomerates {@linkplain uk.ac.uea.cmp.spectre.core.ds.quadruple.Quadruple}s in the given {@linkplain QuadrupleSystem} by joining
+     * Agglomerates Quadruples in the given {@linkplain QuadrupleSystem} by joining
      * given {@linkplain Neighbours}.
      *
      * @param qs         {@linkplain QuadrupleSystem}.

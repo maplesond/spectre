@@ -1,8 +1,8 @@
 /*
- * Phylogenetics Tool suite
- * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
+ * Copyright (C) 2014  UEA School of Computing Sciences
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
@@ -19,14 +19,18 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
+import uk.ac.uea.cmp.spectre.core.ds.network.Edge;
+import uk.ac.uea.cmp.spectre.core.ds.network.Label;
+import uk.ac.uea.cmp.spectre.core.ds.network.Network;
+import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
 import uk.ac.uea.cmp.spectre.core.ds.split.Split;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -135,15 +139,15 @@ public class NexusReaderTest {
 
         assertNotNull(ss);
 
-        IdentifierList co = ss.getCircularOrdering();
+        IdentifierList co = ss.getOrderedTaxa();
 
         assertNotNull(co);
         assertTrue(co.size() == 6);
         assertTrue(co.get(2).getId() == 6);
 
 
-        assertTrue(ss.getNbSplits() == 9);
-        Split s = ss.getSplitAt(7);
+        assertTrue(ss.size() == 9);
+        Split s = ss.get(7);
 
         assertNotNull(s);
         assertTrue(s.getWeight() == 6.951241628977932E-4);
@@ -167,15 +171,15 @@ public class NexusReaderTest {
 
         assertNotNull(ss);
 
-        IdentifierList co = ss.getCircularOrdering();
+        IdentifierList co = ss.getOrderedTaxa();
 
         assertNotNull(co);
         assertTrue(co.size() == 6);
         assertTrue(co.get(2).getId() == 6);
 
 
-        assertTrue(ss.getNbSplits() == 9);
-        Split s = ss.getSplitAt(7);
+        assertTrue(ss.size() == 9);
+        Split s = ss.get(7);
 
         assertNotNull(s);
         assertTrue(s.getWeight() == 6.951241628977932E-4);
@@ -190,5 +194,34 @@ public class NexusReaderTest {
 
         assertNotNull(nexus);
 
+        Network network = nexus.getNetwork();
+
+        assertNotNull(network);
+
+        List<Vertex> vertices = network.getVertices();
+
+        assertNotNull(vertices);
+        assertFalse(vertices.isEmpty());
+
+        List<Label> labels = network.getLabels();
+
+        assertNotNull(labels);
+        assertFalse(labels.isEmpty());
+
+        List<Edge> edges = network.getEdges();
+
+        assertNotNull(edges);
+        assertFalse(edges.isEmpty());
+
+    }
+
+    @Test
+    public void testSPR32() throws IOException {
+
+        File testFile = FileUtils.toFile(NexusReaderTest.class.getResource("/SPR32.nex"));
+
+        Nexus nexus = new NexusReader().parse(testFile);
+
+        assertTrue(nexus.getTaxa().size() == 32);
     }
 }

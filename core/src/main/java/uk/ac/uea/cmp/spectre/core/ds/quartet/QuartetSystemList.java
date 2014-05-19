@@ -1,6 +1,6 @@
 /*
- * Phylogenetics Tool suite
- * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
+ * Copyright (C) 2014  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
@@ -20,13 +20,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.tgac.metaopt.Optimiser;
-import uk.ac.tgac.metaopt.OptimiserException;
-import uk.ac.tgac.metaopt.Solution;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.quartet.load.QLoaderFactory;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.scale.ScalingMatrix;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.scale.ScalingOptimiser;
 import uk.ac.uea.cmp.spectre.core.ds.tree.newick.NewickTree;
 import uk.ac.uea.cmp.spectre.core.io.qweight.QWeightWriter;
 
@@ -140,35 +135,6 @@ public class QuartetSystemList extends ArrayList<QuartetSystem> {
 
         return weights;
     }
-
-
-    public QuartetSystemList scaleWeights(Optimiser optimiser) throws OptimiserException {
-
-        // Computes the matrix of coefficients
-        ScalingMatrix matrix = new ScalingMatrix(this);
-
-        if (matrix.isPerfectMatch()) {
-            double[] solution = matrix.computeFactorsDirectly();
-            if (matrix.isPerfectMatch()) {
-                this.scaleWeights(solution);
-            }
-        }
-
-        if (!matrix.isPerfectMatch()) {
-
-            matrix.recomputeMatrix();
-
-            //Create the problem from the coefficients and run the solver to get the optimal solution
-            Solution solution = new ScalingOptimiser(optimiser).optimise(matrix.getMatrix());
-
-            // Updates quartet weights
-            this.scaleWeights(solution.getVariableValues());
-        }
-
-        // Just return this as a convenience to the client.
-        return this;
-    }
-
 
     /**
      * Updates the quartet weights in the new input files (scales the weights before they are processed by Chopper)

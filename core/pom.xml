@@ -23,11 +23,11 @@
     <parent>
         <groupId>uk.ac.uea.cmp.spectre</groupId>
         <artifactId>spectre</artifactId>
-        <version>0.2.1</version>
+        <version>0.2.2</version>
     </parent>
 
     <artifactId>core</artifactId>
-    <version>${spectre-version}</version>
+    <version>0.2.2</version>
     <packaging>jar</packaging>
 
     <name>Spectre: Core functionality</name>
@@ -80,15 +80,6 @@
             <groupId>org.kohsuke.metainf-services</groupId>
             <artifactId>metainf-services</artifactId>
             <version>1.1</version>
-            <optional>true</optional>
-        </dependency>
-
-        <!-- Meta optimizer -->
-
-        <dependency>
-            <groupId>uk.ac.tgac.metaopt</groupId>
-            <artifactId>metaopt</artifactId>
-            <version>0.1</version>
         </dependency>
 
 

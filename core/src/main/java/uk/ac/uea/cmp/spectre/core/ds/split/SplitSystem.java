@@ -1,6 +1,6 @@
 /*
- * Phylogenetics Tool suite
- * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
+ * Copyright (C) 2014  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
@@ -27,7 +27,7 @@ import java.util.List;
  * Time: 13:11
  * To change this template use File | Settings | File Templates.
  */
-public interface SplitSystem {
+public interface SplitSystem extends List<Split> {
 
 
     // **** Taxa methods ****
@@ -44,39 +44,10 @@ public interface SplitSystem {
      *
      * @return The taxa
      */
-    IdentifierList getTaxa();
+    IdentifierList getOrderedTaxa();
 
 
     // **** Standard split methods ****
-
-    /**
-     * Gets the number of splits in this split system
-     *
-     * @return The number of splits
-     */
-    int getNbSplits();
-
-    /**
-     * Gets the splits in this split system
-     *
-     * @return The splits
-     */
-    List<Split> getSplits();
-
-    /**
-     * Get the split at the specified index
-     *
-     * @param i The index
-     * @return The split at the given index
-     */
-    Split getSplitAt(final int i);
-
-    /**
-     * Adds a split to the end of current list of splits managed by this split system
-     *
-     * @param split The split to add
-     */
-    void addSplit(Split split);
 
     /**
      * Removes the last split in the split system
@@ -93,6 +64,19 @@ public interface SplitSystem {
      */
     Split mergeSplits(final int i, final int j);
 
+    /**
+     * Whether or not this splitsystem contains the specified split.
+     * @param s Split to test
+     * @return True if this split system contains the split, otherwise false.
+     */
+    boolean contains(Split s);
+
+    /**
+     * Whether or not this splitsystem contains the specified splitblock.
+     * @param sb Splitblock to test
+     * @return True if this split system contains the splitblock, otherwise false.
+     */
+    //boolean contains(SplitBlock sb);
 
     // **** Methods related to split weights ****
 
@@ -121,7 +105,8 @@ public interface SplitSystem {
     SplitSystem filterByWeight(double threshold);
 
 
-    // **** Methods related to circular ordering ****
+
+    // **** Interrogation methods that try to detect split system properties ****
 
     /**
      * Whether or not this split system is a circular split system
@@ -130,15 +115,6 @@ public interface SplitSystem {
      */
     boolean isCircular();
 
-    /**
-     * Gets the circular ordering associated with this split system.
-     *
-     * @return The circular ordering, or null if this is not a circular split system.
-     */
-    IdentifierList getCircularOrdering();
-
-
-    // **** Methods related to compatible split system ****
 
     /**
      * Whether or not this split system is a compatible split system

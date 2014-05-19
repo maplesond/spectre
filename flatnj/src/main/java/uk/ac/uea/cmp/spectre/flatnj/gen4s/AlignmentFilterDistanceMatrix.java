@@ -22,7 +22,7 @@ import java.util.Set;
 
 /**
  * Multiple sequence alignment filter for illegal characters based on the
- * {@linkplain uk.ac.uea.cmp.spectre.core.ds.distance.ImmutableDistanceMatrix}.
+ * {@linkplain uk.ac.uea.cmp.spectre.core.ds.distance.FlexibleDistanceMatrix}.
  *
  * @author balvociute
  */

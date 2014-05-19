@@ -1,8 +1,8 @@
 /*
- * Phylogenetics Tool suite
- * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
+ * Copyright (C) 2014  UEA School of Computing Sciences
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
@@ -42,11 +42,11 @@ public class NexusSplitsLoader extends AbstractNexusLoader {
         CanonicalWeightedQuartetMap qW = new CanonicalWeightedQuartetMap();
 
         // Add each split to the quartet weights
-        for (Split split : splitSystem.getSplits()) {
+        for (Split split : splitSystem) {
             qW.addSplit(split);
         }
 
-        return new QuartetSystem(splitSystem.getTaxa(), 1.0, qW);
+        return new QuartetSystem(splitSystem.getOrderedTaxa(), 1.0, qW);
     }
 
     @Override

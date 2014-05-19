@@ -17,10 +17,10 @@
 package uk.ac.uea.cmp.spectre.flatnj.tools;
 
 import uk.ac.uea.cmp.spectre.core.ds.Alignment;
+import uk.ac.uea.cmp.spectre.core.ds.network.Label;
+import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
 import uk.ac.uea.cmp.spectre.flatnj.ds.PermutationSequence;
 import uk.ac.uea.cmp.spectre.flatnj.ds.SplitSystem;
-import uk.ac.uea.cmp.spectre.flatnj.fdraw.Label;
-import uk.ac.uea.cmp.spectre.flatnj.fdraw.Vertex;
 
 import java.awt.*;
 import java.io.File;
@@ -34,26 +34,6 @@ import java.util.List;
  * @author balvociutes
  */
 public class Utilities {
-
-    public static String[] setToStringArray(Set<String> set) {
-        /* This function converts Set of Strings to an array of Strings */
-        String[] array = new String[set.size()];
-        Iterator<String> setIterator = set.iterator();
-        for (int i = 0; i < array.length; i++) {
-            array[i] = setIterator.next();
-        }
-        return array;
-    }
-
-    public static int[] setToIntArray(Set<Integer> set) {
-        /* This function converts Set of Strings to an array of Strings */
-        int[] array = new int[set.size()];
-        Iterator<Integer> setIterator = set.iterator();
-        for (int i = 0; i < array.length; i++) {
-            array[i] = setIterator.next();
-        }
-        return array;
-    }
 
     public static void printTaxaBlock(Writer outputFile, String[] taxa) throws IOException {
         outputFile.write("#NEXUS\n");
@@ -77,93 +57,7 @@ public class Utilities {
         outputFile.write(";\nEND;\n\n");
     }
 
-    public static void sortIntArray(int[] arr) {
-        if (arr.length == 4) {
-            int a = arr[0];
-            int b = arr[1];
-            int c = arr[2];
-            int d = arr[3];
 
-            int min = (a < b) ? a : b;
-            min = (min < c) ? min : c;
-            min = (min < d) ? min : d;
-
-            arr[0] = min;
-
-            if (min == a) {
-                a = b;
-                b = c;
-                c = d;
-            } else if (min == b) {
-                b = c;
-                c = d;
-            } else if (min == c) {
-                c = d;
-            }
-
-            min = (a < b) ? a : b;
-            min = (min < c) ? min : c;
-
-            arr[1] = min;
-
-            if (min == a) {
-                a = b;
-                b = c;
-            } else if (min == b) {
-                b = c;
-            }
-
-            arr[2] = (a < b) ? a : b;
-            arr[3] = (a > b) ? a : b;
-        } else {
-            for (int i = 1; i < arr.length; i++) {
-                for (int j = i; j > 0; j--) {
-                    if (arr[j] < arr[j - 1]) {
-                        int h = arr[j - 1];
-                        arr[j - 1] = arr[j];
-                        arr[j] = h;
-                    }
-                }
-            }
-        }
-    }
-
-    //    static void printArray(int[] seq)
-//    {
-//        for (int i = 0; i < seq.length; i++)
-//        {
-//            System.out.print(seq[i] + "\t");
-//        }
-//        System.out.println();
-//    }
-//
-//    static void printArray(double[] seq)
-//    {
-//        for (int i = 0; i < seq.length; i++)
-//        {
-//            System.out.print(seq[i] + "\t");
-//        }
-//        System.out.println();
-//    }
-//
-//    static void printArray(boolean[] seq)
-//    {
-//        for (int i = 0; i < seq.length; i++)
-//        {
-//            int x = (seq[i]) ? 1 : 0;
-//            System.out.print(x + "\t");
-//        }
-//        System.out.println();
-//    }
-//
-//    static void printArray(String[] seq)
-//    {
-//        for (int i = 0; i < seq.length; i++)
-//        {
-//            System.out.print(seq[i] + "\t");
-//        }
-//        System.out.println();
-//    }
     public static void printAlignmentToFile(FileWriter outputFile, Alignment a) throws IOException {
         String[] ids = a.getTaxaLabels();
         String[] seq = a.getSequences();
@@ -567,12 +461,6 @@ public class Utilities {
 
     public static Color getColor(int[] c) {
         return new Color(c[0], c[1], c[2]);
-    }
-
-    public static Double computeDistance(int x1, int y1, double x2, double y2) {
-        double dx = x2 - x1;
-        double dy = y2 - y1;
-        return Math.sqrt(dx * dx + dy * dy);
     }
 
     static int[] colorToInt(Color c) {

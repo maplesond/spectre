@@ -1,8 +1,8 @@
 /*
- * Phylogenetics Tool suite
- * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
+ * Copyright (C) 2014  UEA School of Computing Sciences
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
@@ -20,8 +20,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import uk.ac.uea.cmp.spectre.core.ds.distance.FlexibleDistanceMatrix;
-import uk.ac.uea.cmp.spectre.core.ds.split.CircularSplitSystem;
-import uk.ac.uea.cmp.spectre.core.ds.split.SimpleSplitSystem;
+import uk.ac.uea.cmp.spectre.core.ds.split.SpectreSplitSystem;
+import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 
 import java.io.File;
 import java.io.IOException;
@@ -50,7 +50,7 @@ public class NexusWriterTest {
 
         final int size = 5;
 
-        SimpleSplitSystem ss = new CircularSplitSystem(new FlexibleDistanceMatrix(size));
+        SplitSystem ss = new SpectreSplitSystem(new FlexibleDistanceMatrix(size));
 
         new NexusWriter().writeSplitSystem(outputFile, ss);
 
@@ -60,7 +60,7 @@ public class NexusWriterTest {
         List<String> lines = FileUtils.readLines(outputFile);
 
         // Check we have the number of lines we were expecting
-        assertTrue(lines.size() == 21);
+        assertTrue(lines.size() == 20 || lines.size() == 21);
     }
 
     @Test
@@ -71,7 +71,7 @@ public class NexusWriterTest {
 
         final int size = 5;
 
-        SimpleSplitSystem ss = new CircularSplitSystem(new FlexibleDistanceMatrix(size));
+        SplitSystem ss = new SpectreSplitSystem(new FlexibleDistanceMatrix(size));
 
 
         /*new NexusWriter().writeTree(outputFile, ss, ss.calculateTreeWeighting(distanceMatrix));

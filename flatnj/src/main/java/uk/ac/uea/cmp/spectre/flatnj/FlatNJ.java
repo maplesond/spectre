@@ -23,6 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import uk.ac.tgac.metaopt.Objective;
 import uk.ac.tgac.metaopt.Optimiser;
 import uk.ac.tgac.metaopt.OptimiserFactory;
+import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
 import uk.ac.uea.cmp.spectre.core.ui.cli.CommandLineHelper;
 import uk.ac.uea.cmp.spectre.flatnj.ds.*;
 import uk.ac.uea.cmp.spectre.flatnj.fdraw.*;

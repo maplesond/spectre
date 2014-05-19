@@ -29,7 +29,7 @@ The installation process from tarball is simple.  The first step is acquire the 
 Then unpacking the compressed tarball to a directory of your choice.  The unpack command is: ``tar -xvf spectre-<version>.tar.gz``.
 This will create a sub-directory called ``spectre-<version>`` and in there should be the following further sub-directories:
 
-* bin - contains scripts allowing the user to easily run all the tools.  In general, the scripts are all command line tools except for those having a ``-gui`` suffix.  Scripts for all platforms are available, in general, those with no extension should work on linux and mac platforms, and those with a ``.bat`` extension should run on windows.
+* bin - contains scripts allowing the user to easily run all the tools.  In general, the scripts are all command line tools except for those having a ``-gui`` suffix.  Scripts for all platforms are available, in general, those with no extension should work on linux and mac platforms, and those with a ``.bat`` extension should run on windows. TODO: Actually, we currently we only produce scripts for the detected platform... we should add a linux/mac and windows distribution on github for each version
 * doc - a html, pdf and text copy of the complete manual
 * etc - contains examples and configuration files
 * examples - Example files to help you get started with the spectre tools
@@ -62,15 +62,15 @@ spectre installation.
 
 Now type the following::
 
-  git clone https://github.com/maplesond/spectre.git
-  cd spectre
-  mvn clean install
+    git clone https://github.com/maplesond/spectre.git
+    cd spectre
+    mvn clean install
 
-Note: If you cannot clone the git repositories using “https”, please try “ssh” instead. Consult github to obtain the
+Note: If you cannot clone the git repositories using the ``https`` protocol, please try ``ssh`` instead. Consult github to obtain the
 specific URLs.
 
 Assuming there were no compilation errors. The build, hopefully the same as that described in the previous section, can
-now be found in ./build/spectre-<version>. There should also be a dist sub directory which will contain a tarball
+now be found in ``./build/spectre-<version>``. There should also be a dist sub directory which will contain a tarball
 suitable for installing spectre on other systems.
 
 
@@ -142,7 +142,7 @@ on their system.  The tools can be found in the bin subfolder.
 Further Documentation
 =====================
 
-Can be found in the ``doc`` directory, or online at: xxxxxx
+The full manual can be found in the ``doc`` directory, or online at: xxxxxx
 
 
 Issues

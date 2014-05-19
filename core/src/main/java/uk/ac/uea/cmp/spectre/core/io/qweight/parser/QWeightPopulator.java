@@ -1,6 +1,6 @@
 /*
- * Phylogenetics Tool suite
- * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
+ * Copyright (C) 2014  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
@@ -23,10 +23,7 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.spectre.core.ds.Identifier;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.GroupedQuartetSystem;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.Quartet;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.QuartetWeights;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.WeightedQuartetGroupMap;
+import uk.ac.uea.cmp.spectre.core.ds.quartet.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -187,7 +184,7 @@ public class QWeightPopulator implements QWeightListener {
             log.warn("Found the unexpected number of taxa in file.  Was expecting: " + this.expectedTaxa + ";  found: " + actualTaxa);
         }
 
-        final int expectedQuartets = Quartet.over4(this.expectedTaxa);
+        final int expectedQuartets = QuartetUtils.over4(this.expectedTaxa);
         final int actualQuartets = this.groupedQuartetSystem.getQuartets().size();
 
         if (actualQuartets != expectedQuartets) {
@@ -214,7 +211,7 @@ public class QWeightPopulator implements QWeightListener {
         double w2 = Double.parseDouble(ctx.w2().NUMERIC().getText());
         double w3 = Double.parseDouble(ctx.w3().NUMERIC().getText());
 
-        Quartet quartet = new Quartet(a, b, c, d);
+        SpectreQuartet quartet = new SpectreQuartet(a, b, c, d);
         QuartetWeights weights = new QuartetWeights(w1, w2, w3);
 
         this.groupedQuartetSystem.getQuartets().put(quartet, weights);

@@ -1,6 +1,6 @@
 /*
- * Phylogenetics Tool suite
- * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
+ * Copyright (C) 2014  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
@@ -42,7 +42,7 @@ public class SplitUtils {
 
         int i = 0;
         for (SplitBlock splitBlock : splitBlocks) {
-            splits.add(new Split(splitBlock, nbTaxa, weights.get(i++)));
+            splits.add(new SpectreSplit(splitBlock, nbTaxa, weights.get(i++)));
         }
 
         return splits;
@@ -76,9 +76,9 @@ public class SplitUtils {
      * @param N The number of taxa
      * @return An array of split indices
      */
-    public static Pair<Integer, Integer>[] createSplitIndices(final int N) {
+    public static List<Pair<Integer, Integer>> createSplitIndices(final int N) {
 
-        Pair<Integer, Integer>[] splitIndices = new ImmutablePair[calcMaxSplits(N)];
+        List<Pair<Integer, Integer>> splitIndices = new ArrayList<>(calcMaxSplits(N));
 
         int n = 0;
 
@@ -88,7 +88,7 @@ public class SplitUtils {
 
                 if (i != 1 || j != N) {
                     // valid split
-                    splitIndices[n++] = new ImmutablePair<>(i, j);
+                    splitIndices.add(n++, new ImmutablePair<>(i, j));
                 }
             }
         }
@@ -101,7 +101,7 @@ public class SplitUtils {
 
         for (Identifier taxon : taxa) {
 
-            splits.add(new Split(new SplitBlock(new int[]{taxon.getId()}), taxa.size(), weight));
+            splits.add(new SpectreSplit(new SpectreSplitBlock(new int[]{taxon.getId()}), taxa.size(), weight));
         }
 
         return splits;
@@ -113,7 +113,7 @@ public class SplitUtils {
 
         for (int i = 1; i <= nbTaxa; i++) {
 
-            splits.add(new Split(new SplitBlock(new int[]{i}), nbTaxa, weight));
+            splits.add(new SpectreSplit(new SpectreSplitBlock(new int[]{i}), nbTaxa, weight));
         }
 
         return splits;

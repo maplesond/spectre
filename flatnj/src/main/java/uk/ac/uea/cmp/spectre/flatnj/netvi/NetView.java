@@ -25,11 +25,11 @@ import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
 import uk.ac.uea.cmp.spectre.core.ui.gui.LookAndFeel;
 import uk.ac.uea.cmp.spectre.flatnj.ds.Leaders;
 import uk.ac.uea.cmp.spectre.flatnj.ds.Network;
 import uk.ac.uea.cmp.spectre.flatnj.ds.Taxa;
-import uk.ac.uea.cmp.spectre.flatnj.fdraw.Vertex;
 import uk.ac.uea.cmp.spectre.flatnj.fdraw.ViewerConfig;
 import uk.ac.uea.cmp.spectre.flatnj.tools.*;
 
@@ -88,6 +88,12 @@ public class NetView extends javax.swing.JFrame {
         leaderLineTypes.add(jRadioButtonSolid);
         leaderLineTypes.add(jRadioButtonDashed);
         leaderLineTypes.add(jRadioButtonDotted);
+    }
+
+    public NetView(File inFile) throws IOException {
+        prepareViewer();
+        directory = inFile.getPath();
+        openNetwork(inFile);
     }
 
     public NetView(Network network, File inFile, Taxa taxa) {
@@ -675,6 +681,25 @@ public class NetView extends javax.swing.JFrame {
         drawing.fixLabels(!fix);
     }//GEN-LAST:event_jCheckBoxFixLabelPositionsActionPerformed
 
+
+    /**
+     * @param input the input file to load and display
+     */
+    public static void startWithInput(final File input) {
+        LookAndFeel.setLookAndFeel(LookAndFeel.NIMBUS);
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    new NetView(input).setVisible(true);
+                } catch (IOException ex) {
+                    log.error("Problem occured while running NetView", ex);
+                }
+            }
+        });
+    }
 
     /**
      * @param args the command line arguments

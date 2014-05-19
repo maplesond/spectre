@@ -1,6 +1,21 @@
+/*
+ * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
+ * Copyright (C) 2014  UEA School of Computing Sciences
+ *
+ * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
+
 package uk.ac.uea.cmp.spectre.core.ds.quartet;
 
-import uk.ac.uea.cmp.spectre.core.math.tuple.Key;
 import uk.ac.uea.cmp.spectre.core.math.tuple.Triplet;
 
 /**
@@ -84,8 +99,8 @@ public class QuartetWeights extends Triplet<Double> {
      */
     public void update(Quartet q1, Quartet q2, double newW) {
 
-        int x = q1.a, y = q1.b, u = q1.c, v = q1.d;
-        int a = q2.a, b = q2.b, c = q2.c, d = q2.d;
+        int x = q1.getA(), y = q1.getB(), u = q1.getC(), v = q1.getD();
+        int a = q2.getA(), b = q2.getB(), c = q2.getC(), d = q2.getD();
 
         if (((x == a || x == b) && (y == a || y == b)) || ((u == a || u == b) && (v == a || v == b))) {
             this.setA(newW);
@@ -106,16 +121,16 @@ public class QuartetWeights extends Triplet<Double> {
      */
     public double selectWeight(Quartet sorted, Quartet unsorted) {
 
-        if (((unsorted.a == sorted.a || unsorted.a == sorted.b) && (unsorted.b == sorted.a || unsorted.b == sorted.b)) ||
-                ((unsorted.c == sorted.a || unsorted.c == sorted.b) && (unsorted.d == sorted.a || unsorted.d == sorted.b))) {
+        if (((unsorted.getA() == sorted.getA() || unsorted.getA() == sorted.getB()) && (unsorted.getB() == sorted.getA() || unsorted.getB() == sorted.getB())) ||
+                ((unsorted.getC() == sorted.getA() || unsorted.getC() == sorted.getB()) && (unsorted.getD() == sorted.getA() || unsorted.getD() == sorted.getB()))) {
 
             return this.getA();
-        } else if (((unsorted.a == sorted.a || unsorted.a == sorted.c) && (unsorted.b == sorted.a || unsorted.b == sorted.c)) ||
-                ((unsorted.c == sorted.a || unsorted.c == sorted.c) && (unsorted.d == sorted.a || unsorted.d == sorted.c))) {
+        } else if (((unsorted.getA() == sorted.getA() || unsorted.getA() == sorted.getC()) && (unsorted.getB() == sorted.getA() || unsorted.getB() == sorted.getC())) ||
+                ((unsorted.getC() == sorted.getA() || unsorted.getC() == sorted.getC()) && (unsorted.getD() == sorted.getA() || unsorted.getD() == sorted.getC()))) {
 
             return this.getB();
-        } else if (((unsorted.a == sorted.a || unsorted.a == sorted.d) && (unsorted.b == sorted.a || unsorted.b == sorted.d)) ||
-                ((unsorted.c == sorted.a || unsorted.c == sorted.d) && (unsorted.d == sorted.a || unsorted.d == sorted.d))) {
+        } else if (((unsorted.getA() == sorted.getA() || unsorted.getA() == sorted.getD()) && (unsorted.getB() == sorted.getA() || unsorted.getB() == sorted.getD())) ||
+                ((unsorted.getC() == sorted.getA() || unsorted.getC() == sorted.getD()) && (unsorted.getD() == sorted.getA() || unsorted.getD() == sorted.getD()))) {
 
             return this.getC();
         }
@@ -164,7 +179,7 @@ public class QuartetWeights extends Triplet<Double> {
     public QuartetWeights permute(int t1, int t2, int t3, int t4) {
 
         // Sort taxa ascending
-        int[] ta = Key.sortElements(t1, t2, t3, t4);
+        int[] ta = new SpectreQuartet(t1, t2, t3, t4).createSortedCopy().toIntArray();
 
         // Shortcuts to variables
         double a = this.getA();
@@ -299,9 +314,6 @@ public class QuartetWeights extends Triplet<Double> {
         }
 
         // Reset the state
-        //this.setA(newA);
-        //this.setB(newB);
-        //this.setC(newC);
         return new QuartetWeights(newA, newB, newC);
     }
 

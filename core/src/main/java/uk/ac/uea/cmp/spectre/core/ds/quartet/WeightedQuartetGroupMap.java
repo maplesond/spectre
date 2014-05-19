@@ -1,6 +1,6 @@
 /*
- * Phylogenetics Tool suite
- * Copyright (C) 2013  UEA CMP Phylogenetics Group
+ * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
+ * Copyright (C) 2014  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
@@ -85,7 +85,7 @@ public class WeightedQuartetGroupMap extends HashMap<Quartet, QuartetWeights> {
     @Override
     public QuartetWeights put(Quartet quartet, QuartetWeights weights) {
 
-        Quartet sorted = quartet.createSortedQuartet();
+        Quartet sorted = quartet.createSortedCopy();
 
         super.put(sorted, weights);
 

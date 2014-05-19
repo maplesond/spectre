@@ -25,7 +25,7 @@ import uk.ac.tgac.metaopt.OptimiserException;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.quartet.GroupedQuartetSystem;
 import uk.ac.uea.cmp.spectre.core.ds.quartet.load.QWeightLoader;
-import uk.ac.uea.cmp.spectre.core.ds.split.CircularSplitSystem;
+import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.spectre.core.io.nexus.NexusWriter;
 import uk.ac.uea.cmp.spectre.core.ui.gui.RunnableTool;
 import uk.ac.uea.cmp.spectre.core.ui.gui.StatusTracker;
@@ -180,7 +180,7 @@ public class QNet extends RunnableTool {
             notifyUser("QNet algorithm completed.  Saving results...");
 
             // Output results in nexus file in standard mode
-            CircularSplitSystem ss = result.createSplitSystem(null, QNetResult.SplitLimiter.STANDARD);
+            SplitSystem ss = result.createSplitSystem(null, QNetResult.SplitLimiter.STANDARD);
 
             new NexusWriter().writeSplitSystem(this.options.getOutput(), ss);
 

@@ -17,6 +17,9 @@
 package uk.ac.uea.cmp.spectre.flatnj.fdraw;
 
 
+import uk.ac.uea.cmp.spectre.core.ds.network.Edge;
+import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
+
 import java.util.*;
 
 /*
@@ -37,17 +40,17 @@ public class Translocator {
 
         for (int i = 0; i < split.size(); i++) {
             Edge e = split.get(i);
-            if (twoLinesCrosses(e.bot.x, e.bot.y, e.top.x - xDelta, e.top.y - yDelta, bottomEdges)) {
+            if (twoLinesCrosses(e.getBot().getX(), e.getBot().getY(), e.getTop().getX() - xDelta, e.getTop().getY() - yDelta, bottomEdges)) {
                 return false;
             }
-            if (twoLinesCrosses(e.top.x, e.top.y, e.top.x - xDelta, e.top.y - yDelta, bottomEdges)) {
+            if (twoLinesCrosses(e.getTop().getX(), e.getTop().getY(), e.getTop().getX() - xDelta, e.getTop().getY() - yDelta, bottomEdges)) {
                 return false;
             }
         }
 
         for (int i = 0; i < split.size(); i++) {
             Edge e = split.get(i);
-            if (twoLinesCrosses(e.bot.x, e.bot.y, e.top.x - xDelta, e.top.y - yDelta, topEdges, xDelta, yDelta)) {
+            if (twoLinesCrosses(e.getBot().getX(), e.getBot().getY(), e.getTop().getX() - xDelta, e.getTop().getY() - yDelta, topEdges, xDelta, yDelta)) {
                 return false;
             }
         }
@@ -55,13 +58,13 @@ public class Translocator {
         Iterator<Edge> topEdgeIterator = topEdges.iterator();
         while (topEdgeIterator.hasNext()) {
             Edge e = topEdgeIterator.next();
-            if (twoLinesCrosses(e.bot.x - xDelta, e.bot.y - yDelta, e.top.x - xDelta, e.top.y - yDelta, bottomEdges)) {
+            if (twoLinesCrosses(e.getBot().getX() - xDelta, e.getBot().getY() - yDelta, e.getTop().getX() - xDelta, e.getTop().getY() - yDelta, bottomEdges)) {
                 return false;
             }
-            if (twoLinesCrosses(e.bot.x, e.bot.y, e.bot.x - xDelta, e.bot.y - yDelta, bottomEdges)) {
+            if (twoLinesCrosses(e.getBot().getX(), e.getBot().getY(), e.getBot().getX() - xDelta, e.getBot().getY() - yDelta, bottomEdges)) {
                 return false;
             }
-            if (twoLinesCrosses(e.top.x, e.top.y, e.top.x - xDelta, e.top.y - yDelta, bottomEdges)) {
+            if (twoLinesCrosses(e.getTop().getX(), e.getTop().getY(), e.getTop().getX() - xDelta, e.getTop().getY() - yDelta, bottomEdges)) {
                 return false;
             }
         }
@@ -71,17 +74,17 @@ public class Translocator {
     private static double[] getDifference(Edge e, double alpha) {
         double[] xyDelta = new double[2];
 
-        Vertex top = e.top;
-        Vertex bot = e.bot;
+        Vertex top = e.getTop();
+        Vertex bot = e.getBot();
 
-        double xt = top.x - bot.x;
-        double yt = top.y - bot.y;
+        double xt = top.getX() - bot.getX();
+        double yt = top.getY() - bot.getY();
 
-        double x = xt * Math.cos(alpha) - yt * Math.sin(alpha) + bot.x;
-        double y = xt * Math.sin(alpha) + yt * Math.cos(alpha) + bot.y;
+        double x = xt * Math.cos(alpha) - yt * Math.sin(alpha) + bot.getX();
+        double y = xt * Math.sin(alpha) + yt * Math.cos(alpha) + bot.getY();
 
-        xyDelta[0] = top.x - x;
-        xyDelta[1] = top.y - y;
+        xyDelta[0] = top.getX() - x;
+        xyDelta[1] = top.getY() - y;
 
         return xyDelta;
     }
@@ -90,10 +93,10 @@ public class Translocator {
         Iterator<Edge> iterator = edges.iterator();
         while (iterator.hasNext()) {
             Edge e = iterator.next();
-            double XB = e.bot.x;
-            double YB = e.bot.y;
-            double XT = e.top.x;
-            double YT = e.top.y;
+            double XB = e.getBot().getX();
+            double YB = e.getBot().getY();
+            double XT = e.getTop().getX();
+            double YT = e.getTop().getY();
 
             if (cross(xb, yb, xt, yt, XB, YB, XT, YT)) {
                 return true;
@@ -106,10 +109,10 @@ public class Translocator {
         Iterator<Edge> iterator = edges.iterator();
         while (iterator.hasNext()) {
             Edge e = iterator.next();
-            double XB = e.bot.x - xDelta;
-            double YB = e.bot.y - yDelta;
-            double XT = e.top.x - xDelta;
-            double YT = e.top.y - yDelta;
+            double XB = e.getBot().getX() - xDelta;
+            double YB = e.getBot().getY() - yDelta;
+            double XT = e.getTop().getX() - xDelta;
+            double YT = e.getTop().getY() - yDelta;
 
             if (cross(xb, yb, xt, yt, XB, YB, XT, YT)) {
                 return true;
@@ -158,58 +161,58 @@ public class Translocator {
     public static void changeCoordinates(LinkedList<Edge> edges, double alpha) {
         alpha = (alpha < 0) ? 2 * Math.PI + alpha : alpha;
 
-        double deltaX = edges.getFirst().top.x;
-        double deltaY = edges.getFirst().top.y;
+        double deltaX = edges.getFirst().getTop().getX();
+        double deltaY = edges.getFirst().getTop().getY();
 
         rotate(edges.getFirst(), alpha);
 
-        deltaX -= edges.getFirst().top.x;
-        deltaY -= edges.getFirst().top.y;
+        deltaX -= edges.getFirst().getTop().getX();
+        deltaY -= edges.getFirst().getTop().getY();
 
         LinkedList<Vertex> vertices = new LinkedList<>();
         for (int i = 0; i < edges.size(); i++) {
-            vertices.add(edges.get(i).top);
-            edges.get(i).visited = true;
+            vertices.add(edges.get(i).getTop());
+            edges.get(i).setVisited(true);
         }
 
         translocate(vertices, deltaX, deltaY);
     }
 
     private static void rotate(Edge e, double alpha) {
-        Vertex top = e.top;
-        Vertex bot = e.bot;
+        Vertex top = e.getTop();
+        Vertex bot = e.getBot();
 
-        double xt = top.x - bot.x;
-        double yt = top.y - bot.y;
+        double xt = top.getX() - bot.getX();
+        double yt = top.getY() - bot.getY();
 
-        double x = xt * Math.cos(alpha) - yt * Math.sin(alpha) + bot.x;
-        double y = xt * Math.sin(alpha) + yt * Math.cos(alpha) + bot.y;
+        double x = xt * Math.cos(alpha) - yt * Math.sin(alpha) + bot.getX();
+        double y = xt * Math.sin(alpha) + yt * Math.cos(alpha) + bot.getY();
 
-        top.x = x;
-        top.y = y;
-        e.visited = true;
-        top.visited = true;
+        top.setX(x);
+        top.setY(y);
+        e.setVisited(true);
+        top.setVisited(true);
     }
 
     private static void translocate(LinkedList<Vertex> vertices, double deltaX, double deltaY) {
         while (!vertices.isEmpty()) {
             Vertex v = vertices.removeFirst();
-            if (!v.visited) {
+            if (!v.isVisited()) {
                 //System.out.print(v.nxnum + " ");
                 move(v, deltaX, deltaY);
             }
 
-            LinkedList<Edge> edges = v.elist;
+            LinkedList<Edge> edges = v.getElist();
             for (int i = 0; i < edges.size(); i++) {
                 Edge e = edges.get(i);
-                if (!e.visited) {
+                if (!e.isVisited()) {
                     //System.out.print(e.nxnum + " ");
-                    e.visited = true;
-                    if (!e.top.visited) {
-                        vertices.add(e.top);
+                    e.setVisited(true);
+                    if (!e.getTop().isVisited()) {
+                        vertices.add(e.getTop());
                     }
-                    if (!e.bot.visited) {
-                        vertices.add(e.bot);
+                    if (!e.getBot().isVisited()) {
+                        vertices.add(e.getBot());
                     }
                 }
             }
@@ -218,22 +221,22 @@ public class Translocator {
     }
 
     private static void move(Vertex v, double deltaX, double deltaY) {
-        v.x = v.x - deltaX;
-        v.y = v.y - deltaY;
-        v.visited = true;
+        v.setX(v.getX() - deltaX);
+        v.setY(v.getY() - deltaY);
+        v.setVisited(true);
     }
 
     public static boolean isBottomPartFreeFromTopVertices(Edge leftmost, Edge rightmost, Set<Edge> edges) {
-        double lxb = leftmost.bot.x;
-        double lyb = leftmost.bot.y;
-        double lxt = leftmost.top.x;
-        double lyt = leftmost.top.y;
+        double lxb = leftmost.getBot().getX();
+        double lyb = leftmost.getBot().getY();
+        double lxt = leftmost.getTop().getX();
+        double lyt = leftmost.getTop().getY();
         double la = (lyt - lyb) / (lxt - lxb);
 
-        double rxb = rightmost.bot.x;
-        double ryb = rightmost.bot.y;
-        double rxt = rightmost.top.x;
-        double ryt = rightmost.top.y;
+        double rxb = rightmost.getBot().getX();
+        double ryb = rightmost.getBot().getY();
+        double rxt = rightmost.getTop().getX();
+        double ryt = rightmost.getTop().getY();
         double ra = (ryt - ryb) / (rxt - rxb);
 
         Iterator<Edge> edgeIterator = edges.iterator();
@@ -250,16 +253,16 @@ public class Translocator {
     }
 
     public static boolean isUpperPartFreeFromBottomVertices(Edge leftmost, Edge rightmost, Set<Edge> edges) {
-        double lxb = leftmost.bot.x;
-        double lyb = leftmost.bot.y;
-        double lxt = leftmost.top.x;
-        double lyt = leftmost.top.y;
+        double lxb = leftmost.getBot().getX();
+        double lyb = leftmost.getBot().getY();
+        double lxt = leftmost.getTop().getX();
+        double lyt = leftmost.getTop().getY();
         double la = (lyt - lyb) / (lxt - lxb);
 
-        double rxb = rightmost.bot.x;
-        double ryb = rightmost.bot.y;
-        double rxt = rightmost.top.x;
-        double ryt = rightmost.top.y;
+        double rxb = rightmost.getBot().getX();
+        double ryb = rightmost.getBot().getY();
+        double rxt = rightmost.getTop().getX();
+        double ryt = rightmost.getTop().getY();
         double ra = (ryt - ryb) / (rxt - rxb);
 
         Iterator<Edge> edgeIterator = edges.iterator();
@@ -276,10 +279,10 @@ public class Translocator {
     }
 
     private static boolean crosses(double xb2, double yb2, double xt2, double yt2, double a2, Edge e) {
-        double xb = e.bot.x;
-        double yb = e.bot.y;
-        double xt = e.top.x;
-        double yt = e.top.y;
+        double xb = e.getBot().getX();
+        double yb = e.getBot().getY();
+        double xt = e.getTop().getX();
+        double yt = e.getTop().getY();
         double a = a(xb, yb, xt, yt);
 
         double x = (yb2 - xb2 * a2 - yb + xb * a) / (a - a2);
@@ -292,10 +295,10 @@ public class Translocator {
     }
 
     private static boolean crosses2(double xb2, double yb2, double xt2, double yt2, double a2, Edge e) {
-        double xb = e.bot.x;
-        double yb = e.bot.y;
-        double xt = e.top.x;
-        double yt = e.top.y;
+        double xb = e.getBot().getX();
+        double yb = e.getBot().getY();
+        double xt = e.getTop().getX();
+        double yt = e.getTop().getY();
         double a = a(xb, yb, xt, yt);
 
         double x = (yb2 - xb2 * a2 - yb + xb * a) / (a - a2);
@@ -308,28 +311,28 @@ public class Translocator {
     }
 
     public static boolean collides(Edge e, boolean top, boolean bottom, double deltaX, double deltaY, Collection<Edge> edges, boolean top2, boolean bottom2) {
-        double xb = (bottom) ? e.bot.x - deltaX : e.bot.x;
-        double yb = (bottom) ? e.bot.y - deltaY : e.top.y;
-        double xt = (top) ? e.top.x - deltaX : e.top.x;
-        double yt = (top) ? e.top.y - deltaY : e.top.y;
+        double xb = (bottom) ? e.getBot().getX() - deltaX : e.getBot().getX();
+        double yb = (bottom) ? e.getBot().getY() - deltaY : e.getTop().getY();
+        double xt = (top) ? e.getTop().getX() - deltaX : e.getTop().getX();
+        double yt = (top) ? e.getTop().getY() - deltaY : e.getTop().getY();
         double a = a(xb, yb, xt, yt);
 
         Iterator<Edge> edgeIterator = edges.iterator();
 
         while (edgeIterator.hasNext()) {
             Edge current = edgeIterator.next();
-            double XB = (bottom2) ? current.bot.x - deltaX : current.bot.x;
-            double YB = (bottom2) ? current.bot.y - deltaY : current.bot.y;
-            double XT = (top2) ? current.top.x - deltaX : current.top.x;
-            double YT = (top2) ? current.top.y - deltaY : current.top.y;
+            double XB = (bottom2) ? current.getBot().getX() - deltaX : current.getBot().getX();
+            double YB = (bottom2) ? current.getBot().getY() - deltaY : current.getBot().getY();
+            double XT = (top2) ? current.getTop().getX() - deltaX : current.getTop().getX();
+            double YT = (top2) ? current.getTop().getY() - deltaY : current.getTop().getY();
 
             if (cross(xb, yb, xt, yt, XB, YB, XT, YT)) {
                 return true;
             }
-            if (top && cross(xt, yt, e.top.x, e.top.y, XB, YB, XT, YT) && !top2) {
+            if (top && cross(xt, yt, e.getTop().getX(), e.getTop().getY(), XB, YB, XT, YT) && !top2) {
                 return true;
             }
-            if (bottom && cross(xb, yb, e.bot.x, e.bot.y, XB, YB, XT, YT) && !top2) {
+            if (bottom && cross(xb, yb, e.getBot().getX(), e.getBot().getY(), XB, YB, XT, YT) && !top2) {
                 return true;
             }
         }
@@ -374,14 +377,14 @@ public class Translocator {
     static double[] getDifference(double alpha, Vertex v, Vertex w) {
         double[] xyDelta = new double[2];
 
-        double xt = w.x - v.x;
-        double yt = w.y - v.y;
+        double xt = w.getX() - v.getX();
+        double yt = w.getY() - v.getY();
 
-        double x = xt * Math.cos(alpha) - yt * Math.sin(alpha) + v.x;
-        double y = xt * Math.sin(alpha) + yt * Math.cos(alpha) + v.y;
+        double x = xt * Math.cos(alpha) - yt * Math.sin(alpha) + v.getX();
+        double y = xt * Math.sin(alpha) + yt * Math.cos(alpha) + v.getY();
 
-        xyDelta[0] = w.x - x;
-        xyDelta[1] = w.y - y;
+        xyDelta[0] = w.getX() - x;
+        xyDelta[1] = w.getY() - y;
 
         return xyDelta;
     }
@@ -392,7 +395,7 @@ public class Translocator {
         double xDelta = xyDelta[0];
         double yDelta = xyDelta[1];
 
-        boolean bottom = (e.bot == v) ? true : false;
+        boolean bottom = (e.getBot() == v) ? true : false;
 
         for (int i = 0; i < split.size(); i++) {
             Edge ee = split.get(i);
@@ -403,15 +406,15 @@ public class Translocator {
             double y2;
 
             if (bottom) {
-                x1 = ee.bot.x;
-                y1 = ee.bot.y;
-                x2 = ee.top.x;
-                y2 = ee.top.y;
+                x1 = ee.getBot().getX();
+                y1 = ee.getBot().getY();
+                x2 = ee.getTop().getX();
+                y2 = ee.getTop().getY();
             } else {
-                x1 = ee.top.x;
-                y1 = ee.top.y;
-                x2 = ee.bot.x;
-                y2 = ee.bot.y;
+                x1 = ee.getTop().getX();
+                y1 = ee.getTop().getY();
+                x2 = ee.getBot().getX();
+                y2 = ee.getBot().getY();
             }
 
             if (twoLinesCrosses(x1, y1, x2 - xDelta, y2 - yDelta, bottomEdges)) {
@@ -428,13 +431,13 @@ public class Translocator {
         Iterator<Edge> topEdgeIterator = topEdges.iterator();
         while (topEdgeIterator.hasNext()) {
             Edge ee = topEdgeIterator.next();
-            if (twoLinesCrosses(ee.bot.x - xDelta, ee.bot.y - yDelta, ee.top.x - xDelta, ee.top.y - yDelta, bottomEdges)) {
+            if (twoLinesCrosses(ee.getBot().getX() - xDelta, ee.getBot().getY() - yDelta, ee.getTop().getX() - xDelta, ee.getTop().getY() - yDelta, bottomEdges)) {
                 return false;
             }
-            if (twoLinesCrosses(ee.bot.x, ee.bot.y, ee.bot.x - xDelta, ee.bot.y - yDelta, bottomEdges)) {
+            if (twoLinesCrosses(ee.getBot().getX(), ee.getBot().getY(), ee.getBot().getX() - xDelta, ee.getBot().getY() - yDelta, bottomEdges)) {
                 return false;
             }
-            if (twoLinesCrosses(ee.top.x, ee.top.y, ee.top.x - xDelta, ee.top.y - yDelta, bottomEdges)) {
+            if (twoLinesCrosses(ee.getTop().getX(), ee.getTop().getY(), ee.getTop().getX() - xDelta, ee.getTop().getY() - yDelta, bottomEdges)) {
                 return false;
             }
         }
@@ -444,40 +447,40 @@ public class Translocator {
     static void changeCoordinates(Vertex v, Vertex w, LinkedList<Edge> edges, double alpha) {
         Edge e = edges.getFirst();
 
-        boolean top = (e.bot == v) ? true : false;
+        boolean top = (e.getBot() == v) ? true : false;
 
-        double deltaX = w.x;
-        double deltaY = w.y;
+        double deltaX = w.getX();
+        double deltaY = w.getY();
 
         rotate(v, w, e, alpha);
 
-        deltaX -= w.x;
-        deltaY -= w.y;
+        deltaX -= w.getX();
+        deltaY -= w.getY();
 
         LinkedList<Vertex> vertices = new LinkedList<>();
         for (int i = 0; i < edges.size(); i++) {
             if (top) {
-                vertices.add(edges.get(i).top);
+                vertices.add(edges.get(i).getTop());
             } else {
-                vertices.add(edges.get(i).bot);
+                vertices.add(edges.get(i).getBot());
             }
-            edges.get(i).visited = true;
+            edges.get(i).setVisited(true);
         }
 
         translocate(vertices, deltaX, deltaY);
     }
 
     private static void rotate(Vertex v, Vertex w, Edge e, double alpha) {
-        double xt = w.x - v.x;
-        double yt = w.y - v.y;
+        double xt = w.getX() - v.getX();
+        double yt = w.getY() - v.getY();
 
-        double x = xt * Math.cos(alpha) - yt * Math.sin(alpha) + v.x;
-        double y = xt * Math.sin(alpha) + yt * Math.cos(alpha) + v.y;
+        double x = xt * Math.cos(alpha) - yt * Math.sin(alpha) + v.getX();
+        double y = xt * Math.sin(alpha) + yt * Math.cos(alpha) + v.getY();
 
-        w.x = x;
-        w.y = y;
-        e.visited = true;
-        w.visited = true;
+        w.setX(x);
+        w.setY(y);
+        e.setVisited(true);
+        w.setVisited(true);
     }
 
     static boolean noCollisionsForRotation(Vertex v, Set<Edge> bottom, Set<Edge> top, double alpha) {
@@ -485,19 +488,19 @@ public class Translocator {
         while (edgeIt.hasNext()) {
             Edge ee = edgeIt.next();
 
-            Vertex eb = ee.bot;
-            double xtb = eb.x - v.x;
-            double ytb = eb.y - v.y;
+            Vertex eb = ee.getBot();
+            double xtb = eb.getX() - v.getX();
+            double ytb = eb.getY() - v.getY();
 
-            double xb = xtb * Math.cos(alpha) - ytb * Math.sin(alpha) + v.x;
-            double yb = xtb * Math.sin(alpha) + ytb * Math.cos(alpha) + v.y;
+            double xb = xtb * Math.cos(alpha) - ytb * Math.sin(alpha) + v.getX();
+            double yb = xtb * Math.sin(alpha) + ytb * Math.cos(alpha) + v.getY();
 
-            Vertex et = ee.top;
-            double xtt = et.x - v.x;
-            double ytt = et.y - v.y;
+            Vertex et = ee.getTop();
+            double xtt = et.getX() - v.getX();
+            double ytt = et.getY() - v.getY();
 
-            double xt = xtt * Math.cos(alpha) - ytt * Math.sin(alpha) + v.x;
-            double yt = xtt * Math.sin(alpha) + ytt * Math.cos(alpha) + v.y;
+            double xt = xtt * Math.cos(alpha) - ytt * Math.sin(alpha) + v.getX();
+            double yt = xtt * Math.sin(alpha) + ytt * Math.cos(alpha) + v.getY();
 
             if (twoLinesCrosses(xb, yb, xt, yt, top)) {
                 return false;
@@ -512,8 +515,8 @@ public class Translocator {
         Iterator<Edge> edgeIt = edges.iterator();
         while (edgeIt.hasNext()) {
             Edge e = edgeIt.next();
-            verticesToRotate.add(e.bot);
-            verticesToRotate.add(e.top);
+            verticesToRotate.add(e.getBot());
+            verticesToRotate.add(e.getTop());
         }
 
         verticesToRotate.remove(v);
@@ -521,16 +524,15 @@ public class Translocator {
         Iterator<Vertex> vertexIt = verticesToRotate.iterator();
         while (vertexIt.hasNext()) {
             Vertex w = vertexIt.next();
-            double xt = w.x - v.x;
-            double yt = w.y - v.y;
+            double xt = w.getX() - v.getX();
+            double yt = w.getY() - v.getY();
 
-            double x = xt * Math.cos(alpha) - yt * Math.sin(alpha) + v.x;
-            double y = xt * Math.sin(alpha) + yt * Math.cos(alpha) + v.y;
+            double x = xt * Math.cos(alpha) - yt * Math.sin(alpha) + v.getX();
+            double y = xt * Math.sin(alpha) + yt * Math.cos(alpha) + v.getY();
 
-            w.x = x;
-            w.y = y;
-            w.visited = true;
-
+            w.setX(x);
+            w.setY(y);
+            w.setVisited(true);
         }
     }
 }

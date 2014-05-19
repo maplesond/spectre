@@ -16,7 +16,7 @@
 
 package uk.ac.uea.cmp.spectre.flatnj.netvi;
 
-import uk.ac.uea.cmp.spectre.flatnj.fdraw.Vertex;
+import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
 
 import java.awt.*;
 import java.util.Collection;
@@ -105,7 +105,7 @@ public class Point extends Element implements Selectable {
         setY(iy);
     }
 
-    public void setCoordinates(int x, int y, Collection<Label> labels) {
+    public void setCoordinates(int x, int y, Collection<uk.ac.uea.cmp.spectre.core.ds.network.Label> labels) {
         setX(x);
         setY(y);
     }

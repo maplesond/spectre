@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Arrays;
 
 /*This class implements methods to handle a quartet system*/
 
@@ -175,7 +176,7 @@ public class QuadrupleSystem implements Cloneable {
         sortedTaxa[2] = c;
         sortedTaxa[3] = d;
 
-        Utilities.sortIntArray(sortedTaxa);
+        Arrays.sort(sortedTaxa);
 
         Quadruple q = null;
         if (areDistinct(sortedTaxa[0], sortedTaxa[1], sortedTaxa[2], sortedTaxa[3])) {
