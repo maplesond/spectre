@@ -21,12 +21,12 @@
     <parent>
         <artifactId>spectre</artifactId>
         <groupId>uk.ac.uea.cmp.spectre</groupId>
-        <version>0.2.1</version>
+        <version>0.2.2</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>qtools</artifactId>
-    <version>2.0.1</version>
+    <version>2.0.2</version>
 
     <name>Spectre: Quartet Tools</name>
 
