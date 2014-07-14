@@ -125,7 +125,11 @@ public interface DistanceMatrix {
      */
     double incrementDistance(final String taxon1Name, final String taxon2Name, final double increment);
 
-
+    /**
+     * Adds a new identifier into this distance matrix.  Should initialise distances from all other idnetifiers in this
+     * matrix
+     * @param id
+     */
     void addIdentifier(Identifier id);
 
 

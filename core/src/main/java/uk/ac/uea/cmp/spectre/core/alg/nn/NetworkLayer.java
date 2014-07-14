@@ -40,13 +40,14 @@ public class NetworkLayer extends LinkedList<NetworkNode> {
         double Rx = 0.0;
 
         for (NetworkNode p : this) {
-            if (p == Cx || p == Cx.adjacent || p == Cy || p == Cy.adjacent || p.adjacent == null) {
-                Rx += D.getDistance(z.id, p.id);
+
+            double dist = D.getDistance(z.id, p.id);
+
+            if (!(p == Cx || p == Cx.adjacent || p == Cy || p == Cy.adjacent || p.adjacent == null)) {
+                dist /= 2.0;
             }
-            // p.adjacent != null so we take the average of the distances
-            else {
-                Rx += D.getDistance(z.id, p.id) / 2.0;
-            }
+
+            Rx += dist;
         }
 
         return Rx;

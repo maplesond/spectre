@@ -553,4 +553,17 @@ public class IdentifierList extends ArrayList<Identifier> {
 
         return lut;
     }
+
+    public Identifier createNextIdentifier() {
+
+        int maxId = 0;
+
+        for (Identifier t : this) {
+            if (maxId < t.getId()) {
+                maxId = t.getId();
+            }
+        }
+
+        return new Identifier(maxId + 1);
+    }
 }

@@ -24,6 +24,9 @@ import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.distance.FlexibleDistanceMatrix;
 
+import java.util.Arrays;
+import java.util.Stack;
+
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -58,7 +61,7 @@ public class NeighborNetImplTest {
     }
 
 
-    /*@Test
+    @Test
     public void testReduction() {
 
         DistanceMatrix v2v = new FlexibleDistanceMatrix(new IdentifierList(taxa), distances1);
@@ -87,7 +90,7 @@ public class NeighborNetImplTest {
         assertTrue(Arrays.equals(matrix[1], new double[]{9.0, 0.0, 6.0, 8.0}));
         assertTrue(Arrays.equals(matrix[2], new double[]{6.0, 6.0, 0.0, 5.0}));
         assertTrue(Arrays.equals(matrix[3], new double[]{4.0, 8.0, 5.0, 0.0}));
-    }*/
+    }
 
     @Test
     public void testSelectionStep1() {

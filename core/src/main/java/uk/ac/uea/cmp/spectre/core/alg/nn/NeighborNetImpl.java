@@ -344,12 +344,14 @@ public class NeighborNetImpl implements NeighborNet {
         // Add the selected vertices to reduce to the stack (we'll need these later)
         this.stackedVertexTriplets.push(selectedVertices);
 
-        // Create two new taxa for the reduced
-        Identifier newVertex1 = c2vsMap.createNextIdentifier();
-        Identifier newVertex2 = c2vsMap.createNextIdentifier();
+        IdentifierList taxa = v2v.getTaxa();
 
-        v2v.getTaxa().add(newVertex1);
-        v2v.getTaxa().add(newVertex2);
+        // Create two new taxa for the reduced
+        Identifier newVertex1 = taxa.createNextIdentifier();
+        taxa.add(newVertex1);
+
+        Identifier newVertex2 = taxa.createNextIdentifier();
+        taxa.add(newVertex2);
 
         // Setup shortcuts
         final Identifier vertex1 = selectedVertices.vertex1;
@@ -357,7 +359,7 @@ public class NeighborNetImpl implements NeighborNet {
         final Identifier vertex3 = selectedVertices.vertex3;
 
         // Iterate over all active vertices
-        for (Identifier v : v2v.getTaxa()) {
+        for (Identifier v : taxa) {
 
             // Only process this vertex if it is not in the selected vertex list
             if (v != vertex1 && v != vertex2 && v != vertex3) {
