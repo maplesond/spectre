@@ -103,28 +103,34 @@ public class NeighborNetImpl implements NeighborNet {
 
         LinkedList<Integer> order = new LinkedList<>();
 
-        for (Identifier i : c2vsMap.keySet()) {
-            order.add(i.getId());
+        for (Map.Entry<Identifier, IdentifierList> components : c2vsMap.entrySet()) {
+
+            for(Identifier i : components.getValue()) {
+                order.add(i.getId());
+            }
         }
 
         while (!this.stackedVertexTriplets.isEmpty()) {
 
             Integer max = Collections.max(order);
             int indexOfMax = order.indexOf(max);
-
             order.remove(max);
+
+            Integer max2 = Collections.max(order);
+            int indexOfMax2 = order.indexOf(max2);
+            order.remove(max2);
 
             VertexTriplet vt = this.stackedVertexTriplets.pop();
 
-            order.add(indexOfMax, vt.vertex1.getId());
-            order.add(indexOfMax + 1, vt.vertex2.getId());
-            order.add(indexOfMax + 2, vt.vertex3.getId());
+            order.add(indexOfMax2, vt.vertex1.getId());
+            order.add(indexOfMax2 + 1, vt.vertex2.getId());
+            order.add(indexOfMax2 + 2, vt.vertex3.getId());
         }
 
         IdentifierList orderedTaxa = new IdentifierList();
 
         for (Integer i : order) {
-            orderedTaxa.add(c2c.getTaxa().getById(i));
+            orderedTaxa.add(v2v.getTaxa().getById(i));
         }
 
         return orderedTaxa;
@@ -132,6 +138,9 @@ public class NeighborNetImpl implements NeighborNet {
 
 
     protected void updateC2C() {
+
+        // Clear the c2c matrix and start again
+        c2c = new FlexibleDistanceMatrix();
 
         for (Map.Entry<Identifier, IdentifierList> components1 : c2vsMap.entrySet()) {
 
@@ -153,6 +162,8 @@ public class NeighborNetImpl implements NeighborNet {
 
     protected void updateC2V() {
 
+        c2v = new FlexibleDistanceMatrix();
+
         IdentifierList activeTaxa = v2v.getTaxa();
 
         for (Map.Entry<Identifier, IdentifierList> components1 : c2vsMap.entrySet()) {
@@ -170,7 +181,6 @@ public class NeighborNetImpl implements NeighborNet {
             }
         }
     }
-
 
     protected Pair<Identifier, Identifier> reduce(Pair<Identifier, Identifier> selectedComponents, Pair<Identifier, Identifier> selectedVertices) {
 
@@ -198,7 +208,7 @@ public class NeighborNetImpl implements NeighborNet {
 
                 first = vertices1.get(0);
 
-                if (vertices2.get(0) == selectedVertices.getLeft() || vertices2.get(0) == selectedVertices.getRight()) {
+                if (vertices2.get(0).equals(selectedVertices.getLeft()) || vertices2.get(0).equals(selectedVertices.getRight())) {
                     second = vertices2.get(0);
                     third = vertices2.get(1);
                 } else {
@@ -208,7 +218,7 @@ public class NeighborNetImpl implements NeighborNet {
             } else {
                 first = vertices2.get(0);
 
-                if (vertices1.get(0) == selectedVertices.getLeft() || vertices1.get(0) == selectedVertices.getRight()) {
+                if (vertices1.get(0).equals(selectedVertices.getLeft()) || vertices1.get(0).equals(selectedVertices.getRight())) {
                     second = vertices1.get(0);
                     third = vertices1.get(1);
                 } else {
@@ -220,20 +230,20 @@ public class NeighborNetImpl implements NeighborNet {
             return vertexTripletReduction(new VertexTriplet(first, second, third));
         } else { // Should be 4
 
-            Identifier first = vertices1.get(0) == selectedVertices.getLeft() ?
+            Identifier first = vertices1.get(0).equals(selectedVertices.getLeft()) ?
                     vertices1.get(1) :
                     vertices1.get(0);
 
             Identifier second = selectedVertices.getLeft();
             Identifier third = selectedVertices.getRight();
 
-            Identifier fourth = vertices2.get(0) == selectedVertices.getRight() ?
+            Identifier fourth = vertices2.get(0).equals(selectedVertices.getRight()) ?
                     vertices2.get(1) :
                     vertices2.get(0);
 
             Pair<Identifier, Identifier> newVertices = vertexTripletReduction(new VertexTriplet(first, second, third));
 
-            return vertexTripletReduction(new VertexTriplet(first, second, third));
+            return vertexTripletReduction(new VertexTriplet(newVertices.getLeft(), newVertices.getRight(), fourth));
         }
 
         //throw new IllegalArgumentException("Number of vertices must be >= 2 || <= 4.  Found " + nbVerticies + " vertices");

@@ -33,5 +33,5 @@ public interface NeighborNet {
      * @param params         Alpha, Beta and Gamma parameters
      * @return The result of neighbornet, a compatible split system
      */
-    SplitSystem execute(DistanceMatrix distanceMatrix, NeighborNetParams params);
+    SplitSystem execute(final DistanceMatrix distanceMatrix, final NeighborNetParams params);
 }

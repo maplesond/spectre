@@ -148,9 +148,15 @@ public interface DistanceMatrix {
     IdentifierList getTaxa(Comparator<Identifier> comparator);
 
 
+    DistanceList getDistances(Identifier taxon);
+
     DistanceList getDistances(Identifier taxon, Comparator<Identifier> comparator);
 
+    DistanceList getDistances(int taxonId);
+
     DistanceList getDistances(int taxonId, Comparator<Identifier> comparator);
+
+    DistanceList getDistances(String taxonName);
 
     DistanceList getDistances(String taxonName, Comparator<Identifier> comparator);
 

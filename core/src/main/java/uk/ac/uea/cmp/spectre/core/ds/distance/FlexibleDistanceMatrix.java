@@ -26,7 +26,7 @@ import java.util.*;
 /**
  * Created by dan on 27/02/14.
  */
-public class FlexibleDistanceMatrix implements DistanceMatrix {
+public class FlexibleDistanceMatrix extends AbstractDistanceMatrix {
 
     private Map<Pair<Identifier, Identifier>, Double> matrix;
     private IdentifierList taxa;
@@ -55,6 +55,10 @@ public class FlexibleDistanceMatrix implements DistanceMatrix {
                 this.setDistance(ti, tj, copy.getDistance(ti, tj));
             }
         }
+    }
+
+    public FlexibleDistanceMatrix(double[][] distances) {
+        this(new IdentifierList(distances.length), distances);
     }
 
     public FlexibleDistanceMatrix(IdentifierList taxa, double[][] distances) {
@@ -159,16 +163,6 @@ public class FlexibleDistanceMatrix implements DistanceMatrix {
     }
 
     @Override
-    public double incrementDistance(final Identifier taxon1, final Identifier taxon2, final double increment) {
-
-        double newValue = this.getDistance(taxon1, taxon2) + increment;
-
-        this.setDistance(taxon1, taxon2, newValue);
-
-        return newValue;
-    }
-
-    @Override
     public double incrementDistance(final int taxonId1, final int taxonId2, final double increment) {
         return this.incrementDistance(this.taxa.getById(taxonId1), this.taxa.getById(taxonId2), increment);
     }
@@ -189,6 +183,7 @@ public class FlexibleDistanceMatrix implements DistanceMatrix {
         return this.taxa.sort(comparator);
     }
 
+
     @Override
     public DistanceList getDistances(Identifier taxon, Comparator<Identifier> comparator) {
 
@@ -206,21 +201,18 @@ public class FlexibleDistanceMatrix implements DistanceMatrix {
         return dl;
     }
 
+
     @Override
     public DistanceList getDistances(int taxonId, Comparator<Identifier> comparator) {
         return this.getDistances(this.taxa.getById(taxonId), comparator);
     }
+
 
     @Override
     public DistanceList getDistances(String taxonName, Comparator<Identifier> comparator) {
         return this.getDistances(this.taxa.getByName(taxonName), comparator);
     }
 
-    @Override
-    public List<DistanceList> getAllDistances() {
-
-        return this.getAllDistances(null);
-    }
 
     @Override
     public List<DistanceList> getAllDistances(Comparator<Identifier> comparator) {
@@ -236,10 +228,6 @@ public class FlexibleDistanceMatrix implements DistanceMatrix {
         return allDistances;
     }
 
-    @Override
-    public double[][] getMatrix() {
-        return this.getMatrix(null);
-    }
 
     @Override
     public double[][] getMatrix(Comparator<Identifier> comparator) {

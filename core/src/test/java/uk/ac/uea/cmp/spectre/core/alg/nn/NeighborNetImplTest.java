@@ -23,6 +23,7 @@ import uk.ac.uea.cmp.spectre.core.ds.Identifier;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.distance.FlexibleDistanceMatrix;
+import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 
 import java.util.Arrays;
 import java.util.Stack;
@@ -52,11 +53,11 @@ public class NeighborNetImplTest {
         };
 
         this.distances2 = new double[][]{
-                {0, 3, 6, 6, 6},
+                {0, 3, 2, 5, 7},
                 {3, 0, 6, 6, 6},
-                {6, 6, 0, 3, 9},
-                {6, 6, 3, 0, 9},
-                {6, 6, 9, 9, 0}
+                {2, 6, 0, 3, 8},
+                {5, 6, 3, 0, 9},
+                {7, 6, 8, 9, 0}
         };
     }
 
@@ -109,16 +110,6 @@ public class NeighborNetImplTest {
     @Test
     public void testSelectionStep2() {
 
-        String[] taxa = new String[]{"A", "B", "C", "D", "E"};
-
-        double[][] distances = new double[][]{
-                {0, 3, 6, 6, 6},
-                {3, 0, 6, 6, 6},
-                {6, 6, 0, 3, 9},
-                {6, 6, 3, 0, 9},
-                {6, 6, 9, 9, 0}
-        };
-
         DistanceMatrix c2c = new FlexibleDistanceMatrix(new IdentifierList(taxa), distances1);
 
         NeighborNetImpl nn = new NeighborNetImpl();
@@ -129,4 +120,27 @@ public class NeighborNetImplTest {
         assertTrue(selectedComponents.getLeft().getName().equals("C"));
         assertTrue(selectedComponents.getRight().getName().equals("D"));
     }
+
+    @Test
+    public void testExecuteDist1() {
+
+        SplitSystem ss = new NeighborNetImpl().execute(new FlexibleDistanceMatrix(distances1), new NeighborNetParams(0.3, 0.3));
+
+        String orderedTaxa = ss.getOrderedTaxa().toString();
+
+        assertTrue(orderedTaxa.equalsIgnoreCase("[A,C,D,E,B]"));
+        assertTrue(true);
+    }
+
+    @Test
+    public void testExecuteDist2() {
+
+        SplitSystem ss = new NeighborNetImpl().execute(new FlexibleDistanceMatrix(distances2), new NeighborNetParams(0.3, 0.3));
+
+        String orderedTaxa = ss.getOrderedTaxa().toString();
+
+        assertTrue(orderedTaxa.equalsIgnoreCase("[A,C,D,E,B]"));
+        assertTrue(true);
+    }
+
 }

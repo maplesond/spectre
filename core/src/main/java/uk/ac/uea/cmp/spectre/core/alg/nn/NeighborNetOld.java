@@ -27,7 +27,7 @@ import java.util.Stack;
 /**
  * Implements Neighbor Net method of Bryant and Moulton (2004).
  */
-public class NeighborNetOld {
+public class NeighborNetOld implements NeighborNet {
 
 
     private static final int MAX_TAXA_FOR_BASIC_ORDERING = 3;
@@ -38,7 +38,8 @@ public class NeighborNetOld {
      * @param distanceMatrix The Distance matrix to process
      * @return The computed split system
      */
-    public SplitSystem createCircularSplitSystem(final DistanceMatrix distanceMatrix) {
+    @Override
+    public SplitSystem execute(final DistanceMatrix distanceMatrix, NeighborNetParams params) {
 
         return new SpectreSplitSystem(distanceMatrix, this.computeCircularOrdering(distanceMatrix), SpectreSplitSystem.LeastSquaresCalculator.TREE_IN_CYCLE);
     }
@@ -80,7 +81,7 @@ public class NeighborNetOld {
 
         // Return the ordered taxa
         IdentifierList ids = new IdentifierList();
-        for (int i = 0; i < nbTaxa; i++) {
+        for (int i = 1; i <= nbTaxa; i++) {
             ids.add(distanceMatrix.getTaxa().getById(oneBasedOrdering[i]));
         }
 
@@ -101,8 +102,8 @@ public class NeighborNetOld {
 
         for (int i = 1; i <= nbTaxa; i++) {
             for (int j = 1; j <= nbTaxa; j++)
-                bigMatrix[i][j] = distanceMatrix.getDistance(i - 1, j - 1);
-            Arrays.fill(bigMatrix[i], nbTaxa + 1, maxNbNodes, 0.0);
+                bigMatrix[i][j] = distanceMatrix.getDistance(i, j);
+            Arrays.fill(bigMatrix[i], nbTaxa+1, maxNbNodes, 0.0);
         }
 
         for (int i = nbTaxa + 1; i < maxNbNodes; i++)
