@@ -38,6 +38,7 @@ public class NeighborNetImplTest {
     private String[] taxa;
     private double[][] distances1;
     private double[][] distances2;
+    private double[][] distances3;
 
     @Before
     public void setup() {
@@ -52,7 +53,9 @@ public class NeighborNetImplTest {
                 {6, 6, 9, 9, 0}
         };
 
-        this.distances2 = new double[][]{
+
+
+        this.distances3 = new double[][]{
                 {0, 3, 2, 5, 7},
                 {3, 0, 6, 6, 6},
                 {2, 6, 0, 3, 8},
@@ -132,15 +135,5 @@ public class NeighborNetImplTest {
         assertTrue(true);
     }
 
-    @Test
-    public void testExecuteDist2() {
-
-        SplitSystem ss = new NeighborNetImpl().execute(new FlexibleDistanceMatrix(distances2), new NeighborNetParams(0.3, 0.3));
-
-        String orderedTaxa = ss.getOrderedTaxa().toString();
-
-        assertTrue(orderedTaxa.equalsIgnoreCase("[A,C,D,E,B]"));
-        assertTrue(true);
-    }
 
 }

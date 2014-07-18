@@ -38,7 +38,7 @@ public class NeighborNetImpl implements NeighborNet {
     protected Stack<VertexTriplet> stackedVertexTriplets;
     protected Component2VertexSetMap c2vsMap;
     protected DistanceMatrix c2c;
-    protected DistanceMatrix c2v;
+    protected DistanceMatrix c2v;       //TODO C2V needs to be changed... can't be symmetrical!  Requires new data structure!
     protected DistanceMatrix v2v;
     protected NeighborNetParams params;
 
@@ -77,7 +77,7 @@ public class NeighborNetImpl implements NeighborNet {
         this.v2v = new FlexibleDistanceMatrix(distanceMatrix);
 
         // Reduce down to a max of 3 nodes
-        while (c2vsMap.size() > 3) {
+        while (v2v.size() > 3) {
 
             // Choose a pair of components from c2c that minimise the Q criterion
             Pair<Identifier, Identifier> selectedComponents = this.selectionStep1();

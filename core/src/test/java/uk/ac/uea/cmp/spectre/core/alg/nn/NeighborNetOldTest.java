@@ -16,6 +16,7 @@
 
 package uk.ac.uea.cmp.spectre.core.alg.nn;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import uk.ac.uea.cmp.spectre.core.ds.distance.FlexibleDistanceMatrix;
@@ -52,12 +53,23 @@ public class NeighborNetOldTest {
     }
 
     @Test
-    public void testExecute() {
+    public void testExecuteDist1() {
 
-        SplitSystem ss = new NeighborNetOld().execute(new FlexibleDistanceMatrix(distances2), new NeighborNetParams(0.3, 0.3));
+        SplitSystem ss = new NeighborNetOld().execute(new FlexibleDistanceMatrix(distances1), new NeighborNetParams(0.3, 0.3));
 
         assertTrue(ss.getOrderedTaxa().toString().equalsIgnoreCase("[A,C,D,E,B]"));
         assertTrue(true);
+    }
+
+    @Test
+    public void testExecuteDist2() {
+
+        SplitSystem ss = new NeighborNetImpl().execute(new FlexibleDistanceMatrix(distances2), new NeighborNetParams(0.3, 0.3));
+
+        String orderedTaxa = ss.getOrderedTaxa().toString();
+
+        Assert.assertTrue(orderedTaxa.equalsIgnoreCase("[A,C,D,E,B]"));
+        Assert.assertTrue(true);
     }
 
 
