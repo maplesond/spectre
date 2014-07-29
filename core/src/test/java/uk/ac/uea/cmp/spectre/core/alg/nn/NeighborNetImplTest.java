@@ -124,7 +124,7 @@ public class NeighborNetImplTest {
         assertTrue(selectedComponents.getRight().getName().equals("D"));
     }
 
-    @Test
+    //@Test
     public void testExecuteDist1() {
 
         SplitSystem ss = new NeighborNetImpl().execute(new FlexibleDistanceMatrix(distances1), new NeighborNetParams(0.3, 0.3));

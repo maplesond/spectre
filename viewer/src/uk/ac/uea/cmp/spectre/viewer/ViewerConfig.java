@@ -16,7 +16,10 @@
 
 package uk.ac.uea.cmp.spectre.viewer;
 
+import uk.ac.uea.cmp.spectre.core.ds.network.VertexList;
+
 import java.awt.*;
+import java.util.Scanner;
 import java.util.Set;
 
 /**
@@ -32,6 +35,7 @@ public class ViewerConfig {
     boolean colorLabels;
     Set<Integer> fixed;
     Double ratio;
+    VertexList labeledVertices;
 
     public ViewerConfig() {
     }
@@ -44,7 +48,8 @@ public class ViewerConfig {
                         boolean showLabels,
                         boolean colorLabels,
                         Set<Integer> fixed,
-                        Double ratio) {
+                        Double ratio,
+                        VertexList labeledVertices) {
         this.dimensions = dimensions;
         this.leaderType = leaderType;
         this.leaderStroke = leaderStroke;
@@ -54,6 +59,14 @@ public class ViewerConfig {
         this.colorLabels = colorLabels;
         this.fixed = fixed;
         this.ratio = ratio;
+        this.labeledVertices = labeledVertices;
+    }
+
+    public ViewerConfig(java.util.List<String> block) {
+
+        for(String line : block) {
+            this.parseLine(line.toLowerCase());
+        }
     }
 
     public void setDimensions(Dimension dimensions) {
@@ -123,5 +136,61 @@ public class ViewerConfig {
 
     public Double getRatio() {
         return ratio;
+    }
+
+    public VertexList getLabeledVertices() {
+        return labeledVertices;
+    }
+
+    public void setLabeledVertices(VertexList labeledVertices) {
+        this.labeledVertices = labeledVertices;
+    }
+
+    protected final void parseLine(String lineLC) {
+        Scanner scannerLC = new Scanner(lineLC);
+        String matched = scannerLC.findInLine("showtrivial\\s*=\\s*(\\S+)");
+        if (matched != null) {
+            this.showTrivial = Boolean.parseBoolean(scannerLC.match().group(1));
+        }
+        scannerLC = new Scanner(lineLC);
+        matched = scannerLC.findInLine("showlabels\\s*=\\s*(\\S+)");
+        if (matched != null) {
+            this.showLabels = Boolean.parseBoolean(scannerLC.match().group(1));
+        }
+        scannerLC = new Scanner(lineLC);
+        matched = scannerLC.findInLine("colorlabels\\s*=\\s*(\\S+)");
+        if (matched != null) {
+            this.colorLabels = Boolean.parseBoolean(scannerLC.match().group(1));
+        }
+        scannerLC = new Scanner(lineLC);
+        matched = scannerLC.findInLine("leaders\\s*=\\s*(\\S+)");
+        if (matched != null) {
+            this.leaderType = scannerLC.match().group(1);
+        }
+        scannerLC = new Scanner(lineLC);
+        matched = scannerLC.findInLine("leaderstroke\\s*=\\s*(\\S+)");
+        if (matched != null) {
+            leaderStroke = scannerLC.match().group(1);
+        }
+        scannerLC = new Scanner(lineLC);
+        matched = scannerLC.findInLine("leadercolor\\s*=\\s*(\\d+)\\s+(\\d+)\\s+(\\d+)");
+        if (matched != null) {
+            leaderColor = new Color(Integer.parseInt(scannerLC.match().group(1)),
+                    Integer.parseInt(scannerLC.match().group(2)),
+                    Integer.parseInt(scannerLC.match().group(3)));
+        }
+        scannerLC = new Scanner(lineLC);
+        matched = scannerLC.findInLine("fix\\s*(\\d+)");
+        if (matched != null) {
+            fixed.add(Integer.parseInt(scannerLC.match().group(1)) - 1);
+        }
+        scannerLC = new Scanner(lineLC);
+        matched = scannerLC.findInLine("ratio\\s*=\\s*(\\.+)");
+        if (matched != null) {
+            try {
+                ratio = Double.parseDouble(scannerLC.match().group(1));
+            } catch (NumberFormatException nfe) {
+            }
+        }
     }
 }

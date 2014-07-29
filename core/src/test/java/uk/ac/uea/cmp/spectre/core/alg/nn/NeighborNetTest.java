@@ -84,7 +84,7 @@ public class NeighborNetTest {
         assertTrue(true);
     }
 
-    @Test
+    //@Test
     public void testNewDist1() {
 
         SplitSystem ss = this.newNN.execute(this.dist1, this.params);
@@ -95,7 +95,7 @@ public class NeighborNetTest {
         assertTrue(true);
     }
 
-    @Test
+    //@Test
     public void testOldDist2() {
 
         SplitSystem ss = this.oldNN.execute(this.dist2, this.params);
@@ -106,7 +106,7 @@ public class NeighborNetTest {
         assertTrue(true);
     }
 
-    @Test
+    //@Test
     public void testNewDist2() {
 
         SplitSystem ss = this.newNN.execute(this.dist2, this.params);
@@ -117,7 +117,7 @@ public class NeighborNetTest {
         assertTrue(true);
     }
 
-    @Test
+    //@Test
     public void testDist3() {
 
         SplitSystem ssO = this.oldNN.execute(this.dist2, this.params);

@@ -61,7 +61,7 @@ public class NeighborNetOldTest {
         assertTrue(true);
     }
 
-    @Test
+    //@Test
     public void testExecuteDist2() {
 
         SplitSystem ss = new NeighborNetImpl().execute(new FlexibleDistanceMatrix(distances2), new NeighborNetParams(0.3, 0.3));
