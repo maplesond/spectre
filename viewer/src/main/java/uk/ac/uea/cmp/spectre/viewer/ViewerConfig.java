@@ -19,6 +19,7 @@ package uk.ac.uea.cmp.spectre.viewer;
 import uk.ac.uea.cmp.spectre.core.ds.network.VertexList;
 
 import java.awt.*;
+import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;
 
@@ -30,14 +31,25 @@ public class ViewerConfig {
     private String leaderType = "";
     private String leaderStroke = "";
     private Color leaderColor;
-    boolean showTrivial;
-    boolean showLabels;
-    boolean colorLabels;
-    Set<Integer> fixed;
-    Double ratio;
-    VertexList labeledVertices;
+    private boolean showTrivial;
+    private boolean showLabels;
+    private boolean colorLabels;
+    private Set<Integer> fixed;
+    private Double ratio;
+    private VertexList labeledVertices;
 
     public ViewerConfig() {
+        this(
+                new Dimension(),
+                "",
+                "",
+                new Color(0,0,0),
+                true,
+                true,
+                true,
+                new HashSet<Integer>(),
+                0.0,
+                new VertexList());
     }
 
     public ViewerConfig(Dimension dimensions,
@@ -63,6 +75,8 @@ public class ViewerConfig {
     }
 
     public ViewerConfig(java.util.List<String> block) {
+
+        this();
 
         for(String line : block) {
             this.parseLine(line.toLowerCase());

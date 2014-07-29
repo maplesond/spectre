@@ -23,6 +23,7 @@ import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfWriter;
+import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
@@ -711,6 +712,8 @@ public class NetView extends javax.swing.JFrame {
      */
     public static void main(String args[]) {
         LookAndFeel.setLookAndFeel(LookAndFeel.NIMBUS);
+
+        BasicConfigurator.configure();
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {

@@ -47,7 +47,7 @@ COMMENT : '[' .*? ']' -> skip;
 // This will be the entry point of our parser.
 parse   : nexus_header blocks EOF;
 
-nexus_header : '#NEXUS' | '#nexus';
+nexus_header : '#NEXUS' | '#nexus' | '#Nexus';
 
 blocks  : // Empty
         | block blocks
@@ -55,9 +55,9 @@ blocks  : // Empty
 
 block   : begin block_declaration end ';';
 
-begin   : 'begin' | 'BEGIN';
+begin   : 'begin' | 'BEGIN' | 'Begin';
 
-end     : 'end' | 'END' | 'endblock' | 'ENDBLOCK';
+end     : 'end' | 'END' | 'End' | 'endblock' | 'ENDBLOCK' | 'EndBlock';
 
 // we haven't implemented everything yet
 block_declaration :
@@ -567,7 +567,7 @@ ne_color : 'fg' '=' INT INT INT;
 // ----------------------------------------------------------------------------
 
 
-matrix_header : 'matrix' | 'MATRIX';
+matrix_header : 'matrix' | 'MATRIX' | 'Matrix';
 
 
 matrix_data :
@@ -607,9 +607,9 @@ state_composed_list :
 
 boolean_option : 'no' | 'yes' | 'false' | 'true';
 
-dimensions  : 'dimensions' | 'DIMENSIONS';
+dimensions  : 'dimensions' | 'DIMENSIONS' | 'Dimensions';
 
-format : 'format' | 'FORMAT';
+format : 'format' | 'FORMAT' | 'Format';
 
 identifier_list :
     // Empty
