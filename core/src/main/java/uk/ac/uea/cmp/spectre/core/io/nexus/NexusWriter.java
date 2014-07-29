@@ -22,8 +22,8 @@ import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrixBuilder;
 import uk.ac.uea.cmp.spectre.core.ds.network.Edge;
-import uk.ac.uea.cmp.spectre.core.ds.network.Label;
 import uk.ac.uea.cmp.spectre.core.ds.network.Network;
+import uk.ac.uea.cmp.spectre.core.ds.network.NetworkLabel;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
 import uk.ac.uea.cmp.spectre.core.ds.split.Split;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
@@ -284,8 +284,8 @@ public class NexusWriter extends AbstractPhygenWriter implements Appendable {
 
         int nTaxa = network.getNbTaxa();
 
-        List<Vertex> vertices = network.getVertices();
-        List<Edge> edges = network.getEdges();
+        List<Vertex> vertices = network.getAllVertices();
+        List<Edge> edges = network.getAllEdges();
 
         this.appendLine("BEGIN Network;");
         this.appendLine("DIMENSIONS ntax=" + nTaxa + " nvertices=" + vertices.size() + " nedges=" + edges.size() + ";");
@@ -332,7 +332,7 @@ public class NexusWriter extends AbstractPhygenWriter implements Appendable {
                 label = label.substring(0, label.length() - 2);
                 this.appendLine((v.getNxnum() + 1) + " '" + label + "' x=2 y=2 f='Dialog-PLAIN-10',");
             } else if (v.getLabel() != null) {
-                Label l = v.getLabel();
+                NetworkLabel l = v.getLabel();
                 String label = (v.getNxnum() + 1) + " '" + l.getName() + "' x=" + ((int) l.getOffsetX()) + " y=" + ((int) l.getOffsetY()) + " f='" + l.getFontFamily() + "-" + l.getFontStyle() + "-" + l.getFontSize() + "'";
                 if (l.getFontColor() != null) {
                     Color c = l.getFontColor();

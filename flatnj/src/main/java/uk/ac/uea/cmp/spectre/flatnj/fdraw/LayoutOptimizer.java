@@ -17,8 +17,8 @@
 package uk.ac.uea.cmp.spectre.flatnj.fdraw;
 
 
+import uk.ac.uea.cmp.spectre.core.ds.network.Network;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
-import uk.ac.uea.cmp.spectre.flatnj.ds.Network;
 
 import java.util.LinkedList;
 import java.util.TreeSet;
@@ -64,7 +64,7 @@ public class LayoutOptimizer {
         //networks that look much better rather than using simple or precise
         //alone.
 
-        int trivial = 2 + network.getTrivial().size() / 10;
+        int trivial = 2 + network.getTrivialEdges().size() / 10;
         int precise = 2 + ps.ntaxa / 20;
         int iterations = 2 + ps.ntaxa / 50;
         int finish = precise + 5;

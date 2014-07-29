@@ -19,18 +19,15 @@ package uk.ac.uea.cmp.spectre.flatnj.tools;
 import uk.ac.uea.cmp.spectre.core.ds.Alignment;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.network.Edge;
-import uk.ac.uea.cmp.spectre.core.ds.network.Label;
+import uk.ac.uea.cmp.spectre.core.ds.network.FlatNetwork;
+import uk.ac.uea.cmp.spectre.core.ds.network.NetworkLabel;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
 import uk.ac.uea.cmp.spectre.flatnj.ds.*;
-import uk.ac.uea.cmp.spectre.flatnj.fdraw.ViewerConfig;
 
-import java.awt.*;
 import java.io.*;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
-
-import uk.ac.uea.cmp.spectre.core.ds.network.Label;
 
 /**
  * @author balvociute
@@ -331,7 +328,7 @@ public class Writer {
                 label = label.substring(0, label.length() - 2);
                 writeLine(v.getNxnum() + " '" + label + "' x=2 y=2 f='Dialog-PLAIN-10',");
             } else if (v.getLabel() != null) {
-                Label l = v.getLabel();
+                NetworkLabel l = v.getLabel();
                 String label = v.getNxnum() + " '" + l.getName() + "' x=" + ((int) l.getOffsetX()) + " y=" + ((int) l.getOffsetY()) + " f='" + l.getFontFamily() + "-" + l.getFontStyle() + "-" + l.getFontSize() + "'";
                 if (l.getFontColor() != null) {
                     int[] c = Utilities.colorToInt(l.getFontColor());
@@ -391,17 +388,17 @@ public class Writer {
         writeLine("END;");
     }
 
-    public void write(Network network, Taxa taxa) {
+    public void write(FlatNetwork network, Taxa taxa) {
         Iterator<Vertex> vIter;
         Iterator<Edge> eIter;
         Iterator taxiter;
         Vertex v;
         Edge e;
 
-        int nTaxa = network.getNTaxa();
+        int nTaxa = network.getNbTaxa();
 
-        List<Vertex> vertices = network.getVertices();
-        List<Edge> edges = network.getEdges();
+        List<Vertex> vertices = network.getAllVertices();
+        List<Edge> edges = network.getAllEdges();
 
         writeLine();
         writeLine("BEGIN Network;");
@@ -459,7 +456,7 @@ public class Writer {
                 label = label.substring(0, label.length() - 2);
                 writeLine((v.getNxnum() + 1) + " '" + label + "' x=2 y=2 f='Dialog-PLAIN-10',");
             } else if (v.getLabel() != null) {
-                Label l = v.getLabel();
+                NetworkLabel l = v.getLabel();
                 String label = (v.getNxnum() + 1) + " '" + l.getName() + "' x=" + ((int) l.getOffsetX()) + " y=" + ((int) l.getOffsetY()) + " f='" + l.getFontFamily() + "-" + l.getFontStyle() + "-" + l.getFontSize() + "'";
                 if (l.getFontColor() != null) {
                     int[] c = Utilities.colorToInt(l.getFontColor());
@@ -496,30 +493,5 @@ public class Writer {
         } catch (IOException ioe) {
             exitError("Unable to open file \"" + file.getAbsolutePath() + "\"");
         }
-    }
-
-    public void write(ViewerConfig config, List<Vertex> labeled) {
-        Dimension dm = config.getDimensions();
-        writeLine();
-        writeLine("BEGIN Viewer;");
-        writeLine("DIMENSIONS width=" + dm.width + " height=" + dm.height + ";");
-        writeLine(" MATRIX");
-        writeLine("  ratio=" + config.getRatio());
-        writeLine("  showtrivial=" + config.showTrivial());
-        writeLine("  showlabels=" + config.showLabels());
-        writeLine("  colorlabels=" + config.colorLabels());
-        writeLine("  leaders=" + config.getLeaderType());
-        writeLine("  leaderstroke=" + config.getLeaderStroke());
-        Color leaderColor = config.getLeaderColor();
-        writeLine("  leadercolor=" + leaderColor.getRed() + " " +
-                leaderColor.getGreen() + " " + leaderColor.getBlue());
-        for (Iterator<Vertex> it = labeled.iterator(); it.hasNext(); ) {
-            Vertex vertex = it.next();
-            Label label = vertex.getLabel();
-            if (!label.movable) {
-                writeLine("  fix " + (vertex.getNxnum() + 1));
-            }
-        }
-        writeLine(" ;\nEND;");
     }
 }

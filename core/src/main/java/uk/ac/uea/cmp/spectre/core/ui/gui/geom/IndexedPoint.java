@@ -14,37 +14,49 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.core.ds.network;
+package uk.ac.uea.cmp.spectre.core.ui.gui.geom;
 
-import java.util.Collection;
-import java.util.LinkedList;
+import java.awt.geom.Point2D;
 
 /**
- * Created by dan on 20/03/14.
+ * @author balvociute
  */
-public class VertexList extends LinkedList<Vertex> {
+public class IndexedPoint extends Point2D.Double {
 
-    public VertexList() {
-        super();
+    private int id;
+    private String label;
+
+    public IndexedPoint(int id, double x, double y) {
+        this(id, x, y, null);
     }
 
-    public VertexList(Collection<Vertex> vertices) {
-        super(vertices);
+    public IndexedPoint(int id, double x, double y, String label) {
+        this.x = x;
+        this.y = y;
+        this.id = id;
+        this.label = label;
     }
 
-    public Vertex getLeftmostVertex() {
-
-        if (this.isEmpty())
-            return null;
-
-        Vertex v = this.getFirst();
-        for (Vertex vi : this) {
-            if (v.getX() > vi.getX()) {
-                v = vi;
-            }
-        }
-
-        return v;
+    public double getX() {
+        return x;
     }
 
+    public double getY() {
+        return y;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    @Override
+    public String toString() {
+        String loc = x + "\t" + y;
+        loc = (label == null) ? loc : label + " " + loc;
+        return loc;
+    }
 }

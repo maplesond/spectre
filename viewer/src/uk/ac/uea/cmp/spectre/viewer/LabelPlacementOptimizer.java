@@ -14,41 +14,16 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.core.ds.network;
+package uk.ac.uea.cmp.spectre.viewer;
 
-import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
-
-import java.util.List;
-import java.util.Set;
+import java.util.Collection;
 
 /**
- * Created by dan on 18/03/14.
+ * @author balvociute
  */
-public interface Network {
-
-    IdentifierList getTaxa();
-
-    VertexList getAllVertices();
-
-    VertexList getLabeledVertices();
-
-    void removeVertices(VertexList toRemove);
-
-    EdgeList getAllEdges();
-
-    EdgeList getInternalEdges();
-
-    EdgeList getExternalEdges();
-
-    Set<Edge> getExternalEdges(Edge e1, Vertex a, Edge e2);
-
-    EdgeList getTrivialEdges();
-
-    void addTrivialEdges(VertexList toAdd);
-
-    List<NetworkLabel> getLabels();
-
-    int getNbTaxa();
-
-    boolean veryLongTrivial();
+public interface LabelPlacementOptimizer {
+    public void placeLabels(Collection<ViewerLabel> labels,
+                            Collection<Line> lines,
+                            Window drawing,
+                            boolean all);
 }

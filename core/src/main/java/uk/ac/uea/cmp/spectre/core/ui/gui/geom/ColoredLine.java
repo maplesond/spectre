@@ -14,41 +14,38 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.core.ds.network;
+package uk.ac.uea.cmp.spectre.core.ui.gui.geom;
 
-import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
-
-import java.util.List;
-import java.util.Set;
+import java.awt.*;
+import java.awt.geom.Line2D;
 
 /**
- * Created by dan on 18/03/14.
+ * @author balvociute
  */
-public interface Network {
+public class ColoredLine extends Line2D.Double {
 
-    IdentifierList getTaxa();
+    private int width;
+    private Color color;
 
-    VertexList getAllVertices();
+    public ColoredLine(IndexedPoint a, IndexedPoint b, Color c) {
+        super(a, b);
+        this.width = 1;
+        this.color = c;
+    }
 
-    VertexList getLabeledVertices();
+    public IndexedPoint getA() {
+        return (IndexedPoint)this.getP1();
+    }
 
-    void removeVertices(VertexList toRemove);
+    public IndexedPoint getB() {
+        return (IndexedPoint)this.getP2();
+    }
 
-    EdgeList getAllEdges();
+    public Color getColor() {
+        return color;
+    }
 
-    EdgeList getInternalEdges();
-
-    EdgeList getExternalEdges();
-
-    Set<Edge> getExternalEdges(Edge e1, Vertex a, Edge e2);
-
-    EdgeList getTrivialEdges();
-
-    void addTrivialEdges(VertexList toAdd);
-
-    List<NetworkLabel> getLabels();
-
-    int getNbTaxa();
-
-    boolean veryLongTrivial();
+    public int getWidth() {
+        return width;
+    }
 }

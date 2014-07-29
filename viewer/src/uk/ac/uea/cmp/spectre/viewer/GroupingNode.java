@@ -14,41 +14,24 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.core.ds.network;
+package uk.ac.uea.cmp.spectre.viewer;
 
-import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 
-import java.util.List;
-import java.util.Set;
+import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
 
 /**
- * Created by dan on 18/03/14.
+ * @author balvociute
  */
-public interface Network {
+public class GroupingNode {
+    Vertex v;
+    double distanceFromStart;
 
-    IdentifierList getTaxa();
+    public GroupingNode(Vertex v, GroupingNode pre, double length) {
+        this.v = v;
 
-    VertexList getAllVertices();
+        distanceFromStart = (pre != null ? pre.distanceFromStart : 0)
+                + length;
+    }
 
-    VertexList getLabeledVertices();
 
-    void removeVertices(VertexList toRemove);
-
-    EdgeList getAllEdges();
-
-    EdgeList getInternalEdges();
-
-    EdgeList getExternalEdges();
-
-    Set<Edge> getExternalEdges(Edge e1, Vertex a, Edge e2);
-
-    EdgeList getTrivialEdges();
-
-    void addTrivialEdges(VertexList toAdd);
-
-    List<NetworkLabel> getLabels();
-
-    int getNbTaxa();
-
-    boolean veryLongTrivial();
 }

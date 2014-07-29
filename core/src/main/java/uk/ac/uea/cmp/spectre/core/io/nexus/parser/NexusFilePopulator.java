@@ -26,7 +26,7 @@ import uk.ac.uea.cmp.spectre.core.ds.Identifier;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrixBuilder;
 import uk.ac.uea.cmp.spectre.core.ds.network.Edge;
-import uk.ac.uea.cmp.spectre.core.ds.network.Label;
+import uk.ac.uea.cmp.spectre.core.ds.network.NetworkLabel;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
 import uk.ac.uea.cmp.spectre.core.ds.split.SpectreSplitBlock;
 import uk.ac.uea.cmp.spectre.core.io.nexus.Nexus;
@@ -450,7 +450,7 @@ public class NexusFilePopulator implements NexusFileListener {
         String type = parts[1];
         int size = Integer.parseInt(parts[2]);
 
-        Label label = this.networkBuilder.getCurrentLabel();
+        NetworkLabel label = this.networkBuilder.getCurrentLabel();
 
         label.setFontFamily(family);
         label.setFontStyle(type);
@@ -968,7 +968,7 @@ public class NexusFilePopulator implements NexusFileListener {
     @Override
     public void exitVlabels_network_label(@NotNull NexusFileParser.Vlabels_network_labelContext ctx) {
 
-        Label label = this.networkBuilder.getCurrentLabel();
+        NetworkLabel label = this.networkBuilder.getCurrentLabel();
 
         int id = Integer.parseInt(ctx.INT().getText());
         String name = ctx.IDENTIFIER().getText();
@@ -1000,7 +1000,7 @@ public class NexusFilePopulator implements NexusFileListener {
     @Override
     public void enterVlabels_network_entry(@NotNull NexusFileParser.Vlabels_network_entryContext ctx) {
 
-        Label label = new Label();
+        NetworkLabel label = new NetworkLabel();
 
         this.networkBuilder.setCurrentLabel(label);
     }

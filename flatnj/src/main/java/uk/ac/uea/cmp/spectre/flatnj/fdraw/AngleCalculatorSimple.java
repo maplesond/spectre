@@ -17,8 +17,9 @@
 package uk.ac.uea.cmp.spectre.flatnj.fdraw;
 
 import uk.ac.uea.cmp.spectre.core.ds.network.Edge;
+import uk.ac.uea.cmp.spectre.core.ds.network.Network;
+import uk.ac.uea.cmp.spectre.core.ds.network.Translocator;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
-import uk.ac.uea.cmp.spectre.flatnj.ds.Network;
 
 import java.util.*;
 
@@ -480,17 +481,17 @@ public class AngleCalculatorSimple implements AngleCalculator {
             }
         }
 
-        List<Vertex> vertices = network.getVertices();
+        List<Vertex> vertices = network.getAllVertices();
         for (int i = 0; i < vertices.size(); i++) {
             Vertex vertex = vertices.get(i);
             double dist = vertex.calcDistanceTo(v);
             if (vertex != v && vertex != w &&
                     ((!cc.pointInsideNetwork(vertex,
-                            network.getExternal())
+                            network.getExternalEdges())
                             && outside
                             && dist <= r && dist >= 0.25 * r) ||
                             (cc.pointInsideNetwork(vertex,
-                                    network.getExternal())
+                                    network.getExternalEdges())
                                     && !outside
                                     && dist <= 1.05 * r && dist > 0.95 * r))) {
                 double[] p = new double[2];
@@ -521,8 +522,8 @@ public class AngleCalculatorSimple implements AngleCalculator {
 
                 Vertex c0 = new Vertex(x, y);
 
-                if ((!cc.pointInsideNetwork(c0, network.getExternal()) && outside) ||
-                        (cc.pointInsideNetwork(c0, network.getExternal()) && !outside)) {
+                if ((!cc.pointInsideNetwork(c0, network.getExternalEdges()) && outside) ||
+                        (cc.pointInsideNetwork(c0, network.getExternalEdges()) && !outside)) {
                     angles.add(Vertex.getClockwiseAngle(c0, v, w));
                     //window.markPoint(c0, 2);
                 }

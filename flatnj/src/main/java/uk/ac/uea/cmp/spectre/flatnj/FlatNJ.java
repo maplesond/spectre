@@ -23,6 +23,8 @@ import org.apache.commons.lang3.StringUtils;
 import uk.ac.tgac.metaopt.Objective;
 import uk.ac.tgac.metaopt.Optimiser;
 import uk.ac.tgac.metaopt.OptimiserFactory;
+import uk.ac.uea.cmp.spectre.core.ds.network.FlatNetwork;
+import uk.ac.uea.cmp.spectre.core.ds.network.Network;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
 import uk.ac.uea.cmp.spectre.core.ui.cli.CommandLineHelper;
 import uk.ac.uea.cmp.spectre.flatnj.ds.*;
@@ -278,7 +280,7 @@ public class FlatNJ {
 
         net = DrawFlat.drawsplitsystem(psDraw, -1, taxa);
 
-        network = new Network(net);
+        network = new FlatNetwork(net);
 
 
         LayoutOptimizer layoutOptimizer = new LayoutOptimizer();

@@ -49,7 +49,7 @@ public class Vertex {
 
     private String shape = null;
 
-    private Label label;
+    private NetworkLabel label;
 
     private EdgeList externalEdges = null;
 
@@ -166,14 +166,14 @@ public class Vertex {
         return fgColor;
     }
 
-    public void setLabel(Label label) {
+    public void setLabel(NetworkLabel label) {
         if (label != null) {
             label.setVertex(this);
         }
         this.label = label;
     }
 
-    public Label getLabel() {
+    public NetworkLabel getLabel() {
         return label;
     }
 
@@ -320,7 +320,7 @@ public class Vertex {
             return null;
 
         // Gets the vertex with the highest X value
-        Vertex v = vertices.getRightmostVertex();
+        Vertex v = vertices.getLeftmostVertex();
 
         Edge first = null;
 

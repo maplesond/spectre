@@ -17,7 +17,7 @@
 package uk.ac.uea.cmp.spectre.flatnj.tools;
 
 import uk.ac.uea.cmp.spectre.core.ds.Alignment;
-import uk.ac.uea.cmp.spectre.core.ds.network.Label;
+import uk.ac.uea.cmp.spectre.core.ds.network.NetworkLabel;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
 import uk.ac.uea.cmp.spectre.flatnj.ds.PermutationSequence;
 import uk.ac.uea.cmp.spectre.flatnj.ds.SplitSystem;
@@ -396,7 +396,7 @@ public class Utilities {
         while (vertexIt.hasNext()) {
             Vertex v = vertexIt.next();
 
-            Label l = v.getLabel();
+            NetworkLabel l = v.getLabel();
 
 
             corners[0] = (i == 0 || corners[0] > v.getX()) ? v.getX() : corners[0];
@@ -471,14 +471,6 @@ public class Utilities {
         rgb[2] = c.getBlue();
 
         return rgb;
-    }
-
-    public static Color getTextColor(Color bg) {
-        if (bg.getRed() <= 50 && bg.getGreen() <= 50 && bg.getBlue() <= 50) {
-            return Color.white;
-        } else {
-            return Color.black;
-        }
     }
 
     public static boolean differentSide(int x1, int y1, int x2, int y2,

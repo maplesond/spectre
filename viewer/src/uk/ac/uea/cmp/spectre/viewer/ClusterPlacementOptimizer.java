@@ -14,41 +14,20 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.core.ds.network;
+package uk.ac.uea.cmp.spectre.viewer;
 
-import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
-
-import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
- * Created by dan on 18/03/14.
+ * @author balvociute
  */
-public interface Network {
+abstract class ClusterPlacementOptimizer {
+    protected Window window;
 
-    IdentifierList getTaxa();
+    public abstract void placeClusterLabels(Set<Cluster> clusters,
+                                            Map<Integer, ViewerLabel> labels,
+                                            Window window);
 
-    VertexList getAllVertices();
 
-    VertexList getLabeledVertices();
-
-    void removeVertices(VertexList toRemove);
-
-    EdgeList getAllEdges();
-
-    EdgeList getInternalEdges();
-
-    EdgeList getExternalEdges();
-
-    Set<Edge> getExternalEdges(Edge e1, Vertex a, Edge e2);
-
-    EdgeList getTrivialEdges();
-
-    void addTrivialEdges(VertexList toAdd);
-
-    List<NetworkLabel> getLabels();
-
-    int getNbTaxa();
-
-    boolean veryLongTrivial();
 }

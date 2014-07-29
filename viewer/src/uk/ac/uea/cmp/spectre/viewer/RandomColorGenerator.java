@@ -14,41 +14,38 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.core.ds.network;
+package uk.ac.uea.cmp.spectre.viewer;
 
-import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
-
+import java.awt.*;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
+import java.util.Random;
 
 /**
- * Created by dan on 18/03/14.
+ * @author balvociute
  */
-public interface Network {
+class RandomColorGenerator implements ColorGenerator {
+    List<Color> colors;
+    Random random;
 
-    IdentifierList getTaxa();
+    public RandomColorGenerator() {
+        random = new Random();
+        colors = new LinkedList();
 
-    VertexList getAllVertices();
+        for (int r = 255; r > 100; r -= 30) {
+            for (int g = 255; g > 100; g -= 30) {
+                for (int b = 255; b > 100; b -= 30) {
+                    colors.add(new Color(r, g, b));
+                }
+            }
+        }
+    }
 
-    VertexList getLabeledVertices();
+    @Override
+    public Color nextColor() {
+        int i = random.nextInt(colors.size());
+        return colors.remove(i);
+    }
 
-    void removeVertices(VertexList toRemove);
 
-    EdgeList getAllEdges();
-
-    EdgeList getInternalEdges();
-
-    EdgeList getExternalEdges();
-
-    Set<Edge> getExternalEdges(Edge e1, Vertex a, Edge e2);
-
-    EdgeList getTrivialEdges();
-
-    void addTrivialEdges(VertexList toAdd);
-
-    List<NetworkLabel> getLabels();
-
-    int getNbTaxa();
-
-    boolean veryLongTrivial();
 }

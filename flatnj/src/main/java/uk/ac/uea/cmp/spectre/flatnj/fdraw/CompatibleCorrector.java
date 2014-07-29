@@ -16,10 +16,7 @@
 
 package uk.ac.uea.cmp.spectre.flatnj.fdraw;
 
-import uk.ac.uea.cmp.spectre.core.ds.network.Edge;
-import uk.ac.uea.cmp.spectre.core.ds.network.EdgeList;
-import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
-import uk.ac.uea.cmp.spectre.flatnj.ds.Network;
+import uk.ac.uea.cmp.spectre.core.ds.network.*;
 import uk.ac.uea.cmp.spectre.flatnj.tools.Utilities;
 
 import java.util.*;
@@ -146,7 +143,7 @@ public class CompatibleCorrector {
 
         int lastSplit = getHighestNexusId(V.getFirstEdge());
 
-        List<Vertex> allV = network.getVertices();
+        List<Vertex> allV = network.getAllVertices();
 
 
 //                Vertex some = vertices.getFirst();
@@ -157,8 +154,8 @@ public class CompatibleCorrector {
 //                c.elist.add(newE);
 //                vertices.add(c);
 
-        LinkedList<Vertex> newVertices = new LinkedList<>();
-        LinkedList<Vertex> oldVertices = new LinkedList<>();
+        VertexList newVertices = new VertexList();
+        VertexList oldVertices = new VertexList();
 
         for (int j = 0; j < allV.size(); j++) {
             Vertex v = allV.get(j);
@@ -254,10 +251,9 @@ public class CompatibleCorrector {
         }
 
         network.removeVertices(oldVertices);
-        network.addTrivial(newVertices);
-        Iterator<Vertex> labeledVertexIterator = network.getLabeled().iterator();
-        while (labeledVertexIterator.hasNext()) {
-            Vertex v = labeledVertexIterator.next();
+        network.addTrivialEdges(newVertices);
+
+        for(Vertex v : network.getLabeledVertices()) {
             v.setSize(3);
             v.setShape(null);
         }
@@ -443,14 +439,14 @@ public class CompatibleCorrector {
         Set<double[]> po = new HashSet<>();
         Set<double[]> li = new HashSet<>();
 
-        List<Edge> trivial = network.getTrivial();
+        List<Edge> trivial = network.getTrivialEdges();
 
         for (int i = 0; i < trivial.size(); i++) {
             Edge e = trivial.get(i);
             vertices.add(e.getBot().getElist().size() == 1 ? e.getBot() : e.getTop());
         }
 
-        double[] corners = Utilities.getCorners(network.getVertices());
+        double[] corners = Utilities.getCorners(network.getAllVertices());
         double X = (corners[0] + corners[1]) * 0.5;
         double Y = (corners[2] + corners[3]) * 0.5;
 
@@ -458,11 +454,11 @@ public class CompatibleCorrector {
 
         List<Edge> orderedTrivial = sortEdges(trivial, center, V);
 
-        List<Edge> external = network.getExternal();
+        List<Edge> external = network.getExternalEdges();
 
         //Collect all edges and remove all trivial and external ones so that
         //only inner edges remain.
-        List<Edge> inner = network.getInternal();
+        List<Edge> inner = network.getInternalEdges();
 
         //Variable to track if any changes were made;
         int corrected = 0;
@@ -484,8 +480,8 @@ public class CompatibleCorrector {
                     Vertex v = (e.getBot().getElist().size() == 1) ? e.getTop() : e.getBot();
                     Vertex w = e.getOther(v);
 
-                    List<Edge> edges = new LinkedList(network.getExternal());
-                    edges.addAll(network.getTrivial());
+                    List<Edge> edges = new LinkedList(network.getExternalEdges());
+                    edges.addAll(network.getTrivialEdges());
                     edges.remove(e);
 
 
@@ -494,18 +490,18 @@ public class CompatibleCorrector {
                     double[] environment = angleCalculator.optimizedAngleForCompatible2(v, w, e, edges, this, network, window, true);
 
                     if (environment.length == 0 && inside) {
-                        environment = angleCalculator.optimizedAngleForCompatible2(v, w, e, network.getInternal(), this, network, window, false);
+                        environment = angleCalculator.optimizedAngleForCompatible2(v, w, e, network.getInternalEdges(), this, network, window, false);
                     }
 
                     edges.add(e);
 
                     //Score current position
                     //trivial.remove(e);
-                    Score currentScore = getScore(w, v.getX(), v.getY(), w.getX(), w.getY(), trivial, e, inner, external, network.getLabeled());
+                    Score currentScore = getScore(w, v.getX(), v.getY(), w.getX(), w.getY(), trivial, e, inner, external, network.getLabeledVertices());
 
 
                     //Score all angles in the environment
-                    Score[] scores = scoreAngles(v, w, environment, trivial, e, inner, external, network.getLabeled());
+                    Score[] scores = scoreAngles(v, w, environment, trivial, e, inner, external, network.getLabeledVertices());
                     //trivial.add(e);
 
                     //Find the best angle:
@@ -765,9 +761,9 @@ public class CompatibleCorrector {
     }
 
     public double moveCompatible(Vertex V, int iterations, Window window, Network network) {
-        List<Edge> compatible = new EdgeList(network.getEdges()).getCompatible();
-        List<Edge> external = network.getExternal();
-        external.addAll(network.getTrivial());
+        List<Edge> compatible = new EdgeList(network.getAllEdges()).getCompatible();
+        List<Edge> external = network.getExternalEdges();
+        external.addAll(network.getTrivialEdges());
 
         Double corrected = 0.0;
 
@@ -800,7 +796,7 @@ public class CompatibleCorrector {
 
                 boolean moved = false;
 
-                List<Edge> trivial = network.getTrivial();
+                List<Edge> trivial = network.getTrivialEdges();
                 Iterator<Edge> eIt = trivial.iterator();
                 while (eIt.hasNext()) {
                     Edge ed = eIt.next();

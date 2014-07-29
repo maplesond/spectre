@@ -291,6 +291,7 @@
         <module>qtools</module>
         <module>flatnj</module>
         <module>padre</module>
+        <module>viewer</module>
 
         <!-- This gets executed last because it creates the distribution and the manual -->
         <module>dist</module>
