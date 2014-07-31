@@ -1,0 +1,8 @@
+/NexusFile.tokens
+/NexusFileBaseListener.java
+/NexusFileBaseVisitor.java
+/NexusFileLexer.java
+/NexusFileLexer.tokens
+/NexusFileListener.java
+/NexusFileParser.java
+/NexusFileVisitor.java

@@ -169,8 +169,8 @@
 
         <dependency>
             <groupId>uk.ac.uea.cmp.spectre</groupId>
-            <artifactId>flatnj</artifactId>
-            <version>2.0.1</version>
+            <artifactId>viewer</artifactId>
+            <version>${spectre-version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>uk.ac.uea.cmp.spectre</groupId>

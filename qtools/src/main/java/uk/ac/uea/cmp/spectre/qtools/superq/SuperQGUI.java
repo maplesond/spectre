@@ -26,7 +26,7 @@ import uk.ac.uea.cmp.spectre.core.ui.gui.JobController;
 import uk.ac.uea.cmp.spectre.core.ui.gui.JobControllerWithView;
 import uk.ac.uea.cmp.spectre.core.ui.gui.StatusTrackerWithView;
 import uk.ac.uea.cmp.spectre.core.ui.gui.ToolHost;
-import uk.ac.uea.cmp.spectre.flatnj.netvi.NetView;
+import uk.ac.uea.cmp.spectre.viewer.NetView;
 import uk.ac.uea.cmp.spectre.qtools.superq.problems.SecondaryProblemFactory;
 
 import javax.swing.*;
