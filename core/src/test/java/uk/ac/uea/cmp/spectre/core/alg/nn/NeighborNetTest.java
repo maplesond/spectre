@@ -16,28 +16,39 @@
 
 package uk.ac.uea.cmp.spectre.core.alg.nn;
 
+import org.apache.commons.lang3.time.StopWatch;
 import org.junit.Before;
 import org.junit.Test;
+import uk.ac.uea.cmp.spectre.core.ds.CircularOrdering;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.distance.FlexibleDistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 
 import static org.junit.Assert.assertTrue;
 
+/**
+ * Please consult TestMaticies_NNet.pdf in the resources folder for details and diagrams of the distance matrices and
+ * associated circular orderings.
+ *
+ * Note that it is not possible at the moment to automatically test all circular orderings due to unpredictable differences in
+ * the output.
+ */
 public class NeighborNetTest {
 
     private DistanceMatrix dist1;
     private DistanceMatrix dist2;
     private DistanceMatrix dist3;
+    private DistanceMatrix dist4;
+    private DistanceMatrix dist5;
 
     private NeighborNet oldNN;
     private NeighborNet newNN;
 
     private NeighborNetParams params;
 
-    private static final String orderDist1 = "[A,C,D,E,B]";
-    private static final String orderDist2 = "[A,B,C,D,E]";
-    private static final String orderDist3 = "[A,B,C,D,E]";
+    private static final CircularOrdering orderDist1 = new CircularOrdering(new String[]{"A","C","D","E","B"});
+
+    private static final double A_THIRD = 1.0/3.0;
 
     @Before
     public void setup() {
@@ -45,25 +56,18 @@ public class NeighborNetTest {
         this.oldNN = new NeighborNetOld();
         this.newNN = new NeighborNetImpl();
 
-        this.params = new NeighborNetParams(0.3, 0.3);
+        this.params = new NeighborNetParams(A_THIRD, A_THIRD);
 
         this.dist1 = new FlexibleDistanceMatrix(new double[][]{
-                {0, 3, 2, 5, 7},
-                {3, 0, 6, 6, 6},
-                {2, 6, 0, 3, 8},
-                {5, 6, 3, 0, 9},
-                {7, 6, 8, 9, 0}
+                {0, 2, 3, 4, 4},
+                {2, 0, 3, 4, 4},
+                {3, 3, 0, 3, 3},
+                {4, 4, 3, 0, 2},
+                {4, 4, 3, 2, 0}
         });
+
 
         this.dist2 = new FlexibleDistanceMatrix(new double[][]{
-                {0, 2, 4, 5, 4},
-                {2, 0, 5, 5, 4},
-                {4, 5, 0, 3, 4},
-                {5, 5, 3, 0, 3},
-                {4, 4, 4, 3, 0}
-        });
-
-        this.dist3 = new FlexibleDistanceMatrix(new double[][]{
                 {0, 4, 7, 7, 8},
                 {4, 0, 7, 7, 8},
                 {7, 7, 0, 6, 5},
@@ -71,64 +75,100 @@ public class NeighborNetTest {
                 {8, 8, 5, 5, 0}
         });
 
+
+        this.dist3 = new FlexibleDistanceMatrix(new double[][]{
+                {0, 2, 7, 7, 6, 6},
+                {2, 0, 7, 7, 6, 6},
+                {7, 7, 0, 2, 7, 7},
+                {7, 7, 2, 0, 7, 7},
+                {6, 6, 7, 7, 0, 2},
+                {6, 6, 7, 7, 2, 0}
+        });
+
+    }
+
+    private void test(DistanceMatrix dm, CircularOrdering correctResult) {
+
+        SplitSystem ssO = this.oldNN.execute(dm, this.params);
+        SplitSystem ssN = this.newNN.execute(dm, this.params);
+
+        CircularOrdering orderedTaxaOld = new CircularOrdering(ssO.getOrderedTaxa());
+        CircularOrdering orderedTaxaNew = new CircularOrdering(ssN.getOrderedTaxa());
+
+        if (correctResult != null) {
+            assertTrue(orderedTaxaOld.equals(correctResult));
+            assertTrue(orderedTaxaNew.equals(correctResult));
+        }
+        assertTrue(true);
     }
 
     @Test
-    public void testOldDist1() {
-
-        SplitSystem ss = this.oldNN.execute(this.dist1, this.params);
-
-        String orderedTaxa = ss.getOrderedTaxa().toString();
-
-        assertTrue(orderedTaxa.equalsIgnoreCase(orderDist1));
-        assertTrue(true);
+    public void testDist1() {
+        this.test(this.dist1, this.orderDist1);
     }
 
-    //@Test
-    public void testNewDist1() {
 
-        SplitSystem ss = this.newNN.execute(this.dist1, this.params);
-
-        String orderedTaxa = ss.getOrderedTaxa().toString();
-
-        assertTrue(orderedTaxa.equalsIgnoreCase(orderDist1));
-        assertTrue(true);
+    @Test
+    public void testDist2() {
+        this.test(this.dist2, null);//this.orderDist2);
     }
 
-    //@Test
-    public void testOldDist2() {
 
-        SplitSystem ss = this.oldNN.execute(this.dist2, this.params);
-
-        String orderedTaxa = ss.getOrderedTaxa().toString();
-
-        assertTrue(orderedTaxa.equalsIgnoreCase(orderDist2));
-        assertTrue(true);
-    }
-
-    //@Test
-    public void testNewDist2() {
-
-        SplitSystem ss = this.newNN.execute(this.dist2, this.params);
-
-        String orderedTaxa = ss.getOrderedTaxa().toString();
-
-        assertTrue(orderedTaxa.equalsIgnoreCase(orderDist2));
-        assertTrue(true);
-    }
-
-    //@Test
+    @Test
     public void testDist3() {
+        this.test(this.dist3, null); // this.orderDist3);
+    }
 
-        SplitSystem ssO = this.oldNN.execute(this.dist2, this.params);
-        SplitSystem ssN = this.newNN.execute(this.dist3, this.params);
+    @Test
+    public void testRuntime() {
 
-        String orderedTaxaOld = ssO.getOrderedTaxa().toString();
-        String orderedTaxaNew = ssN.getOrderedTaxa().toString();
+        DistanceMatrix dm = this.dist3;
 
-        assertTrue(orderedTaxaOld.equalsIgnoreCase(orderDist3));
-        assertTrue(orderedTaxaNew.equalsIgnoreCase(orderDist3));
-        assertTrue(true);
+        StopWatch sw1 = new StopWatch();
+        long memStart1 = getMemoryUse();
+        sw1.start();
+        SplitSystem ssO = this.oldNN.execute(dm, this.params);
+        sw1.stop();
+        long memEnd1 = getMemoryUse();
+        long mem1 = memEnd1 - memStart1;
+        System.out.println("Old implementation: Runtime (s):" + sw1.toString() + "; Mem usage (bytes): " + mem1);
+
+        StopWatch sw2 = new StopWatch();
+        long memStart2 = getMemoryUse();
+        sw2.start();
+        SplitSystem ssN = this.newNN.execute(dm, this.params);
+        sw2.stop();
+        long memEnd2 = getMemoryUse();
+        long mem2 = memEnd2 - memStart2;
+        System.out.println("New implementation: Runtime (s):" + sw2.toString() + "; Mem usage (bytes): " + mem2);
+
+    }
+
+    private long getMemoryUse(){
+        putOutTheGarbage();
+        long totalMemory = Runtime.getRuntime().totalMemory();
+        putOutTheGarbage();
+        long freeMemory = Runtime.getRuntime().freeMemory();
+        return (totalMemory - freeMemory);
+    }
+
+    private void putOutTheGarbage() {
+        collectGarbage();
+        collectGarbage();
+    }
+
+    private static long fSLEEP_INTERVAL = 100;
+
+    private void collectGarbage() {
+        try {
+            System.gc();
+            Thread.currentThread().sleep(fSLEEP_INTERVAL);
+            System.runFinalization();
+            Thread.currentThread().sleep(fSLEEP_INTERVAL);
+        }
+        catch (InterruptedException ex){
+            ex.printStackTrace();
+        }
     }
 
 }

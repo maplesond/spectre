@@ -25,10 +25,7 @@ import uk.ac.uea.cmp.spectre.core.ds.distance.FlexibleDistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.split.SpectreSplitSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Stack;
+import java.util.*;
 
 /**
  * Created by dan on 27/02/14.
@@ -36,21 +33,47 @@ import java.util.Stack;
 public class NeighborNetImpl implements NeighborNet {
 
     protected Stack<VertexTriplet> stackedVertexTriplets;
-    protected Component2VertexSetMap c2vsMap;
+    //protected Component2VertexSetMap c2vsMap;
     protected DistanceMatrix c2c;
-    protected DistanceMatrix c2v;       //TODO C2V needs to be changed... can't be symmetrical!  Requires new data structure!
+    protected C2VMatrix c2v;
     protected DistanceMatrix v2v;
     protected NeighborNetParams params;
 
     public NeighborNetImpl() {
         this.stackedVertexTriplets = null;
-        this.c2vsMap = null;
+        //this.c2vsMap = null;
         this.c2c = null;
         this.c2v = null;
         this.v2v = null;
         this.params = null;
     }
 
+    private void setupCandV(DistanceMatrix distanceMatrix) {
+
+        // Constructor should handle all the setup
+        this.c2v = new C2VMatrix(distanceMatrix);
+
+        this.c2c = new FlexibleDistanceMatrix();
+
+        IdentifierList components = c2v.getComponents();
+
+        for(Identifier i : components) {
+            for(Identifier j : components) {
+                this.c2c.setDistance(i , j, distanceMatrix.getDistance(i.getId(), j.getId()));
+            }
+        }
+
+        // DistanceMatrix between vertices and vertices (make deep copy from initial distance matrix)
+        this.v2v = new FlexibleDistanceMatrix();
+
+        IdentifierList vertices = c2v.getVertices();
+
+        for(Identifier i : vertices) {
+            for(Identifier j : vertices) {
+                this.v2v.setDistance(i , j, distanceMatrix.getDistance(i.getId(), j.getId()));
+            }
+        }
+    }
 
     @Override
     public SplitSystem execute(DistanceMatrix distanceMatrix, NeighborNetParams params) {
@@ -64,17 +87,9 @@ public class NeighborNetImpl implements NeighborNet {
         // Creates a simple split system with trivial splits from the given distance matrix
         SplitSystem treeSplits = new SpectreSplitSystem(distanceMatrix.getTaxa());
 
-        // Setup the component to vertexset map.  Initialise using a one to one mapping of each taxon to itself.
-        this.c2vsMap = new Component2VertexSetMap(distanceMatrix.getTaxa());
+        // DistanceMatrix between components (make deep copy from initial distance matrix and alter the names)
+        setupCandV(distanceMatrix);
 
-        // DistanceMatrix between components (make deep copy from initial distance matrix)
-        this.c2c = new FlexibleDistanceMatrix(distanceMatrix);
-
-        // DistanceMatrix between components and vertices (make deep copy from initial distance matrix)
-        this.c2v = new FlexibleDistanceMatrix(distanceMatrix);
-
-        // DistanceMatrix between vertices and vertices (make deep copy from initial distance matrix)
-        this.v2v = new FlexibleDistanceMatrix(distanceMatrix);
 
         // Reduce down to a max of 3 nodes
         while (v2v.size() > 3) {
@@ -101,14 +116,7 @@ public class NeighborNetImpl implements NeighborNet {
 
     protected IdentifierList expand() {
 
-        LinkedList<Integer> order = new LinkedList<>();
-
-        for (Map.Entry<Identifier, IdentifierList> components : c2vsMap.entrySet()) {
-
-            for(Identifier i : components.getValue()) {
-                order.add(i.getId());
-            }
-        }
+        LinkedList<Integer> order = this.c2v.getOrder();
 
         while (!this.stackedVertexTriplets.isEmpty()) {
 
@@ -136,57 +144,11 @@ public class NeighborNetImpl implements NeighborNet {
         return orderedTaxa;
     }
 
-
-    protected void updateC2C() {
-
-        // Clear the c2c matrix and start again
-        c2c = new FlexibleDistanceMatrix();
-
-        for (Map.Entry<Identifier, IdentifierList> components1 : c2vsMap.entrySet()) {
-
-            for (Map.Entry<Identifier, IdentifierList> components2 : c2vsMap.entrySet()) {
-
-                double sum1 = 0.0;
-
-                for (Identifier id1 : components1.getValue()) {
-                    for (Identifier id2 : components2.getValue()) {
-                        sum1 += v2v.getDistance(id1, id2);
-                    }
-                }
-
-                c2c.setDistance(components1.getKey(), components2.getKey(),
-                        1.0 / (components1.getValue().size() * components2.getValue().size()) * sum1);
-            }
-        }
-    }
-
-    protected void updateC2V() {
-
-        c2v = new FlexibleDistanceMatrix();
-
-        IdentifierList activeTaxa = v2v.getTaxa();
-
-        for (Map.Entry<Identifier, IdentifierList> components1 : c2vsMap.entrySet()) {
-
-            for (Identifier activeTaxon : activeTaxa) {
-
-                double sum1 = 0.0;
-
-                for (Identifier id1 : components1.getValue()) {
-                    sum1 += v2v.getDistance(id1, activeTaxon);
-                }
-
-                c2v.setDistance(components1.getKey(), activeTaxon,
-                        1.0 / components1.getValue().size() * sum1);
-            }
-        }
-    }
-
     protected Pair<Identifier, Identifier> reduce(Pair<Identifier, Identifier> selectedComponents, Pair<Identifier, Identifier> selectedVertices) {
 
         // Both should be 1 or 2 components in length
-        IdentifierList vertices1 = c2vsMap.get(selectedComponents.getLeft());
-        IdentifierList vertices2 = c2vsMap.get(selectedComponents.getRight());
+        IdentifierList vertices1 = c2v.getVertices(selectedComponents.getLeft());
+        IdentifierList vertices2 = c2v.getVertices(selectedComponents.getRight());
 
         IdentifierList vertexUnion = new IdentifierList();
         vertexUnion.addAll(vertices1);
@@ -288,34 +250,36 @@ public class NeighborNetImpl implements NeighborNet {
         double minQ = Double.MAX_VALUE;
 
         // Both should be 1 or 2 components in length
-        IdentifierList vertices1 = c2vsMap.get(selectedComponents.getLeft());
-        IdentifierList vertices2 = c2vsMap.get(selectedComponents.getRight());
+        IdentifierList vertices1 = this.c2v.getVertices(selectedComponents.getLeft());
+        IdentifierList vertices2 = this.c2v.getVertices(selectedComponents.getRight());
 
         IdentifierList vertexUnion = new IdentifierList();
         vertexUnion.addAll(vertices1);
         vertexUnion.addAll(vertices2);
 
-        for (Identifier id1 : vertices1) {
+        for (Identifier v1 : vertices1) {
 
-            for (Identifier id2 : vertices2) {
+            for (Identifier v2 : vertices2) {
 
-                final double sumId1 = c2v.getDistances(id1, null).sum() - c2v.getDistance(id1, selectedComponents.getRight());
-                final double sumId2 = c2v.getDistances(id2, null).sum() - c2v.getDistance(id2, selectedComponents.getLeft());
+                // Subtract the sum of distances from a given vertex in one of the selected components, from the distance between
+                // the given vertex and the other component.
+                final double sumV1 = c2v.sumVertex2Components(v1) - c2v.getDistance(selectedComponents.getRight(), v1);
+                final double sumV2 = c2v.sumVertex2Components(v2) - c2v.getDistance(selectedComponents.getLeft(), v2);
 
                 double sumVId1 = 0.0;
                 double sumVId2 = 0.0;
 
-                for (Identifier id3 : vertexUnion) {
-                    sumVId1 += c2v.getDistance(id1, id3);
-                    sumVId2 += c2v.getDistance(id2, id3);
+                for (Identifier v : vertexUnion) {
+                    sumVId1 += c2v.getDistance(v1, v);
+                    sumVId2 += c2v.getDistance(v2, v);
                 }
 
-                double q = ((vertexUnion.size() - 4 + vertices1.size() + vertices2.size()) * v2v.getDistance(id1, id2)) -
-                        sumId1 - sumId2 - sumVId1 - sumVId2;
+                double q = ((vertexUnion.size() - 4 + vertices1.size() + vertices2.size()) * v2v.getDistance(v1, v2)) -
+                        sumV1 - sumV2 - sumVId1 - sumVId2;
 
                 if (q < minQ) {
                     minQ = q;
-                    bestPair = new ImmutablePair<>(id1, id2);
+                    bestPair = new ImmutablePair<>(v1, v2);
                 }
             }
         }
@@ -326,19 +290,29 @@ public class NeighborNetImpl implements NeighborNet {
 
     protected void updateDataStructures(Pair<Identifier, Identifier> selectedComponents, Pair<Identifier, Identifier> newVertices) {
 
-        // Remove the selected components from step 1 from connected components
-        c2vsMap.remove(selectedComponents.getLeft());
-        c2vsMap.remove(selectedComponents.getRight());
 
-        // Add the grouped vertices to the c2vsmap under a new component
-        IdentifierList mergedSet = new IdentifierList();
-        mergedSet.add(newVertices.getLeft());
-        mergedSet.add(newVertices.getRight());
-        c2vsMap.put(c2vsMap.createNextIdentifier(), mergedSet);
+        this.c2v.update(selectedComponents, newVertices, this.v2v);
 
-        // Update c2c and c2v matrices with new c2vsMap info
-        this.updateC2C();
-        this.updateC2V();
+        // Simpler to clear the c2c matrix and start again... check to make sure this doesn't become a performance issue
+        // when the number of taxa is large
+        c2c = new FlexibleDistanceMatrix();
+
+        for (Map.Entry<Identifier, IdentifierList> components1 : this.c2v.getMapEntries()) {
+
+            for (Map.Entry<Identifier, IdentifierList> components2 : this.c2v.getMapEntries()) {
+
+                double sum1 = 0.0;
+
+                for (Identifier id1 : components1.getValue()) {
+                    for (Identifier id2 : components2.getValue()) {
+                        sum1 += v2v.getDistance(id1, id2);
+                    }
+                }
+
+                c2c.setDistance(components1.getKey(), components2.getKey(),
+                        1.0 / (components1.getValue().size() * components2.getValue().size()) * sum1);
+            }
+        }
     }
 
 
@@ -358,9 +332,11 @@ public class NeighborNetImpl implements NeighborNet {
 
         // Create two new taxa for the reduced
         Identifier newVertex1 = taxa.createNextIdentifier();
+        newVertex1.setName("V" + newVertex1.getId());
         taxa.add(newVertex1);
 
         Identifier newVertex2 = taxa.createNextIdentifier();
+        newVertex2.setName("V" + newVertex2.getId());
         taxa.add(newVertex2);
 
         // Setup shortcuts
@@ -407,6 +383,237 @@ public class NeighborNetImpl implements NeighborNet {
             this.vertex1 = vertex1;
             this.vertex2 = vertex2;
             this.vertex3 = vertex3;
+        }
+    }
+
+    protected static class Component2VertexSetMap extends HashMap<Identifier, IdentifierList> {
+
+        public Component2VertexSetMap(IdentifierList taxa) {
+
+            for (Identifier t : taxa) {
+                IdentifierList newTaxa = new IdentifierList();
+                newTaxa.add(t);
+                this.put(t, newTaxa);
+            }
+        }
+
+        public Identifier createNextIdentifier() {
+
+            int maxId = 0;
+
+            for (Identifier t : this.keySet()) {
+                if (maxId < t.getId()) {
+                    maxId = t.getId();
+                }
+            }
+
+            return new Identifier(maxId + 1);
+        }
+    }
+
+    protected static class C2VMatrix {
+
+        private IdentifierList components;
+        private IdentifierList vertices;
+
+        private Map<Pair<Identifier, Identifier>, Double> matrix;
+        private Map<Identifier, IdentifierList> c2vs;
+        private Map<Identifier, IdentifierList> v2cs;
+
+
+        public C2VMatrix() {
+            this.components = new IdentifierList();
+            this.vertices = new IdentifierList();
+            this.matrix = new HashMap<>();
+            this.c2vs = new HashMap<>();
+            this.v2cs = new HashMap<>();
+        }
+
+        /**
+         * Assumes id of vertex can be translated to component id
+         * @param v2v
+         */
+        public C2VMatrix(DistanceMatrix v2v) {
+
+            this();
+
+            for(Identifier i : v2v.getTaxa()) {
+                for(Identifier j : v2v.getTaxa()) {
+
+                    Identifier c = new Identifier("C" + Integer.toString(i.getId()), i.getId());
+                    Identifier v = new Identifier("V" + Integer.toString(j.getId()), j.getId());
+
+                    if (!components.contains(c)) {
+                        this.addComponent(c);
+                    }
+
+                    if (!vertices.contains(v)) {
+                        this.addVertex(v);
+                    }
+
+                    this.setDistance(c, v, v2v.getDistance(i, j));
+
+                    if (i.getId() != j.getId()) {
+                        this.addVertex(c, v);
+                        this.addComponent(v, c);
+                    }
+                }
+            }
+        }
+
+        public IdentifierList getComponents() {
+            return components;
+        }
+
+        public IdentifierList getVertices() {
+            return vertices;
+        }
+
+        public void addComponent(Identifier c) {
+
+            if (!components.contains(c)) {
+                this.components.add(c);
+            }
+        }
+
+        public void addVertex(Identifier v) {
+
+            if (!vertices.contains(v)) {
+                this.vertices.add(v);
+            }
+        }
+
+        public void addVertex(Identifier c, Identifier v) {
+
+            if (this.c2vs.get(c) == null) {
+                IdentifierList vs = new IdentifierList();
+                vs.add(v);
+                this.c2vs.put(c, vs);
+            }
+            else {
+                this.c2vs.get(c).add(v);
+            }
+        }
+
+        public void addComponent(Identifier v, Identifier c) {
+
+            if (this.v2cs.get(v) == null) {
+                IdentifierList cs = new IdentifierList();
+                cs.add(v);
+                this.v2cs.put(v, cs);
+            }
+            else {
+                this.v2cs.get(v).add(c);
+            }
+        }
+
+        public Identifier createNextComponent() {
+
+            int maxId = 0;
+
+            for (Identifier t : this.components) {
+                if (maxId < t.getId()) {
+                    maxId = t.getId();
+                }
+            }
+
+            maxId++;
+
+            return new Identifier("C" + Integer.toString(maxId), maxId);
+        }
+
+        public double setDistance(Identifier component, Identifier vertex, final double value) {
+
+            if (component == null || vertex == null)
+                throw new IllegalArgumentException("Need two valid taxa to set a distance");
+
+            Pair<Identifier, Identifier> pair = new ImmutablePair<>(component, vertex);
+            Double oldVal = this.matrix.get(pair);
+            this.matrix.put(pair, value);
+
+            return oldVal == null ? 0.0 : oldVal;
+        }
+
+        public double getDistance(final Identifier component, final Identifier vertex) {
+
+            if (component == null || vertex == null)
+                throw new IllegalArgumentException("Need two valid taxa to get a distance");
+
+            Double val = this.matrix.get(new ImmutablePair<>(component, vertex));
+
+            return val == null ? 0.0 : val;
+        }
+
+        public IdentifierList getVertices(Identifier component) {
+            return this.c2vs.get(component);
+        }
+
+
+        public LinkedList<Integer> getOrder() {
+            LinkedList<Integer> order = new LinkedList<>();
+
+            for (Map.Entry<Identifier, IdentifierList> entry : this.c2vs.entrySet()) {
+
+                for (Identifier i : entry.getValue()) {
+                    order.add(i.getId());
+                }
+            }
+            return order;
+        }
+
+        public Set<Map.Entry<Identifier, IdentifierList>> getMapEntries() {
+
+            return this.c2vs.entrySet();
+        }
+
+        public int sumVertex2Components(Identifier v) {
+
+            int sum = 0;
+
+            for (Map.Entry<Identifier, IdentifierList> entry : this.v2cs.entrySet()) {
+                for (Identifier c : entry.getValue()) {
+                    sum += this.getDistance(c, v);
+                }
+            }
+
+            return sum;
+        }
+
+        public void update(Pair<Identifier, Identifier> selectedComponents, Pair<Identifier, Identifier> newVertices,
+                           DistanceMatrix v2v) {
+
+            // Remove the selected components from step 1 from connected components
+            this.c2vs.remove(selectedComponents.getLeft());
+            this.c2vs.remove(selectedComponents.getRight());
+
+            this.vertices.add(newVertices.getLeft());
+            this.vertices.add(newVertices.getRight());
+
+            // Add the grouped vertices to the c2vsmap under a new component
+            IdentifierList mergedSet = new IdentifierList();
+            mergedSet.add(newVertices.getLeft());
+            mergedSet.add(newVertices.getRight());
+            Identifier newComponent = this.createNextComponent();
+            this.c2vs.put(newComponent, mergedSet);
+            this.components.add(newComponent);
+
+            this.matrix = new HashMap<>();
+
+            for (Map.Entry<Identifier, IdentifierList> components1 : this.getMapEntries()) {
+
+                for (Identifier v : v2v.getTaxa()) {
+
+                    double sum1 = 0.0;
+
+                    for (Identifier selectedVertex : components1.getValue()) {
+                        sum1 += v2v.getDistance(selectedVertex, v);
+                    }
+
+                    this.setDistance(components1.getKey(), v,
+                            1.0 / components1.getValue().size() * sum1);
+                }
+            }
+
         }
     }
 }
