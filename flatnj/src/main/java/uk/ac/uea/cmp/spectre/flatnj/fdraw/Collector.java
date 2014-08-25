@@ -18,6 +18,7 @@ package uk.ac.uea.cmp.spectre.flatnj.fdraw;
 
 
 import uk.ac.uea.cmp.spectre.core.ds.network.Edge;
+import uk.ac.uea.cmp.spectre.core.ds.network.draw.PermutationSequenceDraw;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
 
 import java.util.*;
@@ -284,9 +285,9 @@ public class Collector {
     }
 
     public static TreeSet<Edge>[] collectEgdesForTheSplits(PermutationSequenceDraw ps, Vertex v) {
-        TreeSet<Edge>[] splitedges = new TreeSet[ps.nswaps];
+        TreeSet<Edge>[] splitedges = new TreeSet[ps.getNswaps()];
 
-        for (int i = 0; i < ps.active.length; i++) {
+        for (int i = 0; i < ps.getnActive(); i++) {
             LinkedList<Edge> edges = v.collectEdgesForSplit(i);
             splitedges[i] = new TreeSet<>();
             for (int k = 0; k < edges.size(); k++) {
@@ -297,13 +298,13 @@ public class Collector {
     }
 
     public static int[] collectIndicesOfActiveSplits(PermutationSequenceDraw ps) {
-        int[] activeSplits = new int[ps.nActive];
+        int[] activeSplits = new int[ps.getnActive()];
 
         //Index used to fill in array of active splits
         int j = 0;
         //Go through all the splits and select active ones
-        for (int i = 0; i < ps.active.length; i++) {
-            if (ps.active[i]) {
+        for (int i = 0; i < ps.getnActive(); i++) {
+            if (ps.getActive()[i]) {
                 activeSplits[j++] = i;
             }
         }

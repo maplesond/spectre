@@ -25,6 +25,8 @@ import uk.ac.tgac.metaopt.Optimiser;
 import uk.ac.tgac.metaopt.OptimiserFactory;
 import uk.ac.uea.cmp.spectre.core.ds.network.FlatNetwork;
 import uk.ac.uea.cmp.spectre.core.ds.network.Network;
+import uk.ac.uea.cmp.spectre.flatnj.fdraw.DrawFlat;
+import uk.ac.uea.cmp.spectre.core.ds.network.draw.PermutationSequenceDraw;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
 import uk.ac.uea.cmp.spectre.core.ui.cli.CommandLineHelper;
 import uk.ac.uea.cmp.spectre.flatnj.ds.*;
@@ -278,7 +280,7 @@ public class FlatNJ {
                 ps.getActive(),
                 ps.getTrivial());
 
-        net = DrawFlat.drawsplitsystem(psDraw, -1, taxa);
+        net = DrawFlat.drawsplitsystem(psDraw, -1);
 
         network = new FlatNetwork(net);
 

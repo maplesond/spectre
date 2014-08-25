@@ -14,11 +14,12 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.flatnj.fdraw;
-//arrangement of pseudolines to the NNLS-algorithm
-//in such a way that the matrix-vector multiplications
-//can be carried out efficiently.
+package uk.ac.uea.cmp.spectre.core.ds.network.draw;
 
+/**
+ * Arrangement of pseudolines to the NNLS-algorithm in such a way that the matrix-vector multiplications can be carried
+ * out efficiently.
+ */
 public class ArrangementData {
     //For every swap we store the 4 edges incident
     //to the intersection of the corresponding

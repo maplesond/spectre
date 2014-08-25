@@ -18,7 +18,9 @@ package uk.ac.uea.cmp.spectre.flatnj.fdraw;
 
 
 import uk.ac.uea.cmp.spectre.core.ds.network.Network;
+import uk.ac.uea.cmp.spectre.core.ds.network.draw.PermutationSequenceDraw;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
+import uk.ac.uea.cmp.spectre.core.ds.network.draw.SplitSystemDraw;
 
 import java.util.LinkedList;
 import java.util.TreeSet;
@@ -65,8 +67,8 @@ public class LayoutOptimizer {
         //alone.
 
         int trivial = 2 + network.getTrivialEdges().size() / 10;
-        int precise = 2 + ps.ntaxa / 20;
-        int iterations = 2 + ps.ntaxa / 50;
+        int precise = 2 + ps.getNtaxa() / 20;
+        int iterations = 2 + ps.getNtaxa() / 50;
         int finish = precise + 5;
         int compatible = 1;// + ps.ntaxa / 40;
 

@@ -17,6 +17,7 @@
 package uk.ac.uea.cmp.spectre.flatnj.fdraw;
 
 import uk.ac.uea.cmp.spectre.core.ds.network.*;
+import uk.ac.uea.cmp.spectre.core.ds.network.draw.PermutationSequenceDraw;
 import uk.ac.uea.cmp.spectre.flatnj.tools.Utilities;
 
 import java.util.*;
@@ -109,7 +110,7 @@ public class CompatibleCorrector {
         Set<Edge> externalEdges = new HashSet<>();
         Collector.getExternalEdges(externalEdges, v.getElist().getFirst(), v, v.getElist().getFirst());
 
-        double[] trivial = pseq.trivial;
+        double[] trivial = pseq.getTrivial();
         if (trivial != null) {
             Set<Vertex> externalVertices = Collector.getExternalVertices(v.getElist().getFirst(), v.getElist().getFirst().getTop(), v.getElist().getFirst());
             externalVertices.addAll(Collector.getExternalVertices(v.getElist().getFirst(), v.getElist().getFirst().getBot(), v.getElist().getFirst()));
@@ -168,7 +169,7 @@ public class CompatibleCorrector {
 
                 for (int t = taxa.size() - 1; t >= 0; t--) {
                     Integer taxon = taxa.get(t);
-                    double length = ps.trivial[taxon];
+                    double length = ps.getTrivial()[taxon];
 
                     double x;
                     double y;

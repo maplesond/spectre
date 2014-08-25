@@ -16,6 +16,9 @@
 
 package uk.ac.uea.cmp.spectre.flatnj.fdraw;
 
+import uk.ac.uea.cmp.spectre.core.ds.network.draw.ArrangementData;
+import uk.ac.uea.cmp.spectre.core.ds.network.draw.PermutationSequenceDraw;
+
 import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -47,7 +50,7 @@ public class FitWeight {
 
         //Setting up the object containing information
         //about the arrangement of pseudolines.
-        ArrangementData arrdata = psequ.compute_arrangement();
+        ArrangementData arrdata = psequ.computeArrangement();
 
         //Setting up the temporary arrays used in the NNLS algorithm
         NNLSTempData tmpdata = new NNLSTempData();
@@ -58,19 +61,22 @@ public class FitWeight {
         //setting the epsilon to the value provided by the user.
         tmpdata.usereps = usereps;
 
+        final int nbSwaps = psequ.getNswaps();
+        final int nbActive = psequ.getnActive();
+
         //Arrays for storing the split weights
-        tmpdata.tempx = new double[psequ.nswaps];
-        tmpdata.oldx = new double[psequ.nActive];
-        tmpdata.curx = new double[psequ.nActive];
+        tmpdata.tempx = new double[nbSwaps];
+        tmpdata.oldx = new double[nbActive];
+        tmpdata.curx = new double[nbActive];
 
         //Getting the distance matrix as a 1-dimensional array.
-        tmpdata.b = new double[psequ.nswaps];
-        compute_dist_vector_arr(tmpdata.b, psequ.nswaps, dist, psequ);
+        tmpdata.b = new double[nbSwaps];
+        compute_dist_vector_arr(tmpdata.b, nbSwaps, dist, psequ);
 
         //Computing the product of the transpose of the
         //topological matrix of the split system and the
         //distance vector.
-        tmpdata.atb = new double[psequ.nActive];
+        tmpdata.atb = new double[nbActive];
         //compute_aty_arr(tmpdata.atb,tmpdata.tempx,tmpdata.b,arrdata.change,arrdata.arr,arrdata.lastswap,arrdata.upperlower,psequ);
         compute_aty_arr(tmpdata.atb, tmpdata.tempx, tmpdata.b, arrdata, psequ);
 
@@ -87,18 +93,18 @@ public class FitWeight {
         //Set flags to indicate which split weights are fixed to 0.
         //Initially no weights are fixed, that is, all flags are
         //set to false.
-        tmpdata.fixed = new boolean[psequ.nActive];
+        tmpdata.fixed = new boolean[nbActive];
         init_fixed(tmpdata.fixed);
 
         //Create object to store the indices of the splits with negative length.
         tmpdata.negweights = new TreeSet(new SplitWeight(0.0, 0));
 
         //Allocate memory for other arrays in tmpdata.
-        tmpdata.tempdist1 = new double[psequ.nswaps];
-        tmpdata.tempdist2 = new double[psequ.nswaps];
-        tmpdata.tempsplit1 = new double[psequ.nActive];
-        tmpdata.tempsplit2 = new double[psequ.nActive];
-        tmpdata.grad = new double[psequ.nActive];
+        tmpdata.tempdist1 = new double[nbSwaps];
+        tmpdata.tempdist2 = new double[nbSwaps];
+        tmpdata.tempsplit1 = new double[nbActive];
+        tmpdata.tempsplit2 = new double[nbActive];
+        tmpdata.grad = new double[nbActive];
 
         //Score of the objective function at the optimal length vector
         //found by the NNLS algorithm
@@ -109,8 +115,8 @@ public class FitWeight {
         System.out.println("Optimal score found in FitWeight: " + score);
 
         //store solution in weights array of the permutation sequence
-        for (i = 0; i < psequ.nswaps; i++) {
-            psequ.weights[i] = tmpdata.curx[i];
+        for (i = 0; i < nbSwaps; i++) {
+            psequ.setWeightAt(i, tmpdata.curx[i]);
         }
     }
 
@@ -139,7 +145,7 @@ public class FitWeight {
         //Upper bound on the number of iterations.
         //It would be good to investigate how many are really necessary.
         //In practice this seems to be more than enough.
-        int maxiter = 100 * psequ.nswaps;
+        int maxiter = 100 * psequ.getNswaps();
         int niter = 0;
 
         int i = 0;
@@ -244,23 +250,23 @@ public class FitWeight {
 
         //Temporary array used to store the induced distance
         //matrix as a 1-dimensional array.
-        double[] y = new double[psequ.nswaps];
+        double[] y = new double[psequ.getNswaps()];
 
         //Temporary array used in the matrix vector
         //multiplication.
-        double[] tempdist = new double[psequ.nswaps];
+        double[] tempdist = new double[psequ.getNswaps()];
 
         //Vector of the split weights.
-        double[] x = new double[psequ.nActive];
+        double[] x = new double[psequ.getnActive()];
 
         //loop variable
         int i = 0;
 
         //Copy the split weights to x. Splits that are not active
         //cannot contribute to the induced distance.
-        for (i = 0; i < psequ.nswaps; i++) {
-            if (psequ.active[i]) {
-                x[i] = psequ.weights[i];
+        for (i = 0; i < psequ.getNswaps(); i++) {
+            if (psequ.getActive()[i]) {
+                x[i] = psequ.getWeights()[i];
             } else {
                 x[i] = 0.0;
             }
@@ -268,7 +274,7 @@ public class FitWeight {
 
         //Get the neccessary information about the arrangement of
         //pseudolines.
-        ArrangementData arrdata = psequ.compute_arrangement();
+        ArrangementData arrdata = psequ.computeArrangement();
 
         //Compute the induced distance as a 1-dimensional array.
         compute_ax_arr(y, tempdist, x, arrdata.arr, psequ);
@@ -294,20 +300,26 @@ public class FitWeight {
      * psequ  --> permutation sequence representing a flat split system
      */
     public static void compute_dist_vector_arr(double[] b, int npairs, double[][] dist, PermutationSequenceDraw psequ) {
-        int[] cursequ = new int[psequ.ntaxa];
+
+        final int nbTaxa = psequ.getNtaxa();
+
+        int[] cursequ = new int[nbTaxa];
 
         int i = 0;
         int h = 0;
 
-        for (i = 0; i < psequ.ntaxa; i++) {
-            cursequ[i] = psequ.initSequ[i];
+        for (i = 0; i < nbTaxa; i++) {
+            cursequ[i] = psequ.getInitSequ()[i];
         }
 
         for (i = 0; i < npairs; i++) {
-            b[i] = dist[cursequ[psequ.swaps[i]]][cursequ[psequ.swaps[i] + 1]];
-            h = cursequ[psequ.swaps[i]];
-            cursequ[psequ.swaps[i]] = cursequ[psequ.swaps[i] + 1];
-            cursequ[psequ.swaps[i] + 1] = h;
+
+            final int swapI = psequ.getSwaps()[i];
+
+            b[i] = dist[cursequ[swapI]][cursequ[swapI + 1]];
+            h = cursequ[swapI];
+            cursequ[swapI] = cursequ[swapI + 1];
+            cursequ[swapI + 1] = h;
         }
     }
 
@@ -455,12 +467,12 @@ public class FitWeight {
         //Next we compute the length of the splits that
         //correspond to an unbounded face on the right
         //side of the arrangement
-        for (i = 0; i < psequ.ntaxa; i++) {
-            curvertex = arrdata.lastswap[psequ.initSequ[i]];
+        for (i = 0; i < psequ.getNtaxa(); i++) {
+            curvertex = arrdata.lastswap[psequ.getInitSequ()[i]];
 
             //check if curvertex corresponds to the face
             //below the current last edge
-            if (arrdata.upperlower[psequ.initSequ[i]] == 1) {
+            if (arrdata.upperlower[psequ.getInitSequ()[i]] == 1) {
                 curweight = curweight + arrdata.change[curvertex][1];
                 tempx[curvertex] = curweight;
             } else {
@@ -470,7 +482,7 @@ public class FitWeight {
 
         //Finally we progagate the length of the
         //rightmost splits through the arrangement
-        for (i = psequ.nswaps - 1; i >= 0; i--) {
+        for (i = psequ.getNswaps() - 1; i >= 0; i--) {
             if (arrdata.arr[i][3] >= 0) {
                 if (arrdata.arr[arrdata.arr[i][3]][0] == i) {
                     tempx[i] = tempx[arrdata.arr[i][3]] - arrdata.change[arrdata.arr[i][3]][1] + arrdata.change[i][1];
@@ -483,7 +495,7 @@ public class FitWeight {
         //It remains to copy the weights of the active
         //splits to x
         for (i = 0; i < tempx.length; i++) {
-            if (psequ.active[i]) {
+            if (psequ.getActive()[i]) {
                 x[i] = tempx[i];
             } else {
                 x[i] = 0.0;
@@ -533,7 +545,7 @@ public class FitWeight {
         double weight = 0.0;
 
         //Process vertices of the arrangement from right to left.
-        for (i = psequ.nswaps - 1; i >= 0; i--) {
+        for (i = psequ.getNswaps() - 1; i >= 0; i--) {
             weight = tmpdata.b[i];
 
             //walk along upper boundary of face
@@ -635,12 +647,15 @@ public class FitWeight {
      * psequ --> permutation sequence representing a flat split system
      */
     private static double[][] compute_dist_matrix_arr(double[] y, PermutationSequenceDraw psequ) {
+
+        final int nbTaxa = psequ.getNtaxa();
+
         //Distance matrix to be filled in
-        double[][] dist = new double[psequ.ntaxa][psequ.ntaxa];
+        double[][] dist = new double[nbTaxa][nbTaxa];
 
         //Temporary array use to store the current permutation
         //while sweeping through the arrangement of pseudolines
-        int[] cursequ = new int[psequ.ntaxa];
+        int[] cursequ = new int[nbTaxa];
 
         //loop variable
         int i = 0;
@@ -650,18 +665,21 @@ public class FitWeight {
 
         //Initialize current permutation and main diagonal
         //of distance matrix.
-        for (i = 0; i < psequ.ntaxa; i++) {
-            cursequ[i] = psequ.initSequ[i];
+        for (i = 0; i < nbTaxa; i++) {
+            cursequ[i] = psequ.getInitSequ()[i];
             dist[i][i] = 0.0;
         }
 
         //Sweep through arrangement of pseudolines.
         for (i = 0; i < y.length; i++) {
-            dist[cursequ[psequ.swaps[i]]][cursequ[psequ.swaps[i] + 1]] = y[i];
-            dist[cursequ[psequ.swaps[i] + 1]][cursequ[psequ.swaps[i]]] = y[i];
-            h = cursequ[psequ.swaps[i]];
-            cursequ[psequ.swaps[i]] = cursequ[psequ.swaps[i] + 1];
-            cursequ[psequ.swaps[i] + 1] = h;
+
+            final int swapI = psequ.getSwaps()[i];
+
+            dist[cursequ[swapI]][cursequ[swapI + 1]] = y[i];
+            dist[cursequ[swapI + 1]][cursequ[swapI]] = y[i];
+            h = cursequ[swapI];
+            cursequ[swapI] = cursequ[swapI + 1];
+            cursequ[swapI + 1] = h;
         }
 
         return dist;
@@ -688,9 +706,9 @@ public class FitWeight {
 
         //first collect length of splits to the
         //right of a swap
-        for (i = psequ.nswaps - 1; i >= 0; i--) {
-            if (psequ.active[i]) {
-                y[i] = x[psequ.compressed[i]];
+        for (i = psequ.getNswaps() - 1; i >= 0; i--) {
+            if (psequ.getActive()[i]) {
+                y[i] = x[psequ.getCompressed()[i]];
             } else {
                 y[i] = 0.0;
             }
@@ -728,7 +746,7 @@ public class FitWeight {
 
         //next collect length of splits to the
         //left of a swap
-        for (i = 0; i < psequ.nswaps; i++) {
+        for (i = 0; i < psequ.getNswaps(); i++) {
             tempdist[i] = 0.0;
 
             //walk along upper boundary of face
@@ -744,8 +762,8 @@ public class FitWeight {
                 }
             }
             if (leftmost >= 0) {
-                if (psequ.active[leftmost]) {
-                    tempdist[i] = (tempdist[i] - tempdist[leftmost]) + x[psequ.compressed[leftmost]];
+                if (psequ.getActive()[leftmost]) {
+                    tempdist[i] = (tempdist[i] - tempdist[leftmost]) + x[psequ.getCompressed()[leftmost]];
                 } else {
                     tempdist[i] = tempdist[i] - tempdist[leftmost];
                 }

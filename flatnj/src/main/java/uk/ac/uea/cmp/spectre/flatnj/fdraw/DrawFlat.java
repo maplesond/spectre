@@ -19,12 +19,14 @@ package uk.ac.uea.cmp.spectre.flatnj.fdraw;
 
 import uk.ac.uea.cmp.spectre.core.ds.network.Edge;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
-import uk.ac.uea.cmp.spectre.flatnj.ds.Taxa;
+import uk.ac.uea.cmp.spectre.core.ds.network.draw.PermutationSequenceDraw;
+import uk.ac.uea.cmp.spectre.core.ds.network.draw.SplitSystemDraw;
 
 import java.util.*;
 
-//This class provides the algorithm for drawing a
-//network representing a flat split system
+/**
+ * This class provides the algorithm for drawing a network representing a flat split system
+ */
 public class DrawFlat {
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 //Methods for computing a plane drawing of a split
@@ -35,17 +37,19 @@ public class DrawFlat {
     //******************************************************
     //public methods for computing a drawing of the network
     //******************************************************
-    //This method computes a split graph representing
-    //the flat split system given by a permutation sequence.
-    //It returns a vertex of the resulting split graph
-    //from which the network can be traversed.
-    //The split graph may contain unlabeled vertices of degree
-    //two and trivial splits may be represented by more than
-    //one edge in the network. This is the first step
-    //of the computation of the final network.
-    //It is provided as a public method for testing
-    //purposes.
-    public static Vertex compute_split_graph(PermutationSequenceDraw pseq, String[] taxaname, TreeSet[] splitedges) {
+
+    /**
+     * This method computes a split graph representing the flat split system given by a permutation sequence.  It returns
+     * a vertex of the resulting split graph from which the network can be traversed.  The split graph may contain
+     * unlabeled vertices of degree two and trivial splits may be represented by more than one edge in the network. This
+     * is the first step of the computation of the final network.  It is provided as a public method for testing
+     * purposes.
+     * @param pseq
+     * @param taxaname
+     * @param splitedges
+     * @return
+     */
+    public static Vertex computeSplitGraph(PermutationSequenceDraw pseq, String[] taxaname, TreeSet[] splitedges) {
         //Compute the leftmost edges in the network.
         //This also initializes the sets of edges
         //associated to each split.
@@ -129,7 +133,7 @@ public class DrawFlat {
 
         for (i = 0; i < ssyst.nsplits; i++) {
             //System.out.print("Split " + i + " "); 
-            if (pseq.active[i] && is_trivial(pseq, i, ssyst)) {
+            if (pseq.getActive()[i] && is_trivial(pseq, i, ssyst)) {
                 //System.out.println("is trivial");
                 LinkedList elist = u.collectEdgesForSplit(i);
                 //System.out.println(elist.size() + " edges collected");
@@ -161,7 +165,7 @@ public class DrawFlat {
         int nvert = vlist.size();
         int nedges = elist.size();
         //System.out.println("write " + filename);
-        psequ.compress_split_indices();
+        psequ.compressSplitIndices();
         //get the printwriter and write blocks
         PrintWriter pw = NexusIO.openprintwriter(filename);
         NexusIO.writeheader(pw);
@@ -170,20 +174,24 @@ public class DrawFlat {
         NexusIO.closeprintwriter(pw);
     } */
 
-    //This method is the main public method that should be
-    //called for computing a plane split network for a
-    //flat split system given as a permutation sequence.
-    public static Vertex drawsplitsystem(PermutationSequenceDraw pseq, double thr, Taxa taxa) {
+    /**
+     * This method is the main public method that should be called for computing a plane split network for a flat split
+     * system given as a permutation sequence.
+     * @param pseq
+     * @param thr
+     * @return
+     */
+    public static Vertex drawsplitsystem(PermutationSequenceDraw pseq, double thr) {
         pseq.restoreTrivialWeightsForExternalVertices();
 
         pseq.removeSplitsSmallerOrEqualThan(thr);
         //Array of sets of edges, one for each split
-        TreeSet[] splitedges = new TreeSet[pseq.nswaps];
+        TreeSet[] splitedges = new TreeSet[pseq.getNswaps()];
 
         //start timing
         long start = System.currentTimeMillis();
 
-        Vertex v = compute_split_graph(pseq, pseq.taxaname, splitedges);
+        Vertex v = computeSplitGraph(pseq, pseq.getTaxaname(), splitedges);
 
         uk.ac.uea.cmp.spectre.flatnj.tools.Writer w = new uk.ac.uea.cmp.spectre.flatnj.tools.Writer();
 
@@ -207,9 +215,9 @@ public class DrawFlat {
     //number of boxes
     public static void checkdrawsplitsystem(PermutationSequenceDraw pseq) {
         //Array of sets of edges, one for each split
-        TreeSet[] splitedges = new TreeSet[pseq.nswaps];
+        TreeSet[] splitedges = new TreeSet[pseq.getNswaps()];
 
-        Vertex v = compute_split_graph(pseq, pseq.taxaname, splitedges);
+        Vertex v = computeSplitGraph(pseq, pseq.getTaxaname(), splitedges);
         v = remove_compatible_boxes(v, pseq, true, splitedges);
     }
 
@@ -244,12 +252,12 @@ public class DrawFlat {
         System.out.print("Check active splits:");
 
         //check all pairs of active splits
-        for (i = 0; i < (psequ.nswaps - 1); i++) {
-            if (psequ.active[i]) {
+        for (i = 0; i < (psequ.getNswaps() - 1); i++) {
+            if (psequ.getActive()[i]) {
                 System.out.print("*");
 
-                for (j = i + 1; j < psequ.nswaps; j++) {
-                    if (psequ.active[j]) {
+                for (j = i + 1; j < psequ.getNswaps(); j++) {
+                    if (psequ.getActive()[j]) {
                         //System.out.print("Check splits " + i + " and " + j + " -- ");
                         pattern = ssyst.is_compatible(i, j);
                         if (pattern > 0) {
@@ -281,12 +289,14 @@ public class DrawFlat {
             nedges = nedges + splitedges[i].size();
         }
 
-        System.out.println("Number of active splits: " + psequ.nActive);
+        final int nbActive = psequ.getnActive();
+
+        System.out.println("Number of active splits: " + nbActive);
         System.out.println("Number of edges in network: " + nedges);
         System.out.println("Number of incompatible pairs: " + count);
-        System.out.println("Number of boxes: " + ((nedges - psequ.nActive) / 2));
+        System.out.println("Number of boxes: " + ((nedges - nbActive) / 2));
 
-        if ((check) && ((nedges - psequ.nActive) / 2) != count) {
+        if ((check) && ((nedges - nbActive) / 2) != count) {
             System.out.println("Numbers do not match!!!!!");
             System.exit(0);
         }
@@ -1569,20 +1579,20 @@ public class DrawFlat {
         Vertex v = null;
         Edge e = null;
 
-        Edge[] chain = new Edge[pseq.nActive];
+        Edge[] chain = new Edge[pseq.getnActive()];
 
         u = new Vertex(xcoord, ycoord);
 
-        for (i = 0; i < pseq.nswaps; i++) {
+        for (i = 0; i < pseq.getNswaps(); i++) {
             //create new set for edges associated to this split
             splitedges[i] = new TreeSet<>();
 
-            if (pseq.active[i]) {
-                dx = -Math.cos(((j + 1) * Math.PI) / (pseq.nActive + 1));
-                dy = -Math.sin(((j + 1) * Math.PI) / (pseq.nActive + 1));
+            if (pseq.getActive()[i]) {
+                dx = -Math.cos(((j + 1) * Math.PI) / (pseq.getnActive() + 1));
+                dy = -Math.sin(((j + 1) * Math.PI) / (pseq.getnActive() + 1));
 
-                xcoord = xcoord + (pseq.weights[i] * dx);
-                ycoord = ycoord + (pseq.weights[i] * dy);
+                xcoord = xcoord + (pseq.getWeights()[i] * dx);
+                ycoord = ycoord + (pseq.getWeights()[i] * dy);
 
                 v = u;
                 u = new Vertex(xcoord, ycoord);
@@ -1615,9 +1625,12 @@ public class DrawFlat {
         Edge e1 = null;
         Edge e2 = null;
 
-        for (i = 0; i < pseq.ntaxa; i++) {
+        for (i = 0; i < pseq.getNtaxa(); i++) {
             inverted = true;
             //System.out.println("Taxon " + pseq.initSequ[i]);
+
+            final int initSequI = pseq.getInitSequ()[i];
+
 
             while (inverted) {
                 inverted = false;
@@ -1626,8 +1639,8 @@ public class DrawFlat {
                     //test if the splits associated to edges
                     //chain[j-1] and chain[j] must be inverted
 
-                    if (ssyst.splits[chain[j - 1].getIdxsplit()][pseq.initSequ[i]] == 0
-                            && ssyst.splits[chain[j].getIdxsplit()][pseq.initSequ[i]] == 1) {
+                    if (ssyst.splits[chain[j - 1].getIdxsplit()][initSequI] == 0
+                            && ssyst.splits[chain[j].getIdxsplit()][initSequI] == 1) {
                         dx = (chain[j].getBot()).getX() - (chain[j].getTop()).getX();
                         dy = (chain[j].getBot()).getY() - (chain[j].getTop()).getY();
 
@@ -1654,30 +1667,30 @@ public class DrawFlat {
                 if (v == null) {
                     v = new Vertex(0.0, 0.0);
                 }
-                v.getTaxa().add(new Integer(pseq.initSequ[i]));
-                pseq.representedby[pseq.initSequ[i]] = 0;
-                if (pseq.initSequ[i] != 0) {
-                    pseq.activeTaxa[pseq.initSequ[i]] = false;
+                v.getTaxa().add(new Integer(initSequI));
+                pseq.setRepresentedByAt(initSequI, 0);
+                if (initSequI != 0) {
+                    pseq.setActiveTaxaAt(initSequI, false);
                 }
-                pseq.nclasses = 1;
+                pseq.setNClasses(1);
             } else {
                 v = chain[0].getTop();
                 for (j = 0; j < chain.length; j++) {
-                    if (ssyst.splits[chain[j].getIdxsplit()][pseq.initSequ[i]] == 0) {
-                        (chain[j].getTop()).getTaxa().addLast(new Integer(pseq.initSequ[i]));
+                    if (ssyst.splits[chain[j].getIdxsplit()][initSequI] == 0) {
+                        (chain[j].getTop()).getTaxa().addLast(new Integer(initSequI));
                         if (chain[j].getTop().getTaxa().size() > 1) {
-                            pseq.representedby[pseq.initSequ[i]] = ((Integer) (chain[j].getTop().getTaxa().getFirst())).intValue();
-                            pseq.activeTaxa[pseq.initSequ[i]] = false;
-                            pseq.nclasses--;
+                            pseq.setRepresentedByAt(initSequI, ((Integer) (chain[j].getTop().getTaxa().getFirst())).intValue());
+                            pseq.setActiveTaxaAt(initSequI, false);
+                            pseq.decrementNClasses();
                         }
                         break;
                     } else {
                         if (j == (chain.length - 1)) {
-                            (chain[j].getBot()).getTaxa().addLast(new Integer(pseq.initSequ[i]));
+                            (chain[j].getBot()).getTaxa().addLast(new Integer(initSequI));
                             if (chain[j].getBot().getTaxa().size() > 1) {
-                                pseq.representedby[pseq.initSequ[i]] = ((Integer) chain[j].getBot().getTaxa().getFirst()).intValue();
-                                pseq.activeTaxa[pseq.initSequ[i]] = false;
-                                pseq.nclasses--;
+                                pseq.setRepresentedByAt(initSequI, ((Integer) chain[j].getBot().getTaxa().getFirst()).intValue());
+                                pseq.setActiveTaxaAt(initSequI, false);
+                                pseq.decrementNClasses();
                             }
                         }
                     }
@@ -1697,12 +1710,12 @@ public class DrawFlat {
         int c = 0;
 
         for (i = 0; i < ssyst.ntaxa; i++) {
-            if (pseq.activeTaxa[i] == true) {
+            if (pseq.getActiveTaxa()[i] == true) {
                 c = c + ssyst.splits[s][i];
             }
         }
 
-        if ((c == 1) || (c == (pseq.nclasses - 1))) {
+        if ((c == 1) || (c == (pseq.getNclasses() - 1))) {
             return true;
         } else {
             return false;
@@ -1736,21 +1749,21 @@ public class DrawFlat {
         int idx = 0;
 
         for (i = 0; i < ssyst.ntaxa; i++) {
-            if (pseq.activeTaxa[i] == true) {
+            if (pseq.getActiveTaxaAt(i)) {
                 c = c + ssyst.splits[s][i];
             }
         }
 
         if (c == 1) {
             for (i = 0; i < ssyst.ntaxa; i++) {
-                if ((pseq.activeTaxa[i] == true) && (ssyst.splits[s][i] == 1)) {
+                if (pseq.getActiveTaxaAt(i) && (ssyst.splits[s][i] == 1)) {
                     idx = i;
                     break;
                 }
             }
         } else {
             for (i = 0; i < ssyst.ntaxa; i++) {
-                if ((pseq.activeTaxa[i] == true) && (ssyst.splits[s][i] == 0)) {
+                if (pseq.getActiveTaxaAt(i) && (ssyst.splits[s][i] == 0)) {
                     idx = i;
                     break;
                 }

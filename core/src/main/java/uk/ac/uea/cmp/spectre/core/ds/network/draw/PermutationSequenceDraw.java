@@ -14,19 +14,25 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.flatnj.fdraw;
+package uk.ac.uea.cmp.spectre.core.ds.network.draw;
 
-/*This class is used to store the permutation sequence representing
- a flat split system*/
 
+import uk.ac.uea.cmp.spectre.core.ds.split.SpectreSplitBlock;
+import uk.ac.uea.cmp.spectre.core.ds.split.Split;
+import uk.ac.uea.cmp.spectre.core.ds.split.SplitBlock;
+import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.spectre.core.util.CollectionUtils;
 
 import java.util.Random;
 
+/**
+ * This class is used to store the permutation sequence representing a flat split system
+ **/
 public class PermutationSequenceDraw {
-//*************************************************************
-//Variables used in this class
-//*************************************************************
+
+    //*************************************************************
+    //Variables used in this class
+    //*************************************************************
 
     //number of taxa
     int ntaxa = 0;
@@ -82,12 +88,17 @@ public class PermutationSequenceDraw {
     //weights of all trivial splits
     double[] trivial = null;
 
+
+
     //**********************************************************
-//Constructors for this class
-//**********************************************************
-    //Constructor of this class from a given initial sequence 
-    //and a sequence of swaps. Exists mainly for testing
-    //purposes.
+    //Constructors for this class
+    //**********************************************************
+
+    /**
+     * Constructor of this class from a given initial sequence and a sequence of swaps. Exists mainly for testing purposes
+     * @param in_init_sequ
+     * @param in_swaps
+     */
     public PermutationSequenceDraw(int[] in_init_sequ, int[] in_swaps) {
         int i = 0;
 
@@ -124,9 +135,16 @@ public class PermutationSequenceDraw {
         }
     }
 
-    //Constructor of this class from a given initial sequence,
-    //a sequence of swaps, weights and array of active flags. Fot the
-    //transition from PS in FNet.
+
+    /**
+     * Constructor of this class from a given initial sequence, a sequence of swaps, weights and array of active flags.
+     * For the transition from PS in FNet.
+     * @param in_init_sequ
+     * @param in_swaps
+     * @param in_weights
+     * @param in_active
+     * @param trivialWeights
+     */
     public PermutationSequenceDraw(int[] in_init_sequ, int[] in_swaps, double[] in_weights, boolean[] in_active, double[] trivialWeights) {
         int i = 0;
 
@@ -168,9 +186,95 @@ public class PermutationSequenceDraw {
         }
 
         nActive = CollectionUtils.size(active);
-
     }
 
+
+    /**
+     * Constructor for this class from a SplitSystem-object. This is just used as a quick and dirty way to feed circular
+     * split systems into the drawing algorithm and then display them with the viewer.
+     * @param ss
+     */
+    public PermutationSequenceDraw(SplitSystem ss){
+        int h = 0;
+        int i = 0;
+        int j = 0;
+        int k = 0;
+        int a = 0;
+
+        //first get the number of taxa and number of splits
+        //in a full circular split system on that number of taxa
+        ntaxa = ss.getNbTaxa();
+        nclasses = ntaxa;
+        nswaps = ntaxa * (ntaxa - 1) / 2;;
+        nActive = nswaps;
+
+        //assume for now that all splits have weights and
+        //and all splits are active, that is, the split system is full
+        hasWeights = true;
+        hasActiveFlags = true;
+
+        //set up the arrays used to store all the information about the split system
+        initSequ = new int[ntaxa];
+        representedby = new int[ntaxa];
+        activeTaxa = new boolean[ntaxa];
+        taxaname = new String[ntaxa];
+        trivial = new double[ntaxa];
+
+        swaps = new int[nswaps];
+        active = new boolean[nswaps];
+        compressed = new int[nswaps];
+        weights = new double[nswaps];
+
+        //store information about the taxa in arrays
+        for (i = 0; i < ntaxa; i++) {
+            initSequ[i] = i;
+            representedby[i] = i;
+            activeTaxa[i] = true;
+            taxaname[i] = ss.getOrderedTaxa().get(i).getName();
+            trivial[i] = 0.0; //no extra length added to pendant edge;
+        }
+
+        //array used to store the current permutation from which
+        //we extract the current split
+        int[] cursequ = new int[ntaxa];
+        for (i = 0; i < ntaxa; i++) {
+            cursequ[i] = initSequ[i];
+        }
+
+        //the generic structure of a circular split system
+        for (i = 0; i < ntaxa; i++) {
+            for (j = 0; j < ntaxa - i - 1; j++) {
+                swaps[k] = j;
+                compressed[k] = k;
+                weights[k] = 0;
+                active[k] = false;
+
+                //update current permutation
+                h = cursequ[j];
+                cursequ[j] = cursequ[j + 1];
+                cursequ[j + 1] = h;
+
+                //get the split represented by this swap
+                int[] sideA = new int[j+1]; //get one side of the split as an int-array, the elements must be the ids according to the identifier list
+                for(a=0;a<=j;a++) {sideA[a]=cursequ[a];}
+                SplitBlock ssb = new SpectreSplitBlock(sideA);
+                ssb.sort();
+
+                //next check whether the input split system contains a split with one SplitBlock equal to the one we just created
+                for (Split s : ss) {
+                    s.getASide().sort();
+                    if(s.getASide().equals(ssb) || s.getBSide().equals(ssb)){
+                        weights[k] = s.getWeight();
+                        if(weights[k] > 0) {active[k] = true;}
+                    }
+                }
+                k++;
+            }
+        }
+
+        //update number of active splits
+        nActive = CollectionUtils.size(active);
+    }
 
     //Constructor of this class from a permutation
     //sequence stored in a nexus file
@@ -216,7 +320,7 @@ public class PermutationSequenceDraw {
             }
 
             if (thold >= 0.0) {
-                set_active(thold);
+                setActive(thold);
             }
         }
         NexusIO.closelinereader(lnr);
@@ -325,8 +429,10 @@ public class PermutationSequenceDraw {
         NexusIO.closelinereader(lnr);
     }*/
 
-    //Constructor of a template for a circular
-    //split system from a list of taxa 
+    /**
+     * Constructor of a template for a circular split system from a list of taxa
+     * @param tname
+     */
     public PermutationSequenceDraw(String[] tname) {
         ntaxa = tname.length;
         nswaps = ntaxa * (ntaxa - 1) / 2;
@@ -368,13 +474,18 @@ public class PermutationSequenceDraw {
         }
     }
 
-    //Constructor that generates a random permutation
-    //sequence. The first parameter is the number of
-    //taxa. The second parameter is used to indicate
-    //the type of split system:
-    //t = 0: general flat split system
-    //t = 1: circular split system
-    public PermutationSequenceDraw(int n, int t) {
+    public static enum SplitSystemType {
+        FLAT,
+        CIRCULAR
+    }
+
+    /**
+     * Constructor that generates a random permutation sequence. The first parameter is the number of taxa. The second
+     * parameter is used to indicate the type of split system: general flat or circular
+     * @param n
+     * @param t
+     */
+    public PermutationSequenceDraw(int n, SplitSystemType t) {
         ntaxa = n;
         nswaps = ntaxa * (ntaxa - 1) / 2;
         nActive = nswaps;
@@ -415,7 +526,7 @@ public class PermutationSequenceDraw {
         }
 
         //circular split system
-        if (t == 1) {
+        if (t == SplitSystemType.CIRCULAR) {
             for (i = 0; i < ntaxa; i++) {
                 initSequ[i] = i;
             }
@@ -436,7 +547,7 @@ public class PermutationSequenceDraw {
             }
         }
         //general flat split system
-        else if (t == 0) {
+        else if (t == SplitSystemType.FLAT) {
             for (i = 0; i < ntaxa; i++) {
                 initSequ[i] = i;
             }
@@ -493,56 +604,152 @@ public class PermutationSequenceDraw {
         }
     }
 
-    //*********************************************************************
-//Other public methods of this class
-//*********************************************************************
-    //This method prints the sequence on the screen.
-    public void print_sequence() {
-        int i = 0;
+    //***********************************
+    // Getters
+    //***********************************
 
-        System.out.print("Number of taxa: ");
-        System.out.println(ntaxa);
 
-        System.out.println("List of taxa:");
-        for (i = 0; i < ntaxa; i++) {
-            System.out.println(taxaname[i]);
-        }
-
-        System.out.print("Initial permutation: ");
-        for (i = 0; i < ntaxa; i++) {
-            System.out.print(initSequ[i] + " ");
-        }
-        System.out.print("\n");
-
-        System.out.print("Sequence of swaps: ");
-        for (i = 0; i < nswaps; i++) {
-            System.out.print(swaps[i] + " ");
-        }
-        System.out.print("\n");
-
-        if (hasWeights) {
-            System.out.print("Weights: ");
-            for (i = 0; i < nswaps; i++) {
-                System.out.print(weights[i] + " ");
-            }
-            System.out.print("\n");
-        }
-
-        System.out.print("Active swaps: ");
-        for (i = 0; i < nswaps; i++) {
-            if (active[i]) {
-                System.out.print("1 ");
-            } else {
-                System.out.print("0 ");
-            }
-        }
-        System.out.print("\n");
+    public int getNtaxa() {
+        return ntaxa;
     }
 
-    //This method filters the splits by labeling
-    //those with a length below the given threshold
-    //inactive.
-    public void set_active(double thold) {
+    public int getNswaps() {
+        return nswaps;
+    }
+
+    public boolean isHasWeights() {
+        return hasWeights;
+    }
+
+    public boolean isHasActiveFlags() {
+        return hasActiveFlags;
+    }
+
+    public int getnActive() {
+        return nActive;
+    }
+
+    public int getNclasses() {
+        return nclasses;
+    }
+
+    public void setNClasses(final int value) {
+        nclasses = value;
+    }
+
+    public void decrementNClasses() {
+        nclasses--;
+    }
+
+    public int[] getInitSequ() {
+        return initSequ;
+    }
+
+    public String[] getTaxaname() {
+        return taxaname;
+    }
+
+    public int[] getSwaps() {
+        return swaps;
+    }
+
+    public boolean[] getActive() {
+        return active;
+    }
+
+    public int[] getRepresentedby() {
+        return representedby;
+    }
+
+    public void setRepresentedByAt(final int index, final int value) {
+        representedby[index] = value;
+    }
+
+    public boolean[] getActiveTaxa() {
+        return activeTaxa;
+    }
+
+    public boolean getActiveTaxaAt(final int index) {
+        return activeTaxa[index];
+    }
+
+    public void setActiveTaxaAt(final int index, boolean value) {
+        activeTaxa[index] = value;
+    }
+
+    public int[] getCompressed() {
+        return compressed;
+    }
+
+    public double[] getTrivial() {
+        return trivial;
+    }
+
+    public double[] getWeights() {
+        return weights;
+    }
+
+    public void setWeightAt(final int index, double value) {
+        weights[index] = value;
+    }
+
+    //*********************************************************************
+    //Other public methods of this class
+    //*********************************************************************
+
+    /**
+     * Returns a string representation of this sequence
+     */
+    @Override
+    public String toString() {
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("Number of taxa: ").append(ntaxa)
+          .append("List of taxa:");
+
+        for (int i = 0; i < ntaxa; i++) {
+            sb.append(taxaname[i]);
+        }
+
+        sb.append("Initial permutation: ");
+        for (int i = 0; i < ntaxa; i++) {
+            sb.append(initSequ[i] + " ");
+        }
+
+        sb.append("\nSequence of swaps: ");
+        for (int i = 0; i < nswaps; i++) {
+            sb.append(swaps[i] + " ");
+        }
+
+        sb.append("\n");
+
+        if (hasWeights) {
+            sb.append("Weights: ");
+            for (int i = 0; i < nswaps; i++) {
+                sb.append(weights[i] + " ");
+            }
+            sb.append("\n");
+        }
+
+        sb.append("Active swaps: ");
+        for (int i = 0; i < nswaps; i++) {
+            if (active[i]) {
+                sb.append("1 ");
+            } else {
+                sb.append("0 ");
+            }
+        }
+        sb.append("\n");
+
+        return sb.toString();
+    }
+
+    /**
+     * This method filters the splits by labeling those with a length below the given threshold inactive.
+     * @param thold
+     */
+    public void setActive(double thold) {
         if (active == null) {
             active = new boolean[nswaps];
         }
@@ -605,118 +812,98 @@ public class PermutationSequenceDraw {
         nActive = nswaps;
     }
 
-    //Checks whether the permutation sequence is
-    //valid, that is, whether all arrays have
-    //been initialized properly and whether every 
-    //pair of distinct taxe swaps precisely once. 
-    //The latter test, in particular, was included
-    //to detect potential numerical problems when
-    //constructing a permutation sequence from a
-    //set of points in the plane whose coordinates
-    //are given by floating point numbers.
-    public int checkconsistency() {
+    /**
+     * Checks whether the permutation sequence is valid, that is, whether all arrays have been initialized properly and
+     * whether every pair of distinct taxe swaps precisely once.  The latter test, in particular, was included to detect
+     * potential numerical problems when constructing a permutation sequence from a set of points in the plane whose
+     * coordinates are given by floating point numbers.
+     * @return
+     */
+    public boolean checkConsistency() {
         int i = 0;
         int j = 0;
         int k = 0;
         int h = 0;
 
         if (initSequ == null) {
-            System.out.println("Array init_sequ is null");
-            return 1;
+            throw new IllegalStateException("Array init_sequ is null");
         }
 
         if (taxaname == null) {
-            System.out.println("Array taxaname is null");
-            return 1;
+            throw new IllegalStateException("Array taxaname is null");
         }
 
         if (swaps == null) {
-            System.out.println("Array swaps is null");
-            return 1;
+            throw new IllegalStateException("Array swaps is null");
         }
 
         if (active == null) {
-            System.out.println("Array active is null");
-            return 1;
+            throw new IllegalStateException("Array active is null");
         }
 
         if (representedby == null) {
-            System.out.println("Array representedby is null");
-            return 1;
+            throw new IllegalStateException("Array representedby is null");
         }
 
         if (activeTaxa == null) {
-            System.out.println("Array activetaxa is null");
-            return 1;
+            throw new IllegalStateException("Array activetaxa is null");
         }
 
         if (weights == null) {
-            System.out.println("Array weights is null");
-            return 1;
+            throw new IllegalStateException("Array weights is null");
         }
 
         if (initSequ.length != ntaxa) {
-            System.out.println("Length of array init_sequ not okay");
-            return 1;
+            throw new IllegalStateException("Length of array init_sequ not okay");
         }
 
         if (taxaname.length != ntaxa) {
-            System.out.println("Length of array taxaname not okay");
-            return 1;
+            throw new IllegalStateException("Length of array taxaname not okay");
         }
 
         if (swaps.length != nswaps) {
-            System.out.println("Length of array swaps not okay");
-            return 1;
+            throw new IllegalStateException("Length of array swaps not okay");
         }
 
         if (active.length != nswaps) {
-            System.out.println("Length of array active not okay");
-            return 1;
+            throw new IllegalStateException("Length of array active not okay");
         }
 
         if (representedby.length != ntaxa) {
-            System.out.println("Length of array representedby not okay");
-            return 1;
+            throw new IllegalStateException("Length of array representedby not okay");
         }
 
         if (activeTaxa.length != ntaxa) {
-            System.out.println("Length of array activetaxa not okay");
-            return 1;
+            throw new IllegalStateException("Length of array activetaxa not okay");
         }
 
         if (weights.length != nswaps) {
-            System.out.println("Length of array weights not okay");
-            return 1;
+            throw new IllegalStateException("Length of array weights not okay");
         }
 
         for (i = 0; i < (ntaxa - 1); i++) {
             for (j = i + 1; j < ntaxa; j++) {
                 if (initSequ[i] == initSequ[j]) {
-                    System.out.println("Entries of init_sequ are not pairwise distinct");
-                    return 1;
+                    throw new IllegalStateException("Entries of init_sequ are not pairwise distinct");
                 }
             }
         }
 
         for (i = 0; i < ntaxa; i++) {
             if ((initSequ[i] < 0) || (initSequ[i] >= ntaxa)) {
-                System.out.println("Entries of init_sequ are not in range 0,1,...,(ntaxa-1)");
-                return 1;
+                throw new IllegalStateException("Entries of init_sequ are not in range 0,1,...,(ntaxa-1)");
             }
         }
 
         for (i = 0; i < nswaps; i++) {
             if (weights[i] < 0.0) {
-                System.out.println("Some split weights are negative");
-                return 1;
+                throw new IllegalStateException("Some split weights are negative");
             }
         }
 
         for (i = 0; i < ntaxa; i++) {
             if (taxaname[i] == null) {
-                System.out.println("Some names of taxa are null");
-                return 1;
+                throw new IllegalStateException("Some names of taxa are null");
             }
         }
 
@@ -727,8 +914,7 @@ public class PermutationSequenceDraw {
             }
         }
         if (h != nActive) {
-            System.out.println("Number of active splits not okay");
-            return 1;
+            throw new IllegalStateException("Number of active splits not okay");
         }
 
         boolean[][] swapped = new boolean[ntaxa][ntaxa];
@@ -752,54 +938,17 @@ public class PermutationSequenceDraw {
                 cursequ[swaps[k]] = cursequ[swaps[k] + 1];
                 cursequ[swaps[k] + 1] = h;
             } else {
-                System.out.println("Sequence of swaps not valid");
-                return 1;
+                throw new IllegalStateException("Sequence of swaps not valid");
             }
         }
 
-        //System.out.println("Permutation sequence set up okay");
-        return 0;
-    }
-    /*
-    //This method opens a nexus file and writes the 
-    //permutation sequence to a flatsplits block in
-    //a nexus file. 
-    public void write_to_flatplits_block(String filename) {
-        PrintWriter pw = NexusIO.openprintwriter(filename);
-        NexusIO.writeheader(pw);
-        NexusIO.writetaxa(ntaxa, taxaname, pw);
-        NexusIO.writeflatsplits(ntaxa, nswaps, this, pw);
-        NexusIO.closeprintwriter(pw);
+        return true;
     }
 
-    //This method opens a nexus file and writes the 
-    //permutation sequence to a splits block in
-    //a nexus file. 
-    public void write_to_splits_block(String filename) {
-        PrintWriter pw = NexusIO.openprintwriter(filename);
-        NexusIO.writeheader(pw);
-        NexusIO.writetaxa(ntaxa, taxaname, pw);
-        NexusIO.writesplits(ntaxa, nActive, this, pw);
-        NexusIO.closeprintwriter(pw);
-    }
-
-    //This method writes the split system and the
-    //induced distance matrix to a nexus file
-    public void write_induced_distances(String filename) {
-        double[][] dist = FitWeight.compute_induced_distance_arr(this);
-        PrintWriter pw = NexusIO.openprintwriter(filename);
-
-        NexusIO.writeheader(pw);
-        NexusIO.writetaxa(ntaxa, taxaname, pw);
-        NexusIO.writeflatsplits(ntaxa, nswaps, this, pw);
-        NexusIO.writedistances(ntaxa, dist, pw);
-        NexusIO.closeprintwriter(pw);
-    } */
-
-    //We need to number the active splits consecutively
-    //since SplitsTree seems only able to handle indices
-    //up to 10000
-    public void compress_split_indices() {
+    /**
+     * We need to number the active splits consecutively since SplitsTree seems only able to handle indices up to 10000
+     */
+    public void compressSplitIndices() {
         int i = 0;
 
         if (compressed == null) {
@@ -857,11 +1006,12 @@ public class PermutationSequenceDraw {
         return dist;
     }
 
-    //This method computes information about the graph 
-    //that corresponds to the arrangement of pseudolines
-    //that is used to carry out matrix-vector multiplications
-    //efficiently in the class FitWeight. 
-    public ArrangementData compute_arrangement() {
+    /**
+     * This method computes information about the graph that corresponds to the arrangement of pseudolines that is used
+     * to carry out matrix-vector multiplications efficiently in the class FitWeight.
+     * @return
+     */
+    public ArrangementData computeArrangement() {
         //Create the object that stores the information about the arrangement
         ArrangementData arrdata = new ArrangementData();
         //Allocate memory for the arrays in this object.
@@ -915,9 +1065,9 @@ public class PermutationSequenceDraw {
         return arrdata;
     }
 
-    //This method is used to set the flags
-    //so that the local search is performed
-    //on full flat split systems
+    /**
+     * This method is used to set the flags so that the local search is performed on full flat split systems
+     */
     public void init_local_search() {
         hasWeights = true;
         hasActiveFlags = true;
@@ -927,7 +1077,7 @@ public class PermutationSequenceDraw {
         for (i = 0; i < nswaps; i++) {
             active[i] = true;
         }
-        compress_split_indices();
+        compressSplitIndices();
     }
 
     //********************************************************************
@@ -961,7 +1111,7 @@ public class PermutationSequenceDraw {
         }
     }
 
-    void restoreTrivialWeightsForExternalVertices() {
+    public void restoreTrivialWeightsForExternalVertices() {
         SplitSystemDraw ss = new SplitSystemDraw(this);
         double min = -1;
         for (int i = 0; i < trivial.length; i++) {
@@ -1040,16 +1190,15 @@ public class PermutationSequenceDraw {
         }
     }
 
-    public double[] getWeights() {
-        return weights;
-    }
+
+
 
     public void setTaxaNames(String[] taxaNames) {
         taxaname = new String[taxaNames.length];
         System.arraycopy(taxaNames, 0, taxaname, 0, taxaNames.length);
     }
 
-    void removeSplitsSmallerOrEqualThan(double thr) {
+    public void removeSplitsSmallerOrEqualThan(double thr) {
         for (int i = 0; i < weights.length; i++) {
             if (weights[i] <= 0) {
                 active[i] = false;

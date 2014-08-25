@@ -14,10 +14,11 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.flatnj.fdraw;
+package uk.ac.uea.cmp.spectre.core.ds.network.draw;
 
-/*This class implements methods to handle a weighted split system*/
-
+/**
+ * This class implements methods to handle a weighted split system
+ */
 public class SplitSystemDraw {
     //number of taxa
 
@@ -32,8 +33,10 @@ public class SplitSystemDraw {
     //The ordering of taxa is 0,1,...,ntaxa-1.
     public int[][] splits = null;
 
-    //This method prints information about the split system on the screen
-    public void print_splits() {
+    /**
+     * This method prints information about the split system on the screen
+     */
+    public void printSplits() {
         int i = 0;
         int j = 0;
 
@@ -50,11 +53,12 @@ public class SplitSystemDraw {
         }
     }
 
-    //Constructor of this class from a permutation sequence.
-    //The coding by 0/1 is such that a taxon is on the
-    //1-side of the split if it lies below the face
-    //represening the split. The pseudoline arrangement
-    //is given as a permutation sequence.
+    /**
+     * Constructor of this class from a permutation sequence. The coding by 0/1 is such that a taxon is on the 1-side of
+     * the split if it lies below the face represening the split. The pseudoline arrangement is given as a permutation
+     * sequence.
+     * @param p_sequ
+     */
     public SplitSystemDraw(PermutationSequenceDraw p_sequ) {
         int i = 0;
         int j = 0;
