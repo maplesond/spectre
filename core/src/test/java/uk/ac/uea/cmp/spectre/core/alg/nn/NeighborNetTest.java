@@ -18,6 +18,7 @@ package uk.ac.uea.cmp.spectre.core.alg.nn;
 
 import org.apache.commons.lang3.time.StopWatch;
 import org.junit.Before;
+import org.junit.Test;
 import uk.ac.uea.cmp.spectre.core.ds.CircularOrdering;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.distance.FlexibleDistanceMatrix;
@@ -101,24 +102,24 @@ public class NeighborNetTest {
         assertTrue(true);
     }
 
-    //@Test
+    @Test
     public void testDist1() {
         this.test(this.dist1, this.orderDist1);
     }
 
 
-    //@Test
+    @Test
     public void testDist2() {
         this.test(this.dist2, null);//this.orderDist2);
     }
 
 
-    //@Test
+    @Test
     public void testDist3() {
         this.test(this.dist3, null); // this.orderDist3);
     }
 
-    //@Test
+    @Test
     public void testRuntime() {
 
         DistanceMatrix dm = this.dist3;
