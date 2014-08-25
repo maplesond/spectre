@@ -39,6 +39,18 @@ public class NeighborNetOld implements NeighborNet {
      * @return The computed split system
      */
     @Override
+    public SplitSystem execute(final DistanceMatrix distanceMatrix) {
+
+        return this.execute(distanceMatrix, new NeighborNetParams());
+    }
+
+    /**
+     * Executes the NeighborNet algorithm for the given distance matrix, and produces a split system.
+     *
+     * @param distanceMatrix The Distance matrix to process
+     * @return The computed split system
+     */
+    @Override
     public SplitSystem execute(final DistanceMatrix distanceMatrix, NeighborNetParams params) {
 
         return new SpectreSplitSystem(distanceMatrix, this.computeCircularOrdering(distanceMatrix), SpectreSplitSystem.LeastSquaresCalculator.TREE_IN_CYCLE);

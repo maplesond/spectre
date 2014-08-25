@@ -53,8 +53,6 @@ public class NeighborNetImplTest {
                 {6, 6, 9, 9, 0}
         };
 
-
-
         this.distances3 = new double[][]{
                 {0, 3, 2, 5, 7},
                 {3, 0, 6, 6, 6},
@@ -70,14 +68,11 @@ public class NeighborNetImplTest {
 
         DistanceMatrix v2v = new FlexibleDistanceMatrix(new IdentifierList(taxa), distances1);
 
-        final double aThird = 1.0 / 3.0;
-
         assertTrue(v2v.size() == 5);
 
         NeighborNetImpl nn = new NeighborNetImpl();
 
-        nn.v2v = v2v;
-        nn.params = new NeighborNetParams(aThird, aThird, aThird);
+        nn.matrices.setV2V(v2v);
         nn.stackedVertexTriplets = new Stack<>();
         //nn.c2v.sMap = new NeighborNetImpl.Component2VertexSetMap(v2v.getTaxa());
 
@@ -102,7 +97,7 @@ public class NeighborNetImplTest {
         DistanceMatrix c2c = new FlexibleDistanceMatrix(new IdentifierList(taxa), distances1);
 
         NeighborNetImpl nn = new NeighborNetImpl();
-        nn.c2c = c2c;
+        nn.matrices.setC2C(c2c);
 
         Pair<Identifier, Identifier> selectedComponents = nn.selectionStep1();
 
@@ -116,7 +111,7 @@ public class NeighborNetImplTest {
         DistanceMatrix c2c = new FlexibleDistanceMatrix(new IdentifierList(taxa), distances1);
 
         NeighborNetImpl nn = new NeighborNetImpl();
-        nn.c2c = c2c;
+        nn.matrices.setC2C(c2c);
 
         Pair<Identifier, Identifier> selectedComponents = nn.selectionStep1();
 
@@ -127,7 +122,7 @@ public class NeighborNetImplTest {
     //@Test
     public void testExecuteDist1() {
 
-        SplitSystem ss = new NeighborNetImpl().execute(new FlexibleDistanceMatrix(distances1), new NeighborNetParams(0.3, 0.3));
+        SplitSystem ss = new NeighborNetImpl().execute(new FlexibleDistanceMatrix(distances1));
 
         String orderedTaxa = ss.getOrderedTaxa().toString();
 

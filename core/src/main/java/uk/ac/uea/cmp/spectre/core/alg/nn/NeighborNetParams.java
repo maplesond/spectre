@@ -21,9 +21,15 @@ package uk.ac.uea.cmp.spectre.core.alg.nn;
  */
 public class NeighborNetParams {
 
+    private static final double ATHIRD = 1.0 / 3.0;
+
     private double alpha;
     private double beta;
     private double gamma;
+
+    public NeighborNetParams() {
+        this(ATHIRD, ATHIRD);
+    }
 
     public NeighborNetParams(final double alpha, final double beta) {
 

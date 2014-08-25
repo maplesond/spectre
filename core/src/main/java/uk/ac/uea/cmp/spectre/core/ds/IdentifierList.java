@@ -213,6 +213,20 @@ public class IdentifierList extends ArrayList<Identifier> {
         return i == identifiers.size();
     }
 
+    @Override
+    public boolean remove(Object o) {
+        return this.remove((Identifier)o);
+    }
+
+    public boolean remove(Identifier i) {
+        boolean res1 = super.remove(i);
+
+        this.names.remove(i.getName());
+        this.numbers.remove(i.getId());
+
+        return res1;
+    }
+
     /**
      * Overwrites the identifier at a specific position in the list with the one provided.
      *
