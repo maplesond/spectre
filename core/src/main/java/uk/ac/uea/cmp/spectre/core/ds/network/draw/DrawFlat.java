@@ -14,13 +14,11 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.flatnj.fdraw;
+package uk.ac.uea.cmp.spectre.core.ds.network.draw;
 
 
 import uk.ac.uea.cmp.spectre.core.ds.network.Edge;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
-import uk.ac.uea.cmp.spectre.core.ds.network.draw.PermutationSequenceDraw;
-import uk.ac.uea.cmp.spectre.core.ds.network.draw.SplitSystemDraw;
 
 import java.util.*;
 
@@ -192,8 +190,6 @@ public class DrawFlat {
         long start = System.currentTimeMillis();
 
         Vertex v = computeSplitGraph(pseq, pseq.getTaxaname(), splitedges);
-
-        uk.ac.uea.cmp.spectre.flatnj.tools.Writer w = new uk.ac.uea.cmp.spectre.flatnj.tools.Writer();
 
         v = remove_compatible_boxes(v, pseq, false, splitedges);
 

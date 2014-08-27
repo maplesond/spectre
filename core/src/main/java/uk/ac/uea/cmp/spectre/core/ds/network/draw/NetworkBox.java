@@ -14,7 +14,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.flatnj.fdraw;
+package uk.ac.uea.cmp.spectre.core.ds.network.draw;
 
 //This class is used to store the edges
 //of a box in the network

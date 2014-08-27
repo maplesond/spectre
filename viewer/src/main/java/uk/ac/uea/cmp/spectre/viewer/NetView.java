@@ -460,7 +460,7 @@ public class NetView extends javax.swing.JFrame {
                 try {
                     savePDF(pdfFile);
                 } catch (DocumentException ex) {
-                    log.error("Error saving PDF", ex);
+                    errorMessage("Error saving PDF", ex);
                 }
             }
         }
@@ -484,7 +484,7 @@ public class NetView extends javax.swing.JFrame {
                         saveNetworkAs(fileToSave);
                     }
                     catch(IOException ioe) {
-                        log.error("Problem occured while trying to save network", ioe);
+                        errorMessage("Problem occured while trying to save network", ioe);
                     }
                 }
             }
@@ -698,13 +698,22 @@ public class NetView extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
-                try {
-                    new NetView(input).setVisible(true);
-                } catch (IOException ex) {
-                    log.error("Problem occured while running NetView", ex);
-                }
+            try {
+                new NetView(input).setVisible(true);
+            } catch (IOException ex) {
+                errorMessage("Problem occured while running NetView", ex);
+            }
             }
         });
+    }
+
+    protected static void errorMessage(String message, Exception ex) {
+        log.error(message, ex);
+        JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    protected static void errorMessage(String message) {
+        errorMessage(message, null);
     }
 
     /**
@@ -722,7 +731,7 @@ public class NetView extends javax.swing.JFrame {
                 try {
                     new NetView().setVisible(true);
                 } catch (IOException ex) {
-                    log.error("Problem occured while running NetView", ex);
+                    errorMessage("Problem occured while running NetView", ex);
                 }
             }
         });
@@ -806,9 +815,9 @@ public class NetView extends javax.swing.JFrame {
 
             d.close();
         } catch (IOException ex) {
-            System.err.println("Error writing image to the file.");
+            errorMessage("Error writing image to the file.", ex);
         } catch (DocumentException de) {
-            System.err.println("Error1");
+            errorMessage("Document Error");
         }
     }
 
@@ -893,7 +902,7 @@ public class NetView extends javax.swing.JFrame {
             saveNetwork.setEnabled(true);
             showNetwork(inFile);
         } catch (IOException e) {
-            log.error("Problem occured while loading Nexus file containing Network: " + inFile, e);
+            errorMessage("Problem occured while loading Nexus file containing Network: " + inFile, e);
         }
     }
 
@@ -922,7 +931,7 @@ public class NetView extends javax.swing.JFrame {
         try {
             config = new ViewerConfig(new NexusReader().extractBlock(new File(inFile), "Viewer"));
         } catch (IOException e) {
-            log.error("Problem occured while loading Nexus file containing Viewer configuration: " + inFile, e);
+            errorMessage("Problem occured while loading Nexus file containing Viewer configuration: " + inFile, e);
         }
         if (config != null) {
             applyConfig(config);

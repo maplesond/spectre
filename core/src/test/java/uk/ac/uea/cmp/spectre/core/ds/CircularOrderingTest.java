@@ -19,7 +19,7 @@ package uk.ac.uea.cmp.spectre.core.ds;
 import org.junit.Before;
 import org.junit.Test;
 
-import static junit.framework.Assert.assertTrue;
+import static junit.framework.TestCase.assertTrue;
 
 public class CircularOrderingTest {
 

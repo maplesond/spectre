@@ -166,7 +166,9 @@ public class NexusReader extends AbstractPhygenReader {
 
         String line;
         boolean foundStart = false;
-        while ((line = br.readLine()).trim() != null) {
+        while ((line = br.readLine()) != null) {
+
+            line = line.trim();
 
             String[] words = line.split(" ");
             if (words != null && words.length >= 2 && words[0].equalsIgnoreCase("begin") && words[1].equalsIgnoreCase(blockName)) {

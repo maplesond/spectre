@@ -14,11 +14,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.flatnj.fdraw;
+package uk.ac.uea.cmp.spectre.core.ds.network.draw;
 
 import uk.ac.uea.cmp.spectre.core.ds.network.*;
-import uk.ac.uea.cmp.spectre.core.ds.network.draw.PermutationSequenceDraw;
-import uk.ac.uea.cmp.spectre.flatnj.tools.Utilities;
 
 import java.util.*;
 
@@ -331,8 +329,10 @@ public class CompatibleCorrector {
         return sinAlpha;
     }
 
+
+
     private Vertex computeCenterPoint(Vertex net) {
-        double[] corners = Utilities.getCorners(net.collectVertices());
+        double[] corners = Window.getCorners(net.collectVertices());
         double x = 0.5 * (corners[0] + corners[1]);
         double y = 0.5 * (corners[2] + corners[3]);
         return new Vertex(x, y);
@@ -447,7 +447,7 @@ public class CompatibleCorrector {
             vertices.add(e.getBot().getElist().size() == 1 ? e.getBot() : e.getTop());
         }
 
-        double[] corners = Utilities.getCorners(network.getAllVertices());
+        double[] corners = Window.getCorners(network.getAllVertices());
         double X = (corners[0] + corners[1]) * 0.5;
         double Y = (corners[2] + corners[3]) * 0.5;
 

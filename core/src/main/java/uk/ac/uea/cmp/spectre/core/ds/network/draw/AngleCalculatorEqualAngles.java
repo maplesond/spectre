@@ -14,25 +14,25 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.flatnj.fdraw;
+package uk.ac.uea.cmp.spectre.core.ds.network.draw;
+
 
 import uk.ac.uea.cmp.spectre.core.ds.network.Edge;
 
 import java.util.LinkedList;
 
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * To change this template, choose Tools | Templates and open the template in
+ * the editor.
  */
 
 /**
  * @author balvociute
  */
-public class AngleCalculatorMaximalArea extends AngleCalculatorSimple {
+public class AngleCalculatorEqualAngles extends AngleCalculatorMaximalArea {
 
     @Override
     protected double computeOptimal(LinkedList<NetworkBox> boxesSorted) {
-
         double gap = 0.1;
 
         double A = 0;
@@ -49,17 +49,14 @@ public class AngleCalculatorMaximalArea extends AngleCalculatorSimple {
             double alphaSi = getAngle(e1.getTop(), e1.getBot(), e2.getBot());
 
             minDown = (minDown == null || minDown > alphaSi) ? alphaSi : minDown;
-            minUp = (minUp == null || minUp > Math.PI - alphaSi) ? Math.PI - alphaSi : minUp;
+            minUp = (minUp == null || minUp > Math.PI / 2 - alphaSi) ? Math.PI / 2 - alphaSi : minUp;
 
-            //double a = Math.sqrt((e1.top.x - e1.bot.x) * (e1.top.x - e1.bot.x) + (e1.top.y - e1.bot.y) * (e1.top.y - e1.bot.y));
-            double c = Math.sqrt((e1.getBot().getX() - e2.getBot().getX()) * (e1.getBot().getX() - e2.getBot().getX()) +
-                    (e1.getBot().getY() - e2.getBot().getY()) * (e1.getBot().getY() - e2.getBot().getY()));
-            A += c * Math.cos(alphaSi);
-            B += c * Math.sin(alphaSi);
+            A += 2 * alphaSi - Math.PI;
+            B += (Math.PI * Math.PI) / 4.0 - alphaSi * Math.PI + alphaSi * alphaSi;
 
         }
-        double deltaAlpha = Math.atan(A / B);
 
+        double deltaAlpha = -A / (2 * boxesSorted.size());
         if (deltaAlpha < 0 && Math.abs(deltaAlpha) > minDown - gap) {
             if (minDown > gap) {
                 deltaAlpha = (minDown - gap) * Math.signum(deltaAlpha);
@@ -77,9 +74,5 @@ public class AngleCalculatorMaximalArea extends AngleCalculatorSimple {
         return deltaAlpha;
     }
 
-    @Override
-    protected double computeOptimalCompatible(double bAngleLeft, double bAngleRight) {
-        double middle = (bAngleLeft + bAngleRight) / 2;
-        return middle - bAngleRight;
-    }
+
 }

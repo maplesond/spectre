@@ -18,7 +18,7 @@ FLOAT : ('-')? DIGIT* '.' DIGIT+ ('E' ('-')? DIGIT+)?;
 // A token satisfing the regular expression [_\w]+[\d\w\._]*. Note that an single
 //  _ is considered a valid identifier. In most contexts a single _ means a
 //  "don't care identifier", simmilar to the _ meaning in prolog.
-IDENTIFIER : LETTER_US+ (LETTER_US | DIGIT | '.' | '-' )*;
+IDENTIFIER : LETTER_US+ (LETTER_US | DIGIT | '.' | '-' | '/' )*;
 
 fragment DIGIT : [0-9];     // match single digit
 fragment NZ_DIGIT : [1-9];

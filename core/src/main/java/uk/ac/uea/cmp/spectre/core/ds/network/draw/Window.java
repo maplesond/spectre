@@ -14,11 +14,11 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.flatnj.fdraw;
+package uk.ac.uea.cmp.spectre.core.ds.network.draw;
 
 import uk.ac.uea.cmp.spectre.core.ds.network.Edge;
+import uk.ac.uea.cmp.spectre.core.ds.network.NetworkLabel;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
-import uk.ac.uea.cmp.spectre.flatnj.tools.Utilities;
 
 import javax.swing.*;
 import java.awt.*;
@@ -94,6 +94,51 @@ public class Window extends JPanel {
 
     }
 
+    public static double[] getCorners(List<Vertex> vertices) {
+        //0 - minX
+        //1 - maxX
+        //2 - minY
+        //3 - maxY
+        double[] corners = new double[4];
+
+        Iterator<Vertex> vertexIt = vertices.iterator();
+        int i = 0;
+        while (vertexIt.hasNext()) {
+            Vertex v = vertexIt.next();
+
+            NetworkLabel l = v.getLabel();
+
+
+            corners[0] = (i == 0 || corners[0] > v.getX()) ? v.getX() : corners[0];
+            corners[1] = (i == 0 || corners[1] < v.getX()) ? v.getX() : corners[1];
+            corners[2] = (i == 0 || corners[2] > v.getY()) ? v.getY() : corners[2];
+            corners[3] = (i == 0 || corners[3] < v.getY()) ? v.getY() : corners[3];
+
+//            if(v.getLabel() != null)
+//            {
+//                if(l.getOffsetX() < 0)
+//                {
+//                    corners[0] = (corners[0] > v.getX() + l.getOffsetX()) ? v.getX() + l.getOffsetX() : corners[0];
+//                }
+//                else if(l.getOffsetX() > 0)
+//                {
+//                    corners[1] = (corners[1] < v.getX() + l.getOffsetX()) ? v.getX() + l.getOffsetX() : corners[1];
+//                }
+//
+//                if(l.getOffsetY() < 0)
+//                {
+//                    corners[2] = (corners[2] > v.getY() + l.getOffsetY()) ? v.getY() + l.getOffsetY() : corners[2];
+//                }
+//                else if(l.getOffsetY() > 0)
+//                {
+//                    corners[3] = (corners[3] < v.getY() + l.getOffsetY()) ? v.getY() + l.getOffsetY() : corners[3];
+//                }
+//            }
+
+            i++;
+        }
+        return corners;
+    }
 
     public void setGraph(Vertex net, double[] corners, int w, int h) {
         LinkedList<Edge> edges = net.getFirstEdge().collectEdges();
@@ -101,7 +146,7 @@ public class Window extends JPanel {
         lines = new int[edges.size()][5];
         Set<Integer[]> p = new HashSet<>();
 
-        corners = Utilities.getCorners(net.collectVertices());
+        corners = getCorners(net.collectVertices());
 
         minX = corners[0];
         double maxX = corners[1];

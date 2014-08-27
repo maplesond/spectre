@@ -140,10 +140,7 @@ public class Vertex {
     }
 
     public boolean equals(Vertex v2) {
-        if (x == v2.x && y == v2.y) {
-            return true;
-        }
-        return false;
+        return x == v2.x && y == v2.y;
     }
 
     public EdgeList getElist() {

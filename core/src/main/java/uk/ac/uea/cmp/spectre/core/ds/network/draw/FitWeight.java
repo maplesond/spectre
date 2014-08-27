@@ -14,10 +14,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.flatnj.fdraw;
-
-import uk.ac.uea.cmp.spectre.core.ds.network.draw.ArrangementData;
-import uk.ac.uea.cmp.spectre.core.ds.network.draw.PermutationSequenceDraw;
+package uk.ac.uea.cmp.spectre.core.ds.network.draw;
 
 import java.util.Iterator;
 import java.util.SortedSet;
