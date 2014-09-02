@@ -318,6 +318,15 @@ public class IdentifierList extends ArrayList<Identifier> {
         this.maxId = this.size();
     }
 
+    public Identifier getFirst() {
+
+        if (this.size() >= 1) {
+            return this.get(0);
+        }
+
+        return null;
+    }
+
     public static enum Direction {
         FORWARD,
         BACKWARD

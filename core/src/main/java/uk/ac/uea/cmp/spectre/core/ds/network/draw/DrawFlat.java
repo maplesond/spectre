@@ -17,6 +17,7 @@
 package uk.ac.uea.cmp.spectre.core.ds.network.draw;
 
 
+import uk.ac.uea.cmp.spectre.core.ds.Identifier;
 import uk.ac.uea.cmp.spectre.core.ds.network.Edge;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
 
@@ -187,17 +188,17 @@ public class DrawFlat {
         TreeSet[] splitedges = new TreeSet[pseq.getNswaps()];
 
         //start timing
-        long start = System.currentTimeMillis();
+        //long start = System.currentTimeMillis();
 
         Vertex v = computeSplitGraph(pseq, pseq.getTaxaname(), splitedges);
 
         v = remove_compatible_boxes(v, pseq, false, splitedges);
 
         //stop timing      
-        long stop = System.currentTimeMillis();
+        //long stop = System.currentTimeMillis();
 
         //print timing information on screen
-        System.out.println("Total time elapsed: " + (stop - start));
+        //System.out.println("Total time elapsed: " + (stop - start));
 
         //store split network
 
@@ -245,12 +246,12 @@ public class DrawFlat {
         //code for compatibility pattern
         int pattern = 0;
 
-        System.out.print("Check active splits:");
+        //System.out.print("Check active splits:");
 
         //check all pairs of active splits
         for (i = 0; i < (psequ.getNswaps() - 1); i++) {
             if (psequ.getActive()[i]) {
-                System.out.print("*");
+                //System.out.print("*");
 
                 for (j = i + 1; j < psequ.getNswaps(); j++) {
                     if (psequ.getActive()[j]) {
@@ -264,8 +265,7 @@ public class DrawFlat {
                                 //s = filename + rounds + ".nex"; 
                                 //write_splits_graph_to_file(u,s,psequ.ntaxa,psequ.taxaname,psequ);                      
                             } else {
-                                System.out.println("Vertex u is null - stop here");
-                                System.exit(0);
+                                throw new NullPointerException("Vertex u is null - stop here");
                             }
                         } else {
                             //System.out.println("not compatible");
@@ -275,7 +275,7 @@ public class DrawFlat {
                 }
             }
         }
-        System.out.println("");
+        //System.out.println("");
 
         //Check if the numbers of boxes and edges in the output makes sense 
         //First compute the number edges in the network
@@ -287,14 +287,13 @@ public class DrawFlat {
 
         final int nbActive = psequ.getnActive();
 
-        System.out.println("Number of active splits: " + nbActive);
-        System.out.println("Number of edges in network: " + nedges);
-        System.out.println("Number of incompatible pairs: " + count);
-        System.out.println("Number of boxes: " + ((nedges - nbActive) / 2));
+        //System.out.println("Number of active splits: " + nbActive);
+        //System.out.println("Number of edges in network: " + nedges);
+        //System.out.println("Number of incompatible pairs: " + count);
+        //System.out.println("Number of boxes: " + ((nedges - nbActive) / 2));
 
         if ((check) && ((nedges - nbActive) / 2) != count) {
-            System.out.println("Numbers do not match!!!!!");
-            System.exit(0);
+            throw new IllegalStateException("Numbers do not match!!!!!");
         }
 
         return u;
@@ -1663,7 +1662,7 @@ public class DrawFlat {
                 if (v == null) {
                     v = new Vertex(0.0, 0.0);
                 }
-                v.getTaxa().add(new Integer(initSequI));
+                v.getTaxa().add(new Identifier(pseq.getTaxaname()[initSequI], initSequI));
                 pseq.setRepresentedByAt(initSequI, 0);
                 if (initSequI != 0) {
                     pseq.setActiveTaxaAt(initSequI, false);
@@ -1673,18 +1672,18 @@ public class DrawFlat {
                 v = chain[0].getTop();
                 for (j = 0; j < chain.length; j++) {
                     if (ssyst.splits[chain[j].getIdxsplit()][initSequI] == 0) {
-                        (chain[j].getTop()).getTaxa().addLast(new Integer(initSequI));
+                        (chain[j].getTop()).getTaxa().add(new Identifier(pseq.getTaxaname()[initSequI], initSequI));
                         if (chain[j].getTop().getTaxa().size() > 1) {
-                            pseq.setRepresentedByAt(initSequI, ((Integer) (chain[j].getTop().getTaxa().getFirst())).intValue());
+                            pseq.setRepresentedByAt(initSequI, chain[j].getTop().getTaxa().getFirst().getId());
                             pseq.setActiveTaxaAt(initSequI, false);
                             pseq.decrementNClasses();
                         }
                         break;
                     } else {
                         if (j == (chain.length - 1)) {
-                            (chain[j].getBot()).getTaxa().addLast(new Integer(initSequI));
+                            (chain[j].getBot()).getTaxa().add(new Identifier(pseq.getTaxaname()[initSequI], initSequI));
                             if (chain[j].getBot().getTaxa().size() > 1) {
-                                pseq.setRepresentedByAt(initSequI, ((Integer) chain[j].getBot().getTaxa().getFirst()).intValue());
+                                pseq.setRepresentedByAt(initSequI, chain[j].getBot().getTaxa().getFirst().getId());
                                 pseq.setActiveTaxaAt(initSequI, false);
                                 pseq.decrementNClasses();
                             }

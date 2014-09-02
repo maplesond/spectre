@@ -709,7 +709,7 @@ public class NetView extends javax.swing.JFrame {
 
     protected static void errorMessage(String message, Exception ex) {
         log.error(message, ex);
-        JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(null, message + "\n" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
     }
 
     protected static void errorMessage(String message) {

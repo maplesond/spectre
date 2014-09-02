@@ -150,4 +150,25 @@ public class SuperQOptions {
         this.verbose = verbose;
     }
 
+    @Override
+    public String toString() {
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("Input Files:\n");
+
+        for(File input : this.inputFiles) {
+            sb.append("\t" + input.getAbsolutePath() + "\n");
+        }
+
+        sb.append("Output File: " + this.outputFile.getAbsolutePath() + "\n");
+        sb.append("Scaling Solver: " + (this.scalingSolver == null ? "Off" : this.scalingSolver.getIdentifier()) + "\n");
+        sb.append("Primary Solver: " + (this.primarySolver == null ? "Off" : this.primarySolver.getIdentifier()) + "\n");
+        sb.append("Secondary Solver: " + (this.secondarySolver == null ? "Off" : this.secondarySolver.getIdentifier()) + "\n");
+        sb.append("Secondary Objective: " + (this.secondaryProblem == null ? "Off" : this.secondaryProblem.toString()) + "\n");
+        sb.append("Filter Threshold: " + this.filter + "\n");
+
+        return sb.toString();
+    }
+
 }

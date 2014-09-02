@@ -16,6 +16,8 @@
 
 package uk.ac.uea.cmp.spectre.core.ds.network.draw;
 
+import uk.ac.uea.cmp.spectre.core.ds.Identifier;
+import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.network.*;
 
 import java.util.*;
@@ -117,7 +119,7 @@ public class CompatibleCorrector {
                 Vertex vertex = it.next();
                 int partitions = 0;
                 for (int i = 0; i < vertex.getTaxa().size(); i++) {
-                    int taxaNr = vertex.getTaxa().get(i);
+                    int taxaNr = vertex.getTaxa().get(i).getId();
                     double w = trivial[taxaNr];
                     if (w > 0) {
                         partitions++;
@@ -163,11 +165,11 @@ public class CompatibleCorrector {
 
             double anglePlus = 0.0; //is used in order to avoid edge overlaping
             if (v.getTaxa().size() > 0) {
-                LinkedList<Integer> taxa = v.getTaxa();
+                IdentifierList taxa = v.getTaxa();
 
                 for (int t = taxa.size() - 1; t >= 0; t--) {
-                    Integer taxon = taxa.get(t);
-                    double length = ps.getTrivial()[taxon];
+                    Identifier taxon = taxa.get(t);
+                    double length = ps.getTrivial()[taxon.getId()];
 
                     double x;
                     double y;
@@ -179,7 +181,7 @@ public class CompatibleCorrector {
                         e = new Edge(v, w, ++lastSplit, 0);
                         v.getElist().add(e);
                         w.getElist().add(e);
-                        w.setTaxa(new LinkedList<Integer>());
+                        w.setTaxa(new IdentifierList());
                         w.getTaxa().add(taxon);
                         oldVertices.add(v);
                         newVertices.add(w);

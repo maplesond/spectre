@@ -1,6 +1,5 @@
 package uk.ac.uea.cmp.spectre.core.ds.split;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import uk.ac.uea.cmp.spectre.core.ds.Identifier;
@@ -127,11 +126,6 @@ public class SpectreSplitBlock extends ArrayList<Integer> implements SplitBlock 
     }
 
     @Override
-    public String toString() {
-        return StringUtils.join(this, " ");
-    }
-
-    @Override
     public int compareTo(SplitBlock o) {
 
         if (this.size() == 0 && o.size() == 0)
@@ -153,7 +147,7 @@ public class SpectreSplitBlock extends ArrayList<Integer> implements SplitBlock 
         int[] arr = new int[this.size()];
 
         for (int i = 0; i < this.size(); i++) {
-            arr[i] = this.get(i);
+            arr[i] = this.get(i).intValue();
         }
 
         return arr;
@@ -272,5 +266,24 @@ public class SpectreSplitBlock extends ArrayList<Integer> implements SplitBlock 
         }
 
         return true;
+    }
+
+    @Override
+    public String toString() {
+
+        StringBuilder sb = new StringBuilder();
+
+        boolean first = true;
+        for(Integer i : this) {
+
+            if (!first) {
+                sb.append(" ");
+            }
+
+            sb.append(i.toString());
+            first = false;
+        }
+
+        return sb.toString();
     }
 }

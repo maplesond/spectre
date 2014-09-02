@@ -17,8 +17,9 @@
 package uk.ac.uea.cmp.spectre.core.ds.network;
 
 
+import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
+
 import java.awt.*;
-import java.util.LinkedList;
 import java.util.ListIterator;
 
 public class Vertex {
@@ -28,7 +29,7 @@ public class Vertex {
     private EdgeList elist;
 
     //The list of taxa associated to the vertex.
-    private LinkedList<Integer> taxa;
+    private IdentifierList taxa;
 
     //Coordinates of the vertex in the drawing.
     private double x;
@@ -62,7 +63,7 @@ public class Vertex {
         x = xcoord;
         y = ycoord;
         elist = new EdgeList();
-        taxa = new LinkedList<>();
+        taxa = new IdentifierList();
         visited = false;
     }
 
@@ -99,11 +100,11 @@ public class Vertex {
         return elist.getFirst();
     }
 
-    public void setTaxa(LinkedList<Integer> taxa) {
+    public void setTaxa(IdentifierList taxa) {
         this.taxa = taxa;
     }
 
-    public LinkedList<Integer> getTaxa() {
+    public IdentifierList getTaxa() {
         return taxa;
     }
 

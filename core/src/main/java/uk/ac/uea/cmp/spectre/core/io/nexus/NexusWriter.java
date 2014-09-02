@@ -18,6 +18,7 @@ package uk.ac.uea.cmp.spectre.core.io.nexus;
 
 import org.apache.commons.lang3.StringUtils;
 import uk.ac.uea.cmp.spectre.core.ds.Alignment;
+import uk.ac.uea.cmp.spectre.core.ds.Identifier;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrixBuilder;
@@ -268,10 +269,8 @@ public class NexusWriter extends AbstractPhygenWriter implements Appendable {
         int currentSplitIndex = 1;
 
         for (Split s : ss) {
-            String aSide = StringUtils.join(s.getASideAsIntArray(), " ");
-
             if (!ss.isWeighted() || s.getWeight() != 0.0) {
-                this.appendLine("  [" + currentSplitIndex++ + ", size=" + s.getASideSize() + "]\t" + s.getWeight() + "\t" + aSide + ",");
+                this.appendLine("  [" + currentSplitIndex++ + ", size=" + s.getASideSize() + "]\t" + s.getWeight() + "\t" + s.getASide().toString() + ",");
             }
         }
         this.appendLine(";");
@@ -296,8 +295,8 @@ public class NexusWriter extends AbstractPhygenWriter implements Appendable {
         for(Vertex v : vertices) {
             if (v.getTaxa().size() > 0) {
                 String line = String.valueOf((v.getNxnum()));
-                for(Integer i : v.getTaxa()) {
-                    line += " '" + i + "'";
+                for(Identifier i : v.getTaxa()) {
+                    line += " '" + i.getName() + "'";
                 }
                 line += ",";
                 this.appendLine(line);
@@ -326,8 +325,8 @@ public class NexusWriter extends AbstractPhygenWriter implements Appendable {
         for(Vertex v : vertices) {
             if (v.getTaxa().size() > 0) {
                 String label = new String();
-                for(Integer i : v.getTaxa()) {
-                    label = (i + ", ").concat(label);
+                for(Identifier i : v.getTaxa()) {
+                    label = (i.getName() + ", ").concat(label);
                 }
                 label = label.substring(0, label.length() - 2);
                 this.appendLine((v.getNxnum() + 1) + " '" + label + "' x=2 y=2 f='Dialog-PLAIN-10',");
