@@ -163,17 +163,17 @@ public class NexusNetworkBuilder {
     public Network createNetwork() {
 
         if (this.vertices.size() != this.nbExpectedVertices) {
-            log.warn("Number of detected vertices (" + this.vertices.size() + ") is not the same as the " +
+            throw new IllegalStateException("Number of detected vertices (" + this.vertices.size() + ") is not the same as the " +
                     "number of vertices we expected to see (" + this.nbExpectedVertices + ")");
         }
 
         if (this.labels.size() != this.nbExpectedTaxa) {
-            log.warn("Number of detected vertex labels (" + this.labels.size() + ") is not the same as the " +
+            throw new IllegalStateException("Number of detected vertex labels (" + this.labels.size() + ") is not the same as the " +
                     "number of labels we expected to see (" + this.nbExpectedTaxa + ")");
         }
 
         if (this.edges.size() != this.nbExpectedEdges) {
-            log.warn("Number of detected edges (" + this.edges.size() + ") is not the same as the " +
+            throw new IllegalStateException("Number of detected edges (" + this.edges.size() + ") is not the same as the " +
                     "number of edges we expected to see (" + this.nbExpectedEdges + ")");
         }
 

@@ -310,7 +310,7 @@ public class NexusWriter extends AbstractPhygenWriter implements Appendable {
             Color bg = v.getBackgroundColor();
             Color fg = v.getLineColor();
             String shape = (v.getShape() == null) ? "" : " s=" + v.getShape();
-            String line = (v.getNxnum() + 1) + " " + v.getX() + " " + v.getY() + " w=" + v.getWidth() + " h=" + v.getHeight() + shape;
+            String line = v.getNxnum() + " " + v.getX() + " " + v.getY() + " w=" + v.getWidth() + " h=" + v.getHeight() + shape;
             if (!fg.equals(Color.BLACK)) {
                 line = line.concat(" fg=" + fg.getRed() + " " + fg.getGreen() + " " + fg.getBlue());
             }
@@ -329,10 +329,10 @@ public class NexusWriter extends AbstractPhygenWriter implements Appendable {
                     label = (i.getName() + ", ").concat(label);
                 }
                 label = label.substring(0, label.length() - 2);
-                this.appendLine((v.getNxnum() + 1) + " '" + label + "' x=2 y=2 f='Dialog-PLAIN-10',");
+                this.appendLine(v.getNxnum() + " '" + label + "' x=2 y=2 f='Dialog-PLAIN-10',");
             } else if (v.getLabel() != null) {
                 NetworkLabel l = v.getLabel();
-                String label = (v.getNxnum() + 1) + " '" + l.getName() + "' x=" + ((int) l.getOffsetX()) + " y=" + ((int) l.getOffsetY()) + " f='" + l.getFontFamily() + "-" + l.getFontStyle() + "-" + l.getFontSize() + "'";
+                String label = v.getNxnum() + " '" + l.getName() + "' x=" + ((int) l.getOffsetX()) + " y=" + ((int) l.getOffsetY()) + " f='" + l.getFontFamily() + "-" + l.getFontStyle() + "-" + l.getFontSize() + "'";
                 if (l.getFontColor() != null) {
                     Color c = l.getFontColor();
                     label = label.concat(" lc=" + c.getRed() + " " + c.getGreen() + " " + c.getBlue());
@@ -350,7 +350,7 @@ public class NexusWriter extends AbstractPhygenWriter implements Appendable {
         this.appendLine("EDGES");
         for(Edge e : edges) {
             Color c = e.getColor();
-            this.appendLine((e.getNxnum() + 1) + " " + ((e.getTop()).getNxnum() + 1) + " " + ((e.getBot()).getNxnum() + 1) + " s=" + (e.getIdxsplit() + 1) + " l=" + e.getWidth() + " fg=" + c.getRed() + " " + c.getGreen() + " " + c.getBlue() + ",");
+            this.appendLine(e.getNxnum() + " " + e.getTop().getNxnum() + " " + e.getBot().getNxnum() + " s=" + (e.getIdxsplit() + 1) + " l=" + e.getWidth() + " fg=" + c.getRed() + " " + c.getGreen() + " " + c.getBlue() + ",");
         }
         this.appendLine(";");
         this.appendLine("END;");

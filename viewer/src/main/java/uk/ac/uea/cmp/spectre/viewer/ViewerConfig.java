@@ -40,7 +40,7 @@ public class ViewerConfig {
 
     public ViewerConfig() {
         this(
-                new Dimension(),
+                new Dimension(800, 600),
                 "",
                 "",
                 new Color(0,0,0),

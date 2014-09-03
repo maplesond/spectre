@@ -527,6 +527,12 @@ public class SuperQGUI extends JFrame implements ToolHost {
         SuperQOptions options = buildSuperQOptions();
 
         if (options != null) {
+
+            if (options.getOutputFile() == null || options.getOutputFile().getName().isEmpty()) {
+                showErrorDialog("Can't run without output file specified.");
+                return;
+            }
+
             this.lastOutput = options.getOutputFile();
             this.superqRunner.runSuperQ(options, new StatusTrackerWithView(this.progStatus, this.lblStatus, this.cmdViewOutput));
         }
