@@ -16,10 +16,10 @@
 package uk.ac.uea.cmp.spectre.core.io.nexus;
 
 
-import org.apache.commons.lang3.StringUtils;
 import uk.ac.uea.cmp.spectre.core.ds.Alignment;
 import uk.ac.uea.cmp.spectre.core.ds.Identifier;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
+import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrixBuilder;
 import uk.ac.uea.cmp.spectre.core.ds.network.Edge;
@@ -245,8 +245,17 @@ public class NexusWriter extends AbstractPhygenWriter implements Appendable {
         this.appendLine(" DIMENSIONS ntax=" + dm.size() + ";");
         this.appendLine(" FORMAT labels=LEFT interleave=NO diagonal triangle=" + triangle.toString() + ";");
         this.appendLine(" MATRIX");
-        for (int i = 1; i <= matrix.length; i++) {
-            this.appendLine("  [" + i + "]\t" + StringUtils.join(triangle.getRow(i, dm), " "));
+        for (int i = 0; i < matrix.length; i++) {
+
+            DistanceList dl = dm.getAllDistances().get(i);
+            this.append("  [" + dl.getTaxon().getId() + "] '" + dl.getTaxon().getName() + "'\t");
+
+            double[] row = triangle.getRow(i+1, dm);
+            this.append(Double.toString(row[0]));
+            for(int j = 1; j < row.length; j++) {
+                this.append(" " + row[j]);
+            }
+            this.appendLine();
         }
         this.appendLine(";");
         this.appendLine("END; [Distances]");

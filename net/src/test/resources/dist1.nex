@@ -1,0 +1,24 @@
+#NEXUS
+
+BEGIN Taxa;
+ DIMENSIONS ntax=5;
+ TAXLABELS
+  [1]	A
+  [2]	B
+  [3]	C
+  [4]	D
+  [5]	E
+ ;
+END; [Taxa]
+
+BEGIN Distances;
+ DIMENSIONS ntax=5;
+ FORMAT labels=LEFT interleave=NO diagonal triangle=BOTH;
+ MATRIX
+  [1] 'A'	0.0 2.0 3.0 4.0 4.0
+  [2] 'B'	2.0 0.0 3.0 4.0 4.0
+  [3] 'C'	3.0 3.0 0.0 3.0 3.0
+  [4] 'D'	4.0 4.0 3.0 0.0 2.0
+  [5] 'E'	4.0 4.0 3.0 2.0 0.0
+;
+END; [Distances]

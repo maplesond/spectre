@@ -23,11 +23,6 @@ import org.slf4j.LoggerFactory;
 import uk.ac.tgac.metaopt.Optimiser;
 import uk.ac.tgac.metaopt.OptimiserException;
 import uk.ac.tgac.metaopt.Problem;
-import uk.ac.uea.cmp.spectre.core.ds.network.FlatNetwork;
-import uk.ac.uea.cmp.spectre.core.ds.network.Network;
-import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
-import uk.ac.uea.cmp.spectre.core.ds.network.draw.DrawFlat;
-import uk.ac.uea.cmp.spectre.core.ds.network.draw.PermutationSequenceDraw;
 import uk.ac.uea.cmp.spectre.core.ds.quartet.GroupedQuartetSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.spectre.core.io.nexus.Nexus;
@@ -166,20 +161,6 @@ public class SuperQ extends RunnableTool {
                 ss.filterByWeight(this.options.getFilter());
             }
 
-            notifyUser("Creating network");
-
-            // Create network
-            PermutationSequenceDraw psDraw = new PermutationSequenceDraw(ss);
-
-            Vertex net = DrawFlat.drawsplitsystem(psDraw, -1);
-
-            FlatNetwork network = new FlatNetwork(net);
-
-            //net = new LayoutOptimizer().optimize(net, psDraw, network);
-
-            Network n = new FlatNetwork(net);
-
-
             // Save split system
             File outputFile = this.options.getOutputFile();
             File outputDir = this.options.getOutputFile().getParentFile();
@@ -196,9 +177,7 @@ public class SuperQ extends RunnableTool {
                     .appendLine()
                     .append(ss.getOrderedTaxa().sortById())
                     .appendLine()
-                    .append(ss)
-                    .appendLine()
-                    .append(n);
+                    .append(ss);
 
             nw.write(outputFile);
 

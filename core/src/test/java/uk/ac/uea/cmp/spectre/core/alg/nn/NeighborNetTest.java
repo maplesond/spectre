@@ -20,9 +20,14 @@ import org.apache.commons.lang3.time.StopWatch;
 import org.junit.Before;
 import org.junit.Test;
 import uk.ac.uea.cmp.spectre.core.ds.CircularOrdering;
+import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.distance.FlexibleDistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
+import uk.ac.uea.cmp.spectre.core.io.nexus.NexusWriter;
+
+import java.io.File;
+import java.io.IOException;
 
 import static org.junit.Assert.assertTrue;
 
@@ -38,8 +43,6 @@ public class NeighborNetTest {
     private DistanceMatrix dist1;
     private DistanceMatrix dist2;
     private DistanceMatrix dist3;
-    private DistanceMatrix dist4;
-    private DistanceMatrix dist5;
 
     private NeighborNet oldNN;
     private NeighborNet newNN;
@@ -100,6 +103,18 @@ public class NeighborNetTest {
             assertTrue(orderedTaxaNew.equals(correctResult));
         }
         assertTrue(true);
+    }
+
+    @Test
+    public void makeDist() throws IOException {
+
+        new NexusWriter()
+                .appendHeader()
+                .appendLine()
+                .append(new IdentifierList(5))
+                .appendLine()
+                .append(dist1)
+                .write(new File("dist1.nex"));
     }
 
     @Test

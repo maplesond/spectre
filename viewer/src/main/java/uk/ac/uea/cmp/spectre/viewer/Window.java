@@ -25,6 +25,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.*;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -33,7 +36,7 @@ import java.util.regex.Pattern;
 /**
  * @author balvociute
  */
-public class Window extends JPanel {
+public class Window extends JPanel implements KeyListener {
     private ViewerPoint selectedPoint;
     private Set<Cluster> clusters = new HashSet<>();
     double maxLabelH;
@@ -58,12 +61,40 @@ public class Window extends JPanel {
     private double change;
     private final int extraSpace = 20;
     private final int maximalLabelWidth = 40;
+    private InputMap inputmap = this.getInputMap(JPanel.WHEN_IN_FOCUSED_WINDOW);
+    private ActionMap actionmap = this.getActionMap();
 
     public Window() {
+        this(null);
     }
 
     public Window(NetView frame) {
+
         externalFrame = frame;
+        this.addKeyListener(this);
+
+        // Next to try it with just the control key
+        final String controlKeyPressed = "control key pressed";
+        inputmap.put(KeyStroke.getKeyStroke(KeyEvent.VK_CONTROL,
+                KeyEvent.CTRL_DOWN_MASK), controlKeyPressed );
+        actionmap.put(controlKeyPressed, new AbstractAction() {
+
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                activateRotation(true);
+            }
+        });
+
+        final String controlKeyReleased = "control key released";
+        inputmap.put(KeyStroke.getKeyStroke(KeyEvent.VK_CONTROL,
+                0, true), controlKeyReleased );
+        actionmap.put(controlKeyReleased, new AbstractAction() {
+
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                activateRotation(false);
+            }
+        });
     }
 
     Stack<State> undo = new Stack();
@@ -1176,6 +1207,21 @@ public class Window extends JPanel {
                 label.label.movable = fix;
             }
         }
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        activateRotation(e.isControlDown());
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+        activateRotation(false);
     }
 
     private class State {

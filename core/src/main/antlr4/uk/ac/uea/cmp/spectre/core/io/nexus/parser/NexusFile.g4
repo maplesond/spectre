@@ -150,8 +150,10 @@ format_distances_item :
     | diagonal
     | labels
     | missing
-    | 'interleave'
+    | interleave
     ;
+
+interleave : 'interleave' ('=' labels_option)?;
 
 triangle : 'triangle' '=' triangle_option;
 

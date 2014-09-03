@@ -131,4 +131,5 @@ public class FlexibleDistanceList extends HashMap<Identifier, Double> implements
 
         return sum;
     }
+
 }

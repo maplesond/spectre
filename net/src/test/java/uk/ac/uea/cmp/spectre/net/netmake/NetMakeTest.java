@@ -16,17 +16,24 @@
 
 package uk.ac.uea.cmp.spectre.net.netmake;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.distance.FlexibleDistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.spectre.net.netmake.weighting.GreedyMEWeighting;
 import uk.ac.uea.cmp.spectre.net.netmake.weighting.TSPWeighting;
+
+import java.io.File;
+
+import static junit.framework.Assert.assertTrue;
 
 
 /**
@@ -42,6 +49,8 @@ public class NetMakeTest {
         LogManager.getRootLogger().setLevel(Level.WARN);
     }
 
+    @Rule
+    public TemporaryFolder folder = new TemporaryFolder();
 
     @Test
     public void simpleTest() {
@@ -76,5 +85,21 @@ public class NetMakeTest {
         for(Split s : result.getNetwork().getSplits()) {
             assertTrue(s.getWeight() == 1.0);
         }   */
+    }
+
+    @Test
+    public void testDist1() {
+
+        File dist1Nex = FileUtils.toFile(NetMakeTest.class.getResource("/dist1.nex"));
+
+        NetMakeOptions options = new NetMakeOptions();
+        options.setInput(dist1Nex);
+        options.setOutputDir(folder.getRoot());
+        options.setOutputPrefix("netmakeout");
+        options.setWeighting1("TREE");
+
+        new NetMake(options).run();
+
+        assertTrue(true);
     }
 }

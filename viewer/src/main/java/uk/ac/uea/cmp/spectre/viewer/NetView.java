@@ -27,8 +27,11 @@ import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
+import uk.ac.uea.cmp.spectre.core.ds.network.FlatNetwork;
 import uk.ac.uea.cmp.spectre.core.ds.network.Network;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
+import uk.ac.uea.cmp.spectre.core.ds.network.draw.DrawFlat;
+import uk.ac.uea.cmp.spectre.core.ds.network.draw.PermutationSequenceDraw;
 import uk.ac.uea.cmp.spectre.core.io.nexus.Nexus;
 import uk.ac.uea.cmp.spectre.core.io.nexus.NexusReader;
 import uk.ac.uea.cmp.spectre.core.ui.gui.LookAndFeel;
@@ -37,8 +40,7 @@ import uk.ac.uea.cmp.spectre.core.ui.gui.geom.Leaders;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -182,11 +184,7 @@ public class NetView extends javax.swing.JFrame {
                 drawingMouseDragged(evt);
             }
         });
-        drawing.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                drawingKeyPressed(evt);
-            }
-        });
+
 
         javax.swing.GroupLayout drawingLayout = new javax.swing.GroupLayout(drawing);
         drawing.setLayout(drawingLayout);
@@ -606,11 +604,6 @@ public class NetView extends javax.swing.JFrame {
         find.setVisible(true);
     }//GEN-LAST:event_jMenuItemFindActionPerformed
 
-    private void drawingKeyPressed(java.awt.event.KeyEvent evt)//GEN-FIRST:event_drawingKeyPressed
-    {//GEN-HEADEREND:event_drawingKeyPressed
-
-    }//GEN-LAST:event_drawingKeyPressed
-
     private void jCheckBoxShowLabelsActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jCheckBoxShowLabelsActionPerformed
     {//GEN-HEADEREND:event_jCheckBoxShowLabelsActionPerformed
         drawing.repaintOnResize();
@@ -897,7 +890,18 @@ public class NetView extends javax.swing.JFrame {
         directory = inFile.getPath();
         try {
             Nexus nexus = new NexusReader().parse(inFile);
-            network = nexus.getNetwork();
+
+            // If no network was defined but there is a split system then convert the split system to a network
+            if (nexus.getNetwork() == null && nexus.getSplitSystem() != null) {
+
+                // Create network
+                PermutationSequenceDraw psDraw = new PermutationSequenceDraw(nexus.getSplitSystem());
+
+                network = new FlatNetwork(DrawFlat.drawsplitsystem(psDraw, -1));
+            }
+            else {
+                network = nexus.getNetwork();
+            }
             taxa = nexus.getTaxa();
             networkFile = inFile;
             saveNetwork.setEnabled(true);

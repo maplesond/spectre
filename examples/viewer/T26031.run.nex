@@ -1,0 +1,75 @@
+#NEXUS
+
+BEGIN Taxa;
+ DIMENSIONS ntax=22;
+ TAXLABELS
+  [1]	Solanum_evolvulifolium_LB183
+  [2]	Solanum_evolvulifolium_LB709
+  [3]	Solanum_evolvulifolium_LB2253
+  [4]	Solanum_evolvulifolium_LB2415
+  [5]	Solanum_evolvulifolium_LB2520
+  [6]	Solanum_loxophyllum_LB2396
+  [7]	Solanum_crassinervium_LB2397
+  [8]	Solanum_loxophyllum_LB2521
+  [9]	Solanum_pacificum_LB2395
+  [10]	Solanum_anceps_LB654
+  [11]	Solanum_anceps_LB2408
+  [12]	Solanum_phaseoloides_LB693
+  [13]	Solanum_phaseoloides_LB1727
+  [14]	Solanum_trifolium_LB2209
+  [15]	Solanum_trifolium_LB2368
+  [16]	Solanum_limoncochaense_LB2391
+  [17]	Solanum_limoncochaense_LB2466
+  [18]	Solanum_dalibardiforme_LB2454
+  [19]	Solanum_bulbocastanum_S4
+  [20]	Solanum_lycopersicum_RGO340
+  [21]	Solanum_brevifolium_LB1029
+  [22]	Solanum_caripense_LB1026
+ ;
+END; [Taxa]
+
+BEGIN Splits;
+ DIMENSIONS ntax=22 nsplits=37;
+ FORMAT labels=no weights=yes confidences=no intervals=no;
+ PROPERTIES fit=-1.0 weakly_compatible cyclic;
+ CYCLE 11 10 8 6 4 5 7 2 1 3 9 15 14 12 13 16 17 18 20 19 21 22;
+ MATRIX
+  [1, size=5]	3.9999981605168986	8 6 4 5 7,
+  [2, size=9]	9.999998097769506	8 6 4 5 7 2 1 3 9,
+  [3, size=20]	5.999998119069158	8 6 4 5 7 2 1 3 9 15 14 12 13 16 17 18 20 19 21 22,
+  [4, size=3]	3.9999992785678375	6 4 5,
+  [5, size=4]	5.999999248311523	6 4 5 7,
+  [6, size=2]	7.999999637325304	4 5,
+  [7, size=3]	19.999996572254634	2 1 3,
+  [8, size=2]	17.999999456947133	15 14,
+  [9, size=4]	1.9999987226108102	15 14 12 13,
+  [10, size=6]	21.999998104391434	15 14 12 13 16 17,
+  [11, size=11]	3.9999983779375063	15 14 12 13 16 17 18 20 19 21 22,
+  [12, size=2]	7.999998988838832	12 13,
+  [13, size=2]	27.99999859302661	16 17,
+  [14, size=2]	19.99999898959211	20 19,
+  [15, size=2]	11.999999442906802	21 22,
+  [16, size=1]	11.466665319337741	1,
+  [17, size=1]	11.466665319337741	2,
+  [18, size=1]	11.466665319337741	3,
+  [19, size=1]	11.466665319337741	4,
+  [20, size=1]	11.466665319337741	5,
+  [21, size=1]	11.466665319337741	6,
+  [22, size=1]	11.466665319337741	7,
+  [23, size=1]	11.466665319337741	8,
+  [24, size=1]	11.466665319337741	9,
+  [25, size=1]	11.466665319337741	10,
+  [26, size=1]	11.466665319337741	11,
+  [27, size=1]	11.466665319337741	12,
+  [28, size=1]	11.466665319337741	13,
+  [29, size=1]	11.466665319337741	14,
+  [30, size=1]	11.466665319337741	15,
+  [31, size=1]	11.466665319337741	16,
+  [32, size=1]	11.466665319337741	17,
+  [33, size=1]	11.466665319337741	18,
+  [34, size=1]	11.466665319337741	19,
+  [35, size=1]	11.466665319337741	20,
+  [36, size=1]	11.466665319337741	21,
+  [37, size=1]	11.466665319337741	22,
+;
+END; [Splits]

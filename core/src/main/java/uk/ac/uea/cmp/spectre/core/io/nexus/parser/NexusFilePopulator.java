@@ -617,6 +617,16 @@ public class NexusFilePopulator implements NexusFileListener {
     }
 
     @Override
+    public void enterInterleave(@NotNull NexusFileParser.InterleaveContext ctx) {
+
+    }
+
+    @Override
+    public void exitInterleave(@NotNull NexusFileParser.InterleaveContext ctx) {
+
+    }
+
+    @Override
     public void enterFormat(@NotNull NexusFileParser.FormatContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -720,7 +730,8 @@ public class NexusFilePopulator implements NexusFileListener {
                 } else if (ctxFormatItem.missing() != null) {
                     // Not sure what to do with this.. leave it for now.
                 } else if (ctxFormatItem.getText().equals("interleave")) {
-                    this.distanceMatrixBuilder.setInterleave(true);
+                    String interleaveString = ctxFormatItem.interleave().labels_option().getText();
+                    this.distanceMatrixBuilder.setInterleave(interleaveString.equalsIgnoreCase("yes") || interleaveString.equalsIgnoreCase("true"));
                 }
             }
 
