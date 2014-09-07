@@ -14,7 +14,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.net.netmake.weighting;
+package uk.ac.uea.cmp.spectre.core.alg.nm.weighting;
 
 /**
  * Resulting circular order is solution for TSPWeighting.

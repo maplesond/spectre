@@ -19,10 +19,6 @@ package uk.ac.uea.cmp.spectre.net.netmake.fits;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrixGenerator;
 import uk.ac.uea.cmp.spectre.core.ds.distance.RandomDistanceGenerator;
-import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
-import uk.ac.uea.cmp.spectre.net.netmake.NetMake;
-import uk.ac.uea.cmp.spectre.net.netmake.NetMakeResult;
-import uk.ac.uea.cmp.spectre.net.netmake.weighting.TSPWeighting;
 
 /**
  * Created with IntelliJ IDEA.
@@ -40,8 +36,12 @@ public class EqMetricDistanceGenerator implements DistanceMatrixGenerator {
 
         DistanceMatrix inputData = new RandomDistanceGenerator().generateDistances(n);
 
-        NetMakeResult netMakeResult = new NetMake().execute(inputData, new TSPWeighting(n), null);
-        SplitSystem splits = netMakeResult.getTree();
+        /*NetMake nm = new NetMake();
+        nm.getOptions().setWeighting1(new TSPWeighting(n));
+
+
+        NetMakeResult netMakeResult = , null).execute(inputData);
+        SplitSystem splits = netMakeResult.getTree();           */
         /*double[][] treeWeights = splits.calculateSplitWeighting();
 
         for (int i = 0; i < n; i++) {

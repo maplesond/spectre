@@ -23,7 +23,6 @@ import uk.ac.uea.cmp.spectre.core.ds.Identifier;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.distance.FlexibleDistanceMatrix;
-import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 
 import java.util.Arrays;
 import java.util.Stack;
@@ -122,9 +121,9 @@ public class NeighborNetImplTest {
     //@Test
     public void testExecuteDist1() {
 
-        SplitSystem ss = new NeighborNetImpl().execute(new FlexibleDistanceMatrix(distances1));
+        IdentifierList co = new NeighborNetImpl().createCircularOrdering(new FlexibleDistanceMatrix(distances1));
 
-        String orderedTaxa = ss.getOrderedTaxa().toString();
+        String orderedTaxa = co.toString();
 
         assertTrue(orderedTaxa.equalsIgnoreCase("[A,C,D,E,B]"));
         assertTrue(true);

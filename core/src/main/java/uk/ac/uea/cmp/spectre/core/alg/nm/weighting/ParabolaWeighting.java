@@ -14,7 +14,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.net.netmake.weighting;
+package uk.ac.uea.cmp.spectre.core.alg.nm.weighting;
 
 /**
  * A vertex is weighted after its position in the component.

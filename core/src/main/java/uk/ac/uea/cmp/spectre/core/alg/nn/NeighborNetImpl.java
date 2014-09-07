@@ -18,11 +18,11 @@ package uk.ac.uea.cmp.spectre.core.alg.nn;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import uk.ac.uea.cmp.spectre.core.alg.CircularOrderingCreator;
 import uk.ac.uea.cmp.spectre.core.ds.Identifier;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.distance.FlexibleDistanceMatrix;
-import uk.ac.uea.cmp.spectre.core.ds.split.SpectreSplitSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 
 import java.util.*;
@@ -30,24 +30,21 @@ import java.util.*;
 /**
  * Created by dan on 27/02/14.
  */
-public class NeighborNetImpl implements NeighborNet {
+public class NeighborNetImpl implements CircularOrderingCreator {
 
     protected Stack<VertexTriplet> stackedVertexTriplets;
 
     protected CVMatrices matrices;
+    protected NeighborNetParams params;
 
     public NeighborNetImpl() {
         this.stackedVertexTriplets = new Stack<>();
         this.matrices = new CVMatrices();
+        this.params = new NeighborNetParams();
     }
 
     @Override
-    public SplitSystem execute(DistanceMatrix distanceMatrix) {
-        return this.execute(distanceMatrix, new NeighborNetParams());
-    }
-
-    @Override
-    public SplitSystem execute(DistanceMatrix distanceMatrix, NeighborNetParams params) {
+    public IdentifierList createCircularOrdering(DistanceMatrix distanceMatrix) {
 
         // Setup all matrices and temporary data structure required for NN
         this.matrices = new CVMatrices(distanceMatrix, params);
@@ -77,8 +74,17 @@ public class NeighborNetImpl implements NeighborNet {
             throw new IllegalStateException("Vertex triplet stack still contains entries.  Something went wrong in the NN algorithm.");
         }
 
-        // Use circular ordering in a new split system derived from the original matrix.
-        return new SpectreSplitSystem(distanceMatrix, circularOrdering, SpectreSplitSystem.LeastSquaresCalculator.TREE_IN_CYCLE);
+        return circularOrdering;
+    }
+
+    @Override
+    public boolean createsTreeSplits() {
+        return false;
+    }
+
+    @Override
+    public SplitSystem getTreeSplits() {
+        return null;
     }
 
 

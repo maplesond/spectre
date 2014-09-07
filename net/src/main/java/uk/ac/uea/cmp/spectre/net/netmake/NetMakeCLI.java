@@ -22,8 +22,8 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.ac.uea.cmp.spectre.core.alg.CircularOrderingAlgorithms;
 import uk.ac.uea.cmp.spectre.core.ui.cli.CommandLineHelper;
-import uk.ac.uea.cmp.spectre.net.netmake.weighting.Weightings;
 
 import java.io.File;
 import java.text.DateFormat;
@@ -47,6 +47,7 @@ public class NetMakeCLI {
     public static final String OPT_TREE_PARAM = "tree_param";
     public static final String OPT_WEIGHTINGS_1 = "weightings_1";
     public static final String OPT_WEIGHTINGS_2 = "weightings_2";
+    public static final String OPT_CO_ALG = "co_alg";
     public static final String OPT_HELP = "help";
 
 
@@ -56,23 +57,26 @@ public class NetMakeCLI {
         Options options = new Options();
 
         options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_INPUT).isRequired().hasArg()
-                .withDescription("The file containing the distance matrix to input.").create("i"));
+                .withDescription(NetMakeOptions.DESC_INPUT).create("i"));
 
         options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_OUTPUT_DIR).hasArg()
-                .withDescription("The directory to put output from this job.").create("o"));
+                .withDescription(NetMakeOptions.DESC_OUTPUT_DIR).create("o"));
 
         options.addOption(OptionBuilder.withArgName("string").withLongOpt(OPT_OUTPUT_PREFIX).hasArg()
-                .withDescription("The prefix to apply to all files produced by this NetMake run.  Default: netmake-<timestamp>.").create("p"));
+                .withDescription(NetMakeOptions.DESC_OUTPUT_PREFIX).create("p"));
 
         options.addOption(OptionBuilder.withArgName("double").withLongOpt(OPT_TREE_PARAM).hasArg()
-                .withDescription("The weighting parameter passed to the chosen weighting algorithm. " +
-                        " Value must be between 0.0 and 1.0.  Default: 0.5.").create("z"));
+                .withDescription(NetMakeOptions.DESC_TREE_PARAM).create("z"));
 
-        options.addOption(OptionBuilder.withArgName("string").withLongOpt(OPT_WEIGHTINGS_1).isRequired().hasArg()
-                .withDescription("Select Weighting type: " + Weightings.toListString() + ".  Default: ").create("w"));
+        options.addOption(OptionBuilder.withArgName("weighting").withLongOpt(OPT_WEIGHTINGS_1).hasArg()
+                .withDescription(NetMakeOptions.DESC_WEIGHTINGS_1).create("w"));
 
-        options.addOption(OptionBuilder.withArgName("string").withLongOpt(OPT_WEIGHTINGS_2).hasArg()
-                .withDescription("Select 2nd Weighting type: " + Weightings.toListString() + ". Default: ").create("x"));
+        options.addOption(OptionBuilder.withArgName("weighting").withLongOpt(OPT_WEIGHTINGS_2).hasArg()
+                .withDescription(NetMakeOptions.DESC_WEIGHTINGS_2).create("x"));
+
+        options.addOption(OptionBuilder.withArgName("circular_ordering").withLongOpt(OPT_CO_ALG).hasArg()
+                .withDescription(NetMakeOptions.DESC_CO_ALG).create("co"));
+
 
         options.addOption(CommandLineHelper.HELP_OPTION);
 
@@ -103,9 +107,10 @@ public class NetMakeCLI {
             File input = new File(commandLine.getOptionValue(OPT_INPUT));
             File outputDir = commandLine.hasOption(OPT_OUTPUT_DIR) ? new File(commandLine.getOptionValue(OPT_OUTPUT_DIR)) : new File(".");
             String prefix = commandLine.hasOption(OPT_OUTPUT_PREFIX) ? commandLine.getOptionValue(OPT_OUTPUT_PREFIX) : "netmake-" + timeStamp;
-            double treeParam = commandLine.hasOption(OPT_TREE_PARAM) ? Double.parseDouble(commandLine.getOptionValue(OPT_TREE_PARAM)) : 0.5;
-            String weightings1 = commandLine.getOptionValue(OPT_WEIGHTINGS_1);
+            double treeParam = commandLine.hasOption(OPT_TREE_PARAM) ? Double.parseDouble(commandLine.getOptionValue(OPT_TREE_PARAM)) : NetMakeOptions.DEFAULT_TREE_WEIGHT;
+            String weightings1 = commandLine.hasOption(OPT_WEIGHTINGS_1) ? commandLine.getOptionValue(OPT_WEIGHTINGS_1) : "TSP";
             String weightings2 = commandLine.hasOption(OPT_WEIGHTINGS_2) ? commandLine.getOptionValue(OPT_WEIGHTINGS_2) : null;
+            String coAlg = commandLine.hasOption(OPT_CO_ALG) ? commandLine.getOptionValue(OPT_CO_ALG) : CircularOrderingAlgorithms.NETMAKE.toString();
 
 
             // Create the configured NetMake object to process
@@ -116,6 +121,7 @@ public class NetMakeCLI {
             netMakeOptions.setTreeParam(treeParam);
             netMakeOptions.setWeighting1(weightings1);
             netMakeOptions.setWeighting2(weightings2);
+            netMakeOptions.setCoAlg(coAlg);
 
             // Run NetMake
             new NetMake(netMakeOptions).run();

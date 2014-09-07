@@ -14,7 +14,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.net.netmake.weighting;
+package uk.ac.uea.cmp.spectre.core.alg.nm.weighting;
 
 /**
  * Weighting of vertices in merged component depends on number of vertices in

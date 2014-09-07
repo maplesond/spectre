@@ -19,11 +19,11 @@ package uk.ac.uea.cmp.spectre.core.alg.nn;
 import org.apache.commons.lang3.time.StopWatch;
 import org.junit.Before;
 import org.junit.Test;
+import uk.ac.uea.cmp.spectre.core.alg.CircularOrderingCreator;
 import uk.ac.uea.cmp.spectre.core.ds.CircularOrdering;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.distance.FlexibleDistanceMatrix;
-import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.spectre.core.io.nexus.NexusWriter;
 
 import java.io.File;
@@ -44,22 +44,16 @@ public class NeighborNetTest {
     private DistanceMatrix dist2;
     private DistanceMatrix dist3;
 
-    private NeighborNet oldNN;
-    private NeighborNet newNN;
-
-    private NeighborNetParams params;
+    private CircularOrderingCreator oldNN;
+    private CircularOrderingCreator newNN;
 
     private static final CircularOrdering orderDist1 = new CircularOrdering(new String[]{"A","C","D","E","B"});
-
-    private static final double A_THIRD = 1.0/3.0;
 
     @Before
     public void setup() {
 
         this.oldNN = new NeighborNetOld();
         this.newNN = new NeighborNetImpl();
-
-        this.params = new NeighborNetParams(A_THIRD, A_THIRD);
 
         this.dist1 = new FlexibleDistanceMatrix(new double[][]{
                 {0, 2, 3, 4, 4},
@@ -92,11 +86,11 @@ public class NeighborNetTest {
 
     private void test(DistanceMatrix dm, CircularOrdering correctResult) {
 
-        SplitSystem ssO = this.oldNN.execute(dm, this.params);
-        SplitSystem ssN = this.newNN.execute(dm, this.params);
+        IdentifierList ssO = this.oldNN.createCircularOrdering(dm);
+        IdentifierList ssN = this.newNN.createCircularOrdering(dm);
 
-        CircularOrdering orderedTaxaOld = new CircularOrdering(ssO.getOrderedTaxa());
-        CircularOrdering orderedTaxaNew = new CircularOrdering(ssN.getOrderedTaxa());
+        CircularOrdering orderedTaxaOld = new CircularOrdering(ssO);
+        CircularOrdering orderedTaxaNew = new CircularOrdering(ssN);
 
         if (correctResult != null) {
             assertTrue(orderedTaxaOld.equals(correctResult));
@@ -142,7 +136,7 @@ public class NeighborNetTest {
         StopWatch sw1 = new StopWatch();
         long memStart1 = getMemoryUse();
         sw1.start();
-        SplitSystem ssO = this.oldNN.execute(dm, this.params);
+        IdentifierList ssO = this.oldNN.createCircularOrdering(dm);
         sw1.stop();
         long memEnd1 = getMemoryUse();
         long mem1 = memEnd1 - memStart1;
@@ -151,7 +145,7 @@ public class NeighborNetTest {
         StopWatch sw2 = new StopWatch();
         long memStart2 = getMemoryUse();
         sw2.start();
-        SplitSystem ssN = this.newNN.execute(dm, this.params);
+        IdentifierList ssN = this.newNN.createCircularOrdering(dm);
         sw2.stop();
         long memEnd2 = getMemoryUse();
         long mem2 = memEnd2 - memStart2;

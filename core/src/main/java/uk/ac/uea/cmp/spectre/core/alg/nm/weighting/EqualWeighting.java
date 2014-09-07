@@ -14,7 +14,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.net.netmake.weighting;
+package uk.ac.uea.cmp.spectre.core.alg.nm.weighting;
 
 /**
  * Every vertex of one component (after merging) gets the same weighting

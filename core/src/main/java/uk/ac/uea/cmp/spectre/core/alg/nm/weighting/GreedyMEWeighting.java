@@ -14,7 +14,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.net.netmake.weighting;
+package uk.ac.uea.cmp.spectre.core.alg.nm.weighting;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -23,8 +23,6 @@ import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.split.*;
 import uk.ac.uea.cmp.spectre.core.math.stats.Statistics;
-import uk.ac.uea.cmp.spectre.net.netmake.EdgeHandling;
-import uk.ac.uea.cmp.spectre.net.netmake.SummedDistanceList;
 
 import java.util.ArrayList;
 import java.util.List;

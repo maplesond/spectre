@@ -18,13 +18,15 @@ package uk.ac.uea.cmp.spectre.net.netmake;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.ac.uea.cmp.spectre.core.alg.CircularOrderingAlgorithms;
 import uk.ac.uea.cmp.spectre.core.ui.gui.JobController;
 import uk.ac.uea.cmp.spectre.core.ui.gui.StatusTracker;
 import uk.ac.uea.cmp.spectre.core.ui.gui.ToolHost;
-import uk.ac.uea.cmp.spectre.net.netmake.weighting.Weightings;
+import uk.ac.uea.cmp.spectre.core.alg.nm.weighting.Weightings;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.io.File;
 
 import static uk.ac.uea.cmp.spectre.core.ui.gui.LookAndFeel.NIMBUS;
@@ -49,6 +51,9 @@ public class NetMakeGUI extends JFrame implements ToolHost {
     private JTextField txtInput;
     private JButton cmdInput;
 
+    private JPanel pnlAlgorithm;
+    private JLabel lblAlgorithm;
+    private JComboBox<CircularOrderingAlgorithms> cboAlgorithm;
     private JPanel pnlWeightings;
     private JLabel lblWeighting1;
     private JComboBox<Weightings> cboWeighting1;
@@ -135,6 +140,54 @@ public class NetMakeGUI extends JFrame implements ToolHost {
         pack();
     }
 
+    private void initAlgorithmComponents() {
+
+        cboAlgorithm = new JComboBox<>();
+        lblAlgorithm = new JLabel();
+
+        cboAlgorithm.setModel(new DefaultComboBoxModel<>(CircularOrderingAlgorithms.values()));
+        cboAlgorithm.setToolTipText(NetMakeOptions.DESC_CO_ALG);
+        cboAlgorithm.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmdSelectAlgorithmActionPerformed(evt);
+            }
+        });
+
+        lblAlgorithm.setText("Select circular ordering algorithm:");
+        lblAlgorithm.setToolTipText(NetMakeOptions.DESC_CO_ALG);
+
+        pnlAlgorithm = new JPanel();
+
+        GroupLayout algLayout = new GroupLayout(pnlAlgorithm);
+
+        algLayout.setAutoCreateGaps(true);
+        algLayout.setAutoCreateContainerGaps(true);
+
+        algLayout.setHorizontalGroup(
+                algLayout.createSequentialGroup()
+                        .addGroup(algLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+                                        .addComponent(lblAlgorithm)
+                        )
+                        .addGroup(algLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                                        .addComponent(cboAlgorithm)
+                        )
+
+        );
+        algLayout.setVerticalGroup(
+                algLayout.createSequentialGroup()
+                        .addGroup(algLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                                        .addComponent(lblAlgorithm)
+                                        .addComponent(cboAlgorithm)
+                        )
+        );
+
+        pnlAlgorithm.setLayout(algLayout);
+        pnlAlgorithm.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), "Circular Ordering Algorithm:"));
+
+        pack();
+    }
+
+
     /**
      * Optimiser options
      */
@@ -165,9 +218,10 @@ public class NetMakeGUI extends JFrame implements ToolHost {
         lblWeight.setText("Set the tree weight:");
         lblWeight.setToolTipText(NetMakeOptions.DESC_TREE_PARAM);
 
-        txtWeight.setText("");
+        txtWeight.setText(Double.toString(NetMakeOptions.DEFAULT_TREE_WEIGHT));
         txtWeight.setPreferredSize(new Dimension(200, 25));
         txtWeight.setToolTipText(NetMakeOptions.DESC_TREE_PARAM);
+
 
         pnlWeightings = new JPanel();
 
@@ -211,6 +265,7 @@ public class NetMakeGUI extends JFrame implements ToolHost {
         );
 
         pack();
+
     }
 
 
@@ -329,6 +384,7 @@ public class NetMakeGUI extends JFrame implements ToolHost {
     private void initComponents() {
 
         this.initInputComponents();
+        this.initAlgorithmComponents();
         this.initWeightingComponents();
         this.initOutputComponents();
         this.initStatusComponents();
@@ -338,6 +394,8 @@ public class NetMakeGUI extends JFrame implements ToolHost {
         pnlOptions.setLayout(new BoxLayout(pnlOptions, BoxLayout.PAGE_AXIS));
         pnlOptions.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         pnlOptions.add(pnlInput);
+        pnlOptions.add(Box.createRigidArea(new Dimension(0, 10)));
+        pnlOptions.add(pnlAlgorithm);
         pnlOptions.add(Box.createRigidArea(new Dimension(0, 10)));
         pnlOptions.add(pnlWeightings);
         pnlOptions.add(Box.createRigidArea(new Dimension(0, 10)));
@@ -356,6 +414,22 @@ public class NetMakeGUI extends JFrame implements ToolHost {
         getContentPane().add(pnlControlButtons, BorderLayout.PAGE_END);
 
         pack();
+    }
+
+
+    private void cmdSelectAlgorithmActionPerformed(ActionEvent evt) {
+
+        if (evt.getSource() == cboAlgorithm) {
+
+            CircularOrderingAlgorithms alg = (CircularOrderingAlgorithms)cboAlgorithm.getSelectedItem();
+
+            if (alg == CircularOrderingAlgorithms.NEIGHBORNET) {
+                this.enableWeightingsPanel(false);
+            }
+            else if (alg == CircularOrderingAlgorithms.NETMAKE) {
+                this.enableWeightingsPanel(true);
+            }
+        }
     }
 
     /**
@@ -415,6 +489,18 @@ public class NetMakeGUI extends JFrame implements ToolHost {
 
     }
 
+
+    private void enableWeightingsPanel(boolean enabled) {
+
+        this.pnlWeightings.setEnabled(enabled);
+        this.lblWeighting1.setEnabled(enabled);
+        this.cboWeighting1.setEnabled(enabled);
+        this.lblWeighting2.setEnabled(enabled);
+        this.cboWeighting2.setEnabled(enabled);
+        this.lblWeight.setEnabled(enabled);
+        this.txtWeight.setEnabled(enabled);
+    }
+
     /**
      * Setup configuration using values specified in the GUI
      *
@@ -434,6 +520,8 @@ public class NetMakeGUI extends JFrame implements ToolHost {
             showErrorDialog("Tree param must be a real number.");
             return null;
         }
+
+        options.setCoAlg(this.cboAlgorithm.getSelectedItem().toString());
 
         // May need some more validation here.
         options.setWeighting1(this.cboWeighting1.getSelectedItem().toString());

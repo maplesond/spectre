@@ -16,9 +16,9 @@
 
 package uk.ac.uea.cmp.spectre.core.alg.nn;
 
+import uk.ac.uea.cmp.spectre.core.alg.CircularOrderingCreator;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
-import uk.ac.uea.cmp.spectre.core.ds.split.SpectreSplitSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 
 import java.util.Arrays;
@@ -27,47 +27,44 @@ import java.util.Stack;
 /**
  * Implements Neighbor Net method of Bryant and Moulton (2004).
  */
-public class NeighborNetOld implements NeighborNet {
+public class NeighborNetOld implements CircularOrderingCreator {
 
 
     private static final int MAX_TAXA_FOR_BASIC_ORDERING = 3;
 
-    /**
-     * Executes the NeighborNet algorithm for the given distance matrix, and produces a split system.
-     *
-     * @param distanceMatrix The Distance matrix to process
-     * @return The computed split system
-     */
-    @Override
-    public SplitSystem execute(final DistanceMatrix distanceMatrix) {
+    protected NeighborNetParams params;
 
-        return this.execute(distanceMatrix, new NeighborNetParams());
+    public NeighborNetOld() {
+        this(new NeighborNetParams());
+    }
+
+    public NeighborNetOld(NeighborNetParams params) {
+        this.params = params;
     }
 
     /**
-     * Executes the NeighborNet algorithm for the given distance matrix, and produces a split system.
+     * Executes the NeighborNet algorithm for the given distance matrix, and produces a circular ordering.
      *
      * @param distanceMatrix The Distance matrix to process
-     * @return The computed split system
+     * @return The circular ordering
      */
     @Override
-    public SplitSystem execute(final DistanceMatrix distanceMatrix, NeighborNetParams params) {
-
-        return new SpectreSplitSystem(distanceMatrix, this.computeCircularOrdering(distanceMatrix), SpectreSplitSystem.LeastSquaresCalculator.TREE_IN_CYCLE);
-    }
-
-    /**
-     * Executes the NeighborNet algorithm for the given distance matrix to produce a circular ordering.
-     *
-     * @param distanceMatrix The Distance matrix to process
-     * @return A CircularOrdering computed from the distance matrix using the NeighborNet algorithm
-     */
-    public IdentifierList computeCircularOrdering(final DistanceMatrix distanceMatrix) {
+    public IdentifierList createCircularOrdering(final DistanceMatrix distanceMatrix) {
 
         // Special case for small taxa sets: use the order they came in; otherwise run NN proper
         return distanceMatrix.size() <= MAX_TAXA_FOR_BASIC_ORDERING ?
                 distanceMatrix.getTaxa() :
                 executeNeighborNet(distanceMatrix);
+    }
+
+    @Override
+    public boolean createsTreeSplits() {
+        return false;
+    }
+
+    @Override
+    public SplitSystem getTreeSplits() {
+        return null;
     }
 
 

@@ -19,8 +19,8 @@ package uk.ac.uea.cmp.spectre.core.alg.nn;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.FlexibleDistanceMatrix;
-import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 
 import static junit.framework.Assert.assertTrue;
 
@@ -55,20 +55,18 @@ public class NeighborNetOldTest {
     @Test
     public void testExecuteDist1() {
 
-        SplitSystem ss = new NeighborNetOld().execute(new FlexibleDistanceMatrix(distances1), new NeighborNetParams(0.3, 0.3));
+        IdentifierList co = new NeighborNetOld().createCircularOrdering(new FlexibleDistanceMatrix(distances1));
 
-        assertTrue(ss.getOrderedTaxa().toString().equalsIgnoreCase("[A,C,D,E,B]"));
+        assertTrue(co.toString().equalsIgnoreCase("[A,C,D,E,B]"));
         assertTrue(true);
     }
 
     //@Test
     public void testExecuteDist2() {
 
-        SplitSystem ss = new NeighborNetImpl().execute(new FlexibleDistanceMatrix(distances2), new NeighborNetParams(0.3, 0.3));
+        IdentifierList co = new NeighborNetImpl().createCircularOrdering(new FlexibleDistanceMatrix(distances2));
 
-        String orderedTaxa = ss.getOrderedTaxa().toString();
-
-        Assert.assertTrue(orderedTaxa.equalsIgnoreCase("[A,C,D,E,B]"));
+        Assert.assertTrue(co.toString().equalsIgnoreCase("[A,C,D,E,B]"));
         Assert.assertTrue(true);
     }
 
