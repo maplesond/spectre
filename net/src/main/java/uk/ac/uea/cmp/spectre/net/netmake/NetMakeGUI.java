@@ -287,7 +287,7 @@ public class NetMakeGUI extends JFrame implements ToolHost {
         txtOutputDir.setPreferredSize(new Dimension(200, 25));
         txtOutputDir.setToolTipText(NetMakeOptions.DESC_OUTPUT_DIR);
 
-        lblOutputDir.setText("Save to file:");
+        lblOutputDir.setText("Output directory:");
         lblOutputDir.setToolTipText(NetMakeOptions.DESC_OUTPUT_DIR);
 
         cmdOutputDir.setText("...");
@@ -298,7 +298,7 @@ public class NetMakeGUI extends JFrame implements ToolHost {
             }
         });
 
-        lblOutputPrefix.setText("Output prefix:");
+        lblOutputPrefix.setText("Output file prefix:");
         lblOutputPrefix.setToolTipText(NetMakeOptions.DESC_OUTPUT_PREFIX);
 
         txtOutputPrefix.setPreferredSize(new Dimension(200, 25));

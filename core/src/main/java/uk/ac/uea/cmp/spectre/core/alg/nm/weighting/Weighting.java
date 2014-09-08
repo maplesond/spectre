@@ -26,22 +26,20 @@ import org.apache.commons.lang3.StringUtils;
  * @author Sarah Bastkowski
  */
 public abstract class Weighting {
-    private Double[] weightingParameters;
+    private double[] weightingParameters;
 
     /**
      * Does nothing... therefore weighting params array will not be initialised.
      */
     public Weighting() {
+        this.weightingParameters = new double[0];
     }
 
-    /**
-     * @param size the number of weighting parameters to be stored
-     */
-    public Weighting(int size) {
-        weightingParameters = new Double[size];
+    public void setupWeightingParameters(final int size) {
+        this.weightingParameters = new double[size];
 
-        for (int i = 0; i < weightingParameters.length; i++) {
-            weightingParameters[i] = 1.;
+        for(int i = 0; i < size; i++) {
+            this.weightingParameters[i] = 1.0;
         }
     }
 

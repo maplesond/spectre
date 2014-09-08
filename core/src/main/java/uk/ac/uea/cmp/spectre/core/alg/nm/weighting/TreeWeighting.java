@@ -28,20 +28,13 @@ package uk.ac.uea.cmp.spectre.core.alg.nm.weighting;
 public class TreeWeighting extends Weighting {
     private double alpha;
 
-    public TreeWeighting(int size) {
-        this(size, 0.5);
-    }
-
-
     /**
      * Creates a TreeWeighting object with a weighting list of a specified size
      * and a specified constant alpha.
      *
-     * @param size  the number of weighting parameters to be stored
      * @param alpha 0.5 for balanced tree weighting leads to NJ tree
      */
-    public TreeWeighting(int size, double alpha) {
-        super(size);
+    public TreeWeighting(double alpha) {
 
         this.alpha = alpha;
     }

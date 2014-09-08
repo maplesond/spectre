@@ -27,15 +27,6 @@ package uk.ac.uea.cmp.spectre.core.alg.nm.weighting;
 public class EqualWeighting extends Weighting {
 
     /**
-     * Creates an EqualWeighting object with a weighting list of the given size.
-     *
-     * @param size size of the weighting list
-     */
-    public EqualWeighting(int size) {
-        super(size);
-    }
-
-    /**
      * @param i             index of weighting parameter to be updated
      * @param dummy         is not used
      * @param componentSize size of component

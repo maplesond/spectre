@@ -33,47 +33,47 @@ public enum Weightings {
 
     TSP {
         @Override
-        public Weighting create(int size) {
-            return new TSPWeighting(size);
+        public Weighting create() {
+            return new TSPWeighting();
         }
 
         public Weighting create(final DistanceMatrix inputData, final double weightingParam) {
-            return new TSPWeighting(inputData.size());
+            return new TSPWeighting();
         }
     },
     TREE {
         @Override
-        public Weighting create(int size) {
-            return new TreeWeighting(size);
+        public Weighting create() {
+            return new TreeWeighting(0.5);
         }
 
         public Weighting create(final DistanceMatrix inputData, final double weightingParam) {
-            return new TreeWeighting(inputData.size(), weightingParam);
+            return new TreeWeighting(weightingParam);
         }
     },
     EQUAL {
         @Override
-        public Weighting create(int size) {
-            return new EqualWeighting(size);
+        public Weighting create() {
+            return new EqualWeighting();
         }
 
         public Weighting create(final DistanceMatrix inputData, final double weightingParam) {
-            return new EqualWeighting(inputData.size());
+            return new EqualWeighting();
         }
     },
     PARABOLA {
         @Override
-        public Weighting create(int size) {
-            return new ParabolaWeighting(size);
+        public Weighting create() {
+            return new ParabolaWeighting();
         }
 
         public Weighting create(final DistanceMatrix inputData, final double weightingParam) {
-            return new ParabolaWeighting(inputData.size());
+            return new ParabolaWeighting();
         }
     },
     GREEDY_ME {
         @Override
-        public Weighting create(int size) {
+        public Weighting create() {
             throw new UnsupportedOperationException("Can't create GreedyME in this way");
         }
 
@@ -82,7 +82,7 @@ public enum Weightings {
         }
     };
 
-    public abstract Weighting create(final int size);
+    public abstract Weighting create();
 
     public abstract Weighting create(final DistanceMatrix inputData, final double weightingParam);
 

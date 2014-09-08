@@ -243,7 +243,7 @@ public class NexusWriter extends AbstractPhygenWriter implements Appendable {
 
         this.appendLine("BEGIN Distances;");
         this.appendLine(" DIMENSIONS ntax=" + dm.size() + ";");
-        this.appendLine(" FORMAT labels=LEFT interleave=NO diagonal triangle=" + triangle.toString() + ";");
+        this.appendLine(" FORMAT labels=LEFT diagonal triangle=" + triangle.toString() + ";");
         this.appendLine(" MATRIX");
         for (int i = 0; i < matrix.length; i++) {
 

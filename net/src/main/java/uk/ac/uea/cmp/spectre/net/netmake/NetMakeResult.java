@@ -54,7 +54,9 @@ public class NetMakeResult {
         File treeOutputFile = new File(outputDir, prefix + ".tree." + extension);
 
         phygenWriter.writeSplitSystem(networkOutputFile, this.getNetwork());
-        phygenWriter.writeSplitSystem(treeOutputFile, this.getTree());
-        //phygenWriter.writeTree(treeOutputFile, this.getTree(), this.distanceMatrix, this.getTree().calculateTreeWeighting(this.distanceMatrix));
+
+        if (this.tree != null) {
+            phygenWriter.writeSplitSystem(treeOutputFile, this.getTree());
+        }
     }
 }

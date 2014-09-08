@@ -26,15 +26,6 @@ package uk.ac.uea.cmp.spectre.core.alg.nm.weighting;
 public class TSPWeighting extends Weighting {
 
     /**
-     * Creates an TSPWeighting object with a weighting list of the given size.
-     *
-     * @param size size of the weighting list
-     */
-    public TSPWeighting(int size) {
-        super(size);
-    }
-
-    /**
      * @param i             index of weighting parameter to be updated
      * @param position      position of i in component
      * @param componentSize size of component

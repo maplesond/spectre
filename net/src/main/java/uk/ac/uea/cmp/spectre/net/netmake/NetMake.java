@@ -178,7 +178,7 @@ public class NetMake extends RunnableTool {
                 coc = new NeighborNetImpl();
             }
 
-            notifyUser("Processing distance matrix");
+            notifyUser("Executing netmake");
 
             NetMakeResult result = this.execute(distanceMatrix, coc);
 

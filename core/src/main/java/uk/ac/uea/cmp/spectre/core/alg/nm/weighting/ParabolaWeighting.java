@@ -28,16 +28,6 @@ package uk.ac.uea.cmp.spectre.core.alg.nm.weighting;
 public class ParabolaWeighting extends Weighting {
 
     /**
-     * Creates an ParabolaWeighting object
-     * with a weighting list of the given size.
-     *
-     * @param size size of the weighting list
-     */
-    public ParabolaWeighting(int size) {
-        super(size);
-    }
-
-    /**
      * @param i             index of weighting parameter to be updated
      * @param position      position of i in component
      * @param componentSize size of component
