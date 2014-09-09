@@ -1662,7 +1662,7 @@ public class DrawFlat {
                 if (v == null) {
                     v = new Vertex(0.0, 0.0);
                 }
-                v.getTaxa().add(new Identifier(pseq.getTaxaname()[initSequI], initSequI));
+                v.getTaxa().add(new Identifier(taxaname[initSequI], initSequI));
                 pseq.setRepresentedByAt(initSequI, 0);
                 if (initSequI != 0) {
                     pseq.setActiveTaxaAt(initSequI, false);
@@ -1672,7 +1672,7 @@ public class DrawFlat {
                 v = chain[0].getTop();
                 for (j = 0; j < chain.length; j++) {
                     if (ssyst.splits[chain[j].getIdxsplit()][initSequI] == 0) {
-                        (chain[j].getTop()).getTaxa().add(new Identifier(pseq.getTaxaname()[initSequI], initSequI));
+                        (chain[j].getTop()).getTaxa().add(new Identifier(taxaname[initSequI], initSequI));
                         if (chain[j].getTop().getTaxa().size() > 1) {
                             pseq.setRepresentedByAt(initSequI, chain[j].getTop().getTaxa().getFirst().getId());
                             pseq.setActiveTaxaAt(initSequI, false);
@@ -1681,7 +1681,7 @@ public class DrawFlat {
                         break;
                     } else {
                         if (j == (chain.length - 1)) {
-                            (chain[j].getBot()).getTaxa().add(new Identifier(pseq.getTaxaname()[initSequI], initSequI));
+                            (chain[j].getBot()).getTaxa().add(new Identifier(taxaname[initSequI], initSequI));
                             if (chain[j].getBot().getTaxa().size() > 1) {
                                 pseq.setRepresentedByAt(initSequI, chain[j].getBot().getTaxa().getFirst().getId());
                                 pseq.setActiveTaxaAt(initSequI, false);

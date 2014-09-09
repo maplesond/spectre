@@ -303,7 +303,7 @@ public class NexusWriter extends AbstractPhygenWriter implements Appendable {
         //write translate section
         for(Vertex v : vertices) {
             if (v.getTaxa().size() > 0) {
-                String line = String.valueOf((v.getNxnum()));
+                String line = String.valueOf(v.getNxnum());
                 for(Identifier i : v.getTaxa()) {
                     line += " '" + i.getName() + "'";
                 }

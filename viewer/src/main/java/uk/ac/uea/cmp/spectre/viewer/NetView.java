@@ -26,9 +26,11 @@ import com.itextpdf.text.pdf.PdfWriter;
 import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.ac.uea.cmp.spectre.core.ds.Identifier;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.network.FlatNetwork;
 import uk.ac.uea.cmp.spectre.core.ds.network.Network;
+import uk.ac.uea.cmp.spectre.core.ds.network.NetworkLabel;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
 import uk.ac.uea.cmp.spectre.core.ds.network.draw.DrawFlat;
 import uk.ac.uea.cmp.spectre.core.ds.network.draw.PermutationSequenceDraw;
@@ -40,7 +42,8 @@ import uk.ac.uea.cmp.spectre.core.ui.gui.geom.Leaders;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -830,8 +833,12 @@ public class NetView extends javax.swing.JFrame {
 
     private void saveNetwork(File file) throws IOException {
         ViewerNexusWriter writer = new ViewerNexusWriter();
+        writer.appendHeader();
+        writer.appendLine();
         writer.append(taxa);
+        writer.appendLine();
         writer.append(network);
+        writer.appendLine();
         writer.append(config);
         writer.write(file);
     }
@@ -895,9 +902,19 @@ public class NetView extends javax.swing.JFrame {
             if (nexus.getNetwork() == null && nexus.getSplitSystem() != null) {
 
                 // Create network
-                PermutationSequenceDraw psDraw = new PermutationSequenceDraw(nexus.getSplitSystem());
+                network = new FlatNetwork(DrawFlat.drawsplitsystem(new PermutationSequenceDraw(nexus.getSplitSystem()), -1));
 
-                network = new FlatNetwork(DrawFlat.drawsplitsystem(psDraw, -1));
+                // Setup labels
+                for(Vertex v : network.getAllVertices()) {
+                    if (v.getTaxa().size() > 0) {
+                        String label = new String();
+                        for(Identifier i : v.getTaxa()) {
+                            label = (i.getName() + ", ").concat(label);
+                        }
+                        label = label.substring(0, label.length() - 2);
+                        v.setLabel(new NetworkLabel(label));
+                    }
+                }
             }
             else {
                 network = nexus.getNetwork();
