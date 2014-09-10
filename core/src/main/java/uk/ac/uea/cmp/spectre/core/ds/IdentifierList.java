@@ -565,6 +565,10 @@ public class IdentifierList extends ArrayList<Identifier> {
         Collections.shuffle(this);
     }
 
+    public void reverse() {
+        Collections.reverse(this);
+    }
+
     public Map<Identifier, Integer> createLookup() {
 
         Map<Identifier, Integer> lut = new HashMap<>();
