@@ -14,7 +14,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.core.alg.nm.weighting;
+package uk.ac.uea.cmp.spectre.core.co.nm.weighting;
+
+import uk.ac.uea.cmp.spectre.core.ds.Identifier;
 
 /**
  * Resulting circular order is solution for TSPWeighting.
@@ -28,18 +30,18 @@ public class TSPWeighting extends Weighting {
     /**
      * @param i             index of weighting parameter to be updated
      * @param position      position of i in component
-     * @param componentSize size of component
+     * @param size size of component
      * @throws ArrayIndexOutOfBoundsException
      */
     @Override
-    public void updateWeightingParam(int i, int position, int componentSize) {
+    public void updateWeightingParam(Identifier i, int position, int size) {
         Double weightingparameter = 0.;
 
-        if (componentSize == 1) {
+        if (size == 1) {
             weightingparameter = 1.;
         }
-        if (componentSize > 1
-                && (position == 0 || position == (componentSize - 1))) {
+        if (size > 1
+                && (position == 0 || position == (size - 1))) {
             weightingparameter = 0.5;
         } else {
             weightingparameter = 0.;
@@ -48,7 +50,7 @@ public class TSPWeighting extends Weighting {
         setWeightingParam(i, weightingparameter);
     }
 
-    public void process(int i, int position, int customParameter) {
+    public void process(Identifier i, int position, int customParameter) {
         updateWeightingParam(i, position, customParameter);
     }
 }

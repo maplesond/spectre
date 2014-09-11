@@ -14,16 +14,20 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.core.alg.nm.weighting;
+package uk.ac.uea.cmp.spectre.core.co.nm.weighting;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.uea.cmp.spectre.core.alg.nm.NetMakeCircularOrderer;
+import uk.ac.uea.cmp.spectre.core.co.CVMatrices;
 import uk.ac.uea.cmp.spectre.core.ds.Identifier;
+import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
-import uk.ac.uea.cmp.spectre.core.ds.split.*;
+import uk.ac.uea.cmp.spectre.core.ds.split.Split;
+import uk.ac.uea.cmp.spectre.core.ds.split.SplitBlock;
+import uk.ac.uea.cmp.spectre.core.ds.split.SplitDistanceMap;
+import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.spectre.core.math.stats.Statistics;
 
 import java.util.ArrayList;
@@ -55,7 +59,7 @@ public class GreedyMEWeighting extends Weighting {
     }
 
 
-    public Pair<Identifier, Identifier> makeMECherry(SplitSystem splits, final NetMakeCircularOrderer.CVMatrices c2v) {
+    public Pair<Identifier, Identifier> makeMECherry(SplitSystem splits, final CVMatrices c2v) {
 
         double oldTreeLength = Double.POSITIVE_INFINITY;
 
@@ -66,13 +70,21 @@ public class GreedyMEWeighting extends Weighting {
 
         log.debug(nbComponents + " cherries to produce");
 
-        for (int i = 0; i < nbComponents - 1; i++) {
+        for (int i = 0; i < c2v.getComponents().size(); i++) {
+
+            Identifier componentI = c2v.getComponents().get(i);
 
             log.debug("Making cherry " + i + "...");
             for (int j = i + 1; j < nbComponents; j++) {
 
+                Identifier componentJ = c2v.getComponents().get(j);
+
                 // Create a new merged split i and j from splits creation and add into ss
-                splits.add(new SpectreSplit(c2v.getVertexSplitAt(i), c2v.getVertexSplitAt(j)));
+                IdentifierList vertices = new IdentifierList();
+                vertices.addAll(c2v.getVertices(componentI));
+                vertices.addAll(c2v.getVertices(componentJ));
+
+                //splits.add();
 
 
                 // If we've created a split which contains the entire taxa set then remove it
@@ -468,7 +480,7 @@ public class GreedyMEWeighting extends Weighting {
      * @param customParameter
      */
     @Override
-    public void updateWeightingParam(int i, int position, int customParameter) {
+    public void updateWeightingParam(Identifier i, int position, int customParameter) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 }

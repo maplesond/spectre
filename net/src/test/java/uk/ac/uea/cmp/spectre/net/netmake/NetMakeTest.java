@@ -24,14 +24,14 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import uk.ac.uea.cmp.spectre.core.alg.CircularOrderingCreator;
-import uk.ac.uea.cmp.spectre.core.alg.nm.NetMakeCircularOrderer;
+import uk.ac.uea.cmp.spectre.core.co.CircularOrderingCreator;
+import uk.ac.uea.cmp.spectre.core.co.nm.NetMakeCircularOrderer;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.distance.FlexibleDistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
-import uk.ac.uea.cmp.spectre.core.alg.nm.weighting.GreedyMEWeighting;
-import uk.ac.uea.cmp.spectre.core.alg.nm.weighting.TSPWeighting;
+import uk.ac.uea.cmp.spectre.core.co.nm.weighting.GreedyMEWeighting;
+import uk.ac.uea.cmp.spectre.core.co.nm.weighting.TSPWeighting;
 
 import java.io.File;
 
@@ -72,7 +72,7 @@ public class NetMakeTest {
 
         DistanceMatrix distanceMatrix = new FlexibleDistanceMatrix(new IdentifierList(taxa), distances);
 
-        CircularOrderingCreator circularOrderingCreator = new NetMakeCircularOrderer(new GreedyMEWeighting(distanceMatrix), new TSPWeighting(distanceMatrix.size()));
+        CircularOrderingCreator circularOrderingCreator = new NetMakeCircularOrderer(new GreedyMEWeighting(distanceMatrix), new TSPWeighting());
         NetMakeResult result = new NetMake().execute(distanceMatrix, circularOrderingCreator);
 
         SplitSystem tree = result.getTree();

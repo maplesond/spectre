@@ -14,7 +14,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.core.alg.nm.weighting;
+package uk.ac.uea.cmp.spectre.core.co.nm.weighting;
 
 import org.apache.commons.lang3.StringUtils;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
@@ -85,7 +85,6 @@ public enum Weightings {
     public abstract Weighting create();
 
     public abstract Weighting create(final DistanceMatrix inputData, final double weightingParam);
-
 
     public static Weighting createWeighting(String weightingType, DistanceMatrix distanceMatrix, double weightingParam, final boolean greedyMEAllowed) {
         Weightings w = Weightings.valueOf(weightingType);

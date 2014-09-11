@@ -14,7 +14,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.core.alg.nm.weighting;
+package uk.ac.uea.cmp.spectre.core.co.nm.weighting;
+
+import uk.ac.uea.cmp.spectre.core.ds.Identifier;
 
 /**
  * A vertex is weighted after its position in the component.
@@ -30,25 +32,35 @@ public class ParabolaWeighting extends Weighting {
     /**
      * @param i             index of weighting parameter to be updated
      * @param position      position of i in component
-     * @param componentSize size of component
+     * @param size size of component
      * @throws ArrayIndexOutOfBoundsException
      */
     @Override
-    public void updateWeightingParam(int i, int position, int componentSize) {
-        double weightingparameter = 0.;
-        double alpha = 0.; //normalization factor
+    public void updateWeightingParam(Identifier i, int position, int size) {
 
-        for (int j = 0; j < componentSize; j++) {
-            alpha += (j - 0.5 * (componentSize - 1))
-                    * (j - 0.5 * (componentSize - 1));
-        }
-        weightingparameter = 1. / alpha * (position - 0.5 * (componentSize - 1))
-                * (position - 0.5 * (componentSize - 1));
+        double alpha = calcAlpha(size);
+        double weighting = 1. / alpha * Math.pow(position - 0.5 * (size - 1), 2);
 
-        setWeightingParam(i, weightingparameter);
+        this.setWeightingParam(i, weighting);
     }
 
-    public void process(int i, int position, int customParameter) {
+    /**
+     * Calculate the normalisation factor alpha
+     * @param size Size of component (i.e. number of vertices)
+     * @return alpha
+     */
+    private static double calcAlpha(final int size) {
+        double alpha = 0.;
+
+        for (int j = 0; j < size; j++) {
+            alpha += (j - 0.5 * (size - 1))
+                    * (j - 0.5 * (size - 1));
+        }
+
+        return alpha;
+    }
+
+    public void process(Identifier i, int position, int customParameter) {
         updateWeightingParam(i, position, customParameter);
     }
 }

@@ -14,9 +14,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.core.alg.nn;
+package uk.ac.uea.cmp.spectre.core.co.nn;
 
-import uk.ac.uea.cmp.spectre.core.alg.CircularOrderingCreator;
+import uk.ac.uea.cmp.spectre.core.co.CircularOrderingCreator;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;

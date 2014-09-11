@@ -18,11 +18,11 @@ package uk.ac.uea.cmp.spectre.net.netmake;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.uea.cmp.spectre.core.alg.CircularOrderingAlgorithms;
+import uk.ac.uea.cmp.spectre.core.co.CircularOrderingAlgorithms;
 import uk.ac.uea.cmp.spectre.core.ui.gui.JobController;
 import uk.ac.uea.cmp.spectre.core.ui.gui.StatusTracker;
 import uk.ac.uea.cmp.spectre.core.ui.gui.ToolHost;
-import uk.ac.uea.cmp.spectre.core.alg.nm.weighting.Weightings;
+import uk.ac.uea.cmp.spectre.core.co.nm.weighting.Weightings;
 
 import javax.swing.*;
 import java.awt.*;

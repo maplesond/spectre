@@ -14,12 +14,12 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.core.alg.nn;
+package uk.ac.uea.cmp.spectre.core.co.nn;
 
 import org.apache.commons.lang3.time.StopWatch;
 import org.junit.Before;
 import org.junit.Test;
-import uk.ac.uea.cmp.spectre.core.alg.CircularOrderingCreator;
+import uk.ac.uea.cmp.spectre.core.co.CircularOrderingCreator;
 import uk.ac.uea.cmp.spectre.core.ds.CircularOrdering;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
@@ -32,7 +32,7 @@ import java.io.IOException;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Please consult TestMaticies_NNet.pdf in the resources folder for details and diagrams of the distance matrices and
+ * Please consult TestMaticies_NNet.pdf in the resources folder for details and diagrams of the distance mx and
  * associated circular orderings.
  *
  * Note that it is not possible at the moment to automatically test all circular orderings due to unpredictable differences in

@@ -14,7 +14,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.core.alg.nm.weighting;
+package uk.ac.uea.cmp.spectre.core.co.nm.weighting;
+
+import uk.ac.uea.cmp.spectre.core.ds.Identifier;
 
 /**
  * Weighting of vertices in merged component depends on number of vertices in
@@ -46,20 +48,15 @@ public class TreeWeighting extends Weighting {
      * @throws ArrayIndexOutOfBoundsException
      */
     @Override
-    public void updateWeightingParam(int i, int position,
+    public void updateWeightingParam(Identifier i, int position,
                                      int componentSplitposition) {
-        double weightingparameter = 0.;
 
-        if (position < componentSplitposition) {
-            weightingparameter = alpha * getWeightingParam(i);
-        } else {
-            weightingparameter = (1. - alpha) * getWeightingParam(i);
-        }
+        double weightingparameter = (position < componentSplitposition ? alpha : 1.0 - alpha) * getWeightingParam(i);
 
         setWeightingParam(i, weightingparameter);
     }
 
-    public void process(int i, int position, int customParameter) {
+    public void process(Identifier i, int position, int customParameter) {
         updateWeightingParam(i, position, customParameter);
     }
 }
