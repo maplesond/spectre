@@ -176,13 +176,13 @@ public class NetMEGUI extends JFrame implements ToolHost {
         txtOutputPrefix = new JTextField();
 
         txtOutputDir.setPreferredSize(new Dimension(200, 25));
-        txtOutputDir.setToolTipText(NetMakeOptions.DESC_OUTPUT_DIR);
+        txtOutputDir.setToolTipText(NetMakeOptions.DESC_OUTPUT_NETWORK);
 
         lblOutputDir.setText("Save to file:");
-        lblOutputDir.setToolTipText(NetMakeOptions.DESC_OUTPUT_DIR);
+        lblOutputDir.setToolTipText(NetMakeOptions.DESC_OUTPUT_NETWORK);
 
         cmdOutputDir.setText("...");
-        cmdOutputDir.setToolTipText(NetMakeOptions.DESC_OUTPUT_DIR);
+        cmdOutputDir.setToolTipText(NetMakeOptions.DESC_OUTPUT_NETWORK);
         cmdOutputDir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cmdOutputDirActionPerformed(evt);
@@ -190,10 +190,10 @@ public class NetMEGUI extends JFrame implements ToolHost {
         });
 
         lblOutputPrefix.setText("Output prefix:");
-        lblOutputPrefix.setToolTipText(NetMakeOptions.DESC_OUTPUT_PREFIX);
+        lblOutputPrefix.setToolTipText(NetMEOptions.DESC_OUTPUT_PREFIX);
 
         txtOutputPrefix.setPreferredSize(new Dimension(200, 25));
-        txtOutputPrefix.setToolTipText(NetMakeOptions.DESC_OUTPUT_PREFIX);
+        txtOutputPrefix.setToolTipText(NetMEOptions.DESC_OUTPUT_PREFIX);
 
         pnlSelectOutputDir = new JPanel();
         pnlSelectOutputDir.setLayout(new BoxLayout(pnlSelectOutputDir, BoxLayout.LINE_AXIS));

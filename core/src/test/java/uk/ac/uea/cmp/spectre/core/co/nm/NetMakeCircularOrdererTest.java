@@ -14,12 +14,11 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.core.alg.nm;
+package uk.ac.uea.cmp.spectre.core.co.nm;
 
 import org.junit.Before;
-import org.junit.Test;
-import uk.ac.uea.cmp.spectre.core.alg.CircularOrderingCreator;
-import uk.ac.uea.cmp.spectre.core.alg.nm.weighting.TreeWeighting;
+import uk.ac.uea.cmp.spectre.core.co.CircularOrderingCreator;
+import uk.ac.uea.cmp.spectre.core.co.nm.weighting.TreeWeighting;
 import uk.ac.uea.cmp.spectre.core.ds.CircularOrdering;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
@@ -85,12 +84,12 @@ public class NetMakeCircularOrdererTest {
         assertTrue(true);
     }
 
-    @Test
+    //@Test
     public void testDist1() {
         this.test(this.dist1, this.orderDist1);
     }
 
-    @Test
+    //@Test
     public void testDist2() {
         this.test(this.dist2, this.orderDist1);
     }

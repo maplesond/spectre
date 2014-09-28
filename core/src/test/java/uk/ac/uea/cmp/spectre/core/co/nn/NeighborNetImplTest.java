@@ -14,7 +14,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.core.alg.nn;
+package uk.ac.uea.cmp.spectre.core.co.nn;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
@@ -71,7 +71,7 @@ public class NeighborNetImplTest {
 
         NeighborNetImpl nn = new NeighborNetImpl();
 
-        nn.matrices.setV2V(v2v);
+        nn.mx.setV2V(v2v);
         nn.stackedVertexTriplets = new Stack<>();
         //nn.c2v.sMap = new NeighborNetImpl.Component2VertexSetMap(v2v.getTaxa());
 
@@ -96,9 +96,8 @@ public class NeighborNetImplTest {
         DistanceMatrix c2c = new FlexibleDistanceMatrix(new IdentifierList(taxa), distances1);
 
         NeighborNetImpl nn = new NeighborNetImpl();
-        nn.matrices.setC2C(c2c);
 
-        Pair<Identifier, Identifier> selectedComponents = nn.selectionStep1();
+        Pair<Identifier, Identifier> selectedComponents = nn.selectionStep1(c2c);
 
         assertTrue(selectedComponents.getLeft().getName().equals("C"));
         assertTrue(selectedComponents.getRight().getName().equals("D"));
@@ -110,9 +109,8 @@ public class NeighborNetImplTest {
         DistanceMatrix c2c = new FlexibleDistanceMatrix(new IdentifierList(taxa), distances1);
 
         NeighborNetImpl nn = new NeighborNetImpl();
-        nn.matrices.setC2C(c2c);
 
-        Pair<Identifier, Identifier> selectedComponents = nn.selectionStep1();
+        Pair<Identifier, Identifier> selectedComponents = nn.selectionStep1(c2c);
 
         assertTrue(selectedComponents.getLeft().getName().equals("C"));
         assertTrue(selectedComponents.getRight().getName().equals("D"));

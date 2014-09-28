@@ -13,37 +13,44 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
-
-package uk.ac.uea.cmp.spectre.core.alg;
+package uk.ac.uea.cmp.spectre.core.co.nm.weighting;
 
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
- * Created with IntelliJ IDEA.
- * User: Sarah_2
- * Date: 24/04/13
- * Time: 15:49
- * To change this template use File | Settings | File Templates.
+ * @author Sarah Bastkowski
  */
-public enum CircularOrderingAlgorithms {
+public class SummedDistanceList extends ArrayList<Double> {
 
-    NETMAKE {
-    },
-    NEIGHBORNET {
+    public SummedDistanceList() {
+        super();
     }
-    ;
 
-    public static String toListString() {
-        List<String> list = new ArrayList<>();
 
-        for (CircularOrderingAlgorithms prf : CircularOrderingAlgorithms.values()) {
-            list.add(prf.toString());
+    public SummedDistanceList(double[] sdl) {
+        for (double sd : sdl) {
+            this.add(new Double(sd));
         }
-
-        return "[" + StringUtils.join(list, ", ") + "]";
     }
 
+    public SummedDistanceList(SummedDistanceList copy) {
+        this();
+
+        //Maybe this is unnecessary and could simply be done with a call to copy.addAll()
+        //but just to be sure...
+        for (Double sd : copy) {
+            this.add(Double.valueOf(sd));
+        }
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+        sb.append(StringUtils.join(this, ","));
+        sb.append("]");
+        return sb.toString();
+    }
 }

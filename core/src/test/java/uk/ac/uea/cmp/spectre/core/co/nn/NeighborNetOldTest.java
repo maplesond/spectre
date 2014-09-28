@@ -14,7 +14,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.core.alg.nn;
+package uk.ac.uea.cmp.spectre.core.co.nn;
 
 import org.junit.Assert;
 import org.junit.Before;

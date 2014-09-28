@@ -14,9 +14,14 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.core.alg.nm.weighting;
+package uk.ac.uea.cmp.spectre.core.co.nm.weighting;
 
 import org.apache.commons.lang3.StringUtils;
+import uk.ac.uea.cmp.spectre.core.ds.Identifier;
+import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Fills and updates weighting list
@@ -26,21 +31,36 @@ import org.apache.commons.lang3.StringUtils;
  * @author Sarah Bastkowski
  */
 public abstract class Weighting {
-    private double[] weightingParameters;
+
+    private Map<Identifier, Double> weightingParameters;
 
     /**
      * Does nothing... therefore weighting params array will not be initialised.
      */
     public Weighting() {
-        this.weightingParameters = new double[0];
+        this.weightingParameters = new HashMap<>();
     }
 
-    public void setupWeightingParameters(final int size) {
-        this.weightingParameters = new double[size];
-
-        for(int i = 0; i < size; i++) {
-            this.weightingParameters[i] = 1.0;
+    public void initialiseWeightings(IdentifierList vertices) {
+        for(Identifier v : vertices) {
+            this.weightingParameters.put(v, 1.0);
         }
+    }
+
+    public void updateWeightings(IdentifierList vertices) {
+
+        for (Identifier v : vertices) {
+            //if (i == sb1.get(j) - 1) {
+            //    position = j;
+
+                if (this instanceof TreeWeighting) {
+                    this.updateWeightingParam(v, 1, vertices.size());//position, componentSplitPosition);
+                } else {
+                    this.updateWeightingParam(v, 1, vertices.size()); //position, vertices.size());
+                }
+            //}
+        }
+
     }
 
     /**
@@ -50,7 +70,7 @@ public abstract class Weighting {
      * @param position
      * @param customParameter parameter depending on implemented algorithm
      */
-    public abstract void updateWeightingParam(int i, int position, int customParameter);
+    public abstract void updateWeightingParam(Identifier i, int position, int customParameter);
 
     /**
      * Returns the weighting parameter stored at the specified position
@@ -60,8 +80,8 @@ public abstract class Weighting {
      * @return the weighting parameter stored at the specified position
      * @throws ArrayIndexOutOfBoundsException if the index is out of range
      */
-    public Double getWeightingParam(int i) {
-        return weightingParameters[i];
+    public double getWeightingParam(Identifier i) {
+        return weightingParameters.get(i);
     }
 
     /**
@@ -72,8 +92,8 @@ public abstract class Weighting {
      * @param newValue value that replaces the one at the specified position
      * @throws ArrayIndexOutOfBoundsException if the index is out of range
      */
-    public void setWeightingParam(int i, Double newValue) {
-        weightingParameters[i] = newValue;
+    public void setWeightingParam(Identifier i, double newValue) {
+        weightingParameters.put(i, newValue);
     }
 
     @Override

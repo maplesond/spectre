@@ -14,7 +14,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.core.alg.nm.weighting;
+package uk.ac.uea.cmp.spectre.core.co.nm.weighting;
+
+import uk.ac.uea.cmp.spectre.core.ds.Identifier;
 
 /**
  * Every vertex of one component (after merging) gets the same weighting
@@ -33,7 +35,7 @@ public class EqualWeighting extends Weighting {
      * @throws ArrayIndexOutOfBoundsException
      */
     @Override
-    public void updateWeightingParam(int i, int dummy, int componentSize) {
+    public void updateWeightingParam(Identifier i, int dummy, int componentSize) {
         Double weightingparameter = 0.;
 
         weightingparameter = 1. / componentSize;
@@ -41,7 +43,7 @@ public class EqualWeighting extends Weighting {
         setWeightingParam(i, weightingparameter);
     }
 
-    public void process(int i, int position, int customParameter) {
+    public void process(Identifier i, int position, int customParameter) {
         updateWeightingParam(i, position, customParameter);
     }
 }

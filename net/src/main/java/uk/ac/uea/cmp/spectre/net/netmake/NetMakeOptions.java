@@ -16,8 +16,8 @@
 
 package uk.ac.uea.cmp.spectre.net.netmake;
 
-import uk.ac.uea.cmp.spectre.core.alg.CircularOrderingAlgorithms;
-import uk.ac.uea.cmp.spectre.core.alg.nm.weighting.Weightings;
+import uk.ac.uea.cmp.spectre.core.co.CircularOrderingAlgorithms;
+import uk.ac.uea.cmp.spectre.core.co.nm.weighting.Weightings;
 
 import java.io.File;
 
@@ -33,9 +33,9 @@ public class NetMakeOptions {
     // Options descriptions
     public static final String DESC_INPUT = "The file containing the distance matrix to input.";
 
-    public static final String DESC_OUTPUT_DIR = "The directory to put output from this job.";
+    public static final String DESC_OUTPUT_NETWORK = "The location to write the output network.";
 
-    public static final String DESC_OUTPUT_PREFIX = "The prefix to apply to all files produced by this NetMake run.  Default: netmake-<timestamp>.";
+    public static final String DESC_OUTPUT_TREE = "The location to write the output tree (if applicable)";
 
     public static final String DESC_TREE_PARAM = "The weighting parameter passed to the chosen weighting algorithm. " +
             " Value must be between 0.0 and 1.0.  Default: " + DEFAULT_TREE_WEIGHT;
@@ -48,8 +48,8 @@ public class NetMakeOptions {
 
 
     private File input;
-    private File outputDir;
-    private String outputPrefix;
+    private File outputNetwork;
+    private File outputTree;
     private String weighting1;
     private String weighting2;
     private double treeParam;
@@ -57,10 +57,10 @@ public class NetMakeOptions {
 
 
     public NetMakeOptions() {
-        this(null, null, "netmake", null, null, DEFAULT_TREE_WEIGHT, "NETMAKE");
+        this(null, null, null, null, null, DEFAULT_TREE_WEIGHT, "NETMAKE");
     }
 
-    public NetMakeOptions(File input, File outputDir, String outputPrefix, String weighting1, String weighting2, double treeParam, String coAlg) {
+    public NetMakeOptions(File input, File outputNetwork, File outputTree, String weighting1, String weighting2, double treeParam, String coAlg) {
 
         // Validates that we have sensible input for the weightings
         if (weighting1 != null && !weighting1.isEmpty())
@@ -70,8 +70,8 @@ public class NetMakeOptions {
             Weightings.valueOf(weighting2);
 
         this.input = input;
-        this.outputDir = outputDir;
-        this.outputPrefix = outputPrefix;
+        this.outputNetwork = outputNetwork;
+        this.outputTree = outputTree;
         this.weighting1 = weighting1;
         this.weighting2 = weighting2;
         this.treeParam = treeParam;
@@ -86,20 +86,20 @@ public class NetMakeOptions {
         this.input = input;
     }
 
-    public File getOutputDir() {
-        return outputDir;
+    public File getOutputNetwork() {
+        return outputNetwork;
     }
 
-    public void setOutputDir(File outputDir) {
-        this.outputDir = outputDir;
+    public void setOutputNetwork(File outputNetwork) {
+        this.outputNetwork = outputNetwork;
     }
 
-    public String getOutputPrefix() {
-        return outputPrefix;
+    public File getOutputTree() {
+        return outputTree;
     }
 
-    public void setOutputPrefix(String outputPrefix) {
-        this.outputPrefix = outputPrefix;
+    public void setOutputTree(File outputTree) {
+        this.outputTree = outputTree;
     }
 
     public String getWeighting1() {

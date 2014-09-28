@@ -22,12 +22,12 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.PropertyConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.uea.cmp.spectre.core.alg.CircularOrderingAlgorithms;
-import uk.ac.uea.cmp.spectre.core.alg.CircularOrderingCreator;
-import uk.ac.uea.cmp.spectre.core.alg.nm.NetMakeCircularOrderer;
-import uk.ac.uea.cmp.spectre.core.alg.nm.weighting.Weighting;
-import uk.ac.uea.cmp.spectre.core.alg.nm.weighting.Weightings;
-import uk.ac.uea.cmp.spectre.core.alg.nn.NeighborNetImpl;
+import uk.ac.uea.cmp.spectre.core.co.CircularOrderingAlgorithms;
+import uk.ac.uea.cmp.spectre.core.co.CircularOrderingCreator;
+import uk.ac.uea.cmp.spectre.core.co.nm.NetMakeCircularOrderer;
+import uk.ac.uea.cmp.spectre.core.co.nm.weighting.Weighting;
+import uk.ac.uea.cmp.spectre.core.co.nm.weighting.Weightings;
+import uk.ac.uea.cmp.spectre.core.co.nn.NeighborNetImpl;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.split.SpectreSplitSystem;
@@ -94,7 +94,7 @@ public class NetMake extends RunnableTool {
 
         SplitSystem tree = null;
 
-        if (circularOrderingCreator.createsTreeSplits()) {
+        if (circularOrderingCreator.createsTreeSplits() && this.getOptions().getOutputTree() != null) {
 
             SplitSystem treeSplits = circularOrderingCreator.getTreeSplits();
 
@@ -185,7 +185,7 @@ public class NetMake extends RunnableTool {
             notifyUser("Saving results to disk");
 
             // Save results.
-            result.save(this.options.getOutputDir(), this.options.getOutputPrefix());
+            result.save(this.options.getOutputNetwork(), this.options.getOutputTree());
 
             this.trackerFinished(true);
 
