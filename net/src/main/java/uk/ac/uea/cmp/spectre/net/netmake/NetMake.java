@@ -94,7 +94,7 @@ public class NetMake extends RunnableTool {
 
         SplitSystem tree = null;
 
-        if (circularOrderingCreator.createsTreeSplits()) {
+        if (circularOrderingCreator.createsTreeSplits() && this.getOptions().getOutputTree() != null) {
 
             SplitSystem treeSplits = circularOrderingCreator.getTreeSplits();
 
@@ -185,7 +185,7 @@ public class NetMake extends RunnableTool {
             notifyUser("Saving results to disk");
 
             // Save results.
-            result.save(this.options.getOutputDir(), this.options.getOutputPrefix());
+            result.save(this.options.getOutputNetwork(), this.options.getOutputTree());
 
             this.trackerFinished(true);
 

@@ -95,14 +95,64 @@ public class NetMakeTest {
 
         File dist1Nex = FileUtils.toFile(NetMakeTest.class.getResource("/dist1.nex"));
 
+        File netout = new File(folder.getRoot(), "network.nex");
+        File treeout = new File(folder.getRoot(), "tree.nex");
+
         NetMakeOptions options = new NetMakeOptions();
         options.setInput(dist1Nex);
-        options.setOutputDir(folder.getRoot());
-        options.setOutputPrefix("netmakeout");
+        options.setOutputNetwork(netout);
+        options.setOutputTree(treeout);
         options.setWeighting1("TREE");
 
-        new NetMake(options).run();
+        NetMake nm = new NetMake(options);
 
-        assertTrue(true);
+        nm.run();
+
+        assertTrue(netout.exists());
+        assertTrue(treeout.exists());
+    }
+
+    @Test
+    public void testDist2() {
+
+        File dist1Nex = FileUtils.toFile(NetMakeTest.class.getResource("/dist2.nex"));
+
+        File netout = new File(folder.getRoot(), "network.nex");
+        File treeout = new File(folder.getRoot(), "tree.nex");
+
+        NetMakeOptions options = new NetMakeOptions();
+        options.setInput(dist1Nex);
+        options.setOutputNetwork(netout);
+        options.setOutputTree(treeout);
+        options.setWeighting1("TREE");
+
+        NetMake nm = new NetMake(options);
+
+        nm.run();
+
+        assertTrue(netout.exists());
+        assertTrue(treeout.exists());
+    }
+
+    @Test
+    public void testDist3() {
+
+        File dist1Nex = FileUtils.toFile(NetMakeTest.class.getResource("/dist3.nex"));
+
+        File netout = new File(folder.getRoot(), "network.nex");
+        File treeout = new File(folder.getRoot(), "tree.nex");
+
+        NetMakeOptions options = new NetMakeOptions();
+        options.setInput(dist1Nex);
+        options.setOutputNetwork(netout);
+        options.setOutputTree(treeout);
+        options.setWeighting1("TREE");
+
+        NetMake nm = new NetMake(options);
+
+        nm.run();
+
+        assertTrue(netout.exists());
+        assertTrue(treeout.exists());
     }
 }

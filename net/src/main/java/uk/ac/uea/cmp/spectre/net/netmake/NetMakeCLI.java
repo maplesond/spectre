@@ -42,8 +42,8 @@ public class NetMakeCLI {
 
     public static final String OPT_INPUT = "input";
     public static final String OPT_INPUT_TYPE = "input_file_type";
-    public static final String OPT_OUTPUT_DIR = "output";
-    public static final String OPT_OUTPUT_PREFIX = "prefix";
+    public static final String OPT_OUTPUT_NETWORK = "network_out";
+    public static final String OPT_OUTPUT_TREE = "tree_out";
     public static final String OPT_TREE_PARAM = "tree_param";
     public static final String OPT_WEIGHTINGS_1 = "weightings_1";
     public static final String OPT_WEIGHTINGS_2 = "weightings_2";
@@ -59,11 +59,11 @@ public class NetMakeCLI {
         options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_INPUT).isRequired().hasArg()
                 .withDescription(NetMakeOptions.DESC_INPUT).create("i"));
 
-        options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_OUTPUT_DIR).hasArg()
-                .withDescription(NetMakeOptions.DESC_OUTPUT_DIR).create("o"));
+        options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_OUTPUT_NETWORK).hasArg()
+                .withDescription(NetMakeOptions.DESC_OUTPUT_NETWORK).create("on"));
 
-        options.addOption(OptionBuilder.withArgName("string").withLongOpt(OPT_OUTPUT_PREFIX).hasArg()
-                .withDescription(NetMakeOptions.DESC_OUTPUT_PREFIX).create("p"));
+        options.addOption(OptionBuilder.withArgName("string").withLongOpt(OPT_OUTPUT_TREE).hasArg()
+                .withDescription(NetMakeOptions.DESC_OUTPUT_TREE).create("ot"));
 
         options.addOption(OptionBuilder.withArgName("double").withLongOpt(OPT_TREE_PARAM).hasArg()
                 .withDescription(NetMakeOptions.DESC_TREE_PARAM).create("z"));
@@ -87,7 +87,7 @@ public class NetMakeCLI {
     public static void main(String[] args) {
 
         CommandLine commandLine = CommandLineHelper.startApp(createOptions(), "netmake",
-                "Creates networks from distance matricies", args);
+                "Creates networks from distance matrices", args);
 
         // If we didn't return a command line object then just return.  Probably the user requested help or
         // input invalid args
@@ -105,8 +105,8 @@ public class NetMakeCLI {
             log.info("NetMake: Parsing arguments");
 
             File input = new File(commandLine.getOptionValue(OPT_INPUT));
-            File outputDir = commandLine.hasOption(OPT_OUTPUT_DIR) ? new File(commandLine.getOptionValue(OPT_OUTPUT_DIR)) : new File(".");
-            String prefix = commandLine.hasOption(OPT_OUTPUT_PREFIX) ? commandLine.getOptionValue(OPT_OUTPUT_PREFIX) : "netmake-" + timeStamp;
+            File outputNetwork = commandLine.hasOption(OPT_OUTPUT_NETWORK) ? new File(commandLine.getOptionValue(OPT_OUTPUT_NETWORK)) : new File("netmake.nex");
+            File outputTree = commandLine.hasOption(OPT_OUTPUT_TREE) ? new File(commandLine.getOptionValue(OPT_OUTPUT_TREE)) : null;
             double treeParam = commandLine.hasOption(OPT_TREE_PARAM) ? Double.parseDouble(commandLine.getOptionValue(OPT_TREE_PARAM)) : NetMakeOptions.DEFAULT_TREE_WEIGHT;
             String weightings1 = commandLine.hasOption(OPT_WEIGHTINGS_1) ? commandLine.getOptionValue(OPT_WEIGHTINGS_1) : "TSP";
             String weightings2 = commandLine.hasOption(OPT_WEIGHTINGS_2) ? commandLine.getOptionValue(OPT_WEIGHTINGS_2) : null;
@@ -116,8 +116,8 @@ public class NetMakeCLI {
             // Create the configured NetMake object to process
             NetMakeOptions netMakeOptions = new NetMakeOptions();
             netMakeOptions.setInput(input);
-            netMakeOptions.setOutputDir(outputDir);
-            netMakeOptions.setOutputPrefix(prefix);
+            netMakeOptions.setOutputNetwork(outputNetwork);
+            netMakeOptions.setOutputTree(outputTree);
             netMakeOptions.setTreeParam(treeParam);
             netMakeOptions.setWeighting1(weightings1);
             netMakeOptions.setWeighting2(weightings2);
