@@ -26,7 +26,7 @@ import uk.ac.uea.cmp.spectre.core.ds.Identifier;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.distance.FlexibleDistanceMatrix;
-import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
+import uk.ac.uea.cmp.spectre.core.ds.split.*;
 
 import java.util.Map;
 
@@ -92,7 +92,7 @@ public class NetMakeCircularOrderer implements CircularOrderingCreator {
     public IdentifierList createCircularOrdering(final DistanceMatrix distanceMatrix) {
 
         // Creates a simple split system with trivial splits from the given distance matrix
-        //this.treeSplits = new SpectreSplitSystem(taxa, SplitUtils.createTrivialSplits(taxa, 1.0));
+        this.treeSplits = new SpectreSplitSystem(distanceMatrix.getTaxa(), SplitUtils.createTrivialSplits(distanceMatrix.getTaxa(), 1.0));
 
         this.mx = new CVMatrices(distanceMatrix);
 
@@ -122,7 +122,7 @@ public class NetMakeCircularOrderer implements CircularOrderingCreator {
             Identifier mergedComponent = this.merge(selectedComponents, selectedVertices);
 
             // Add new component/split to Split list
-            //treeSplits.add(mx.getVertices(mergedComponent).copy());
+            treeSplits.add(new SpectreSplit(new SpectreSplitBlock(mx.getVertices(mergedComponent).getIdsAsLinkedList()), distanceMatrix.getTaxa().size()));
 
             // Update component to component distanceMatrix (assuming not in GreedyME mode)
             if (runMode != RunMode.HYBRID_GREEDYME) {
@@ -138,7 +138,7 @@ public class NetMakeCircularOrderer implements CircularOrderingCreator {
         }
 
         // Remove last row (last row is the whole set and the last but one is not required)
-        //treeSplits.removeLastSplit();
+        treeSplits.removeLastSplit();
 
         // Create ordering
         IdentifierList permutation = this.createCircularOrdering();
