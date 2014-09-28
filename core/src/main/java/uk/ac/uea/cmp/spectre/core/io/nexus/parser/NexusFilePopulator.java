@@ -1783,12 +1783,27 @@ public class NexusFilePopulator implements NexusFileListener {
 
         NexusFileParser.Matrix_dataContext mtxData = ctx.matrix_data();
 
+        IdentifierList taxa = this.nexus.getTaxa();
+
+        boolean populateTaxa = taxa == null || taxa.isEmpty();
+
+        if (populateTaxa) {
+            taxa = new IdentifierList();
+        }
+
+        int taxaId = 1;
+
         while (mtxData != null) {
 
-            if (ctx.matrix_data().IDENTIFIER() != null) {
-                String taxon = ctx.matrix_data().IDENTIFIER().getText();
+            Identifier currentTaxon = null;
 
-                // don't do anything with this for now (presumably there is taxa info in the taxa block any how.
+            if (populateTaxa && mtxData.IDENTIFIER() != null) {
+                String taxon = mtxData.IDENTIFIER().getText();
+
+                currentTaxon = new Identifier(taxon, taxaId++);
+            }
+            else {
+                currentTaxon = taxa.getById(taxaId++);
             }
 
             NexusFileParser.Matrix_entry_listContext mtxCtx = mtxData.matrix_entry_list();
@@ -1804,11 +1819,12 @@ public class NexusFilePopulator implements NexusFileListener {
                 mtxCtx = mtxCtx.matrix_entry_list();
             }
 
-            this.distanceMatrixBuilder.getRows().add(row);
+            if (!row.isEmpty() && currentTaxon != null) {
+                this.distanceMatrixBuilder.addRow(row, currentTaxon);
+            }
 
             mtxData = mtxData.matrix_data();
         }
-
 
         // We should have all the information to build a distance matrix at this point... so do it.
         this.nexus.setDistanceMatrix(this.distanceMatrixBuilder.createDistanceMatrix());

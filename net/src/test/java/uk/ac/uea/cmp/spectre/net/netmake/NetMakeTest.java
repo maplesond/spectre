@@ -155,4 +155,26 @@ public class NetMakeTest {
         assertTrue(netout.exists());
         assertTrue(treeout.exists());
     }
+
+    @Test
+    public void testColors() {
+
+        File dist1Nex = FileUtils.toFile(NetMakeTest.class.getResource("/colors.nex"));
+
+        File netout = new File(folder.getRoot(), "network.nex");
+        File treeout = new File(folder.getRoot(), "tree.nex");
+
+        NetMakeOptions options = new NetMakeOptions();
+        options.setInput(dist1Nex);
+        options.setOutputNetwork(netout);
+        options.setOutputTree(treeout);
+        options.setWeighting1("TREE");
+
+        NetMake nm = new NetMake(options);
+
+        nm.run();
+
+        assertTrue(netout.exists());
+        assertTrue(treeout.exists());
+    }
 }
