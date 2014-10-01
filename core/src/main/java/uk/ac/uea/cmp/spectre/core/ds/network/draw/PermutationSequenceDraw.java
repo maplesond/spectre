@@ -205,7 +205,7 @@ public class PermutationSequenceDraw {
         //in a full circular split system on that number of taxa
         ntaxa = ss.getNbTaxa();
         nclasses = ntaxa;
-        nswaps = ntaxa * (ntaxa - 1) / 2;;
+        nswaps = ntaxa * (ntaxa - 1) / 2;
         nActive = nswaps;
 
         //assume for now that all splits have weights and

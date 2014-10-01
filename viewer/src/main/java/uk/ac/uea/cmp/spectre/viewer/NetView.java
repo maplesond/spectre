@@ -919,6 +919,7 @@ public class NetView extends javax.swing.JFrame {
             else {
                 network = nexus.getNetwork();
             }
+
             taxa = nexus.getTaxa();
             networkFile = inFile;
             saveNetwork.setEnabled(true);
