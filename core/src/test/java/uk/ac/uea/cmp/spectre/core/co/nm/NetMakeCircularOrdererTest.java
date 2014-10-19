@@ -17,7 +17,10 @@
 package uk.ac.uea.cmp.spectre.core.co.nm;
 
 import org.junit.Before;
+import org.junit.Test;
 import uk.ac.uea.cmp.spectre.core.co.CircularOrderingCreator;
+import uk.ac.uea.cmp.spectre.core.co.nm.weighting.GreedyMEWeighting;
+import uk.ac.uea.cmp.spectre.core.co.nm.weighting.TSPWeighting;
 import uk.ac.uea.cmp.spectre.core.co.nm.weighting.TreeWeighting;
 import uk.ac.uea.cmp.spectre.core.ds.CircularOrdering;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
@@ -33,15 +36,14 @@ public class NetMakeCircularOrdererTest {
     private DistanceMatrix dist2;
     private DistanceMatrix dist3;
 
-    private CircularOrderingCreator nm;
-    private CircularOrderingCreator newNN;
-
-    private static final CircularOrdering orderDist1 = new CircularOrdering(new String[]{"A","C","D","E","B"});
+    private static final CircularOrdering orderDist1 = new CircularOrdering(new String[]{"D","E","C","B","A"});
+    private static final CircularOrdering orderDist2 = new CircularOrdering(new String[]{"A","B","C","E","D"});
+    private static final CircularOrdering orderDist3 = new CircularOrdering(new String[]{"C","D","B","A","E","F"});
 
     @Before
     public void setup() {
 
-        this.nm = new NetMakeCircularOrderer(new TreeWeighting(0.5), null);
+
 
         this.dist1 = new FlexibleDistanceMatrix(new double[][]{
                 {0, 2, 3, 4, 4},
@@ -74,7 +76,9 @@ public class NetMakeCircularOrdererTest {
 
     private void test(DistanceMatrix dm, CircularOrdering correctResult) {
 
-        IdentifierList ssO = this.nm.createCircularOrdering(dm);
+        CircularOrderingCreator nm = new NetMakeCircularOrderer(new TreeWeighting(0.5), null);
+
+        IdentifierList ssO = nm.createCircularOrdering(dm);
 
         CircularOrdering circularOrdering = new CircularOrdering(ssO);
 
@@ -84,13 +88,37 @@ public class NetMakeCircularOrdererTest {
         assertTrue(true);
     }
 
-    //@Test
+    private void testGreedy(DistanceMatrix dm, CircularOrdering correctResult) {
+
+        CircularOrderingCreator nm = new NetMakeCircularOrderer(new GreedyMEWeighting(dm), new TSPWeighting());
+
+        IdentifierList ssO = nm.createCircularOrdering(dm);
+
+        CircularOrdering circularOrdering = new CircularOrdering(ssO);
+
+        if (correctResult != null) {
+            assertTrue(circularOrdering.equals(correctResult));
+        }
+        assertTrue(true);
+    }
+
+    @Test
     public void testDist1() {
         this.test(this.dist1, this.orderDist1);
     }
 
-    //@Test
+    @Test
     public void testDist2() {
-        this.test(this.dist2, this.orderDist1);
+        this.test(this.dist2, this.orderDist2);
+    }
+
+    @Test
+    public void testDist3() {
+        this.test(this.dist3, this.orderDist3);
+    }
+
+    @Test
+    public void testGreedy1() {
+        this.testGreedy(this.dist1, this.orderDist1);
     }
 }

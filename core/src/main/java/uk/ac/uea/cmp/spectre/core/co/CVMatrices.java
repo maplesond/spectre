@@ -176,6 +176,8 @@ public class CVMatrices {
         return this.c2c.size();
     }
 
+    public int getNbActiveComponents() { return c2vs.size(); }
+
     public int getNbVertices() {
         return this.v2v.size();
     }

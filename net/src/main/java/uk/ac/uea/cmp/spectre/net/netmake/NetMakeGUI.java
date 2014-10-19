@@ -284,6 +284,7 @@ public class NetMakeGUI extends JFrame implements ToolHost {
 
         lblOutputTree = new JLabel();
         txtOutputTree = new JTextField();
+        cmdOutputTree = new JButton();
 
         txtOutputNetwork.setPreferredSize(new Dimension(200, 25));
         txtOutputNetwork.setToolTipText(NetMakeOptions.DESC_OUTPUT_NETWORK);

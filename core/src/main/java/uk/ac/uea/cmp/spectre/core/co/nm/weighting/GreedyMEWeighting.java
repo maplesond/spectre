@@ -24,10 +24,7 @@ import uk.ac.uea.cmp.spectre.core.co.CVMatrices;
 import uk.ac.uea.cmp.spectre.core.ds.Identifier;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
-import uk.ac.uea.cmp.spectre.core.ds.split.Split;
-import uk.ac.uea.cmp.spectre.core.ds.split.SplitBlock;
-import uk.ac.uea.cmp.spectre.core.ds.split.SplitDistanceMap;
-import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
+import uk.ac.uea.cmp.spectre.core.ds.split.*;
 import uk.ac.uea.cmp.spectre.core.math.stats.Statistics;
 
 import java.util.ArrayList;
@@ -59,6 +56,17 @@ public class GreedyMEWeighting extends Weighting {
     }
 
 
+    private SplitBlock convertTaxaToSplitBlock(IdentifierList taxa) {
+
+        List<Integer> ids = new ArrayList<>();
+
+        for(Identifier taxon : taxa) {
+            ids.add(taxon.getId());
+        }
+
+        return new SpectreSplitBlock(ids);
+    }
+
     public Pair<Identifier, Identifier> makeMECherry(SplitSystem splits, final CVMatrices c2v) {
 
         double oldTreeLength = Double.POSITIVE_INFINITY;
@@ -66,48 +74,46 @@ public class GreedyMEWeighting extends Weighting {
         Identifier bestI = null;
         Identifier bestJ = null;
 
-        final int nbComponents = c2v.getComponents().size();
+        List<Identifier> components = new ArrayList<>();
+        components.addAll(c2v.getC2Vs().keySet());
+        final int nbComponents = components.size();
+
+        if (components.size() < 2) {
+            throw new IllegalStateException("Too few components to process");
+        }
 
         log.debug(nbComponents + " cherries to produce");
 
-        for (int i = 0; i < c2v.getComponents().size(); i++) {
+        int i = 0;
+        for (Identifier componentI : components) {
 
-            Identifier componentI = c2v.getComponents().get(i);
+            int j = 0;
+            for (Identifier componentJ : components) {
 
-            log.debug("Making cherry " + i + "...");
-            for (int j = i + 1; j < nbComponents; j++) {
+                if (j > i) {
 
-                Identifier componentJ = c2v.getComponents().get(j);
+                    // Create a new merged split i and j from splits creation and add into ss
+                    IdentifierList vertices = new IdentifierList();
+                    vertices.addAll(c2v.getVertices(componentI));
+                    vertices.addAll(c2v.getVertices(componentJ));
 
-                // Create a new merged split i and j from splits creation and add into ss
-                IdentifierList vertices = new IdentifierList();
-                vertices.addAll(c2v.getVertices(componentI));
-                vertices.addAll(c2v.getVertices(componentJ));
+                    splits.add(new SpectreSplit(
+                            new SpectreSplit(this.convertTaxaToSplitBlock(c2v.getVertices(componentI)), c2v.getNbVertices()),
+                            new SpectreSplit(this.convertTaxaToSplitBlock(c2v.getVertices(componentJ)), c2v.getNbVertices())));
 
-                //splits.add();
+                    double treeLength = this.calculateTreeLength(splits);
 
+                    if (treeLength < oldTreeLength) {
+                        oldTreeLength = treeLength;
+                        bestI = componentI;
+                        bestJ = componentJ;
+                    }
 
-                // If we've created a split which contains the entire taxa set then remove it
-                /*if (splits.getRow(splits.rows() -1).size() == this.distanceMatrix.size()) {
-                    splits.removeRow(splits.rows() - 1);
-                } */
-
-                log.debug("  Number of splits: " + c2v.getComponents().size());
-
-                double treeLength = this.calculateTreeLength(splits);
-
-                log.debug("  Tree length is " + treeLength + " for " + i + "," + j);
-
-                if (treeLength < oldTreeLength) {
-                    oldTreeLength = treeLength;
-                    bestI = c2v.getComponents().get(i);
-                    bestJ = c2v.getComponents().get(j);
+                    splits.removeLastSplit();
                 }
-
-                splits.removeLastSplit();
+                j++;
             }
-
-            log.debug("Made cherry " + i);
+            i++;
         }
 
         return new ImmutablePair<>(bestI, bestJ);
@@ -411,17 +417,13 @@ public class GreedyMEWeighting extends Weighting {
 
         SplitDistanceMap splitDistanceMap = this.calculateP(splits);
 
-        for (int i = 0; i < splits.size(); i++) {
+        for (Split split : splits) {
 
-            Split splitI = splits.get(i);
+            EdgeHandling.AdjacentEdges aEdgeAdjacents = new EdgeHandling().retrieveAdjacents(split, splits, splitDistanceMap);
 
-            EdgeHandling.AdjacentEdges aEdgeAdjacents = new EdgeHandling().retrieveAdjacents(splitI, splits, splitDistanceMap);
+            double weight = calculateEdges(splitDistanceMap.get(split), aEdgeAdjacents, split.onExternalEdge());
 
-            log.debug("    Retrieved adjacent edges for " + i + ". " + aEdgeAdjacents.getNumberOfLeavesInAdjacents().length + " leaves");
-
-            edgeWeights.add(calculateEdges(splitDistanceMap.get(splitI), aEdgeAdjacents, splitI.onExternalEdge()));
-
-            log.debug("    Calculated edge length for " + i + ": " + edgeWeights.get(i));
+            edgeWeights.add(weight);
         }
 
         log.debug("  Calculated Edge Weights");

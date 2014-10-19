@@ -108,15 +108,17 @@ public class NetMakeCircularOrderer implements CircularOrderingCreator {
                 null;
 
         // Loop until components has at least two entries left.
-        while (mx.getNbComponents() > 2) {
+        while (mx.getNbActiveComponents() > 2) {
 
             // The pair should be splits with the shortest tree length between them
             Pair<Identifier, Identifier> selectedComponents =
-                    runMode == RunMode.HYBRID_GREEDYME ?
-                        gme.makeMECherry(treeSplits, mx) :
-                        selectionStep1(this.mx.getC2C());
+                    this.runMode == RunMode.HYBRID_GREEDYME ?
+                        gme.makeMECherry(this.treeSplits, this.mx) :
+                        this.selectionStep1(this.mx.getC2C());
 
-            Pair<Identifier, Identifier> selectedVertices = selectionStep2(selectedComponents);
+            Pair<Identifier, Identifier> selectedVertices = this.selectionStep2(selectedComponents);
+
+
 
             // Merge of components
             Identifier mergedComponent = this.merge(selectedComponents, selectedVertices);
@@ -141,9 +143,55 @@ public class NetMakeCircularOrderer implements CircularOrderingCreator {
         treeSplits.removeLastSplit();
 
         // Create ordering
-        IdentifierList permutation = this.createCircularOrdering();
+        IdentifierList permutation = this.finalOrdering();
 
-        return permutation;
+        return this.mx.reverseTranslate(permutation);
+    }
+
+    private IdentifierList finalOrdering() {
+
+        final int finalActiveComponents = this.mx.getNbActiveComponents();
+
+        if (finalActiveComponents == 0) {
+            throw new IllegalStateException("Algorithm Error: 0 active components.  This should never happen.");
+        }
+        else if (finalActiveComponents == 1) {
+            IdentifierList allVertices = new IdentifierList();
+
+            // This loop should only go around once... just did it this way because it seemed to be the easiest way to
+            // get out the information we need
+            for(IdentifierList vertices : this.mx.getC2Vs().values()) {
+                allVertices.addAll(vertices);
+            }
+
+            return allVertices;
+        }
+        else if (finalActiveComponents == 2) {
+
+            Identifier sc1 = null;
+            Identifier sc2 = null;
+
+            int i = 1;
+            for(Identifier sc : this.mx.getC2Vs().keySet()) {
+
+                if (i == 1) {
+                    sc1 = sc;
+                }
+                else if (i == 2) {
+                    sc2 = sc;
+                }
+
+                i++;
+            }
+
+            // Run second selection step again
+            Pair<Identifier, Identifier> selectedVertices = this.selectionStep2(new ImmutablePair<Identifier, Identifier>(sc1, sc2));
+
+            return this.mergeVertices(selectedVertices, this.mx.getC2Vs().get(sc1), this.mx.getC2Vs().get(sc2));
+        }
+        else {
+            throw new IllegalStateException("Algorithm Error: More than 2 active components.  This should never happen.");
+        }
     }
 
     @Override
@@ -171,7 +219,7 @@ public class NetMakeCircularOrderer implements CircularOrderingCreator {
             Identifier id1 = entry.getKey().getLeft();
             Identifier id2 = entry.getKey().getRight();
 
-            final double id1_2_id2 = c2c.getDistance(id1, id2);
+            final double id1_2_id2 = entry.getValue();
 
             final double sumId1 = c2c.getDistances(id1, null).sum() - id1_2_id2;
             final double sumId2 = c2c.getDistances(id2, null).sum() - id1_2_id2;
@@ -251,6 +299,7 @@ public class NetMakeCircularOrderer implements CircularOrderingCreator {
     protected IdentifierList createCircularOrdering() {
 
         IdentifierList help = new IdentifierList();
+
         for (Identifier c : this.mx.getComponents()) {
             for (Identifier v : this.mx.getVertices(c)) {
                 help.add(v);
@@ -265,45 +314,59 @@ public class NetMakeCircularOrderer implements CircularOrderingCreator {
     }
 
 
-    protected Identifier merge(Identifier sc1, Identifier sc2) {
+    private IdentifierList mergeVertices(Pair<Identifier, Identifier> selectedVertices, IdentifierList vl1, IdentifierList vl2) {
 
-        IdentifierList v1 = this.mx.getVertices(sc1);
-        IdentifierList v2 = this.mx.getVertices(sc2);
+        Identifier sv1 = selectedVertices.getLeft();
+        Identifier sv2 = selectedVertices.getRight();
 
-        for(Identifier v : v2) {
-            v1.add(v);
+        IdentifierList mv1Vertices = new IdentifierList();
+        IdentifierList mv2Vertices = new IdentifierList();
+
+        mv1Vertices.addAll(vl1);
+        mv2Vertices.addAll(vl2);
+
+        // Check which components the selected vertices belong
+        boolean invert = !vl1.containsId(sv1.getId());
+
+        Identifier firstVertex = invert ? sv2 : sv1;
+        Identifier secondVertex = invert ? sv1 : sv2;
+
+        // Order vertices
+        if (vl1.getFirst() == firstVertex) {
+            mv1Vertices.reverse();
         }
 
-        Identifier next = this.mx.createNextComponent();
+        if (vl2.getFirst() != secondVertex) {
+            mv2Vertices.reverse();
+        }
 
-        this.mx.getC2Vs().remove(sc1);
-        this.mx.getC2Vs().remove(sc2);
-        this.mx.getC2Vs().put(next, v1);
+        // Merge vertices
+        IdentifierList mv = new IdentifierList();
+        mv.addAll(mv1Vertices);
+        mv.addAll(mv2Vertices);
 
-        return next;
+        return mv;
     }
 
     public Identifier merge(Pair<Identifier, Identifier> selectedComponents, Pair<Identifier, Identifier> selectedVertices) {
 
         Identifier sc1 = selectedComponents.getLeft();
         Identifier sc2 = selectedComponents.getRight();
-        Identifier sv1 = selectedVertices.getLeft();
-        Identifier sv2 = selectedVertices.getRight();
 
         IdentifierList sc1Vertices = this.mx.getVertices(sc1);
         IdentifierList sc2Vertices = this.mx.getVertices(sc2);
 
-        // Merging of components
-        if (sc1Vertices.getFirst() == sv1) {
-            sc1Vertices.reverse();
-        }
+        IdentifierList mv = this.mergeVertices(selectedVertices, sc1Vertices, sc2Vertices);
 
-        if (sc2Vertices.getFirst() == sv2) {
-            return this.merge(sc1, sc2);
-        } else {
-            sc2Vertices.reverse();
-            return this.merge(sc1, sc2);
-        }
+        // Create new component
+        Identifier next = this.mx.createNextComponent();
+
+        // Update C2Vs
+        this.mx.getC2Vs().remove(sc1);
+        this.mx.getC2Vs().remove(sc2);
+        this.mx.getC2Vs().put(next, mv);
+
+        return next;
     }
 
     private void updateC2C(Weighting w) {

@@ -26,14 +26,16 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import uk.ac.uea.cmp.spectre.core.co.CircularOrderingCreator;
 import uk.ac.uea.cmp.spectre.core.co.nm.NetMakeCircularOrderer;
+import uk.ac.uea.cmp.spectre.core.co.nm.weighting.GreedyMEWeighting;
+import uk.ac.uea.cmp.spectre.core.co.nm.weighting.TSPWeighting;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.distance.FlexibleDistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
-import uk.ac.uea.cmp.spectre.core.co.nm.weighting.GreedyMEWeighting;
-import uk.ac.uea.cmp.spectre.core.co.nm.weighting.TSPWeighting;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.List;
 
 import static junit.framework.Assert.assertTrue;
 
@@ -91,7 +93,7 @@ public class NetMakeTest {
     }
 
     @Test
-    public void testDist1() {
+    public void testDist1() throws IOException {
 
         File dist1Nex = FileUtils.toFile(NetMakeTest.class.getResource("/dist1.nex"));
 
@@ -110,10 +112,17 @@ public class NetMakeTest {
 
         assertTrue(netout.exists());
         assertTrue(treeout.exists());
+
+        List<String> netlines = FileUtils.readLines(netout);
+        List<String> treelines = FileUtils.readLines(treeout);
+
+        assertTrue(!netlines.isEmpty());
+        assertTrue(!treelines.isEmpty());
+
     }
 
     @Test
-    public void testDist2() {
+    public void testDist2() throws IOException {
 
         File dist1Nex = FileUtils.toFile(NetMakeTest.class.getResource("/dist2.nex"));
 
@@ -132,32 +141,16 @@ public class NetMakeTest {
 
         assertTrue(netout.exists());
         assertTrue(treeout.exists());
+
+        List<String> netlines = FileUtils.readLines(netout);
+        List<String> treelines = FileUtils.readLines(treeout);
+
+        assertTrue(!netlines.isEmpty());
+        assertTrue(!treelines.isEmpty());
     }
 
     @Test
-    public void testDist3() {
-
-        File dist1Nex = FileUtils.toFile(NetMakeTest.class.getResource("/dist3.nex"));
-
-        File netout = new File(folder.getRoot(), "network.nex");
-        File treeout = new File(folder.getRoot(), "tree.nex");
-
-        NetMakeOptions options = new NetMakeOptions();
-        options.setInput(dist1Nex);
-        options.setOutputNetwork(netout);
-        options.setOutputTree(treeout);
-        options.setWeighting1("TREE");
-
-        NetMake nm = new NetMake(options);
-
-        nm.run();
-
-        assertTrue(netout.exists());
-        assertTrue(treeout.exists());
-    }
-
-    @Test
-    public void testColors() {
+    public void testColors() throws IOException {
 
         File dist1Nex = FileUtils.toFile(NetMakeTest.class.getResource("/colors.nex"));
 
@@ -176,5 +169,11 @@ public class NetMakeTest {
 
         assertTrue(netout.exists());
         assertTrue(treeout.exists());
+
+        List<String> netlines = FileUtils.readLines(netout);
+        List<String> treelines = FileUtils.readLines(treeout);
+
+        assertTrue(!netlines.isEmpty());
+        assertTrue(!treelines.isEmpty());
     }
 }

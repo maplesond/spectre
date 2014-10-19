@@ -90,7 +90,7 @@ public class NetMake extends RunnableTool {
 
         IdentifierList permutation = circularOrderingCreator.createCircularOrdering(distanceMatrix);
 
-        SplitSystem network = new SpectreSplitSystem(distanceMatrix, permutation, SpectreSplitSystem.LeastSquaresCalculator.CIRCULAR);;
+        SplitSystem network = new SpectreSplitSystem(distanceMatrix, permutation, SpectreSplitSystem.LeastSquaresCalculator.CIRCULAR);
 
         SplitSystem tree = null;
 
