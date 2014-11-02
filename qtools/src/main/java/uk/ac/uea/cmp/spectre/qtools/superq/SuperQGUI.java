@@ -26,7 +26,7 @@ import uk.ac.uea.cmp.spectre.core.ui.gui.JobController;
 import uk.ac.uea.cmp.spectre.core.ui.gui.JobControllerWithView;
 import uk.ac.uea.cmp.spectre.core.ui.gui.StatusTrackerWithView;
 import uk.ac.uea.cmp.spectre.core.ui.gui.ToolHost;
-import uk.ac.uea.cmp.spectre.flatnj.netvi.NetView;
+import uk.ac.uea.cmp.spectre.viewer.NetView;
 import uk.ac.uea.cmp.spectre.qtools.superq.problems.SecondaryProblemFactory;
 
 import javax.swing.*;
@@ -527,6 +527,12 @@ public class SuperQGUI extends JFrame implements ToolHost {
         SuperQOptions options = buildSuperQOptions();
 
         if (options != null) {
+
+            if (options.getOutputFile() == null || options.getOutputFile().getName().isEmpty()) {
+                showErrorDialog("Can't run without output file specified.");
+                return;
+            }
+
             this.lastOutput = options.getOutputFile();
             this.superqRunner.runSuperQ(options, new StatusTrackerWithView(this.progStatus, this.lblStatus, this.cmdViewOutput));
         }

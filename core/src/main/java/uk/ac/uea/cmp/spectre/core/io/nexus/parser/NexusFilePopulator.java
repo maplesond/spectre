@@ -26,7 +26,7 @@ import uk.ac.uea.cmp.spectre.core.ds.Identifier;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrixBuilder;
 import uk.ac.uea.cmp.spectre.core.ds.network.Edge;
-import uk.ac.uea.cmp.spectre.core.ds.network.Label;
+import uk.ac.uea.cmp.spectre.core.ds.network.NetworkLabel;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
 import uk.ac.uea.cmp.spectre.core.ds.split.SpectreSplitBlock;
 import uk.ac.uea.cmp.spectre.core.io.nexus.Nexus;
@@ -450,7 +450,7 @@ public class NexusFilePopulator implements NexusFileListener {
         String type = parts[1];
         int size = Integer.parseInt(parts[2]);
 
-        Label label = this.networkBuilder.getCurrentLabel();
+        NetworkLabel label = this.networkBuilder.getCurrentLabel();
 
         label.setFontFamily(family);
         label.setFontStyle(type);
@@ -617,6 +617,16 @@ public class NexusFilePopulator implements NexusFileListener {
     }
 
     @Override
+    public void enterInterleave(@NotNull NexusFileParser.InterleaveContext ctx) {
+
+    }
+
+    @Override
+    public void exitInterleave(@NotNull NexusFileParser.InterleaveContext ctx) {
+
+    }
+
+    @Override
     public void enterFormat(@NotNull NexusFileParser.FormatContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -720,7 +730,8 @@ public class NexusFilePopulator implements NexusFileListener {
                 } else if (ctxFormatItem.missing() != null) {
                     // Not sure what to do with this.. leave it for now.
                 } else if (ctxFormatItem.getText().equals("interleave")) {
-                    this.distanceMatrixBuilder.setInterleave(true);
+                    String interleaveString = ctxFormatItem.interleave().labels_option().getText();
+                    this.distanceMatrixBuilder.setInterleave(interleaveString.equalsIgnoreCase("yes") || interleaveString.equalsIgnoreCase("true"));
                 }
             }
 
@@ -968,7 +979,7 @@ public class NexusFilePopulator implements NexusFileListener {
     @Override
     public void exitVlabels_network_label(@NotNull NexusFileParser.Vlabels_network_labelContext ctx) {
 
-        Label label = this.networkBuilder.getCurrentLabel();
+        NetworkLabel label = this.networkBuilder.getCurrentLabel();
 
         int id = Integer.parseInt(ctx.INT().getText());
         String name = ctx.IDENTIFIER().getText();
@@ -1000,7 +1011,7 @@ public class NexusFilePopulator implements NexusFileListener {
     @Override
     public void enterVlabels_network_entry(@NotNull NexusFileParser.Vlabels_network_entryContext ctx) {
 
-        Label label = new Label();
+        NetworkLabel label = new NetworkLabel();
 
         this.networkBuilder.setCurrentLabel(label);
     }
@@ -1772,12 +1783,27 @@ public class NexusFilePopulator implements NexusFileListener {
 
         NexusFileParser.Matrix_dataContext mtxData = ctx.matrix_data();
 
+        IdentifierList taxa = this.nexus.getTaxa();
+
+        boolean populateTaxa = taxa == null || taxa.isEmpty();
+
+        if (populateTaxa) {
+            taxa = new IdentifierList();
+        }
+
+        int taxaId = 1;
+
         while (mtxData != null) {
 
-            if (ctx.matrix_data().IDENTIFIER() != null) {
-                String taxon = ctx.matrix_data().IDENTIFIER().getText();
+            Identifier currentTaxon = null;
 
-                // don't do anything with this for now (presumably there is taxa info in the taxa block any how.
+            if (populateTaxa && mtxData.IDENTIFIER() != null) {
+                String taxon = mtxData.IDENTIFIER().getText();
+
+                currentTaxon = new Identifier(taxon, taxaId++);
+            }
+            else {
+                currentTaxon = taxa.getById(taxaId++);
             }
 
             NexusFileParser.Matrix_entry_listContext mtxCtx = mtxData.matrix_entry_list();
@@ -1793,11 +1819,12 @@ public class NexusFilePopulator implements NexusFileListener {
                 mtxCtx = mtxCtx.matrix_entry_list();
             }
 
-            this.distanceMatrixBuilder.getRows().add(row);
+            if (!row.isEmpty() && currentTaxon != null) {
+                this.distanceMatrixBuilder.addRow(row, currentTaxon);
+            }
 
             mtxData = mtxData.matrix_data();
         }
-
 
         // We should have all the information to build a distance matrix at this point... so do it.
         this.nexus.setDistanceMatrix(this.distanceMatrixBuilder.createDistanceMatrix());

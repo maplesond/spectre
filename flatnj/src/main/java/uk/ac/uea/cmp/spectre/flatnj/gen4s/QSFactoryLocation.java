@@ -16,7 +16,7 @@
 
 package uk.ac.uea.cmp.spectre.flatnj.gen4s;
 
-import uk.ac.uea.cmp.spectre.flatnj.ds.Location;
+import uk.ac.uea.cmp.spectre.core.ui.gui.geom.IndexedPoint;
 import uk.ac.uea.cmp.spectre.flatnj.ds.Locations;
 import uk.ac.uea.cmp.spectre.flatnj.ds.Quadruple;
 import uk.ac.uea.cmp.spectre.flatnj.ds.QuadrupleSystem;
@@ -46,7 +46,7 @@ public class QSFactoryLocation implements QSFactory {
 
     @Override
     public QuadrupleSystem computeQS() {
-        Location[] locations = l.getLocations();
+        IndexedPoint[] locations = l.getLocations();
         QuadrupleSystem qs = new QuadrupleSystem(locations.length);
         double[][] matrix = new double[locations.length][locations.length];
         for (int i = 0; i < locations.length; i++) {

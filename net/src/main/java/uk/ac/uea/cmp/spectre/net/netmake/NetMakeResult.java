@@ -45,16 +45,14 @@ public class NetMakeResult {
         return network;
     }
 
-    public void save(File outputDir, String prefix) throws IOException {
+    public void save(File outputNetwork, File outputTree) throws IOException {
 
         PhygenWriter phygenWriter = PhygenWriterFactory.NEXUS.create();
-        String extension = PhygenWriterFactory.NEXUS.getPrimaryExtension();
 
-        File networkOutputFile = new File(outputDir, prefix + ".network." + extension);
-        File treeOutputFile = new File(outputDir, prefix + ".tree." + extension);
+        phygenWriter.writeSplitSystem(outputNetwork, this.getNetwork());
 
-        phygenWriter.writeSplitSystem(networkOutputFile, this.getNetwork());
-        phygenWriter.writeSplitSystem(treeOutputFile, this.getTree());
-        //phygenWriter.writeTree(treeOutputFile, this.getTree(), this.distanceMatrix, this.getTree().calculateTreeWeighting(this.distanceMatrix));
+        if (this.tree != null && outputTree != null) {
+            phygenWriter.writeSplitSystem(outputTree, this.getTree());
+        }
     }
 }

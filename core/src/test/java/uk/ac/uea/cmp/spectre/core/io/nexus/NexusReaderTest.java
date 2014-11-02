@@ -20,8 +20,8 @@ import org.junit.Test;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.network.Edge;
-import uk.ac.uea.cmp.spectre.core.ds.network.Label;
 import uk.ac.uea.cmp.spectre.core.ds.network.Network;
+import uk.ac.uea.cmp.spectre.core.ds.network.NetworkLabel;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
 import uk.ac.uea.cmp.spectre.core.ds.split.Split;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
@@ -198,17 +198,17 @@ public class NexusReaderTest {
 
         assertNotNull(network);
 
-        List<Vertex> vertices = network.getVertices();
+        List<Vertex> vertices = network.getAllVertices();
 
         assertNotNull(vertices);
         assertFalse(vertices.isEmpty());
 
-        List<Label> labels = network.getLabels();
+        List<NetworkLabel> labels = network.getLabels();
 
         assertNotNull(labels);
         assertFalse(labels.isEmpty());
 
-        List<Edge> edges = network.getEdges();
+        List<Edge> edges = network.getAllEdges();
 
         assertNotNull(edges);
         assertFalse(edges.isEmpty());

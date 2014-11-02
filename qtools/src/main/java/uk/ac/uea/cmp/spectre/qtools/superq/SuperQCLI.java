@@ -67,12 +67,15 @@ public class SuperQCLI {
             if (superQ.failed()) {
                 log.error(superQ.getErrorMessage());
             }
+            else {
+                log.info("Completed successfully");
+            }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             System.exit(3);
         }
 
-        log.info("Completed successfully");
+
     }
 
     private static Options createOptions() {
@@ -146,6 +149,10 @@ public class SuperQCLI {
                 sqOpts.setPrimarySolver(
                         OptimiserFactory.getInstance().createOptimiserInstance(
                                 commandLine.getOptionValue(OPT_PRIMARY_SOLVER), Objective.ObjectiveType.QUADRATIC));
+            }
+
+            if (commandLine.hasOption(OPT_SECONDARY_SOLVER) && !commandLine.hasOption(OPT_SECONDARY_OBJECTIVE)) {
+                throw new ParseException("If you request a secondary solver, then you must also specify a secondary objective");
             }
 
             if (commandLine.hasOption(OPT_SECONDARY_SOLVER)) {

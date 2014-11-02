@@ -17,8 +17,9 @@
 package uk.ac.uea.cmp.spectre.core.ds.network;
 
 
+import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
+
 import java.awt.*;
-import java.util.LinkedList;
 import java.util.ListIterator;
 
 public class Vertex {
@@ -28,7 +29,7 @@ public class Vertex {
     private EdgeList elist;
 
     //The list of taxa associated to the vertex.
-    private LinkedList<Integer> taxa;
+    private IdentifierList taxa;
 
     //Coordinates of the vertex in the drawing.
     private double x;
@@ -49,7 +50,7 @@ public class Vertex {
 
     private String shape = null;
 
-    private Label label;
+    private NetworkLabel label;
 
     private EdgeList externalEdges = null;
 
@@ -62,7 +63,7 @@ public class Vertex {
         x = xcoord;
         y = ycoord;
         elist = new EdgeList();
-        taxa = new LinkedList<>();
+        taxa = new IdentifierList();
         visited = false;
     }
 
@@ -99,11 +100,11 @@ public class Vertex {
         return elist.getFirst();
     }
 
-    public void setTaxa(LinkedList<Integer> taxa) {
+    public void setTaxa(IdentifierList taxa) {
         this.taxa = taxa;
     }
 
-    public LinkedList<Integer> getTaxa() {
+    public IdentifierList getTaxa() {
         return taxa;
     }
 
@@ -140,10 +141,7 @@ public class Vertex {
     }
 
     public boolean equals(Vertex v2) {
-        if (x == v2.x && y == v2.y) {
-            return true;
-        }
-        return false;
+        return x == v2.x && y == v2.y;
     }
 
     public EdgeList getElist() {
@@ -166,14 +164,14 @@ public class Vertex {
         return fgColor;
     }
 
-    public void setLabel(Label label) {
+    public void setLabel(NetworkLabel label) {
         if (label != null) {
             label.setVertex(this);
         }
         this.label = label;
     }
 
-    public Label getLabel() {
+    public NetworkLabel getLabel() {
         return label;
     }
 
@@ -320,7 +318,7 @@ public class Vertex {
             return null;
 
         // Gets the vertex with the highest X value
-        Vertex v = vertices.getRightmostVertex();
+        Vertex v = vertices.getLeftmostVertex();
 
         Edge first = null;
 

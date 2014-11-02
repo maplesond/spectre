@@ -67,6 +67,11 @@ public class SuperQ extends RunnableTool {
 
     }
 
+    protected void printOptions() {
+        log.info("Recognised these options:\n\n" +
+                this.options.toString());
+    }
+
     @Override
     public void run() {
 
@@ -74,6 +79,9 @@ public class SuperQ extends RunnableTool {
 
             // Check we have something sensible to work with
             validateOptions();
+
+            // Print the validated options
+            printOptions();
 
             // Get a shortcut to runtime object for checking memory usage
             Runtime rt = Runtime.getRuntime();
@@ -153,7 +161,6 @@ public class SuperQ extends RunnableTool {
                 ss.filterByWeight(this.options.getFilter());
             }
 
-
             // Save split system
             File outputFile = this.options.getOutputFile();
             File outputDir = this.options.getOutputFile().getParentFile();
@@ -163,8 +170,16 @@ public class SuperQ extends RunnableTool {
                 outputDir.mkdirs();
             }
 
-            notifyUser("Saving weights to file: " + outputFile.getAbsolutePath());
-            new NexusWriter().writeSplitSystem(outputFile, ss);
+            notifyUser("Saving to file: " + outputFile.getAbsolutePath());
+            NexusWriter nw = new NexusWriter();
+            // Construct file content
+            nw.appendHeader()
+                    .appendLine()
+                    .append(ss.getOrderedTaxa().sortById())
+                    .appendLine()
+                    .append(ss);
+
+            nw.write(outputFile);
 
             this.trackerFinished(true);
 

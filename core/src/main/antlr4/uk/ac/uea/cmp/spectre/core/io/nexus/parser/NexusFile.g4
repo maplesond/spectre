@@ -18,7 +18,7 @@ FLOAT : ('-')? DIGIT* '.' DIGIT+ ('E' ('-')? DIGIT+)?;
 // A token satisfing the regular expression [_\w]+[\d\w\._]*. Note that an single
 //  _ is considered a valid identifier. In most contexts a single _ means a
 //  "don't care identifier", simmilar to the _ meaning in prolog.
-IDENTIFIER : LETTER_US+ (LETTER_US | DIGIT | '.' | '-' )*;
+IDENTIFIER : LETTER_US+ (LETTER_US | DIGIT | '.' | '-' | '/' )*;
 
 fragment DIGIT : [0-9];     // match single digit
 fragment NZ_DIGIT : [1-9];
@@ -47,7 +47,7 @@ COMMENT : '[' .*? ']' -> skip;
 // This will be the entry point of our parser.
 parse   : nexus_header blocks EOF;
 
-nexus_header : '#NEXUS' | '#nexus';
+nexus_header : '#NEXUS' | '#nexus' | '#Nexus';
 
 blocks  : // Empty
         | block blocks
@@ -55,9 +55,9 @@ blocks  : // Empty
 
 block   : begin block_declaration end ';';
 
-begin   : 'begin' | 'BEGIN';
+begin   : 'begin' | 'BEGIN' | 'Begin';
 
-end     : 'end' | 'END' | 'endblock' | 'ENDBLOCK';
+end     : 'end' | 'END' | 'End' | 'endblock' | 'ENDBLOCK' | 'EndBlock';
 
 // we haven't implemented everything yet
 block_declaration :
@@ -150,8 +150,10 @@ format_distances_item :
     | diagonal
     | labels
     | missing
-    | 'interleave'
+    | interleave
     ;
+
+interleave : 'interleave' ('=' labels_option)?;
 
 triangle : 'triangle' '=' triangle_option;
 
@@ -567,7 +569,7 @@ ne_color : 'fg' '=' INT INT INT;
 // ----------------------------------------------------------------------------
 
 
-matrix_header : 'matrix' | 'MATRIX';
+matrix_header : 'matrix' | 'MATRIX' | 'Matrix';
 
 
 matrix_data :
@@ -607,9 +609,9 @@ state_composed_list :
 
 boolean_option : 'no' | 'yes' | 'false' | 'true';
 
-dimensions  : 'dimensions' | 'DIMENSIONS';
+dimensions  : 'dimensions' | 'DIMENSIONS' | 'Dimensions';
 
-format : 'format' | 'FORMAT';
+format : 'format' | 'FORMAT' | 'Format';
 
 identifier_list :
     // Empty

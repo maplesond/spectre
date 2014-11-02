@@ -16,7 +16,7 @@
 
 package uk.ac.uea.cmp.spectre.flatnj.tools;
 
-import uk.ac.uea.cmp.spectre.flatnj.ds.Location;
+import uk.ac.uea.cmp.spectre.core.ui.gui.geom.IndexedPoint;
 import uk.ac.uea.cmp.spectre.flatnj.ds.Locations;
 
 import java.util.LinkedList;
@@ -25,7 +25,7 @@ import java.util.LinkedList;
  * Created by dan on 12/02/14.
  */
 public class NexusReaderLocations extends NexusReader {
-    LinkedList<Location> llist;
+    LinkedList<IndexedPoint> llist;
 
     public NexusReaderLocations() {
         block = "locations";
@@ -52,7 +52,7 @@ public class NexusReaderLocations extends NexusReader {
             try {
                 x = Double.parseDouble(scanner.match().group(2));
                 y = Double.parseDouble(scanner.match().group(3));
-                llist.add(new Location(x, y, taxLabel));
+                llist.add(new IndexedPoint(-1, x, y, taxLabel));
             } catch (NumberFormatException nfe) {
                 System.err.println("Error while parsing coordinates in the LOCATIONS block. Coordinates must be real numbers:\n\t" + line);
                 System.exit(1);
@@ -66,7 +66,7 @@ public class NexusReaderLocations extends NexusReader {
             try {
                 x = Double.parseDouble(scanner.match().group(1));
                 y = Double.parseDouble(scanner.match().group(2));
-                llist.add(new Location(x, y));
+                llist.add(new IndexedPoint(-1, x, y));
             } catch (NumberFormatException nfe) {
                 System.err.println("Error while parsing coordinates in the LOCATIONS block. Coordinates must be real numbers:\n\t" + line);
                 System.exit(1);

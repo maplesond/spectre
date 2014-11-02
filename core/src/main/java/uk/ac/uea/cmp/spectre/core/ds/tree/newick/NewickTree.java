@@ -66,6 +66,11 @@ public class NewickTree extends NewickNode {
         // Parse should handle this but let's make it easy for it
         String trimmedSource = source.trim();
 
+        // Just ignore empty lines
+        if (trimmedSource.isEmpty()) {
+            return;
+        }
+
         // Convert loader into a character stream
         CharStream in = new ANTLRInputStream(trimmedSource);
 

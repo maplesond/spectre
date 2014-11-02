@@ -19,6 +19,7 @@ package uk.ac.uea.cmp.spectre.core.ds.network;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by dan on 18/03/14.
@@ -27,11 +28,27 @@ public interface Network {
 
     IdentifierList getTaxa();
 
-    List<Vertex> getVertices();
+    VertexList getAllVertices();
 
-    EdgeList getEdges();
+    VertexList getLabeledVertices();
 
-    List<Label> getLabels();
+    void removeVertices(VertexList toRemove);
+
+    EdgeList getAllEdges();
+
+    EdgeList getInternalEdges();
+
+    EdgeList getExternalEdges();
+
+    Set<Edge> getExternalEdges(Edge e1, Vertex a, Edge e2);
+
+    EdgeList getTrivialEdges();
+
+    void addTrivialEdges(VertexList toAdd);
+
+    List<NetworkLabel> getLabels();
 
     int getNbTaxa();
+
+    boolean veryLongTrivial();
 }

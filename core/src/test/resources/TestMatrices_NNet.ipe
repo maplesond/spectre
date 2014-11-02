@@ -1,0 +1,418 @@
+<?xml version="1.0"?>
+<!DOCTYPE ipe SYSTEM "ipe.dtd">
+<ipe version="70005" creator="Ipe 7.1.4">
+<info created="D:20140811105153" modified="D:20140811105153"/>
+<ipestyle name="basic">
+<symbol name="arrow/arc(spx)">
+<path stroke="sym-stroke" fill="sym-stroke" pen="sym-pen">
+0 0 m
+-1 0.333 l
+-1 -0.333 l
+h
+</path>
+</symbol>
+<symbol name="arrow/farc(spx)">
+<path stroke="sym-stroke" fill="white" pen="sym-pen">
+0 0 m
+-1 0.333 l
+-1 -0.333 l
+h
+</path>
+</symbol>
+<symbol name="mark/circle(sx)" transformations="translations">
+<path fill="sym-stroke">
+0.6 0 0 0.6 0 0 e
+0.4 0 0 0.4 0 0 e
+</path>
+</symbol>
+<symbol name="mark/disk(sx)" transformations="translations">
+<path fill="sym-stroke">
+0.6 0 0 0.6 0 0 e
+</path>
+</symbol>
+<symbol name="mark/fdisk(sfx)" transformations="translations">
+<group>
+<path fill="sym-fill">
+0.5 0 0 0.5 0 0 e
+</path>
+<path fill="sym-stroke" fillrule="eofill">
+0.6 0 0 0.6 0 0 e
+0.4 0 0 0.4 0 0 e
+</path>
+</group>
+</symbol>
+<symbol name="mark/box(sx)" transformations="translations">
+<path fill="sym-stroke" fillrule="eofill">
+-0.6 -0.6 m
+0.6 -0.6 l
+0.6 0.6 l
+-0.6 0.6 l
+h
+-0.4 -0.4 m
+0.4 -0.4 l
+0.4 0.4 l
+-0.4 0.4 l
+h
+</path>
+</symbol>
+<symbol name="mark/square(sx)" transformations="translations">
+<path fill="sym-stroke">
+-0.6 -0.6 m
+0.6 -0.6 l
+0.6 0.6 l
+-0.6 0.6 l
+h
+</path>
+</symbol>
+<symbol name="mark/fsquare(sfx)" transformations="translations">
+<group>
+<path fill="sym-fill">
+-0.5 -0.5 m
+0.5 -0.5 l
+0.5 0.5 l
+-0.5 0.5 l
+h
+</path>
+<path fill="sym-stroke" fillrule="eofill">
+-0.6 -0.6 m
+0.6 -0.6 l
+0.6 0.6 l
+-0.6 0.6 l
+h
+-0.4 -0.4 m
+0.4 -0.4 l
+0.4 0.4 l
+-0.4 0.4 l
+h
+</path>
+</group>
+</symbol>
+<symbol name="mark/cross(sx)" transformations="translations">
+<group>
+<path fill="sym-stroke">
+-0.43 -0.57 m
+0.57 0.43 l
+0.43 0.57 l
+-0.57 -0.43 l
+h
+</path>
+<path fill="sym-stroke">
+-0.43 0.57 m
+0.57 -0.43 l
+0.43 -0.57 l
+-0.57 0.43 l
+h
+</path>
+</group>
+</symbol>
+<symbol name="arrow/fnormal(spx)">
+<path stroke="sym-stroke" fill="white" pen="sym-pen">
+0 0 m
+-1 0.333 l
+-1 -0.333 l
+h
+</path>
+</symbol>
+<symbol name="arrow/pointed(spx)">
+<path stroke="sym-stroke" fill="sym-stroke" pen="sym-pen">
+0 0 m
+-1 0.333 l
+-0.8 0 l
+-1 -0.333 l
+h
+</path>
+</symbol>
+<symbol name="arrow/fpointed(spx)">
+<path stroke="sym-stroke" fill="white" pen="sym-pen">
+0 0 m
+-1 0.333 l
+-0.8 0 l
+-1 -0.333 l
+h
+</path>
+</symbol>
+<symbol name="arrow/linear(spx)">
+<path stroke="sym-stroke" pen="sym-pen">
+-1 0.333 m
+0 0 l
+-1 -0.333 l
+</path>
+</symbol>
+<symbol name="arrow/fdouble(spx)">
+<path stroke="sym-stroke" fill="white" pen="sym-pen">
+0 0 m
+-1 0.333 l
+-1 -0.333 l
+h
+-1 0 m
+-2 0.333 l
+-2 -0.333 l
+h
+</path>
+</symbol>
+<symbol name="arrow/double(spx)">
+<path stroke="sym-stroke" fill="sym-stroke" pen="sym-pen">
+0 0 m
+-1 0.333 l
+-1 -0.333 l
+h
+-1 0 m
+-2 0.333 l
+-2 -0.333 l
+h
+</path>
+</symbol>
+<pen name="heavier" value="0.8"/>
+<pen name="fat" value="1.2"/>
+<pen name="ultrafat" value="2"/>
+<symbolsize name="large" value="5"/>
+<symbolsize name="small" value="2"/>
+<symbolsize name="tiny" value="1.1"/>
+<arrowsize name="large" value="10"/>
+<arrowsize name="small" value="5"/>
+<arrowsize name="tiny" value="3"/>
+<color name="red" value="1 0 0"/>
+<color name="green" value="0 1 0"/>
+<color name="blue" value="0 0 1"/>
+<color name="yellow" value="1 1 0"/>
+<color name="orange" value="1 0.647 0"/>
+<color name="gold" value="1 0.843 0"/>
+<color name="purple" value="0.627 0.125 0.941"/>
+<color name="gray" value="0.745"/>
+<color name="brown" value="0.647 0.165 0.165"/>
+<color name="navy" value="0 0 0.502"/>
+<color name="pink" value="1 0.753 0.796"/>
+<color name="seagreen" value="0.18 0.545 0.341"/>
+<color name="turquoise" value="0.251 0.878 0.816"/>
+<color name="violet" value="0.933 0.51 0.933"/>
+<color name="darkblue" value="0 0 0.545"/>
+<color name="darkcyan" value="0 0.545 0.545"/>
+<color name="darkgray" value="0.663"/>
+<color name="darkgreen" value="0 0.392 0"/>
+<color name="darkmagenta" value="0.545 0 0.545"/>
+<color name="darkorange" value="1 0.549 0"/>
+<color name="darkred" value="0.545 0 0"/>
+<color name="lightblue" value="0.678 0.847 0.902"/>
+<color name="lightcyan" value="0.878 1 1"/>
+<color name="lightgray" value="0.827"/>
+<color name="lightgreen" value="0.565 0.933 0.565"/>
+<color name="lightyellow" value="1 1 0.878"/>
+<dashstyle name="dashed" value="[4] 0"/>
+<dashstyle name="dotted" value="[1 3] 0"/>
+<dashstyle name="dash dotted" value="[4 2 1 2] 0"/>
+<dashstyle name="dash dot dotted" value="[4 2 1 2 1 2] 0"/>
+<textsize name="large" value="\large"/>
+<textsize name="Large" value="\Large"/>
+<textsize name="LARGE" value="\LARGE"/>
+<textsize name="huge" value="\huge"/>
+<textsize name="Huge" value="\Huge"/>
+<textsize name="small" value="\small"/>
+<textsize name="footnote" value="\footnotesize"/>
+<textsize name="tiny" value="\tiny"/>
+<textstyle name="center" begin="\begin{center}" end="\end{center}"/>
+<textstyle name="itemize" begin="\begin{itemize}" end="\end{itemize}"/>
+<textstyle name="item" begin="\begin{itemize}\item{}" end="\end{itemize}"/>
+<gridsize name="4 pts" value="4"/>
+<gridsize name="8 pts (~3 mm)" value="8"/>
+<gridsize name="16 pts (~6 mm)" value="16"/>
+<gridsize name="32 pts (~12 mm)" value="32"/>
+<gridsize name="10 pts (~3.5 mm)" value="10"/>
+<gridsize name="20 pts (~7 mm)" value="20"/>
+<gridsize name="14 pts (~5 mm)" value="14"/>
+<gridsize name="28 pts (~10 mm)" value="28"/>
+<gridsize name="56 pts (~20 mm)" value="56"/>
+<anglesize name="90 deg" value="90"/>
+<anglesize name="60 deg" value="60"/>
+<anglesize name="45 deg" value="45"/>
+<anglesize name="30 deg" value="30"/>
+<anglesize name="22.5 deg" value="22.5"/>
+<tiling name="falling" angle="-60" step="4" width="1"/>
+<tiling name="rising" angle="30" step="4" width="1"/>
+</ipestyle>
+<page>
+<layer name="alpha"/>
+<view layers="alpha" active="alpha"/>
+<path layer="alpha" stroke="black">
+80 768 m
+112 736 l
+80 704 l
+80 704 l
+</path>
+<path stroke="black">
+112 736 m
+144 736 l
+144 768 l
+144 768 l
+</path>
+<path stroke="black">
+144 736 m
+176 736 l
+208 768 l
+208 768 l
+</path>
+<path stroke="black">
+176 736 m
+208 704 l
+208 704 l
+</path>
+<text matrix="1 0 0 1 12 4" transformations="translations" pos="56 688" stroke="black" type="label" width="8.775" height="8.169" depth="0" valign="baseline">\large{A}</text>
+<text transformations="translations" pos="68 772" stroke="black" type="label" width="8.29" height="8.169" depth="0" valign="baseline">\large{B}</text>
+<text transformations="translations" pos="140 776" stroke="black" type="label" width="8.454" height="8.169" depth="0" valign="baseline">\large{C}</text>
+<text transformations="translations" pos="216 768" stroke="black" type="label" width="8.94" height="8.169" depth="0" valign="baseline">\large{D}</text>
+<text transformations="translations" pos="212 696" stroke="black" type="label" width="7.639" height="8.169" depth="0" valign="baseline">\large{F}</text>
+<text transformations="translations" pos="64 800" stroke="black" type="label" width="102.718" height="8.302" depth="0" valign="baseline">\large{Tree for Distances 1}</text>
+<text transformations="translations" pos="80 744" stroke="black" type="label" width="4.981" height="6.42" depth="0" valign="baseline">1</text>
+<text transformations="translations" pos="80 716" stroke="black" type="label" width="4.981" height="6.42" depth="0" valign="baseline">1</text>
+<text transformations="translations" pos="124 740" stroke="black" type="label" width="4.981" height="6.42" depth="0" valign="baseline">1</text>
+<text transformations="translations" pos="156 740" stroke="black" type="label" width="4.981" height="6.42" depth="0" valign="baseline">1</text>
+<text transformations="translations" pos="200 744" stroke="black" type="label" width="4.981" height="6.42" depth="0" valign="baseline">1</text>
+<text transformations="translations" pos="200 720" stroke="black" type="label" width="4.981" height="6.42" depth="0" valign="baseline">1</text>
+<text transformations="translations" pos="132 760" stroke="black" type="label" width="4.981" height="6.42" depth="0" valign="baseline">1</text>
+<text transformations="translations" pos="64 624" stroke="black" type="label" width="235.772" height="8.307" depth="2.32" valign="baseline">\large{Network and underlining trees for Distances 2}</text>
+<path matrix="1 0 0 1 0 -176" stroke="black">
+80 768 m
+112 736 l
+80 704 l
+80 704 l
+</path>
+<path matrix="1 0 0 1 0 -176" stroke="black">
+112 736 m
+144 736 l
+144 768 l
+144 768 l
+</path>
+<path matrix="1 0 0 1 0 -176" stroke="black">
+144 736 m
+176 736 l
+208 768 l
+208 768 l
+</path>
+<path matrix="1 0 0 1 0 -176" stroke="black">
+176 736 m
+208 704 l
+208 704 l
+</path>
+<text matrix="1 0 0 1 12 -172" transformations="translations" pos="56 688" stroke="black" type="label" width="8.775" height="8.169" depth="0" valign="baseline">\large{A}</text>
+<text matrix="1 0 0 1 0 -176" transformations="translations" pos="68 772" stroke="black" type="label" width="8.29" height="8.169" depth="0" valign="baseline">\large{B}</text>
+<text matrix="1 0 0 1 0 -176" transformations="translations" pos="140 776" stroke="black" type="label" width="8.454" height="8.169" depth="0" valign="baseline">\large{C}</text>
+<text matrix="1 0 0 1 0 -176" transformations="translations" pos="216 768" stroke="black" type="label" width="8.94" height="8.169" depth="0" valign="baseline">\large{D}</text>
+<text matrix="1 0 0 1 0 -176" transformations="translations" pos="212 696" stroke="black" type="label" width="7.639" height="8.169" depth="0" valign="baseline">\large{F}</text>
+<text matrix="1 0 0 1 0 -176" transformations="translations" pos="80 744" stroke="black" type="label" width="4.981" height="6.42" depth="0" valign="baseline">1</text>
+<text matrix="1 0 0 1 0 -176" transformations="translations" pos="80 716" stroke="black" type="label" width="4.981" height="6.42" depth="0" valign="baseline">1</text>
+<text matrix="1 0 0 1 0 -176" transformations="translations" pos="124 740" stroke="black" type="label" width="4.981" height="6.42" depth="0" valign="baseline">1</text>
+<text matrix="1 0 0 1 0 -176" transformations="translations" pos="156 740" stroke="black" type="label" width="4.981" height="6.42" depth="0" valign="baseline">1</text>
+<text matrix="1 0 0 1 0 -176" transformations="translations" pos="200 744" stroke="black" type="label" width="4.981" height="6.42" depth="0" valign="baseline">1</text>
+<text matrix="1 0 0 1 0 -176" transformations="translations" pos="200 720" stroke="black" type="label" width="4.981" height="6.42" depth="0" valign="baseline">1</text>
+<text matrix="1 0 0 1 0 -176" transformations="translations" pos="132 760" stroke="black" type="label" width="4.981" height="6.42" depth="0" valign="baseline">1</text>
+<path matrix="1 0 0 1 208 -176" stroke="black">
+80 768 m
+112 736 l
+80 704 l
+80 704 l
+</path>
+<path matrix="1 0 0 1 208 -176" stroke="black">
+112 736 m
+144 736 l
+144 768 l
+144 768 l
+</path>
+<path matrix="1 0 0 1 208 -176" stroke="black">
+144 736 m
+176 736 l
+208 768 l
+208 768 l
+</path>
+<path matrix="1 0 0 1 208 -176" stroke="black">
+176 736 m
+208 704 l
+208 704 l
+</path>
+<text matrix="1 0 0 1 220 -172" transformations="translations" pos="56 688" stroke="black" type="label" width="8.775" height="8.169" depth="0" valign="baseline">\large{A}</text>
+<text matrix="1 0 0 1 208 -176" transformations="translations" pos="68 772" stroke="black" type="label" width="8.29" height="8.169" depth="0" valign="baseline">\large{B}</text>
+<text matrix="1 0 0 1 208 -176" transformations="translations" pos="140 776" stroke="black" type="label" width="8.454" height="8.169" depth="0" valign="baseline">\large{C}</text>
+<text matrix="1 0 0 1 208 -176" transformations="translations" pos="216 768" stroke="black" type="label" width="8.94" height="8.169" depth="0" valign="baseline">\large{D}</text>
+<text matrix="1 0 0 1 208 -176" transformations="translations" pos="212 696" stroke="black" type="label" width="7.639" height="8.169" depth="0" valign="baseline">\large{F}</text>
+<text matrix="1 0 0 1 208 -176" transformations="translations" pos="80 744" stroke="black" type="label" width="4.981" height="6.42" depth="0" valign="baseline">1</text>
+<text matrix="1 0 0 1 208 -176" transformations="translations" pos="80 716" stroke="black" type="label" width="4.981" height="6.42" depth="0" valign="baseline">1</text>
+<text matrix="1 0 0 1 208 -176" transformations="translations" pos="124 740" stroke="black" type="label" width="4.981" height="6.42" depth="0" valign="baseline">1</text>
+<text matrix="1 0 0 1 208 -176" transformations="translations" pos="156 740" stroke="black" type="label" width="4.981" height="6.42" depth="0" valign="baseline">1</text>
+<text matrix="1 0 0 1 208 -176" transformations="translations" pos="200 744" stroke="black" type="label" width="4.981" height="6.42" depth="0" valign="baseline">1</text>
+<text matrix="1 0 0 1 208 -176" transformations="translations" pos="200 720" stroke="black" type="label" width="4.981" height="6.42" depth="0" valign="baseline">1</text>
+<text matrix="1 0 0 1 208 -176" transformations="translations" pos="132 760" stroke="black" type="label" width="4.981" height="6.42" depth="0" valign="baseline">1</text>
+<path stroke="black">
+80 400 m
+112 400 l
+112 368 l
+112 368 l
+</path>
+<path stroke="black">
+112 400 m
+144 432 l
+144 464 l
+176 464 l
+176 432 l
+144 432 l
+</path>
+<path stroke="black">
+176 432 m
+208 400 l
+208 400 l
+</path>
+<path stroke="black">
+176 464 m
+208 496 l
+</path>
+<path stroke="black">
+144 464 m
+112 496 l
+</path>
+<text transformations="translations" pos="104 352" stroke="black" type="label" width="8.775" height="8.169" depth="0" valign="baseline">\large{A}</text>
+<text transformations="translations" pos="64 392" stroke="black" type="label" width="8.29" height="8.169" depth="0" valign="baseline">\large{B}</text>
+<text transformations="translations" pos="100 496" stroke="black" type="label" width="8.454" height="8.169" depth="0" valign="baseline">\large{C}</text>
+<text transformations="translations" pos="216 492" stroke="black" type="label" width="7.965" height="8.169" depth="0" valign="baseline">\large{E}</text>
+<text transformations="translations" pos="216 388" stroke="black" type="label" width="8.94" height="8.169" depth="0" valign="baseline">\large{D}</text>
+<text transformations="translations" pos="160 348" stroke="black" type="label" width="36.557" height="6.918" depth="0" valign="baseline">Network</text>
+<text transformations="translations" pos="68 288" stroke="black" type="label" width="102.718" height="8.302" depth="0" valign="baseline">\large{Tree for Distances 3}</text>
+<path stroke="black">
+224 272 m
+256 240 l
+288 272 l
+288 272 l
+</path>
+<path stroke="black">
+256 240 m
+256 176 l
+192 176 l
+160 208 l
+160 208 l
+</path>
+<path stroke="black">
+192 176 m
+160 140 l
+</path>
+<path stroke="black">
+256 176 m
+352 176 l
+384 208 l
+</path>
+<path stroke="black">
+352 176 m
+384 144 l
+384 144 l
+</path>
+<text transformations="translations" pos="144 128" stroke="black" type="label" width="8.775" height="8.169" depth="0" valign="baseline">\large{A}</text>
+<text matrix="1 0 0 1 20 0" transformations="translations" pos="124 208" stroke="black" type="label" width="8.29" height="8.169" depth="0" valign="baseline">\large{B}</text>
+<text transformations="translations" pos="212 276" stroke="black" type="label" width="7.965" height="8.169" depth="0" valign="baseline">\large{E}</text>
+<text transformations="translations" pos="284 276" stroke="black" type="label" width="7.639" height="8.169" depth="0" valign="baseline">\large{F}</text>
+<text transformations="translations" pos="388 216" stroke="black" type="label" width="8.454" height="8.169" depth="0" valign="baseline">\large{C}</text>
+<text matrix="1 0 0 1 -16 8" transformations="translations" pos="404 124" stroke="black" type="label" width="8.94" height="8.169" depth="0" valign="baseline">\large{D}</text>
+<text transformations="translations" pos="180 200" stroke="black" type="label" width="4.981" height="6.42" depth="0" valign="baseline">1</text>
+<text transformations="translations" pos="180 148" stroke="black" type="label" width="4.981" height="6.42" depth="0" valign="baseline">1</text>
+<text transformations="translations" pos="224 168" stroke="black" type="label" width="4.981" height="6.42" depth="0" valign="baseline">2</text>
+<text transformations="translations" pos="228 248" stroke="black" type="label" width="4.981" height="6.42" depth="0" valign="baseline">1</text>
+<text transformations="translations" pos="280 248" stroke="black" type="label" width="4.981" height="6.42" depth="0" valign="baseline">1</text>
+<text transformations="translations" pos="300 160" stroke="black" type="label" width="4.981" height="6.42" depth="0" valign="baseline">3</text>
+<text transformations="translations" pos="360 196" stroke="black" type="label" width="4.981" height="6.42" depth="0" valign="baseline">1</text>
+<text transformations="translations" pos="360 148" stroke="black" type="label" width="4.981" height="6.42" depth="0" valign="baseline">1</text>
+</page>
+</ipe>

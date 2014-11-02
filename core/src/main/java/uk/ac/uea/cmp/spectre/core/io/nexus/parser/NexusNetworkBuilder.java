@@ -21,7 +21,6 @@ import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.spectre.core.ds.network.*;
 
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 
 /**
@@ -41,8 +40,8 @@ public class NexusNetworkBuilder {
     private Map<Integer, Vertex> vertices;
     private Vertex currentVertex;
 
-    private Map<Integer, Label> labels;
-    private Label currentLabel;
+    private Map<Integer, NetworkLabel> labels;
+    private NetworkLabel currentLabel;
 
     private Map<Integer, Edge> edges;
     private Edge currentEdge;
@@ -124,19 +123,19 @@ public class NexusNetworkBuilder {
         this.currentVertex = currentVertex;
     }
 
-    public Map<Integer, Label> getLabels() {
+    public Map<Integer, NetworkLabel> getLabels() {
         return labels;
     }
 
-    public void setLabels(Map<Integer, Label> labels) {
+    public void setLabels(Map<Integer, NetworkLabel> labels) {
         this.labels = labels;
     }
 
-    public Label getCurrentLabel() {
+    public NetworkLabel getCurrentLabel() {
         return currentLabel;
     }
 
-    public void setCurrentLabel(Label currentLabel) {
+    public void setCurrentLabel(NetworkLabel currentLabel) {
         this.currentLabel = currentLabel;
     }
 
@@ -164,24 +163,24 @@ public class NexusNetworkBuilder {
     public Network createNetwork() {
 
         if (this.vertices.size() != this.nbExpectedVertices) {
-            log.warn("Number of detected vertices (" + this.vertices.size() + ") is not the same as the " +
+            throw new IllegalStateException("Number of detected vertices (" + this.vertices.size() + ") is not the same as the " +
                     "number of vertices we expected to see (" + this.nbExpectedVertices + ")");
         }
 
         if (this.labels.size() != this.nbExpectedTaxa) {
-            log.warn("Number of detected vertex labels (" + this.labels.size() + ") is not the same as the " +
+            throw new IllegalStateException("Number of detected vertex labels (" + this.labels.size() + ") is not the same as the " +
                     "number of labels we expected to see (" + this.nbExpectedTaxa + ")");
         }
 
         if (this.edges.size() != this.nbExpectedEdges) {
-            log.warn("Number of detected edges (" + this.edges.size() + ") is not the same as the " +
+            throw new IllegalStateException("Number of detected edges (" + this.edges.size() + ") is not the same as the " +
                     "number of edges we expected to see (" + this.nbExpectedEdges + ")");
         }
 
         FlatNetwork network = new FlatNetwork();
 
-        network.setVertices(new LinkedList<>(this.vertices.values()));
-        network.setVertexLabels(new LinkedList<>(this.labels.values()));
+        network.setVertices(new VertexList(this.vertices.values()));
+        //network.setVertexLabels(new LinkedList<>(this.labels.values()));
         network.setEdges(new EdgeList(this.edges.values()));
 
         return network;

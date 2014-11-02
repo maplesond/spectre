@@ -23,11 +23,11 @@
     <parent>
         <groupId>uk.ac.uea.cmp.spectre</groupId>
         <artifactId>spectre</artifactId>
-        <version>0.2.2</version>
+        <version>0.3.0</version>
     </parent>
 
     <artifactId>core</artifactId>
-    <version>0.2.2</version>
+    <version>0.3.0</version>
     <packaging>jar</packaging>
 
     <name>Spectre: Core functionality</name>

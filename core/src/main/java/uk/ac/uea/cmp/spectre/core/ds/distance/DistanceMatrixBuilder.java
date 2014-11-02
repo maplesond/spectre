@@ -17,6 +17,8 @@
 package uk.ac.uea.cmp.spectre.core.ds.distance;
 
 import org.apache.commons.lang3.ArrayUtils;
+import uk.ac.uea.cmp.spectre.core.ds.Identifier;
+import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -93,6 +95,7 @@ public class DistanceMatrixBuilder {
     private boolean interleave;
     private Labels labels;
     private List<List<Double>> rows;
+    private IdentifierList taxa;
 
     public DistanceMatrixBuilder() {
         this.nbTaxa = 0;
@@ -102,14 +105,20 @@ public class DistanceMatrixBuilder {
         this.interleave = false;
         this.labels = Labels.NONE;
         this.rows = new ArrayList<>();
+        this.taxa = new IdentifierList();
     }
 
     public DistanceMatrix createDistanceMatrix() {
 
         this.removeEmptyLines(this.rows);
-        DistanceMatrix distanceMatrix = new FlexibleDistanceMatrix(this.rows.size());
+        DistanceMatrix distanceMatrix = new FlexibleDistanceMatrix(this.taxa);
         this.fillDistanceMatrix(this.rows, distanceMatrix);
         return distanceMatrix;
+    }
+
+    public void addRow(List<Double> row, Identifier taxon) {
+        this.rows.add(row);
+        this.taxa.add(taxon);
     }
 
     private void removeEmptyLines(List<List<Double>> rows) {

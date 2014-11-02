@@ -18,13 +18,15 @@ package uk.ac.uea.cmp.spectre.net.netmake;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.ac.uea.cmp.spectre.core.co.CircularOrderingAlgorithms;
 import uk.ac.uea.cmp.spectre.core.ui.gui.JobController;
 import uk.ac.uea.cmp.spectre.core.ui.gui.StatusTracker;
 import uk.ac.uea.cmp.spectre.core.ui.gui.ToolHost;
-import uk.ac.uea.cmp.spectre.net.netmake.weighting.Weightings;
+import uk.ac.uea.cmp.spectre.core.co.nm.weighting.Weightings;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.io.File;
 
 import static uk.ac.uea.cmp.spectre.core.ui.gui.LookAndFeel.NIMBUS;
@@ -49,6 +51,9 @@ public class NetMakeGUI extends JFrame implements ToolHost {
     private JTextField txtInput;
     private JButton cmdInput;
 
+    private JPanel pnlAlgorithm;
+    private JLabel lblAlgorithm;
+    private JComboBox<CircularOrderingAlgorithms> cboAlgorithm;
     private JPanel pnlWeightings;
     private JLabel lblWeighting1;
     private JComboBox<Weightings> cboWeighting1;
@@ -58,13 +63,14 @@ public class NetMakeGUI extends JFrame implements ToolHost {
     private JTextField txtWeight;
 
     private JPanel pnlOutput;
-    private JPanel pnlSelectOutputDir;
-    private JPanel pnlOutputPrefix;
-    private JLabel lblOutputDir;
-    private JTextField txtOutputDir;
-    private JButton cmdOutputDir;
-    private JLabel lblOutputPrefix;
-    private JTextField txtOutputPrefix;
+    private JPanel pnlSelectOutputNetwork;
+    private JLabel lblOutputNetwork;
+    private JTextField txtOutputNetwork;
+    private JButton cmdOutputNetwork;
+    private JPanel pnlSelectOutputTree;
+    private JLabel lblOutputTree;
+    private JTextField txtOutputTree;
+    private JButton cmdOutputTree;
 
     private JPanel pnlStatus;
     private JPanel pnlControlButtons;
@@ -135,6 +141,54 @@ public class NetMakeGUI extends JFrame implements ToolHost {
         pack();
     }
 
+    private void initAlgorithmComponents() {
+
+        cboAlgorithm = new JComboBox<>();
+        lblAlgorithm = new JLabel();
+
+        cboAlgorithm.setModel(new DefaultComboBoxModel<>(CircularOrderingAlgorithms.values()));
+        cboAlgorithm.setToolTipText(NetMakeOptions.DESC_CO_ALG);
+        cboAlgorithm.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmdSelectAlgorithmActionPerformed(evt);
+            }
+        });
+
+        lblAlgorithm.setText("Select circular ordering algorithm:");
+        lblAlgorithm.setToolTipText(NetMakeOptions.DESC_CO_ALG);
+
+        pnlAlgorithm = new JPanel();
+
+        GroupLayout algLayout = new GroupLayout(pnlAlgorithm);
+
+        algLayout.setAutoCreateGaps(true);
+        algLayout.setAutoCreateContainerGaps(true);
+
+        algLayout.setHorizontalGroup(
+                algLayout.createSequentialGroup()
+                        .addGroup(algLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+                                        .addComponent(lblAlgorithm)
+                        )
+                        .addGroup(algLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                                        .addComponent(cboAlgorithm)
+                        )
+
+        );
+        algLayout.setVerticalGroup(
+                algLayout.createSequentialGroup()
+                        .addGroup(algLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                                        .addComponent(lblAlgorithm)
+                                        .addComponent(cboAlgorithm)
+                        )
+        );
+
+        pnlAlgorithm.setLayout(algLayout);
+        pnlAlgorithm.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), "Circular Ordering Algorithm:"));
+
+        pack();
+    }
+
+
     /**
      * Optimiser options
      */
@@ -165,9 +219,10 @@ public class NetMakeGUI extends JFrame implements ToolHost {
         lblWeight.setText("Set the tree weight:");
         lblWeight.setToolTipText(NetMakeOptions.DESC_TREE_PARAM);
 
-        txtWeight.setText("");
+        txtWeight.setText(Double.toString(NetMakeOptions.DEFAULT_TREE_WEIGHT));
         txtWeight.setPreferredSize(new Dimension(200, 25));
         txtWeight.setToolTipText(NetMakeOptions.DESC_TREE_PARAM);
+
 
         pnlWeightings = new JPanel();
 
@@ -211,6 +266,7 @@ public class NetMakeGUI extends JFrame implements ToolHost {
         );
 
         pack();
+
     }
 
 
@@ -222,57 +278,68 @@ public class NetMakeGUI extends JFrame implements ToolHost {
 
         pnlOutput = new JPanel(new BorderLayout());
 
-        lblOutputDir = new JLabel();
-        txtOutputDir = new JTextField();
-        cmdOutputDir = new JButton();
+        lblOutputNetwork = new JLabel();
+        txtOutputNetwork = new JTextField();
+        cmdOutputNetwork = new JButton();
 
-        lblOutputPrefix = new JLabel();
-        txtOutputPrefix = new JTextField();
+        lblOutputTree = new JLabel();
+        txtOutputTree = new JTextField();
+        cmdOutputTree = new JButton();
 
-        txtOutputDir.setPreferredSize(new Dimension(200, 25));
-        txtOutputDir.setToolTipText(NetMakeOptions.DESC_OUTPUT_DIR);
+        txtOutputNetwork.setPreferredSize(new Dimension(200, 25));
+        txtOutputNetwork.setToolTipText(NetMakeOptions.DESC_OUTPUT_NETWORK);
 
-        lblOutputDir.setText("Save to file:");
-        lblOutputDir.setToolTipText(NetMakeOptions.DESC_OUTPUT_DIR);
+        lblOutputNetwork.setText("Output directory:");
+        lblOutputNetwork.setToolTipText(NetMakeOptions.DESC_OUTPUT_NETWORK);
 
-        cmdOutputDir.setText("...");
-        cmdOutputDir.setToolTipText(NetMakeOptions.DESC_OUTPUT_DIR);
-        cmdOutputDir.addActionListener(new java.awt.event.ActionListener() {
+        cmdOutputNetwork.setText("...");
+        cmdOutputNetwork.setToolTipText(NetMakeOptions.DESC_OUTPUT_NETWORK);
+        cmdOutputNetwork.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cmdOutputDirActionPerformed(evt);
+                cmdOutputNetworkActionPerformed(evt);
             }
         });
 
-        lblOutputPrefix.setText("Output prefix:");
-        lblOutputPrefix.setToolTipText(NetMakeOptions.DESC_OUTPUT_PREFIX);
+        lblOutputTree.setText("Output file prefix:");
+        lblOutputTree.setToolTipText(NetMakeOptions.DESC_OUTPUT_TREE);
 
-        txtOutputPrefix.setPreferredSize(new Dimension(200, 25));
-        txtOutputPrefix.setToolTipText(NetMakeOptions.DESC_OUTPUT_PREFIX);
+        txtOutputTree.setPreferredSize(new Dimension(200, 25));
+        txtOutputTree.setToolTipText(NetMakeOptions.DESC_OUTPUT_TREE);
 
-        pnlSelectOutputDir = new JPanel();
-        pnlSelectOutputDir.setLayout(new BoxLayout(pnlSelectOutputDir, BoxLayout.LINE_AXIS));
-        pnlSelectOutputDir.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        pnlSelectOutputDir.add(Box.createHorizontalGlue());
-        pnlSelectOutputDir.add(lblOutputDir);
-        pnlSelectOutputDir.add(Box.createRigidArea(new Dimension(10, 0)));
-        pnlSelectOutputDir.add(txtOutputDir);
-        pnlSelectOutputDir.add(Box.createRigidArea(new Dimension(10, 0)));
-        pnlSelectOutputDir.add(cmdOutputDir);
+        cmdOutputTree.setText("...");
+        cmdOutputTree.setToolTipText(NetMakeOptions.DESC_OUTPUT_TREE);
+        cmdOutputTree.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmdOutputTreeActionPerformed(evt);
+            }
+        });
 
-        pnlOutputPrefix = new JPanel();
-        pnlOutputPrefix.setLayout(new BoxLayout(pnlOutputPrefix, BoxLayout.LINE_AXIS));
-        pnlOutputPrefix.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
-        pnlOutputPrefix.add(Box.createHorizontalGlue());
-        pnlOutputPrefix.add(lblOutputPrefix);
-        pnlOutputPrefix.add(Box.createRigidArea(new Dimension(10, 0)));
-        pnlOutputPrefix.add(txtOutputPrefix);
+        pnlSelectOutputNetwork = new JPanel();
+        pnlSelectOutputNetwork.setLayout(new BoxLayout(pnlSelectOutputNetwork, BoxLayout.LINE_AXIS));
+        pnlSelectOutputNetwork.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        pnlSelectOutputNetwork.add(Box.createHorizontalGlue());
+        pnlSelectOutputNetwork.add(lblOutputNetwork);
+        pnlSelectOutputNetwork.add(Box.createRigidArea(new Dimension(10, 0)));
+        pnlSelectOutputNetwork.add(txtOutputNetwork);
+        pnlSelectOutputNetwork.add(Box.createRigidArea(new Dimension(10, 0)));
+        pnlSelectOutputNetwork.add(cmdOutputNetwork);
+
+        pnlSelectOutputTree = new JPanel();
+        pnlSelectOutputTree.setLayout(new BoxLayout(pnlSelectOutputTree, BoxLayout.LINE_AXIS));
+        pnlSelectOutputTree.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        pnlSelectOutputTree.add(Box.createHorizontalGlue());
+        pnlSelectOutputTree.add(lblOutputTree);
+        pnlSelectOutputTree.add(Box.createRigidArea(new Dimension(10, 0)));
+        pnlSelectOutputTree.add(txtOutputTree);
+        pnlSelectOutputTree.add(Box.createRigidArea(new Dimension(10, 0)));
+        pnlSelectOutputTree.add(cmdOutputTree);
 
         pnlOutput = new JPanel();
         pnlOutput.setLayout(new BoxLayout(pnlOutput, BoxLayout.PAGE_AXIS));
         pnlOutput.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), "Output:"));
         pnlOutput.add(Box.createVerticalGlue());
-        pnlOutput.add(pnlSelectOutputDir);
-        pnlOutput.add(pnlOutputPrefix);
+        pnlOutput.add(pnlSelectOutputNetwork);
+        pnlOutput.add(pnlSelectOutputTree);
 
         pack();
     }
@@ -303,8 +370,8 @@ public class NetMakeGUI extends JFrame implements ToolHost {
         // ***** Run control and feedback *****
 
         cmdRun = new JButton();
-        cmdRun.setText("Run NetMake");
-        cmdRun.setToolTipText("Run NetMake");
+        cmdRun.setText("Run");
+        cmdRun.setToolTipText("Run Algorithm");
         cmdRun.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cmdRunActionPerformed(evt);
@@ -329,6 +396,7 @@ public class NetMakeGUI extends JFrame implements ToolHost {
     private void initComponents() {
 
         this.initInputComponents();
+        this.initAlgorithmComponents();
         this.initWeightingComponents();
         this.initOutputComponents();
         this.initStatusComponents();
@@ -338,6 +406,8 @@ public class NetMakeGUI extends JFrame implements ToolHost {
         pnlOptions.setLayout(new BoxLayout(pnlOptions, BoxLayout.PAGE_AXIS));
         pnlOptions.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         pnlOptions.add(pnlInput);
+        pnlOptions.add(Box.createRigidArea(new Dimension(0, 10)));
+        pnlOptions.add(pnlAlgorithm);
         pnlOptions.add(Box.createRigidArea(new Dimension(0, 10)));
         pnlOptions.add(pnlWeightings);
         pnlOptions.add(Box.createRigidArea(new Dimension(0, 10)));
@@ -358,22 +428,58 @@ public class NetMakeGUI extends JFrame implements ToolHost {
         pack();
     }
 
+
+    private void cmdSelectAlgorithmActionPerformed(ActionEvent evt) {
+
+        if (evt.getSource() == cboAlgorithm) {
+
+            CircularOrderingAlgorithms alg = (CircularOrderingAlgorithms)cboAlgorithm.getSelectedItem();
+
+            if (alg == CircularOrderingAlgorithms.NEIGHBORNET) {
+                this.enableWeightingsPanel(false);
+            }
+            else if (alg == CircularOrderingAlgorithms.NETMAKE) {
+                this.enableWeightingsPanel(true);
+            }
+        }
+    }
+
     /**
      * Choose file for output
      *
      * @param evt
      */
-    private void cmdOutputDirActionPerformed(java.awt.event.ActionEvent evt) {
+    private void cmdOutputNetworkActionPerformed(java.awt.event.ActionEvent evt) {
 
         final JFileChooser fc = new JFileChooser();
-        if (evt.getSource() == cmdOutputDir) {
-            fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        if (evt.getSource() == cmdOutputNetwork) {
             int returnVal = fc.showSaveDialog(NetMakeGUI.this);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
 
                 File file = fc.getSelectedFile();
                 String z = file.getAbsolutePath();
-                txtOutputDir.setText(z);
+                txtOutputNetwork.setText(z);
+            } else {
+                log.debug("Open command cancelled by user.");
+            }
+        }
+    }
+
+    /**
+     * Choose file for output
+     *
+     * @param evt
+     */
+    private void cmdOutputTreeActionPerformed(java.awt.event.ActionEvent evt) {
+
+        final JFileChooser fc = new JFileChooser();
+        if (evt.getSource() == cmdOutputTree) {
+            int returnVal = fc.showSaveDialog(NetMakeGUI.this);
+            if (returnVal == JFileChooser.APPROVE_OPTION) {
+
+                File file = fc.getSelectedFile();
+                String z = file.getAbsolutePath();
+                txtOutputTree.setText(z);
             } else {
                 log.debug("Open command cancelled by user.");
             }
@@ -415,6 +521,18 @@ public class NetMakeGUI extends JFrame implements ToolHost {
 
     }
 
+
+    private void enableWeightingsPanel(boolean enabled) {
+
+        this.pnlWeightings.setEnabled(enabled);
+        this.lblWeighting1.setEnabled(enabled);
+        this.cboWeighting1.setEnabled(enabled);
+        this.lblWeighting2.setEnabled(enabled);
+        this.cboWeighting2.setEnabled(enabled);
+        this.lblWeight.setEnabled(enabled);
+        this.txtWeight.setEnabled(enabled);
+    }
+
     /**
      * Setup configuration using values specified in the GUI
      *
@@ -424,9 +542,9 @@ public class NetMakeGUI extends JFrame implements ToolHost {
 
         NetMakeOptions options = new NetMakeOptions();
 
-        options.setInput(new File(this.txtInput.getText().replaceAll("(^\")|(\"$)", "")));
-        options.setOutputDir(new File(this.txtOutputDir.getText().replaceAll("(^\")|(\"$)", "")));
-        options.setOutputPrefix(this.txtOutputPrefix.getText());
+        options.setInput(this.txtOutputTree.getText().trim() == null ? null : new File(this.txtInput.getText().replaceAll("(^\")|(\"$)", "")));
+        options.setOutputNetwork(this.txtOutputTree.getText().trim() == null ? null : new File(this.txtOutputNetwork.getText().replaceAll("(^\")|(\"$)", "")));
+        options.setOutputTree(this.txtOutputTree.getText().trim() == null ? null : new File(this.txtOutputTree.getText().replaceAll("(^\")|(\"$)", "")));
 
         try {
             options.setTreeParam(Double.parseDouble(this.txtWeight.getText()));
@@ -434,6 +552,8 @@ public class NetMakeGUI extends JFrame implements ToolHost {
             showErrorDialog("Tree param must be a real number.");
             return null;
         }
+
+        options.setCoAlg(this.cboAlgorithm.getSelectedItem().toString());
 
         // May need some more validation here.
         options.setWeighting1(this.cboWeighting1.getSelectedItem().toString());

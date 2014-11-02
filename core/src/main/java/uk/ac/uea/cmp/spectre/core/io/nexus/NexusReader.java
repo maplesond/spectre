@@ -36,10 +36,9 @@ import uk.ac.uea.cmp.spectre.core.io.nexus.parser.NexusFilePopulator;
 import uk.ac.uea.cmp.spectre.core.util.DefaultParsingErrorListener;
 import uk.ac.uea.cmp.spectre.core.util.DefaultParsingErrorStrategy;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -157,6 +156,37 @@ public class NexusReader extends AbstractPhygenReader {
         return splitSystem.isCircular() ?
                 splitSystem.getOrderedTaxa() :
                 null;
+    }
+
+    public List<String> extractBlock(File file, String blockName) throws IOException {
+
+        List<String> lines = new ArrayList<>();
+
+        BufferedReader br = new BufferedReader(new FileReader(file));
+
+        String line;
+        boolean foundStart = false;
+        while ((line = br.readLine()) != null) {
+
+            line = line.trim();
+
+            String[] words = line.split(" ");
+            if (words != null && words.length >= 2 && words[0].equalsIgnoreCase("begin") && words[1].equalsIgnoreCase(blockName)) {
+                foundStart = true;
+            }
+
+            if (foundStart) {
+                lines.add(line);
+            }
+
+            if (foundStart && words != null && words.length >= 1 && words[0].equalsIgnoreCase("end")) {
+                break;
+            }
+        }
+
+        br.close();
+
+        return lines;
     }
 
 

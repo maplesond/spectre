@@ -16,17 +16,28 @@
 
 package uk.ac.uea.cmp.spectre.net.netmake;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+import uk.ac.uea.cmp.spectre.core.co.CircularOrderingCreator;
+import uk.ac.uea.cmp.spectre.core.co.nm.NetMakeCircularOrderer;
+import uk.ac.uea.cmp.spectre.core.co.nm.weighting.GreedyMEWeighting;
+import uk.ac.uea.cmp.spectre.core.co.nm.weighting.TSPWeighting;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.distance.FlexibleDistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
-import uk.ac.uea.cmp.spectre.net.netmake.weighting.GreedyMEWeighting;
-import uk.ac.uea.cmp.spectre.net.netmake.weighting.TSPWeighting;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+
+import static junit.framework.Assert.assertTrue;
 
 
 /**
@@ -42,8 +53,10 @@ public class NetMakeTest {
         LogManager.getRootLogger().setLevel(Level.WARN);
     }
 
+    @Rule
+    public TemporaryFolder folder = new TemporaryFolder();
 
-    @Test
+    //@Test
     public void simpleTest() {
 
         String[] taxa = new String[]{"1", "2", "3", "4", "5", "6", "7"};
@@ -61,7 +74,8 @@ public class NetMakeTest {
 
         DistanceMatrix distanceMatrix = new FlexibleDistanceMatrix(new IdentifierList(taxa), distances);
 
-        NetMakeResult result = new NetMake().execute(distanceMatrix, new GreedyMEWeighting(distanceMatrix), new TSPWeighting(distanceMatrix.size()));
+        CircularOrderingCreator circularOrderingCreator = new NetMakeCircularOrderer(new GreedyMEWeighting(distanceMatrix), new TSPWeighting());
+        NetMakeResult result = new NetMake().execute(distanceMatrix, circularOrderingCreator);
 
         SplitSystem tree = result.getTree();
 
@@ -76,5 +90,90 @@ public class NetMakeTest {
         for(Split s : result.getNetwork().getSplits()) {
             assertTrue(s.getWeight() == 1.0);
         }   */
+    }
+
+    @Test
+    public void testDist1() throws IOException {
+
+        File dist1Nex = FileUtils.toFile(NetMakeTest.class.getResource("/dist1.nex"));
+
+        File netout = new File(folder.getRoot(), "network.nex");
+        File treeout = new File(folder.getRoot(), "tree.nex");
+
+        NetMakeOptions options = new NetMakeOptions();
+        options.setInput(dist1Nex);
+        options.setOutputNetwork(netout);
+        options.setOutputTree(treeout);
+        options.setWeighting1("TREE");
+
+        NetMake nm = new NetMake(options);
+
+        nm.run();
+
+        assertTrue(netout.exists());
+        assertTrue(treeout.exists());
+
+        List<String> netlines = FileUtils.readLines(netout);
+        List<String> treelines = FileUtils.readLines(treeout);
+
+        assertTrue(!netlines.isEmpty());
+        assertTrue(!treelines.isEmpty());
+
+    }
+
+    @Test
+    public void testDist2() throws IOException {
+
+        File dist1Nex = FileUtils.toFile(NetMakeTest.class.getResource("/dist2.nex"));
+
+        File netout = new File(folder.getRoot(), "network.nex");
+        File treeout = new File(folder.getRoot(), "tree.nex");
+
+        NetMakeOptions options = new NetMakeOptions();
+        options.setInput(dist1Nex);
+        options.setOutputNetwork(netout);
+        options.setOutputTree(treeout);
+        options.setWeighting1("TREE");
+
+        NetMake nm = new NetMake(options);
+
+        nm.run();
+
+        assertTrue(netout.exists());
+        assertTrue(treeout.exists());
+
+        List<String> netlines = FileUtils.readLines(netout);
+        List<String> treelines = FileUtils.readLines(treeout);
+
+        assertTrue(!netlines.isEmpty());
+        assertTrue(!treelines.isEmpty());
+    }
+
+    @Test
+    public void testColors() throws IOException {
+
+        File dist1Nex = FileUtils.toFile(NetMakeTest.class.getResource("/colors.nex"));
+
+        File netout = new File(folder.getRoot(), "network.nex");
+        File treeout = new File(folder.getRoot(), "tree.nex");
+
+        NetMakeOptions options = new NetMakeOptions();
+        options.setInput(dist1Nex);
+        options.setOutputNetwork(netout);
+        options.setOutputTree(treeout);
+        options.setWeighting1("TREE");
+
+        NetMake nm = new NetMake(options);
+
+        nm.run();
+
+        assertTrue(netout.exists());
+        assertTrue(treeout.exists());
+
+        List<String> netlines = FileUtils.readLines(netout);
+        List<String> treelines = FileUtils.readLines(treeout);
+
+        assertTrue(!netlines.isEmpty());
+        assertTrue(!treelines.isEmpty());
     }
 }

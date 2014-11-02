@@ -16,10 +16,7 @@
 
 package uk.ac.uea.cmp.spectre.flatnj.tools;
 
-import uk.ac.uea.cmp.spectre.core.ds.network.Edge;
-import uk.ac.uea.cmp.spectre.core.ds.network.Label;
-import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
-import uk.ac.uea.cmp.spectre.flatnj.ds.Network;
+import uk.ac.uea.cmp.spectre.core.ds.network.*;
 
 import java.awt.*;
 import java.util.Scanner;
@@ -28,8 +25,8 @@ import java.util.Scanner;
  * @author balvociute
  */
 public class NexusReaderNetwork extends NexusReader {
-    Vertex[] vertices;
-    Edge[] edges;
+    VertexList vertices;
+    EdgeList edges;
 
     boolean readingVertices = true;
     boolean readingLabels = false;
@@ -46,8 +43,8 @@ public class NexusReaderNetwork extends NexusReader {
 
     @Override
     protected void initializeDataStructures(Dimensions dimensions) {
-        vertices = new Vertex[dimensions.nVertices];
-        edges = new Edge[dimensions.nEdges];
+        vertices = new VertexList();
+        edges = new EdgeList();
     }
 
     @Override
@@ -77,7 +74,7 @@ public class NexusReaderNetwork extends NexusReader {
 
                         v = new Vertex(x, y);
                         v.setNxnum(i);
-                        vertices[i] = v;
+                        vertices.add(i,v);
                     } catch (NumberFormatException nfe) {
                         exitError("Coordinates must be real numbers.");
                     }
@@ -101,7 +98,7 @@ public class NexusReaderNetwork extends NexusReader {
                 }
             } else if (readingLabels) {
                 if (scanner.findInLine("^\\s*(\\d+)\\s+'([^']+)'") != null) {
-                    Label l = new Label();
+                    NetworkLabel l = new NetworkLabel();
                     int i = Integer.parseInt(scanner.match().group(1)) - 1;
                     l.setName(scanner.match().group(2));
                     if (scanner.findInLine("x\\s*=\\s*(-?\\d+)") != null) {
@@ -127,7 +124,7 @@ public class NexusReaderNetwork extends NexusReader {
                     l.setFontFamily(fontFamily);
                     l.setFontStyle(fontType);
                     l.setFontSize(fontSize);
-                    vertices[i].setLabel(l);
+                    vertices.get(i).setLabel(l);
                 }
             } else if (readingEdges) {
                 if (scanner.findInLine("^\\s*(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+s\\s*=\\s*(\\d+)") != null) {
@@ -136,8 +133,8 @@ public class NexusReaderNetwork extends NexusReader {
                     int iBot = Integer.parseInt(scanner.match().group(3)) - 1;
                     int split = Integer.parseInt(scanner.match().group(4)) - 1;
 
-                    Vertex viTop = vertices[iTop];
-                    Vertex viBot = vertices[iBot];
+                    Vertex viTop = vertices.get(iTop);
+                    Vertex viBot = vertices.get(iBot);
                     Edge e = new Edge(viTop, viBot, split, 0);
                     e.setNxnum(id);
 
@@ -153,7 +150,7 @@ public class NexusReaderNetwork extends NexusReader {
                         Color c = parseColors(scanner);
                         e.setColor(c);
                     }
-                    edges[id] = e;
+                    edges.set(id, e);
                 }
             }
         }
@@ -170,16 +167,13 @@ public class NexusReaderNetwork extends NexusReader {
     @Override
     protected Object createObject(Dimensions dimensions, Cycle cycle, Draw draw) {
         removeZeroEdges();
-        Network network = new Network(vertices, edges);
-        network.setNTaxa(dimensions.nTax);
-        network.setRotationAngle(draw.angle);
-        network.setRatio(draw.scale);
+        Network network = new FlatNetwork(vertices, edges);
         return network;
     }
 
     private void removeZeroEdges() {
-        for (int i = 0; i < vertices.length; i++) {
-            Vertex w = vertices[i];
+        for (int i = 0; i < vertices.size(); i++) {
+            Vertex w = vertices.get(i);
             if (w.getElist().size() == 1) {
                 Edge e = w.getFirstEdge();
 

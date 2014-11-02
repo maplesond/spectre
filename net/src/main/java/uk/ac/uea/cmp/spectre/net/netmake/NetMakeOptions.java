@@ -16,9 +16,8 @@
 
 package uk.ac.uea.cmp.spectre.net.netmake;
 
-import uk.ac.uea.cmp.spectre.net.netmake.weighting.GreedyMEWeighting;
-import uk.ac.uea.cmp.spectre.net.netmake.weighting.Weighting;
-import uk.ac.uea.cmp.spectre.net.netmake.weighting.Weightings;
+import uk.ac.uea.cmp.spectre.core.co.CircularOrderingAlgorithms;
+import uk.ac.uea.cmp.spectre.core.co.nm.weighting.Weightings;
 
 import java.io.File;
 
@@ -27,33 +26,41 @@ import java.io.File;
  */
 public class NetMakeOptions {
 
+    // Defaults
+    public static final double DEFAULT_TREE_WEIGHT = 0.5;
+
+
     // Options descriptions
     public static final String DESC_INPUT = "The file containing the distance matrix to input.";
 
-    public static final String DESC_OUTPUT_DIR = "The directory to put output from this job.";
+    public static final String DESC_OUTPUT_NETWORK = "The location to write the output network.";
 
-    public static final String DESC_OUTPUT_PREFIX = "The prefix to apply to all files produced by this NetMake run.  Default: netmake-<timestamp>.";
+    public static final String DESC_OUTPUT_TREE = "The location to write the output tree (if applicable)";
 
     public static final String DESC_TREE_PARAM = "The weighting parameter passed to the chosen weighting algorithm. " +
-            " Value must be between 0.0 and 1.0.  Default: 0.5.";
+            " Value must be between 0.0 and 1.0.  Default: " + DEFAULT_TREE_WEIGHT;
 
-    public static final String DESC_WEIGHTINGS_1 = "Select Weighting type: " + Weightings.toListString() + ".  Default: ";
+    public static final String DESC_CO_ALG = "The circular ordering algorithm to use: " + CircularOrderingAlgorithms.toListString() + ". Default: NETMAKE";
 
-    public static final String DESC_WEIGHTINGS_2 = "Select 2nd Weighting type: " + Weightings.toListString() + ". Default: ";
+    public static final String DESC_WEIGHTINGS_1 = "For NETMAKE circular ordering algorithm, select 1st weighting type: " + Weightings.toListString() + ".  Required if circular algorithm is NETMAKE.  Default: TSP";
+
+    public static final String DESC_WEIGHTINGS_2 = "For NETMAKE circular ordering algorithm, select 2nd weighting type: " + Weightings.toListString() + ". Default: NONE";
 
 
     private File input;
-    private File outputDir;
-    private String outputPrefix;
+    private File outputNetwork;
+    private File outputTree;
     private String weighting1;
     private String weighting2;
     private double treeParam;
+    private String coAlg;
+
 
     public NetMakeOptions() {
-        this(null, null, "netmake", null, null, 0.5);
+        this(null, null, null, null, null, DEFAULT_TREE_WEIGHT, "NETMAKE");
     }
 
-    public NetMakeOptions(File input, File outputDir, String outputPrefix, String weighting1, String weighting2, double treeParam) {
+    public NetMakeOptions(File input, File outputNetwork, File outputTree, String weighting1, String weighting2, double treeParam, String coAlg) {
 
         // Validates that we have sensible input for the weightings
         if (weighting1 != null && !weighting1.isEmpty())
@@ -63,31 +70,12 @@ public class NetMakeOptions {
             Weightings.valueOf(weighting2);
 
         this.input = input;
-        this.outputDir = outputDir;
-        this.outputPrefix = outputPrefix;
+        this.outputNetwork = outputNetwork;
+        this.outputTree = outputTree;
         this.weighting1 = weighting1;
         this.weighting2 = weighting2;
         this.treeParam = treeParam;
-    }
-
-
-    protected static boolean isGreedyMEWeighting(Weighting w) {
-        if (w == null)
-            return false;
-
-        return (w instanceof GreedyMEWeighting);
-    }
-
-    protected enum RunMode {
-
-        UNKNOWN,
-        NORMAL,
-        HYBRID,
-        HYBRID_GREEDYME;
-
-        public boolean isHybrid() {
-            return (this == HYBRID || this == HYBRID_GREEDYME);
-        }
+        this.coAlg = coAlg;
     }
 
     public File getInput() {
@@ -98,20 +86,20 @@ public class NetMakeOptions {
         this.input = input;
     }
 
-    public File getOutputDir() {
-        return outputDir;
+    public File getOutputNetwork() {
+        return outputNetwork;
     }
 
-    public void setOutputDir(File outputDir) {
-        this.outputDir = outputDir;
+    public void setOutputNetwork(File outputNetwork) {
+        this.outputNetwork = outputNetwork;
     }
 
-    public String getOutputPrefix() {
-        return outputPrefix;
+    public File getOutputTree() {
+        return outputTree;
     }
 
-    public void setOutputPrefix(String outputPrefix) {
-        this.outputPrefix = outputPrefix;
+    public void setOutputTree(File outputTree) {
+        this.outputTree = outputTree;
     }
 
     public String getWeighting1() {
@@ -138,18 +126,11 @@ public class NetMakeOptions {
         this.treeParam = treeParam;
     }
 
-    public static RunMode getRunMode(Weighting weighting1, Weighting weighting2) {
+    public String getCoAlg() {
+        return coAlg;
+    }
 
-        if (weighting1 == null) {
-            return RunMode.UNKNOWN;
-        } else if (weighting2 == null && !isGreedyMEWeighting(weighting1)) {
-            return RunMode.NORMAL;
-        } else if (isGreedyMEWeighting(weighting1) && !isGreedyMEWeighting(weighting2)) {
-            return RunMode.HYBRID_GREEDYME;
-        } else if (!isGreedyMEWeighting(weighting1) && weighting2 != null) {
-            return RunMode.HYBRID;
-        }
-
-        return RunMode.UNKNOWN;
+    public void setCoAlg(String coAlg) {
+        this.coAlg = coAlg;
     }
 }

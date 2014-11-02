@@ -17,7 +17,7 @@
 package uk.ac.uea.cmp.spectre.flatnj.tools;
 
 import uk.ac.uea.cmp.spectre.core.ds.Alignment;
-import uk.ac.uea.cmp.spectre.core.ds.network.Label;
+import uk.ac.uea.cmp.spectre.core.ds.network.NetworkLabel;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
 import uk.ac.uea.cmp.spectre.flatnj.ds.PermutationSequence;
 import uk.ac.uea.cmp.spectre.flatnj.ds.SplitSystem;
@@ -384,51 +384,7 @@ public class Utilities {
         return uniq;
     }
 
-    public static double[] getCorners(List<Vertex> vertices) {
-        //0 - minX
-        //1 - maxX
-        //2 - minY
-        //3 - maxY
-        double[] corners = new double[4];
 
-        Iterator<Vertex> vertexIt = vertices.iterator();
-        int i = 0;
-        while (vertexIt.hasNext()) {
-            Vertex v = vertexIt.next();
-
-            Label l = v.getLabel();
-
-
-            corners[0] = (i == 0 || corners[0] > v.getX()) ? v.getX() : corners[0];
-            corners[1] = (i == 0 || corners[1] < v.getX()) ? v.getX() : corners[1];
-            corners[2] = (i == 0 || corners[2] > v.getY()) ? v.getY() : corners[2];
-            corners[3] = (i == 0 || corners[3] < v.getY()) ? v.getY() : corners[3];
-
-//            if(v.getLabel() != null)
-//            {
-//                if(l.getOffsetX() < 0)
-//                {
-//                    corners[0] = (corners[0] > v.getX() + l.getOffsetX()) ? v.getX() + l.getOffsetX() : corners[0];
-//                }
-//                else if(l.getOffsetX() > 0)
-//                {
-//                    corners[1] = (corners[1] < v.getX() + l.getOffsetX()) ? v.getX() + l.getOffsetX() : corners[1];
-//                }
-//                
-//                if(l.getOffsetY() < 0)
-//                {
-//                    corners[2] = (corners[2] > v.getY() + l.getOffsetY()) ? v.getY() + l.getOffsetY() : corners[2];
-//                }
-//                else if(l.getOffsetY() > 0)
-//                {
-//                    corners[3] = (corners[3] < v.getY() + l.getOffsetY()) ? v.getY() + l.getOffsetY() : corners[3];
-//                }
-//            }
-
-            i++;
-        }
-        return corners;
-    }
 
     public static double getAverage(double[] trivial) {
         double avg = 0.0;
@@ -471,14 +427,6 @@ public class Utilities {
         rgb[2] = c.getBlue();
 
         return rgb;
-    }
-
-    public static Color getTextColor(Color bg) {
-        if (bg.getRed() <= 50 && bg.getGreen() <= 50 && bg.getBlue() <= 50) {
-            return Color.white;
-        } else {
-            return Color.black;
-        }
     }
 
     public static boolean differentSide(int x1, int y1, int x2, int y2,

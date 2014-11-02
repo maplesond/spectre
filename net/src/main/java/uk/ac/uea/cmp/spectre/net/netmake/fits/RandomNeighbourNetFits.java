@@ -25,7 +25,7 @@ import uk.ac.uea.cmp.spectre.core.ds.split.SpectreSplitSystem;
 import uk.ac.uea.cmp.spectre.core.io.PhygenReader;
 import uk.ac.uea.cmp.spectre.core.io.PhygenReaderFactory;
 import uk.ac.uea.cmp.spectre.core.io.nexus.NexusWriter;
-import uk.ac.uea.cmp.spectre.net.netmake.weighting.Weightings;
+import uk.ac.uea.cmp.spectre.core.co.nm.weighting.Weightings;
 
 import java.io.File;
 import java.io.IOException;

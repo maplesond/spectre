@@ -20,16 +20,21 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.BasicConfigurator;
 import uk.ac.tgac.metaopt.Objective;
 import uk.ac.tgac.metaopt.Optimiser;
 import uk.ac.tgac.metaopt.OptimiserFactory;
+import uk.ac.uea.cmp.spectre.core.ds.network.FlatNetwork;
+import uk.ac.uea.cmp.spectre.core.ds.network.Network;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
+import uk.ac.uea.cmp.spectre.core.ds.network.draw.*;
+import uk.ac.uea.cmp.spectre.core.io.nexus.NexusWriter;
 import uk.ac.uea.cmp.spectre.core.ui.cli.CommandLineHelper;
 import uk.ac.uea.cmp.spectre.flatnj.ds.*;
-import uk.ac.uea.cmp.spectre.flatnj.fdraw.*;
 import uk.ac.uea.cmp.spectre.flatnj.tools.*;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
  * FlatNJ (FlatNetJoining) is a program for computing split networks that allow
@@ -151,6 +156,10 @@ public class FlatNJ {
         }
 
         try {
+
+            // Setup logging
+            BasicConfigurator.configure();
+
             // Parsing the command line.
 
             // Required
@@ -276,9 +285,9 @@ public class FlatNJ {
                 ps.getActive(),
                 ps.getTrivial());
 
-        net = DrawFlat.drawsplitsystem(psDraw, -1, taxa);
+        net = DrawFlat.drawsplitsystem(psDraw, -1);
 
-        network = new Network(net);
+        network = new FlatNetwork(net);
 
 
         LayoutOptimizer layoutOptimizer = new LayoutOptimizer();
@@ -334,6 +343,12 @@ public class FlatNJ {
     private static void writeNetwork() {
         System.err.print(Utilities.addDots("Writing NETWORK block ", nDots));
         writer.write(net, ps.getnTaxa(), ps.getCompressed(), taxa);
+        Network n = new FlatNetwork(net);
+        try {
+            new NexusWriter().append(n).write(new File("newout.nex"));
+        } catch (IOException e) {
+            System.err.println("Error saving network.");
+        }
         System.err.println(" done.");
     }
 

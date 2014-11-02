@@ -81,7 +81,14 @@ public class NexusSplitSystemBuilder {
         List<Split> splits = SplitUtils.createWeightedSplitList(this.splitBlocks, this.weights, nbTaxa);
 
         if (isCyclic) {
-            ss = new SpectreSplitSystem(new IdentifierList(cycle), splits);
+
+            IdentifierList cycledTaxa = new IdentifierList();
+
+            for(Integer i : cycle) {
+                cycledTaxa.add(this.taxa.getById(i));
+            }
+
+            ss = new SpectreSplitSystem(cycledTaxa, splits);
         } else {
             ss = taxa != null ?
                     new SpectreSplitSystem(taxa, splits) :

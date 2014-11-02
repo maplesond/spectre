@@ -19,6 +19,7 @@ package uk.ac.uea.cmp.spectre.flatnj.ds;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.distance.FlexibleDistanceMatrix;
+import uk.ac.uea.cmp.spectre.core.ui.gui.geom.IndexedPoint;
 
 import java.util.List;
 
@@ -26,20 +27,21 @@ import java.util.List;
  * @author balvociute
  */
 public class Locations {
-    Location[] locations;
 
-    public Locations(Location[] locations) {
+    private IndexedPoint[] locations;
+
+    public Locations(IndexedPoint[] locations) {
         this.locations = locations;
     }
 
-    public Locations(List<Location> locationsList) {
-        locations = new Location[locationsList.size()];
+    public Locations(List<IndexedPoint> locationsList) {
+        locations = new IndexedPoint[locationsList.size()];
         for (int i = 0; i < locations.length; i++) {
             locations[i] = locationsList.get(i);
         }
     }
 
-    public Location[] getLocations() {
+    public IndexedPoint[] getLocations() {
         return locations;
     }
 
@@ -70,7 +72,7 @@ public class Locations {
         for (int i = 0; i < locations.length; i++) {
             matrix[i][i] = 0.0;
             for (int j = i + 1; j < locations.length; j++) {
-                double d = locations[i].distanceTo(locations[j]);
+                double d = locations[i].distanceSq(locations[j]);
                 matrix[i][j] = d;
                 matrix[j][i] = d;
             }
