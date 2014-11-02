@@ -49,8 +49,8 @@ public class NeighborNetTest {
 
     private static final CircularOrdering orderDist1 = new CircularOrdering(new String[]{"A","C","D","E","B"});
     private static final CircularOrdering orderDist2 = new CircularOrdering(new String[]{"C","E","D","B","A"});
-    private static final CircularOrdering orderDist3 = new CircularOrdering(new String[]{"C","D","B","A","E","F"});
-    private static final CircularOrdering orderDist3b = new CircularOrdering(new String[]{"E","F","B","A","C","D"});
+    private static final CircularOrdering orderDist3a = new CircularOrdering(new String[]{"A","C","D","E","F","B"});
+    private static final CircularOrdering orderDist3b = new CircularOrdering(new String[]{"D","C","B","A","E","F"});
 
 
     @Before
@@ -89,6 +89,10 @@ public class NeighborNetTest {
     }
 
     private void test(DistanceMatrix dm, CircularOrdering correctResult) {
+        this.test(dm, correctResult, null);
+    }
+
+    private void test(DistanceMatrix dm, CircularOrdering correctResult, CircularOrdering alternateResult) {
 
         IdentifierList ssO = this.oldNN.createCircularOrdering(dm);
         IdentifierList ssN = this.newNN.createCircularOrdering(dm);
@@ -97,8 +101,15 @@ public class NeighborNetTest {
         CircularOrdering orderedTaxaNew = new CircularOrdering(ssN);
 
         if (correctResult != null) {
-            assertTrue(orderedTaxaOld.equals(correctResult));
-            assertTrue(orderedTaxaNew.equals(correctResult));
+
+            if (alternateResult != null) {
+                assertTrue(orderedTaxaOld.equals(correctResult) || orderedTaxaOld.equals(alternateResult));
+                assertTrue(orderedTaxaNew.equals(correctResult) || orderedTaxaNew.equals(alternateResult));
+            }
+            else {
+                assertTrue(orderedTaxaOld.equals(correctResult));
+                assertTrue(orderedTaxaNew.equals(correctResult));
+            }
         }
         assertTrue(true);
     }
@@ -129,7 +140,7 @@ public class NeighborNetTest {
 
     @Test
     public void testDist3() {
-        this.test(this.dist3, this.orderDist3b);
+        this.test(this.dist3, this.orderDist3a, this.orderDist3b);
     }
 
     @Test

@@ -38,8 +38,7 @@ public class NetMakeCircularOrdererTest {
 
     private static final CircularOrdering orderDist1 = new CircularOrdering(new String[]{"B","A","C","D","E"});
     private static final CircularOrdering orderDist2 = new CircularOrdering(new String[]{"C","E","D","B","A"});
-    private static final CircularOrdering orderDist3 = new CircularOrdering(new String[]{"C","D","B","A","E","F"});
-    private static final CircularOrdering orderDist3b = new CircularOrdering(new String[]{"E","F","B","A","C","D"});
+    private static final CircularOrdering orderDist3 = new CircularOrdering(new String[]{"E","F","B","A","C","D"});
 
     @Before
     public void setup() {
