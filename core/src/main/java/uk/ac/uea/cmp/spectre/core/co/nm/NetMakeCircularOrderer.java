@@ -145,7 +145,10 @@ public class NetMakeCircularOrderer implements CircularOrderingCreator {
         // Create ordering
         IdentifierList permutation = this.finalOrdering();
 
-        return this.mx.reverseTranslate(permutation);
+        // Translate and reverse the result
+        IdentifierList reverseOrdering = this.mx.reverseTranslate(permutation).reverse();
+
+        return reverseOrdering;
     }
 
     private IdentifierList finalOrdering() {

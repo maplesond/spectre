@@ -36,9 +36,10 @@ public class NetMakeCircularOrdererTest {
     private DistanceMatrix dist2;
     private DistanceMatrix dist3;
 
-    private static final CircularOrdering orderDist1 = new CircularOrdering(new String[]{"D","E","C","B","A"});
-    private static final CircularOrdering orderDist2 = new CircularOrdering(new String[]{"A","B","C","E","D"});
+    private static final CircularOrdering orderDist1 = new CircularOrdering(new String[]{"B","A","C","D","E"});
+    private static final CircularOrdering orderDist2 = new CircularOrdering(new String[]{"C","E","D","B","A"});
     private static final CircularOrdering orderDist3 = new CircularOrdering(new String[]{"C","D","B","A","E","F"});
+    private static final CircularOrdering orderDist3b = new CircularOrdering(new String[]{"E","F","B","A","C","D"});
 
     @Before
     public void setup() {

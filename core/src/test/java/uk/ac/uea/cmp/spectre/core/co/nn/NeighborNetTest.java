@@ -48,6 +48,10 @@ public class NeighborNetTest {
     private CircularOrderingCreator newNN;
 
     private static final CircularOrdering orderDist1 = new CircularOrdering(new String[]{"A","C","D","E","B"});
+    private static final CircularOrdering orderDist2 = new CircularOrdering(new String[]{"C","E","D","B","A"});
+    private static final CircularOrdering orderDist3 = new CircularOrdering(new String[]{"C","D","B","A","E","F"});
+    private static final CircularOrdering orderDist3b = new CircularOrdering(new String[]{"E","F","B","A","C","D"});
+
 
     @Before
     public void setup() {
@@ -119,13 +123,13 @@ public class NeighborNetTest {
 
     @Test
     public void testDist2() {
-        this.test(this.dist2, null);//this.orderDist2);
+        this.test(this.dist2, this.orderDist2);
     }
 
 
     @Test
     public void testDist3() {
-        this.test(this.dist3, null); // this.orderDist3);
+        this.test(this.dist3, this.orderDist3b);
     }
 
     @Test
