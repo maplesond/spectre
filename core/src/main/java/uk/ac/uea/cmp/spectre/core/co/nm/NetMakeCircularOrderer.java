@@ -118,8 +118,6 @@ public class NetMakeCircularOrderer implements CircularOrderingCreator {
 
             Pair<Identifier, Identifier> selectedVertices = this.selectionStep2(selectedComponents);
 
-
-
             // Merge of components
             Identifier mergedComponent = this.merge(selectedComponents, selectedVertices);
 
@@ -145,10 +143,8 @@ public class NetMakeCircularOrderer implements CircularOrderingCreator {
         // Create ordering
         IdentifierList permutation = this.finalOrdering();
 
-        // Translate and reverse the result
-        IdentifierList reverseOrdering = this.mx.reverseTranslate(permutation).reverse();
-
-        return reverseOrdering;
+        // Translate and return
+        return this.mx.reverseTranslate(permutation);
     }
 
     private IdentifierList finalOrdering() {
@@ -336,11 +332,11 @@ public class NetMakeCircularOrderer implements CircularOrderingCreator {
 
         // Order vertices
         if (vl1.getFirst() == firstVertex) {
-            mv1Vertices.reverse();
+            mv1Vertices = mv1Vertices.reverseOrdering();
         }
 
         if (vl2.getFirst() != secondVertex) {
-            mv2Vertices.reverse();
+            mv2Vertices = mv2Vertices.reverseOrdering();
         }
 
         // Merge vertices

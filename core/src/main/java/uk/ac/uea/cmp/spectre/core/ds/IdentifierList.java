@@ -183,6 +183,19 @@ public class IdentifierList extends ArrayList<Identifier> {
         }
     }
 
+    public boolean addAll(Collection<? extends Identifier> identifiers) {
+
+        for(Identifier i : identifiers) {
+            boolean success = this.add(i);
+
+            if (!success) {
+                throw new IllegalArgumentException("Could not add identifier (" + i.toString() + ") to this identifier list.");
+            }
+        }
+
+        return true;
+    }
+
     /**
      * Adds identifiers from another IdentifierList into this IdentifierList.  Will ignore identifiers that are already present in this list.
      * The return flag indicates if all identifers were merged.
@@ -565,10 +578,6 @@ public class IdentifierList extends ArrayList<Identifier> {
         Collections.shuffle(this);
     }
 
-    public IdentifierList reverse() {
-        Collections.reverse(this);
-        return this;
-    }
 
     public Map<Identifier, Integer> createLookup() {
 

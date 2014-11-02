@@ -47,14 +47,15 @@ public class NetMakeCLIITCase {
 
         NetMakeCLI.main(new String[]{
                 "--input", testFile1.getAbsolutePath(),
-                "--output", outputDir.getAbsolutePath(),
+                "--network_out", new File(outputDir, "network.nex").getAbsolutePath(),
+                "--tree_out", new File(outputDir, "tree.nex").getAbsolutePath(),
                 "--weightings_1", "TREE"
         });
 
         assertTrue(outputDir.listFiles().length == 2);
     }
 
-    @Test
+    //@Test
     public void testTreeBees() throws IOException {
 
         File outputDir = temporaryFolder.getRoot();
@@ -63,7 +64,8 @@ public class NetMakeCLIITCase {
 
         NetMakeCLI.main(new String[]{
                 "--input", testFile2.getAbsolutePath(),
-                "--output", outputDir.getAbsolutePath(),
+                "--network_out", new File(outputDir, "network.nex").getAbsolutePath(),
+                "--tree_out", new File(outputDir, "tree.nex").getAbsolutePath(),
                 "--weightings_1", "GREEDY_ME",
                 "--weightings_2", "TSP"
         });

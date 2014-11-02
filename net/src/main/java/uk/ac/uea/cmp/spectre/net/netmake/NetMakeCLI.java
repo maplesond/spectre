@@ -62,7 +62,7 @@ public class NetMakeCLI {
         options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_OUTPUT_NETWORK).hasArg()
                 .withDescription(NetMakeOptions.DESC_OUTPUT_NETWORK).create("on"));
 
-        options.addOption(OptionBuilder.withArgName("string").withLongOpt(OPT_OUTPUT_TREE).hasArg()
+        options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_OUTPUT_TREE).hasArg()
                 .withDescription(NetMakeOptions.DESC_OUTPUT_TREE).create("ot"));
 
         options.addOption(OptionBuilder.withArgName("double").withLongOpt(OPT_TREE_PARAM).hasArg()

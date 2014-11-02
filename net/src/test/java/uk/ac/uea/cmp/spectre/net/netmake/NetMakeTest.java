@@ -56,7 +56,7 @@ public class NetMakeTest {
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
-    @Test
+    //@Test
     public void simpleTest() {
 
         String[] taxa = new String[]{"1", "2", "3", "4", "5", "6", "7"};

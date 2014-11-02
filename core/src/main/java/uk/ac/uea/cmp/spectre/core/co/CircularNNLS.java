@@ -807,8 +807,19 @@ public class CircularNNLS {
 
             SplitBlock sb = splits.get(i).getASide();
 
-            int k = translation.get(circularOrdering.getById(sb.getFirst()));
-            int l = translation.get(circularOrdering.getById(sb.getLast()));
+            Identifier a = circularOrdering.getById(sb.getFirst());
+            Identifier b = circularOrdering.getById(sb.getLast());
+
+            if (a == null) {
+                throw new IllegalStateException("Identifier with id \"" + sb.getFirst() + "\" does not exist in circular ordering");
+            }
+
+            if (b == null) {
+                throw new IllegalStateException("Identifier with id \"" + sb.getLast() + "\" does not exist in circular ordering");
+            }
+
+            int k = translation.get(a);
+            int l = translation.get(b);
 
             if (k == 0) {
                 flag[n - 1][l] = true;
