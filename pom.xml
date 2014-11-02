@@ -22,7 +22,7 @@
 
     <groupId>uk.ac.uea.cmp.spectre</groupId>
     <artifactId>spectre</artifactId>
-    <version>0.2.2</version>
+    <version>0.3.0</version>
     <packaging>pom</packaging>
 
     <name>Suite of PhylogEnetiC Tools for Reticulate Evolution</name>
