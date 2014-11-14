@@ -59,14 +59,14 @@
                                         dir="${doc-dir}"
                                         executable="make"
                                         failonerror="false">
-                                    <arg line="html text"/>
+                                    <arg line="html man text"/>
                                     <!--<arg line="html latexpdf text" />-->
                                 </exec>
 
                                 <!-- copy the documentation in to the build dir -->
-                                <mkdir dir="${build-dir}/doc/html"/>
-                                <copy todir="${build-dir}/doc/html">
-                                    <fileset dir="${doc-dir}/build/html"/>
+                                <mkdir dir="${build-dir}/doc"/>
+                                <copy todir="${build-dir}/doc">
+                                    <fileset dir="${doc-dir}/build"/>
                                 </copy>
                                 <!--<copy file="${doc-dir}/build/latex/phygen.pdf" todir="${build-dir}/doc"/>-->
                             </target>
