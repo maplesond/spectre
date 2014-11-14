@@ -2,8 +2,14 @@
 Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
 ==============================================================
 
-The aim of this project was to create a single project that contains a number of reusable tools for modelling and
+.. image:: images/spectre.png
+    :scale: 50%
+
+The aim of SPECTRE (a Suite of PhylogEnetiC Tools for Reticulate Evolution) is to create a toolbox for modelling and
 visualising reticulate evolution via phylogenetic trees and networks.
+
+Table of Contents
+=================
 
 .. toctree::
     :numbered:
@@ -11,6 +17,7 @@ visualising reticulate evolution via phylogenetic trees and networks.
 
     introduction
     installation
+    running
     tools
     developing
 
@@ -42,7 +49,7 @@ Citing Spectre
 ==============
 
 The paper for spectre is currently being prepared.  If you use spectre in your work and wish to publish in the meantime
-please refer the project's web page: ...
+please refer the project's web page: [TODO]
 
 Additionally, spectre consists on a number of tools that have already been published, if your work uses any of these
 pre-published tools please also cite the associated publication(s).  A reverse chronological list of all publications
@@ -83,7 +90,7 @@ QNet
 Credits
 =======
 
-Spectre is a multi-institute, world-wide collaboration.  Active contributors to spectre are listed in the following table
+Spectre is an international collaboration.  Active contributors to spectre are listed in the following table
 (in publication order):
 
 +--------------------------+-------------------------------+-----------------------------------+-----------------------------------------------------------------------------+
@@ -121,7 +128,5 @@ table (in alphabetical order):
 +-------------------------------+----------------------------------------+
 | Bengt Oxelman                 | PADRE                                  |
 +-------------------------------+----------------------------------------+
-
-TODO: Add a list of any relevant funding bodies here....
 
 

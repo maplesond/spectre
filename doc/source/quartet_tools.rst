@@ -8,12 +8,8 @@ partial trees using quartet systems.  SuperQ is a pipeline that brings together 
 cases SuperQ will be the only Quartet tool you need to use.  However, all the subtools within superq are separately
 available in case you wish to conduct a more detailed and controlled analysis.
 
-
-Running the tools
------------------
-
 SuperQ
-~~~~~~
+------
 
 Constructs a phylogenetic supernetwork from a set of weighted or unweighted partial trees by using quartets. SuperQ is a pipeline
 that incorperates QMaker, Scaler, QNet and SFilter, which are all described in more detail later in this section.  These
@@ -35,7 +31,7 @@ more information on how to adjust these options.
 
 
 QMaker
-~~~~~~
+------
 
 QMaker enables conversion of several types of phylogenetic data into quartet phylogeny information.
 
@@ -66,13 +62,13 @@ Splits) blocks are expected.
 
 
 Scaler
-~~~~~~
+------
 
 Scales trees within a set of trees
 
 
 SFilter
-~~~~~~~
+-------
 
 Once a phylogenetic supernetwork has been computed, it may be desirable to filter out weakly supported splits that may
 result from numerical error or noise. This can be done using the SFilter tool.
@@ -86,7 +82,7 @@ retained from <infile> to <outfile>.
 
 
 Qnet
-~~~~
+----
 
 QNet, short for Quartet Network, is an algorithm to combine quartet phylogenies into a phylogenetic network, as well as
 the name of the software suite implementing the method. It functions by first finding a cyclic ordering between the taxa

@@ -14,12 +14,12 @@ Gen4S
 
 Gen4S generates a system of 4-splits from one of the following types of data:
 
-* (a) multiple sequence alignment
-* (b) geographical coordinates
-* (c) weighted split system
+1. multiple sequence alignment
+2. geographical coordinates
+3. weighted split system
 
-In a system of 4-splits on a set X with |X| >= 4, for each 4-element subset fa; b; c; dg of X, all seven possible 4-splits
-a|bcd, b|acd, c|abd, d|abc, ab|cd, ac|bd and ad|bc are assigned a non-negative weight.
+In a system of 4-splits on a set `X` with `|X| >= 4`, for each 4-element subset fa; b; c; dg of X, all seven possible 4-splits
+`a|bcd, b|acd, c|abd, d|abc, ab|cd, ac|bd and ad|bc` are assigned a non-negative weight.
 
 FlatNJ
 ------
@@ -30,8 +30,8 @@ and NeighborNet (Bryant and Moulton, 2004).
 
 The run time for generating the unweighted split system underlying the final result is O(n^4). Suitable Weights
 for the splits are estimated using a least squares fitting between the given system of 4-splits and the system of 4-splits
-induced by the resulting weighted split system. To solve the least squares problem, the algorithms available through
-the Gurobi Optimizer (www.gurobi.com) CHANGE THIS!!! are used. This software must be downloaded and installed separately.
+induced by the resulting weighted split system. To solve the least squares problem the SPECTRE metaopt system is used to
+hook into external solver, although we recommend that Gurobi Optimizer (www.gurobi.com) is used used as the external solver if available.
 The resulting weighted splits are filtered using the approach described in (Grunewald et al. 2007) and, using
 the method described in (Spillner et al. 2011), an almost planar split network is constructed. In order to view the
 drawing of the network use a split network viewer, e.g. SplitsTree (Huson and Bryant, 2006).
@@ -59,6 +59,7 @@ Viewing a split network
 -----------------------
 
 To view split networks computed with FlatNJ, the SplitsTree package can be used. It can be downloaded from http://www.splitstree.org/.
+[TODO]  Shouldn't we use NetView now??
 
 Walk through usage examples
 ---------------------------
@@ -69,29 +70,43 @@ Note that the drawing of the network can be adjusted by the user in SplitsTree.
 Molecular Sequence Data
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-To illustrate FlatNJ's usage for sequence data, we use sequences of fluorescent proteins (``colors aln.faa`` file in the
+To illustrate FlatNJ's usage for sequence data, we use sequences of fluorescent proteins (``<spectre_dir>/examples/flatnj/colors_aln.faa`` file in the
 examples directory). For more information on this data set see the results section in (Balvociute et al. 2013). The
 following steps will guide you through the whole process of the network construction for the fluorescent protein data set:
 
 1. Open a terminal window and change to the directory of FlatNJ.
 
-2. To compute a system of 4-splits for the input file ``colors aln.faa`` type: ``gen4s -fa examples/colors_aln.faa -o examples/colors.4s``
+2. To compute a system of 4-splits for the input file ``<spectre_dir>/examples/flatnj/colors_aln.faa`` type: ``gen4s -fa <spectre_dir>/examples/flatnj/colors_aln.faa -o <output_dir>/colors.4s``
 
-3. To compute a split network from the system of 4-splits type: ``flatnj -i examples/colors.4s -o examples/colors.nex``
+3. To compute a split network from the system of 4-splits type: ``flatnj -i <output_dir>/colors.4s -o <output_dir>/colors.nex``
 
-4. To view the network launch SplitsTree and open the colors.nex file from examples directory. The network displayed by SplitsTree should look very similar to the one in Figure 1.
+4. To view the network launch SplitsTree and open ``<output_dir>/colors.nex``. The network displayed by SplitsTree should look very similar to the one in Figure 1.
+
+
+.. image:: images/flatnj-fig1.png
+    :scale: 50 %
+
+Figure 1: Split network generated from the multiple protein sequence alignment from ``<spectre_dir>/examples/flatnj/colors_aln.faa``.
+Network displayed with SplitsTree.
+
 
 Geographical data
 ~~~~~~~~~~~~~~~~~
 
-To illustrate FlatNJ's usage for geographical data, we use coordinates of some of the European capitals (``europe.nex``
-file in the examples directory). The following steps will guide you through the whole process of the network
-construction for the European capitals data set:
+To illustrate FlatNJ's usage for geographical data, we use coordinates of some of the European capitals (``<spectre_dir>/examples/flatnj/europe.nex``).
+The following steps will guide you through the whole process of the network construction for the European capitals data set:
 
-1. Open a terminal window and change to the directory of FlatNJ.
-2. To compute a system of 4-splits for the input file ``europe.nex`` type: ``gen4s -i examples/europe.nex -b LOCATIONS -o examples/europe.4s``
-3. To compute a split network from the system of 4-splits type: ``flatnj -i examples/europe.4s -o examples/europe_net.nex``
-4. To view the network launch SplitsTree and open europe ``net.nex`` file from examples directory. The network displayed by SplitsTree should look very similar to the one in Figure 2.
+1. Open a terminal window and change to an empty working directory.
+2. To compute a system of 4-splits for the input file ``<spectre_dir>/examples/flatnj/europe.nex`` type: ``gen4s -i <spectre_dir>/examples/flatnj/europe.nex -b LOCATIONS -o <output_dir>/europe.4s``
+3. To compute a split network from the system of 4-splits type: ``flatnj -i <spectre_dir>/examples/flatnj/europe.4s -o <output_dir>/europe_net.nex``
+4. To view the network launch SplitsTree and open europe ``<output_dir>/europe_net.nex``. The network displayed by SplitsTree should look very similar to the one in Figure 2.
+
+.. image:: images/flatnj-fig2.png
+    :scale: 50 %
+
+Figure 2: Split network generated from geographical coordinate data in examples/europe.nex data. Network
+displayed with SplitsTree. The network was flipped and rotated approximately 90 degrees to the left to align it
+with the usual representation on a map.
 
 
 File formats
@@ -175,5 +190,20 @@ next section).
 NetView
 -------
 
+[TODO]
 
 
+References
+----------
+
+* M. Balvociute, A. Spillner, and V. Moulton. FlatNJ: A novel network-based approach to visualize evolutionary and biogeographical relationships, 2013. Systematic Biology, 2014.
+
+* D. Bryant and V. Moulton. Neighbor-net: an agglomerative method for the construction of phylogenetic networks. Mol. Biol. Evol., 21:255–265, 2004.
+
+* S. Grunewald, K. Forslund, A. Dress, and V. Moulton. Qnet: An agglomerative method for the construction of phylogenetic networks from weighted quartets. Mol. Biol. Evol., 24(2):532–538, 2007.
+
+* D. H. Huson and D. Bryant. Application of phylogenetic networks in evolutionary studies. Mol. Biol. Evol., 23(2):254–267, 2006.
+
+* N. Saitou and M. Nei. The neighbor-joining method: a new method for reconstructing phylogenetic trees. Mol. Biol. Evol., 4:406–425, 1987.
+
+* A. Spillner, B. Nguyen, and V. Moulton. Constructing and drawing regular planar split networks. IEEE/ACM Trans. Comput. Biol. Bioinform., 9:395–407, 2011.
