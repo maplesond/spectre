@@ -186,7 +186,7 @@ public class FlexibleDistanceMatrix extends AbstractDistanceMatrix {
 
     @Override
     public IdentifierList getTaxa(Comparator<Identifier> comparator) {
-        return this.taxa.sort(comparator);
+        return this.taxa.sortCopy(comparator);
     }
 
 
@@ -195,7 +195,7 @@ public class FlexibleDistanceMatrix extends AbstractDistanceMatrix {
 
         DistanceList dl = new FlexibleDistanceList(taxon);
 
-        IdentifierList sorted = comparator == null ? this.taxa : this.taxa.sort(comparator);
+        IdentifierList sorted = comparator == null ? this.taxa : this.taxa.sortCopy(comparator);
 
         for (Identifier t : sorted) {
 
@@ -223,7 +223,7 @@ public class FlexibleDistanceMatrix extends AbstractDistanceMatrix {
     @Override
     public List<DistanceList> getAllDistances(Comparator<Identifier> comparator) {
 
-        IdentifierList sorted = comparator == null ? this.taxa : this.taxa.sort(comparator);
+        IdentifierList sorted = comparator == null ? this.taxa : this.taxa.sortCopy(comparator);
 
         List<DistanceList> allDistances = new ArrayList<>(this.size());
 
@@ -240,7 +240,7 @@ public class FlexibleDistanceMatrix extends AbstractDistanceMatrix {
 
         double[][] matrix = new double[this.size()][this.size()];
 
-        IdentifierList sorted = comparator == null ? this.taxa : this.taxa.sort(comparator);
+        IdentifierList sorted = comparator == null ? this.taxa : this.taxa.sortCopy(comparator);
 
         for (int i = 0; i < sorted.size(); i++) {
 

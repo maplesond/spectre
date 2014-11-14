@@ -16,6 +16,8 @@
 
 package uk.ac.uea.cmp.spectre.core.ds;
 
+import uk.ac.uea.cmp.spectre.core.util.StringUtils;
+
 import java.util.Arrays;
 
 /**
@@ -109,5 +111,17 @@ public class CircularOrdering {
     @Override
     public int hashCode() {
         return taxa != null ? Arrays.hashCode(taxa) : 0;
+    }
+
+    @Override
+    public String toString() {
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("[");
+        sb.append(org.apache.commons.lang3.StringUtils.join(this.taxa, ","));
+        sb.append("]");
+
+        return sb.toString();
     }
 }

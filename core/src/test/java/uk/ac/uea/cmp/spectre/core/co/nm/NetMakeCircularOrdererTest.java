@@ -37,7 +37,8 @@ public class NetMakeCircularOrdererTest {
     private DistanceMatrix dist3;
 
     private static final CircularOrdering orderDist1 = new CircularOrdering(new String[]{"E","D","C","A","B"});
-    private static final CircularOrdering orderDist2 = new CircularOrdering(new String[]{"B","A","C","E","D"});
+    private static final CircularOrdering orderDist2a = new CircularOrdering(new String[]{"B","A","C","E","D"});
+    private static final CircularOrdering orderDist2b = new CircularOrdering(new String[]{"A","B","C","E","D"});
     private static final CircularOrdering orderDist3 = new CircularOrdering(new String[]{"D","C","B","A","E","F"});
 
     @Before
@@ -75,6 +76,10 @@ public class NetMakeCircularOrdererTest {
     }
 
     private void test(DistanceMatrix dm, CircularOrdering correctResult) {
+        this.test(dm, correctResult, null);
+    }
+
+    private void test(DistanceMatrix dm, CircularOrdering correctResult, CircularOrdering alternateCorrectResult) {
 
         CircularOrderingCreator nm = new NetMakeCircularOrderer(new TreeWeighting(0.5), null);
 
@@ -83,7 +88,9 @@ public class NetMakeCircularOrdererTest {
         CircularOrdering circularOrdering = new CircularOrdering(ssO);
 
         if (correctResult != null) {
-            assertTrue(circularOrdering.equals(correctResult));
+            assertTrue("Incorrect circular ordering: " + circularOrdering.toString() + "; Expected: " + correctResult.toString(),
+                    circularOrdering.equals(correctResult) ||
+                            (alternateCorrectResult != null ? circularOrdering.equals(alternateCorrectResult) : true));
         }
         assertTrue(true);
     }
@@ -109,7 +116,7 @@ public class NetMakeCircularOrdererTest {
 
     @Test
     public void testDist2() {
-        this.test(this.dist2, this.orderDist2);
+        this.test(this.dist2, this.orderDist2a, this.orderDist2b);
     }
 
     @Test

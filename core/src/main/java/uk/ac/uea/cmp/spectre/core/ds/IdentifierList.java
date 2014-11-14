@@ -554,7 +554,7 @@ public class IdentifierList extends ArrayList<Identifier> {
     }
 
 
-    public IdentifierList sort(Comparator<Identifier> comparator) {
+    public IdentifierList sortCopy(Comparator<Identifier> comparator) {
 
         IdentifierList identifiers = new IdentifierList(this);
 
@@ -566,12 +566,12 @@ public class IdentifierList extends ArrayList<Identifier> {
 
     public IdentifierList sortById() {
 
-        return this.sort(new Identifier.NumberComparator());
+        return this.sortCopy(new Identifier.NumberComparator());
     }
 
     public IdentifierList sortByName() {
 
-        return this.sort(new Identifier.NameComparator());
+        return this.sortCopy(new Identifier.NameComparator());
     }
 
     public void shuffle() {

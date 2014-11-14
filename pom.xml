@@ -28,7 +28,7 @@
     <name>Suite of PhylogEnetiC Tools for Reticulate Evolution</name>
 
     <properties>
-        <spectre-version>0.2.2</spectre-version>
+        <spectre-version>0.3.0</spectre-version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java-version>1.7</java-version>
@@ -152,8 +152,8 @@
                         <source>${java-version}</source>
                         <target>${java-version}</target>
                         <showDeprecation>true</showDeprecation>
-                        <showWarnings>true</showWarnings>
-                        <compilerArgument>-Xlint:unchecked</compilerArgument>
+                        <showWarnings>false</showWarnings>
+                        <!--<compilerArgument>-Xlint:unchecked</compilerArgument>-->
                     </configuration>
                 </plugin>
 
@@ -258,6 +258,7 @@
                         <configuration>
                             <jarOutputDirectory>${build-dir}/support_jars</jarOutputDirectory>
                             <quiet>true</quiet>
+                            <failOnError>false</failOnError>
                         </configuration>
                     </execution>
                 </executions>
