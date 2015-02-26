@@ -21,9 +21,9 @@ follow the instructions in the metaopt README for how to add other optimizers.
 From tarball
 ------------
 
-Before starting the installation please ensure that the Java Runtime Environment (JRE) V1.7+ is installed and configured
+Before starting the installation please ensure that the Java Runtime Environment (JRE) V1.8+ is installed and configured
 for your environment.  You can check this by typing the following at the command line: ``java -version``.  Double check
-the version number exceeds V1.7.
+the version number exceeds V1.8.
 
 The installation process from tarball is simple.  The first step is acquire the tarball from https://github.com/maplesond/spectre/releases.
 Then unpacking the compressed tarball to a directory of your choice.  The unpack command is: ``tar -xvf spectre-<version>.tar.gz``.
@@ -39,15 +39,17 @@ This will create a sub-directory called ``spectre-<version>`` and in there shoul
 Should you want to run the tools without referring to their paths, you should ensure the `bin` directory is on your
 PATH environment variable.
 
+Unfortunately, as we cannot bundle Gurobi resources with SPECTRE, if you wish to enable Gurobi support you must install SPECTRE
+from source (see below).
 
 From source
 -----------
 
-Spectre is a java 1.7 / maven project. Before compiling the source code, please make sure the following tools are installed:
+Spectre is a java 1.8 / maven project. Before compiling the source code, please make sure the following tools are installed:
 
 * GIT
 * Maven (make sure you set the m2_home environment variable to point at your Maven directory)
-* JDK v1.7+  (make sure you set the JAVA_HOME environment variable to point at your JDK directory)
+* JDK v1.8+  (make sure you set the JAVA_HOME environment variable to point at your JDK directory)
 * Make
 * Sphinx (may require you to install python, also make sure the sphinx-build is on the path environment variable)
 
@@ -64,7 +66,14 @@ Now type the following::
 
     git clone https://github.com/maplesond/spectre.git
     cd spectre
+
+Then type::
+
     mvn clean install
+
+or, if you wish to enable gurobi optimizer support::
+
+    mvn clean install -P gurobi
 
 Note: If you cannot clone the git repositories using the ``https`` protocol, please try ``ssh`` instead. Consult github to obtain the
 specific URLs.
