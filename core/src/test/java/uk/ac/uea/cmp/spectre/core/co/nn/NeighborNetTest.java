@@ -44,7 +44,7 @@ public class NeighborNetTest {
     private DistanceMatrix dist2;
     private DistanceMatrix dist3;
 
-    private CircularOrderingCreator oldNN;
+    //private CircularOrderingCreator oldNN;
     private CircularOrderingCreator newNN;
 
     private static final CircularOrdering orderDist1 = new CircularOrdering(new String[]{"A","C","D","E","B"});
@@ -57,7 +57,7 @@ public class NeighborNetTest {
     @Before
     public void setup() {
 
-        this.oldNN = new NeighborNetOld();
+        //this.oldNN = new NeighborNetOld();
         this.newNN = new NeighborNetImpl();
 
         this.dist1 = new FlexibleDistanceMatrix(new double[][]{
@@ -95,20 +95,20 @@ public class NeighborNetTest {
 
     private void test(DistanceMatrix dm, CircularOrdering correctResult, CircularOrdering alternateResult) {
 
-        IdentifierList ssO = this.oldNN.createCircularOrdering(dm);
+        //IdentifierList ssO = this.oldNN.createCircularOrdering(dm);
         IdentifierList ssN = this.newNN.createCircularOrdering(dm);
 
-        CircularOrdering orderedTaxaOld = new CircularOrdering(ssO);
+        //CircularOrdering orderedTaxaOld = new CircularOrdering(ssO);
         CircularOrdering orderedTaxaNew = new CircularOrdering(ssN);
 
         if (correctResult != null) {
 
             if (alternateResult != null) {
-                assertTrue(orderedTaxaOld.equals(correctResult) || orderedTaxaOld.equals(alternateResult));
+                //assertTrue(orderedTaxaOld.equals(correctResult) || orderedTaxaOld.equals(alternateResult));
                 assertTrue(orderedTaxaNew.equals(correctResult) || orderedTaxaNew.equals(alternateResult));
             }
             else {
-                assertTrue(orderedTaxaOld.equals(correctResult));
+                //assertTrue(orderedTaxaOld.equals(correctResult));
                 assertTrue(orderedTaxaNew.equals(correctResult));
             }
         }
@@ -144,7 +144,7 @@ public class NeighborNetTest {
         this.test(this.dist3, this.orderDist3a, this.orderDist3b);
     }
 
-    @Test
+    /*@Test
     public void testRuntime() {
 
         DistanceMatrix dm = this.dist3;
@@ -167,7 +167,7 @@ public class NeighborNetTest {
         long mem2 = memEnd2 - memStart2;
         System.out.println("New implementation: Runtime (s):" + sw2.toString() + "; Mem usage (bytes): " + mem2);
 
-    }
+    } */
 
     private long getMemoryUse(){
         putOutTheGarbage();

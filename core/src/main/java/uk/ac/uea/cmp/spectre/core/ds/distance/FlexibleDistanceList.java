@@ -32,6 +32,7 @@ public class FlexibleDistanceList extends HashMap<Identifier, Double> implements
 
     /**
      * Constructs an empty <tt>FlexibleDistanceList</tt>
+     * @param primaryTaxon The primary taxon for this list
      */
     public FlexibleDistanceList(Identifier primaryTaxon) {
         super();

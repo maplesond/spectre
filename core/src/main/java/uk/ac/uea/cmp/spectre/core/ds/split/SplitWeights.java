@@ -69,8 +69,8 @@ public class SplitWeights {
 
     /**
      * Returns true if the weight is positive and greater than 0.0
-     * @param i
-     * @param j
+     * @param i Index I
+     * @param j Index J
      * @return Whether the weight at the specified position is positive
      */
     public boolean hasWeightAt(final int i, final int j) {

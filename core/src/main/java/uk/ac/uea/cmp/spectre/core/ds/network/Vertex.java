@@ -402,9 +402,9 @@ public class Vertex {
 
     /**
      * Calculates the clockwise angle between 3 vertices
-     * @param v1
-     * @param a
-     * @param v2
+     * @param v1 Vertex 1
+     * @param a Vertex A
+     * @param v2 Vertex 2
      * @return The angle between the vertices
      */
     public static double getClockwiseAngle(Vertex v1, Vertex a, Vertex v2) {

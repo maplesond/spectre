@@ -21,21 +21,22 @@
     <parent>
         <artifactId>spectre</artifactId>
         <groupId>uk.ac.uea.cmp.spectre</groupId>
-        <version>0.4.0</version>
+        <version>0.3.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>padre</artifactId>
-    <version>2.0.1</version>
+    <artifactId>net</artifactId>
+    <version>0.3.0</version>
 
-    <name>Spectre: Padre</name>
+    <name>Spectre: Network Tools</name>
 
     <build>
 
-        <!--<sourceDirectory>src/main/java</sourceDirectory>-->
-        <!--<testSourceDirectory>src/test/java</testSourceDirectory>-->
+        <sourceDirectory>src/main/java</sourceDirectory>
+        <testSourceDirectory>src/test/java</testSourceDirectory>
 
         <plugins>
+
 
             <!-- Creates scripts for all platforms that allow the user to easily execute this tool -->
             <plugin>
@@ -43,16 +44,37 @@
                 <artifactId>appassembler-maven-plugin</artifactId>
                 <version>1.6</version>
 
-                <!-- We create scripts for both CLI and GUI -->
                 <configuration>
                     <platforms>
                         <platform>${spectre-platform}</platform>
                     </platforms>
                     <programs>
-                        <!--<program>
-                            <mainClass>uk.ac.uea.cmp.spectre.qtools.superq.SuperQCLI</mainClass>
-                            <id>superq</id>
-                        </program>-->
+                        <program>
+                            <mainClass>uk.ac.uea.cmp.spectre.net.netmake.NetMakeCLI</mainClass>
+                            <id>netmake</id>
+                            <jvmSettings>
+                                <extraArguments>
+                                    <extraArgument>-Djava.awt.headless=true</extraArgument>
+                                </extraArguments>
+                            </jvmSettings>
+                        </program>
+                        <program>
+                            <mainClass>uk.ac.uea.cmp.spectre.net.netmake.NetMakeGUI</mainClass>
+                            <id>netmake-gui</id>
+                        </program>
+                        <program>
+                            <mainClass>uk.ac.uea.cmp.spectre.net.netme.NetMECLI</mainClass>
+                            <id>netme</id>
+                            <jvmSettings>
+                                <extraArguments>
+                                    <extraArgument>-Djava.awt.headless=true</extraArgument>
+                                </extraArguments>
+                            </jvmSettings>
+                        </program>
+                        <program>
+                            <mainClass>uk.ac.uea.cmp.spectre.net.netme.NetMEGUI</mainClass>
+                            <id>netme-gui</id>
+                        </program>
                     </programs>
                 </configuration>
             </plugin>
@@ -71,8 +93,10 @@
                         </goals>
                         <configuration>
                             <target>
-                                <!--<chmod file="${build-dir}/bin/superq" perm="755"/>-->
-
+                                <chmod file="${build-dir}/bin/netmake" perm="755"/>
+                                <chmod file="${build-dir}/bin/netmake-gui" perm="755"/>
+                                <chmod file="${build-dir}/bin/netme" perm="755"/>
+                                <chmod file="${build-dir}/bin/netme-gui" perm="755"/>
                             </target>
                         </configuration>
                     </execution>
@@ -84,13 +108,14 @@
 
     <dependencies>
 
-        <!-- Spectre Core -->
+        <!-- PhyGen -->
 
         <dependency>
             <groupId>uk.ac.uea.cmp.spectre</groupId>
             <artifactId>core</artifactId>
             <version>${spectre-version}</version>
         </dependency>
+
 
     </dependencies>
 

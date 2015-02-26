@@ -34,8 +34,8 @@ public interface DistanceList {
     /**
      * Sets the distance to the specified taxon
      *
-     * @param taxon
-     * @param value
+     * @param taxon The taxon which will have its distance modified
+     * @param value The new distance value
      * @return The previous distance set between the two taxa, or 0.0 if the value has never been set before
      */
     double setDistance(final Identifier taxon, final double value);
@@ -43,8 +43,8 @@ public interface DistanceList {
     /**
      * Sets the distance to the specified taxon using its name
      *
-     * @param taxonName
-     * @param value
+     * @param taxonName Name of the taxon to modify
+     * @param value The new distance value
      * @return The previous distance set between the two taxa, or 0.0 if the value has never been set before
      */
     double setDistance(final String taxonName, final double value);
@@ -52,8 +52,8 @@ public interface DistanceList {
     /**
      * Sets the distance to the specified taxa using its id
      *
-     * @param taxonId
-     * @param value
+     * @param taxonId ID of the taxon to modify
+     * @param value The new distance value
      * @return The previous distance set between the two taxa, or 0.0 if the value has never been set before
      */
     double setDistance(final int taxonId, final double value);
@@ -62,8 +62,8 @@ public interface DistanceList {
     /**
      * Increments the distance to the specified taxon by incValue.  Returns the new distance to the specified taxon.
      *
-     * @param taxon
-     * @param increment
+     * @param taxon The taxon to increment
+     * @param increment Amount to increment the distance by
      * @return The value after incrementation.
      */
     double incrementDistance(final Identifier taxon, final double increment);
@@ -71,8 +71,8 @@ public interface DistanceList {
     /**
      * Increments the distance to the specified taxon by incValue.  Returns the new distance to the specified taxon.
      *
-     * @param taxonId
-     * @param increment
+     * @param taxonId ID of the taxon to modify
+     * @param increment Amount to increment the distance by
      * @return The value after incrementation.
      */
     double incrementDistance(final int taxonId, final double increment);
@@ -80,8 +80,8 @@ public interface DistanceList {
     /**
      * Increments the distance to the specified taxon by incValue.  Returns the new distance to the specified taxon.
      *
-     * @param taxonName
-     * @param increment
+     * @param taxonName Name of the taxon to increment
+     * @param increment Amount to increment the distance by
      * @return The value after incrementation.
      */
     double incrementDistance(final String taxonName, final double increment);

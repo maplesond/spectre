@@ -33,7 +33,7 @@ public abstract class AbstractQLoader implements QLoader {
      * @param file   The file to load
      * @param weight The weight to be applied to this file
      * @return A quartet network with a single weighted element
-     * @throws IOException
+     * @throws IOException Thrown if there were any issues loading from file
      */
     @Override
     public QuartetSystemList load(File file, double weight) throws IOException {

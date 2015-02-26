@@ -54,8 +54,8 @@ public class SpectreSplit implements Split {
     /**
      * Creates a new split merged from the two provided splits
      *
-     * @param s1
-     * @param s2
+     * @param s1 Split 1
+     * @param s2 Split 2
      */
     public SpectreSplit(Split s1, Split s2) {
         this(s1.getASide().copy(), s1.getNbTaxa());
@@ -209,6 +209,7 @@ public class SpectreSplit implements Split {
     /**
      * Summed up distanceMatrix from all elements on the A side to all elements on the B side.
      *
+     * @param distanceMatrix Distance matrix
      * @return P
      */
     public double calculateP(DistanceMatrix distanceMatrix) {

@@ -197,9 +197,9 @@ public class FlatNetwork implements Network {
 
     /**
      * This method collects the edges that represent a given split in the network.
-     * @param s
-     * @param elistall
-     * @return
+     * @param s Index of split
+     * @param elistall Complete list of edges in the network
+     * @return Edges that represent the specified split in the network
      */
     protected static EdgeList collectEdgesForSplit(int s, EdgeList elistall) {
         ListIterator iter = elistall.listIterator();

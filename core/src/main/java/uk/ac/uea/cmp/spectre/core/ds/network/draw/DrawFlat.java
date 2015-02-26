@@ -43,10 +43,10 @@ public class DrawFlat {
      * unlabeled vertices of degree two and trivial splits may be represented by more than one edge in the network. This
      * is the first step of the computation of the final network.  It is provided as a public method for testing
      * purposes.
-     * @param pseq
-     * @param taxaname
-     * @param splitedges
-     * @return
+     * @param pseq Permutation sequence draw object
+     * @param taxaname Array of taxa names
+     * @param splitedges Array of treesets representing split edges
+     * @return Split graph represented by a single vertex.  The network can be traversed from this vertex.
      */
     public static Vertex computeSplitGraph(PermutationSequenceDraw pseq, String[] taxaname, TreeSet[] splitedges) {
         //Compute the leftmost edges in the network.
@@ -176,9 +176,9 @@ public class DrawFlat {
     /**
      * This method is the main public method that should be called for computing a plane split network for a flat split
      * system given as a permutation sequence.
-     * @param pseq
-     * @param thr
-     * @return
+     * @param pseq Permuatation sequence draw object
+     * @param thr Threshold, below which splits are ignored
+     * @return Split graph represented by a single vertex.  The network can be traversed from this vertex.
      */
     public static Vertex drawsplitsystem(PermutationSequenceDraw pseq, double thr) {
         pseq.restoreTrivialWeightsForExternalVertices();

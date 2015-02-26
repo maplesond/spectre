@@ -29,17 +29,12 @@ public class FitWeight {
 //public methods
 //*******************************************************************
 
-    //This method wraps the actual nnls algorithm and
-    //performs some initialization when the
-    //algorithm is called from scratch.
-    //
-
     /**
-     * Parameters:
-     * psequ   --> permutation sequence representing a flat split system
-     * dist    --> distance matrix we want to fit on the flat split system
-     * usereps --> epsilon bound provided by the user. Used determine
-     * the precision of the approximation of the optimal solution.
+     * This method wraps the actual nnls algorithm and performs some initialization when the algorithm is called from scratch.
+     *
+     * @param psequ permutation sequence representing a flat split system
+     * @param dist distance matrix we want to fit on the flat split system
+     * @param usereps epsilon bound provided by the user. Used determine the precision of the approximation of the optimal solution.
      */
     public static void lh_nnls_arr(PermutationSequenceDraw psequ, double[][] dist, double usereps) {
         //loop variable
@@ -117,23 +112,17 @@ public class FitWeight {
         }
     }
 
-    //This method uses the NNLS algorithm by
-    //Lawson and Hanson. The particular implementation
-    //uses the method of conjugate gradients to
-    //solve the unconstraint subproblems. This
-    //idea is due to David Bryant. The matrix-vector
-    //multiplication is arrangement-based and one
-    //can provide a start vector and so on.
-    //This method is wrapped by lh_nnls_arr()
 
     /**
-     * Parameters
-     * psequ   --> permutation sequence representing a flat split system
-     * tmpdata --> object containing temporary data used by the algorithm.
-     * The main purpose is to avoid the re-allocation of memory
-     * by providing arrays that can be used throughout.
-     * arrdata --> object storing information about the arrangement of pseudolines
-     * representing the flat split system
+     * This method uses the NNLS algorithm by Lawson and Hanson. The particular implementation uses the method of conjugate
+     * gradients to solve the unconstraint subproblems. This idea is due to David Bryant. The matrix-vector multiplication
+     * is arrangement-based and one can provide a start vector and so on. This method is wrapped by lh_nnls_arr()
+     *
+     * @param psequ permutation sequence representing a flat split system
+     * @param tmpdata object containing temporary data used by the algorithm. The main purpose is to avoid the re-allocation
+     *                of memory by providing arrays that can be used throughout.
+     * @param arrdata object storing information about the arrangement of pseudolines representing the flat split system
+     * @return Result
      */
     public static double lh_nnls_arr_inner(PermutationSequenceDraw psequ, NNLSTempData tmpdata, ArrangementData arrdata) {
         eps = tmpdata.usereps;
@@ -232,14 +221,13 @@ public class FitWeight {
         return compute_objective_arr(tmpdata, arrdata.arr, psequ);
     }
 
-    //This method computes the distance induced by the
-    //active splits using the arrangement of pseudolines
-    //This method exists for testing purposes. It is not
-    //used by the NNLS algorithm.
 
     /**
-     * Parameters
-     * psequ   --> permutation sequence representing a flat split system
+     * This method computes the distance induced by the active splits using the arrangement of pseudolines. This method
+     * exists for testing purposes. It is not used by the NNLS algorithm.
+     *
+     * @param psequ permutation sequence representing a flat split system
+     * @return distance matrix
      */
     public static double[][] compute_induced_distance_arr(PermutationSequenceDraw psequ) {
         //Array for the distance matrix to be computed.
@@ -283,18 +271,16 @@ public class FitWeight {
     }
 
 
-    //This method computes the 1-dimensional array
-    //that corresponds to one triangle of the distance
-    //matrix. The order of entries corresponds to
-    //the left to right order of the swaps in the
-    //arrangement of pseudolines.
+    //
 
     /**
-     * Parameters
-     * b      --> 1-dimensional vector corresponding to the given distance matrix
-     * npairs --> number of 2-element subsets of the set of taxa
-     * dist   --> given distance matrix
-     * psequ  --> permutation sequence representing a flat split system
+     * This method computes the 1-dimensional array that corresponds to one triangle of the distance matrix. The order of
+     * entries corresponds to the left to right order of the swaps in the arrangement of pseudolines.
+     *
+     * @param b 1-dimensional vector corresponding to the given distance matrix
+     * @param npairs number of 2-element subsets of the set of taxa
+     * @param dist given distance matrix
+     * @param psequ permutation sequence representing a flat split system
      */
     public static void compute_dist_vector_arr(double[] b, int npairs, double[][] dist, PermutationSequenceDraw psequ) {
 
@@ -321,14 +307,12 @@ public class FitWeight {
     }
 
 
-    //This method initializes the flags for
-    //fixed enries
+    //
 
     /**
-     * Parameters
-     * fixed --> array of flags, a flag is true iff the length
-     * of the corresponding split is fixed to 0.0.
-     * Initially no split weights are fixed.
+     * This method initializes the flags for fixed enries
+     *
+     * @param fixed array of flags, a flag is true iff the length of the corresponding split is fixed to 0.0. Initially no split weights are fixed.
      */
     public static void init_fixed(boolean[] fixed) {
         int i = 0;
@@ -339,17 +323,15 @@ public class FitWeight {
     }
 
 
-    //Computes split weights from distances
-
     /**
-     * Parameters
-     * x       --> resulting length vector
-     * tmpdata --> object containing temporary data used by the algorithm.
-     * The main purpose is to avoid the re-allocation of memory
-     * by providing arrays that can be used throughout.
-     * arrdata --> object storing information about the arrangement of pseudolines
-     * representing the flat split system
-     * psequ   --> permutation sequence representing a flat split system
+     * Computes split weights from distances
+     *
+     * @param x resulting length vector
+     * @param tempx object containing temporary data used by the algorithm. The main purpose is to avoid the re-allocation
+     *              of memory by providing arrays that can be used throughout.
+     * @param y Unknown??
+     * @param arrdata object storing information about the arrangement of pseudolines representing the flat split system
+     * @param psequ permutation sequence representing a flat split system
      */
     public static void compute_aty_arr(double[] x, double[] tempx, double[] y, ArrangementData arrdata, PermutationSequenceDraw psequ) {
         //loop variables
@@ -501,12 +483,11 @@ public class FitWeight {
     }
 
 
-    //This method initializes the current solution
-
     /**
-     * Parameters
-     * x --> vector to be initialized
-     * w --> real number that is assigned to all entries of x
+     * This method initializes the current solution
+     *
+     * @param x vector to be initialized
+     * @param w real number that is assigned to all entries of x
      */
     public static void init_x(double[] x, double w) {
         int i = 0;
@@ -516,17 +497,15 @@ public class FitWeight {
         }
     }
 
-    //This method computes the unique (not necessarily non-negative)
-    //weighting of the splits that induces the distance matrix
 
     /**
-     * Parameters
-     * tmpdata --> object containing temporary data used by the algorithm.
-     * The main purpose is to avoid the re-allocation of memory
-     * by providing arrays that can be used throughout.
-     * arrdata --> object storing information about the arrangement of pseudolines
-     * representing the flat split system
-     * psequ   --> permutation sequence representing a flat split system
+     * This method computes the unique (not necessarily non-negative) weighting of the splits that induces the distance matrix
+     *
+     * @param x Unknown ??
+     * @param tmpdata object containing temporary data used by the algorithm. The main purpose is to avoid the re-allocation
+     *                of memory by providing arrays that can be used throughout.
+     * @param arrdata object storing information about the arrangement of pseudolines representing the flat split system
+     * @param psequ permutation sequence representing a flat split system
      */
     //public static void compute_unconstrained(double[] x,double[] tempx,double[] b,int[][] arr,int[] lastswap,PermutationSequenceDraw psequ)
     public static void compute_unconstrained(double[] x, NNLSTempData tmpdata, ArrangementData arrdata, PermutationSequenceDraw psequ) {
@@ -634,14 +613,12 @@ public class FitWeight {
     private static double cgeps = 0.000001;
 
 
-    //This method computes a distance matrix from a
-    //1-dimensional distance vector that corresponds
-    //to the swaps in the arrangement of pseudolines
-
     /**
+     * This method computes a distance matrix from a 1-dimensional distance vector that corresponds to the swaps in the
+     * arrangement of pseudolines
      * Parameters
-     * y     --> 1-dimensional distance vector
-     * psequ --> permutation sequence representing a flat split system
+     * @param y 1-dimensional distance vector
+     * @param psequ permutation sequence representing a flat split system
      */
     private static double[][] compute_dist_matrix_arr(double[] y, PermutationSequenceDraw psequ) {
 
@@ -682,17 +659,15 @@ public class FitWeight {
         return dist;
     }
 
-    //This method computes the product of the topological
-    //matrix and a vector of split weigts without explicitly
-    //computing the topological matrix
-
     /**
-     * Parameter
-     * y        --> resulting distance vector
-     * tempdist --> temporary array provided to avoid re-allocation of memory
-     * x        --> vector of split weights
-     * arr      --> data about the arrangement of pseudolines (see class ArrangementData)
-     * psequ    --> permutation sequence representing the flat split system
+     * This method computes the product of the topological matrix and a vector of split weigts without explicitly computing
+     * the topological matrix
+     *
+     * @param y resulting distance vector
+     * @param tempdist temporary array provided to avoid re-allocation of memory
+     * @param x vector of split weights
+     * @param arr data about the arrangement of pseudolines (see class ArrangementData)
+     * @param psequ permutation sequence representing the flat split system
      */
     private static void compute_ax_arr(double[] y, double[] tempdist, double[] x, int[][] arr, PermutationSequenceDraw psequ) {
         int i = 0;
@@ -786,18 +761,13 @@ public class FitWeight {
     }
 
 
-    //Same as previous method but uses arrangment
-    //of pseudolines to do the matrix-vector
-    //multiplication
-
     /**
-     * Parameters
-     * tmpdata --> object containing temporary data used by the algorithm.
-     * The main purpose is to avoid the re-allocation of memory
-     * by providing arrays that can be used throughout.
-     * arrdata --> object storing information about the arrangement of pseudolines
-     * representing the flat split system
-     * psequ   --> permutation sequence representing a flat split system
+     * Same as previous method but uses arrangment of pseudolines to do the matrix-vector multiplication
+     *
+     * @param tmpdata object containing temporary data used by the algorithm. The main purpose is to avoid the re-allocation
+     *                of memory by providing arrays that can be used throughout.
+     * @param arrdata object storing information about the arrangement of pseudolines representing the flat split system
+     * @param psequ permutation sequence representing a flat split system
      */
     private static void compute_gradient_arr(NNLSTempData tmpdata, ArrangementData arrdata, PermutationSequenceDraw psequ) {
         compute_ax_arr(tmpdata.tempdist1, tmpdata.tempdist2, tmpdata.curx, arrdata.arr, psequ);
@@ -810,12 +780,10 @@ public class FitWeight {
         }
     }
 
-    //This method replaces every negative entry in the
-    //vector by 0
-
     /**
-     * Parameter
-     * x --> input vector
+     * This method replaces every negative entry in the vector by 0
+     *
+     * @param x input vector
      */
     private static void make_non_negative(double[] x) {
         int i = 0;
@@ -828,11 +796,10 @@ public class FitWeight {
     }
 
 
-    //This method computes the l_2-norm of a vector
-
     /**
-     * Parameter
-     * v --> input vector
+     * This method computes the l_2-norm of a vector
+     *
+     * @param v input vector
      */
     private static double l2_norm(double[] v) {
         int i = 0;
@@ -846,18 +813,13 @@ public class FitWeight {
         return l;
     }
 
-    //This method computes the value of the objective
-    //function at a vector x using the arrangement
-    //based matrix-vector multiplication
-
     /**
-     * Parameters
-     * tmpdata --> object containing temporary data used by the algorithm.
-     * The main purpose is to avoid the re-allocation of memory
-     * by providing arrays that can be used throughout.
-     * arr     --> array storing information about the arrangement of pseudolines
-     * representing the flat split system
-     * psequ   --> permutation sequence representing a flat split system
+     * This method computes the value of the objective function at a vector x using the arrangement based matrix-vector multiplication
+
+     * @param tmpdata object containing temporary data used by the algorithm.  The main purpose is to avoid the re-allocation
+     *                of memory by providing arrays that can be used throughout.
+     * @param arr array storing information about the arrangement of pseudolines representing the flat split system
+     * @param psequ permutation sequence representing a flat split system
      */
     private static double compute_objective_arr(NNLSTempData tmpdata, int[][] arr, PermutationSequenceDraw psequ) {
         int i = 0;
@@ -874,14 +836,11 @@ public class FitWeight {
         return l;
     }
 
-
-    //This method computes the scalar product of two
-    //vectors
-
     /**
-     * Parameters
-     * u --> input vector
-     * v --> input vector
+     * This method computes the scalar product of two vectors
+     *
+     * @param u input vector
+     * @param v input vector
      */
     private static double compute_scalar_product(double[] u, double[] v) {
         int i = 0;
@@ -893,12 +852,11 @@ public class FitWeight {
         return l;
     }
 
-    //This method prints a vector on the screen
-
     /**
-     * Parameters
-     * v       --> input vector
-     * message --> string provided by the user that will be printed before the vector
+     * This method prints a vector on the screen
+     *
+     * @param v input vector
+     * @param message string provided by the user that will be printed before the vector
      */
     private static void print_vector(double[] v, String message) {
         int i = 0;
@@ -911,19 +869,14 @@ public class FitWeight {
         System.out.println(" ");
     }
 
-    //This method computes the solution to a linear
-    //system of equations with the conjugate gradient
-    //method. The matrix-vector multiplication is
-    //arrangement based
-
     /**
-     * Parameters
-     * tmpdata --> object containing temporary data used by the algorithm.
-     * The main purpose is to avoid the re-allocation of memory
-     * by providing arrays that can be used throughout.
-     * arrdata --> object storing information about the arrangement of pseudolines
-     * representing the flat split system
-     * psequ   --> permutation sequence representing a flat split system
+     * This method computes the solution to a linear system of equations with the conjugate gradient method. The matrix-vector
+     * multiplication is arrangement based
+     *
+     * @param tmpdata object containing temporary data used by the algorithm. The main purpose is to avoid the re-allocation
+     *                of memory by providing arrays that can be used throughout.
+     * @param arrdata object storing information about the arrangement of pseudolines representing the flat split system
+     * @param psequ permutation sequence representing a flat split system
      */
     private static void conjugate_gradient_arr(NNLSTempData tmpdata, ArrangementData arrdata, PermutationSequenceDraw psequ) {
         //maximum number of iterations. Would be good to
@@ -986,12 +939,11 @@ public class FitWeight {
         }
     }
 
-    //This method collects the splits with negative length
-
     /**
-     * Parameters
-     * curx       --> vector of split weights
-     * negweights --> collection for storing the indices of the splits with negative length
+     * This method collects the splits with negative length
+     *
+     * @param curx vector of split weights
+     * @param negweights collection for storing the indices of the splits with negative length
      */
     private static void collect_negative_splits(double[] curx, SortedSet negweights) {
         int i = 0;
@@ -1005,15 +957,12 @@ public class FitWeight {
         }
     }
 
-    //This method filters the set of those splits with
-    //negative length in the current solution. The worst
-    //are fixed to 0.0.
-
     /**
-     * Parameters
-     * negweights --> collection for storing the indices of the splits with negative length
-     * curx       --> vector of split weights
-     * fixed      --> array of flags indicating which splits have a length fixed to 0.0
+     * This method filters the set of those splits with negative length in the current solution. The worst are fixed to 0.0.
+     *
+     * @param negweights collection for storing the indices of the splits with negative length
+     * @param curx vector of split weights
+     * @param fixed array of flags indicating which splits have a length fixed to 0.0
      */
     private static boolean remove_worst_splits(SortedSet negweights, double[] curx, boolean[] fixed) {
         int nnegweights = negweights.size();
@@ -1034,13 +983,11 @@ public class FitWeight {
         return removedsomething;
     }
 
-    //This method sets the values of fixed split weights
-    //to 0.0
-
     /**
-     * Parameters
-     * x     --> input vector
-     * fixed --> array of flags indicating which splits have a length fixed to 0.0
+     * This method sets the values of fixed split weights to 0.0
+     *
+     * @param x input vector
+     * @param fixed array of flags indicating which splits have a length fixed to 0.0
      */
     private static void set_to_zero(double[] x, boolean[] fixed) {
         int i = 0;

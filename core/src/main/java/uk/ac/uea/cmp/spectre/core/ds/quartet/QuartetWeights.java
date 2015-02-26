@@ -96,6 +96,9 @@ public class QuartetWeights extends Triplet<Double> {
      * Investigate which topology of a, b, c, d that the topologies of x, y, u, v correspond to, and set weights accordingly
      * See if xy|uv is ab|cd (w1), ac|bd (w2), or ad|bc (w3)
      * The first length of the stored triplet
+     * @param q1 Quartet 1
+     * @param q2 Quartet 2
+     * @param newW New Weight
      */
     public void update(Quartet q1, Quartet q2, double newW) {
 
@@ -115,9 +118,9 @@ public class QuartetWeights extends Triplet<Double> {
      * Determine which quartet to take. Use the unordered numbers, they
      * match one ordering or other
      *
-     * @param sorted
-     * @param unsorted
-     * @return The weight determined by considering q1 and q2
+     * @param sorted Sorted Quartet
+     * @param unsorted Unsorted Quartet
+     * @return The weight determined by considering q1 (sorted) and q2 (unsorted)
      */
     public double selectWeight(Quartet sorted, Quartet unsorted) {
 
@@ -322,8 +325,9 @@ public class QuartetWeights extends Triplet<Double> {
      * just a potentially weighted mean with this, quartets supported by few trees will be weak, although if the
      * trees are strong, they may be too
      *
-     * @param other
-     * @param weight
+     * @param other Other quartet weights
+     * @param weight Weighting factor to apply to other weights
+     * @return This set of quartet weights for easy access
      */
     public QuartetWeights weightedIncrement(QuartetWeights other, double weight) {
 

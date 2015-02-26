@@ -60,8 +60,8 @@ public class SuperQCLI {
 
         try {
 
-            SuperQ.configureLogging();
             SuperQOptions sqOpts = processArgs(commandLine);
+            SuperQ.configureLogging(sqOpts.isVerbose());
             SuperQ superQ = new SuperQ(sqOpts);
             superQ.run();
             if (superQ.failed()) {

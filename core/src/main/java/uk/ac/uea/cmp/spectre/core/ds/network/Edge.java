@@ -199,7 +199,7 @@ public class Edge implements Comparable<Edge> {
 
     /**
      * This method computes a list of the edges in the split network.
-     * @return
+     * @return The computed list of edges in the split network
      */
     public EdgeList collectEdges() {
 

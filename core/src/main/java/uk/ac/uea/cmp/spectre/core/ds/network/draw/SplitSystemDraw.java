@@ -57,7 +57,7 @@ public class SplitSystemDraw {
      * Constructor of this class from a permutation sequence. The coding by 0/1 is such that a taxon is on the 1-side of
      * the split if it lies below the face represening the split. The pseudoline arrangement is given as a permutation
      * sequence.
-     * @param p_sequ
+     * @param p_sequ permutation sequence representing a flat split system
      */
     public SplitSystemDraw(PermutationSequenceDraw p_sequ) {
         int i = 0;

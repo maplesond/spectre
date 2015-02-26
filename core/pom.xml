@@ -20,30 +20,186 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>uk.ac.uea.cmp.spectre</groupId>
-        <artifactId>spectre</artifactId>
-        <version>0.3.0</version>
-    </parent>
-
+    <groupId>uk.ac.uea.cmp.spectre</groupId>
     <artifactId>core</artifactId>
-    <version>0.3.0</version>
+    <version>0.4.0</version>
     <packaging>jar</packaging>
 
     <name>Spectre: Core functionality</name>
+    <description>Core library for the SPECTRE project.  Contains commonly used data structures, algorithms and file handling functionality commonly used in phylogenetics.</description>
+    <url>https://github.com/maplesond/spectre</url>
+    <scm>
+        <url>https://github.com/maplesond/spectre.git</url>
+    </scm>
+
 
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java-version>1.8</java-version>
         <antlr-version>4.1</antlr-version>
+        <slf4j-version>1.6.1</slf4j-version>
+        <dist-name>${project.parent.artifactId}-${project.parent.version}</dist-name>
+        <dist-dir>${project.basedir}/../build/dist</dist-dir>
+        <build-dir>${project.basedir}/../build/${dist-name}</build-dir>
     </properties>
 
+    <!-- Licensing -->
+    <licenses>
+        <license>
+            <name>GNU General Public License</name>
+            <url>http://www.gnu.org/licenses/gpl.html</url>
+        </license>
+    </licenses>
+
+    <!-- Developer Listing -->
+    <developers>
+        <developer>
+            <id>maplesod</id>
+            <name>Daniel Mapleson</name>
+            <email>daniel.mapleson@tgac.ac.uk</email>
+            <organization>TGAC</organization>
+            <organizationUrl>http://www.tgac.ac.uk</organizationUrl>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>s.bastkowski</id>
+            <name>Sarah Bastkowski</name>
+            <email>sarah.bastkowski@tgac.ac.uk</email>
+            <organization>TGAC</organization>
+            <organizationUrl>http://www.tgac.ac.uk</organizationUrl>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>balvociute</id>
+            <name>Monica Balvociute</name>
+            <email>mokana@gmail.com</email>
+            <organization>New Zealand</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>anspliner</id>
+            <name>Andreas Spillner</name>
+            <email>anspliner@googlemail.com</email>
+            <organization>Greifswald University</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>
+
+    <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>2.2.1</version>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>2.9.1</version>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                                <configuration>
+                                    <additionalparam>-Xdoclint:none</additionalparam>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.5</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <version>2.17</version>
+                        <dependencies>
+                            <dependency>
+                                <groupId>org.apache.maven.surefire</groupId>
+                                <artifactId>surefire-junit47</artifactId>
+                                <version>2.17</version>
+                            </dependency>
+                        </dependencies>
+                        <executions>
+                            <execution>
+                                <id>failsafe-integration-tests</id>
+                                <phase>integration-test</phase>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                    <goal>verify</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
 
     <build>
 
         <plugins>
 
+            <!-- Compiler settings -->
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <source>${java-version}</source>
+                    <target>${java-version}</target>
+                    <showDeprecation>true</showDeprecation>
+                    <showWarnings>false</showWarnings>
+                    <!--<compilerArgument>-Xlint:unchecked</compilerArgument>-->
+                </configuration>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.17</version>
                 <configuration>
                     <forkMode>once</forkMode>
                     <workingDirectory>target</workingDirectory>
@@ -67,12 +223,35 @@
                 </executions>
             </plugin>
 
+
+
+
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.3</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>ossrh</serverId>
+                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                </configuration>
+            </plugin>
+
         </plugins>
     </build>
 
 
     <dependencies>
 
+        <!-- Testing -->
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+            <scope>test</scope>
+        </dependency>
 
         <!-- METAINF services -->
 

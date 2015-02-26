@@ -17,6 +17,8 @@ package uk.ac.uea.cmp.spectre.qtools.superq;
 
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
 import org.apache.log4j.PropertyConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -136,7 +138,7 @@ public class SuperQ extends RunnableTool {
                             solution, qnetResult.getComputedWeights().getEtE().toArray());
 
                     // Run the secondary optimisation step
-                    double[] solution2 = this.options.getSecondaryProblem().getName() == "MINIMA" ?
+                    double[] solution2 = this.options.getSecondaryProblem().getName().equalsIgnoreCase("MINIMA") ?
                             this.minimaOptimise(secondarySolver, problem, solution) :     // Special handling of MINIMA objective
                             secondarySolver.optimise(problem).getVariableValues();        // Normally just call child's optimisation method
 
@@ -246,12 +248,13 @@ public class SuperQ extends RunnableTool {
         this.trackerInitUnknownRuntime(message);
     }
 
-    public static void configureLogging() {
+    public static void configureLogging(boolean verbose) {
         // Setup logging
         File propsFile = new File("etc/logging.properties");
 
         if (!propsFile.exists()) {
             BasicConfigurator.configure();
+            LogManager.getRootLogger().setLevel(verbose ? Level.DEBUG : Level.INFO);
             log.info("No logging configuration found.  Using default logging properties.");
         } else {
             PropertyConfigurator.configure(propsFile.getPath());

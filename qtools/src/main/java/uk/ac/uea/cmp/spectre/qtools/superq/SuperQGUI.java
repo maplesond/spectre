@@ -674,7 +674,7 @@ public class SuperQGUI extends JFrame implements ToolHost {
      */
     public static void main(String args[]) {
 
-        SuperQ.configureLogging();
+        SuperQ.configureLogging(false);
 
         setLookAndFeel(NIMBUS);
 

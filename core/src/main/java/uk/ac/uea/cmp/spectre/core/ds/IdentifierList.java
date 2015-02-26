@@ -54,6 +54,7 @@ public class IdentifierList extends ArrayList<Identifier> {
 
     /**
      * Seeded constructor. Add as single element aTaxon.
+     * @param identifier Single element to add into this new list
      */
     public IdentifierList(Identifier identifier) {
 
@@ -87,7 +88,7 @@ public class IdentifierList extends ArrayList<Identifier> {
     /**
      * Copy constructor
      *
-     * @param identifierList
+     * @param identifierList list to copy
      */
     public IdentifierList(IdentifierList identifierList) {
         this();
@@ -243,8 +244,8 @@ public class IdentifierList extends ArrayList<Identifier> {
     /**
      * Overwrites the identifier at a specific position in the list with the one provided.
      *
-     * @param index
-     * @param identifier
+     * @param index index of element in array to modify
+     * @param identifier The identifier to replace element at index
      * @return The identifier that's been set.
      */
     @Override
@@ -293,7 +294,8 @@ public class IdentifierList extends ArrayList<Identifier> {
     }
 
     /**
-     * Reverses the ordering.  i.e. places identifier in the opposite order..
+     * Reverses the ordering.  i.e. places identifier in the opposite order.
+     * @return A copy of the indentifier list in reverse order.
      */
     public IdentifierList reverseOrdering() {
 
@@ -347,6 +349,10 @@ public class IdentifierList extends ArrayList<Identifier> {
 
     /**
      * EXCLUSIVE sublist-complement, reverse-order (so front-front, back-back)
+     *
+     * @param I index I
+     * @param J index J
+     * @return sublist-complement in reverse order
      */
     public IdentifierList complement(int I, int J) {
 
@@ -532,6 +538,11 @@ public class IdentifierList extends ArrayList<Identifier> {
     /**
      * Join method. Joins in that order the two lists, in the specified
      * orientation
+     * @param firstList First list to join
+     * @param firstDirection Direction in which to join the first list (i.e. shall we reverse it)
+     * @param secondList Second list to join to the first
+     * @param secondDirection Direction in which to join the second list (i.e. shall we reverse it)
+     * @return joined lists
      */
     public static IdentifierList join(IdentifierList firstList, Direction firstDirection,
                                       IdentifierList secondList, Direction secondDirection) {

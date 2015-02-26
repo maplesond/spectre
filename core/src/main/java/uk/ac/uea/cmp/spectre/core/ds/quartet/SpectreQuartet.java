@@ -28,7 +28,7 @@ import java.util.List;
  * Objects of this class are used as keys in the hashmap that associates sorts 4-tuples of taxa with the corresponding
  * weights of the three quartets.  Assumes the quartets are sorted when created.  If not, the sort method is available
  * to sort the indices.
- * <p/>
+ *
  * A quartet is always stored in its canonical form: the left pair must contain the smallest taxa id of the quadruple
  */
 public class SpectreQuartet implements Quartet {
@@ -54,11 +54,11 @@ public class SpectreQuartet implements Quartet {
 
     /**
      * Copy constructor.
-     * <p/>
+     *
      * Note: We do not reuse the other constructor here as we already know that the other quartet must be distinct and
      * in canonical form.  Therefore we can save some time here by just directly copying the variables.
      *
-     * @param q
+     * @param q Quartet to copy
      */
     public SpectreQuartet(Quartet q) {
 
@@ -72,10 +72,10 @@ public class SpectreQuartet implements Quartet {
      * This method is critical for setting up quartets.  It converts the taxa ids into their quartet canonical form.  This
      * means that the first taxa id should be the minimum for the quadruple, whilst maintaining the input pairings.
      *
-     * @param a
-     * @param b
-     * @param c
-     * @param d
+     * @param a Taxon ID for A
+     * @param b Taxon ID for B
+     * @param c Taxon ID for C
+     * @param d Taxon ID for D
      */
     protected final void setCanonically(int a, int b, int c, int d) {
 

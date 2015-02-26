@@ -178,7 +178,7 @@ public class SpectreSplitBlock extends ArrayList<Integer> implements SplitBlock 
     /**
      * Copies elements from the provided split block and adds them to this split block
      *
-     * @param splitBlock
+     * @param splitBlock Splitblock to merge with this
      */
     @Override
     public void merge(SplitBlock splitBlock) {

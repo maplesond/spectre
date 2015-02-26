@@ -52,7 +52,7 @@ public class QuartetSystemList extends ArrayList<QuartetSystem> {
     /**
      * Creates a list of quartet networks initalised with a single element
      *
-     * @param initialElement
+     * @param initialElement First quartet system to use as a seed for this list
      */
     public QuartetSystemList(QuartetSystem initialElement) {
         super();
@@ -140,7 +140,6 @@ public class QuartetSystemList extends ArrayList<QuartetSystem> {
      * Updates the quartet weights in the new input files (scales the weights before they are processed by Chopper)
      *
      * @param w The weights to apply to the quartet networks.
-     * @throws IOException
      */
     public void scaleWeights(double[] w) {
 

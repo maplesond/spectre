@@ -33,12 +33,7 @@ import java.util.Set;
  * @author balvociute
  */
 public interface AngleCalculator {
-    /**
-     * @param boxesSorted
-     * @param edges
-     * @param bottom
-     * @return
-     */
+
     public double computeOptimalAngle(LinkedList<NetworkBox> boxesSorted, LinkedList<Edge> edges, boolean bottom);
 
     public double computeForCompatible(LinkedList<Edge> edges);
@@ -47,14 +42,6 @@ public interface AngleCalculator {
 
     public double getSafeAngleBot(double deltaAlpha, Edge leftmost, Edge rightmost, Set<Vertex> bottomVertices, Set<Vertex> topVertices);
 
-    /**
-     * @param deltaAlpha
-     * @param leftmost
-     * @param rightmost
-     * @param bottomVertices
-     * @param topVertices
-     * @return
-     */
     public double getSafeAngleTop(double deltaAlpha, Edge leftmost, Edge rightmost, Set<Vertex> bottomVertices, Set<Vertex> topVertices);
 
     public double computeMiddleAngleForTrivial(Edge split, Vertex bot, Vertex top);

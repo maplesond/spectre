@@ -31,7 +31,7 @@ public class TSPWeighting extends Weighting {
      * @param i             index of weighting parameter to be updated
      * @param position      position of i in component
      * @param size size of component
-     * @throws ArrayIndexOutOfBoundsException
+     * @throws ArrayIndexOutOfBoundsException Array index is not valid
      */
     @Override
     public void updateWeightingParam(Identifier i, int position, int size) {

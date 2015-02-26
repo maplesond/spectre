@@ -121,7 +121,7 @@ public class SpectreSplitSystem extends ArrayList<Split> implements SplitSystem 
 
     /**
      * Copy constructor
-     * @param splitSystem
+     * @param splitSystem Split system to copy
      */
     public SpectreSplitSystem(SplitSystem splitSystem) {
         this(new IdentifierList(splitSystem.getOrderedTaxa()), new ArrayList<>(splitSystem));
@@ -333,7 +333,7 @@ public class SpectreSplitSystem extends ArrayList<Split> implements SplitSystem 
     /**
      * Deletes all splits and recalculates them.  All splits must have a positive length
      *
-     * @param treeWeights
+     * @param treeWeights Tree weights to use to reweight this split system
      */
     protected void reweight(SplitWeights treeWeights) {
 

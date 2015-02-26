@@ -22,7 +22,7 @@ import uk.ac.uea.cmp.spectre.core.ds.Identifier;
  * A vertex is weighted after its position in the component.
  * The inner vertices are lower weighted then the outer ones.
  * The weighting follows an adjusted parabola function.
- * <p/>
+ *
  * Sarah Bastkowski, 2010: <I>Algorithmen zum Finden von Bäumen in Neighbor Net Netzwerken</I>
  *
  * @author Sarah Bastkowski
@@ -33,7 +33,7 @@ public class ParabolaWeighting extends Weighting {
      * @param i             index of weighting parameter to be updated
      * @param position      position of i in component
      * @param size size of component
-     * @throws ArrayIndexOutOfBoundsException
+     * @throws ArrayIndexOutOfBoundsException Array index is not valid
      */
     @Override
     public void updateWeightingParam(Identifier i, int position, int size) {

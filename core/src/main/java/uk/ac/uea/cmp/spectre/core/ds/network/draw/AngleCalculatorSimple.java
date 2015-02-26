@@ -391,12 +391,6 @@ public class AngleCalculatorSimple implements AngleCalculator {
         return lr;
     }
 
-    /**
-     * @param v
-     * @param w
-     * @param e
-     * @return
-     */
     @Override
     public double optimizedAngleForCompatible(Vertex v, Vertex w, Edge e, List<Edge> botEdges, List<Edge> topEdges) {
         Set<Vertex> botVertices = new HashSet<>();

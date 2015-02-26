@@ -32,7 +32,7 @@ public class EqualWeighting extends Weighting {
      * @param i             index of weighting parameter to be updated
      * @param dummy         is not used
      * @param componentSize size of component
-     * @throws ArrayIndexOutOfBoundsException
+     * @throws ArrayIndexOutOfBoundsException Array index is not valid
      */
     @Override
     public void updateWeightingParam(Identifier i, int dummy, int componentSize) {

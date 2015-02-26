@@ -65,7 +65,7 @@ public class CVMatrices {
 
     /**
      * Assumes id of vertex can be translated to component id
-     * @param userMatrix
+     * @param userMatrix The user distance matrix
      */
     public CVMatrices(DistanceMatrix userMatrix) {
 

@@ -66,8 +66,8 @@ public abstract class Weighting {
     /**
      * Updates the weighting parameter at a specified position.
      *
-     * @param i               index of the weighting parameter to be updated
-     * @param position
+     * @param i               Taxon to update
+     * @param position        index of the weighting parameter to be updated
      * @param customParameter parameter depending on implemented algorithm
      */
     public abstract void updateWeightingParam(Identifier i, int position, int customParameter);

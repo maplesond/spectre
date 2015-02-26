@@ -96,8 +96,8 @@ public class PermutationSequenceDraw {
 
     /**
      * Constructor of this class from a given initial sequence and a sequence of swaps. Exists mainly for testing purposes
-     * @param in_init_sequ
-     * @param in_swaps
+     * @param in_init_sequ Unknown ??
+     * @param in_swaps Unknown ??
      */
     public PermutationSequenceDraw(int[] in_init_sequ, int[] in_swaps) {
         int i = 0;
@@ -139,11 +139,11 @@ public class PermutationSequenceDraw {
     /**
      * Constructor of this class from a given initial sequence, a sequence of swaps, weights and array of active flags.
      * For the transition from PS in FNet.
-     * @param in_init_sequ
-     * @param in_swaps
-     * @param in_weights
-     * @param in_active
-     * @param trivialWeights
+     * @param in_init_sequ Initial sequence
+     * @param in_swaps Sequence of swaps
+     * @param in_weights Weights
+     * @param in_active Active flags
+     * @param trivialWeights Trivial weights
      */
     public PermutationSequenceDraw(int[] in_init_sequ, int[] in_swaps, double[] in_weights, boolean[] in_active, double[] trivialWeights) {
         int i = 0;
@@ -192,7 +192,7 @@ public class PermutationSequenceDraw {
     /**
      * Constructor for this class from a SplitSystem-object. This is just used as a quick and dirty way to feed circular
      * split systems into the drawing algorithm and then display them with the viewer.
-     * @param ss
+     * @param ss Circular split system
      */
     public PermutationSequenceDraw(SplitSystem ss){
         int h = 0;
@@ -431,7 +431,7 @@ public class PermutationSequenceDraw {
 
     /**
      * Constructor of a template for a circular split system from a list of taxa
-     * @param tname
+     * @param tname List of taxa names
      */
     public PermutationSequenceDraw(String[] tname) {
         ntaxa = tname.length;
@@ -482,8 +482,8 @@ public class PermutationSequenceDraw {
     /**
      * Constructor that generates a random permutation sequence. The first parameter is the number of taxa. The second
      * parameter is used to indicate the type of split system: general flat or circular
-     * @param n
-     * @param t
+     * @param n Number of taxa
+     * @param t Type of split system
      */
     public PermutationSequenceDraw(int n, SplitSystemType t) {
         ntaxa = n;
@@ -747,7 +747,7 @@ public class PermutationSequenceDraw {
 
     /**
      * This method filters the splits by labeling those with a length below the given threshold inactive.
-     * @param thold
+     * @param thold Threshold value
      */
     public void setActive(double thold) {
         if (active == null) {
@@ -774,11 +774,12 @@ public class PermutationSequenceDraw {
         }
     }
 
-    //This method randomly sets some splits inactive.
-    //For testing purposes. The parameter is a real
-    //number between 0 and 1. This number equals
-    //the probability with which a split is set
-    //to be active.
+
+    /**
+     * This method randomly sets some splits inactive.  For testing purposes. The parameter is a real number between 0 and
+     * 1. This number equals the probability with which a split is set to be active.
+     * @param thold Threshold value
+     */
     public void knock_out(double thold) {
         int i = 0;
         Random rgen = new Random();
@@ -817,7 +818,7 @@ public class PermutationSequenceDraw {
      * whether every pair of distinct taxe swaps precisely once.  The latter test, in particular, was included to detect
      * potential numerical problems when constructing a permutation sequence from a set of points in the plane whose
      * coordinates are given by floating point numbers.
-     * @return
+     * @return True if consistent, false otherwise
      */
     public boolean checkConsistency() {
         int i = 0;
@@ -1009,7 +1010,7 @@ public class PermutationSequenceDraw {
     /**
      * This method computes information about the graph that corresponds to the arrangement of pseudolines that is used
      * to carry out matrix-vector multiplications efficiently in the class FitWeight.
-     * @return
+     * @return Arrangement of pseudolines
      */
     public ArrangementData computeArrangement() {
         //Create the object that stores the information about the arrangement

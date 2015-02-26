@@ -44,8 +44,8 @@ public class SpiFactory<T extends Service> {
     /**
      * This default method accepts an identifier if it equals the service's name, or if it matches the class names.
      *
-     * @param identifier
-     * @param service
+     * @param identifier Identifier
+     * @param service Service
      * @return Whether the service accepts the given identifier
      */
     protected boolean acceptsIdentifier(String identifier, T service) {
@@ -57,7 +57,7 @@ public class SpiFactory<T extends Service> {
     /**
      * Creates a new instance of the service with the specified name if it can be found, otherwise return null
      *
-     * @param name
+     * @param name Name of service
      * @return A new service
      */
     public T create(String name) {

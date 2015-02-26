@@ -50,8 +50,9 @@ public class WeightedQuartetGroupMap extends HashMap<Quartet, QuartetWeights> {
     /**
      * Adds a weighted quartet into the hash map.
      *
-     * @param quartet
-     * @param weight
+     * @param quartet Quartet to put
+     * @param weight Weight of Quartet
+     * @return The previous value for this quartet (or null, if there wasn't anything)
      */
     public QuartetWeights put(Quartet quartet, double weight) {
 
@@ -79,8 +80,8 @@ public class WeightedQuartetGroupMap extends HashMap<Quartet, QuartetWeights> {
     /**
      * Already given the weights, so just dump these where they should be in the hash
      *
-     * @param quartet
-     * @param weights
+     * @param quartet Quartet to put
+     * @param weights Weights for quartet
      */
     @Override
     public QuartetWeights put(Quartet quartet, QuartetWeights weights) {
@@ -93,9 +94,6 @@ public class WeightedQuartetGroupMap extends HashMap<Quartet, QuartetWeights> {
     }
 
 
-    /**
-     * setWeight sets a length
-     */
     public void incrementWeight(Quartet q, double increment) {
 
         Pair<Quartet, Integer> keys = q.getGroupKeys();

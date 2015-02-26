@@ -21,19 +21,19 @@
     <parent>
         <artifactId>spectre</artifactId>
         <groupId>uk.ac.uea.cmp.spectre</groupId>
-        <version>0.4.0</version>
+        <version>0.3.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>padre</artifactId>
-    <version>2.0.1</version>
+    <artifactId>misc</artifactId>
+    <version>0.3.0</version>
 
-    <name>Spectre: Padre</name>
+    <name>Spectre: Miscellaneous Tools</name>
 
     <build>
 
-        <!--<sourceDirectory>src/main/java</sourceDirectory>-->
-        <!--<testSourceDirectory>src/test/java</testSourceDirectory>-->
+        <sourceDirectory>src/main/java</sourceDirectory>
+        <testSourceDirectory>src/test/java</testSourceDirectory>
 
         <plugins>
 
@@ -43,16 +43,24 @@
                 <artifactId>appassembler-maven-plugin</artifactId>
                 <version>1.6</version>
 
-                <!-- We create scripts for both CLI and GUI -->
                 <configuration>
                     <platforms>
                         <platform>${spectre-platform}</platform>
                     </platforms>
+                    <extraJvmArguments>-Djava.awt.headless=true</extraJvmArguments>
                     <programs>
-                        <!--<program>
-                            <mainClass>uk.ac.uea.cmp.spectre.qtools.superq.SuperQCLI</mainClass>
-                            <id>superq</id>
-                        </program>-->
+                        <program>
+                            <mainClass>uk.ac.uea.cmp.spectre.tools.convertor.DistanceMatrixConvertor</mainClass>
+                            <id>distmxconv</id>
+                        </program>
+                        <program>
+                            <mainClass>uk.ac.uea.cmp.spectre.tools.phycor.PhylipCorrector</mainClass>
+                            <id>phycor</id>
+                        </program>
+                        <program>
+                            <mainClass>uk.ac.uea.cmp.spectre.tools.rdg.RandomDistanceGeneratorTool</mainClass>
+                            <id>rdg</id>
+                        </program>
                     </programs>
                 </configuration>
             </plugin>
@@ -71,8 +79,9 @@
                         </goals>
                         <configuration>
                             <target>
-                                <!--<chmod file="${build-dir}/bin/superq" perm="755"/>-->
-
+                                <chmod file="${build-dir}/bin/distmxconv" perm="755"/>
+                                <chmod file="${build-dir}/bin/phycor" perm="755"/>
+                                <chmod file="${build-dir}/bin/rdg" perm="755"/>
                             </target>
                         </configuration>
                     </execution>
@@ -84,13 +93,15 @@
 
     <dependencies>
 
-        <!-- Spectre Core -->
+
+        <!-- Spectre -->
 
         <dependency>
             <groupId>uk.ac.uea.cmp.spectre</groupId>
             <artifactId>core</artifactId>
             <version>${spectre-version}</version>
         </dependency>
+
 
     </dependencies>
 

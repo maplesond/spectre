@@ -102,7 +102,7 @@ public class CanonicalWeightedQuartetMap extends HashMap<Quartet, Double> {
      * Divides quartet weights in this map with those in summer.  Summer must contain the same quartets or be a super set
      * of this hash map otherwise a null pointer exception will be thrown
      *
-     * @param other
+     * @param other Other quartets to divide from those in this
      */
     public void divide(CanonicalWeightedQuartetMap other) {
 

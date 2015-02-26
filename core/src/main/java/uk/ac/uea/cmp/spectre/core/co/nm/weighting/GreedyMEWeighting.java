@@ -44,9 +44,9 @@ public class GreedyMEWeighting extends Weighting {
 
 
     /**
-     * Initialises a GreedyMEWeighting with a SplitSystem
+     * Initialises a GreedyMEWeighting with a distance matrix
      *
-     * @param distanceMatrix
+     * @param distanceMatrix The distance matrix to use
      */
     public GreedyMEWeighting(DistanceMatrix distanceMatrix) {
 
@@ -354,8 +354,8 @@ public class GreedyMEWeighting extends Weighting {
     /**
      * Matrix inversion for X^-1 (see D.Bryant thesis page 153)
      *
-     * @param C
-     * @param nbTaxa
+     * @param C Unknown ??
+     * @param nbTaxa Number of taxa
      * @return Matrix Inversion Result
      */
     private InversionResult matrixInversion(final int[] C, final int nbTaxa) {
@@ -377,13 +377,13 @@ public class GreedyMEWeighting extends Weighting {
     /**
      * There is no zero in the matrix "D" (notation refers to D.Bryant thesis algorithm 15)
      *
-     * @param zero
-     * @param nbTaxa
-     * @param k
-     * @param C
-     * @param gamma
-     * @param d
-     * @param v
+     * @param zero Unknown ??
+     * @param nbTaxa Unknown ??
+     * @param k Unknown ??
+     * @param C Unknown ??
+     * @param gamma Unknown ??
+     * @param d Unknown ??
+     * @param v Unknown ??
      * @return W
      */
     private double[] calcW(final int zero, final int nbTaxa, final double k, final int[] C, final double gamma, final double[] d, final int[] v) {
@@ -477,9 +477,9 @@ public class GreedyMEWeighting extends Weighting {
      * is not technically a Weighting but is sometimes used in a Weighting object's
      * place in NeighborNet
      *
-     * @param i
-     * @param position
-     * @param customParameter
+     * @param i               Taxon to update
+     * @param position        index of the weighting parameter to be updated
+     * @param customParameter parameter depending on implemented algorithm
      */
     @Override
     public void updateWeightingParam(Identifier i, int position, int customParameter) {

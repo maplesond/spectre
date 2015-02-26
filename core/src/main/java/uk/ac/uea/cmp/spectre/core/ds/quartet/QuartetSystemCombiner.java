@@ -145,6 +145,9 @@ public class QuartetSystemCombiner {
     /**
      * note: this now simply computes a weighted sum. This is the part that may be done in any number of ways here,
      * take weighted sum of every quartet where the quartet is nonzero
+     * @param other The other map of canonical weighted quartet to combine into this
+     * @param translation Translation map, which helps to translate quartets in other into this
+     * @param scalingFactor Scaling factor to apply to the other quartets
      */
     public void combine(CanonicalWeightedQuartetMap other, Map<Integer, Integer> translation, double scalingFactor) {
 

@@ -40,12 +40,12 @@ public class DefaultParsingErrorListener implements ANTLRErrorListener {
     /**
      * Just rethrows exception
      *
-     * @param recognizer
-     * @param offendingSymbol
-     * @param line
-     * @param charPositionInLine
-     * @param msg
-     * @param e
+     * @param recognizer Recognizer
+     * @param offendingSymbol Offending symbol
+     * @param line Line error occured at
+     * @param charPositionInLine Character in line causing the problem
+     * @param msg Error message
+     * @param e Recognition Exception object
      */
     @Override
     public void syntaxError(Recognizer<?, ?> recognizer, @Nullable Object offendingSymbol, int line, int charPositionInLine, String msg, @Nullable RecognitionException e) {

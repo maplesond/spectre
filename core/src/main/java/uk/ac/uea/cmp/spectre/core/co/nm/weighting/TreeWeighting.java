@@ -45,7 +45,7 @@ public class TreeWeighting extends Weighting {
      * @param i                      index of weighting parameter to be updated
      * @param position               position of i in component
      * @param componentSplitposition position where second component begins after merging step
-     * @throws ArrayIndexOutOfBoundsException
+     * @throws ArrayIndexOutOfBoundsException Array index is not valid
      */
     @Override
     public void updateWeightingParam(Identifier i, int position,

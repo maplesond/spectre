@@ -23,10 +23,6 @@ public interface Quartet extends Comparable<Quartet> {
 
     int getD();
 
-    /**
-     *
-     * @return
-     */
     Pair<Quartet, Integer> getGroupKeys();
 
     /**

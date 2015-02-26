@@ -95,6 +95,7 @@ public class NeighborNetImpl implements CircularOrderingCreator {
     /**
      * Choose a pair of components that minimise the Q criterion from c2c
      *
+     * @param c2c Component to component distance matrix
      * @return a pair of components that minimise the Q criterion
      */
     protected Pair<Identifier, Identifier> selectionStep1(final DistanceMatrix c2c) {

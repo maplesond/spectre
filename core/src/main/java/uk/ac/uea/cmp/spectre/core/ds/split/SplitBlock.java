@@ -65,13 +65,13 @@ public interface SplitBlock extends List<Integer>, Comparable<SplitBlock> {
 
     /**
      * Get the first element in this split block
-     * @return
+     * @return First element
      */
     int getFirst();
 
     /**
      * Get the last element in this split block
-     * @return
+     * @return Last element
      */
     int getLast();
 
