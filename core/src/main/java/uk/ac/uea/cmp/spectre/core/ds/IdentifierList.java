@@ -269,20 +269,6 @@ public class IdentifierList extends ArrayList<Identifier> {
         return this.numbers.get(id);
     }
 
-    public Quadruple getQuadruple(int a, int b, int c, int d) {
-
-        if (this.size() < 4)
-            throw new IllegalStateException("Identifier list must contain at least 4 taxa for this method to work");
-
-        return new Quadruple(this.getById(a), this.getById(b), this.getById(c), this.getById(d));
-    }
-
-    public boolean contains(Quadruple quad) {
-        return this.contains(quad.getQ1())
-                && this.contains(quad.getQ2())
-                && this.contains(quad.getQ3())
-                && this.contains(quad.getQ4());
-    }
 
     public boolean containsName(String name) {
         return this.names.containsKey(name);

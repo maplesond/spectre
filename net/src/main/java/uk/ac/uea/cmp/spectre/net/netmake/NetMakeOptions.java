@@ -15,8 +15,8 @@
 
 package uk.ac.uea.cmp.spectre.net.netmake;
 
-import uk.ac.uea.cmp.spectre.core.co.CircularOrderingAlgorithms;
-import uk.ac.uea.cmp.spectre.core.co.nm.weighting.Weightings;
+import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.CircularOrderingAlgorithms;
+import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.nm.weighting.Weightings;
 
 import java.io.File;
 

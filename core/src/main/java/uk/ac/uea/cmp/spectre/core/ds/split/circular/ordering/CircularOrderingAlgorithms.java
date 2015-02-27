@@ -13,26 +13,36 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.core.co;
+package uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering;
 
-import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
-import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
-import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Created by dan on 07/09/14.
+ * Created with IntelliJ IDEA.
+ * User: Sarah_2
+ * Date: 24/04/13
+ * Time: 15:49
+ * To change this template use File | Settings | File Templates.
  */
-public interface CircularOrderingCreator {
+public enum CircularOrderingAlgorithms {
 
-    /**
-     * Creates a circular ordering of taxa from a distance matrix
-     * @param distanceMatrix Distances between each taxa
-     * @return A list of taxa matching taxa found in the distance matrix except that it has been sorted according to the
-     * underlying algorithm
-     */
-    IdentifierList createCircularOrdering(final DistanceMatrix distanceMatrix);
+    NETMAKE {
+    },
+    NEIGHBORNET {
+    }
+    ;
 
-    boolean createsTreeSplits();
+    public static String toListString() {
+        List<String> list = new ArrayList<>();
 
-    SplitSystem getTreeSplits();
+        for (CircularOrderingAlgorithms prf : CircularOrderingAlgorithms.values()) {
+            list.add(prf.toString());
+        }
+
+        return "[" + StringUtils.join(list, ", ") + "]";
+    }
+
 }

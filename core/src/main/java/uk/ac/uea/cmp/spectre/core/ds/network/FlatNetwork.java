@@ -236,7 +236,7 @@ public class FlatNetwork implements Network {
             w = v;
             v = t;
         } else {
-            java.util.List<Edge> elist = v.getElist();
+            EdgeList elist = v.getElist();
 
             for (int i = 0; i < elist.size(); i++) {
                 Vertex ww = null;

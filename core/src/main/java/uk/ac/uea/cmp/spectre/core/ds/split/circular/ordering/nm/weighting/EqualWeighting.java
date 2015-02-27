@@ -13,44 +13,31 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.core.co.nm.weighting;
+package uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.nm.weighting;
 
 import uk.ac.uea.cmp.spectre.core.ds.Identifier;
 
 /**
- * Weighting of vertices in merged component depends on number of vertices in
- * original component before mergin
- * (equal to number of times the components has been choosen in selection step)
+ * Every vertex of one component (after merging) gets the same weighting
+ * parameter, so they are all equally weighted.
  * <p/>
  * Sarah Bastkowski, 2010: <I>Algorithmen zum Finden von Bäumen in Neighbor Net Netzwerken</I>
  *
  * @author Sarah Bastkowski
  */
-public class TreeWeighting extends Weighting {
-    private double alpha;
+public class EqualWeighting extends Weighting {
 
     /**
-     * Creates a TreeWeighting object with a weighting list of a specified size
-     * and a specified constant alpha.
-     *
-     * @param alpha 0.5 for balanced tree weighting leads to NJ tree
-     */
-    public TreeWeighting(double alpha) {
-
-        this.alpha = alpha;
-    }
-
-    /**
-     * @param i                      index of weighting parameter to be updated
-     * @param position               position of i in component
-     * @param componentSplitposition position where second component begins after merging step
+     * @param i             index of weighting parameter to be updated
+     * @param dummy         is not used
+     * @param componentSize size of component
      * @throws ArrayIndexOutOfBoundsException Array index is not valid
      */
     @Override
-    public void updateWeightingParam(Identifier i, int position,
-                                     int componentSplitposition) {
+    public void updateWeightingParam(Identifier i, int dummy, int componentSize) {
+        Double weightingparameter = 0.;
 
-        double weightingparameter = (position < componentSplitposition ? alpha : 1.0 - alpha) * getWeightingParam(i);
+        weightingparameter = 1. / componentSize;
 
         setWeightingParam(i, weightingparameter);
     }

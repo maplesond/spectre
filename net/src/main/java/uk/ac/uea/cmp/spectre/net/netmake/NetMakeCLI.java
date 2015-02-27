@@ -21,7 +21,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.uea.cmp.spectre.core.co.CircularOrderingAlgorithms;
+import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.CircularOrderingAlgorithms;
 import uk.ac.uea.cmp.spectre.core.ui.cli.CommandLineHelper;
 
 import java.io.File;
@@ -74,7 +74,7 @@ public class NetMakeCLI {
                 .withDescription(NetMakeOptions.DESC_WEIGHTINGS_2).create("x"));
 
         options.addOption(OptionBuilder.withArgName("circular_ordering").withLongOpt(OPT_CO_ALG).hasArg()
-                .withDescription(NetMakeOptions.DESC_CO_ALG).create("co"));
+                .withDescription(NetMakeOptions.DESC_CO_ALG).create("ordering"));
 
 
         options.addOption(CommandLineHelper.HELP_OPTION);

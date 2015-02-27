@@ -287,13 +287,8 @@ public class FlatNJ {
         net = DrawFlat.drawsplitsystem(psDraw, -1);
 
         network = new FlatNetwork(net);
-
-
-        LayoutOptimizer layoutOptimizer = new LayoutOptimizer();
-
-        net = layoutOptimizer.optimize(net, psDraw, network);
-        CompatibleCorrector compatibleCorrectorPrecise =
-                new CompatibleCorrector(new AngleCalculatorMaximalArea());
+        net = net.optimiseLayout(psDraw, network);
+        CompatibleCorrector compatibleCorrectorPrecise = new CompatibleCorrector(new AngleCalculatorMaximalArea());
         compatibleCorrectorPrecise.addInnerTrivial(net, psDraw, network);
         if (!network.veryLongTrivial()) {
             Long time1 = System.currentTimeMillis();

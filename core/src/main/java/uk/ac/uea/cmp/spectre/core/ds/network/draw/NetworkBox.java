@@ -27,10 +27,6 @@ public class NetworkBox {
     private Edge f1;
     private Edge f2;
 
-    public NetworkBox() {
-        this(null, null, null, null);
-    }
-
     public NetworkBox(Edge e1, Edge e2, Edge f1, Edge f2) {
         this.e1 = e1;
         this.e2 = e2;

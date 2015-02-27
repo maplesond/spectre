@@ -278,7 +278,7 @@ public class Collector {
         return balloons;
     }
 
-    public static TreeSet<Edge>[] collectEgdesForTheSplits(PermutationSequenceDraw ps, Vertex v) {
+    public static TreeSet<Edge>[] collectEdgesForTheSplits(PermutationSequenceDraw ps, Vertex v) {
         TreeSet<Edge>[] splitedges = new TreeSet[ps.getNswaps()];
 
         for (int i = 0; i < ps.getnActive(); i++) {
@@ -494,7 +494,7 @@ public class Collector {
     }
 
     public static void highlightLargestSplits(Vertex V, PermutationSequenceDraw ps, int n) {
-        TreeSet<Edge>[] edges = collectEgdesForTheSplits(ps, V);
+        TreeSet<Edge>[] edges = collectEdgesForTheSplits(ps, V);
         Map<Integer, Double> splits = new HashMap<>();
         for (int i = 0; i < edges.length; i++) {
             if (edges[i].size() > 1) {

@@ -13,7 +13,9 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.core.ds;
+package uk.ac.uea.cmp.spectre.core.ds.split.circular;
+
+import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 
 import java.util.Arrays;
 

@@ -13,7 +13,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.core.co.nn;
+package uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.nn;
 
 /**
  * Created by dan on 09/03/14.

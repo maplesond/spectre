@@ -16,8 +16,8 @@
 package uk.ac.uea.cmp.spectre.core.ds.network.draw;
 
 import uk.ac.uea.cmp.spectre.core.ds.network.Edge;
+import uk.ac.uea.cmp.spectre.core.ds.network.EdgeList;
 import uk.ac.uea.cmp.spectre.core.ds.network.Network;
-import uk.ac.uea.cmp.spectre.core.ds.network.Translocator;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
 
 import java.util.LinkedList;
@@ -47,7 +47,7 @@ public class BoxOpener {
         Double maxAngle = null;
         for (int i = 0; i < activeSplits.length; i++) {
             int S = activeSplits[i];
-            LinkedList<Edge> edges = v.collectEdgesForSplit(S);
+            EdgeList edges = v.collectEdgesForSplit(S);
             if (edges.size() > 1) {
                 double angle = open(activeSplits, S, ss, edges, splitedges, v, vertices, network);
                 if (maxAngle == null || maxAngle < angle) {
@@ -62,7 +62,7 @@ public class BoxOpener {
         boolean foundSplit = false;
         while (!foundSplit) {
             int S = activeSplits[nr++];
-            LinkedList<Edge> edges = v.collectEdgesForSplit(S);
+            EdgeList edges = v.collectEdgesForSplit(S);
             if (edges.size() > 1) {
                 foundSplit = true;
                 open(activeSplits, S, ss, edges, splitedges, v, vertices, network);
@@ -77,7 +77,7 @@ public class BoxOpener {
     public double open(int[] activeSplits,
                        int S,
                        SplitSystemDraw ss,
-                       LinkedList<Edge> edges,
+                       EdgeList edges,
                        TreeSet[] splitedges,
                        Vertex v,
                        LinkedList<Vertex> vertices,
@@ -179,7 +179,7 @@ public class BoxOpener {
     }
 
 
-    public double move(int[] activeSplits, int S, SplitSystemDraw ss, LinkedList<Edge> edges, TreeSet[] splitedges, Vertex v, LinkedList<Vertex> vertices) {
+    public double move(int[] activeSplits, int S, SplitSystemDraw ss, EdgeList edges, TreeSet[] splitedges, Vertex v, LinkedList<Vertex> vertices) {
         Edge e = edges.getFirst();
 
         //Gap that protects vertices and edges from touching

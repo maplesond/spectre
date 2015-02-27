@@ -328,7 +328,15 @@ public class DrawFlat {
         }
     }
 
-    //This method checks if two splits form a box in the network
+    //
+
+    /**
+     * This method checks if two splits form a box in the network
+     * @param a Split A
+     * @param b Split B
+     * @param splitedges Set of splits
+     * @return A network box formed from the splits if possible, null otherwise
+     */
     public static NetworkBox form_box(int a, int b, TreeSet[] splitedges) {
         NetworkBox netbox = null;
 

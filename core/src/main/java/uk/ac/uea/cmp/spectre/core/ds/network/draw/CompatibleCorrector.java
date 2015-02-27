@@ -21,28 +21,20 @@ import uk.ac.uea.cmp.spectre.core.ds.network.*;
 
 import java.util.*;
 
-/*
- * To change this template, choose Tools | Templates and open the template in
- * the editor.
- */
-
 /**
  * @author balvociute
  */
 public class CompatibleCorrector {
 
-    AngleCalculator angleCalculator;
-    private double balloonAngle = Math.PI * 0.99;
-    LinkedList<Vertex> vertices;
+    private static final double BALLOON_ANGLE = Math.PI * 0.99;
 
-    Vertex C;
+    private AngleCalculator angleCalculator;
 
     public CompatibleCorrector(AngleCalculator ac) {
         this.angleCalculator = ac;
     }
 
-    public double correctAnglesForTrivial(LinkedList<Edge> edges, LinkedList<Vertex> vertices) {
-        Edge split = edges.getFirst();
+    public double correctAnglesForTrivial(EdgeList edges, LinkedList<Vertex> vertices) {
 
         Set<Edge> topEdges = Collector.getAllEdges(edges, true);
         Set<Edge> bottomEdges = Collector.getAllEdges(edges, false);
@@ -68,7 +60,7 @@ public class CompatibleCorrector {
         return 0.0;
     }
 
-    public double correctAngles(LinkedList<Edge> edges, LinkedList<Vertex> vertices) {
+    public double correctAngles(EdgeList edges, LinkedList<Vertex> vertices) {
         Edge split = edges.getFirst();
 
         Vertex bottom = split.getBot();
@@ -135,7 +127,7 @@ public class CompatibleCorrector {
     }
 
     public void addInnerTrivial(Vertex V, PermutationSequenceDraw ps, Network network) {
-        //LinkedList<LinkedList<Edge>> balloons = Collector.collectBallons(balloonAngle, V);
+        //LinkedList<LinkedList<Edge>> balloons = Collector.collectBallons(BALLOON_ANGLE, V);
 
         //LinkedList<Vertex>[] verticesInBalloons = Collector.assignVerticesToBalloons(balloons, V);
 
@@ -271,7 +263,7 @@ public class CompatibleCorrector {
 
     public void correctCompatible(LinkedList<Edge> allEdges, Vertex V) {
 
-        LinkedList<LinkedList<Edge>> balloons = Collector.collectBallons(balloonAngle, V);
+        LinkedList<LinkedList<Edge>> balloons = Collector.collectBallons(BALLOON_ANGLE, V);
         LinkedList<Vertex>[] verticesInBalloons = Collector.assignVerticesToBalloons(balloons, V);
 
         for (int i = 0; i < balloons.size(); i++) {
@@ -389,7 +381,7 @@ public class CompatibleCorrector {
         for (int i = 0; i < splitedges.length; i++) {
             if (splitedges[i].size() == 1) {
                 Edge e = (Edge) splitedges[i].first();
-                LinkedList<Edge> edges = new LinkedList<>();
+                EdgeList edges = new EdgeList();
                 edges.add(e);
                 double moved = 0.0;
                 if (e.getTop().getElist().size() == 1 || e.getBot().getElist().size() == 1) {
@@ -403,23 +395,17 @@ public class CompatibleCorrector {
     }
 
     public boolean pointInsideNetwork(Vertex c, List<Edge> external) {
-        int crossingsWithBorders = castRay(c, external);
-        if (crossingsWithBorders % 2 == 0) {
-            return false;
-        }
-        return true;
+        return castRay(c, external) % 2 != 0;
     }
 
     private int castRay(Vertex c, List<Edge> edges) {
         Line ray = new Line(c, new Vertex(c.getX() + 1, c.getY() + 1));
         int crossings = 0;
-        Iterator<Edge> edgeIterator = edges.iterator();
-        while (edgeIterator.hasNext()) {
-            Edge e = edgeIterator.next();
+        for(Edge e : edges) {
             if (!e.isCompatible()) {
-                Line eLine = new Line(e);
-                Vertex intP = intersection(ray, eLine);
-                if (Math.signum(intP.getX() - e.getTop().getX()) != Math.signum(intP.getX() - e.getBot().getX()) && intP.getX() > c.getX() && intP.getY() > c.getY()) {
+                Vertex intP = ray.intersection(new Line(e));
+                if (Math.signum(intP.getX() - e.getTop().getX()) != Math.signum(intP.getX() - e.getBot().getX()) &&
+                        intP.getX() > c.getX() && intP.getY() > c.getY()) {
                     crossings++;
                 }
             }
@@ -427,16 +413,12 @@ public class CompatibleCorrector {
         return crossings;
     }
 
-    private Vertex intersection(Line l1, Line l2) {
-        double x = (l2.b - l1.b) / (l1.a - l2.a);
-        double y = l1.a * x + l1.b;
-        return new Vertex(x, y);
-    }
+
 
     public int moveTrivial(Vertex V, int iterations, Network network) {
-        vertices = new LinkedList<>();
+        VertexList vertices = new VertexList();
 
-        C = computeCenterPoint(V);
+        Vertex centerPoint = computeCenterPoint(V);
 
         Set<double[]> po = new HashSet<>();
         Set<double[]> li = new HashSet<>();
@@ -499,11 +481,11 @@ public class CompatibleCorrector {
 
                     //Score current position
                     //trivial.remove(e);
-                    Score currentScore = getScore(w, v.getX(), v.getY(), w.getX(), w.getY(), trivial, e, inner, external, network.getLabeledVertices());
+                    Score currentScore = getScore(w, v.getX(), v.getY(), w.getX(), w.getY(), trivial, e, inner, external, network.getLabeledVertices(), centerPoint);
 
 
                     //Score all angles in the environment
-                    Score[] scores = scoreAngles(v, w, environment, trivial, e, inner, external, network.getLabeledVertices());
+                    Score[] scores = scoreAngles(v, w, environment, trivial, e, inner, external, network.getLabeledVertices(), centerPoint);
                     //trivial.add(e);
 
                     //Find the best angle:
@@ -582,7 +564,7 @@ public class CompatibleCorrector {
         return sorted;
     }
 
-    private Score[] scoreAngles(Vertex v, Vertex w, double[] environment, List<Edge> trivial, Edge e, List<Edge> inner, List<Edge> external, List<Vertex> labeled) {
+    private Score[] scoreAngles(Vertex v, Vertex w, double[] environment, List<Edge> trivial, Edge e, List<Edge> inner, List<Edge> external, List<Vertex> labeled, Vertex centrePoint) {
         Score[] scores = new Score[environment.length];
 
         double xt = w.getX() - v.getX();
@@ -593,7 +575,7 @@ public class CompatibleCorrector {
             double newX = xt * Math.cos(angle) - yt * Math.sin(angle) + v.getX();
             double newY = xt * Math.sin(angle) + yt * Math.cos(angle) + v.getY();
 
-            scores[i] = getScore(w, v.getX(), v.getY(), newX, newY, trivial, e, inner, external, labeled);
+            scores[i] = getScore(w, v.getX(), v.getY(), newX, newY, trivial, e, inner, external, labeled, centrePoint);
             scores[i].newX = newX;
             scores[i].newY = newY;
         }
@@ -601,7 +583,7 @@ public class CompatibleCorrector {
         return scores;
     }
 
-    private Score getScore(Vertex w, double x, double y, double x1, double y1, List<Edge> trivial, Edge e, List<Edge> internal, List<Edge> external, List<Vertex> labeled) {
+    private Score getScore(Vertex w, double x, double y, double x1, double y1, List<Edge> trivial, Edge e, List<Edge> internal, List<Edge> external, List<Vertex> labeled, Vertex centrePoint) {
         Score score = new Score();
 
         double punishment = 1;
@@ -642,7 +624,7 @@ public class CompatibleCorrector {
         //Get smallest angle with incident edges
         score.anglScore = scoreAngles(e, x, y, x1, y1);
 
-        score.dirScore = scoreDirection(e, x, y, x1, y1);
+        score.dirScore = scoreDirection(e, x, y, x1, y1, centrePoint);
 
         return score;
     }
@@ -880,15 +862,15 @@ public class CompatibleCorrector {
         return moved;
     }
 
-    private double scoreDirection(Edge e, double x, double y, double x1, double y1) {
+    private double scoreDirection(Edge e, double x, double y, double x1, double y1, Vertex centrePoint) {
         double length = e.length();
-        double sinAlpha = getSinusAlpha(new Vertex(x, y), C);
+        double sinAlpha = getSinusAlpha(new Vertex(x, y), centrePoint);
         double alpha = Math.asin(sinAlpha);
 
         double Y;
         double X;
 
-        if (y >= C.getY()) {
+        if (y >= centrePoint.getY()) {
             Y = y + length * sinAlpha;
         } else {
             Y = y - length * sinAlpha;
@@ -896,13 +878,13 @@ public class CompatibleCorrector {
 
         double cosAlpha = Math.cos(alpha);
 
-        if (x >= C.getX()) {
+        if (x >= centrePoint.getX()) {
             X = x + length * cosAlpha;
         } else {
             X = x - length * cosAlpha;
         }
 
-        double deviation = angleCalculator.getAngle(new Vertex(X, Y), C, new Vertex(x1, y1));
+        double deviation = angleCalculator.getAngle(new Vertex(X, Y), centrePoint, new Vertex(x1, y1));
 
         return deviation;
     }
@@ -998,10 +980,10 @@ public class CompatibleCorrector {
     }
 
 
-    private class Line {
+    private static class Line {
 
-        double a;
-        double b;
+        private double a;
+        private double b;
 
         private Line(Vertex v, Vertex w) {
             setAB(v, w);
@@ -1016,16 +998,24 @@ public class CompatibleCorrector {
             b = y1 - a * x1;
         }
 
-        private void setAB(Vertex v, Vertex w) {
+        private final void setAB(Vertex v, Vertex w) {
             a = (v.getY() - w.getY()) / (v.getX() - w.getX());
             b = v.getY() - a * v.getX();
         }
 
+        @Override
+        public boolean equals(Object o) {
+            return this.equals((Line)o);
+        }
+
         public boolean equals(Line l2) {
-            if (this.a == l2.a && this.b == l2.b) {
-                return true;
-            }
-            return false;
+            return this.a == l2.a && this.b == l2.b;
+        }
+
+        public Vertex intersection(Line l) {
+            double x = (l.b - this.b) / (this.a - l.a);
+            double y = this.a * x + this.b;
+            return new Vertex(x, y);
         }
     }
 }

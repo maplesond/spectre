@@ -13,7 +13,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.core.co.nm.weighting;
+package uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.nm.weighting;
 
 import org.apache.commons.lang3.StringUtils;
 

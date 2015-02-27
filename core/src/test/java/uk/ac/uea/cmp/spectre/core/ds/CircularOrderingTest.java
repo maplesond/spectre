@@ -17,6 +17,7 @@ package uk.ac.uea.cmp.spectre.core.ds;
 
 import org.junit.Before;
 import org.junit.Test;
+import uk.ac.uea.cmp.spectre.core.ds.split.circular.CircularOrdering;
 
 import static junit.framework.TestCase.assertTrue;
 

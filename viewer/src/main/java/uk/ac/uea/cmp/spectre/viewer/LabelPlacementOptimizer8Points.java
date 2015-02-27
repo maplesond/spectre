@@ -15,7 +15,7 @@
 
 package uk.ac.uea.cmp.spectre.viewer;
 
-import uk.ac.uea.cmp.spectre.core.ds.network.Translocator;
+import uk.ac.uea.cmp.spectre.core.ds.network.draw.Translocator;
 
 import java.util.Collection;
 import java.util.Iterator;

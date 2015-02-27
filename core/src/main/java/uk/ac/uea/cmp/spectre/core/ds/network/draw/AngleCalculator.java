@@ -16,6 +16,7 @@
 package uk.ac.uea.cmp.spectre.core.ds.network.draw;
 
 import uk.ac.uea.cmp.spectre.core.ds.network.Edge;
+import uk.ac.uea.cmp.spectre.core.ds.network.EdgeList;
 import uk.ac.uea.cmp.spectre.core.ds.network.Network;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
 
@@ -33,10 +34,18 @@ import java.util.Set;
  */
 public interface AngleCalculator {
 
-    public double computeOptimalAngle(LinkedList<NetworkBox> boxesSorted, LinkedList<Edge> edges, boolean bottom);
+    public double computeOptimalAngle(List<NetworkBox> boxesSorted, EdgeList edges, boolean bottom);
 
-    public double computeForCompatible(LinkedList<Edge> edges);
+    public double computeForCompatible(EdgeList edges);
 
+    /**
+     * Calculates the angle at Vertex 'a' from Vertex 'v1' to 'v2'
+     *
+     * @param v1 Vertex 1
+     * @param a Centre point from which to measure the angle
+     * @param v2 Vertex 2
+     * @return Angle from vertex 1 to vertex 2 at centre point 'a'
+     */
     public double getAngle(Vertex v1, Vertex a, Vertex v2);
 
     public double getSafeAngleBot(double deltaAlpha, Edge leftmost, Edge rightmost, Set<Vertex> bottomVertices, Set<Vertex> topVertices);

@@ -13,42 +13,26 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.core.ds;
+package uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering;
+
+import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
+import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
+import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 
 /**
- * Created with IntelliJ IDEA.
- * User: dan
- * Date: 12/11/13
- * Time: 23:09
- * To change this template use File | Settings | File Templates.
+ * Created by dan on 07/09/14.
  */
-public class Quadruple {
+public interface CircularOrderingCreator {
 
-    private Identifier q1;
-    private Identifier q2;
-    private Identifier q3;
-    private Identifier q4;
+    /**
+     * Creates a circular ordering of taxa from a distance matrix
+     * @param distanceMatrix Distances between each taxa
+     * @return A list of taxa matching taxa found in the distance matrix except that it has been sorted according to the
+     * underlying algorithm
+     */
+    IdentifierList createCircularOrdering(final DistanceMatrix distanceMatrix);
 
-    public Quadruple(Identifier q1, Identifier q2, Identifier q3, Identifier q4) {
-        this.q1 = q1;
-        this.q2 = q2;
-        this.q3 = q3;
-        this.q4 = q4;
-    }
+    boolean createsTreeSplits();
 
-    public Identifier getQ1() {
-        return q1;
-    }
-
-    public Identifier getQ2() {
-        return q2;
-    }
-
-    public Identifier getQ3() {
-        return q3;
-    }
-
-    public Identifier getQ4() {
-        return q4;
-    }
+    SplitSystem getTreeSplits();
 }

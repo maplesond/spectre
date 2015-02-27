@@ -19,6 +19,7 @@ package uk.ac.uea.cmp.spectre.core.ds.network.draw;
 import uk.ac.uea.cmp.spectre.core.ds.network.Edge;
 
 import java.util.LinkedList;
+import java.util.List;
 
 /*
  * To change this template, choose Tools | Templates and open the template in
@@ -31,7 +32,7 @@ import java.util.LinkedList;
 public class AngleCalculatorEqualAngles extends AngleCalculatorMaximalArea {
 
     @Override
-    protected double computeOptimal(LinkedList<NetworkBox> boxesSorted) {
+    protected double computeOptimal(List<NetworkBox> boxesSorted) {
         double gap = 0.1;
 
         double A = 0;

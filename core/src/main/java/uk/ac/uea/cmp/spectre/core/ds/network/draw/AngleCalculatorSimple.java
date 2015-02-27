@@ -16,8 +16,8 @@
 package uk.ac.uea.cmp.spectre.core.ds.network.draw;
 
 import uk.ac.uea.cmp.spectre.core.ds.network.Edge;
+import uk.ac.uea.cmp.spectre.core.ds.network.EdgeList;
 import uk.ac.uea.cmp.spectre.core.ds.network.Network;
-import uk.ac.uea.cmp.spectre.core.ds.network.Translocator;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
 
 import java.util.*;
@@ -36,7 +36,7 @@ public class AngleCalculatorSimple implements AngleCalculator {
     private double smallAngle = 0.2;
 
     @Override
-    public double computeOptimalAngle(LinkedList<NetworkBox> boxesSorted, LinkedList<Edge> edges, boolean bottom) {
+    public double computeOptimalAngle(List<NetworkBox> boxesSorted, EdgeList edges, boolean bottom) {
         if (!boxesSorted.isEmpty()) {
             return computeForIncompatible(boxesSorted, bottom);
         } else if (edges.size() == 1) {
@@ -47,7 +47,7 @@ public class AngleCalculatorSimple implements AngleCalculator {
     }
 
     @Override
-    public double computeForCompatible(LinkedList<Edge> edges) {
+    public double computeForCompatible(EdgeList edges) {
         Edge split = edges.getFirst();
         double deltaAlpha = 0.0;
 
@@ -91,7 +91,7 @@ public class AngleCalculatorSimple implements AngleCalculator {
         return deltaAlpha;
     }
 
-    protected double computeForIncompatible(LinkedList<NetworkBox> boxesSorted, boolean bottom) {
+    protected double computeForIncompatible(List<NetworkBox> boxesSorted, boolean bottom) {
         //variables to store limits of the possible angle movements
         //up is the maximum posible change of the angle by which we could
         //increase it,
@@ -187,12 +187,12 @@ public class AngleCalculatorSimple implements AngleCalculator {
         return angle;
     }
 
-    protected double computeOptimal(LinkedList<NetworkBox> boxesSorted) {
+    protected double computeOptimal(List<NetworkBox> boxesSorted) {
         double deltaAlpha = smallAngle * Math.signum(Math.random() - 0.5);
         return deltaAlpha;
     }
 
-    protected double computeSecondDerivative(LinkedList<NetworkBox> boxesSorted, double deltaAlpha) {
+    protected double computeSecondDerivative(List<NetworkBox> boxesSorted, double deltaAlpha) {
         double secondDerivative = 0;
 
         for (int i = 0; i < boxesSorted.size(); i++) {

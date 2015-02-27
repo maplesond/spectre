@@ -23,8 +23,9 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Arrays;
 
-/*This class implements methods to handle a quartet system*/
-
+/**
+ * This class implements methods to handle a quadruple system
+ */
 public class QuadrupleSystem implements Cloneable {
     //number of taxa
     private int nTaxa = 0;

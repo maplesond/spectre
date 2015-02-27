@@ -13,20 +13,18 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.core.co.nm.weighting;
+package uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.nm.weighting;
 
 import uk.ac.uea.cmp.spectre.core.ds.Identifier;
 
 /**
- * A vertex is weighted after its position in the component.
- * The inner vertices are lower weighted then the outer ones.
- * The weighting follows an adjusted parabola function.
- *
+ * Resulting circular order is solution for TSPWeighting.
+ * <p/>
  * Sarah Bastkowski, 2010: <I>Algorithmen zum Finden von Bäumen in Neighbor Net Netzwerken</I>
  *
  * @author Sarah Bastkowski
  */
-public class ParabolaWeighting extends Weighting {
+public class TSPWeighting extends Weighting {
 
     /**
      * @param i             index of weighting parameter to be updated
@@ -36,27 +34,19 @@ public class ParabolaWeighting extends Weighting {
      */
     @Override
     public void updateWeightingParam(Identifier i, int position, int size) {
+        Double weightingparameter = 0.;
 
-        double alpha = calcAlpha(size);
-        double weighting = 1. / alpha * Math.pow(position - 0.5 * (size - 1), 2);
-
-        this.setWeightingParam(i, weighting);
-    }
-
-    /**
-     * Calculate the normalisation factor alpha
-     * @param size Size of component (i.e. number of vertices)
-     * @return alpha
-     */
-    private static double calcAlpha(final int size) {
-        double alpha = 0.;
-
-        for (int j = 0; j < size; j++) {
-            alpha += (j - 0.5 * (size - 1))
-                    * (j - 0.5 * (size - 1));
+        if (size == 1) {
+            weightingparameter = 1.;
+        }
+        if (size > 1
+                && (position == 0 || position == (size - 1))) {
+            weightingparameter = 0.5;
+        } else {
+            weightingparameter = 0.;
         }
 
-        return alpha;
+        setWeightingParam(i, weightingparameter);
     }
 
     public void process(Identifier i, int position, int customParameter) {

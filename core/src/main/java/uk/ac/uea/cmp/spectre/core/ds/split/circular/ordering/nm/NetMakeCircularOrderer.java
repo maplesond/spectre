@@ -13,14 +13,14 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.core.co.nm;
+package uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.nm;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import uk.ac.uea.cmp.spectre.core.co.CVMatrices;
-import uk.ac.uea.cmp.spectre.core.co.CircularOrderingCreator;
-import uk.ac.uea.cmp.spectre.core.co.nm.weighting.GreedyMEWeighting;
-import uk.ac.uea.cmp.spectre.core.co.nm.weighting.Weighting;
+import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.CVMatrices;
+import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.CircularOrderingCreator;
+import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.nm.weighting.GreedyMEWeighting;
+import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.nm.weighting.Weighting;
 import uk.ac.uea.cmp.spectre.core.ds.Identifier;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;

@@ -13,15 +13,15 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.core.co.nm;
+package uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.nm;
 
 import org.junit.Before;
 import org.junit.Test;
-import uk.ac.uea.cmp.spectre.core.co.CircularOrderingCreator;
-import uk.ac.uea.cmp.spectre.core.co.nm.weighting.GreedyMEWeighting;
-import uk.ac.uea.cmp.spectre.core.co.nm.weighting.TSPWeighting;
-import uk.ac.uea.cmp.spectre.core.co.nm.weighting.TreeWeighting;
-import uk.ac.uea.cmp.spectre.core.ds.CircularOrdering;
+import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.CircularOrderingCreator;
+import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.nm.weighting.GreedyMEWeighting;
+import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.nm.weighting.TSPWeighting;
+import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.nm.weighting.TreeWeighting;
+import uk.ac.uea.cmp.spectre.core.ds.split.circular.CircularOrdering;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.distance.FlexibleDistanceMatrix;

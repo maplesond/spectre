@@ -167,8 +167,8 @@ public class Edge implements Comparable<Edge> {
         }
     }
 
-    private void collectEdges(LinkedList<Edge> elist) {
-        LinkedList<Edge> toBeExplored = new LinkedList<>();
+    private void collectEdges(EdgeList elist) {
+        EdgeList toBeExplored = new EdgeList();
         toBeExplored.addLast(this);
         this.setVisited(true);
 

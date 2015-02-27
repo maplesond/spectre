@@ -17,9 +17,12 @@ package uk.ac.uea.cmp.spectre.core.ds.network;
 
 
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
+import uk.ac.uea.cmp.spectre.core.ds.network.draw.*;
 
 import java.awt.*;
+import java.util.LinkedList;
 import java.util.ListIterator;
+import java.util.TreeSet;
 
 public class Vertex {
 
@@ -429,5 +432,67 @@ public class Vertex {
             }
         }
         return angle;
+    }
+
+    public Vertex optimiseLayout(PermutationSequenceDraw ps, Network network) {
+
+        //Compute split system
+        SplitSystemDraw ss = new SplitSystemDraw(ps);
+
+        //Collect all vertices
+        LinkedList<Vertex> vertices = this.collectVertices();
+
+        //Initialize array used to store indices of active splits only
+        int[] activeSplits = Collector.collectIndicesOfActiveSplits(ps);
+        //Initialize array to keep edges involved in each split
+        TreeSet[] splitedges = Collector.collectEdgesForTheSplits(ps, this);
+
+        AngleCalculator angleCalculatorSimple = new AngleCalculatorSimple();
+        AngleCalculator angleCalculatorPrecise = new AngleCalculatorMaximalArea();
+
+        //Two types of box openers are used. Simple one tries to open boxes by
+        //no more than certain constant angle, whereas precise one uses angle
+        //which maximises certain function.
+        BoxOpener boxOpenerSimple = new BoxOpener(angleCalculatorSimple);
+        BoxOpener boxOpenerPrecise = new BoxOpener(angleCalculatorPrecise);
+
+        //CompatibleCorrectors are used to change angles for compatible splits.
+        CompatibleCorrector compatibleCorrectorSimple = new CompatibleCorrector(angleCalculatorSimple);
+        CompatibleCorrector compatibleCorrectorPrecise = new CompatibleCorrector(angleCalculatorPrecise);
+
+        //First step of the layout optimisation consists of a few iterations of
+        //simple box opening followed by a few of more precise one. These two
+        //are repeated a few times. This king of strategy proved to produce
+        //networks that look much better rather than using simple or precise
+        //alone.
+
+        int trivial = 2 + network.getTrivialEdges().size() / 10;
+        int precise = 2 + ps.getNtaxa() / 20;
+        int iterations = 2 + ps.getNtaxa() / 50;
+        int finish = precise + 5;
+        int compatible = 1;// + ps.ntaxa / 40;
+
+        //compatibleCorrectorPrecise.moveTrivial(v, 2 + ((int)(ps.ntaxa * 0.03)), null);
+        for (int j = 0; j < iterations; j++) {
+            //System.err.print("iteration precise: ");
+            for (int i = 0; i < precise; i++) {
+                //System.err.print((i + 1) + " ");
+                boxOpenerPrecise.openIncompatible(activeSplits, this, ss, vertices, splitedges, network);
+            }
+            for (int i = 0; i < compatible; i++) {
+                //System.err.print((i + 1) + " ");
+                compatibleCorrectorPrecise.moveCompatible(this, 1, network);
+            }
+            //System.err.print("moving trivial: ");
+            compatibleCorrectorPrecise.moveTrivial(this, trivial, network);
+
+            //System.err.println();
+        }
+        //System.err.println("Finishing: ");
+        for (int i = 0; i < finish; i++) {
+            //System.out.println((i+1) + " ");
+            boxOpenerPrecise.openOneIncompatible(activeSplits, this, ss, vertices, splitedges, network);
+        }
+        return this;
     }
 }
