@@ -1,14 +1,13 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2014  UEA School of Computing Sciences
+ * Copyright (C) 2015  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
- * details.
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
@@ -20,14 +19,10 @@ import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-//This class provides the algorithm for computing
-//NNLS-fitting of a distance matrix on a flat split
-//system
-
+/**
+ * This class provides the algorithm for computing NNLS-fitting of a distance matrix on a flat split system
+ */
 public class FitWeight {
-//*******************************************************************
-//public methods
-//*******************************************************************
 
     /**
      * This method wraps the actual nnls algorithm and performs some initialization when the algorithm is called from scratch.
@@ -42,19 +37,14 @@ public class FitWeight {
 
         //Setting up the object containing information
         //about the arrangement of pseudolines.
-        ArrangementData arrdata = psequ.computeArrangement();
-
-        //Setting up the temporary arrays used in the NNLS algorithm
-        NNLSTempData tmpdata = new NNLSTempData();
-
-        //This will be the first pass.
-        tmpdata.firsttime = true;
-
-        //setting the epsilon to the value provided by the user.
-        tmpdata.usereps = usereps;
+        ArrangementData arrdata = ArrangementData.computeArrangement(psequ.swaps, psequ.initSequ);
 
         final int nbSwaps = psequ.getNswaps();
         final int nbActive = psequ.getnActive();
+
+        //Setting up the temporary arrays used in the NNLS algorithm
+        NNLSTempData tmpdata = new NNLSTempData(usereps);
+
 
         //Arrays for storing the split weights
         tmpdata.tempx = new double[nbSwaps];
@@ -125,8 +115,8 @@ public class FitWeight {
      * @return Result
      */
     public static double lh_nnls_arr_inner(PermutationSequenceDraw psequ, NNLSTempData tmpdata, ArrangementData arrdata) {
-        eps = tmpdata.usereps;
-        cgeps = tmpdata.usereps;
+        eps = tmpdata.getUserEpsilon();
+        cgeps = tmpdata.getUserEpsilon();
 
         //Upper bound on the number of iterations.
         //It would be good to investigate how many are really necessary.
@@ -147,9 +137,9 @@ public class FitWeight {
                 System.out.println("Inner loop");
 
                 //Check if we enter this loop for the first time.
-                if (tmpdata.firsttime) {
+                if (tmpdata.isFirstTime()) {
                     //We just use the optimal solution of the full unconstraint problem.
-                    tmpdata.firsttime = false;
+                    tmpdata.setFirstTime(false);
                 } else {
                     //We compute the optimal solution of the unconstrained problem restricted
                     //to those elements that are not fixed to 0.
@@ -259,7 +249,7 @@ public class FitWeight {
 
         //Get the neccessary information about the arrangement of
         //pseudolines.
-        ArrangementData arrdata = psequ.computeArrangement();
+        ArrangementData arrdata = ArrangementData.computeArrangement(psequ.swaps, psequ.initSequ);
 
         //Compute the induced distance as a 1-dimensional array.
         compute_ax_arr(y, tempdist, x, arrdata.arr, psequ);

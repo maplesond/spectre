@@ -1,14 +1,13 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2014  UEA School of Computing Sciences
+ * Copyright (C) 2015  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
- * details.
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
@@ -334,7 +333,7 @@ public class CompatibleCorrector {
 
 
     private Vertex computeCenterPoint(Vertex net) {
-        double[] corners = Window.getCorners(net.collectVertices());
+        double[] corners = net.collectVertices().getCorners();
         double x = 0.5 * (corners[0] + corners[1]);
         double y = 0.5 * (corners[2] + corners[3]);
         return new Vertex(x, y);
@@ -434,7 +433,7 @@ public class CompatibleCorrector {
         return new Vertex(x, y);
     }
 
-    public int moveTrivial(Vertex V, int iterations, Window window, Network network) {
+    public int moveTrivial(Vertex V, int iterations, Network network) {
         vertices = new LinkedList<>();
 
         C = computeCenterPoint(V);
@@ -449,7 +448,7 @@ public class CompatibleCorrector {
             vertices.add(e.getBot().getElist().size() == 1 ? e.getBot() : e.getTop());
         }
 
-        double[] corners = Window.getCorners(network.getAllVertices());
+        double[] corners = network.getAllVertices().getCorners();
         double X = (corners[0] + corners[1]) * 0.5;
         double Y = (corners[2] + corners[3]) * 0.5;
 
@@ -490,10 +489,10 @@ public class CompatibleCorrector {
 
                     boolean inside = pointNotInTheSet(v, external);
 
-                    double[] environment = angleCalculator.optimizedAngleForCompatible2(v, w, e, edges, this, network, window, true);
+                    double[] environment = angleCalculator.optimizedAngleForCompatible2(v, w, e, edges, this, network, true);
 
                     if (environment.length == 0 && inside) {
-                        environment = angleCalculator.optimizedAngleForCompatible2(v, w, e, network.getInternalEdges(), this, network, window, false);
+                        environment = angleCalculator.optimizedAngleForCompatible2(v, w, e, network.getInternalEdges(), this, network, false);
                     }
 
                     edges.add(e);
@@ -526,21 +525,6 @@ public class CompatibleCorrector {
                     }
 
                     if (best != -1) {
-                        if (window != null) {
-                            double[] point = new double[3];
-                            point[0] = w.getX();
-                            point[1] = w.getY();
-                            point[2] = w.getHeight();
-
-                            double[] line = new double[4];
-                            line[0] = w.getX();
-                            line[1] = w.getY();
-                            line[2] = v.getX();
-                            line[3] = v.getY();
-
-                            po.add(point);
-                            li.add(line);
-                        }
 
                         w.setX(scores[best].newX);
                         w.setY(scores[best].newY);
@@ -558,9 +542,6 @@ public class CompatibleCorrector {
             if (corrected == 0) {
                 break;
             }
-        }
-        if (window != null) {
-            window.setLast(li, po);
         }
 
         return corrected;
@@ -763,7 +744,7 @@ public class CompatibleCorrector {
         return true;
     }
 
-    public double moveCompatible(Vertex V, int iterations, Window window, Network network) {
+    public double moveCompatible(Vertex V, int iterations, Network network) {
         List<Edge> compatible = new EdgeList(network.getAllEdges()).getCompatible();
         List<Edge> external = network.getExternalEdges();
         external.addAll(network.getTrivialEdges());

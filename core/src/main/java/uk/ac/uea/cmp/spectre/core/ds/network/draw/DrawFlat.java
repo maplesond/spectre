@@ -1,14 +1,13 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2014  UEA School of Computing Sciences
+ * Copyright (C) 2015  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
- * details.
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
@@ -344,8 +343,8 @@ public class DrawFlat {
         while (iter.hasNext()) {
             e1 = (Edge) iter.next();
             if (e1 != h) {
-                f1 = (Edge) e1.getTop().getElist().get((e1.getTop().getElist().indexOf(e1) + e1.getTop().getElist().size() - 1) % e1.getTop().getElist().size());
-                f2 = (Edge) e1.getBot().getElist().get((e1.getBot().getElist().indexOf(e1) + 1) % e1.getBot().getElist().size());
+                f1 = e1.getTop().getElist().get((e1.getTop().getElist().indexOf(e1) + e1.getTop().getElist().size() - 1) % e1.getTop().getElist().size());
+                f2 = e1.getBot().getElist().get((e1.getBot().getElist().indexOf(e1) + 1) % e1.getBot().getElist().size());
 
                 if (f1.getIdxsplit() == b) {
                     netbox = new NetworkBox(e1, (Edge) iter.next(), f1, f2);
@@ -387,7 +386,7 @@ public class DrawFlat {
         //System.out.print("Collect edges -- ");
 
         //determine direction in which we collect edges
-        if (netbox.f1.getTimestp() < netbox.f2.getTimestp()) {
+        if (netbox.getF1().getTimestp() < netbox.getF2().getTimestp()) {
             if (pattern == 1) {
                 dira = -1;
                 dirb = 1;
@@ -434,8 +433,8 @@ public class DrawFlat {
         }
 
         //now collect edges
-        collect_edges_from_box(netbox.e1, netbox.e2, a, dira, elista, crosslista, splitedges, parta);
-        collect_edges_from_box(netbox.f1, netbox.f2, b, dirb, elistb, crosslistb, splitedges, partb);
+        collect_edges_from_box(netbox.getE1(), netbox.getE2(), a, dira, elista, crosslista, splitedges, parta);
+        collect_edges_from_box(netbox.getF1(), netbox.getF2(), b, dirb, elistb, crosslistb, splitedges, partb);
 
         //System.out.println("done");
 
