@@ -20,7 +20,6 @@ import uk.ac.uea.cmp.spectre.core.ds.network.EdgeList;
 import uk.ac.uea.cmp.spectre.core.ds.network.Network;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 

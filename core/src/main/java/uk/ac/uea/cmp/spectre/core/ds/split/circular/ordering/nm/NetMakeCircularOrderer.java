@@ -17,15 +17,15 @@ package uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.nm;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.CVMatrices;
-import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.CircularOrderingCreator;
-import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.nm.weighting.GreedyMEWeighting;
-import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.nm.weighting.Weighting;
 import uk.ac.uea.cmp.spectre.core.ds.Identifier;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.distance.FlexibleDistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.split.*;
+import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.CVMatrices;
+import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.CircularOrderingCreator;
+import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.nm.weighting.GreedyMEWeighting;
+import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.nm.weighting.Weighting;
 
 import java.util.Map;
 

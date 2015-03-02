@@ -19,11 +19,11 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.CVMatrices;
 import uk.ac.uea.cmp.spectre.core.ds.Identifier;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.split.*;
+import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.CVMatrices;
 import uk.ac.uea.cmp.spectre.core.math.stats.Statistics;
 
 import java.util.ArrayList;

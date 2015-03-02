@@ -18,7 +18,6 @@ package uk.ac.uea.cmp.spectre.core.ds.network.draw;
 
 import uk.ac.uea.cmp.spectre.core.ds.network.Edge;
 
-import java.util.LinkedList;
 import java.util.List;
 
 /*

@@ -15,9 +15,9 @@
 
 package uk.ac.uea.cmp.spectre.core.ds.split;
 
-import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.CircularNNLS;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
+import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.CircularNNLS;
 
 import java.util.ArrayList;
 import java.util.List;

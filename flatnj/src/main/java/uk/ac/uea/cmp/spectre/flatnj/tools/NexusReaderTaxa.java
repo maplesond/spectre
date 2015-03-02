@@ -15,7 +15,7 @@
 
 package uk.ac.uea.cmp.spectre.flatnj.tools;
 
-import uk.ac.uea.cmp.spectre.flatnj.ds.Taxa;
+import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -45,14 +45,14 @@ public class NexusReaderTaxa extends NexusReader {
     }
 
     @Override
-    protected Taxa createObject(Dimensions dimensions, Cycle cycle, Draw draw) {
-        Taxa taxa = null;
+    protected IdentifierList createObject(Dimensions dimensions, Cycle cycle, Draw draw) {
+        IdentifierList taxa = null;
         if (labels.size() > 0) {
             String[] labelsAsArray = new String[labels.size()];
             for (int i = 0; i < labelsAsArray.length; i++) {
                 labelsAsArray[i] = labels.get(i);
             }
-            taxa = new Taxa(labelsAsArray);
+            taxa = new IdentifierList(labelsAsArray);
         }
         return taxa;
     }

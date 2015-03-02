@@ -16,12 +16,16 @@
 package uk.ac.uea.cmp.spectre.flatnj.tools;
 
 import uk.ac.uea.cmp.spectre.core.ds.Alignment;
+import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.network.Edge;
 import uk.ac.uea.cmp.spectre.core.ds.network.FlatNetwork;
 import uk.ac.uea.cmp.spectre.core.ds.network.NetworkLabel;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
-import uk.ac.uea.cmp.spectre.flatnj.ds.*;
+import uk.ac.uea.cmp.spectre.flatnj.ds.PermutationSequence;
+import uk.ac.uea.cmp.spectre.flatnj.ds.Quadruple;
+import uk.ac.uea.cmp.spectre.flatnj.ds.QuadrupleSystem;
+import uk.ac.uea.cmp.spectre.flatnj.ds.SplitSystem;
 
 import java.io.*;
 import java.util.Iterator;
@@ -73,8 +77,8 @@ public class Writer {
         }
     }
 
-    public void write(Taxa taxa) {
-        String[] labels = taxa.getTaxaNames();
+    public void write(IdentifierList taxa) {
+        String[] labels = taxa.getNames();
         writeLine("#NEXUS");
         writeLine();
         writeLine("BEGIN Taxa;");
@@ -266,7 +270,7 @@ public class Writer {
         }
     }
 
-    public void write(Vertex net, int nTaxa, int[] compressed, Taxa taxa) {
+    public void write(Vertex net, int nTaxa, int[] compressed, IdentifierList taxa) {
         Iterator<Vertex> vIter;
         Iterator<Edge> eIter;
         Iterator taxiter;
@@ -291,7 +295,7 @@ public class Writer {
 
                 while (taxiter.hasNext()) {
                     int index = ((Integer) taxiter.next()).intValue();
-                    line = line.concat(" '" + taxa.getTaxaNames()[index] + "'");
+                    line = line.concat(" '" + taxa.getNames()[index] + "'");
                 }
                 line = line.concat(",");
                 writeLine(line);
@@ -320,7 +324,7 @@ public class Writer {
                 String label = new String();
                 taxiter = v.getTaxa().listIterator();
                 while (taxiter.hasNext()) {
-                    label = (taxa.getTaxaNames()[((Integer) taxiter.next()).intValue()] + ", ").concat(label);
+                    label = (taxa.getNames()[((Integer) taxiter.next()).intValue()] + ", ").concat(label);
                     //--------------------- just for testing, so that labels are nor visible --------
                     //label = "";
                 }
@@ -387,7 +391,7 @@ public class Writer {
         writeLine("END;");
     }
 
-    public void write(FlatNetwork network, Taxa taxa) {
+    public void write(FlatNetwork network, IdentifierList taxa) {
         Iterator<Vertex> vIter;
         Iterator<Edge> eIter;
         Iterator taxiter;
@@ -413,7 +417,7 @@ public class Writer {
                 String line = String.valueOf((v.getNxnum() + 1));
 
                 while (taxiter.hasNext()) {
-                    line = line.concat(" '" + taxa.getTaxaNames()[((Integer) taxiter.next()).intValue()] + "'");
+                    line = line.concat(" '" + taxa.getNames()[((Integer) taxiter.next()).intValue()] + "'");
                 }
                 line = line.concat(",");
                 writeLine(line);
@@ -448,7 +452,7 @@ public class Writer {
                 String label = new String();
                 taxiter = v.getTaxa().listIterator();
                 while (taxiter.hasNext()) {
-                    label = (taxa.getTaxaNames()[((Integer) taxiter.next()).intValue()] + ", ").concat(label);
+                    label = (taxa.getNames()[((Integer) taxiter.next()).intValue()] + ", ").concat(label);
                     //--------------------- just for testing, so that labels are nor visible --------
                     //label = "";
                 }

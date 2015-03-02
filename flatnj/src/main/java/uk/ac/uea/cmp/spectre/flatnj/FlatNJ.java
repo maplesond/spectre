@@ -23,13 +23,20 @@ import org.apache.log4j.BasicConfigurator;
 import uk.ac.tgac.metaopt.Objective;
 import uk.ac.tgac.metaopt.Optimiser;
 import uk.ac.tgac.metaopt.OptimiserFactory;
+import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.network.FlatNetwork;
 import uk.ac.uea.cmp.spectre.core.ds.network.Network;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
-import uk.ac.uea.cmp.spectre.core.ds.network.draw.*;
+import uk.ac.uea.cmp.spectre.core.ds.network.draw.AngleCalculatorMaximalArea;
+import uk.ac.uea.cmp.spectre.core.ds.network.draw.CompatibleCorrector;
+import uk.ac.uea.cmp.spectre.core.ds.network.draw.DrawFlat;
+import uk.ac.uea.cmp.spectre.core.ds.network.draw.PermutationSequenceDraw;
 import uk.ac.uea.cmp.spectre.core.io.nexus.NexusWriter;
 import uk.ac.uea.cmp.spectre.core.ui.cli.CommandLineHelper;
-import uk.ac.uea.cmp.spectre.flatnj.ds.*;
+import uk.ac.uea.cmp.spectre.flatnj.ds.PermutationSequence;
+import uk.ac.uea.cmp.spectre.flatnj.ds.QuadrupleSystem;
+import uk.ac.uea.cmp.spectre.flatnj.ds.SplitSystem;
+import uk.ac.uea.cmp.spectre.flatnj.ds.SplitSystemFinal;
 import uk.ac.uea.cmp.spectre.flatnj.tools.*;
 
 import java.io.File;
@@ -90,7 +97,7 @@ public class FlatNJ {
     /**
      * List of the taxa
      */
-    private static Taxa taxa = null;
+    private static IdentifierList taxa = null;
 
     /**
      * Length of the information line
@@ -202,7 +209,7 @@ public class FlatNJ {
     private static void readTaxa(String inFile) {
         System.err.print(Utilities.addDots("Reading taxa labels ", nDots));
         reader = new NexusReaderTaxa();
-        taxa = (Taxa) reader.readBlock(inFile);
+        taxa = (IdentifierList) reader.readBlock(inFile);
         System.err.println(" done.");
     }
 
@@ -255,7 +262,7 @@ public class FlatNJ {
 
         ps.filterSplits(threshold);
 
-        ps.setTaxaNames(taxa.getTaxaNames());
+        ps.setTaxaNames(taxa.getNames());
         ss = new SplitSystemFinal(ps);
         System.err.println(" done.");
 

@@ -16,7 +16,6 @@
 package uk.ac.uea.cmp.spectre.core.ds.network;
 
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
-import uk.ac.uea.cmp.spectre.core.ds.network.draw.PermutationSequenceDraw;
 
 import java.util.List;
 import java.util.Set;

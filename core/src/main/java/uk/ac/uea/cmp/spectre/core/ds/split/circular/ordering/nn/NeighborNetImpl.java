@@ -17,13 +17,13 @@ package uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.nn;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.CVMatrices;
-import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.CircularOrderingCreator;
 import uk.ac.uea.cmp.spectre.core.ds.Identifier;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.distance.FlexibleDistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
+import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.CVMatrices;
+import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.CircularOrderingCreator;
 
 import java.util.Collections;
 import java.util.LinkedList;

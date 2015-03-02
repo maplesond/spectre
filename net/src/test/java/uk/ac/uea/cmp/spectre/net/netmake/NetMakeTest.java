@@ -23,14 +23,14 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.CircularOrderingCreator;
-import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.nm.NetMakeCircularOrderer;
-import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.nm.weighting.GreedyMEWeighting;
-import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.nm.weighting.TSPWeighting;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.distance.FlexibleDistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
+import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.CircularOrderingCreator;
+import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.nm.NetMakeCircularOrderer;
+import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.nm.weighting.GreedyMEWeighting;
+import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.nm.weighting.TSPWeighting;
 
 import java.io.File;
 import java.io.IOException;

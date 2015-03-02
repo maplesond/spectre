@@ -20,6 +20,7 @@ import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.lang3.StringUtils;
 import uk.ac.uea.cmp.spectre.core.ds.Alignment;
+import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.io.fasta.FastaReader;
 import uk.ac.uea.cmp.spectre.core.io.nexus.NexusReader;
@@ -27,7 +28,6 @@ import uk.ac.uea.cmp.spectre.core.ui.cli.CommandLineHelper;
 import uk.ac.uea.cmp.spectre.flatnj.ds.Locations;
 import uk.ac.uea.cmp.spectre.flatnj.ds.QuadrupleSystem;
 import uk.ac.uea.cmp.spectre.flatnj.ds.SplitSystem;
-import uk.ac.uea.cmp.spectre.flatnj.ds.Taxa;
 import uk.ac.uea.cmp.spectre.flatnj.tools.*;
 
 import java.io.File;
@@ -62,7 +62,7 @@ public class Gen4S {
     private static DistanceMatrix dm;
     private static Locations loc;
     private static SplitSystem ss;
-    private static Taxa taxa = null;
+    private static IdentifierList taxa = null;
     private static QuadrupleSystem qs;
     private static int nDots = 40;
 
@@ -153,7 +153,7 @@ public class Gen4S {
                 }
 
                 if (taxaLabels != null) {
-                    taxa = new Taxa(taxaLabels);
+                    taxa = new IdentifierList(taxaLabels);
                 } else {
                     readTaxa(inFile);
                 }
@@ -177,7 +177,7 @@ public class Gen4S {
 
     /**
      * Reads alignment from fasta file and initializes {@linkplain Alignment}
-     * and {@linkplain Taxa} objects.
+     * and {@linkplain uk.ac.uea.cmp.spectre.core.ds.IdentifierList} objects.
      *
      * @param fastaFile fasta file path.
      */
@@ -188,7 +188,7 @@ public class Gen4S {
             System.err.println();
             exitError("Error: could not read sequence alignment from '" + fastaFile + "'");
         }
-        taxa = new Taxa(a.getTaxaLabels());
+        taxa = new IdentifierList(a.getTaxaLabels());
         System.err.println(" done.");
     }
 
@@ -257,13 +257,13 @@ public class Gen4S {
 
     /**
      * Reads taxa names from TAXA block in nexus input file and initializes
-     * {@linkplain Taxa} object.
+     * {@linkplain uk.ac.uea.cmp.spectre.core.ds.IdentifierList} object.
      *
      * @param inFile
      */
     private static void readTaxa(File inFile) {
         System.err.print(Utilities.addDots("Reading taxa labels ", nDots));
-        taxa = (Taxa) new NexusReaderTaxa().readBlock(inFile.getAbsolutePath());
+        taxa = (IdentifierList) new NexusReaderTaxa().readBlock(inFile.getAbsolutePath());
         System.err.println(" done.");
     }
 

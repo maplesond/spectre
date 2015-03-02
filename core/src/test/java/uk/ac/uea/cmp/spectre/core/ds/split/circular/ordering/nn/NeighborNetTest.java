@@ -17,11 +17,11 @@ package uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.nn;
 
 import org.junit.Before;
 import org.junit.Test;
-import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.CircularOrderingCreator;
-import uk.ac.uea.cmp.spectre.core.ds.split.circular.CircularOrdering;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.distance.FlexibleDistanceMatrix;
+import uk.ac.uea.cmp.spectre.core.ds.split.circular.CircularOrdering;
+import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.CircularOrderingCreator;
 import uk.ac.uea.cmp.spectre.core.io.nexus.NexusWriter;
 
 import java.io.File;
