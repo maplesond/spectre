@@ -142,7 +142,7 @@ public class NexusWriter extends AbstractPhygenWriter implements Appendable {
 
         nexusString.append("#NEXUS\nBEGIN taxa;\nDIMENSIONS ntax=").append(N).append(";\nTAXLABELS\n");
 
-        for (Taxon taxon : nexusData.getTaxa()) {
+        for (Taxon taxon : nexusData.getActive()) {
             nexusString.append(taxon.getName()).append("\n");
         }
 

@@ -158,7 +158,7 @@ public class Nexus {
         List<SplitBlock> filteredSplits = new LinkedList<>();
         List<Double> filteredWeights = new LinkedList<>();
 
-        Collections.copy(taxaCopy, this.getTaxa());
+        Collections.copy(taxaCopy, this.getActive());
         Collections.copy(cycleCopy, this.getCycle());
 
         for (int i = 0; i < noSplits; i++) {

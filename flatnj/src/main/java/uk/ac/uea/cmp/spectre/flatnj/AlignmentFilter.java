@@ -13,20 +13,27 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.flatnj.gen4s;
-
-import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleSystem;
+package uk.ac.uea.cmp.spectre.flatnj;
 
 /**
- * Interface for {@link QuadrupleSystem} factory.
+ * Multiple sequence alignment filter for illegal characters.
  *
  * @author balvociute
  */
-public interface QSFactory {
+public class AlignmentFilter {
     /**
-     * Initializes and weights {@link QuadrupleSystem}.
+     * Checks if the <code>symbol</code> is in the alphabet.
      *
-     * @return a {@link QuadrupleSystem}  object.
+     * @param symbol a character to be checked.
+     * @return true if <code>symbol</code> is in the alphabet and false
+     * otherwise.
      */
-    public abstract QuadrupleSystem computeQS();
+    public boolean isAllowed(char symbol) {
+        if (symbol == '-') {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
 }

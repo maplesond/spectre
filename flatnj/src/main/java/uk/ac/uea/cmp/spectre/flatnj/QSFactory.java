@@ -18,17 +18,15 @@ package uk.ac.uea.cmp.spectre.flatnj;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleSystem;
 
 /**
- * {@linkplain QuadrupleSystem} agglomerator.
+ * Interface for {@link QuadrupleSystem} factory.
  *
  * @author balvociute
  */
-public interface QuadrupleAgglomerator {
+public interface QSFactory {
     /**
-     * Agglomerates Quadruples in the given {@linkplain QuadrupleSystem} by joining
-     * given {@linkplain Neighbours}.
+     * Initializes and weights {@link QuadrupleSystem}.
      *
-     * @param qs         {@linkplain QuadrupleSystem}.
-     * @param neighbours {@linkplain Neighbours}.
+     * @return a {@link QuadrupleSystem}  object.
      */
-    public void agglomerate(QuadrupleSystem qs, Neighbours neighbours);
+    public abstract QuadrupleSystem computeQS();
 }

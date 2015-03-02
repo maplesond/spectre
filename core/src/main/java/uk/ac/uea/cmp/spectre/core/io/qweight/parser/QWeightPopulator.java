@@ -23,7 +23,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.spectre.core.ds.Identifier;
 import uk.ac.uea.cmp.spectre.core.ds.quad.SpectreQuad;
-import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.*;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.GroupedQuartetSystem;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.QuartetUtils;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.QuartetWeights;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.WeightedQuartetGroupMap;
 
 /**
  * Created with IntelliJ IDEA.

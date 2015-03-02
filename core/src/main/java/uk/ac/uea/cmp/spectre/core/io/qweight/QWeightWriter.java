@@ -15,8 +15,8 @@
 
 package uk.ac.uea.cmp.spectre.core.io.qweight;
 
-import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.GroupedQuartetSystem;
 import uk.ac.uea.cmp.spectre.core.ds.quad.Quad;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.GroupedQuartetSystem;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.QuartetSystem;
 import uk.ac.uea.cmp.spectre.core.io.AbstractPhygenWriter;
 

@@ -23,11 +23,11 @@ import uk.ac.uea.cmp.spectre.core.ds.network.Edge;
 import uk.ac.uea.cmp.spectre.core.ds.network.FlatNetwork;
 import uk.ac.uea.cmp.spectre.core.ds.network.NetworkLabel;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
-import uk.ac.uea.cmp.spectre.core.ds.split.flat.PermutationSequence;
-import uk.ac.uea.cmp.spectre.core.ds.split.flat.Utilities;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.Quadruple;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.flat.FlatSplitSystem;
+import uk.ac.uea.cmp.spectre.core.ds.split.flat.PermutationSequence;
+import uk.ac.uea.cmp.spectre.core.ds.split.flat.Utilities;
 
 import java.io.*;
 import java.util.Iterator;
@@ -131,7 +131,7 @@ public class Writer {
     public void write(QuadrupleSystem qs) {
         writeLine();
         writeLine("BEGIN Quadruples;");
-        writeLine(" DIMENSIONS ntax=" + qs.getnTaxa() + " nquadruples=" + qs.getnQuadruples() + ";");
+        writeLine(" DIMENSIONS ntax=" + qs.getNbTaxa() + " nquadruples=" + qs.getnQuadruples() + ";");
         writeLine(" FORMAT labels=LEFT;");
         writeLine(" MATRIX");
 

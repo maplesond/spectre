@@ -13,11 +13,10 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.flatnj;
+package uk.ac.uea.cmp.spectre.core.ds.quad.quadruple;
 
+import uk.ac.uea.cmp.spectre.core.ds.split.flat.Neighbours;
 import uk.ac.uea.cmp.spectre.core.util.CollectionUtils;
-import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.Quadruple;
-import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleSystem;
 
 /**
  * {@linkplain QuadrupleSystem} agglomerator that averages weights in each pair of
@@ -28,7 +27,7 @@ import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleSystem;
 public class QuadrupleAgglomeratorAverage implements QuadrupleAgglomerator {
     @Override
     public void agglomerate(QuadrupleSystem qs, Neighbours neighbours) {
-        int[] taxa = CollectionUtils.getElements(qs.getTaxa());
+        int[] taxa = CollectionUtils.getElements(qs.getActive());
 
         int a = neighbours.getA();
         int b = neighbours.getB();

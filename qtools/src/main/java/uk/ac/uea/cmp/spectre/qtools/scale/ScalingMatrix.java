@@ -15,10 +15,10 @@
 
 package uk.ac.uea.cmp.spectre.qtools.scale;
 
+import uk.ac.uea.cmp.spectre.core.ds.quad.SpectreQuad;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.GroupedQuartetSystem;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.QuartetSystemList;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.QuartetWeights;
-import uk.ac.uea.cmp.spectre.core.ds.quad.SpectreQuad;
 import uk.ac.uea.cmp.spectre.core.math.Equality;
 
 import java.io.IOException;

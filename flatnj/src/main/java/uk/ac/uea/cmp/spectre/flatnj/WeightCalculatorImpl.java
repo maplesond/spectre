@@ -16,22 +16,24 @@
 package uk.ac.uea.cmp.spectre.flatnj;
 
 import uk.ac.tgac.metaopt.*;
-import uk.ac.uea.cmp.spectre.core.ds.split.flat.PermutationSequence;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleSystem;
+import uk.ac.uea.cmp.spectre.core.ds.split.flat.PermutationSequence;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Computes split weights in the resulting {@linkplain  PermutationSequence}
- * using <a href="http://www.gurobi.com/">Gurobi solver</a>.
+ * Computes split weights in the resulting {@linkplain  PermutationSequence}.  Originally designed to use
+ * <a href="http://www.gurobi.com/">Gurobi solver</a>, although now may use any solver supported by metaopt
+ * <a href="https://github.com/maplesond/metaopt">MetaOpt</a>.
  *
  * @author balvociute
  */
 
 public class WeightCalculatorImpl implements WeightCalculator {
-    PermutationSequence ps;
-    QuadrupleSystem qs;
+
+    private PermutationSequence ps;
+    private QuadrupleSystem qs;
 
     /**
      * Constructor used to initiate {@linkplain  WeightCalculator} and set
@@ -65,8 +67,8 @@ public class WeightCalculatorImpl implements WeightCalculator {
      * if we get the same result, as we have already requested that the variables are non-negative.  Probably these
      * constraints will just slow the solver down.)
      *
-     * @param variables
-     * @return
+     * @param variables Variables to constrain
+     * @return A list of constraints
      */
     protected List<Constraint> createConstraints(List<Variable> variables) {
 

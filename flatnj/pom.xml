@@ -76,7 +76,7 @@
                             </jvmSettings>
                         </program>
                         <program>
-                            <mainClass>uk.ac.uea.cmp.spectre.flatnj.gen4s.Gen4S</mainClass>
+                            <mainClass>uk.ac.uea.cmp.spectre.flatnj.Gen4S</mainClass>
                             <id>gen4s</id>
                             <jvmSettings>
                                 <extraArguments>

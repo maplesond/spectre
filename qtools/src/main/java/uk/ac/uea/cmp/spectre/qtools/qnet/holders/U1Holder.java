@@ -18,10 +18,10 @@ package uk.ac.uea.cmp.spectre.qtools.qnet.holders;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
-import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.CanonicalWeightedQuartetMap;
 import uk.ac.uea.cmp.spectre.core.ds.quad.Quad;
-import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.QuartetUtils;
 import uk.ac.uea.cmp.spectre.core.ds.quad.SpectreQuad;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.CanonicalWeightedQuartetMap;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.QuartetUtils;
 import uk.ac.uea.cmp.spectre.qtools.qnet.QNetException;
 
 import java.util.List;

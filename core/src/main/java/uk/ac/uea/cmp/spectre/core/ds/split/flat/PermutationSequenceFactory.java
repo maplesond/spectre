@@ -13,12 +13,14 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.flatnj;
+package uk.ac.uea.cmp.spectre.core.ds.split.flat;
 
-import uk.ac.uea.cmp.spectre.core.util.CollectionUtils;
-import uk.ac.uea.cmp.spectre.core.ds.split.flat.PermutationSequence;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.Quadruple;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleAgglomerator;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleAgglomeratorAverage;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleSystem;
+import uk.ac.uea.cmp.spectre.core.util.CollectionUtils;
+import uk.ac.uea.cmp.spectre.core.util.StringJoiner;
 
 /**
  * Class for computing {@linkplain PermutationSequence} from {@linkplain QuadrupleSystem}.
@@ -62,7 +64,7 @@ public class PermutationSequenceFactory {
      * @return
      */
     public PermutationSequence computePermutationSequence(QuadrupleSystem qs) {
-        int n = qs.getnTaxa();
+        int n = qs.getNbTaxa();
         Neighbours[] neighbours = new Neighbours[n - 4];
 
         int i = agglomerate(neighbours, qs);
@@ -79,7 +81,7 @@ public class PermutationSequenceFactory {
      * Finds the permutation sequence that best represents remaining quartet.
      */
     private PermutationSequence findBestOnFour(QuadrupleSystem qs) {
-        int[] x = CollectionUtils.getElements(qs.getTaxa());
+        int[] x = CollectionUtils.getElements(qs.getActive());
         int j = 0;
         Quadruple q = qs.getQuadruple(x);
         double[] weights = q.getWeights();
@@ -177,13 +179,13 @@ public class PermutationSequenceFactory {
      */
     private int agglomerate(Neighbours[] neighbours, QuadrupleSystem qs) {
         int i = -1;
-        int n = qs.getnTaxa();
+        int n = qs.getNbTaxa();
 
         double[][][] scores = scorer.initializeScores(qs);
 
         Runtime rt = Runtime.getRuntime();
 
-        while (qs.getnTaxa() > 4) {
+        while (qs.getNbTaxa() > 4) {
             i++;
             if (i > 0 && i % (n / 4) == 0) {
                 rt.gc();
@@ -202,24 +204,33 @@ public class PermutationSequenceFactory {
     }
 
     /**
-     * Prints min or max scores from scores table.
+     * Convert min or max scores from scores table into readable string representation.
      *
      * @param scores scores table.
      * @param taxa   taxa indexes.
      * @param i      score index. 0 - min, 1 - max.(probably)
      */
-    private void printScores(double[][][] scores, int[] taxa, int i) {
+    public String scoresToString(double[][][] scores, int[] taxa, int i) {
+
+        StringBuilder sb = new StringBuilder();
+
+        StringJoiner t = new StringJoiner("\t");
+
         for (int j1 = 0; j1 < taxa.length; j1++) {
-            System.out.print("\t" + taxa[j1]);
+            t.add(Integer.toString(taxa[j1]));
         }
-        System.out.println();
+        sb.append("\t").append(t.toString()).append("\n");
+
         for (int j1 = 0; j1 < taxa.length; j1++) {
-            System.out.print(taxa[j1]);
+            sb.append(taxa[j1]);
+            StringJoiner t2 = new StringJoiner("\t");
             for (int j2 = 0; j2 < taxa.length; j2++) {
-                System.out.print("\t" + scores[taxa[j1]][taxa[j2]][i]);
+                t2.add(Double.toString(scores[taxa[j1]][taxa[j2]][i]));
             }
-            System.out.println();
+            sb.append("\t").append(t2.toString()).append("\n");
         }
-        System.out.println();
+        sb.append("\n");
+
+        return sb.toString();
     }
 }

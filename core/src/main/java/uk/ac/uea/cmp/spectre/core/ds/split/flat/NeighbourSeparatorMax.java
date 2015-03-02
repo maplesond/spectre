@@ -13,13 +13,11 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.flatnj;
+package uk.ac.uea.cmp.spectre.core.ds.split.flat;
 
-import uk.ac.uea.cmp.spectre.core.util.CollectionUtils;
-import uk.ac.uea.cmp.spectre.core.ds.split.flat.PermutationSequence;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.Quadruple;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleSystem;
-import uk.ac.uea.cmp.spectre.core.ds.split.flat.FlatSplitSystem;
+import uk.ac.uea.cmp.spectre.core.util.CollectionUtils;
 
 /**
  * Separates neighbors by maximizing length of the {@linkplain PermutationSequence}

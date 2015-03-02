@@ -13,10 +13,10 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.flatnj;
+package uk.ac.uea.cmp.spectre.core.ds.split.flat;
 
-import uk.ac.uea.cmp.spectre.core.util.CollectionUtils;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleSystem;
+import uk.ac.uea.cmp.spectre.core.util.CollectionUtils;
 
 /**
  * Finds {@linkplain Neighbours} by combing two criteria. First finds pairs of taxa
@@ -35,7 +35,7 @@ public class NeighbourFinderCombined implements NeighbourFinder {
 
         int atAll = 0;
 
-        int[] taxa = CollectionUtils.getElements(qs.getTaxa());
+        int[] taxa = CollectionUtils.getElements(qs.getActive());
         int nTaxa = taxa.length;
 
         for (int i1 = 0; i1 < nTaxa - 1; i1++) {

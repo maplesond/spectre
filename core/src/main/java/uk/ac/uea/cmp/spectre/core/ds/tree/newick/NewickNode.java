@@ -17,8 +17,8 @@ package uk.ac.uea.cmp.spectre.core.ds.tree.newick;
 
 import uk.ac.uea.cmp.spectre.core.ds.Identifier;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
-import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.CanonicalWeightedQuartetMap;
 import uk.ac.uea.cmp.spectre.core.ds.quad.SpectreQuad;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.CanonicalWeightedQuartetMap;
 
 import java.util.ArrayList;
 import java.util.List;

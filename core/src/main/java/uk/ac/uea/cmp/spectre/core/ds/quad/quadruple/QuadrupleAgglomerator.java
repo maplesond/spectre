@@ -13,22 +13,22 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.flatnj;
+package uk.ac.uea.cmp.spectre.core.ds.quad.quadruple;
 
-import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleSystem;
+import uk.ac.uea.cmp.spectre.core.ds.split.flat.Neighbours;
 
 /**
- * {@linkplain Neighbours} selector from {@linkplain QuadrupleSystem}.
+ * {@linkplain QuadrupleSystem} agglomerator.
  *
  * @author balvociute
  */
-public interface NeighbourFinder {
+public interface QuadrupleAgglomerator {
     /**
-     * Finds {@linkplain Neighbours} in the current quadruple system.
+     * Agglomerates Quadruples in the given {@linkplain QuadrupleSystem} by joining
+     * given {@linkplain Neighbours}.
      *
-     * @param qs     current {@linkplain QuadrupleSystem}.
-     * @param scores precomputed scores between pairs of taxa.
-     * @return
+     * @param qs         {@linkplain QuadrupleSystem}.
+     * @param neighbours {@linkplain Neighbours}.
      */
-    public Neighbours findNeighbours(QuadrupleSystem qs, double[][][] scores);
+    public void agglomerate(QuadrupleSystem qs, Neighbours neighbours);
 }

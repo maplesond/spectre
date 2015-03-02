@@ -13,18 +13,23 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.flatnj;
+package uk.ac.uea.cmp.spectre.core.ds.split.flat;
 
 /**
- * Class for storing pair of taxa that has been chosen as neighbors by
- * {@linkplain NeighbourFinder}
+ * Class for storing pair of taxa ('a' and 'b') that has been chosen as neighbors by {@linkplain NeighbourFinder}.
+ * 'a' is the smaller taxon.
  */
-
 public class Neighbours {
-    //a and b are the neighbours in the list of taxa.
-    //a is the smaller taxon.
-    int a = 0;
-    int b = 0;
+
+    private int a;
+    private int b;
+
+    /**
+     * Constructor without parameters.
+     */
+    public Neighbours() {
+        this(0, 0);
+    }
 
     /**
      * Constructor.
@@ -34,12 +39,6 @@ public class Neighbours {
      */
     public Neighbours(int inA, int inB) {
         setAB(inA, inB);
-    }
-
-    /**
-     * Constructor without parameters.
-     */
-    public Neighbours() {
     }
 
     /**
@@ -70,8 +69,9 @@ public class Neighbours {
     /**
      * Prints indexes of the neighbors to the screen.
      */
-    void printNeihbors() {
-        System.out.println("Neighbors are: " + a + " " + b);
+    @Override
+    public String toString() {
+        return "Neighbors are: " + a + " " + b;
     }
 
 

@@ -72,7 +72,7 @@ public class NeighborNetImplTest {
 
         nn.mx.setV2V(v2v);
         nn.stackedVertexTriplets = new Stack<>();
-        //nn.c2v.sMap = new NeighborNetImpl.Component2VertexSetMap(v2v.getTaxa());
+        //nn.c2v.sMap = new NeighborNetImpl.Component2VertexSetMap(v2v.getActive());
 
         nn.vertexTripletReduction(
                 new NeighborNetImpl.VertexTriplet(

@@ -18,7 +18,10 @@ package uk.ac.uea.cmp.spectre.qtools.qmaker;
 import org.junit.Test;
 import uk.ac.uea.cmp.spectre.core.ds.quad.Quad;
 import uk.ac.uea.cmp.spectre.core.ds.quad.SpectreQuad;
-import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.*;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.GroupedQuartetSystem;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.QuartetSystem;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.QuartetSystemList;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.QuartetWeights;
 import uk.ac.uea.cmp.spectre.core.ds.tree.newick.NewickTree;
 
 import java.io.IOException;

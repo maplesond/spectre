@@ -13,12 +13,11 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.flatnj.gen4s;
+package uk.ac.uea.cmp.spectre.flatnj;
 
-import uk.ac.uea.cmp.spectre.core.ui.gui.geom.IndexedPoint;
-import uk.ac.uea.cmp.spectre.flatnj.Locations;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.Quadruple;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleSystem;
+import uk.ac.uea.cmp.spectre.core.ui.gui.geom.IndexedPoint;
 
 /**
  * Quadruple system factory from geographic locations.

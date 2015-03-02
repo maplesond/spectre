@@ -18,12 +18,21 @@ package uk.ac.uea.cmp.spectre.flatnj;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.StopWatch;
 import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.PropertyConfigurator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.ac.tgac.metaopt.Objective;
 import uk.ac.tgac.metaopt.Optimiser;
 import uk.ac.tgac.metaopt.OptimiserFactory;
+import uk.ac.uea.cmp.spectre.core.ds.Alignment;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
+import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.network.FlatNetwork;
 import uk.ac.uea.cmp.spectre.core.ds.network.Network;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
@@ -31,13 +40,13 @@ import uk.ac.uea.cmp.spectre.core.ds.network.draw.AngleCalculatorMaximalArea;
 import uk.ac.uea.cmp.spectre.core.ds.network.draw.CompatibleCorrector;
 import uk.ac.uea.cmp.spectre.core.ds.network.draw.DrawFlat;
 import uk.ac.uea.cmp.spectre.core.ds.network.draw.PermutationSequenceDraw;
-import uk.ac.uea.cmp.spectre.core.ds.split.flat.Utilities;
-import uk.ac.uea.cmp.spectre.core.io.nexus.NexusWriter;
-import uk.ac.uea.cmp.spectre.core.ui.cli.CommandLineHelper;
-import uk.ac.uea.cmp.spectre.core.ds.split.flat.PermutationSequence;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.flat.FlatSplitSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.flat.FlatSplitSystemFinal;
+import uk.ac.uea.cmp.spectre.core.ds.split.flat.PermutationSequence;
+import uk.ac.uea.cmp.spectre.core.ds.split.flat.PermutationSequenceFactory;
+import uk.ac.uea.cmp.spectre.core.io.fasta.FastaReader;
+import uk.ac.uea.cmp.spectre.core.ui.cli.CommandLineHelper;
 import uk.ac.uea.cmp.spectre.flatnj.tools.*;
 
 import java.io.File;
@@ -51,74 +60,229 @@ import java.io.IOException;
  */
 public class FlatNJ {
 
+    private static Logger log = LoggerFactory.getLogger(FlatNJ.class);
+
+    private static final String OPT_INPUT = "input";
+    private static final String OPT_OUTPUT = "output";
+    private static final String OPT_NEXUS_BLOCK = "nexus_block";
     private static final String OPT_THRESHOLD = "threshold";
-    private static final String OPT_FILTER = "filter";
-    private static final String OPT_INPUT = "in";
-    private static final String OPT_OUTPUT = "out";
     private static final String OPT_OPTIMISER = "optimiser";
+    private static final String OPT_SAVE_STAGES = "save_stages";
+    private static final String OPT_VERBOSE = "verbose";
 
     private static final double DEFAULT_THRESHOLD = 0.15;
     private static final String DEFAULT_OUTPUT = "flatnj.out";
 
-    /**
-     * Nexus file reader
-     */
-    private static NexusReader reader;
+    private static final String[] ALLOWED_BLOCKS = new String[]{
+            "characters",
+            "data",
+            "distances",
+            "locations",
+            "splits",
+            "quadruples"
+    };
 
-    /**
-     * Split length estimator
-     */
-    private static WeightCalculator wCalculator;
+    private File inFile;
+    private File outFile;
+    private String nexusBlock;
+    private double threshold;
+    private Optimiser optimiser;
+    private boolean saveStages;
 
-    /**
-     * Nexus file writer
-     */
-    private static Writer writer;
+    public FlatNJ(File inFile, File outFile, Optimiser optimiser) {
+        this.inFile = inFile;
+        this.outFile = outFile;
+        this.nexusBlock = null;
+        this.threshold = DEFAULT_THRESHOLD;
+        this.optimiser = optimiser;
+        this.saveStages = false;
+    }
 
-    /**
-     * Quadruple system from input file
-     */
-    private static QuadrupleSystem qs = null;
+    public File getInFile() {
+        return inFile;
+    }
 
-    /**
-     * Flat split system coded as allowable sequence
-     */
-    private static PermutationSequence ps = null;
+    public void setInFile(File inFile) {
+        this.inFile = inFile;
+    }
 
-    /**
-     * Flat split system in general split system format
-     */
-    private static FlatSplitSystem ss = null;
+    public File getOutFile() {
+        return outFile;
+    }
 
-    /**
-     * Starting vertex of split network
-     */
-    private static Vertex net = null;
+    public void setOutFile(File outFile) {
+        this.outFile = outFile;
+    }
 
-    /**
-     * List of the taxa
-     */
-    private static IdentifierList taxa = null;
+    public String getNexusBlock() {
+        return nexusBlock;
+    }
 
-    /**
-     * Length of the information line
-     */
-    private static int nDots = 40;
+    public void setNexusBlock(String nexusBlock) {
+        this.nexusBlock = nexusBlock;
+    }
 
-    /**
-     * Flat split system as allowable sequence for the drawing module
-     */
-    private static PermutationSequenceDraw psDraw = null;
+    public double getThreshold() {
+        return threshold;
+    }
 
-    /**
-     * Split network computed from flat split system
-     */
-    private static Network network = null;
+    public void setThreshold(double threshold) {
+        this.threshold = threshold;
+    }
 
-    /**
-     * Iteration counter used by interactive user interface
-     */
-    static int iter = 0;
+    public Optimiser getOptimiser() {
+        return optimiser;
+    }
+
+    public void setOptimiser(Optimiser optimiser) {
+        this.optimiser = optimiser;
+    }
+
+    public boolean isSaveStages() {
+        return saveStages;
+    }
+
+    public void setSaveStages(boolean saveStages) {
+        this.saveStages = saveStages;
+    }
+
+    public Result execute() throws IOException {
+        log.info("Loading input data from: " + inFile);
+
+        // Work out input file type
+        String extension = FilenameUtils.getExtension(inFile.getName());
+
+        IdentifierList taxa = null;
+        Alignment alignment = null;
+        DistanceMatrix distanceMatrix = null;
+        Locations locations = null;
+        FlatSplitSystem ss = null;
+        QuadrupleSystem qs = null;
+
+        if (extension.equalsIgnoreCase("fa") || extension.equalsIgnoreCase("fasta")) {
+            alignment = readAlignment(inFile);
+            taxa = new IdentifierList(alignment.getTaxaLabels());
+        }
+        else if (extension.equalsIgnoreCase("nex") || extension.equalsIgnoreCase("nexus") || extension.equalsIgnoreCase("4s")) {
+
+            if (nexusBlock == null) {
+                throw new IllegalArgumentException("Nexus file provided as input but no nexus block specified by user");
+            }
+
+            // Read taxa block regardless
+            taxa = readTaxa(inFile.getAbsolutePath());
+
+            String blockLowerCase = this.nexusBlock.toLowerCase();
+            if (blockLowerCase.contentEquals("data") || blockLowerCase.contentEquals("characters")) {
+                alignment = readAlignment(inFile);
+            } else if (blockLowerCase.contentEquals("distances")) {
+                distanceMatrix = readDistanceMatrix(inFile);
+            } if (blockLowerCase.contentEquals("locations")) {
+                locations = readLocations(inFile);
+            } else if (blockLowerCase.contentEquals("splits")) {
+                ss = readSplitSystem(inFile);
+            } else if (blockLowerCase.contentEquals("quadruples")) {
+                qs = readQuadruples(inFile.getAbsolutePath());
+            }
+
+        }
+
+        if (taxa == null) {
+            throw new IOException("No labels for the taxa were indicated.");
+        }
+
+        // Compute the Quadruple system from alternate information if we didn't just load it from disk
+        if (qs == null) {
+
+            log.info("Computing system of 4-splits (quadruples)");
+
+            QSFactory qsFactory = null;
+
+            if (alignment != null) {
+                qsFactory = new QSFactoryAlignment(alignment, distanceMatrix);
+            } else if (locations != null) {
+                qsFactory = new QSFactoryLocation(locations);
+            } else if (ss != null) {
+                qsFactory = new QSFactorySplitSystem(ss);
+            }
+
+            qs = qsFactory.computeQS();
+
+            if (this.saveStages) {
+
+                File quadFile = new File(this.outFile.getParentFile(), this.outFile.getName() + ".quads.nex");
+                log.info("Saving quadruples to: " + quadFile.getAbsolutePath());
+                Writer writer = new Writer();
+                writer.open(quadFile.getAbsolutePath());
+                writer.write(taxa);
+                writer.write(qs);
+                writer.close();
+            }
+        }
+
+        qs.subtractMin();   //Subtract minimal weights. They will be added back when the network is computed.
+
+        log.info("Computing flat split system");
+        PermutationSequence ps = new PermutationSequenceFactory().computePermutationSequence(qs);
+
+        // Updates Permutation Sequence permutationSequence
+        log.info("Weighting flat split system");
+        new WeightCalculatorImpl(ps, qs).fitWeights(optimiser);
+
+        log.info("Filtering splits below threshold: " + threshold);
+        ps.filterSplits(threshold);
+
+        log.debug("Finalising splits system and setting active splits");
+        ps.setTaxaNames(taxa.getNames());
+        ss = new FlatSplitSystemFinal(ps);
+        ss.setActive(ps.getActive());
+
+        if (this.saveStages) {
+            File ssFile = new File(this.outFile.getParentFile(), this.outFile.getName() + ".splits.nex");
+            log.info("Saving splits to: " + ssFile.getAbsolutePath());
+            Writer writer = new Writer();
+            writer.open(ssFile.getAbsolutePath());
+            writer.write(taxa);
+            writer.write(ss);
+            writer.close();
+        }
+
+        log.info("Computing network");
+        PermutationSequenceDraw psDraw = new PermutationSequenceDraw(ps.getSequence(),
+                ps.getSwaps(),
+                ps.getWeights(),
+                ps.getActive(),
+                ps.getTrivial());
+
+        log.debug("Drawing split system");
+        Vertex net = DrawFlat.drawsplitsystem(psDraw, -1);
+
+        Network network = new FlatNetwork(net);
+        log.info("Optimising network layout");
+        net = net.optimiseLayout(psDraw, network);
+
+        log.debug("Correcting compatible splits");
+        CompatibleCorrector compatibleCorrectorPrecise = new CompatibleCorrector(new AngleCalculatorMaximalArea());
+        compatibleCorrectorPrecise.addInnerTrivial(net, psDraw, network);
+
+        if (!network.veryLongTrivial()) {
+            log.debug("Correcting trivial splits");
+            compatibleCorrectorPrecise.moveTrivial(net, 5, network);
+        }
+
+        if (this.saveStages) {
+            File netFile = new File(this.outFile.getParentFile(), this.outFile.getName() + ".network.nex");
+            log.info("Saving network to: " + netFile.getAbsolutePath());
+            Writer writer = new Writer();
+            writer.open(netFile.getAbsolutePath());
+            writer.write(taxa);
+            writer.write((FlatNetwork)network, taxa);
+            writer.close();
+        }
+
+        return new Result(taxa, qs, ps, ss, net);
+    }
+
 
     protected static Options createOptions() {
 
@@ -126,20 +290,27 @@ public class FlatNJ {
         Options options = new Options();
 
         // Options with arguments
-        options.addOption(OptionBuilder.withArgName("double").withLongOpt(OPT_THRESHOLD).hasArg()
-                .withDescription("Filtering threshold, i.e. minimal length ratio allowed for two incompatible splits. Default value (" + DEFAULT_THRESHOLD + ")").create("t"));
-
-        options.addOption(OptionBuilder.withArgName("boolean").withLongOpt(OPT_FILTER)
-                .withDescription("Filter the split system").create("f"));
-
         options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_INPUT).isRequired().hasArg()
                 .withDescription("Input file - Quadruple data in nexus format.").create("i"));
 
         options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_OUTPUT).hasArg()
                 .withDescription("Output file - Default value (\"" + DEFAULT_OUTPUT + "\")").create("o"));
 
+        options.addOption(OptionBuilder.withArgName("string").withLongOpt(OPT_NEXUS_BLOCK).hasArg()
+                .withDescription("If input file is a nexus file, then the user must specify which block in the file to use as input." +
+                        "May be one of the following:\n" + StringUtils.join(ALLOWED_BLOCKS, ", ") + ".").create("n"));
+
+        options.addOption(OptionBuilder.withArgName("double").withLongOpt(OPT_THRESHOLD).hasArg()
+                .withDescription("Filtering threshold, i.e. minimal length ratio allowed for two incompatible splits. Default value (" + DEFAULT_THRESHOLD + ")").create("t"));
+
         options.addOption(OptionBuilder.withArgName("string").withLongOpt(OPT_OPTIMISER).hasArg()
                 .withDescription("The optimiser to use: " + OptimiserFactory.getInstance().listOperationalOptimisers()).create("p"));
+
+        options.addOption(OptionBuilder.withLongOpt(OPT_SAVE_STAGES)
+                .withDescription("Output nexus files at all stages in the pipeline.  Will use output file name with additional suffix for intermediary stages - Default: false").create("a"));
+
+        options.addOption(OptionBuilder.withLongOpt(OPT_VERBOSE)
+                .withDescription("Whether to output detailed logging information").create("v"));
 
         options.addOption(CommandLineHelper.HELP_OPTION);
 
@@ -154,7 +325,7 @@ public class FlatNJ {
     public static void main(String[] args) {
         // Setup the command line options
         CommandLine commandLine = CommandLineHelper.startApp(createOptions(), "flatnj",
-                "Flat NJ computes flat split networks from quadruple data. To generate quadruples please use GenQS.", args);
+                "Flat NJ computes flat split networks from quadruple data. To generate quadruples please use Gen4S.", args);
 
         // If we didn't return a command line object then just return.  Probably the user requested help or
         // input invalid args
@@ -165,53 +336,110 @@ public class FlatNJ {
         try {
 
             // Setup logging
-            BasicConfigurator.configure();
+            File propsFile = new File("etc/logging.properties");
+
+            if (!propsFile.exists()) {
+                BasicConfigurator.configure();
+                LogManager.getRootLogger().setLevel(commandLine.hasOption(OPT_VERBOSE) ? Level.DEBUG : Level.INFO);
+                log.info("No logging configuration found.  Using default logging properties.");
+            } else {
+                PropertyConfigurator.configure(propsFile.getPath());
+                log.info("Found logging configuration: " + propsFile.getAbsoluteFile());
+            }
 
             // Parsing the command line.
+            log.info("Running Flat Net Joining Algorithm");
+            log.debug("Parsing command line options");
 
             // Required
             File inFile = new File(commandLine.getOptionValue(OPT_INPUT));
+            Optimiser optimiser = OptimiserFactory.getInstance().createOptimiserInstance(commandLine.getOptionValue(OPT_OPTIMISER), Objective.ObjectiveType.QUADRATIC);
 
             // Optional
             File outFile = commandLine.hasOption(OPT_OUTPUT) ? new File(commandLine.getOptionValue(OPT_OUTPUT)) : new File(DEFAULT_OUTPUT);
+            String nexusBlock = commandLine.hasOption(OPT_NEXUS_BLOCK) ? commandLine.getOptionValue(OPT_NEXUS_BLOCK) : null;
             double threshold = commandLine.hasOption(OPT_THRESHOLD) ? Double.parseDouble(commandLine.getOptionValue(OPT_THRESHOLD)) : DEFAULT_THRESHOLD;
-            boolean filterSplits = commandLine.hasOption(OPT_FILTER);
-            Optimiser optimiser = commandLine.hasOption(OPT_OPTIMISER) ?
-                    OptimiserFactory.getInstance().createOptimiserInstance(commandLine.getOptionValue(OPT_OPTIMISER), Objective.ObjectiveType.QUADRATIC) :
-                    null;
+            boolean saveStages = commandLine.hasOption(OPT_SAVE_STAGES);
 
-            readTaxa(inFile.getAbsolutePath());
+            log.debug("Command line options were interpreted as follows:\n" +
+                    "\tInput File: " + inFile.getAbsolutePath() + "\n" +
+                    "\tOutput File: " + outFile.getAbsolutePath() + "\n" +
+                    "\tNexus block: " + (nexusBlock != null ? nexusBlock : "N/A") + "\n" +
+                    "\tThreshold value: " + threshold + "\n" +
+                    "\tOptimizer: " + optimiser.getIdentifier() + "\n");
 
-            if (filterSplits) {
-                readSplitsystem(inFile.getAbsolutePath());
-                ss.filterSplits(threshold);
-                saveSplitSystem(outFile);
-            } else {
-                readQuadruples(inFile.getAbsolutePath());
-                qs.subtractMin();   //Subtract minimal weights. Tey will be
-                //added back when the network is computed.
-                computeSplitSystem(threshold, optimiser);
-                computeNetwork(threshold, optimiser);
-                saveNetwork(outFile);
-            }
+            FlatNJ flatNJ = new FlatNJ(inFile, outFile, optimiser);
+            flatNJ.setNexusBlock(nexusBlock);
+            flatNJ.setThreshold(threshold);
+            flatNJ.setSaveStages(saveStages);
+
+            StopWatch stopWatch = new StopWatch();
+            stopWatch.start();
+            Result result = flatNJ.execute();
+            stopWatch.stop();
+            log.info("FlatNJ completed in: " + result.toString());
+
+            log.info("Saving complete nexus file to: " + outFile.getAbsolutePath());
+            result.save(outFile);
+
+            log.info("FlatNJ completed successfully");
+
         } catch (Exception e) {
-            System.err.println(e.getMessage());
+            System.err.println("\nError: " + e.getMessage());
+            System.err.println("\nStack trace:");
             System.err.println(StringUtils.join(e.getStackTrace(), "\n"));
             System.exit(1);
         }
     }
-
 
     /**
      * Reads TAXA block and prints progress messages
      *
      * @param inFile input file
      */
-    private static void readTaxa(String inFile) {
-        System.err.print(Utilities.addDots("Reading taxa labels ", nDots));
-        reader = new NexusReaderTaxa();
-        taxa = (IdentifierList) reader.readBlock(inFile);
-        System.err.println(" done.");
+    protected IdentifierList readTaxa(String inFile) {
+        log.debug("Reading taxa labels");
+        NexusReader reader = new NexusReaderTaxa();
+        return (IdentifierList) reader.readBlock(inFile);
+    }
+
+    /**
+     * Reads alignment from fasta file and initializes {@linkplain uk.ac.uea.cmp.spectre.core.ds.Alignment}
+     * and {@linkplain uk.ac.uea.cmp.spectre.core.ds.IdentifierList} objects.
+     *
+     * @param fastaFile fasta file path.
+     */
+    protected Alignment readAlignment(File fastaFile) throws IOException {
+        log.debug("Reading sequences");
+        Alignment a = new FastaReader().readAlignment(fastaFile);
+        if (a.getSequences().length == 0) {
+            throw new IOException("Could not read sequence alignment from '" + fastaFile + "'");
+        }
+        return a;
+    }
+
+    /**
+     * Reads character distance matrix from DISTANCES block in nexus distance
+     * matrix file and initializes {@linkplain uk.ac.uea.cmp.spectre.core.ds.distance.FlexibleDistanceMatrix} object.
+     *
+     * @param distanceMatrixFile nexus file path.
+     */
+    protected DistanceMatrix readDistanceMatrix(File distanceMatrixFile) throws IOException {
+        log.debug("Reading distance matrix");
+        return new uk.ac.uea.cmp.spectre.core.io.nexus.NexusReader().readDistanceMatrix(distanceMatrixFile);
+    }
+
+    /**
+     * Reads locations from LOCATIONS block in nexus input file and initializes
+     * {@linkplain Locations} object.
+     *
+     * @param inFile nexus file path.
+     * @return a {@linkplain String} array containing taxa names.
+     */
+    protected Locations readLocations(File inFile) {
+        log.debug("Reading locations");
+        Locations loc = (Locations) new NexusReaderLocations().readBlock(inFile.getAbsolutePath());
+        return loc;
     }
 
     /**
@@ -219,18 +447,14 @@ public class FlatNJ {
      *
      * @param inFile input file
      */
-    private static void readQuadruples(String inFile) {
-        System.err.print(Utilities.addDots("Reading quadruples ", nDots));
-        reader = new NexusReaderQuadruples();
-        qs = (QuadrupleSystem) reader.readBlock(inFile);
+    protected QuadrupleSystem readQuadruples(String inFile) throws IOException {
+        log.debug("Reading quadruples");
+        NexusReader reader = new NexusReaderQuadruples();
+        QuadrupleSystem qs = (QuadrupleSystem) reader.readBlock(inFile);
         if (qs == null) {
-            System.err.println();
-            System.err.println("Error: could not read quadruples from '" +
-                    inFile + "'");
-            System.exit(0);
-        } else {
-            System.err.println(" done.");
+            throw new IOException("Could not read quadruples from " + inFile);
         }
+        return qs;
     }
 
     /**
@@ -238,128 +462,60 @@ public class FlatNJ {
      *
      * @param inFile input file
      */
-    private static void readSplitsystem(String inFile) {
-        System.err.print(Utilities.addDots("Reading splits ", nDots));
-        reader = new NexusReaderSplits();
-        ss = (FlatSplitSystem) reader.readBlock(inFile);
-        System.err.println(" done.");
+    protected FlatSplitSystem readSplitSystem(File inFile) {
+        log.debug("Reading splits");
+        NexusReader reader = new NexusReaderSplits();
+        return (FlatSplitSystem) reader.readBlock(inFile.getAbsolutePath());
     }
 
-    /**
-     * Computes flat split system from input quadruple system
-     */
-    private static void computeSplitSystem(double threshold, Optimiser optimiser) {
-        System.err.print(Utilities.addDots("Computing flat split system ",
-                nDots));
-        PermutationSequenceFactory psf = new PermutationSequenceFactory();
-        ps = psf.computePermutationSequence(qs);
-        System.err.println(" done.");
 
-        System.err.print(Utilities.addDots("Weighting flat split system ",
-                nDots));
 
-        wCalculator = new WeightCalculatorImpl(ps, qs);
-        wCalculator.fitWeights(optimiser);
+    public static class Result {
+        private IdentifierList taxa;
+        private QuadrupleSystem quadrupleSystem;
+        private PermutationSequence permutationSequence;
+        private FlatSplitSystem splitSystem;
+        private Vertex network;
 
-        ps.filterSplits(threshold);
-
-        ps.setTaxaNames(taxa.getNames());
-        ss = new FlatSplitSystemFinal(ps);
-        System.err.println(" done.");
-
-    }
-
-    /**
-     * Computes planar network for previously computed flat split system
-     */
-    private static void computeNetwork(double threshold, Optimiser optimiser) {
-        if (ps == null) {
-            computeSplitSystem(threshold, optimiser);
+        public Result(IdentifierList taxa, QuadrupleSystem quadrupleSystem, PermutationSequence permutationSequence, FlatSplitSystem splitSystem, Vertex network) {
+            this.taxa = taxa;
+            this.quadrupleSystem = quadrupleSystem;
+            this.permutationSequence = permutationSequence;
+            this.splitSystem = splitSystem;
+            this.network = network;
         }
 
-        System.err.print(Utilities.addDots("Computing network ", nDots));
-        System.out.println();
-        ps.filterSplits(threshold);
-
-        if (ss == null) {
-            ss = new FlatSplitSystemFinal(ps);
-            ss.setActive(ps.getActive());
+        public IdentifierList getTaxa() {
+            return taxa;
         }
 
-        psDraw = new PermutationSequenceDraw(ps.getSequence(),
-                ps.getSwaps(),
-                ps.getWeights(),
-                ps.getActive(),
-                ps.getTrivial());
-
-        net = DrawFlat.drawsplitsystem(psDraw, -1);
-
-        network = new FlatNetwork(net);
-        net = net.optimiseLayout(psDraw, network);
-        CompatibleCorrector compatibleCorrectorPrecise = new CompatibleCorrector(new AngleCalculatorMaximalArea());
-        compatibleCorrectorPrecise.addInnerTrivial(net, psDraw, network);
-        if (!network.veryLongTrivial()) {
-            Long time1 = System.currentTimeMillis();
-            compatibleCorrectorPrecise.moveTrivial(net, 5, network);
-            System.out.println("\nTime: " + (System.currentTimeMillis() - time1));
+        public QuadrupleSystem getQuadrupleSystem() {
+            return quadrupleSystem;
         }
 
-        System.out.print(Utilities.addDots("", nDots));
-        System.err.println(" done.");
-    }
-
-    /**
-     * Creates output file with network data.
-     */
-    private static void saveNetwork(File outputFile) {
-        writer = new Writer();
-        writer.open(outputFile.getAbsolutePath());
-        writeTaxa();
-        writeNetwork();
-        writer.close();
-    }
-
-    /**
-     * Creates output file with splits.
-     */
-    private static void saveSplitSystem(File outputFile) {
-        writer = new Writer();
-        writer.open(outputFile.getAbsolutePath());
-        writeTaxa();
-        writeSplits();
-        writer.close();
-    }
-
-    /**
-     * Writes TAXA block to the output file.
-     */
-    private static void writeTaxa() {
-        System.err.print(Utilities.addDots("Writing TAXA block ", nDots));
-        writer.write(taxa);
-        System.err.println(" done.");
-    }
-
-    /**
-     * Writes NETWORK block to the output file.
-     */
-    private static void writeNetwork() {
-        System.err.print(Utilities.addDots("Writing NETWORK block ", nDots));
-        writer.write(net, ps.getnTaxa(), ps.getCompressed(), taxa);
-        Network n = new FlatNetwork(net);
-        try {
-            new NexusWriter().append(n).write(new File("newout.nex"));
-        } catch (IOException e) {
-            System.err.println("Error saving network.");
+        public PermutationSequence getPermutationSequence() {
+            return permutationSequence;
         }
-        System.err.println(" done.");
-    }
 
-    /**
-     * Writes SPLITS block to the output file.
-     */
-    private static void writeSplits() {
-        System.err.print(Utilities.addDots("Writing SPLITS block ", nDots));
-        writer.write(ss);
-        System.err.println(" done.");
+        public FlatSplitSystem getSplitSystem() {
+            return splitSystem;
+        }
+
+        public Vertex getNetwork() {
+            return network;
+        }
+
+        /**
+         * Creates output file with network data.
+         */
+        public void save(File outputFile) throws IOException {
+
+            Writer writer = new Writer();
+            writer.open(outputFile.getAbsolutePath());
+            writer.write(taxa);
+            writer.write(splitSystem);
+            writer.write(network, permutationSequence.getnTaxa(), permutationSequence.getCompressed(), taxa);
+            writer.close();
+        }
     }
 }

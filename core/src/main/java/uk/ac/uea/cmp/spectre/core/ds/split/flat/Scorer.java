@@ -13,11 +13,11 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.flatnj;
+package uk.ac.uea.cmp.spectre.core.ds.split.flat;
 
-import uk.ac.uea.cmp.spectre.core.util.CollectionUtils;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.Quadruple;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleSystem;
+import uk.ac.uea.cmp.spectre.core.util.CollectionUtils;
 
 /**
  * Computes and updates scores of pairs of taxa that show their
@@ -33,7 +33,7 @@ public class Scorer {
      * @return
      */
     public double[][][] initializeScores(QuadrupleSystem qs) {
-        int nTaxa = qs.getnTaxa();
+        int nTaxa = qs.getNbTaxa();
         int[] taxa = qs.getTaxaInt();
 
         double[][][] scores = new double[nTaxa][nTaxa][3];
@@ -122,7 +122,7 @@ public class Scorer {
      * @param qs         {@linkplain QuadrupleSystem}
      */
     public void updateScoresAfterWeightChange(double[][][] scores, Neighbours neighbours, QuadrupleSystem qs) {
-        int[] taxa = CollectionUtils.getElements(qs.getTaxa());
+        int[] taxa = CollectionUtils.getElements(qs.getActive());
         int a = neighbours.getA();
         int b = neighbours.getB();
 

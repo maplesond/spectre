@@ -13,27 +13,22 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.flatnj.gen4s;
+package uk.ac.uea.cmp.spectre.core.ds.split.flat;
+
+import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleSystem;
 
 /**
- * Multiple sequence alignment filter for illegal characters.
+ * {@linkplain Neighbours} selector from {@linkplain QuadrupleSystem}.
  *
  * @author balvociute
  */
-public class AlignmentFilter {
+public interface NeighbourFinder {
     /**
-     * Checks if the <code>symbol</code> is in the alphabet.
+     * Finds {@linkplain Neighbours} in the current quadruple system.
      *
-     * @param symbol a character to be checked.
-     * @return true if <code>symbol</code> is in the alphabet and false
-     * otherwise.
+     * @param qs     current {@linkplain QuadrupleSystem}.
+     * @param scores precomputed scores between pairs of taxa.
+     * @return
      */
-    public boolean isAllowed(char symbol) {
-        if (symbol == '-') {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
+    public Neighbours findNeighbours(QuadrupleSystem qs, double[][][] scores);
 }
