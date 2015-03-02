@@ -15,10 +15,10 @@
 package uk.ac.uea.cmp.spectre.qtools.qnet.holders;
 
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.CanonicalWeightedQuartetMap;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.Quartet;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.QuartetUtils;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.SpectreQuartet;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.CanonicalWeightedQuartetMap;
+import uk.ac.uea.cmp.spectre.core.ds.quad.Quad;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.QuartetUtils;
+import uk.ac.uea.cmp.spectre.core.ds.quad.SpectreQuad;
 import uk.ac.uea.cmp.spectre.qtools.qnet.QNetException;
 
 import java.util.List;
@@ -96,7 +96,7 @@ public class THolder {
                                         // what is and what isn't a quartet
                                         if (QuartetUtils.areDistinct(yA1, yA2, yB, yC)) {
 
-                                            Quartet q = new SpectreQuartet(yA1, yB, yA2, yC);
+                                            Quad q = new SpectreQuad(yA1, yB, yA2, yC);
 
                                             count++;
                                             weight += theQuartetWeights.containsKey(q) ?

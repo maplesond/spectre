@@ -23,7 +23,7 @@ public class Edge implements Comparable<Edge> {
 
     // Endpoints of the edge.
     private Vertex top;
-    private Vertex bot;
+    private Vertex bottom;
 
     // Index of the split associated to the edge.
     private int idxsplit;
@@ -47,7 +47,7 @@ public class Edge implements Comparable<Edge> {
 
     public Edge(Vertex t, Vertex b, int idx, int time) {
         top = t;
-        bot = b;
+        bottom = b;
         idxsplit = idx;
         timestp = time;
         visited = false;
@@ -62,12 +62,12 @@ public class Edge implements Comparable<Edge> {
 
 
     public double length() {
-        return Math.sqrt((bot.getX() - top.getX()) * (bot.getX() - top.getX()) + (bot.getY() - top.getY()) * (bot.getY() - top.getY()));
+        return Math.sqrt((bottom.getX() - top.getX()) * (bottom.getX() - top.getX()) + (bottom.getY() - top.getY()) * (bottom.getY() - top.getY()));
     }
 
     @Override
     public String toString() {
-        return "Nr. " + nxnum + "\nSplit: " + idxsplit + "\nBot: " + bot.toSimpleString() + "\nTop: " + top.toSimpleString() + "\n";
+        return "Nr. " + nxnum + "\nSplit: " + idxsplit + "\nBot: " + bottom.toSimpleString() + "\nTop: " + top.toSimpleString() + "\n";
     }
 
 
@@ -75,16 +75,16 @@ public class Edge implements Comparable<Edge> {
         this.top = top;
     }
 
-    public void setBot(Vertex bot) {
-        this.bot = bot;
+    public void setBottom(Vertex bottom) {
+        this.bottom = bottom;
     }
 
     public void setColor(Color c) {
         color = c;
     }
 
-    public Vertex getBot() {
-        return bot;
+    public Vertex getBottom() {
+        return bottom;
     }
 
     public Color getColor() {
@@ -140,10 +140,10 @@ public class Edge implements Comparable<Edge> {
     }
 
     public Vertex getOther(Vertex v) {
-        if (bot == v) {
+        if (bottom == v) {
             return top;
         } else if (top == v) {
-            return bot;
+            return bottom;
         } else {
             return null;
         }
@@ -176,7 +176,7 @@ public class Edge implements Comparable<Edge> {
         while (toBeExplored.size() > 0) {
             g = toBeExplored.removeFirst();
             elist.addLast(g);
-            Iterator iter = ((g.getTop()).getElist()).iterator();
+            Iterator iter = ((g.getTop()).getEdgeList()).iterator();
             while (iter.hasNext()) {
                 h = (Edge) iter.next();
                 if (h.isVisited() == false) {
@@ -184,7 +184,7 @@ public class Edge implements Comparable<Edge> {
                     h.setVisited(true);
                 }
             }
-            iter = ((g.getBot()).getElist()).iterator();
+            iter = ((g.getBottom()).getEdgeList()).iterator();
             while (iter.hasNext()) {
                 h = (Edge) iter.next();
                 if (h.isVisited() == false) {
@@ -213,4 +213,7 @@ public class Edge implements Comparable<Edge> {
         return elist;
     }
 
+    public boolean bottomEquals(Edge e) {
+        return this.getBottom().equals(e.getBottom());
+    }
 }

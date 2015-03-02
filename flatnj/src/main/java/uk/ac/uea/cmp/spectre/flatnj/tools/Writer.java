@@ -16,16 +16,18 @@
 package uk.ac.uea.cmp.spectre.flatnj.tools;
 
 import uk.ac.uea.cmp.spectre.core.ds.Alignment;
+import uk.ac.uea.cmp.spectre.core.ds.Identifier;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.network.Edge;
 import uk.ac.uea.cmp.spectre.core.ds.network.FlatNetwork;
 import uk.ac.uea.cmp.spectre.core.ds.network.NetworkLabel;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
-import uk.ac.uea.cmp.spectre.flatnj.ds.PermutationSequence;
-import uk.ac.uea.cmp.spectre.flatnj.ds.Quadruple;
-import uk.ac.uea.cmp.spectre.flatnj.ds.QuadrupleSystem;
-import uk.ac.uea.cmp.spectre.flatnj.ds.SplitSystem;
+import uk.ac.uea.cmp.spectre.core.ds.split.flat.PermutationSequence;
+import uk.ac.uea.cmp.spectre.core.ds.split.flat.Utilities;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.Quadruple;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleSystem;
+import uk.ac.uea.cmp.spectre.core.ds.split.flat.FlatSplitSystem;
 
 import java.io.*;
 import java.util.Iterator;
@@ -137,7 +139,7 @@ public class Writer {
 
         for (int i = 0; i < quadruples.length; i++) {
             String line = ("  quadruple" + i + " :");
-            int[] taxa = quadruples[i].getTaxa();
+            int[] taxa = quadruples[i].getTaxa().toIntArray();
             double[] weights = quadruples[i].getWeights();
             for (int j = 0; j < 4; j++) {
                 line = line.concat(" " + taxa[j]);
@@ -194,7 +196,7 @@ public class Writer {
         writeLine("END;");
     }
 
-    public void write(SplitSystem ss) {
+    public void write(FlatSplitSystem ss) {
         boolean[][] splits = ss.getSplits();
 
         boolean[] active = ss.getActive();
@@ -273,7 +275,7 @@ public class Writer {
     public void write(Vertex net, int nTaxa, int[] compressed, IdentifierList taxa) {
         Iterator<Vertex> vIter;
         Iterator<Edge> eIter;
-        Iterator taxiter;
+        Iterator<Identifier> taxiter;
         Vertex v;
         Edge e;
 
@@ -294,7 +296,7 @@ public class Writer {
                 String line = String.valueOf(v.getNxnum());
 
                 while (taxiter.hasNext()) {
-                    int index = ((Integer) taxiter.next()).intValue();
+                    int index = taxiter.next().getId();
                     line = line.concat(" '" + taxa.getNames()[index] + "'");
                 }
                 line = line.concat(",");
@@ -324,7 +326,7 @@ public class Writer {
                 String label = new String();
                 taxiter = v.getTaxa().listIterator();
                 while (taxiter.hasNext()) {
-                    label = (taxa.getNames()[((Integer) taxiter.next()).intValue()] + ", ").concat(label);
+                    label = (taxa.getNames()[taxiter.next().getId()] + ", ").concat(label);
                     //--------------------- just for testing, so that labels are nor visible --------
                     //label = "";
                 }
@@ -382,7 +384,7 @@ public class Writer {
 
             writeLine(e.getNxnum() + " " +
                     (e.getTop()).getNxnum() + " " +
-                    (e.getBot()).getNxnum() +
+                    (e.getBottom()).getNxnum() +
                     " s=" + comp +
                     " l=" + e.getWidth() +
                     " fg=" + color[0] + " " + color[1] + " " + color[2] + ",");
@@ -480,7 +482,7 @@ public class Writer {
         while (eIter.hasNext()) {
             e = (Edge) eIter.next();
             int[] color = Utilities.colorToInt(e.getColor());
-            writeLine((e.getNxnum() + 1) + " " + ((e.getTop()).getNxnum() + 1) + " " + ((e.getBot()).getNxnum() + 1) + " s=" + (e.getIdxsplit() + 1) + " l=" + e.getWidth() + " fg=" + color[0] + " " + color[1] + " " + color[2] + ",");
+            writeLine((e.getNxnum() + 1) + " " + ((e.getTop()).getNxnum() + 1) + " " + ((e.getBottom()).getNxnum() + 1) + " s=" + (e.getIdxsplit() + 1) + " l=" + e.getWidth() + " fg=" + color[0] + " " + color[1] + " " + color[2] + ",");
         }
         writeLine(";");
         writeLine("END;");

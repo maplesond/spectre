@@ -15,7 +15,7 @@
 
 package uk.ac.uea.cmp.spectre.flatnj.tools;
 
-import uk.ac.uea.cmp.spectre.flatnj.ds.SplitSystem;
+import uk.ac.uea.cmp.spectre.core.ds.split.flat.FlatSplitSystem;
 
 /**
  * @author balvociute
@@ -112,8 +112,8 @@ public class NexusReaderSplits extends NexusReader {
     }
 
     @Override
-    protected SplitSystem createObject(Dimensions dimensions, Cycle cycle, Draw draw) {
-        return new SplitSystem(splits, weights, cycle.permutation, active);
+    protected FlatSplitSystem createObject(Dimensions dimensions, Cycle cycle, Draw draw) {
+        return new FlatSplitSystem(splits, weights, cycle.permutation, active);
     }
 
 }

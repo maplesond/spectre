@@ -1547,12 +1547,12 @@ public class NexusFilePopulator implements NexusFileListener {
         Vertex vTop = this.networkBuilder.getVertices().get(top);
         Vertex vBot = this.networkBuilder.getVertices().get(bot);
 
-        vBot.getElist().add(edge);
-        vTop.getElist().add(edge);
+        vBot.getEdgeList().add(edge);
+        vTop.getEdgeList().add(edge);
 
         edge.setNxnum(id);
         edge.setTop(vTop);
-        edge.setBot(vBot);
+        edge.setBottom(vBot);
 
         this.networkBuilder.getEdges().put(this.networkBuilder.getCurrentEdge().getNxnum(), edge);
     }

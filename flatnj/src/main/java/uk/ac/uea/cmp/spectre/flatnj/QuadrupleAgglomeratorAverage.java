@@ -16,12 +16,12 @@
 package uk.ac.uea.cmp.spectre.flatnj;
 
 import uk.ac.uea.cmp.spectre.core.util.CollectionUtils;
-import uk.ac.uea.cmp.spectre.flatnj.ds.Quadruple;
-import uk.ac.uea.cmp.spectre.flatnj.ds.QuadrupleSystem;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.Quadruple;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleSystem;
 
 /**
  * {@linkplain QuadrupleSystem} agglomerator that averages weights in each pair of
- * joined {@linkplain uk.ac.uea.cmp.spectre.flatnj.ds.Quadruple}s.
+ * joined {@linkplain uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.Quadruple}s.
  *
  * @author balvociute
  */

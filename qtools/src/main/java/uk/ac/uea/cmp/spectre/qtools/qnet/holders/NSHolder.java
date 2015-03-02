@@ -17,10 +17,10 @@ package uk.ac.uea.cmp.spectre.qtools.qnet.holders;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.CanonicalWeightedQuartetMap;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.Quartet;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.QuartetUtils;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.SpectreQuartet;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.CanonicalWeightedQuartetMap;
+import uk.ac.uea.cmp.spectre.core.ds.quad.Quad;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.QuartetUtils;
+import uk.ac.uea.cmp.spectre.core.ds.quad.SpectreQuad;
 import uk.ac.uea.cmp.spectre.qtools.qnet.QNetException;
 
 import java.util.List;
@@ -71,7 +71,7 @@ public class NSHolder extends AbstractBasicHolder {
                                     // what is and what isn't a quartet
                                     if (QuartetUtils.areDistinct(yA, yB, yC, yD)) {
 
-                                        Quartet q = new SpectreQuartet(yA, yB, yC, yD);
+                                        Quad q = new SpectreQuad(yA, yB, yC, yD);
 
                                         count++;
                                         weight += theQuartetWeights.containsKey(q) ?

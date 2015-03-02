@@ -22,12 +22,13 @@ import org.apache.commons.lang3.StringUtils;
 import uk.ac.uea.cmp.spectre.core.ds.Alignment;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
+import uk.ac.uea.cmp.spectre.core.ds.split.flat.Utilities;
 import uk.ac.uea.cmp.spectre.core.io.fasta.FastaReader;
 import uk.ac.uea.cmp.spectre.core.io.nexus.NexusReader;
 import uk.ac.uea.cmp.spectre.core.ui.cli.CommandLineHelper;
-import uk.ac.uea.cmp.spectre.flatnj.ds.Locations;
-import uk.ac.uea.cmp.spectre.flatnj.ds.QuadrupleSystem;
-import uk.ac.uea.cmp.spectre.flatnj.ds.SplitSystem;
+import uk.ac.uea.cmp.spectre.flatnj.Locations;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleSystem;
+import uk.ac.uea.cmp.spectre.core.ds.split.flat.FlatSplitSystem;
 import uk.ac.uea.cmp.spectre.flatnj.tools.*;
 
 import java.io.File;
@@ -61,7 +62,7 @@ public class Gen4S {
     private static Alignment a;
     private static DistanceMatrix dm;
     private static Locations loc;
-    private static SplitSystem ss;
+    private static FlatSplitSystem ss;
     private static IdentifierList taxa = null;
     private static QuadrupleSystem qs;
     private static int nDots = 40;
@@ -245,13 +246,13 @@ public class Gen4S {
 
     /**
      * Reads splits from SPLITS block in nexus input file and initializes
-     * {@linkplain SplitSystem} object.
+     * {@linkplain uk.ac.uea.cmp.spectre.core.ds.split.flat.FlatSplitSystem} object.
      *
      * @param inFile nexus file path.
      */
     private static void readSplits(File inFile) throws IOException {
         System.err.print(Utilities.addDots("Reading splits ", nDots));
-        ss = (SplitSystem) new NexusReaderSplits().readBlock(inFile.getAbsolutePath());
+        ss = (FlatSplitSystem) new NexusReaderSplits().readBlock(inFile.getAbsolutePath());
         System.err.println(" done.");
     }
 

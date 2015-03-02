@@ -21,7 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.tgac.metaopt.*;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.QuartetSystemList;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.QuartetSystemList;
 import uk.ac.uea.cmp.spectre.tools.SpectreTool;
 
 import java.io.File;

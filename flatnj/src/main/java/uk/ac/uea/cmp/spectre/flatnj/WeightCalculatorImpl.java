@@ -16,8 +16,8 @@
 package uk.ac.uea.cmp.spectre.flatnj;
 
 import uk.ac.tgac.metaopt.*;
-import uk.ac.uea.cmp.spectre.flatnj.ds.PermutationSequence;
-import uk.ac.uea.cmp.spectre.flatnj.ds.QuadrupleSystem;
+import uk.ac.uea.cmp.spectre.core.ds.split.flat.PermutationSequence;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleSystem;
 
 import java.util.ArrayList;
 import java.util.List;

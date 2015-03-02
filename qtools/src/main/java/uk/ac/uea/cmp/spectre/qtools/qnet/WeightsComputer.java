@@ -23,9 +23,9 @@ import org.slf4j.LoggerFactory;
 import uk.ac.tgac.metaopt.Optimiser;
 import uk.ac.tgac.metaopt.OptimiserException;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.GroupedQuartetSystem;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.SpectreQuartet;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.WeightedQuartetGroupMap;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.GroupedQuartetSystem;
+import uk.ac.uea.cmp.spectre.core.ds.quad.SpectreQuad;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.WeightedQuartetGroupMap;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitUtils;
 import uk.ac.uea.cmp.spectre.core.math.matrix.SymmetricMatrix;
 import uk.ac.uea.cmp.spectre.qtools.qnet.holders.PHolder;
@@ -280,7 +280,7 @@ public class WeightsComputer {
                             int cC = c[i - 1];
                             int cD = c[j - 1];
 
-                            double aW = theQuartetWeights.getWeight(new SpectreQuartet(cA, cB, cC, cD));
+                            double aW = theQuartetWeights.getWeight(new SpectreQuad(cA, cB, cC, cD));
 
                             gw[p - 1][p + 1][i - 1][j - 1] = aW;
                         } else if (l == 3) {
@@ -290,7 +290,7 @@ public class WeightsComputer {
                             int cC = c[i - 1];
                             int cD = c[j - 1];
 
-                            double aW = theQuartetWeights.getWeight(new SpectreQuartet(cA, cB, cC, cD));
+                            double aW = theQuartetWeights.getWeight(new SpectreQuad(cA, cB, cC, cD));
 
                             gw[p - 1][p + 2][i - 1][j - 1] = aW
                                     + gw[p - 1][p + 1][i - 1][j - 1] + gw[p][p + 2][i - 1][j - 1];
@@ -301,7 +301,7 @@ public class WeightsComputer {
                             int cC = c[i - 1];
                             int cD = c[j - 1];
 
-                            double aW = theQuartetWeights.getWeight(new SpectreQuartet(cA, cB, cC, cD));
+                            double aW = theQuartetWeights.getWeight(new SpectreQuad(cA, cB, cC, cD));
 
                             gw[p - 1][p + l - 1][i - 1][j - 1] = aW
                                     + gw[p - 1][p + l - 2][i - 1][j - 1] + gw[p][p + l - 1][i - 1][j - 1]
@@ -318,7 +318,7 @@ public class WeightsComputer {
                             int cC = c[i - 1];
                             int cD = c[j - 1];
 
-                            double aW = theQuartetWeights.getWeight(new SpectreQuartet(cA, cB, cC, cD));
+                            double aW = theQuartetWeights.getWeight(new SpectreQuad(cA, cB, cC, cD));
 
                             gw[p - 1][p + 1][i - 1][j - 1] = aW;
                         } else if (l == 3) {
@@ -328,7 +328,7 @@ public class WeightsComputer {
                             int cC = c[i - 1];
                             int cD = c[j - 1];
 
-                            double aW = theQuartetWeights.getWeight(new SpectreQuartet(cA, cB, cC, cD));
+                            double aW = theQuartetWeights.getWeight(new SpectreQuad(cA, cB, cC, cD));
 
                             gw[p - 1][p + 2][i - 1][j - 1] = aW
                                     + gw[p - 1][p + 1][i - 1][j - 1] + gw[p][p + 2][i - 1][j - 1];
@@ -339,7 +339,7 @@ public class WeightsComputer {
                             int cC = c[i - 1];
                             int cD = c[j - 1];
 
-                            double aW = theQuartetWeights.getWeight(new SpectreQuartet(cA, cB, cC, cD));
+                            double aW = theQuartetWeights.getWeight(new SpectreQuad(cA, cB, cC, cD));
 
                             gw[p - 1][p + l - 1][i - 1][j - 1] = aW
                                     + gw[p - 1][p + l - 2][i - 1][j - 1] + gw[p][p + l - 1][i - 1][j - 1]
@@ -359,7 +359,7 @@ public class WeightsComputer {
                             int cC = c[i - 1];
                             int cD = c[j - 1];
 
-                            double aW = theQuartetWeights.getWeight(new SpectreQuartet(cA, cB, cC, cD));
+                            double aW = theQuartetWeights.getWeight(new SpectreQuad(cA, cB, cC, cD));
 
                             gw[p - 1][p + 1][i - 1][j - 1] = aW;
 
@@ -370,7 +370,7 @@ public class WeightsComputer {
                             int cC = c[i - 1];
                             int cD = c[j - 1];
 
-                            double aW = theQuartetWeights.getWeight(new SpectreQuartet(cA, cB, cC, cD));
+                            double aW = theQuartetWeights.getWeight(new SpectreQuad(cA, cB, cC, cD));
 
                             gw[p - 1][p + 2][i - 1][j - 1] = aW
                                     + gw[p - 1][p + 1][i - 1][j - 1] + gw[p][p + 2][i - 1][j - 1];
@@ -382,7 +382,7 @@ public class WeightsComputer {
                             int cC = c[i - 1];
                             int cD = c[j - 1];
 
-                            double aW = theQuartetWeights.getWeight(new SpectreQuartet(cA, cB, cC, cD));
+                            double aW = theQuartetWeights.getWeight(new SpectreQuad(cA, cB, cC, cD));
 
                             gw[p - 1][p + l - 1][i - 1][j - 1] = aW
                                     + gw[p - 1][p + l - 2][i - 1][j - 1] + gw[p][p + l - 1][i - 1][j - 1]

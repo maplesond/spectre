@@ -90,52 +90,49 @@ public class SplitSystemDraw {
         }
     }
 
-    //This method checks whether the splits with
-    //indices a and b are compatible. It returns:
-    //-1: splits incompatible
-    // 1: splits compatible, 11 pattern
-    // 2: splits compatible, 10 pattern 
-    // 3: splits compatible, 01 pattern
-    // 4: splits compatible, 00 pattern
-    public int is_compatible(int a, int b) {
-        //loop variable
-        int i = 0;
+    public static enum Compatible {
+        NO {
+            @Override
+            public boolean isCompatible() {
+                return false;
+            }
+        },
+        YES_11 {
+            @Override
+            public boolean isCompatible() {
+                return true;
+            }
+        },
+        YES_10 {
+            @Override
+            public boolean isCompatible() {
+                return true;
+            }
+        },
+        YES_01 {
+            @Override
+            public boolean isCompatible() {
+                return true;
+            }
+        },
+        YES_00 {
+            @Override
+            public boolean isCompatible() {
+                return true;
+            }
+        };
 
-        //variables for counting the number of occurences of patterns
-        int count11 = 0;
-        int count10 = 0;
-        int count01 = 0;
-        int count00 = 0;
-
-        for (i = 0; i < ntaxa; i++) {
-            if ((splits[a][i] == 1) && (splits[b][i] == 1)) {
-                count11++;
-            }
-            if ((splits[a][i] == 1) && (splits[b][i] == 0)) {
-                count10++;
-            }
-            if ((splits[a][i] == 0) && (splits[b][i] == 1)) {
-                count01++;
-            }
-            if ((splits[a][i] == 0) && (splits[b][i] == 0)) {
-                count00++;
-            }
-        }
-
-        if (count11 == 0) {
-            return 1;
-        } else if (count10 == 0) {
-            return 2;
-        } else if (count01 == 0) {
-            return 3;
-        } else if (count00 == 0) {
-            return 4;
-        } else {
-            return -1;
-        }
+        public abstract boolean isCompatible();
     }
 
-    public boolean isCompatible(int a, int b) {
+    /**
+     * This method checks whether the splits with indices a and b are compatible.
+     * @param a Index A
+     * @param b Index B
+     * @return Compatible enum describing if the splits are compatible, and if so, which pattern they show.
+     */
+    public Compatible isCompatible(int a, int b) {
+
         //variables for counting the number of occurences of patterns
         int count11 = 0;
         int count10 = 0;
@@ -157,10 +154,16 @@ public class SplitSystemDraw {
             }
         }
 
-        if (count11 == 0 || count10 == 0 || count01 == 0 || count00 == 0) {
-            return true;
+        if (count11 == 0) {
+            return Compatible.YES_11;
+        } else if (count10 == 0) {
+            return Compatible.YES_10;
+        } else if (count01 == 0) {
+            return Compatible.YES_01;
+        } else if (count00 == 0) {
+            return Compatible.YES_00;
         } else {
-            return false;
+            return Compatible.NO;
         }
     }
 }

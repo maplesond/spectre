@@ -109,7 +109,7 @@ public class ClusterFinderSplits extends ClusterFinder {
                     cluster.add(p, l, changeColors);
                     unclusteredVertices.remove(v);
                 }
-                List<Edge> elist = v.getElist();
+                List<Edge> elist = v.getEdgeList();
                 for (int i = 0; i < elist.size(); i++) {
                     Edge e = elist.get(i);
                     if (!e.isVisited()) {

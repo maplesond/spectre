@@ -16,9 +16,9 @@
 package uk.ac.uea.cmp.spectre.qtools.qnet.holders;
 
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.CanonicalWeightedQuartetMap;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.QuartetUtils;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.SpectreQuartet;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.CanonicalWeightedQuartetMap;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.QuartetUtils;
+import uk.ac.uea.cmp.spectre.core.ds.quad.SpectreQuad;
 import uk.ac.uea.cmp.spectre.core.math.tuple.Triplet;
 import uk.ac.uea.cmp.spectre.qtools.qnet.QNetException;
 
@@ -98,9 +98,9 @@ public class WHolder {
                                             int yC = C.get(xC).getId();
                                             int yD = D.get(xD).getId();
 
-                                            SpectreQuartet q1 = new SpectreQuartet(yA, yB, yC, yD);
-                                            SpectreQuartet q2 = new SpectreQuartet(yA, yC, yB, yD);
-                                            SpectreQuartet q3 = new SpectreQuartet(yA, yD, yB, yC);
+                                            SpectreQuad q1 = new SpectreQuad(yA, yB, yC, yD);
+                                            SpectreQuad q2 = new SpectreQuad(yA, yC, yB, yD);
+                                            SpectreQuad q3 = new SpectreQuad(yA, yD, yB, yC);
 
 
                                             count1++;

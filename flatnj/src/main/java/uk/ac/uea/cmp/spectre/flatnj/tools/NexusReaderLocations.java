@@ -16,7 +16,7 @@
 package uk.ac.uea.cmp.spectre.flatnj.tools;
 
 import uk.ac.uea.cmp.spectre.core.ui.gui.geom.IndexedPoint;
-import uk.ac.uea.cmp.spectre.flatnj.ds.Locations;
+import uk.ac.uea.cmp.spectre.flatnj.Locations;
 
 import java.util.LinkedList;
 

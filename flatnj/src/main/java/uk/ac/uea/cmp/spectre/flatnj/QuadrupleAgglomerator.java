@@ -15,7 +15,7 @@
 
 package uk.ac.uea.cmp.spectre.flatnj;
 
-import uk.ac.uea.cmp.spectre.flatnj.ds.QuadrupleSystem;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleSystem;
 
 /**
  * {@linkplain QuadrupleSystem} agglomerator.

@@ -17,8 +17,8 @@ package uk.ac.uea.cmp.spectre.core.ds.tree.newick;
 
 import uk.ac.uea.cmp.spectre.core.ds.Identifier;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.CanonicalWeightedQuartetMap;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.SpectreQuartet;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.CanonicalWeightedQuartetMap;
+import uk.ac.uea.cmp.spectre.core.ds.quad.SpectreQuad;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -288,7 +288,7 @@ public abstract class NewickNode {
                                 int b1 = setB.get(iB1).getId();
                                 int b2 = setB.get(iB2).getId();
 
-                                qW.incrementWeight(new SpectreQuartet(a1, a2, b1, b2), w);
+                                qW.incrementWeight(new SpectreQuad(a1, a2, b1, b2), w);
                             }
                         }
                     }

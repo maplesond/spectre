@@ -16,8 +16,8 @@
 package uk.ac.uea.cmp.spectre.flatnj;
 
 import uk.ac.uea.cmp.spectre.core.util.CollectionUtils;
-import uk.ac.uea.cmp.spectre.flatnj.ds.Quadruple;
-import uk.ac.uea.cmp.spectre.flatnj.ds.QuadrupleSystem;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.Quadruple;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleSystem;
 
 /**
  * Computes and updates scores of pairs of taxa that show their

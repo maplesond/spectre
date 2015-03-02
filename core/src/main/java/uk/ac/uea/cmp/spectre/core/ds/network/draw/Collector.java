@@ -44,16 +44,16 @@ public class Collector {
             //Also, if the last vertex that was added is in the bottom of the
             //current vector then the vector is looking down as well.
             if (last == null) {
-                b1 = (current.getBot() == a) ? current.getTop() : current.getBot();
-            } else if (current.getBot() == last) {
-                b1 = current.getBot();
+                b1 = (current.getBottom() == a) ? current.getTop() : current.getBottom();
+            } else if (current.getBottom() == last) {
+                b1 = current.getBottom();
                 a = current.getTop();
             }
             //Else, if the last vertex added is in the top of the current
             //vector, then it is looking up.
             else {
                 b1 = current.getTop();
-                a = current.getBot();
+                a = current.getBottom();
             }
 
             //Adding the vertex and setting it as the last added.
@@ -63,7 +63,7 @@ public class Collector {
             last = a;
 
             //Getting the list of all edges incident to the "central point" a.
-            LinkedList<Edge> incidentEdges = a.getElist();
+            LinkedList<Edge> incidentEdges = a.getEdgeList();
             //Removing current edge, because we need to find the one that is
             //clockwise closest to it.
             //incidentEdges.remove(current);
@@ -75,7 +75,7 @@ public class Collector {
             for (int i = 0; i < incidentEdges.size(); i++) {
                 Edge e = incidentEdges.get(i);
                 if (e.length() > 0) {
-                    Vertex b2 = (e.getTop() == a) ? e.getBot() : e.getTop();
+                    Vertex b2 = (e.getTop() == a) ? e.getBottom() : e.getTop();
                     double angle = (b1 != b2) ? Vertex.getClockwiseAngle(b1, a, b2) : 2 * Math.PI;
                     if (closest == null || minAngle > angle) {
                         closest = e;
@@ -110,16 +110,16 @@ public class Collector {
             //Also, if the last vertex that was added is in the bottom of the
             //current vector then the vector is looking down as well.
             if (last == null) {
-                a = (current.getBot() == b1) ? current.getTop() : current.getBot();
-            } else if (current.getBot() == last) {
-                b1 = current.getBot();
+                a = (current.getBottom() == b1) ? current.getTop() : current.getBottom();
+            } else if (current.getBottom() == last) {
+                b1 = current.getBottom();
                 a = current.getTop();
             }
             //Else, if the last vertex added is in the top of the current
             //vector, then it is looking up.
             else {
                 b1 = current.getTop();
-                a = current.getBot();
+                a = current.getBottom();
             }
 
             //Adding the vertex and setting it as the last added.
@@ -127,7 +127,7 @@ public class Collector {
             last = a;
 
             //Getting the list of all edges incident to the "central point" a.
-            LinkedList<Edge> incidentEdges = a.getElist();
+            LinkedList<Edge> incidentEdges = a.getEdgeList();
 
             //Removing current edge, because we need to find the one that is
             //clockwise closest to it.
@@ -140,7 +140,7 @@ public class Collector {
             for (int i = 0; i < incidentEdges.size(); i++) {
                 Edge e = incidentEdges.get(i);
                 if (e.length() > 0) {
-                    Vertex b2 = (e.getTop() == a) ? e.getBot() : e.getTop();
+                    Vertex b2 = (e.getTop() == a) ? e.getBottom() : e.getTop();
                     double angle = (b1 != b2) ? Vertex.getClockwiseAngle(b1, a, b2) : 2 * Math.PI;
                     if (closest == null || minAngle > angle) {
                         closest = e;
@@ -167,12 +167,12 @@ public class Collector {
             if (top) {
                 vertices.add(split.get(i).getTop());
             } else {
-                vertices.add(split.get(i).getBot());
+                vertices.add(split.get(i).getBottom());
             }
         }
         while (!vertices.isEmpty()) {
             Vertex v = vertices.removeFirst();
-            LinkedList<Edge> incident = v.getElist();
+            LinkedList<Edge> incident = v.getEdgeList();
             for (int i = 0; i < incident.size(); i++) {
                 Edge e = incident.get(i);
                 if (!e.isVisited()) {
@@ -181,7 +181,7 @@ public class Collector {
                     if (e.getTop() != v) {
                         vertices.add(e.getTop());
                     } else {
-                        vertices.add(e.getBot());
+                        vertices.add(e.getBottom());
                     }
                 }
             }
@@ -206,14 +206,14 @@ public class Collector {
 
         LinkedList<Edge> external = v.collectAllExternalEdges(false);
 
-        Vertex startVertex = (external.get(0).getBot() == external.get(1).getBot() || external.get(0).getBot() == external.get(1).getTop()) ? external.get(0).getTop() : external.get(0).getBot();
+        Vertex startVertex = (external.get(0).getBottom() == external.get(1).getBottom() || external.get(0).getBottom() == external.get(1).getTop()) ? external.get(0).getTop() : external.get(0).getBottom();
 
         Vertex startingPoint = null;
         Edge startingEdge = null;
         Edge terminalEdge = null;
 
-        Vertex v1 = (external.getLast().getBot() == startVertex) ? external.getLast().getTop() : external.getLast().getBot();
-        Vertex v2 = (external.getFirst().getBot() == startVertex) ? external.getFirst().getTop() : external.getFirst().getBot();
+        Vertex v1 = (external.getLast().getBottom() == startVertex) ? external.getLast().getTop() : external.getLast().getBottom();
+        Vertex v2 = (external.getFirst().getBottom() == startVertex) ? external.getFirst().getTop() : external.getFirst().getBottom();
         Vertex a = startVertex;
 
         if (Vertex.getClockwiseAngle(v1, startVertex, v2) < angleThreshold) {
@@ -228,7 +228,7 @@ public class Collector {
             if (i > 0 && startingPoint == null) {
                 v1 = a;
                 a = v2;
-                v2 = (e.getTop() == a) ? e.getBot() : e.getTop();
+                v2 = (e.getTop() == a) ? e.getBottom() : e.getTop();
                 if (Vertex.getClockwiseAngle(v1, a, v2) < angleThreshold) {
                     startingPoint = a;
                     startingEdge = e;
@@ -250,14 +250,14 @@ public class Collector {
             int index = external.indexOf(startingEdge) + 1;
             index = (index == external.size()) ? 0 : index;
 
-            a = (startingEdge.getBot() == startingPoint) ? startingEdge.getTop() : startingEdge.getBot();
+            a = (startingEdge.getBottom() == startingPoint) ? startingEdge.getTop() : startingEdge.getBottom();
             v1 = startingPoint;
 
             Edge current = null;
             while (current != terminalEdge) {
                 before = current;
                 current = external.get(index);
-                v2 = (current.getBot() == a) ? current.getTop() : current.getBot();
+                v2 = (current.getBottom() == a) ? current.getTop() : current.getBottom();
                 double angle = (v1 == v2) ? 2 * Math.PI : Vertex.getClockwiseAngle(v1, a, v2);
                 if (angle < angleThreshold) {
                     balloonCount++;
@@ -321,16 +321,16 @@ public class Collector {
             //Also, if the last vertex that was added is in the bottom of the
             //current vector then the vector is looking down as well.
             if (last == null) {
-                b1 = (current.getBot() == a) ? current.getTop() : current.getBot();
-            } else if (current.getBot() == last) {
-                b1 = current.getBot();
+                b1 = (current.getBottom() == a) ? current.getTop() : current.getBottom();
+            } else if (current.getBottom() == last) {
+                b1 = current.getBottom();
                 a = current.getTop();
             }
             //Else, if the last vertex added is in the top of the current
             //vector, then it is looking up.
             else {
                 b1 = current.getTop();
-                a = current.getBot();
+                a = current.getBottom();
             }
 
             //Adding the vertex and setting it as the last added.
@@ -340,7 +340,7 @@ public class Collector {
             last = a;
 
             //Getting the list of all edges incident to the "central point" a.
-            LinkedList<Edge> incidentEdges = a.getElist();
+            LinkedList<Edge> incidentEdges = a.getEdgeList();
             //Removing current edge, because we need to find the one that is
             //clockwise closest to it.
             //incidentEdges.remove(current);
@@ -352,7 +352,7 @@ public class Collector {
             for (int i = 0; i < incidentEdges.size(); i++) {
                 Edge e = incidentEdges.get(i);
                 if (e.length() > 0) {
-                    Vertex b2 = (e.getTop() == a) ? e.getBot() : e.getTop();
+                    Vertex b2 = (e.getTop() == a) ? e.getBottom() : e.getTop();
                     double angle = (b1 != b2) ? Vertex.getClockwiseAngle(b1, a, b2) : 2 * Math.PI;
                     if (closest == null || minAngle > angle) {
                         closest = e;
@@ -379,13 +379,13 @@ public class Collector {
             Vertex w = vertices.get(i);
             if (w.getTaxa().size() > 0) {
                 int closest = 0;
-                if (w.getElist().size() == 1) {
-                    Vertex another = (w.getElist().getFirst().getTop() == w) ? w.getElist().getFirst().getBot() : w.getElist().getFirst().getTop();
+                if (w.getEdgeList().size() == 1) {
+                    Vertex another = (w.getEdgeList().getFirst().getTop() == w) ? w.getEdgeList().getFirst().getBottom() : w.getEdgeList().getFirst().getTop();
                     for (int j = 0; j < balloons.size(); j++) {
                         LinkedList<Edge> currentBalloon = balloons.get(j);
                         for (int k = 0; k < currentBalloon.size(); k++) {
                             Edge e = currentBalloon.get(k);
-                            if (e.getBot() == another || e.getTop() == another) {
+                            if (e.getBottom() == another || e.getTop() == another) {
                                 closest = j;
                             }
                         }
@@ -411,7 +411,7 @@ public class Collector {
     }
 
     public static double getDistanceEdgeToEgde(Vertex v1, Vertex v2, Edge ee, boolean longEdge) {
-        Vertex w1 = ee.getBot();
+        Vertex w1 = ee.getBottom();
         Vertex w2 = ee.getTop();
 
         if (longEdge) {
@@ -425,7 +425,7 @@ public class Collector {
 
         double min;
 
-//        if(ee.getTop() != v1 && ee.getBot() != v1)
+//        if(ee.getTop() != v1 && ee.getBottom() != v1)
 //        {
 //            min = (Translocator.cross(v1.x, v1.y, v2.x, v2.y, w1.x, w1.y, w2.x, w2.y)) ? 0.0 : getDistanceToEgde(v2, ee);
 //        }
@@ -453,7 +453,7 @@ public class Collector {
         double x = e.length();
 
         double a = v.calcDistanceTo(e.getTop());
-        double b = v.calcDistanceTo(e.getBot());
+        double b = v.calcDistanceTo(e.getBottom());
 
         double p = (a + b + x) * 0.5;
 
@@ -474,7 +474,7 @@ public class Collector {
     public static double getDistanceToEnds(Vertex v, Edge e) {
 
         double a = v.calcDistanceTo(e.getTop());
-        double b = v.calcDistanceTo(e.getBot());
+        double b = v.calcDistanceTo(e.getBottom());
 
         return Math.min(a, b);
     }
@@ -486,7 +486,7 @@ public class Collector {
         LinkedList<Edge> compatible = new LinkedList<>();
         for (int i = 0; i < edges.size(); i++) {
             Edge e = edges.get(i);
-            if (e.getBot().getElist().size() > 1 && e.getTop().getElist().size() > 1 && V.collectEdgesForSplit(e.getIdxsplit()).size() == 1) {
+            if (e.getBottom().getEdgeList().size() > 1 && e.getTop().getEdgeList().size() > 1 && V.collectEdgesForSplit(e.getIdxsplit()).size() == 1) {
                 compatible.add(e);
             }
         }

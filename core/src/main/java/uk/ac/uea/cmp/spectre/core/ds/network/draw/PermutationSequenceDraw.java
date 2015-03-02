@@ -1113,7 +1113,7 @@ public class PermutationSequenceDraw {
         for (int i = 0; i < ss.nsplits; i++) {
             if (active[i]) {
                 for (int j = 0; j < ss.nsplits; j++) {
-                    if (!ss.isCompatible(i, j)) {
+                    if (ss.isCompatible(i, j) == SplitSystemDraw.Compatible.NO) {
                         if (weights[i] < weights[j] * threshold) {
                             active[i] = false;
                         } else if (weights[j] < weights[i] * threshold) {

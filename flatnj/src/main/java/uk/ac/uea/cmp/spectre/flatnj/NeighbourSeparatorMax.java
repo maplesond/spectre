@@ -16,10 +16,10 @@
 package uk.ac.uea.cmp.spectre.flatnj;
 
 import uk.ac.uea.cmp.spectre.core.util.CollectionUtils;
-import uk.ac.uea.cmp.spectre.flatnj.ds.PermutationSequence;
-import uk.ac.uea.cmp.spectre.flatnj.ds.Quadruple;
-import uk.ac.uea.cmp.spectre.flatnj.ds.QuadrupleSystem;
-import uk.ac.uea.cmp.spectre.flatnj.ds.SplitSystem;
+import uk.ac.uea.cmp.spectre.core.ds.split.flat.PermutationSequence;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.Quadruple;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleSystem;
+import uk.ac.uea.cmp.spectre.core.ds.split.flat.FlatSplitSystem;
 
 /**
  * Separates neighbors by maximizing length of the {@linkplain PermutationSequence}
@@ -303,7 +303,7 @@ public class NeighbourSeparatorMax implements NeighbourSeparator {
                 for (int i2 = i1 + 1; i2 < nTaxa; i2++) {
                     if (a != sequence[i1] && a != sequence[i2]
                             && b != sequence[i1] && b != sequence[i2]) {
-                        SplitSystem ssSmall = new SplitSystem(
+                        FlatSplitSystem ssSmall = new FlatSplitSystem(
                                 ps.getSplitSystemFor4Taxa(a, b,
                                         sequence[i1],
                                         sequence[i2],
@@ -320,10 +320,10 @@ public class NeighbourSeparatorMax implements NeighbourSeparator {
                 if (a != sequence[i]
                         && b != sequence[i]
                         && crossedTaxa != sequence[i]) {
-                    SplitSystem ssSmallOld = new SplitSystem(lastPS.getSplitSystemFor4Taxa(a, b, crossedTaxa, sequence[i], lastCrossings));
+                    FlatSplitSystem ssSmallOld = new FlatSplitSystem(lastPS.getSplitSystemFor4Taxa(a, b, crossedTaxa, sequence[i], lastCrossings));
                     score -= qs.getFitRestriction(a, b, crossedTaxa, sequence[i], ssSmallOld);
 
-                    SplitSystem ssSmallNew = new SplitSystem(ps.getSplitSystemFor4Taxa(a, b, crossedTaxa, sequence[i], crossings));
+                    FlatSplitSystem ssSmallNew = new FlatSplitSystem(ps.getSplitSystemFor4Taxa(a, b, crossedTaxa, sequence[i], crossings));
                     score += qs.getFitRestriction(a, b, crossedTaxa, sequence[i], ssSmallNew);
                 }
             }

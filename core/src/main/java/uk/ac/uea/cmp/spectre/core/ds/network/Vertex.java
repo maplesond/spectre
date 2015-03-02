@@ -26,15 +26,24 @@ import java.util.TreeSet;
 
 public class Vertex {
 
-    //List of the edges that are incident to this vertex.
-    //The edges are sorted clockwise around the vertex.
-    private EdgeList elist;
+    /**
+     * List of the edges that are incident to this vertex. The edges are sorted clockwise around the vertex.
+     */
+    private EdgeList edgeList;
 
-    //The list of taxa associated to the vertex.
+    /**
+     * The list of taxa associated to the vertex.
+     */
     private IdentifierList taxa;
 
-    //Coordinates of the vertex in the drawing.
+    /**
+     * X coordinate in drawing plane
+     */
     private double x;
+
+    /**
+     * Y coordinate in drawing plane
+     */
     private double y;
 
     //number of vertex in nexus file
@@ -64,23 +73,23 @@ public class Vertex {
     public Vertex(double xcoord, double ycoord) {
         x = xcoord;
         y = ycoord;
-        elist = new EdgeList();
+        edgeList = new EdgeList();
         taxa = new IdentifierList();
         visited = false;
     }
 
     //Methods to add an edge to the list of incident edges.
     public void add_edge_before_first(Edge e) {
-        elist.addFirst(e);
+        edgeList.addFirst(e);
     }
 
     public void add_edge_after_last(Edge e) {
-        elist.addLast(e);
+        edgeList.addLast(e);
     }
 
     @Override
     public String toString() {
-        return nxnum + " [" + x + ", " + y + "] : " + elist.size();
+        return nxnum + " [" + x + ", " + y + "] : " + edgeList.size();
     }
 
     public String toSimpleString() {
@@ -99,7 +108,7 @@ public class Vertex {
     }
 
     public Edge getFirstEdge() {
-        return elist.getFirst();
+        return edgeList.getFirst();
     }
 
     public void setTaxa(IdentifierList taxa) {
@@ -142,12 +151,17 @@ public class Vertex {
         return shape;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        return this.equals((Vertex)o);
+    }
+
     public boolean equals(Vertex v2) {
         return x == v2.x && y == v2.y;
     }
 
-    public EdgeList getElist() {
-        return elist;
+    public EdgeList getEdgeList() {
+        return edgeList;
     }
 
     public void setWidth(int w) {
@@ -240,13 +254,13 @@ public class Vertex {
         while (toBeExplored.size() > 0) {
             u = toBeExplored.removeFirst();
             vlist.addLast(u);
-            ListIterator<Edge> iter = u.getElist().listIterator();
+            ListIterator<Edge> iter = u.getEdgeList().listIterator();
             while (iter.hasNext()) {
                 e = iter.next();
                 if (u == e.getTop()) {
-                    if (!e.getBot().isVisited()) {
-                        toBeExplored.addLast(e.getBot());
-                        (e.getBot()).setVisited(true);
+                    if (!e.getBottom().isVisited()) {
+                        toBeExplored.addLast(e.getBottom());
+                        (e.getBottom()).setVisited(true);
                     }
                 } else {
                     if (!e.getTop().isVisited()) {
@@ -268,7 +282,7 @@ public class Vertex {
 
         EdgeList elist = new EdgeList();
 
-        for (Edge e : this.elist.getFirst().collectEdges()) {
+        for (Edge e : this.edgeList.getFirst().collectEdges()) {
             if (e.getIdxsplit() == splitIndex) {
                 elist.add(e);
             }
@@ -281,8 +295,8 @@ public class Vertex {
 
         EdgeList trivial = new EdgeList();
         for (Vertex w : this.collectVertices()) {
-            if (w.getElist().size() == 1) {
-                trivial.add(w.getElist().getFirst());
+            if (w.getEdgeList().size() == 1) {
+                trivial.add(w.getEdgeList().getFirst());
             }
         }
         return trivial;
@@ -327,31 +341,31 @@ public class Vertex {
         EdgeList ext = new EdgeList();
         Vertex w = null;
 
-        if (v.getElist().size() == 1) {
-            w = (v.getElist().getFirst().getBot() == v) ?
-                    v.getElist().getFirst().getTop() :
-                    v.getElist().getFirst().getBot();
+        if (v.getEdgeList().size() == 1) {
+            w = (v.getEdgeList().getFirst().getBottom() == v) ?
+                    v.getEdgeList().getFirst().getTop() :
+                    v.getEdgeList().getFirst().getBottom();
 
-            first = v.getElist().getFirst();
+            first = v.getEdgeList().getFirst();
 
             Vertex t = w;
             w = v;
             v = t;
         } else {
-            EdgeList elist = v.getElist();
+            EdgeList elist = v.getEdgeList();
 
             for (int i = 0; i < elist.size(); i++) {
                 Vertex ww = null;
-                Vertex w0 = (elist.get(i).getBot() == v) ?
+                Vertex w0 = (elist.get(i).getBottom() == v) ?
                         elist.get(i).getTop() :
-                        elist.get(i).getBot();
+                        elist.get(i).getBottom();
 
                 double angle = 0;
                 for (int j = 0; j < elist.size(); j++) {
                     if (i != j) {
-                        Vertex w1 = (elist.get(j).getBot() == v) ?
+                        Vertex w1 = (elist.get(j).getBottom() == v) ?
                                 elist.get(j).getTop() :
-                                elist.get(j).getBot();
+                                elist.get(j).getBottom();
 
                         double currentAngle = Vertex.getClockwiseAngle(w0, v, w1);
                         if (ww == null || currentAngle < angle) {
@@ -377,8 +391,8 @@ public class Vertex {
             double minAngle = 2 * Math.PI;
             Edge nextE = null;
             Vertex W2 = null;
-            for (Edge e : v.getElist()) {
-                Vertex w2 = (e.getBot() == v) ? e.getTop() : e.getBot();
+            for (Edge e : v.getEdgeList()) {
+                Vertex w2 = (e.getBottom() == v) ? e.getTop() : e.getBottom();
                 double angle = (currentE == e) ? 2 * Math.PI : Vertex.getClockwiseAngle(w, v, w2);
                 if (nextE == null || minAngle > angle) {
                     nextE = e;

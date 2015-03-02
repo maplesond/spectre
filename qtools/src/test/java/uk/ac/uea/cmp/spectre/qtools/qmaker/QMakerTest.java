@@ -16,7 +16,9 @@
 package uk.ac.uea.cmp.spectre.qtools.qmaker;
 
 import org.junit.Test;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.*;
+import uk.ac.uea.cmp.spectre.core.ds.quad.Quad;
+import uk.ac.uea.cmp.spectre.core.ds.quad.SpectreQuad;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.*;
 import uk.ac.uea.cmp.spectre.core.ds.tree.newick.NewickTree;
 
 import java.io.IOException;
@@ -63,21 +65,21 @@ public class QMakerTest {
         qsl.add(new QuartetSystem(tree2));
 
         GroupedQuartetSystem gqs = new QMaker().execute(qsl);
-        List<Quartet> quartets = gqs.sortedQuartets();
+        List<Quad> quads = gqs.sortedQuartets();
 
-        assertNotNull(quartets);
-        assertTrue(quartets.size() == 5);
+        assertNotNull(quads);
+        assertTrue(quads.size() == 5);
 
-        Quartet q1 = new SpectreQuartet(1, 2, 3, 4);
-        assertTrue(quartets.get(0).equals(q1));
+        Quad q1 = new SpectreQuad(1, 2, 3, 4);
+        assertTrue(quads.get(0).equals(q1));
         assertTrue(gqs.getQuartets().get(q1).equals(new QuartetWeights(1.0, 0.0, 0.0)));
 
-        Quartet q2 = new SpectreQuartet(1, 2, 3, 5);
-        assertTrue(quartets.get(1).equals(q2));
+        Quad q2 = new SpectreQuad(1, 2, 3, 5);
+        assertTrue(quads.get(1).equals(q2));
         assertTrue(gqs.getQuartets().get(q2).equals(new QuartetWeights(1.5, 0.0, 0.0)));
 
-        Quartet q4 = new SpectreQuartet(1, 3, 4, 5);
-        assertTrue(quartets.get(3).equals(q4));
+        Quad q4 = new SpectreQuad(1, 3, 4, 5);
+        assertTrue(quads.get(3).equals(q4));
         assertTrue(gqs.getQuartets().get(q4).equals(new QuartetWeights(1.0, 1.0, 0.0)));
     }
 

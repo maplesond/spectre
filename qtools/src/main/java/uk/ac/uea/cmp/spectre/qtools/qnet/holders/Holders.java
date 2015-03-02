@@ -16,7 +16,7 @@
 package uk.ac.uea.cmp.spectre.qtools.qnet.holders;
 
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.CanonicalWeightedQuartetMap;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.CanonicalWeightedQuartetMap;
 import uk.ac.uea.cmp.spectre.core.util.CollectionUtils;
 import uk.ac.uea.cmp.spectre.qtools.qnet.QNetException;
 

@@ -20,7 +20,7 @@ import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import uk.ac.uea.cmp.spectre.core.ds.Identifier;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.CanonicalWeightedQuartetMap;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.CanonicalWeightedQuartetMap;
 import uk.ac.uea.cmp.spectre.core.ds.tree.newick.parser.NewickTreeLexer;
 import uk.ac.uea.cmp.spectre.core.ds.tree.newick.parser.NewickTreeParser;
 import uk.ac.uea.cmp.spectre.core.ds.tree.newick.parser.NewickTreePopulator;

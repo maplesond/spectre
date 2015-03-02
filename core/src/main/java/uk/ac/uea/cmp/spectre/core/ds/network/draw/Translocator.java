@@ -39,7 +39,7 @@ public class Translocator {
 
         for (int i = 0; i < split.size(); i++) {
             Edge e = split.get(i);
-            if (twoLinesCrosses(e.getBot().getX(), e.getBot().getY(), e.getTop().getX() - xDelta, e.getTop().getY() - yDelta, bottomEdges)) {
+            if (twoLinesCrosses(e.getBottom().getX(), e.getBottom().getY(), e.getTop().getX() - xDelta, e.getTop().getY() - yDelta, bottomEdges)) {
                 return false;
             }
             if (twoLinesCrosses(e.getTop().getX(), e.getTop().getY(), e.getTop().getX() - xDelta, e.getTop().getY() - yDelta, bottomEdges)) {
@@ -49,7 +49,7 @@ public class Translocator {
 
         for (int i = 0; i < split.size(); i++) {
             Edge e = split.get(i);
-            if (twoLinesCrosses(e.getBot().getX(), e.getBot().getY(), e.getTop().getX() - xDelta, e.getTop().getY() - yDelta, topEdges, xDelta, yDelta)) {
+            if (twoLinesCrosses(e.getBottom().getX(), e.getBottom().getY(), e.getTop().getX() - xDelta, e.getTop().getY() - yDelta, topEdges, xDelta, yDelta)) {
                 return false;
             }
         }
@@ -57,10 +57,10 @@ public class Translocator {
         Iterator<Edge> topEdgeIterator = topEdges.iterator();
         while (topEdgeIterator.hasNext()) {
             Edge e = topEdgeIterator.next();
-            if (twoLinesCrosses(e.getBot().getX() - xDelta, e.getBot().getY() - yDelta, e.getTop().getX() - xDelta, e.getTop().getY() - yDelta, bottomEdges)) {
+            if (twoLinesCrosses(e.getBottom().getX() - xDelta, e.getBottom().getY() - yDelta, e.getTop().getX() - xDelta, e.getTop().getY() - yDelta, bottomEdges)) {
                 return false;
             }
-            if (twoLinesCrosses(e.getBot().getX(), e.getBot().getY(), e.getBot().getX() - xDelta, e.getBot().getY() - yDelta, bottomEdges)) {
+            if (twoLinesCrosses(e.getBottom().getX(), e.getBottom().getY(), e.getBottom().getX() - xDelta, e.getBottom().getY() - yDelta, bottomEdges)) {
                 return false;
             }
             if (twoLinesCrosses(e.getTop().getX(), e.getTop().getY(), e.getTop().getX() - xDelta, e.getTop().getY() - yDelta, bottomEdges)) {
@@ -76,7 +76,7 @@ public class Translocator {
         double xDelta = xyDelta[0];
         double yDelta = xyDelta[1];
 
-        boolean bottom = (e.getBot() == v) ? true : false;
+        boolean bottom = (e.getBottom() == v) ? true : false;
 
         for (int i = 0; i < split.size(); i++) {
             Edge ee = split.get(i);
@@ -87,15 +87,15 @@ public class Translocator {
             double y2;
 
             if (bottom) {
-                x1 = ee.getBot().getX();
-                y1 = ee.getBot().getY();
+                x1 = ee.getBottom().getX();
+                y1 = ee.getBottom().getY();
                 x2 = ee.getTop().getX();
                 y2 = ee.getTop().getY();
             } else {
                 x1 = ee.getTop().getX();
                 y1 = ee.getTop().getY();
-                x2 = ee.getBot().getX();
-                y2 = ee.getBot().getY();
+                x2 = ee.getBottom().getX();
+                y2 = ee.getBottom().getY();
             }
 
             if (twoLinesCrosses(x1, y1, x2 - xDelta, y2 - yDelta, bottomEdges)) {
@@ -112,10 +112,10 @@ public class Translocator {
         Iterator<Edge> topEdgeIterator = topEdges.iterator();
         while (topEdgeIterator.hasNext()) {
             Edge ee = topEdgeIterator.next();
-            if (twoLinesCrosses(ee.getBot().getX() - xDelta, ee.getBot().getY() - yDelta, ee.getTop().getX() - xDelta, ee.getTop().getY() - yDelta, bottomEdges)) {
+            if (twoLinesCrosses(ee.getBottom().getX() - xDelta, ee.getBottom().getY() - yDelta, ee.getTop().getX() - xDelta, ee.getTop().getY() - yDelta, bottomEdges)) {
                 return false;
             }
-            if (twoLinesCrosses(ee.getBot().getX(), ee.getBot().getY(), ee.getBot().getX() - xDelta, ee.getBot().getY() - yDelta, bottomEdges)) {
+            if (twoLinesCrosses(ee.getBottom().getX(), ee.getBottom().getY(), ee.getBottom().getX() - xDelta, ee.getBottom().getY() - yDelta, bottomEdges)) {
                 return false;
             }
             if (twoLinesCrosses(ee.getTop().getX(), ee.getTop().getY(), ee.getTop().getX() - xDelta, ee.getTop().getY() - yDelta, bottomEdges)) {
@@ -129,7 +129,7 @@ public class Translocator {
         double[] xyDelta = new double[2];
 
         Vertex top = e.getTop();
-        Vertex bot = e.getBot();
+        Vertex bot = e.getBottom();
 
         double xt = top.getX() - bot.getX();
         double yt = top.getY() - bot.getY();
@@ -147,8 +147,8 @@ public class Translocator {
         Iterator<Edge> iterator = edges.iterator();
         while (iterator.hasNext()) {
             Edge e = iterator.next();
-            double XB = e.getBot().getX();
-            double YB = e.getBot().getY();
+            double XB = e.getBottom().getX();
+            double YB = e.getBottom().getY();
             double XT = e.getTop().getX();
             double YT = e.getTop().getY();
 
@@ -163,8 +163,8 @@ public class Translocator {
         Iterator<Edge> iterator = edges.iterator();
         while (iterator.hasNext()) {
             Edge e = iterator.next();
-            double XB = e.getBot().getX() - xDelta;
-            double YB = e.getBot().getY() - yDelta;
+            double XB = e.getBottom().getX() - xDelta;
+            double YB = e.getBottom().getY() - yDelta;
             double XT = e.getTop().getX() - xDelta;
             double YT = e.getTop().getY() - yDelta;
 
@@ -234,7 +234,7 @@ public class Translocator {
 
     private static void rotate(Edge e, double alpha) {
         Vertex top = e.getTop();
-        Vertex bot = e.getBot();
+        Vertex bot = e.getBottom();
 
         double xt = top.getX() - bot.getX();
         double yt = top.getY() - bot.getY();
@@ -256,7 +256,7 @@ public class Translocator {
                 move(v, deltaX, deltaY);
             }
 
-            LinkedList<Edge> edges = v.getElist();
+            LinkedList<Edge> edges = v.getEdgeList();
             for (int i = 0; i < edges.size(); i++) {
                 Edge e = edges.get(i);
                 if (!e.isVisited()) {
@@ -265,8 +265,8 @@ public class Translocator {
                     if (!e.getTop().isVisited()) {
                         vertices.add(e.getTop());
                     }
-                    if (!e.getBot().isVisited()) {
-                        vertices.add(e.getBot());
+                    if (!e.getBottom().isVisited()) {
+                        vertices.add(e.getBottom());
                     }
                 }
             }
@@ -281,14 +281,14 @@ public class Translocator {
     }
 
     public static boolean isBottomPartFreeFromTopVertices(Edge leftmost, Edge rightmost, Set<Edge> edges) {
-        double lxb = leftmost.getBot().getX();
-        double lyb = leftmost.getBot().getY();
+        double lxb = leftmost.getBottom().getX();
+        double lyb = leftmost.getBottom().getY();
         double lxt = leftmost.getTop().getX();
         double lyt = leftmost.getTop().getY();
         double la = (lyt - lyb) / (lxt - lxb);
 
-        double rxb = rightmost.getBot().getX();
-        double ryb = rightmost.getBot().getY();
+        double rxb = rightmost.getBottom().getX();
+        double ryb = rightmost.getBottom().getY();
         double rxt = rightmost.getTop().getX();
         double ryt = rightmost.getTop().getY();
         double ra = (ryt - ryb) / (rxt - rxb);
@@ -307,14 +307,14 @@ public class Translocator {
     }
 
     public static boolean isUpperPartFreeFromBottomVertices(Edge leftmost, Edge rightmost, Set<Edge> edges) {
-        double lxb = leftmost.getBot().getX();
-        double lyb = leftmost.getBot().getY();
+        double lxb = leftmost.getBottom().getX();
+        double lyb = leftmost.getBottom().getY();
         double lxt = leftmost.getTop().getX();
         double lyt = leftmost.getTop().getY();
         double la = (lyt - lyb) / (lxt - lxb);
 
-        double rxb = rightmost.getBot().getX();
-        double ryb = rightmost.getBot().getY();
+        double rxb = rightmost.getBottom().getX();
+        double ryb = rightmost.getBottom().getY();
         double rxt = rightmost.getTop().getX();
         double ryt = rightmost.getTop().getY();
         double ra = (ryt - ryb) / (rxt - rxb);
@@ -331,8 +331,8 @@ public class Translocator {
     }
 
     private static boolean crosses(double xb2, double yb2, double xt2, double yt2, double a2, Edge e) {
-        double xb = e.getBot().getX();
-        double yb = e.getBot().getY();
+        double xb = e.getBottom().getX();
+        double yb = e.getBottom().getY();
         double xt = e.getTop().getX();
         double yt = e.getTop().getY();
         double a = a(xb, yb, xt, yt);
@@ -347,8 +347,8 @@ public class Translocator {
     }
 
     private static boolean crosses2(double xb2, double yb2, double xt2, double yt2, double a2, Edge e) {
-        double xb = e.getBot().getX();
-        double yb = e.getBot().getY();
+        double xb = e.getBottom().getX();
+        double yb = e.getBottom().getY();
         double xt = e.getTop().getX();
         double yt = e.getTop().getY();
         double a = a(xb, yb, xt, yt);
@@ -363,8 +363,8 @@ public class Translocator {
     }
 
     public static boolean collides(Edge e, boolean top, boolean bottom, double deltaX, double deltaY, Collection<Edge> edges, boolean top2, boolean bottom2) {
-        double xb = (bottom) ? e.getBot().getX() - deltaX : e.getBot().getX();
-        double yb = (bottom) ? e.getBot().getY() - deltaY : e.getTop().getY();
+        double xb = (bottom) ? e.getBottom().getX() - deltaX : e.getBottom().getX();
+        double yb = (bottom) ? e.getBottom().getY() - deltaY : e.getTop().getY();
         double xt = (top) ? e.getTop().getX() - deltaX : e.getTop().getX();
         double yt = (top) ? e.getTop().getY() - deltaY : e.getTop().getY();
         double a = a(xb, yb, xt, yt);
@@ -373,8 +373,8 @@ public class Translocator {
 
         while (edgeIterator.hasNext()) {
             Edge current = edgeIterator.next();
-            double XB = (bottom2) ? current.getBot().getX() - deltaX : current.getBot().getX();
-            double YB = (bottom2) ? current.getBot().getY() - deltaY : current.getBot().getY();
+            double XB = (bottom2) ? current.getBottom().getX() - deltaX : current.getBottom().getX();
+            double YB = (bottom2) ? current.getBottom().getY() - deltaY : current.getBottom().getY();
             double XT = (top2) ? current.getTop().getX() - deltaX : current.getTop().getX();
             double YT = (top2) ? current.getTop().getY() - deltaY : current.getTop().getY();
 
@@ -384,7 +384,7 @@ public class Translocator {
             if (top && cross(xt, yt, e.getTop().getX(), e.getTop().getY(), XB, YB, XT, YT) && !top2) {
                 return true;
             }
-            if (bottom && cross(xb, yb, e.getBot().getX(), e.getBot().getY(), XB, YB, XT, YT) && !top2) {
+            if (bottom && cross(xb, yb, e.getBottom().getX(), e.getBottom().getY(), XB, YB, XT, YT) && !top2) {
                 return true;
             }
         }
@@ -446,7 +446,7 @@ public class Translocator {
     public static void changeCoordinates(Vertex v, Vertex w, LinkedList<Edge> edges, double alpha) {
         Edge e = edges.getFirst();
 
-        boolean top = (e.getBot() == v) ? true : false;
+        boolean top = (e.getBottom() == v) ? true : false;
 
         double deltaX = w.getX();
         double deltaY = w.getY();
@@ -461,7 +461,7 @@ public class Translocator {
             if (top) {
                 vertices.add(edges.get(i).getTop());
             } else {
-                vertices.add(edges.get(i).getBot());
+                vertices.add(edges.get(i).getBottom());
             }
             edges.get(i).setVisited(true);
         }
@@ -487,7 +487,7 @@ public class Translocator {
         while (edgeIt.hasNext()) {
             Edge ee = edgeIt.next();
 
-            Vertex eb = ee.getBot();
+            Vertex eb = ee.getBottom();
             double xtb = eb.getX() - v.getX();
             double ytb = eb.getY() - v.getY();
 
@@ -514,7 +514,7 @@ public class Translocator {
         Iterator<Edge> edgeIt = edges.iterator();
         while (edgeIt.hasNext()) {
             Edge e = edgeIt.next();
-            verticesToRotate.add(e.getBot());
+            verticesToRotate.add(e.getBottom());
             verticesToRotate.add(e.getTop());
         }
 

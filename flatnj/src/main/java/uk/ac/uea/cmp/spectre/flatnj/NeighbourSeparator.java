@@ -15,8 +15,8 @@
 
 package uk.ac.uea.cmp.spectre.flatnj;
 
-import uk.ac.uea.cmp.spectre.flatnj.ds.PermutationSequence;
-import uk.ac.uea.cmp.spectre.flatnj.ds.QuadrupleSystem;
+import uk.ac.uea.cmp.spectre.core.ds.split.flat.PermutationSequence;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleSystem;
 
 /**
  * Computes {@linkplain PermutationSequence} by separating {@linkplain Neighbours} in the

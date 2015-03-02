@@ -45,14 +45,14 @@ public class AngleCalculatorMaximalArea extends AngleCalculatorSimple {
             Edge e1 = b.getE1();
             Edge e2 = b.getE2();
 
-            double alphaSi = getAngle(e1.getTop(), e1.getBot(), e2.getBot());
+            double alphaSi = getAngle(e1.getTop(), e1.getBottom(), e2.getBottom());
 
             minDown = (minDown == null || minDown > alphaSi) ? alphaSi : minDown;
             minUp = (minUp == null || minUp > Math.PI - alphaSi) ? Math.PI - alphaSi : minUp;
 
             //double a = Math.sqrt((e1.top.x - e1.bot.x) * (e1.top.x - e1.bot.x) + (e1.top.y - e1.bot.y) * (e1.top.y - e1.bot.y));
-            double c = Math.sqrt((e1.getBot().getX() - e2.getBot().getX()) * (e1.getBot().getX() - e2.getBot().getX()) +
-                    (e1.getBot().getY() - e2.getBot().getY()) * (e1.getBot().getY() - e2.getBot().getY()));
+            double c = Math.sqrt((e1.getBottom().getX() - e2.getBottom().getX()) * (e1.getBottom().getX() - e2.getBottom().getX()) +
+                    (e1.getBottom().getY() - e2.getBottom().getY()) * (e1.getBottom().getY() - e2.getBottom().getY()));
             A += c * Math.cos(alphaSi);
             B += c * Math.sin(alphaSi);
 

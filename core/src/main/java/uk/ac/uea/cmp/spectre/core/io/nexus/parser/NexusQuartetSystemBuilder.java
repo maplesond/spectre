@@ -18,8 +18,8 @@ package uk.ac.uea.cmp.spectre.core.io.nexus.parser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.GroupedQuartetSystem;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.WeightedQuartetGroupMap;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.GroupedQuartetSystem;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.WeightedQuartetGroupMap;
 
 /**
  * Created with IntelliJ IDEA.

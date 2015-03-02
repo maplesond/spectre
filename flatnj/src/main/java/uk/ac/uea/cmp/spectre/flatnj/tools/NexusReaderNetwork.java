@@ -137,8 +137,8 @@ public class NexusReaderNetwork extends NexusReader {
                     Edge e = new Edge(viTop, viBot, split, 0);
                     e.setNxnum(id);
 
-                    viBot.getElist().add(e);
-                    viTop.getElist().add(e);
+                    viBot.getEdgeList().add(e);
+                    viTop.getEdgeList().add(e);
 
                     e.setIdxsplit(split);
 
@@ -173,10 +173,10 @@ public class NexusReaderNetwork extends NexusReader {
     private void removeZeroEdges() {
         for (int i = 0; i < vertices.size(); i++) {
             Vertex w = vertices.get(i);
-            if (w.getElist().size() == 1) {
+            if (w.getEdgeList().size() == 1) {
                 Edge e = w.getFirstEdge();
 
-                Vertex v = (e.getBot() == w) ? e.getTop() : e.getBot();
+                Vertex v = (e.getBottom() == w) ? e.getTop() : e.getBottom();
 
                 if (w.getX() == v.getX() && w.getY() == v.getY()) {
                     if (v.getLabel() == null) {
@@ -192,8 +192,8 @@ public class NexusReaderNetwork extends NexusReader {
                         v.getLabel().setName(name);
                     }
                     w.setLabel(null);
-                    v.getElist().remove(e);
-                    w.getElist().remove(e);
+                    v.getEdgeList().remove(e);
+                    w.getEdgeList().remove(e);
                 }
             }
         }

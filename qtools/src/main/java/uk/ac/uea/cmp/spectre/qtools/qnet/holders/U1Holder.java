@@ -18,10 +18,10 @@ package uk.ac.uea.cmp.spectre.qtools.qnet.holders;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.CanonicalWeightedQuartetMap;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.Quartet;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.QuartetUtils;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.SpectreQuartet;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.CanonicalWeightedQuartetMap;
+import uk.ac.uea.cmp.spectre.core.ds.quad.Quad;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.QuartetUtils;
+import uk.ac.uea.cmp.spectre.core.ds.quad.SpectreQuad;
 import uk.ac.uea.cmp.spectre.qtools.qnet.QNetException;
 
 import java.util.List;
@@ -60,8 +60,8 @@ public class U1Holder extends AbstractBasicHolder {
                         // what is and what isn't a quartet
                         if (QuartetUtils.areDistinct(yA1, yA2, yB1, yB2)) {
 
-                            Quartet q1 = new SpectreQuartet(yA1, yB2, yA2, yB1);
-                            Quartet q2 = new SpectreQuartet(yA2, yB1, yA1, yB2);
+                            Quad q1 = new SpectreQuad(yA1, yB2, yA2, yB1);
+                            Quad q2 = new SpectreQuad(yA2, yB1, yA1, yB2);
 
                             count++;
                             weight += theQuartetWeights.containsKey(q1) ?

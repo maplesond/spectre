@@ -15,7 +15,7 @@
 
 package uk.ac.uea.cmp.spectre.core.math.matrix;
 
-import uk.ac.uea.cmp.spectre.core.ds.quartet.QuartetUtils;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.QuartetUtils;
 
 /**
  * Created by IntelliJ IDEA. User: Analysis Date: 2004-jul-11 Time: 19:08:50 To

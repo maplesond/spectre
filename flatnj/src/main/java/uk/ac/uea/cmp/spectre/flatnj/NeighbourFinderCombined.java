@@ -16,7 +16,7 @@
 package uk.ac.uea.cmp.spectre.flatnj;
 
 import uk.ac.uea.cmp.spectre.core.util.CollectionUtils;
-import uk.ac.uea.cmp.spectre.flatnj.ds.QuadrupleSystem;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleSystem;
 
 /**
  * Finds {@linkplain Neighbours} by combing two criteria. First finds pairs of taxa

@@ -31,12 +31,13 @@ import uk.ac.uea.cmp.spectre.core.ds.network.draw.AngleCalculatorMaximalArea;
 import uk.ac.uea.cmp.spectre.core.ds.network.draw.CompatibleCorrector;
 import uk.ac.uea.cmp.spectre.core.ds.network.draw.DrawFlat;
 import uk.ac.uea.cmp.spectre.core.ds.network.draw.PermutationSequenceDraw;
+import uk.ac.uea.cmp.spectre.core.ds.split.flat.Utilities;
 import uk.ac.uea.cmp.spectre.core.io.nexus.NexusWriter;
 import uk.ac.uea.cmp.spectre.core.ui.cli.CommandLineHelper;
-import uk.ac.uea.cmp.spectre.flatnj.ds.PermutationSequence;
-import uk.ac.uea.cmp.spectre.flatnj.ds.QuadrupleSystem;
-import uk.ac.uea.cmp.spectre.flatnj.ds.SplitSystem;
-import uk.ac.uea.cmp.spectre.flatnj.ds.SplitSystemFinal;
+import uk.ac.uea.cmp.spectre.core.ds.split.flat.PermutationSequence;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleSystem;
+import uk.ac.uea.cmp.spectre.core.ds.split.flat.FlatSplitSystem;
+import uk.ac.uea.cmp.spectre.core.ds.split.flat.FlatSplitSystemFinal;
 import uk.ac.uea.cmp.spectre.flatnj.tools.*;
 
 import java.io.File;
@@ -87,7 +88,7 @@ public class FlatNJ {
     /**
      * Flat split system in general split system format
      */
-    private static SplitSystem ss = null;
+    private static FlatSplitSystem ss = null;
 
     /**
      * Starting vertex of split network
@@ -240,7 +241,7 @@ public class FlatNJ {
     private static void readSplitsystem(String inFile) {
         System.err.print(Utilities.addDots("Reading splits ", nDots));
         reader = new NexusReaderSplits();
-        ss = (SplitSystem) reader.readBlock(inFile);
+        ss = (FlatSplitSystem) reader.readBlock(inFile);
         System.err.println(" done.");
     }
 
@@ -263,7 +264,7 @@ public class FlatNJ {
         ps.filterSplits(threshold);
 
         ps.setTaxaNames(taxa.getNames());
-        ss = new SplitSystemFinal(ps);
+        ss = new FlatSplitSystemFinal(ps);
         System.err.println(" done.");
 
     }
@@ -281,7 +282,7 @@ public class FlatNJ {
         ps.filterSplits(threshold);
 
         if (ss == null) {
-            ss = new SplitSystemFinal(ps);
+            ss = new FlatSplitSystemFinal(ps);
             ss.setActive(ps.getActive());
         }
 

@@ -49,4 +49,5 @@ public class NetworkBox {
     public Edge getF2() {
         return f2;
     }
+
 }

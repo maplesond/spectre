@@ -16,10 +16,10 @@
 package uk.ac.uea.cmp.spectre.qtools.qnet.holders;
 
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.GroupedQuartetSystem;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.Quartet;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.QuartetUtils;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.QuartetWeights;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.GroupedQuartetSystem;
+import uk.ac.uea.cmp.spectre.core.ds.quad.Quad;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.QuartetUtils;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.QuartetWeights;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -69,7 +69,7 @@ public class PHolder {
         }*/
 
         // load r values
-        for (Map.Entry<Quartet, QuartetWeights> entry : quartetSystem.getQuartets().entrySet()) {
+        for (Map.Entry<Quad, QuartetWeights> entry : quartetSystem.getQuartets().entrySet()) {
 
             this.setR(
                     entry.getKey().getA(),

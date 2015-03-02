@@ -45,7 +45,7 @@ public class AngleCalculatorEqualAngles extends AngleCalculatorMaximalArea {
             Edge e1 = b.getE1();
             Edge e2 = b.getE2();
 
-            double alphaSi = getAngle(e1.getTop(), e1.getBot(), e2.getBot());
+            double alphaSi = getAngle(e1.getTop(), e1.getBottom(), e2.getBottom());
 
             minDown = (minDown == null || minDown > alphaSi) ? alphaSi : minDown;
             minUp = (minUp == null || minUp > Math.PI / 2 - alphaSi) ? Math.PI / 2 - alphaSi : minUp;

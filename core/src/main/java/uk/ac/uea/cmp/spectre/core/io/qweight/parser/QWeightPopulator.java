@@ -22,7 +22,8 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.spectre.core.ds.Identifier;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.*;
+import uk.ac.uea.cmp.spectre.core.ds.quad.SpectreQuad;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -210,7 +211,7 @@ public class QWeightPopulator implements QWeightListener {
         double w2 = Double.parseDouble(ctx.w2().NUMERIC().getText());
         double w3 = Double.parseDouble(ctx.w3().NUMERIC().getText());
 
-        SpectreQuartet quartet = new SpectreQuartet(a, b, c, d);
+        SpectreQuad quartet = new SpectreQuad(a, b, c, d);
         QuartetWeights weights = new QuartetWeights(w1, w2, w3);
 
         this.groupedQuartetSystem.getQuartets().put(quartet, weights);

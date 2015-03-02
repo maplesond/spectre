@@ -358,7 +358,7 @@ public class NexusWriter extends AbstractPhygenWriter implements Appendable {
         this.appendLine("EDGES");
         for(Edge e : edges) {
             Color c = e.getColor();
-            this.appendLine(e.getNxnum() + " " + e.getTop().getNxnum() + " " + e.getBot().getNxnum() + " s=" + (e.getIdxsplit() + 1) + " l=" + e.getWidth() + " fg=" + c.getRed() + " " + c.getGreen() + " " + c.getBlue() + ",");
+            this.appendLine(e.getNxnum() + " " + e.getTop().getNxnum() + " " + e.getBottom().getNxnum() + " s=" + (e.getIdxsplit() + 1) + " l=" + e.getWidth() + " fg=" + c.getRed() + " " + c.getGreen() + " " + c.getBlue() + ",");
         }
         this.appendLine(";");
         this.appendLine("END;");

@@ -15,9 +15,9 @@
 
 package uk.ac.uea.cmp.spectre.core.io.qweight;
 
-import uk.ac.uea.cmp.spectre.core.ds.quartet.GroupedQuartetSystem;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.Quartet;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.QuartetSystem;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.GroupedQuartetSystem;
+import uk.ac.uea.cmp.spectre.core.ds.quad.Quad;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.QuartetSystem;
 import uk.ac.uea.cmp.spectre.core.io.AbstractPhygenWriter;
 
 import java.io.File;
@@ -59,8 +59,8 @@ public class QWeightWriter extends AbstractPhygenWriter {
         }
 
         // Output the quartets and weights part
-        for (Quartet quartet : quartetSystem.sortedQuartets()) {
-            out.write(quartet.toString(nF) + " " + quartetSystem.getQuartets().get(quartet).toString() + ";\n");
+        for (Quad quad : quartetSystem.sortedQuartets()) {
+            out.write(quad.toString(nF) + " " + quartetSystem.getQuartets().get(quad).toString() + ";\n");
         }
 
         out.close();

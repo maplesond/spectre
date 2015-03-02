@@ -15,10 +15,10 @@
 
 package uk.ac.uea.cmp.spectre.qtools.scale;
 
-import uk.ac.uea.cmp.spectre.core.ds.quartet.GroupedQuartetSystem;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.QuartetSystemList;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.QuartetWeights;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.SpectreQuartet;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.GroupedQuartetSystem;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.QuartetSystemList;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.QuartetWeights;
+import uk.ac.uea.cmp.spectre.core.ds.quad.SpectreQuad;
 import uk.ac.uea.cmp.spectre.core.math.Equality;
 
 import java.io.IOException;
@@ -183,10 +183,10 @@ public class ScalingMatrix {
                 for (int t3 = t2 + 1; t3 < (ntaxaj - 1); t3++) {
                     for (int t4 = t3 + 1; t4 < ntaxaj; t4++) {
 
-                        wvj = qnj.getQuartets().get(new SpectreQuartet((t1 + 1), (t2 + 1), (t3 + 1), (t4 + 1)).createSortedCopy());
+                        wvj = qnj.getQuartets().get(new SpectreQuad((t1 + 1), (t2 + 1), (t3 + 1), (t4 + 1)).createSortedCopy());
 
                         if (transind[t1] >= 0 && transind[t2] >= 0 && transind[t3] >= 0 && transind[t4] >= 0) {
-                            wvi = qni.getQuartets().get(new SpectreQuartet((transind[t1] + 1), (transind[t2] + 1), (transind[t3] + 1), (transind[t4] + 1)).createSortedCopy());
+                            wvi = qni.getQuartets().get(new SpectreQuad((transind[t1] + 1), (transind[t2] + 1), (transind[t3] + 1), (transind[t4] + 1)).createSortedCopy());
                         } else {
                             wvi = null;
                         }
@@ -267,13 +267,13 @@ public class ScalingMatrix {
                 for (int t3 = t2 + 1; t3 < (ntaxaj - 1); t3++) {
                     for (int t4 = t3 + 1; t4 < ntaxaj; t4++) {
 
-                        wvj = qnj.getQuartets().get(new SpectreQuartet((t1 + 1), (t2 + 1), (t3 + 1), (t4 + 1)).createSortedCopy());
+                        wvj = qnj.getQuartets().get(new SpectreQuad((t1 + 1), (t2 + 1), (t3 + 1), (t4 + 1)).createSortedCopy());
 
                         if (transind[t1] >= 0 && transind[t2] >= 0 && transind[t3] >= 0 && transind[t4] >= 0) {
 
                             //need to sort indices after translation, best in
                             //constructor of Key
-                            wvi = qni.getQuartets().get(new SpectreQuartet((transind[t1] + 1), (transind[t2] + 1), (transind[t3] + 1), (transind[t4] + 1)).createSortedCopy());
+                            wvi = qni.getQuartets().get(new SpectreQuad((transind[t1] + 1), (transind[t2] + 1), (transind[t3] + 1), (transind[t4] + 1)).createSortedCopy());
                         } else {
                             wvi = null;
                         }
@@ -323,13 +323,13 @@ public class ScalingMatrix {
                 for (int t3 = t2 + 1; t3 < (ntaxaj - 1); t3++) {
                     for (int t4 = t3 + 1; t4 < ntaxaj; t4++) {
 
-                        wvj = qnj.getQuartets().get(new SpectreQuartet((t1 + 1), (t2 + 1), (t3 + 1), (t4 + 1)).createSortedCopy());
+                        wvj = qnj.getQuartets().get(new SpectreQuad((t1 + 1), (t2 + 1), (t3 + 1), (t4 + 1)).createSortedCopy());
 
                         if (transind[t1] >= 0 && transind[t2] >= 0 && transind[t3] >= 0 && transind[t4] >= 0) {
 
                             //need to sort indices after translation, best in
                             //constructor of Key
-                            wvi = qni.getQuartets().get(new SpectreQuartet((transind[t1] + 1), (transind[t2] + 1), (transind[t3] + 1), (transind[t4] + 1)).createSortedCopy());
+                            wvi = qni.getQuartets().get(new SpectreQuad((transind[t1] + 1), (transind[t2] + 1), (transind[t3] + 1), (transind[t4] + 1)).createSortedCopy());
                         } else {
                             wvi = null;
                         }

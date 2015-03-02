@@ -370,7 +370,7 @@ public class Window extends JPanel implements KeyListener {
         edges = network.getAllEdges();
         for (Edge e : edges) {
             Line l = new Line(e);
-            l.setPoints(points.get(e.getBot().getNxnum()),
+            l.setPoints(points.get(e.getBottom().getNxnum()),
                     points.get(e.getTop().getNxnum()));
             lines.put(e.getNxnum(), l);
         }
@@ -608,7 +608,7 @@ public class Window extends JPanel implements KeyListener {
     void moveTheVertex(java.awt.Point directionPoint) {
         if (selectedPoint != null) {
             Vertex v = vertices.get(selectedPoint.id);
-            if (v.getElist().size() == 1) {
+            if (v.getEdgeList().size() == 1) {
                 State state = startState();
                 state.vertexPositions.put(v, new double[]{v.getX(), v.getY()});
 
@@ -690,7 +690,7 @@ public class Window extends JPanel implements KeyListener {
                     l.p.suppressed = false;
                 } else {
                     Vertex v = vertices.get(l.p.id);
-                    if (v.getElist().size() == 1) {
+                    if (v.getEdgeList().size() == 1) {
                         ViewerPoint p2 = points.get(v.getFirstEdge().getOther(v).getNxnum());
                         l.p.suppress(p2);
                     }

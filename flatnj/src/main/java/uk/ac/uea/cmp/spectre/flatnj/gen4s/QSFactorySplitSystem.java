@@ -15,9 +15,9 @@
 
 package uk.ac.uea.cmp.spectre.flatnj.gen4s;
 
-import uk.ac.uea.cmp.spectre.flatnj.ds.Quadruple;
-import uk.ac.uea.cmp.spectre.flatnj.ds.QuadrupleSystem;
-import uk.ac.uea.cmp.spectre.flatnj.ds.SplitSystem;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.Quadruple;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleSystem;
+import uk.ac.uea.cmp.spectre.core.ds.split.flat.FlatSplitSystem;
 
 /**
  * Quadruple system factory from split system.
@@ -26,10 +26,10 @@ import uk.ac.uea.cmp.spectre.flatnj.ds.SplitSystem;
  */
 public class QSFactorySplitSystem implements QSFactory {
     /**
-     * {@linkplain SplitSystem} to be used for the estimation of
+     * {@linkplain uk.ac.uea.cmp.spectre.core.ds.split.flat.FlatSplitSystem} to be used for the estimation of
      * {@link QuadrupleSystem}.
      */
-    private SplitSystem ss;
+    private FlatSplitSystem ss;
 
     /**
      * {@linkplain boolean} splits matrix that indicates which taxa are
@@ -44,12 +44,12 @@ public class QSFactorySplitSystem implements QSFactory {
 
     /**
      * Constructs {@linkplain QSFactoryLocation} object that will use
-     * {@linkplain  SplitSystem} to compute new {@link QuadrupleSystem}.
+     * {@linkplain  uk.ac.uea.cmp.spectre.core.ds.split.flat.FlatSplitSystem} to compute new {@link QuadrupleSystem}.
      *
-     * @param ss a {@linkplain SplitSystem} object to be used for the estimation of
+     * @param ss a {@linkplain uk.ac.uea.cmp.spectre.core.ds.split.flat.FlatSplitSystem} object to be used for the estimation of
      *           {@link QuadrupleSystem}.
      */
-    public QSFactorySplitSystem(SplitSystem ss) {
+    public QSFactorySplitSystem(FlatSplitSystem ss) {
         this.ss = ss;
     }
 
