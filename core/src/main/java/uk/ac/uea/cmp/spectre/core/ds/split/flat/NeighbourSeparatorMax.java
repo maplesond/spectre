@@ -26,7 +26,8 @@ import uk.ac.uea.cmp.spectre.core.util.CollectionUtils;
  * @author balvociute
  */
 public class NeighbourSeparatorMax implements NeighbourSeparator {
-    int crossedTaxa;
+
+    private int crossedTaxa;
 
     @Override
     public PermutationSequence popOutNeighbours(Neighbours[] neighbours,

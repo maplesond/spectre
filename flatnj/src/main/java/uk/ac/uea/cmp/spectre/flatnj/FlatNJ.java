@@ -159,7 +159,7 @@ public class FlatNJ {
         FlatSplitSystem ss = null;
         QuadrupleSystem qs = null;
 
-        if (extension.equalsIgnoreCase("fa") || extension.equalsIgnoreCase("fasta")) {
+        if (extension.equalsIgnoreCase("fa") || extension.equalsIgnoreCase("faa") || extension.equalsIgnoreCase("fasta")) {
             alignment = readAlignment(inFile);
             taxa = new IdentifierList(alignment.getTaxaLabels());
         }
@@ -235,7 +235,7 @@ public class FlatNJ {
         log.debug("Finalising splits system and setting active splits");
         ps.setTaxaNames(taxa.getNames());
         ss = new FlatSplitSystemFinal(ps);
-        ss.setActive(ps.getActive());
+        //ss.setActive(ps.getActive());  // Do we want to reset this from active (extra trivial splits would have been added in the constructor)
 
         if (this.saveStages) {
             File ssFile = new File(this.outFile.getParentFile(), this.outFile.getName() + ".splits.nex");
@@ -303,7 +303,7 @@ public class FlatNJ {
         options.addOption(OptionBuilder.withArgName("double").withLongOpt(OPT_THRESHOLD).hasArg()
                 .withDescription("Filtering threshold, i.e. minimal length ratio allowed for two incompatible splits. Default value (" + DEFAULT_THRESHOLD + ")").create("t"));
 
-        options.addOption(OptionBuilder.withArgName("string").withLongOpt(OPT_OPTIMISER).hasArg()
+        options.addOption(OptionBuilder.withArgName("string").withLongOpt(OPT_OPTIMISER).isRequired().hasArg()
                 .withDescription("The optimiser to use: " + OptimiserFactory.getInstance().listOperationalOptimisers()).create("p"));
 
         options.addOption(OptionBuilder.withLongOpt(OPT_SAVE_STAGES)
@@ -385,7 +385,7 @@ public class FlatNJ {
             log.info("FlatNJ completed successfully");
 
         } catch (Exception e) {
-            System.err.println("\nError: " + e.getMessage());
+            System.err.println("\nException: " + e.toString());
             System.err.println("\nStack trace:");
             System.err.println(StringUtils.join(e.getStackTrace(), "\n"));
             System.exit(1);

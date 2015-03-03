@@ -75,15 +75,6 @@
                                 </extraArguments>
                             </jvmSettings>
                         </program>
-                        <program>
-                            <mainClass>uk.ac.uea.cmp.spectre.flatnj.Gen4S</mainClass>
-                            <id>gen4s</id>
-                            <jvmSettings>
-                                <extraArguments>
-                                    <extraArgument>-Djava.awt.headless=true</extraArgument>
-                                </extraArguments>
-                            </jvmSettings>
-                        </program>
                     </programs>
                 </configuration>
             </plugin>

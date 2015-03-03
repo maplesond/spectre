@@ -41,9 +41,7 @@ public class QSFactoryAlignment implements QSFactory {
      * {@linkplain Alignment} and {@linkplain  uk.ac.uea.cmp.spectre.core.ds.distance.FlexibleDistanceMatrix} to compute new
      * {@link QuadrupleSystem}.
      *
-     * @param a  an {@linkplain Alignment} to be used for
-     *           {@link QuadrupleSystem}
-     *           estimation.
+     * @param a  an {@linkplain Alignment} to be used for {@link QuadrupleSystem} estimation.
      * @param dm a {@linkplain uk.ac.uea.cmp.spectre.core.ds.distance.FlexibleDistanceMatrix} for more precise quadruple split
      *           weight estimation. In case it is <code>null</code>, inverted
      *           identity matrix will be used by default.

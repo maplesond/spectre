@@ -33,7 +33,7 @@ public class Scorer {
      * @return
      */
     public double[][][] initializeScores(QuadrupleSystem qs) {
-        int nTaxa = qs.getNbTaxa();
+        int nTaxa = qs.getNbActiveTaxa();
         int[] taxa = qs.getTaxaInt();
 
         double[][][] scores = new double[nTaxa][nTaxa][3];

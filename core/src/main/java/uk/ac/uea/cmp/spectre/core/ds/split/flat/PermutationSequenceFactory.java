@@ -28,10 +28,19 @@ import uk.ac.uea.cmp.spectre.core.util.StringJoiner;
  * @author balvociute
  */
 public class PermutationSequenceFactory {
-    private NeighbourFinder neighbourFinder = new NeighbourFinderCombined();
-    private QuadrupleAgglomerator quadrupleAgglomerator = new QuadrupleAgglomeratorAverage();
-    private NeighbourSeparator neighbourSeparator = new NeighbourSeparatorMax();
-    private Scorer scorer = new Scorer();
+
+    private NeighbourFinder neighbourFinder;
+    private QuadrupleAgglomerator quadrupleAgglomerator;
+    private NeighbourSeparator neighbourSeparator;
+    private Scorer scorer;
+
+    /**
+     * Constructor that sets default {@linkplain NeighbourFinder},
+     * {@linkplain QuadrupleAgglomerator} and {@linkplain NeighbourSeparator}.
+     */
+    public PermutationSequenceFactory() {
+        this(new NeighbourFinderCombined(), new QuadrupleAgglomeratorAverage(), new NeighbourSeparatorMax());
+    }
 
     /**
      * Constructor with specific {@linkplain NeighbourFinder},
@@ -45,16 +54,7 @@ public class PermutationSequenceFactory {
         this.neighbourFinder = neighbourFinder;
         this.neighbourSeparator = neighbourSeparator;
         this.quadrupleAgglomerator = quadrupleAgglomerator;
-    }
-
-    /**
-     * Constructor that sets default {@linkplain NeighbourFinder},
-     * {@linkplain QuadrupleAgglomerator} and {@linkplain NeighbourSeparator}.
-     */
-    public PermutationSequenceFactory() {
-        neighbourFinder = new NeighbourFinderCombined();
-        quadrupleAgglomerator = new QuadrupleAgglomeratorAverage();
-        neighbourSeparator = new NeighbourSeparatorMax();
+        this.scorer = new Scorer();
     }
 
     /**
@@ -64,7 +64,7 @@ public class PermutationSequenceFactory {
      * @return
      */
     public PermutationSequence computePermutationSequence(QuadrupleSystem qs) {
-        int n = qs.getNbTaxa();
+        int n = qs.getNbActiveTaxa();
         Neighbours[] neighbours = new Neighbours[n - 4];
 
         int i = agglomerate(neighbours, qs);
@@ -179,13 +179,13 @@ public class PermutationSequenceFactory {
      */
     private int agglomerate(Neighbours[] neighbours, QuadrupleSystem qs) {
         int i = -1;
-        int n = qs.getNbTaxa();
+        int n = qs.getNbActiveTaxa();
 
         double[][][] scores = scorer.initializeScores(qs);
 
         Runtime rt = Runtime.getRuntime();
 
-        while (qs.getNbTaxa() > 4) {
+        while (qs.getNbActiveTaxa() > 4) {
             i++;
             if (i > 0 && i % (n / 4) == 0) {
                 rt.gc();

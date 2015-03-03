@@ -19,6 +19,7 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.tgac.metaopt.Objective;
@@ -71,11 +72,11 @@ public class SuperQCLI {
                 log.info("Completed successfully");
             }
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            System.err.println("\nException: " + e.toString());
+            System.err.println("\nStack trace:");
+            System.err.println(StringUtils.join(e.getStackTrace(), "\n"));
             System.exit(3);
         }
-
-
     }
 
     private static Options createOptions() {

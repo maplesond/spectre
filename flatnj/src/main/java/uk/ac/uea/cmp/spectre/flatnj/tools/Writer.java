@@ -131,7 +131,7 @@ public class Writer {
     public void write(QuadrupleSystem qs) {
         writeLine();
         writeLine("BEGIN Quadruples;");
-        writeLine(" DIMENSIONS ntax=" + qs.getNbTaxa() + " nquadruples=" + qs.getnQuadruples() + ";");
+        writeLine(" DIMENSIONS ntax=" + qs.getNbActiveTaxa() + " nquadruples=" + qs.getnQuadruples() + ";");
         writeLine(" FORMAT labels=LEFT;");
         writeLine(" MATRIX");
 

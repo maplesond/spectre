@@ -227,8 +227,8 @@ public class QuadrupleSystem implements Cloneable {
         return active;
     }
 
-    public int getNbTaxa() {
-        return this.taxa.size();
+    public int getNbActiveTaxa() {
+        return this.nbActiveTaxa;
     }
 
     public int getnQuadruples() {
