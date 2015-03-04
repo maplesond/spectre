@@ -467,8 +467,8 @@ public class Vertex {
         //Two types of box openers are used. Simple one tries to open boxes by
         //no more than certain constant angle, whereas precise one uses angle
         //which maximises certain function.
-        BoxOpener boxOpenerSimple = new BoxOpener(angleCalculatorSimple);
-        BoxOpener boxOpenerPrecise = new BoxOpener(angleCalculatorPrecise);
+        BoxOpener boxOpenerSimple = new BoxOpener(angleCalculatorSimple, ss);
+        BoxOpener boxOpenerPrecise = new BoxOpener(angleCalculatorPrecise, ss);
 
         //CompatibleCorrectors are used to change angles for compatible splits.
         CompatibleCorrector compatibleCorrectorSimple = new CompatibleCorrector(angleCalculatorSimple);
@@ -488,24 +488,17 @@ public class Vertex {
 
         //compatibleCorrectorPrecise.moveTrivial(v, 2 + ((int)(ps.ntaxa * 0.03)), null);
         for (int j = 0; j < iterations; j++) {
-            //System.err.print("iteration precise: ");
             for (int i = 0; i < precise; i++) {
-                //System.err.print((i + 1) + " ");
-                boxOpenerPrecise.openIncompatible(activeSplits, this, ss, vertices, splitedges, network);
+                boxOpenerPrecise.openIncompatible(activeSplits, this, vertices, splitedges, network);
             }
             for (int i = 0; i < compatible; i++) {
-                //System.err.print((i + 1) + " ");
                 compatibleCorrectorPrecise.moveCompatible(this, 1, network);
             }
-            //System.err.print("moving trivial: ");
             compatibleCorrectorPrecise.moveTrivial(this, trivial, network);
-
-            //System.err.println();
         }
-        //System.err.println("Finishing: ");
+
         for (int i = 0; i < finish; i++) {
-            //System.out.println((i+1) + " ");
-            boxOpenerPrecise.openOneIncompatible(activeSplits, this, ss, vertices, splitedges, network);
+            boxOpenerPrecise.openOneIncompatible(activeSplits, this, vertices, splitedges, network);
         }
         return this;
     }

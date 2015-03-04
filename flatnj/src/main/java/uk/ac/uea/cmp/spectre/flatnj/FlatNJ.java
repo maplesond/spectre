@@ -255,7 +255,7 @@ public class FlatNJ {
                 ps.getTrivial());
 
         log.debug("Drawing split system");
-        Vertex net = DrawFlat.drawsplitsystem(psDraw, -1);
+        Vertex net = psDraw.drawSplitSystem(-1.0);
 
         Network network = new FlatNetwork(net);
         log.info("Optimising network layout");

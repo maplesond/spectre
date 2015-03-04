@@ -31,16 +31,17 @@ import java.util.TreeSet;
 public class BoxOpener {
 
     private AngleCalculator angleCalculator;
+    private SplitSystemDraw splitSystemDraw;
     private int nr = 0;
 
-    public BoxOpener(AngleCalculator ac) {
+    public BoxOpener(AngleCalculator ac, SplitSystemDraw ssd) {
         this.nr = 0;
         this.angleCalculator = ac;
+        this.splitSystemDraw = ssd;
     }
 
     public double openIncompatible(int[] activeSplits,
                                    Vertex v,
-                                   SplitSystemDraw ss,
                                    LinkedList<Vertex> vertices,
                                    TreeSet[] splitedges,
                                    Network network) {
@@ -49,7 +50,7 @@ public class BoxOpener {
             int S = activeSplits[i];
             EdgeList edges = v.collectEdgesForSplit(S);
             if (edges.size() > 1) {
-                double angle = open(activeSplits, S, ss, edges, splitedges, v, vertices, network);
+                double angle = open(activeSplits, S, edges, splitedges, v, vertices, network);
                 if (maxAngle == null || maxAngle < angle) {
                     maxAngle = angle;
                 }
@@ -58,14 +59,14 @@ public class BoxOpener {
         return maxAngle;
     }
 
-    public void openOneIncompatible(int[] activeSplits, Vertex v, SplitSystemDraw ss, LinkedList<Vertex> vertices, TreeSet[] splitedges, Network network) {
+    public void openOneIncompatible(int[] activeSplits, Vertex v, LinkedList<Vertex> vertices, TreeSet[] splitedges, Network network) {
         boolean foundSplit = false;
         while (!foundSplit) {
             int S = activeSplits[nr++];
             EdgeList edges = v.collectEdgesForSplit(S);
             if (edges.size() > 1) {
                 foundSplit = true;
-                open(activeSplits, S, ss, edges, splitedges, v, vertices, network);
+                open(activeSplits, S, edges, splitedges, v, vertices, network);
             }
             if (nr == activeSplits.length) {
                 nr = 0;
@@ -76,7 +77,6 @@ public class BoxOpener {
 
     public double open(int[] activeSplits,
                        int S,
-                       SplitSystemDraw ss,
                        EdgeList edges,
                        TreeSet[] splitedges,
                        Vertex v,
@@ -92,7 +92,7 @@ public class BoxOpener {
         if (edges.size() > 1) {
 
             //Collect all the boxes induced by this split
-            LinkedList<NetworkBox> boxesSorted = collectAndSortBoxesForTheSplit(activeSplits, ss, S, splitedges);
+            LinkedList<NetworkBox> boxesSorted = collectAndSortBoxesForTheSplit(activeSplits, S, splitedges);
 
             deltaAlpha = angleCalculator.computeOptimalAngle(boxesSorted, edges, true);
 
@@ -174,7 +174,7 @@ public class BoxOpener {
     }
 
 
-    public double move(int[] activeSplits, int S, SplitSystemDraw ss, EdgeList edges, TreeSet[] splitedges, Vertex v, LinkedList<Vertex> vertices) {
+    public double move(int[] activeSplits, int S, EdgeList edges, TreeSet[] splitedges, Vertex v, LinkedList<Vertex> vertices) {
         Edge e = edges.getFirst();
 
         //Gap that protects vertices and edges from touching
@@ -206,13 +206,13 @@ public class BoxOpener {
         return deltaAlpha;
     }
 
-    private LinkedList<NetworkBox> collectAndSortBoxesForTheSplit(int[] activeSplits, SplitSystemDraw ss, int S, TreeSet[] splitedges) {
+    private LinkedList<NetworkBox> collectAndSortBoxesForTheSplit(int[] activeSplits, int S, TreeSet[] splitedges) {
         LinkedList<NetworkBox> boxes = new LinkedList<>();
         for (int i2 = 0; i2 < activeSplits.length; i2++) {
             int Si = activeSplits[i2];
 
-            if (ss.isCompatible(S, Si) == SplitSystemDraw.Compatible.NO) {
-                NetworkBox bi = DrawFlat.form_box(S, Si, splitedges);
+            if (splitSystemDraw.isCompatible(S, Si) == SplitSystemDraw.Compatible.NO) {
+                NetworkBox bi = NetworkBox.formBox(S, Si, splitedges);
                 if (bi != null) {
                     boxes.add(bi);
                 }
