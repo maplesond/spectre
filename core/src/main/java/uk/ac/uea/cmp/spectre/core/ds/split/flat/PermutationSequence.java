@@ -17,6 +17,8 @@ package uk.ac.uea.cmp.spectre.core.ds.split.flat;
 
 import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.Quadruple;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleSystem;
+import uk.ac.uea.cmp.spectre.core.math.stats.Statistics;
+import uk.ac.uea.cmp.spectre.core.util.CollectionUtils;
 
 import java.util.*;
 
@@ -368,8 +370,8 @@ public class PermutationSequence {
 
     private double compute2vs2bothSetsWithOneOfTwoFixed(int a, boolean[] set1, int b, boolean[] set2, QuadrupleSystem qs) {
         double score = 0;
-        int[] elements1 = Utilities.getElements(set1);
-        int[] elements2 = Utilities.getElements(set2);
+        int[] elements1 = CollectionUtils.getTrueElements(set1);
+        int[] elements2 = CollectionUtils.getTrueElements(set2);
         if (elements1.length > 0 && elements2.length > 0) {
             for (int i1 = 0; i1 < elements1.length; i1++) {
                 for (int i2 = 0; i2 < elements2.length; i2++) {
@@ -382,7 +384,7 @@ public class PermutationSequence {
 
     private double compute2vs2bothSets(boolean[] set1, boolean[] set2, QuadrupleSystem qs) {
         double score = 0;
-        if (Utilities.size(set1) > 1 && Utilities.size(set2) > 1) {
+        if (CollectionUtils.nbTrueElements(set1) > 1 && CollectionUtils.nbTrueElements(set2) > 1) {
             int[][] duplets1 = computeDuplets(set1);
             int[][] duplets2 = computeDuplets(set2);
             for (int i1 = 0; i1 < duplets1.length; i1++) {
@@ -396,9 +398,9 @@ public class PermutationSequence {
 
     private double compute2vs2setWithOneOfTwoFixedAndSet(int a, boolean[] set1, boolean[] set2, QuadrupleSystem qs) {
         double score = 0;
-        if (Utilities.size(set1) > 0 && Utilities.size(set2) > 1) {
+        if (CollectionUtils.nbTrueElements(set1) > 0 && CollectionUtils.nbTrueElements(set2) > 1) {
             int[][] duplets = computeDuplets(set2);
-            int[] elements1 = Utilities.getElements(set1);
+            int[] elements1 = CollectionUtils.getTrueElements(set1);
             for (int i1 = 0; i1 < elements1.length; i1++) {
                 for (int i = 0; i < duplets.length; i++) {
                     score += qs.get2Vs2Weight(a, elements1[i1], duplets[i][0], duplets[i][1]);
@@ -410,9 +412,9 @@ public class PermutationSequence {
 
     private double compute1vs3setAndSetWithOneOfThreeFixed(boolean[] set1, boolean[] set2, int a, QuadrupleSystem qs) {
         double score = 0;
-        if (Utilities.size(set1) > 0 && Utilities.size(set2) > 1) {
+        if (CollectionUtils.nbTrueElements(set1) > 0 && CollectionUtils.nbTrueElements(set2) > 1) {
             int[][] duplets = computeDuplets(set2);
-            int[] elements1 = Utilities.getElements(set1);
+            int[] elements1 = CollectionUtils.getTrueElements(set1);
             for (int i1 = 0; i1 < elements1.length; i1++) {
                 for (int i = 0; i < duplets.length; i++) {
                     score += qs.get1Vs3Weight(elements1[i1], duplets[i][0], duplets[i][1], a);
@@ -424,9 +426,9 @@ public class PermutationSequence {
 
     private double compute1vs3setAndSetWithTwoOfThreeFixed(boolean[] set1, boolean[] set2, int a, int b, QuadrupleSystem qs) {
         double score = 0;
-        if (Utilities.size(set1) > 0 && Utilities.size(set2) > 0) {
-            int[] elements1 = Utilities.getElements(set1);
-            int[] elements2 = Utilities.getElements(set2);
+        if (CollectionUtils.nbTrueElements(set1) > 0 && CollectionUtils.nbTrueElements(set2) > 0) {
+            int[] elements1 = CollectionUtils.getTrueElements(set1);
+            int[] elements2 = CollectionUtils.getTrueElements(set2);
             for (int i1 = 0; i1 < elements1.length; i1++) {
                 for (int i2 = 0; i2 < elements2.length; i2++) {
                     score += qs.get1Vs3Weight(elements1[i1], elements2[i2], a, b);
@@ -438,7 +440,7 @@ public class PermutationSequence {
 
     private double compute1vs3fixedAndSetWithOneOfThreeFixed(int a, boolean[] set, int b, QuadrupleSystem qs) {
         double score = 0;
-        if (Utilities.size(set) > 1) {
+        if (CollectionUtils.nbTrueElements(set) > 1) {
             int[][] duplets = computeDuplets(set);
             for (int i = 0; i < duplets.length; i++) {
                 score += qs.get1Vs3Weight(a, duplets[i][0], duplets[i][1], b);
@@ -495,9 +497,9 @@ public class PermutationSequence {
     private double compute1vs3bothSets(QuadrupleSystem qs, boolean[] set1, boolean[] set2) {
         double score = 0;
 
-        if (Utilities.size(set1) > 0 && Utilities.size(set2) > 2) {
+        if (CollectionUtils.nbTrueElements(set1) > 0 && CollectionUtils.nbTrueElements(set2) > 2) {
             int[][] triplets = computeTriplets(set2);
-            int[] elements1 = Utilities.getElements(set1);
+            int[] elements1 = CollectionUtils.getTrueElements(set1);
             for (int i1 = 0; i1 < elements1.length; i1++) {
                 for (int i = 0; i < triplets.length; i++) {
                     score += qs.get1Vs3Weight(elements1[i1], triplets[i][0], triplets[i][1], triplets[i][2]);
@@ -508,7 +510,7 @@ public class PermutationSequence {
     }
 
     private int[][] computeTriplets(boolean[] set) {
-        int[] elements = Utilities.getElements(set);
+        int[] elements = CollectionUtils.getTrueElements(set);
         int[][] triplets = new int[elements.length * (elements.length - 1) * (elements.length - 2) / 6][3];
         int j = 0;
         for (int i1 = 0; i1 < elements.length - 2; i1++) {
@@ -525,7 +527,7 @@ public class PermutationSequence {
     }
 
     private int[][] computeDuplets(boolean[] set) {
-        int[] elements = Utilities.getElements(set);
+        int[] elements = CollectionUtils.getTrueElements(set);
         int size = elements.length;
 
         int[][] duplets = new int[size * (size - 1) / 2][2];
@@ -607,10 +609,10 @@ public class PermutationSequence {
                         intersections[j][l][currentPermutation[k]] = set;
                     }
                 }
-                sizes[j][0] = Utilities.size(intersections[j][0]);
-                sizes[j][1] = Utilities.size(intersections[j][1]);
-                sizes[j][2] = Utilities.size(intersections[j][2]);
-                sizes[j][3] = Utilities.size(intersections[j][3]);
+                sizes[j][0] = CollectionUtils.nbTrueElements(intersections[j][0]);
+                sizes[j][1] = CollectionUtils.nbTrueElements(intersections[j][1]);
+                sizes[j][2] = CollectionUtils.nbTrueElements(intersections[j][2]);
+                sizes[j][3] = CollectionUtils.nbTrueElements(intersections[j][3]);
             } else {
                 for (int i1 = 0; i1 < intersections[j].length; i1++) {
                     System.arraycopy(intersections[j - 1][i1], 0, intersections[j][i1], 0, intersections[j][i1].length);
@@ -755,8 +757,8 @@ public class PermutationSequence {
     }
 
     private void printSplit(boolean[][] b) {
-        int[] below = Utilities.getElements(b[0]);
-        int[] above = Utilities.getElements(b[1]);
+        int[] below = CollectionUtils.getTrueElements(b[0]);
+        int[] above = CollectionUtils.getTrueElements(b[1]);
         for (int i = 0; i < below.length; i++) {
             System.out.print(below[i] + " ");
         }
@@ -900,19 +902,25 @@ public class PermutationSequence {
         return w;
     }
 
-    //This method prints the sequence on the screen.
-    public void printSequence() {
-        System.out.print("Initial sequence: ");
-        for (int i = 0; i < nTaxa; i++) {
-            System.out.print(initSequ[i] + " ");
-        }
-        System.out.println();
+    @Override
+    public String toString() {
 
-        System.out.print("Swaps: ");
-        for (int i = 0; i < nSwaps; i++) {
-            System.out.print(swaps[i] + " ");
+        StringBuilder sb = new StringBuilder();
+        sb.append("Initial sequence: ");
+        StringJoiner sj1 = new StringJoiner(" ");
+        for (int i = 0; i < nTaxa; i++) {
+            sj1.add(Integer.toString(initSequ[i]));
         }
-        System.out.println();
+        sb.append(sj1.toString()).append("\n");
+
+        sb.append("Swaps: ");
+        StringJoiner sj2 = new StringJoiner(" ");
+        for (int i = 0; i < nSwaps; i++) {
+            sj2.add(Integer.toString(swaps[i]));
+        }
+        sb.append(sj2.toString()).append("\n");
+
+        return sb.toString();
     }
 
     public void setWeights(double[] w, double[] trivial) {
@@ -948,7 +956,7 @@ public class PermutationSequence {
     }
 
     public void filterSplits(double threshold) {
-        if (Utilities.size(active) == 0) {
+        if (CollectionUtils.nbTrueElements(active) == 0) {
             for (int i = 0; i < active.length; i++) {
                 active[i] = true;
             }
@@ -1041,7 +1049,7 @@ public class PermutationSequence {
                 tr.put(taxaNo, i);
             }
         }
-        double avg = Utilities.getAverage(trivial);
+        double avg = Statistics.mean(trivial);
         for (int i = 0; i < trivial.length; i++) {
             if (trivial[i] < avg * 0.3) {
                 trivial[i] = 0.0;

@@ -19,6 +19,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.split.flat.FlatSplitSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.flat.Utilities;
+import uk.ac.uea.cmp.spectre.core.util.CollectionUtils;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -246,7 +247,7 @@ public class QuadrupleSystem implements Cloneable {
 
     //return number of active active
     public int[] getTaxaInt() {
-        return Utilities.getElements(active);
+        return CollectionUtils.getTrueElements(active);
     }
 
     //inactivates active b
@@ -261,29 +262,6 @@ public class QuadrupleSystem implements Cloneable {
         active[b] = true;
         nbActiveTaxa++;
         nQuadruples = (nbActiveTaxa * (nbActiveTaxa - 1) * (nbActiveTaxa - 2) * (nbActiveTaxa - 3)) / (2 * 3 * 4);
-    }
-
-    //prints difference of the quadruple split weights between this qs and qs2
-    public void printDifference(QuadrupleSystem qs2) {
-        int[] aTaxa = Utilities.getElements(active);
-        for (int i1 = 0; i1 < aTaxa.length; i1++) {
-            for (int i2 = i1 + 1; i2 < aTaxa.length; i2++) {
-                for (int i3 = i2 + 1; i3 < aTaxa.length; i3++) {
-                    for (int i4 = i3 + 1; i4 < aTaxa.length; i4++) {
-                        Quadruple q = getQuadruple(aTaxa[i1], aTaxa[i2], aTaxa[i3], aTaxa[i4]);
-                        Quadruple q2 = qs2.getQuadruple(aTaxa[i1], aTaxa[i2], aTaxa[i3], aTaxa[i4]);
-                        System.out.print("Quadruple nr. " + q.getIndex() + " : ");
-                        System.out.print(aTaxa[i1] + " " + aTaxa[i2] + " " + aTaxa[i3] + " " + aTaxa[i4] + " : ");
-                        double[] weights = q.getWeights();
-                        double[] weights2 = q2.getWeights();
-                        for (int j = 0; j < 7; j++) {
-                            System.out.print((weights[j] - weights2[j]) + " ");
-                        }
-                        System.out.println(" *");
-                    }
-                }
-            }
-        }
     }
 
     //creates identical qs to this one (except we lose track of which taxa are inactive)
@@ -341,30 +319,6 @@ public class QuadrupleSystem implements Cloneable {
         writer.close();
     }
 
-    //prints quadruple information
-    public void printQuadruples() {
-        System.out.println("Number of taxa: " + nbActiveTaxa + " *");
-        System.out.println("Number of quadruplets: " + nQuadruples + " *");
-
-        int[] aTaxa = Utilities.getElements(active);
-        for (int i1 = 0; i1 < aTaxa.length; i1++) {
-            for (int i2 = i1 + 1; i2 < aTaxa.length; i2++) {
-                for (int i3 = i2 + 1; i3 < aTaxa.length; i3++) {
-                    for (int i4 = i3 + 1; i4 < aTaxa.length; i4++) {
-                        Quadruple q = getQuadruple(aTaxa[i1], aTaxa[i2], aTaxa[i3], aTaxa[i4]);
-                        System.out.print("Quadruple nr. " + q.getIndex() + " : ");
-                        System.out.print(aTaxa[i1] + " " + aTaxa[i2] + " " + aTaxa[i3] + " " + aTaxa[i4] + " : ");
-                        double[] weights = q.getWeights();
-                        for (int j = 0; j < 7; j++) {
-                            System.out.print(weights[j] + " ");
-                        }
-                        System.out.println(" *");
-                    }
-                }
-            }
-        }
-    }
-
     //forms active number with 0s in front ot it. Used for printing quartets.
     private String getTaxaWith0(int i) {
         String taxNr = Integer.toString(i + 1);
@@ -374,22 +328,6 @@ public class QuadrupleSystem implements Cloneable {
             taxNr = "0" + Integer.toString(i + 1);
         }
         return taxNr;
-    }
-
-    //prints difference between this qs and qs2. tf is the name of the file
-    //to be printed in front of the difference.
-    public double compare(QuadrupleSystem qs2, String tf) {
-        double diff = 0;
-        for (int i = 0; i < quadruples.length; i++) {
-            double[] w1 = quadruples[i].getWeights();
-            double[] w2 = qs2.getQuadruple(quadruples[i].getTaxa().toIntArray()).getWeights();
-            for (int j = 0; j < w1.length; j++) {
-                diff += (w1[j] - w2[j]) * (w1[j] - w2[j]);
-            }
-        }
-        diff = Math.sqrt(diff);
-        System.err.println(tf + "\t" + diff);
-        return diff;
     }
 
 

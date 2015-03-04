@@ -94,11 +94,6 @@ public class BoxOpener {
             //Collect all the boxes induced by this split
             LinkedList<NetworkBox> boxesSorted = collectAndSortBoxesForTheSplit(activeSplits, ss, S, splitedges);
 
-            //Just print the number of splits that the current one is incompatible
-            //with
-            //System.out.println("Split no. " + S + " is incompatible with " + boxesSorted.size() + " splits.");
-
-
             deltaAlpha = angleCalculator.computeOptimalAngle(boxesSorted, edges, true);
 
             if (deltaAlpha != 0) {

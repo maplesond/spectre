@@ -3,16 +3,9 @@
 Flat Neighbor Joining (FlatNJ)
 ==============================
 
-The FlatNJ method for constructing split networks is presented in (Balvociute et al. 2013). This tool group consists of
-two command line tools:
+The Flat Net Joining (FlatNJ) method for constructing split networks is presented in (Balvociute et al. 2013).
 
-* Gen4S - generates a system of 4-splits from the input data (e.g. a multiple sequence alignment).
-* FlatNJ - given a system of 4-splits, computes a split network.
-
-Gen4S
------
-
-Gen4S generates a system of 4-splits from one of the following types of data:
+FlatNJ first generates a system of 4-splits (quadruples) from one of the following types of data:
 
 1. multiple sequence alignment
 2. geographical coordinates
@@ -21,10 +14,7 @@ Gen4S generates a system of 4-splits from one of the following types of data:
 In a system of 4-splits on a set `X` with `|X| >= 4`, for each 4-element subset fa; b; c; dg of X, all seven possible 4-splits
 `a|bcd, b|acd, c|abd, d|abc, ab|cd, ac|bd and ad|bc` are assigned a non-negative weight.
 
-FlatNJ
-------
-
-FlatNJ computes, from a given system of 4-splits, a split network that is guaranteed to be (almost) planar. FlatNJ
+FlatNJ then, from a given system of 4-splits, generates a split network that is guaranteed to be (almost) planar. FlatNJ
 is based on an agglomerative approach similar to the one used in methods such as NeighborJoining (Saitou and Nei, 1987)
 and NeighborNet (Bryant and Moulton, 2004).
 
@@ -76,11 +66,9 @@ following steps will guide you through the whole process of the network construc
 
 1. Open a terminal window and change to the directory of FlatNJ.
 
-2. To compute a system of 4-splits for the input file ``<spectre_dir>/examples/flatnj/colors_aln.faa`` type: ``gen4s -fa <spectre_dir>/examples/flatnj/colors_aln.faa -o <output_dir>/colors.4s``
+2. To compute a split network from the protein sequences fasta file type: ``flatnj -i <spectre_dir>/examples/flatnj/colors_aln.faa -o <output_dir>/colors.nex``
 
-3. To compute a split network from the system of 4-splits type: ``flatnj -i <output_dir>/colors.4s -o <output_dir>/colors.nex``
-
-4. To view the network launch SplitsTree and open ``<output_dir>/colors.nex``. The network displayed by SplitsTree should look very similar to the one in Figure 1.
+3. To view the network launch ``netview`` and open ``<output_dir>/colors.nex``. The network displayed by the viewer should look very similar to the one in Figure 1.
 
 
 .. image:: images/flatnj-fig1.png
@@ -99,7 +87,7 @@ The following steps will guide you through the whole process of the network cons
 1. Open a terminal window and change to an empty working directory.
 2. To compute a system of 4-splits for the input file ``<spectre_dir>/examples/flatnj/europe.nex`` type: ``gen4s -i <spectre_dir>/examples/flatnj/europe.nex -b LOCATIONS -o <output_dir>/europe.4s``
 3. To compute a split network from the system of 4-splits type: ``flatnj -i <spectre_dir>/examples/flatnj/europe.4s -o <output_dir>/europe_net.nex``
-4. To view the network launch SplitsTree and open europe ``<output_dir>/europe_net.nex``. The network displayed by SplitsTree should look very similar to the one in Figure 2.
+4. To view the network launch ``netview`` and open europe ``<output_dir>/europe_net.nex``. The network displayed by SplitsTree should look very similar to the one in Figure 2.
 
 .. image:: images/flatnj-fig2.png
     :scale: 50 %

@@ -100,21 +100,20 @@ public class CollectionUtils {
         }
     }
 
-    public static int size(boolean[] array) {
+    public static int nbTrueElements(boolean[] array) {
         int size = 0;
         for (int i = 0; i < array.length; i++) {
             if (array[i] == true) {
                 size++;
             }
         }
-        //size = (size < array.length - size) ? size : array.length - size;
 
         return size;
     }
 
 
-    public static int[] getElements(boolean[] set) {
-        int size = size(set);
+    public static int[] getTrueElements(boolean[] set) {
+        int size = nbTrueElements(set);
         int[] elements = new int[size];
         int j = 0;
         for (int i = 0; i < set.length; i++) {

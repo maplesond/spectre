@@ -15,13 +15,17 @@
 
 package uk.ac.uea.cmp.spectre.core.ds.network.draw;
 
+import uk.ac.uea.cmp.spectre.core.ds.network.Edge;
+import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
 import uk.ac.uea.cmp.spectre.core.ds.split.SpectreSplitBlock;
 import uk.ac.uea.cmp.spectre.core.ds.split.Split;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitBlock;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.spectre.core.util.CollectionUtils;
 
+import java.util.LinkedList;
 import java.util.Random;
+import java.util.TreeSet;
 
 /**
  * This class is used to store the permutation sequence representing a flat split system
@@ -183,7 +187,7 @@ public class PermutationSequenceDraw {
             }
         }
 
-        nActive = CollectionUtils.size(active);
+        nActive = CollectionUtils.nbTrueElements(active);
     }
 
 
@@ -271,7 +275,7 @@ public class PermutationSequenceDraw {
         }
 
         //update number of active splits
-        nActive = CollectionUtils.size(active);
+        nActive = CollectionUtils.nbTrueElements(active);
     }
 
     //Constructor of this class from a permutation
@@ -598,7 +602,7 @@ public class PermutationSequenceDraw {
                 }
             }
         } else {
-            System.out.println("Type of split system not supported by construtor of Perm_sequence");
+            throw new UnsupportedOperationException("Type of split system not supported by construtor of Perm_sequence");
         }
     }
 
@@ -1148,5 +1152,30 @@ public class PermutationSequenceDraw {
         }
     }
 
+    public int[] collectIndicesOfActiveSplits() {
+        int[] activeSplits = new int[this.getnActive()];
 
+        //Index used to fill in array of active splits
+        int j = 0;
+        //Go through all the splits and select active ones
+        for (int i = 0; i < this.getnActive(); i++) {
+            if (this.getActive()[i]) {
+                activeSplits[j++] = i;
+            }
+        }
+        return activeSplits;
+    }
+
+    public TreeSet<Edge>[] collectEdgesForTheSplits(final Vertex v) {
+        TreeSet<Edge>[] splitedges = new TreeSet[this.getNswaps()];
+
+        for (int i = 0; i < this.getnActive(); i++) {
+            LinkedList<Edge> edges = v.collectEdgesForSplit(i);
+            splitedges[i] = new TreeSet<>();
+            for (int k = 0; k < edges.size(); k++) {
+                splitedges[i].add(edges.get(k));
+            }
+        }
+        return splitedges;
+    }
 }

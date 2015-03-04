@@ -450,16 +450,16 @@ public class Vertex {
 
     public Vertex optimiseLayout(PermutationSequenceDraw ps, Network network) {
 
-        //Compute split system
+        // Compute split system
         SplitSystemDraw ss = new SplitSystemDraw(ps);
 
-        //Collect all vertices
+        // Collect all vertices in the network
         LinkedList<Vertex> vertices = this.collectVertices();
 
         //Initialize array used to store indices of active splits only
-        int[] activeSplits = Collector.collectIndicesOfActiveSplits(ps);
+        int[] activeSplits = ps.collectIndicesOfActiveSplits();
         //Initialize array to keep edges involved in each split
-        TreeSet[] splitedges = Collector.collectEdgesForTheSplits(ps, this);
+        TreeSet[] splitedges = ps.collectEdgesForTheSplits(this);
 
         AngleCalculator angleCalculatorSimple = new AngleCalculatorSimple();
         AngleCalculator angleCalculatorPrecise = new AngleCalculatorMaximalArea();

@@ -16,6 +16,7 @@
 package uk.ac.uea.cmp.spectre.core.ds.split.flat;
 
 import uk.ac.uea.cmp.spectre.core.ds.Alignment;
+import uk.ac.uea.cmp.spectre.core.util.CollectionUtils;
 
 import java.io.*;
 import java.util.Arrays;
@@ -167,124 +168,11 @@ public class FlatSplitSystem {
         return exists;
     }
 
-    //This method prints information about the split system on the screen
-    public void printSplits() {
-        int i = 0;
-        int j = 0;
-
-        double[] trivial = new double[nTaxa];
-
-        System.out.println("Number of taxa: " + nTaxa + " *");
-        System.out.println("Number of splits: " + nSplits + " *");
-
-        System.out.println("List of splits:");
-        System.out.println("Not trivial:");
-
-        for (i = 0; i < nSplits; i++) {
-            if (!isTrivial(splits[i])) {
-                System.out.print(weights[i] + " : ");
-                for (j = 0; j < nTaxa; j++) {
-                    int x = (splits[i][j]) ? 1 : 0;
-                    System.out.print(x);
-                    if (j < nTaxa - 1) {
-                        System.out.print("-");
-                    }
-                }
-                System.out.println(" *");
-            } else {
-                trivial[trivialTaxa(splits[i])] = weights[i];
-            }
-        }
-        System.out.println("Trivial:");
-        for (i = 0; i < nTaxa; i++) {
-            if (trivial[i] + trivialWeights[i] > 0) {
-                System.out.print((trivial[i] + trivialWeights[i]) + " : ");
-                for (j = 0; j < nTaxa; j++) {
-                    int x = (i == j) ? 1 : 0;
-                    System.out.print(x);
-                    if (j < nTaxa - 1) {
-                        System.out.print("-");
-                    }
-                }
-                System.out.println(" *");
-            }
-        }
-    }
-
-    //This method prints information about the splits that have positive length on the screen
-    public void printPositiveSplits() {
-        int i = 0;
-        int j = 0;
-
-        double[] trivial = new double[nTaxa];
-
-        System.out.println("Number of taxa: " + nTaxa + " *");
-        System.out.println("Number of splits: " + (nonTrivialSplits() + nTaxa) + " *");
-
-        System.out.println("List of splits:");
-        System.out.println("Not trivial:");
-
-        for (i = 0; i < nSplits; i++) {
-            if (weights[i] > 0) {
-                if (!isTrivial(splits[i])) {
-                    System.out.print(weights[i] + " : ");
-                    for (j = 0; j < nTaxa; j++) {
-                        int x = (splits[i][j]) ? 1 : 0;
-                        System.out.print(x);
-                        if (j < nTaxa - 1) {
-                            System.out.print("-");
-                        }
-                    }
-                    System.out.println(" *");
-                } else {
-                    trivial[trivialTaxa(splits[i])] = weights[i];
-                }
-            }
-        }
-        System.out.println("Trivial:");
-        for (i = 0; i < nTaxa; i++) {
-            if (trivial[i] + trivialWeights[i] > 0) {
-                System.out.print((trivial[i] + trivialWeights[i]) + " : ");
-                for (j = 0; j < nTaxa; j++) {
-                    int x = (i == j) ? 1 : 0;
-                    System.out.print(x);
-                    if (j < nTaxa - 1) {
-                        System.out.print("-");
-                    }
-                }
-                System.out.println(" *");
-            }
-        }
-    }
-
-    public void printSplitsNonTrivial() {
-        int i = 0;
-        int j = 0;
-
-
-        System.out.println("Number of taxa: " + nTaxa + " *");
-        System.out.println("Number of splits: " + nSplits + " *");
-
-        System.out.println("List of splits:");
-        System.out.println("Not trivial:");
-
-        for (i = 0; i < nSplits; i++) {
-            System.out.print(weights[i] + " : ");
-            for (j = 0; j < nTaxa; j++) {
-                int x = (splits[i][j]) ? 1 : 0;
-                System.out.print(x);
-                if (j < nTaxa - 1) {
-                    System.out.print("-");
-                }
-            }
-            System.out.println(" *");
-        }
-    }
 
     //This constructor reads a weighted split system from a file.
     //The file must contain the list of splits in the same
     //format as in a nexus file.
-    public FlatSplitSystem(String fileName) {
+    public FlatSplitSystem(String fileName) throws IOException {
 
         int mode = 0;
         String line = null;
@@ -293,14 +181,8 @@ public class FlatSplitSystem {
         String matched = null;
         boolean weightsPresent = false;
 
-        try {
-            ln_reader = new LineNumberReader(new FileReader(fileName));
-            line = ln_reader.readLine();
-        } catch (FileNotFoundException fnfe) {
-            System.out.println("File '" + fileName + "' not found.");
-        } catch (IOException ioe) {
-            System.out.println("Error reading splits file.");
-        }
+        ln_reader = new LineNumberReader(new FileReader(fileName));
+        line = ln_reader.readLine();
 
         while (line != null) {
             line = (mode != 1) ? line.toLowerCase() : line;
@@ -439,84 +321,80 @@ public class FlatSplitSystem {
 //        }
     }
 
-    public FlatSplitSystem(String fileName, int a) {
+    public FlatSplitSystem(String fileName, int a) throws IOException {
         String line = "";
         int i = 0;
         int k = 0;
 
-        try {
-            LineNumberReader ln_reader = new LineNumberReader(new FileReader(fileName));
-            //read number of taxa
+        LineNumberReader ln_reader = new LineNumberReader(new FileReader(fileName));
+        //read number of taxa
 
-            while (line.toLowerCase().contains("begin") && line.toLowerCase().contains("splits")) {
-                line = ln_reader.readLine();
-            }
-
-            while (!(line.contains("ntax") && line.contains("nsplits"))) {
-                line = ln_reader.readLine();
-            }
-
-            int index = line.indexOf("ntax=");
-            String tmp = line.substring(index + 5);
-            index = tmp.indexOf(" ");
-            nTaxa = Integer.parseInt(tmp.substring(0, index));
-            index = tmp.indexOf("nsplits=");
-            tmp = tmp.substring(index + 8);
-            index = tmp.indexOf(";");
-            nSplits = Integer.parseInt(tmp.substring(0, index));
-
-            splits = new boolean[nSplits][nTaxa];
-            weights = new double[nSplits];
-
-
-            while (!line.toLowerCase().contains("matrix")) {
-                line = ln_reader.readLine();
-            }
-
+        while (line.toLowerCase().contains("begin") && line.toLowerCase().contains("splits")) {
             line = ln_reader.readLine();
-            i = 0;
+        }
 
-            while (!line.toLowerCase().contains(";")) {
+        while (!(line.contains("ntax") && line.contains("nsplits"))) {
+            line = ln_reader.readLine();
+        }
 
-                index = line.lastIndexOf(',');
-                line = line.substring(0, index);
-                line = line.trim();
+        int index = line.indexOf("ntax=");
+        String tmp = line.substring(index + 5);
+        index = tmp.indexOf(" ");
+        nTaxa = Integer.parseInt(tmp.substring(0, index));
+        index = tmp.indexOf("nsplits=");
+        tmp = tmp.substring(index + 8);
+        index = tmp.indexOf(";");
+        nSplits = Integer.parseInt(tmp.substring(0, index));
 
-                if (line.contains("]")) {
-                    index = line.indexOf("]") + 1;
-                } else {
-                    index = line.indexOf(' ') + 1;
+        splits = new boolean[nSplits][nTaxa];
+        weights = new double[nSplits];
+
+
+        while (!line.toLowerCase().contains("matrix")) {
+            line = ln_reader.readLine();
+        }
+
+        line = ln_reader.readLine();
+        i = 0;
+
+        while (!line.toLowerCase().contains(";")) {
+
+            index = line.lastIndexOf(',');
+            line = line.substring(0, index);
+            line = line.trim();
+
+            if (line.contains("]")) {
+                index = line.indexOf("]") + 1;
+            } else {
+                index = line.indexOf(' ') + 1;
+            }
+            line = line.substring(index);
+            line = line.trim();
+
+            index = line.indexOf(' ') + 1;
+            weights[i] = Double.parseDouble(line.substring(0, index));
+            line = line.substring(index).trim();
+
+            for (k = 0; k < nTaxa; k++) {
+                splits[i][k] = false;
+            }
+            while (line.length() > 0) {
+                index = line.indexOf(' ');
+                if (index == -1) {
+                    index = line.length();
                 }
+                //note that in nexus files the taxa are numbered 1,2,...,nTaxa
+                k = Integer.parseInt(line.substring(0, index));
+                splits[i][k - 1] = true;
                 line = line.substring(index);
                 line = line.trim();
-
-                index = line.indexOf(' ') + 1;
-                weights[i] = Double.parseDouble(line.substring(0, index));
-                line = line.substring(index).trim();
-
-                for (k = 0; k < nTaxa; k++) {
-                    splits[i][k] = false;
-                }
-                while (line.length() > 0) {
-                    index = line.indexOf(' ');
-                    if (index == -1) {
-                        index = line.length();
-                    }
-                    //note that in nexus files the taxa are numbered 1,2,...,nTaxa
-                    k = Integer.parseInt(line.substring(0, index));
-                    splits[i][k - 1] = true;
-                    line = line.substring(index);
-                    line = line.trim();
-                }
-
-                i++;
-                line = ln_reader.readLine();
             }
 
-            ln_reader.close();
-        } catch (IOException exception) {
-            System.out.println("Couldn't read file.");
+            i++;
+            line = ln_reader.readLine();
         }
+
+        ln_reader.close();
     }
 
     //Constructor of this class from a permutation sequence.
@@ -880,34 +758,6 @@ public class FlatSplitSystem {
         return -1;
     }
 
-    private void printSplit(int j) {
-        for (int i = 0; i < splits[j].length; i++) {
-            if (splits[j][i] == true) {
-                System.out.print(i + " ");
-            }
-        }
-        System.out.print("|");
-        for (int i = 0; i < splits[j].length; i++) {
-            if (splits[j][i] == false) {
-                System.out.print(" " + i);
-            }
-        }
-        System.out.println();
-    }
-
-    public void compare(FlatSplitSystem ssr) {
-        int rounding = 1000;
-        for (int i = 0; i < splits.length; i++) {
-            int j = ssr.splitNr(splits[i]);
-            if (j > -1) {
-                System.out.println((double) (Math.round(rounding * Math.abs(weights[i] - ssr.weights[j]) / weights[i])) / rounding);
-            } else {
-                System.out.println("Split " + i + " is missing.");
-            }
-        }
-
-    }
-
     public void unifyWeights() {
         for (int i = 0; i < weights.length; i++) {
             weights[i] = 1.0;
@@ -931,7 +781,7 @@ public class FlatSplitSystem {
     }
 
     public boolean isTrivial(boolean[] b) {
-        int s = Utilities.size(b);
+        int s = CollectionUtils.nbTrueElements(b);
         int e = b.length;
         if (s == 1 || e - s == 1) {
             return true;
@@ -1213,7 +1063,7 @@ public class FlatSplitSystem {
     }
 
     protected int trivialTaxa(boolean[] b) {
-        int len = Utilities.size(b);
+        int len = CollectionUtils.nbTrueElements(b);
         boolean right = true;
         if (len > 1) {
             right = false;
@@ -1230,47 +1080,6 @@ public class FlatSplitSystem {
         return trivialWeights;
     }
 
-    public void printSplitsBoth(FlatSplitSystem ss) {
-        int i = 0;
-        int j = 0;
-
-        double[] trivial = new double[nTaxa];
-
-        System.out.println("Number of taxa: " + nTaxa + " *");
-        System.out.println("Number of splits: " + (nonTrivialSplits() + nTaxa) + " *");
-
-        System.out.println("List of splits:");
-        System.out.println("Not trivial:");
-
-        for (i = 0; i < nSplits; i++) {
-            if (!isTrivial(splits[i])) {
-                System.out.print(weights[i] + " : ");
-                for (j = 0; j < nTaxa; j++) {
-                    int x = (splits[i][j]) ? 1 : 0;
-                    System.out.print(x);
-                    if (j < nTaxa - 1) {
-                        System.out.print("-");
-                    }
-                }
-                System.out.println(" " + ss.getWeight(splits[i]));
-            } else {
-                trivial[trivialTaxa(splits[i])] = weights[i];
-            }
-        }
-        System.out.println("Trivial:");
-        for (i = 0; i < nTaxa; i++) {
-            System.out.print((trivial[i] + trivialWeights[i]) + " : ");
-            for (j = 0; j < nTaxa; j++) {
-                int x = (i == j) ? 1 : 0;
-                System.out.print(x);
-                if (j < nTaxa - 1) {
-                    System.out.print("-");
-                }
-            }
-            System.out.println(" " + ss.trivialWeights[i]);
-        }
-
-    }
 
     public boolean isCompatible(int a, int b) {
         //variables for counting the number of occurences of patterns
@@ -1342,7 +1151,7 @@ public class FlatSplitSystem {
             active = new boolean[nSplits];
         }
 
-        if (Utilities.size(active) == 0) {
+        if (CollectionUtils.nbTrueElements(active) == 0) {
             for (int i = 0; i < active.length; i++) {
                 active[i] = true;
             }
@@ -1360,7 +1169,7 @@ public class FlatSplitSystem {
             }
         }
 
-        nSplits = Utilities.size(active);
+        nSplits = CollectionUtils.nbTrueElements(active);
 
         boolean[][] splits2 = new boolean[nSplits][nTaxa];
         double[] weights2 = new double[nSplits];
@@ -1380,16 +1189,6 @@ public class FlatSplitSystem {
         splits = splits2;
         weights = weights2;
         active = active2;
-    }
-
-    public int sizeNoTrivial() {
-        int size = Utilities.size(active);
-        for (int i = 0; i < splits.length; i++) {
-            if (active[i] && isTrivial(splits[i])) {
-                size--;
-            }
-        }
-        return size;
     }
 
     public double getBackWithSimilarityThreshold(FlatSplitSystem ss2, double threshold) {
@@ -1423,10 +1222,6 @@ public class FlatSplitSystem {
                 if (!isTrivial(splits[i]) && !isTrivial(splits2[j]) && active[i] && active2[j]) {
                     int dist = minHamming(splits[i], splits2[j]);
                     if (dist <= distThr) {
-//                        System.out.println(dist + " <= " + distThr);
-//                        System.out.println(Arrays.toString(splits[i]));
-//                        System.out.println(Arrays.toString(splits2[j]));
-//                        System.out.println();
                         indices.add(i);
                         break;
                     }

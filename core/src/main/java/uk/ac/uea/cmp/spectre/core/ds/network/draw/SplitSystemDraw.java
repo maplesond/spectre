@@ -16,40 +16,48 @@
 package uk.ac.uea.cmp.spectre.core.ds.network.draw;
 
 /**
- * This class implements methods to handle a weighted split system
+ * This class implements methods to handle a weighted split system.
+ * The taxa are always indexed as 0,1,...,ntaxa-1.  This is also the ordering in which they are used in the matrix
+ * that stores the split system.
  */
 public class SplitSystemDraw {
-    //number of taxa
 
+    /**
+     * Number of taxa
+     */
     public int ntaxa = 0;
-    //The taxa are always indexed as 0,1,...,ntaxa-1.
-    //This is also the ordering in which they are used
-    //in the matrix that stores the split system below.
-    //number of splits
+
+    /**
+     * Number of splits
+     */
     public int nsplits = 0;
-    //2-dimensional 0/1-array encoding the splits.
-    //Rows correspond to splits, columns correspond to taxa.
-    //The ordering of taxa is 0,1,...,ntaxa-1.
+
+    /**
+     * 2-dimensional 0/1-array encoding the splits.  Rows correspond to splits, columns correspond to taxa.  The ordering
+     * of taxa is 0,1,...,ntaxa-1.
+     */
     public int[][] splits = null;
 
     /**
-     * This method prints information about the split system on the screen
+     * This method presents information about the split system on the screen in string form
      */
-    public void printSplits() {
-        int i = 0;
-        int j = 0;
+    @Override
+    public String toString() {
 
-        System.out.println("Number of taxa: " + ntaxa + " *");
-        System.out.println("Number of splits: " + nsplits + " *");
+        StringBuilder sb = new StringBuilder();
+        sb.append("Number of taxa: " + ntaxa + " *\n");
+        sb.append("Number of splits: " + nsplits + " *\n");
 
-        System.out.println("List of splits:");
+        sb.append("List of splits:\n");
 
-        for (i = 0; i < nsplits; i++) {
-            for (j = 0; j < ntaxa; j++) {
-                System.out.print(splits[i][j]);
+        for (int i = 0; i < nsplits; i++) {
+            for (int j = 0; j < ntaxa; j++) {
+                sb.append(splits[i][j]);
             }
-            System.out.println(" *");
+            sb.append(" *\n");
         }
+
+        return sb.toString();
     }
 
     /**
@@ -59,8 +67,7 @@ public class SplitSystemDraw {
      * @param p_sequ permutation sequence representing a flat split system
      */
     public SplitSystemDraw(PermutationSequenceDraw p_sequ) {
-        int i = 0;
-        int j = 0;
+
         int h = 0;
 
         ntaxa = p_sequ.ntaxa;
@@ -69,18 +76,18 @@ public class SplitSystemDraw {
         int[] cur_sequ = new int[ntaxa];
 
         //Initialize current sequence with initial permutation
-        for (i = 0; i < ntaxa; i++) {
+        for (int i = 0; i < ntaxa; i++) {
             cur_sequ[i] = p_sequ.initSequ[i];
         }
 
         //Write splits into 0/1-array.
-        for (i = 0; i < nsplits; i++) {
+        for (int i = 0; i < nsplits; i++) {
             //compute current permutation
             h = cur_sequ[p_sequ.swaps[i]];
             cur_sequ[p_sequ.swaps[i]] = cur_sequ[p_sequ.swaps[i] + 1];
             cur_sequ[p_sequ.swaps[i] + 1] = h;
             //turn it into a 0/1 sequence
-            for (j = 0; j < ntaxa; j++) {
+            for (int j = 0; j < ntaxa; j++) {
                 if (j <= p_sequ.swaps[i]) {
                     splits[i][cur_sequ[j]] = 1;
                 } else {

@@ -27,7 +27,7 @@ import uk.ac.uea.cmp.spectre.core.util.CollectionUtils;
 public class QuadrupleAgglomeratorAverage implements QuadrupleAgglomerator {
     @Override
     public void agglomerate(QuadrupleSystem qs, Neighbours neighbours) {
-        int[] taxa = CollectionUtils.getElements(qs.getActive());
+        int[] taxa = CollectionUtils.getTrueElements(qs.getActive());
 
         int a = neighbours.getA();
         int b = neighbours.getB();

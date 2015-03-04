@@ -35,7 +35,7 @@ public class NeighbourFinderCombined implements NeighbourFinder {
 
         int atAll = 0;
 
-        int[] taxa = CollectionUtils.getElements(qs.getActive());
+        int[] taxa = CollectionUtils.getTrueElements(qs.getActive());
         int nTaxa = taxa.length;
 
         for (int i1 = 0; i1 < nTaxa - 1; i1++) {

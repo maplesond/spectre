@@ -122,7 +122,7 @@ public class Scorer {
      * @param qs         {@linkplain QuadrupleSystem}
      */
     public void updateScoresAfterWeightChange(double[][][] scores, Neighbours neighbours, QuadrupleSystem qs) {
-        int[] taxa = CollectionUtils.getElements(qs.getActive());
+        int[] taxa = CollectionUtils.getTrueElements(qs.getActive());
         int a = neighbours.getA();
         int b = neighbours.getB();
 

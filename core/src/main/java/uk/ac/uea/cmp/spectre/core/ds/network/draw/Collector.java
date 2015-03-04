@@ -278,32 +278,6 @@ public class Collector {
         return balloons;
     }
 
-    public static TreeSet<Edge>[] collectEdgesForTheSplits(PermutationSequenceDraw ps, Vertex v) {
-        TreeSet<Edge>[] splitedges = new TreeSet[ps.getNswaps()];
-
-        for (int i = 0; i < ps.getnActive(); i++) {
-            LinkedList<Edge> edges = v.collectEdgesForSplit(i);
-            splitedges[i] = new TreeSet<>();
-            for (int k = 0; k < edges.size(); k++) {
-                splitedges[i].add(edges.get(k));
-            }
-        }
-        return splitedges;
-    }
-
-    public static int[] collectIndicesOfActiveSplits(PermutationSequenceDraw ps) {
-        int[] activeSplits = new int[ps.getnActive()];
-
-        //Index used to fill in array of active splits
-        int j = 0;
-        //Go through all the splits and select active ones
-        for (int i = 0; i < ps.getnActive(); i++) {
-            if (ps.getActive()[i]) {
-                activeSplits[j++] = i;
-            }
-        }
-        return activeSplits;
-    }
 
     public static Set<Edge> getExternalEdges(Edge e1, Vertex a, Edge e2) {
         Set<Edge> edges = new HashSet<>();
@@ -494,7 +468,7 @@ public class Collector {
     }
 
     public static void highlightLargestSplits(Vertex V, PermutationSequenceDraw ps, int n) {
-        TreeSet<Edge>[] edges = collectEdgesForTheSplits(ps, V);
+        TreeSet<Edge>[] edges = ps.collectEdgesForTheSplits(V);
         Map<Integer, Double> splits = new HashMap<>();
         for (int i = 0; i < edges.length; i++) {
             if (edges[i].size() > 1) {

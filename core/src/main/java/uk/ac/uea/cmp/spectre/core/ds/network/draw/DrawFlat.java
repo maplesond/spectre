@@ -322,9 +322,7 @@ public class DrawFlat {
         }
 
         if (u == null) {
-            System.out.println("Got a null vertex back -- stop here.");
-            System.exit(0);
-            return null;
+            throw new NullPointerException("Got a null vertex back");
         } else {
             return u;
         }
@@ -941,9 +939,8 @@ public class DrawFlat {
             }
         }
 
-        System.out.println("Did not find a first crossing -- something is wrong -- stop here");
-        System.exit(0);
-        return -1;
+        // Something's wrong! :(
+        throw new IllegalStateException("Did not find a first crossing");
     }
 
     //This method collects the indices of the splits
@@ -1017,8 +1014,7 @@ public class DrawFlat {
                                                         LinkedList<Edge> elista, LinkedList<Edge> elistb,
                                                         TreeSet[] splitedges, PermutationSequenceDraw psequ) {
         if (elist.isEmpty()) {
-            System.out.println("List of flip edges is empty -- error -- stop here");
-            System.exit(0);
+            throw new IllegalArgumentException("List of flip edges is empty");
         }
 
 
@@ -2106,67 +2102,4 @@ public class DrawFlat {
         return v;
     }
 
-
-    private static void log_splitedges(TreeSet[] splitedges, String mes) {
-        int i = 0;
-        Edge f = null;
-
-        System.out.println(mes + "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-
-        for (i = 0; i < splitedges.length; i++) {
-            Iterator iter = splitedges[i].iterator();
-
-            System.out.print("Split " + i + ":");
-            while (iter.hasNext()) {
-                f = (Edge) iter.next();
-                System.out.print(" " + f.getTimestp());
-            }
-            System.out.println("");
-        }
-
-        /*
-         * System.out.println("split indices");
-         *
-         * for(i=0;i<splitedges.length;i++) { Iterator iter =
-         * splitedges[i].iterator();
-         *
-         * System.out.print("Split " + i + ":"); while(iter.hasNext()) { f =
-         * (Edge)iter.next(); System.out.print(" " + f.getIdxsplit()); }
-         * System.out.println(""); }
-         */
-    }
-
-    private static void log_elist(LinkedList<Edge> elist, String mes) {
-        int i = 0;
-        Edge f = null;
-
-        System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-
-        Iterator iter = elist.iterator();
-
-        System.out.println(mes + " ");
-
-        while (iter.hasNext()) {
-            f = (Edge) iter.next();
-            System.out.print(" " + f.getTimestp());
-        }
-        System.out.println("");
-    }
-
-    private static void log_elist_idx(LinkedList<Edge> elist, String mes) {
-        int i = 0;
-        Edge f = null;
-
-        System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-
-        Iterator iter = elist.iterator();
-
-        System.out.println(mes + " ");
-
-        while (iter.hasNext()) {
-            f = (Edge) iter.next();
-            System.out.print(" " + f.getIdxsplit());
-        }
-        System.out.println("");
-    }
 }

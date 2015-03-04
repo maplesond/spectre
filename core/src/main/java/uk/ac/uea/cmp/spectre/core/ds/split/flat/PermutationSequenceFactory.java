@@ -81,7 +81,7 @@ public class PermutationSequenceFactory {
      * Finds the permutation sequence that best represents remaining quartet.
      */
     private PermutationSequence findBestOnFour(QuadrupleSystem qs) {
-        int[] x = CollectionUtils.getElements(qs.getActive());
+        int[] x = CollectionUtils.getTrueElements(qs.getActive());
         int j = 0;
         Quadruple q = qs.getQuadruple(x);
         double[] weights = q.getWeights();

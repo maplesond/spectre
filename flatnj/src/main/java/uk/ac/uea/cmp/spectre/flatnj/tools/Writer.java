@@ -28,6 +28,7 @@ import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.flat.FlatSplitSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.flat.PermutationSequence;
 import uk.ac.uea.cmp.spectre.core.ds.split.flat.Utilities;
+import uk.ac.uea.cmp.spectre.core.util.CollectionUtils;
 
 import java.io.*;
 import java.util.Iterator;
@@ -206,7 +207,7 @@ public class Writer {
 
         int nTaxa = ss.getnTaxa();
 
-        int nSplits = Utilities.size(active);
+        int nSplits = CollectionUtils.nbTrueElements(active);
 
         writeLine();
         writeLine("BEGIN Splits;");
