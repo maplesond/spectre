@@ -420,7 +420,7 @@ public class Writer {
                 String line = String.valueOf((v.getNxnum() + 1));
 
                 while (taxiter.hasNext()) {
-                    line = line.concat(" '" + taxa.getNames()[((Integer) taxiter.next()).intValue()] + "'");
+                    line = line.concat(" '" + taxa.getNames()[((Identifier) taxiter.next()).getId()] + "'");
                 }
                 line = line.concat(",");
                 writeLine(line);
@@ -455,7 +455,7 @@ public class Writer {
                 String label = new String();
                 taxiter = v.getTaxa().listIterator();
                 while (taxiter.hasNext()) {
-                    label = (taxa.getNames()[((Integer) taxiter.next()).intValue()] + ", ").concat(label);
+                    label = (taxa.getNames()[((Identifier) taxiter.next()).getId()] + ", ").concat(label);
                     //--------------------- just for testing, so that labels are nor visible --------
                     //label = "";
                 }

@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.tgac.metaopt.Objective;
 import uk.ac.tgac.metaopt.Optimiser;
+import uk.ac.tgac.metaopt.OptimiserException;
 import uk.ac.tgac.metaopt.OptimiserFactory;
 import uk.ac.uea.cmp.spectre.core.ds.Alignment;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
@@ -38,7 +39,6 @@ import uk.ac.uea.cmp.spectre.core.ds.network.Network;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
 import uk.ac.uea.cmp.spectre.core.ds.network.draw.AngleCalculatorMaximalArea;
 import uk.ac.uea.cmp.spectre.core.ds.network.draw.CompatibleCorrector;
-import uk.ac.uea.cmp.spectre.core.ds.network.draw.DrawFlat;
 import uk.ac.uea.cmp.spectre.core.ds.network.draw.PermutationSequenceDraw;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.flat.FlatSplitSystem;
@@ -354,6 +354,10 @@ public class FlatNJ {
             // Required
             File inFile = new File(commandLine.getOptionValue(OPT_INPUT));
             Optimiser optimiser = OptimiserFactory.getInstance().createOptimiserInstance(commandLine.getOptionValue(OPT_OPTIMISER), Objective.ObjectiveType.QUADRATIC);
+
+            if (optimiser == null) {
+                throw new OptimiserException("Optimiser not recognised: " + commandLine.getOptionValue(OPT_OPTIMISER));
+            }
 
             // Optional
             File outFile = commandLine.hasOption(OPT_OUTPUT) ? new File(commandLine.getOptionValue(OPT_OUTPUT)) : new File(DEFAULT_OUTPUT);

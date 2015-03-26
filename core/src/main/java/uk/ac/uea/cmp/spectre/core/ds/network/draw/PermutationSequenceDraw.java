@@ -661,6 +661,10 @@ public class PermutationSequenceDraw {
         return active;
     }
 
+    public boolean getActive(int index) {
+        return active[index];
+    }
+
     public int[] getRepresentedby() {
         return representedby;
     }
@@ -1180,8 +1184,8 @@ public class PermutationSequenceDraw {
         //Index used to fill in array of active splits
         int j = 0;
         //Go through all the splits and select active ones
-        for (int i = 0; i < this.getnActive(); i++) {
-            if (this.getActive()[i]) {
+        for (int i = 0; i < this.getActive().length; i++) {
+            if (this.getActive(i)) {
                 activeSplits[j++] = i;
             }
         }
@@ -1191,7 +1195,7 @@ public class PermutationSequenceDraw {
     public TreeSet<Edge>[] collectEdgesForTheSplits(final Vertex v) {
         TreeSet<Edge>[] splitedges = new TreeSet[this.getNswaps()];
 
-        for (int i = 0; i < this.getnActive(); i++) {
+        for (int i = 0; i < this.getActive().length; i++) {
             LinkedList<Edge> edges = v.collectEdgesForSplit(i);
             splitedges[i] = new TreeSet<>();
             for (int k = 0; k < edges.size(); k++) {
