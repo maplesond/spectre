@@ -46,9 +46,13 @@ public class TreeLoader implements QLoader {
         List<String> lines = FileUtils.readLines(file);
         for (String line : lines) {
 
-            NewickTree tree = new NewickTree(line);
+            String trimmedLine = line.trim();
 
-            sourceDataList.add(new QuartetSystem(tree.getTaxa(), tree.getScalingFactor() * weight, tree.createQuartets()));
+            if (!trimmedLine.isEmpty()) {
+                NewickTree tree = new NewickTree(trimmedLine);
+
+                sourceDataList.add(new QuartetSystem(tree.getTaxa(), tree.getScalingFactor() * weight, tree.createQuartets()));
+            }
         }
 
         return sourceDataList;

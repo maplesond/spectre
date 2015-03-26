@@ -900,7 +900,7 @@ public class NetView extends javax.swing.JFrame {
             if (nexus.getNetwork() == null && nexus.getSplitSystem() != null) {
 
                 // Create network
-                network = new FlatNetwork(new PermutationSequenceDraw(nexus.getSplitSystem()).drawSplitSystem(-1));
+                network = new FlatNetwork(new PermutationSequenceDraw(nexus.getSplitSystem()).drawSplitSystem(-1.0));
 
                 // Setup labels
                 for(Vertex v : network.getAllVertices()) {
