@@ -98,47 +98,6 @@ public class PermutationSequenceDraw {
     //Constructors for this class
     //**********************************************************
 
-    /**
-     * Constructor of this class from a given initial sequence and a sequence of swaps. Exists mainly for testing purposes
-     * @param in_init_sequ Unknown ??
-     * @param in_swaps Unknown ??
-     */
-    public PermutationSequenceDraw(int[] in_init_sequ, int[] in_swaps) {
-        int i = 0;
-
-        ntaxa = initSequ.length;
-        nclasses = ntaxa;
-        nswaps = swaps.length;
-        nActive = nswaps;
-
-        hasWeights = true;
-        hasActiveFlags = true;
-
-        initSequ = new int[ntaxa];
-        representedby = new int[ntaxa];
-        activeTaxa = new boolean[ntaxa];
-        taxaname = new String[ntaxa];
-
-        swaps = new int[nswaps];
-        active = new boolean[nswaps];
-        compressed = new int[nswaps];
-        weights = new double[nswaps];
-
-        for (i = 0; i < ntaxa; i++) {
-            initSequ[i] = in_init_sequ[i];
-            representedby[i] = i;
-            activeTaxa[i] = true;
-            taxaname[i] = "taxon" + i;
-        }
-
-        for (i = 0; i < nswaps; i++) {
-            swaps[i] = in_swaps[i];
-            compressed[i] = i;
-            active[i] = true;
-            weights[i] = 1.0;
-        }
-    }
-
 
     /**
      * Constructor of this class from a given initial sequence, a sequence of swaps, weights and array of active flags.
@@ -199,11 +158,6 @@ public class PermutationSequenceDraw {
      * @param ss Circular split system
      */
     public PermutationSequenceDraw(SplitSystem ss){
-        int h = 0;
-        int i = 0;
-        int j = 0;
-        int k = 0;
-        int a = 0;
 
         //first get the number of taxa and number of splits
         //in a full circular split system on that number of taxa
@@ -230,7 +184,7 @@ public class PermutationSequenceDraw {
         weights = new double[nswaps];
 
         //store information about the taxa in arrays
-        for (i = 0; i < ntaxa; i++) {
+        for (int i = 0; i < ntaxa; i++) {
             initSequ[i] = i;
             representedby[i] = i;
             activeTaxa[i] = true;
@@ -241,13 +195,17 @@ public class PermutationSequenceDraw {
         //array used to store the current permutation from which
         //we extract the current split
         int[] cursequ = new int[ntaxa];
-        for (i = 0; i < ntaxa; i++) {
+        for (int i = 0; i < ntaxa; i++) {
             cursequ[i] = initSequ[i];
         }
 
+        int h = 0;
+        int k = 0;
+        int a = 0;
+
         //the generic structure of a circular split system
-        for (i = 0; i < ntaxa; i++) {
-            for (j = 0; j < ntaxa - i - 1; j++) {
+        for (int i = 0; i < ntaxa; i++) {
+            for (int j = 0; j < ntaxa - i - 1; j++) {
                 swaps[k] = j;
                 compressed[k] = k;
                 weights[k] = 0;
@@ -280,333 +238,6 @@ public class PermutationSequenceDraw {
         nActive = CollectionUtils.nbTrueElements(active);
     }
 
-    //Constructor of this class from a permutation
-    //sequence stored in a nexus file
-    //The threshold can be used to filter
-    //the splits.
-    /*public PermutationSequenceDraw(String filename, double thold) {
-        int i = 0;
-
-        LineNumberReader lnr = NexusIO.openlinereader(filename);
-        taxaname = NexusIO.readtaxa(lnr);
-
-        if (taxaname == null) {
-            System.out.println("Reading the taxa block failed");
-        } else {
-            ntaxa = taxaname.length;
-            nclasses = ntaxa;
-            nswaps = ntaxa * (ntaxa - 1) / 2;
-            nActive = nswaps;
-
-            initSequ = new int[ntaxa];
-            representedby = new int[ntaxa];
-            activeTaxa = new boolean[ntaxa];
-            trivial = new double[ntaxa];
-
-            swaps = new int[nswaps];
-            active = new boolean[nswaps];
-            compressed = new int[nswaps];
-            weights = new double[nswaps];
-
-            for (i = 0; i < ntaxa; i++) {
-                representedby[i] = i;
-                activeTaxa[i] = true;
-            }
-
-            for (i = 0; i < nswaps; i++) {
-                compressed[i] = i;
-                active[i] = true;
-                weights[i] = 1.0;
-            }
-
-            if (NexusIO.readflatsplits(this, lnr) < 0) {
-                System.out.println("Reading the flatsplits block failed");
-            }
-
-            if (thold >= 0.0) {
-                setActive(thold);
-            }
-        }
-        NexusIO.closelinereader(lnr);
-    }
-
-    //Constructor of this class from a set of points
-    //stored in a nexus file. The split system contains
-    //the affine split system induced by these points.
-    public PermutationSequenceDraw(String filename) {
-        int i = 0;
-        int j = 0;
-        int k = 0;
-        int h = 0;
-        int l = 0;
-        double dx = 0.0;
-        double dy = 0.0;
-        double r = 0.0;
-
-        LineNumberReader lnr = NexusIO.openlinereader(filename);
-        taxaname = NexusIO.readtaxa(lnr);
-
-        if (taxaname == null) {
-            System.out.println("Reading the taxa block failed");
-        } else {
-            ntaxa = taxaname.length;
-            nclasses = ntaxa;
-            nswaps = ntaxa * (ntaxa - 1) / 2;
-            nActive = nswaps;
-
-            hasWeights = true;
-            hasActiveFlags = true;
-
-            initSequ = new int[ntaxa];
-            representedby = new int[ntaxa];
-            activeTaxa = new boolean[ntaxa];
-
-            swaps = new int[nswaps];
-            active = new boolean[nswaps];
-            compressed = new int[nswaps];
-            weights = new double[nswaps];
-
-            for (i = 0; i < ntaxa; i++) {
-                representedby[i] = i;
-                activeTaxa[i] = true;
-                initSequ[i] = i;
-            }
-
-            for (i = 0; i < nswaps; i++) {
-                compressed[i] = i;
-                active[i] = true;
-                weights[i] = 1.0;
-            }
-
-            double[] xcoord = new double[ntaxa];
-            double[] ycoord = new double[ntaxa];
-
-            if (NexusIO.readlocations(xcoord, ycoord, lnr) < 0) {
-                System.out.println("Reading the locations block failed");
-            } else {
-                sortinitsequence(xcoord, ycoord);
-
-                int[] cursequ = new int[ntaxa];
-
-                for (i = 0; i < ntaxa; i++) {
-                    cursequ[i] = initSequ[i];
-                }
-
-                boolean[][] swapped = new boolean[ntaxa][ntaxa];
-
-                for (i = 0; i < ntaxa; i++) {
-                    for (j = 0; j < ntaxa; j++) {
-                        swapped[i][j] = false;
-                    }
-                }
-
-                for (k = 0; k < nswaps; k++) {
-                    r = Double.POSITIVE_INFINITY;
-                    h = -1;
-
-                    for (i = 0; i < (ntaxa - 1); i++) {
-                        if (swapped[cursequ[i]][cursequ[i + 1]] == false) {
-                            dx = xcoord[cursequ[i]] - xcoord[cursequ[i + 1]];
-                            dy = ycoord[cursequ[i]] - ycoord[cursequ[i + 1]];
-                            if (dx == 0.0) {
-                                if (r == Double.POSITIVE_INFINITY) {
-                                    h = i;
-                                }
-                            } else {
-                                if (r >= (dy / dx)) {
-                                    r = dy / dx;
-                                    h = i;
-                                }
-                            }
-                        }
-                    }
-
-                    swaps[k] = h;
-                    swapped[cursequ[h]][cursequ[h + 1]] = true;
-                    swapped[cursequ[h + 1]][cursequ[h]] = true;
-                    l = cursequ[h];
-                    cursequ[h] = cursequ[h + 1];
-                    cursequ[h + 1] = l;
-                }
-            }
-        }
-        NexusIO.closelinereader(lnr);
-    }*/
-
-    /**
-     * Constructor of a template for a circular split system from a list of taxa
-     * @param tname List of taxa names
-     */
-    public PermutationSequenceDraw(String[] tname) {
-        ntaxa = tname.length;
-        nswaps = ntaxa * (ntaxa - 1) / 2;
-        nActive = nswaps;
-        nclasses = ntaxa;
-        hasWeights = true;
-        hasActiveFlags = true;
-
-        initSequ = new int[ntaxa];
-        taxaname = new String[ntaxa];
-        swaps = new int[nswaps];
-        active = new boolean[nswaps];
-        compressed = new int[nswaps];
-        representedby = new int[ntaxa];
-        activeTaxa = new boolean[ntaxa];
-        weights = new double[nswaps];
-
-        int i = 0;
-        int j = 0;
-        int k = 0;
-        int h = 0;
-        int r = 0;
-        int a = 0;
-
-        for (i = 0; i < ntaxa; i++) {
-            taxaname[i] = tname[i];
-        }
-
-        //circular split system
-        for (i = 0; i < ntaxa; i++) {
-            initSequ[i] = i;
-        }
-
-        for (i = 0; i < ntaxa; i++) {
-            for (j = 0; j < ntaxa - i - 1; j++) {
-                swaps[k] = j;
-                k++;
-            }
-        }
-    }
-
-    public static enum SplitSystemType {
-        FLAT,
-        CIRCULAR
-    }
-
-    /**
-     * Constructor that generates a random permutation sequence. The first parameter is the number of taxa. The second
-     * parameter is used to indicate the type of split system: general flat or circular
-     * @param n Number of taxa
-     * @param t Type of split system
-     */
-    public PermutationSequenceDraw(int n, SplitSystemType t) {
-        ntaxa = n;
-        nswaps = ntaxa * (ntaxa - 1) / 2;
-        nActive = nswaps;
-        nclasses = ntaxa;
-        hasWeights = true;
-        hasActiveFlags = true;
-
-        initSequ = new int[ntaxa];
-        taxaname = new String[ntaxa];
-        swaps = new int[nswaps];
-        active = new boolean[nswaps];
-        compressed = new int[nswaps];
-        representedby = new int[ntaxa];
-        activeTaxa = new boolean[ntaxa];
-
-        weights = new double[nswaps];
-
-        Random rgen = new Random();
-
-        int i = 0;
-        int j = 0;
-        int k = 0;
-        int h = 0;
-        int r = 0;
-        int a = 0;
-
-        for (i = 0; i < nswaps; i++) {
-            active[i] = true;
-            weights[i] = rgen.nextDouble();
-            //weights[i] = 1.0;
-            compressed[i] = i;
-        }
-
-        for (i = 0; i < ntaxa; i++) {
-            taxaname[i] = "Taxon" + i;
-            representedby[i] = i;
-            activeTaxa[i] = true;
-        }
-
-        //circular split system
-        if (t == SplitSystemType.CIRCULAR) {
-            for (i = 0; i < ntaxa; i++) {
-                initSequ[i] = i;
-            }
-
-            //generate a random initial permutation
-            for (i = 0; i < ntaxa; i++) {
-                r = rgen.nextInt(ntaxa - i);
-                h = initSequ[i];
-                initSequ[i] = initSequ[i + r];
-                initSequ[i + r] = h;
-            }
-
-            for (i = 0; i < ntaxa; i++) {
-                for (j = 0; j < ntaxa - i - 1; j++) {
-                    swaps[k] = j;
-                    k++;
-                }
-            }
-        }
-        //general flat split system
-        else if (t == SplitSystemType.FLAT) {
-            for (i = 0; i < ntaxa; i++) {
-                initSequ[i] = i;
-            }
-
-            //generate a random initial permutation
-            for (i = 0; i < ntaxa; i++) {
-                r = rgen.nextInt(ntaxa - i);
-                h = initSequ[i];
-                initSequ[i] = initSequ[i + r];
-                initSequ[i + r] = h;
-            }
-
-            //generate random sequence of swaps
-            boolean[][] swapped = new boolean[ntaxa][ntaxa];
-            for (i = 0; i < ntaxa; i++) {
-                for (j = 0; j < ntaxa; j++) {
-                    swapped[i][j] = false;
-                }
-            }
-
-            int[] cursequ = new int[ntaxa];
-            for (i = 0; i < ntaxa; i++) {
-                cursequ[i] = initSequ[i];
-            }
-
-            for (k = 0; k < nswaps; k++) {
-                a = 0;
-                for (i = 0; i < (ntaxa - 1); i++) {
-                    if (swapped[cursequ[i]][cursequ[i + 1]] == false) {
-                        a++;
-                    }
-                }
-
-                r = rgen.nextInt(a) + 1;
-
-                a = 0;
-                for (i = 0; i < (ntaxa - 1); i++) {
-                    if (swapped[cursequ[i]][cursequ[i + 1]] == false) {
-                        a++;
-                    }
-                    if (a == r) {
-                        swaps[k] = i;
-                        swapped[cursequ[i]][cursequ[i + 1]] = true;
-                        swapped[cursequ[i + 1]][cursequ[i]] = true;
-                        h = cursequ[i];
-                        cursequ[i] = cursequ[i + 1];
-                        cursequ[i + 1] = h;
-                        break;
-                    }
-                }
-            }
-        } else {
-            throw new UnsupportedOperationException("Type of split system not supported by construtor of Perm_sequence");
-        }
-    }
 
     //***********************************
     // Getters
@@ -621,11 +252,11 @@ public class PermutationSequenceDraw {
         return nswaps;
     }
 
-    public boolean isHasWeights() {
+    public boolean hasWeights() {
         return hasWeights;
     }
 
-    public boolean isHasActiveFlags() {
+    public boolean hasActiveFlags() {
         return hasActiveFlags;
     }
 
