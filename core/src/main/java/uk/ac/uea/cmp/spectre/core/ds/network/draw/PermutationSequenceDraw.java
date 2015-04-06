@@ -185,10 +185,12 @@ public class PermutationSequenceDraw {
 
         //store information about the taxa in arrays
         for (int i = 0; i < ntaxa; i++) {
-            initSequ[i] = i;
+            //Initial permutation must equal circular ordering underlying the circular split system.
+            //Assumes that Ids used are 1,2,3,...,ntaxa.
+            initSequ[i] = ss.getOrderedTaxa().get(i).getId()-1;
             representedby[i] = i;
             activeTaxa[i] = true;
-            taxaname[i] = ss.getOrderedTaxa().get(i).getName();
+            taxaname[ss.getOrderedTaxa().get(i).getId()-1] = ss.getOrderedTaxa().get(i).getName();
             trivial[i] = 0.0; //no extra length added to pendant edge;
         }
 
@@ -218,14 +220,17 @@ public class PermutationSequenceDraw {
 
                 //get the split represented by this swap
                 int[] sideA = new int[j+1]; //get one side of the split as an int-array, the elements must be the ids according to the identifier list
-                for(a=0;a<=j;a++) {sideA[a]=cursequ[a];}
+                for(a=0;a<=j;a++) {sideA[a]=cursequ[a]+1;}
                 SplitBlock ssb = new SpectreSplitBlock(sideA);
                 ssb.sort();
 
                 //next check whether the input split system contains a split with one SplitBlock equal to the one we just created
                 for (Split s : ss) {
-                    s.getASide().sort();
-                    if(s.getASide().equals(ssb) || s.getBSide().equals(ssb)){
+                    SplitBlock ssba = s.getASide();
+                    ssba.sort();
+                    SplitBlock ssbb = s.getBSide();
+                    ssbb.sort();
+                    if(ssba.equals(ssb) || ssbb.equals(ssb)){
                         weights[k] = s.getWeight();
                         if(weights[k] > 0) {active[k] = true;}
                     }
