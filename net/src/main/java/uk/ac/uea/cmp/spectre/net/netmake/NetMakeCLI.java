@@ -1,14 +1,13 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2014  UEA School of Computing Sciences
+ * Copyright (C) 2015  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
- * details.
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
@@ -22,7 +21,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.uea.cmp.spectre.core.co.CircularOrderingAlgorithms;
+import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.CircularOrderingAlgorithms;
 import uk.ac.uea.cmp.spectre.core.ui.cli.CommandLineHelper;
 
 import java.io.File;
@@ -75,7 +74,7 @@ public class NetMakeCLI {
                 .withDescription(NetMakeOptions.DESC_WEIGHTINGS_2).create("x"));
 
         options.addOption(OptionBuilder.withArgName("circular_ordering").withLongOpt(OPT_CO_ALG).hasArg()
-                .withDescription(NetMakeOptions.DESC_CO_ALG).create("co"));
+                .withDescription(NetMakeOptions.DESC_CO_ALG).create("ordering"));
 
 
         options.addOption(CommandLineHelper.HELP_OPTION);

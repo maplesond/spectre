@@ -1,14 +1,13 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2014  UEA School of Computing Sciences
+ * Copyright (C) 2015  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
- * details.
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
@@ -22,17 +21,17 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.PropertyConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.uea.cmp.spectre.core.co.CircularOrderingAlgorithms;
-import uk.ac.uea.cmp.spectre.core.co.CircularOrderingCreator;
-import uk.ac.uea.cmp.spectre.core.co.nm.NetMakeCircularOrderer;
-import uk.ac.uea.cmp.spectre.core.co.nm.weighting.Weighting;
-import uk.ac.uea.cmp.spectre.core.co.nm.weighting.Weightings;
-import uk.ac.uea.cmp.spectre.core.co.nn.NeighborNetImpl;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.split.SpectreSplitSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitBlock;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
+import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.CircularOrderingAlgorithms;
+import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.CircularOrderingCreator;
+import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.nm.NetMakeCircularOrderer;
+import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.nm.weighting.Weighting;
+import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.nm.weighting.Weightings;
+import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.nn.NeighborNetImpl;
 import uk.ac.uea.cmp.spectre.core.io.PhygenReader;
 import uk.ac.uea.cmp.spectre.core.io.PhygenReaderFactory;
 import uk.ac.uea.cmp.spectre.core.ui.gui.RunnableTool;

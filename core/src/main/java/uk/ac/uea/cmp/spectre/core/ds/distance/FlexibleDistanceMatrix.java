@@ -1,14 +1,13 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2014  UEA School of Computing Sciences
+ * Copyright (C) 2015  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
- * details.
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
@@ -186,7 +185,7 @@ public class FlexibleDistanceMatrix extends AbstractDistanceMatrix {
 
     @Override
     public IdentifierList getTaxa(Comparator<Identifier> comparator) {
-        return this.taxa.sort(comparator);
+        return this.taxa.sortCopy(comparator);
     }
 
 
@@ -195,7 +194,7 @@ public class FlexibleDistanceMatrix extends AbstractDistanceMatrix {
 
         DistanceList dl = new FlexibleDistanceList(taxon);
 
-        IdentifierList sorted = comparator == null ? this.taxa : this.taxa.sort(comparator);
+        IdentifierList sorted = comparator == null ? this.taxa : this.taxa.sortCopy(comparator);
 
         for (Identifier t : sorted) {
 
@@ -223,7 +222,7 @@ public class FlexibleDistanceMatrix extends AbstractDistanceMatrix {
     @Override
     public List<DistanceList> getAllDistances(Comparator<Identifier> comparator) {
 
-        IdentifierList sorted = comparator == null ? this.taxa : this.taxa.sort(comparator);
+        IdentifierList sorted = comparator == null ? this.taxa : this.taxa.sortCopy(comparator);
 
         List<DistanceList> allDistances = new ArrayList<>(this.size());
 
@@ -240,7 +239,7 @@ public class FlexibleDistanceMatrix extends AbstractDistanceMatrix {
 
         double[][] matrix = new double[this.size()][this.size()];
 
-        IdentifierList sorted = comparator == null ? this.taxa : this.taxa.sort(comparator);
+        IdentifierList sorted = comparator == null ? this.taxa : this.taxa.sortCopy(comparator);
 
         for (int i = 0; i < sorted.size(); i++) {
 

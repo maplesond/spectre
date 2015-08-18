@@ -1,14 +1,13 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2014  UEA School of Computing Sciences
+ * Copyright (C) 2015  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
- * details.
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
@@ -17,8 +16,8 @@
 package uk.ac.uea.cmp.spectre.core.ds.network.draw;
 
 import uk.ac.uea.cmp.spectre.core.ds.network.Edge;
+import uk.ac.uea.cmp.spectre.core.ds.network.EdgeList;
 import uk.ac.uea.cmp.spectre.core.ds.network.Network;
-import uk.ac.uea.cmp.spectre.core.ds.network.Translocator;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
 
 import java.util.*;
@@ -37,7 +36,7 @@ public class AngleCalculatorSimple implements AngleCalculator {
     private double smallAngle = 0.2;
 
     @Override
-    public double computeOptimalAngle(LinkedList<NetworkBox> boxesSorted, LinkedList<Edge> edges, boolean bottom) {
+    public double computeOptimalAngle(List<NetworkBox> boxesSorted, EdgeList edges, boolean bottom) {
         if (!boxesSorted.isEmpty()) {
             return computeForIncompatible(boxesSorted, bottom);
         } else if (edges.size() == 1) {
@@ -48,7 +47,7 @@ public class AngleCalculatorSimple implements AngleCalculator {
     }
 
     @Override
-    public double computeForCompatible(LinkedList<Edge> edges) {
+    public double computeForCompatible(EdgeList edges) {
         Edge split = edges.getFirst();
         double deltaAlpha = 0.0;
 
@@ -59,7 +58,7 @@ public class AngleCalculatorSimple implements AngleCalculator {
             //Collect all the external vertices that are above
             Set<Vertex> topVertices = getAllVertices(split, true);
 
-            Vertex bottom = split.getBot();
+            Vertex bottom = split.getBottom();
             Vertex top = split.getTop();
 
             Vertex bStrikerLeft = findStrikerOnTheLeft(bottom, top, topVertices);
@@ -92,7 +91,7 @@ public class AngleCalculatorSimple implements AngleCalculator {
         return deltaAlpha;
     }
 
-    protected double computeForIncompatible(LinkedList<NetworkBox> boxesSorted, boolean bottom) {
+    protected double computeForIncompatible(List<NetworkBox> boxesSorted, boolean bottom) {
         //variables to store limits of the possible angle movements
         //up is the maximum posible change of the angle by which we could
         //increase it,
@@ -103,12 +102,12 @@ public class AngleCalculatorSimple implements AngleCalculator {
         //go through all the boxes
         for (int i = 0; i < boxesSorted.size(); i++) {
             NetworkBox b = boxesSorted.get(i);
-            Edge e1 = b.e1;
-            Edge e2 = b.e2;
+            Edge e1 = b.getE1();
+            Edge e2 = b.getE2();
 
             //evaluate angles of current box
-            double currUp = getAngle(e1.getBot(), e2.getBot(), e2.getTop());
-            double currDown = getAngle(e1.getTop(), e1.getBot(), e2.getBot());
+            double currUp = getAngle(e1.getBottom(), e2.getBottom(), e2.getTop());
+            double currDown = getAngle(e1.getTop(), e1.getBottom(), e2.getBottom());
 
             //if new angles are smaller, then update limits
             alphaUp = (alphaUp == null || alphaUp > currUp) ? currUp : alphaUp;
@@ -146,13 +145,13 @@ public class AngleCalculatorSimple implements AngleCalculator {
             vertices.add(split.getTop());
             verticesR.add(split.getTop());
         } else {
-            vertices.add(split.getBot());
-            verticesR.add(split.getBot());
+            vertices.add(split.getBottom());
+            verticesR.add(split.getBottom());
         }
 
         while (!vertices.isEmpty()) {
             Vertex v = vertices.removeFirst();
-            LinkedList<Edge> incident = v.getElist();
+            LinkedList<Edge> incident = v.getEdgeList();
             for (int i = 0; i < incident.size(); i++) {
                 Edge e = incident.get(i);
                 if (!e.isVisited()) {
@@ -162,8 +161,8 @@ public class AngleCalculatorSimple implements AngleCalculator {
                         vertices.add(e.getTop());
                         verticesR.add(e.getTop());
                     } else {
-                        vertices.add(e.getBot());
-                        verticesR.add(e.getBot());
+                        vertices.add(e.getBottom());
+                        verticesR.add(e.getBottom());
                     }
                 }
             }
@@ -188,29 +187,29 @@ public class AngleCalculatorSimple implements AngleCalculator {
         return angle;
     }
 
-    protected double computeOptimal(LinkedList<NetworkBox> boxesSorted) {
+    protected double computeOptimal(List<NetworkBox> boxesSorted) {
         double deltaAlpha = smallAngle * Math.signum(Math.random() - 0.5);
         return deltaAlpha;
     }
 
-    protected double computeSecondDerivative(LinkedList<NetworkBox> boxesSorted, double deltaAlpha) {
+    protected double computeSecondDerivative(List<NetworkBox> boxesSorted, double deltaAlpha) {
         double secondDerivative = 0;
 
         for (int i = 0; i < boxesSorted.size(); i++) {
             NetworkBox b = boxesSorted.get(i);
 
             // Messy shortcuts
-            Edge e1 = b.e1;
-            Edge e2 = b.e2;
+            Edge e1 = b.getE1();
+            Edge e2 = b.getE2();
 
-            Vertex e1Bot = e1.getBot();
+            Vertex e1Bot = e1.getBottom();
             Vertex e1Top = e1.getTop();
             double e1BotX = e1Bot.getX();
             double e1BotY = e1Bot.getY();
             double e1TopX = e1Top.getX();
             double e1TopY = e1Top.getY();
 
-            Vertex e2Bot = e2.getBot();
+            Vertex e2Bot = e2.getBottom();
             double e2BotX = e2Bot.getX();
             double e2BotY = e2Bot.getY();
 
@@ -312,14 +311,14 @@ public class AngleCalculatorSimple implements AngleCalculator {
         double safeAngle = 0.0;
 
         //Determine striker and defender points for the bottom leftmost and rightmost ends of the split
-        Vertex bStrikerLeft = findStrikerOnTheLeft(leftmost.getBot(), leftmost.getTop(), topVertices);
-        Vertex bStrikerRight = findStrikerOnTheRight(rightmost.getBot(), rightmost.getTop(), topVertices);
-        Vertex bDefenderLeft = findDefenderOnTheLeft(leftmost.getBot(), leftmost.getTop(), bottomVertices);
-        Vertex bDefenderRight = findDefenderOnTheRight(rightmost.getBot(), rightmost.getTop(), bottomVertices);
+        Vertex bStrikerLeft = findStrikerOnTheLeft(leftmost.getBottom(), leftmost.getTop(), topVertices);
+        Vertex bStrikerRight = findStrikerOnTheRight(rightmost.getBottom(), rightmost.getTop(), topVertices);
+        Vertex bDefenderLeft = findDefenderOnTheLeft(leftmost.getBottom(), leftmost.getTop(), bottomVertices);
+        Vertex bDefenderRight = findDefenderOnTheRight(rightmost.getBottom(), rightmost.getTop(), bottomVertices);
 
         //Determine all four safe angles
-        double bAngleLeft = Vertex.getClockwiseAngle(bDefenderLeft, leftmost.getBot(), bStrikerLeft);
-        double bAngleRight = Vertex.getClockwiseAngle(bStrikerRight, rightmost.getBot(), bDefenderRight);
+        double bAngleLeft = Vertex.getClockwiseAngle(bDefenderLeft, leftmost.getBottom(), bStrikerLeft);
+        double bAngleRight = Vertex.getClockwiseAngle(bStrikerRight, rightmost.getBottom(), bDefenderRight);
 
         if (bAngleLeft <= Math.PI && bAngleRight <= Math.PI) {
             safeAngle = Math.min(bAngleLeft, bAngleRight);
@@ -333,10 +332,10 @@ public class AngleCalculatorSimple implements AngleCalculator {
         double safeAngle = 0.0;
 
         //Determining corresponding points for the top
-        Vertex tStrikerLeft = findStrikerOnTheRight(leftmost.getTop(), leftmost.getBot(), bottomVertices);
-        Vertex tStrikerRight = findStrikerOnTheLeft(rightmost.getTop(), rightmost.getBot(), bottomVertices);
-        Vertex tDefenderLeft = findDefenderOnTheRight(leftmost.getTop(), leftmost.getBot(), topVertices);
-        Vertex tDefenderRight = findDefenderOnTheLeft(rightmost.getTop(), rightmost.getBot(), topVertices);
+        Vertex tStrikerLeft = findStrikerOnTheRight(leftmost.getTop(), leftmost.getBottom(), bottomVertices);
+        Vertex tStrikerRight = findStrikerOnTheLeft(rightmost.getTop(), rightmost.getBottom(), bottomVertices);
+        Vertex tDefenderLeft = findDefenderOnTheRight(leftmost.getTop(), leftmost.getBottom(), topVertices);
+        Vertex tDefenderRight = findDefenderOnTheLeft(rightmost.getTop(), rightmost.getBottom(), topVertices);
 
         //Determine all four safe angles
         double tAngleLeft = Vertex.getClockwiseAngle(tStrikerLeft, leftmost.getTop(), tDefenderLeft);
@@ -362,9 +361,9 @@ public class AngleCalculatorSimple implements AngleCalculator {
     public double[] computeLeftAndRightAngles(Edge split, Vertex v, Vertex w) {
         double[] lr = new double[2];
         LinkedList<Edge> around = new LinkedList<>();
-        for (int i = 0; i < v.getElist().size(); i++) {
-            if (v.getElist().get(i) != split) {
-                around.add(v.getElist().get(i));
+        for (int i = 0; i < v.getEdgeList().size(); i++) {
+            if (v.getEdgeList().get(i) != split) {
+                around.add(v.getEdgeList().get(i));
             }
         }
         Edge left = null;
@@ -373,7 +372,7 @@ public class AngleCalculatorSimple implements AngleCalculator {
         double angleRight = 0.0;
         for (int i = 0; i < around.size(); i++) {
             Edge e = around.get(i);
-            Vertex ev = (e.getBot() == v) ? e.getTop() : e.getBot();
+            Vertex ev = (e.getBottom() == v) ? e.getTop() : e.getBottom();
             double edgeSplitAngle = Vertex.getClockwiseAngle(ev, v, w);
             double splitEdgeAngle = Vertex.getClockwiseAngle(w, v, ev);
 
@@ -391,25 +390,19 @@ public class AngleCalculatorSimple implements AngleCalculator {
         return lr;
     }
 
-    /**
-     * @param v
-     * @param w
-     * @param e
-     * @return
-     */
     @Override
     public double optimizedAngleForCompatible(Vertex v, Vertex w, Edge e, List<Edge> botEdges, List<Edge> topEdges) {
         Set<Vertex> botVertices = new HashSet<>();
         for (int i = 0; i < botEdges.size(); i++) {
             Edge ee = botEdges.get(i);
-            botVertices.add(ee.getBot());
+            botVertices.add(ee.getBottom());
             botVertices.add(ee.getTop());
         }
 
         Set<Vertex> topVertices = new HashSet<>();
         for (int i = 0; i < topEdges.size(); i++) {
             Edge ee = topEdges.get(i);
-            topVertices.add(ee.getBot());
+            topVertices.add(ee.getBottom());
             topVertices.add(ee.getTop());
         }
 
@@ -435,7 +428,6 @@ public class AngleCalculatorSimple implements AngleCalculator {
                                                  List<Edge> edges,
                                                  CompatibleCorrector cc,
                                                  Network network,
-                                                 Window window,
                                                  boolean outside) {
         List<Double> angles = new LinkedList<>();
 
@@ -455,8 +447,8 @@ public class AngleCalculatorSimple implements AngleCalculator {
             //double dist = Collector.getDistanceToEgde(v, ee);
             //if(dist <= r)
             {
-                double xb = ee.getBot().getX();
-                double yb = ee.getBot().getY();
+                double xb = ee.getBottom().getX();
+                double yb = ee.getBottom().getY();
                 double xt = ee.getTop().getX();
                 double yt = ee.getTop().getY();
 

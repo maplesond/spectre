@@ -1,14 +1,13 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2014  UEA School of Computing Sciences
+ * Copyright (C) 2015  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
- * details.
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
@@ -32,7 +31,6 @@ import uk.ac.uea.cmp.spectre.core.ds.network.FlatNetwork;
 import uk.ac.uea.cmp.spectre.core.ds.network.Network;
 import uk.ac.uea.cmp.spectre.core.ds.network.NetworkLabel;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
-import uk.ac.uea.cmp.spectre.core.ds.network.draw.DrawFlat;
 import uk.ac.uea.cmp.spectre.core.ds.network.draw.PermutationSequenceDraw;
 import uk.ac.uea.cmp.spectre.core.io.nexus.Nexus;
 import uk.ac.uea.cmp.spectre.core.io.nexus.NexusReader;
@@ -902,7 +900,7 @@ public class NetView extends javax.swing.JFrame {
             if (nexus.getNetwork() == null && nexus.getSplitSystem() != null) {
 
                 // Create network
-                network = new FlatNetwork(DrawFlat.drawsplitsystem(new PermutationSequenceDraw(nexus.getSplitSystem()), -1));
+                network = new FlatNetwork(new PermutationSequenceDraw(nexus.getSplitSystem()).drawSplitSystem(-1.0));
 
                 // Setup labels
                 for(Vertex v : network.getAllVertices()) {

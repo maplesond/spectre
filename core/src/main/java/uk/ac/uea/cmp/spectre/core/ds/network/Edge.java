@@ -1,14 +1,13 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2014  UEA School of Computing Sciences
+ * Copyright (C) 2015  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
- * details.
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
@@ -18,14 +17,13 @@ package uk.ac.uea.cmp.spectre.core.ds.network;
 
 import java.awt.*;
 import java.util.Iterator;
-import java.util.LinkedList;
 
 
 public class Edge implements Comparable<Edge> {
 
     // Endpoints of the edge.
     private Vertex top;
-    private Vertex bot;
+    private Vertex bottom;
 
     // Index of the split associated to the edge.
     private int idxsplit;
@@ -49,7 +47,7 @@ public class Edge implements Comparable<Edge> {
 
     public Edge(Vertex t, Vertex b, int idx, int time) {
         top = t;
-        bot = b;
+        bottom = b;
         idxsplit = idx;
         timestp = time;
         visited = false;
@@ -64,12 +62,12 @@ public class Edge implements Comparable<Edge> {
 
 
     public double length() {
-        return Math.sqrt((bot.getX() - top.getX()) * (bot.getX() - top.getX()) + (bot.getY() - top.getY()) * (bot.getY() - top.getY()));
+        return Math.sqrt((bottom.getX() - top.getX()) * (bottom.getX() - top.getX()) + (bottom.getY() - top.getY()) * (bottom.getY() - top.getY()));
     }
 
     @Override
     public String toString() {
-        return "Nr. " + nxnum + "\nSplit: " + idxsplit + "\nBot: " + bot.toSimpleString() + "\nTop: " + top.toSimpleString() + "\n";
+        return "Nr. " + nxnum + "\nSplit: " + idxsplit + "\nBot: " + bottom.toSimpleString() + "\nTop: " + top.toSimpleString() + "\n";
     }
 
 
@@ -77,16 +75,16 @@ public class Edge implements Comparable<Edge> {
         this.top = top;
     }
 
-    public void setBot(Vertex bot) {
-        this.bot = bot;
+    public void setBottom(Vertex bottom) {
+        this.bottom = bottom;
     }
 
     public void setColor(Color c) {
         color = c;
     }
 
-    public Vertex getBot() {
-        return bot;
+    public Vertex getBottom() {
+        return bottom;
     }
 
     public Color getColor() {
@@ -142,10 +140,10 @@ public class Edge implements Comparable<Edge> {
     }
 
     public Vertex getOther(Vertex v) {
-        if (bot == v) {
+        if (bottom == v) {
             return top;
         } else if (top == v) {
-            return bot;
+            return bottom;
         } else {
             return null;
         }
@@ -168,8 +166,8 @@ public class Edge implements Comparable<Edge> {
         }
     }
 
-    private void collectEdges(LinkedList<Edge> elist) {
-        LinkedList<Edge> toBeExplored = new LinkedList<>();
+    private void collectEdges(EdgeList elist) {
+        EdgeList toBeExplored = new EdgeList();
         toBeExplored.addLast(this);
         this.setVisited(true);
 
@@ -178,7 +176,7 @@ public class Edge implements Comparable<Edge> {
         while (toBeExplored.size() > 0) {
             g = toBeExplored.removeFirst();
             elist.addLast(g);
-            Iterator iter = ((g.getTop()).getElist()).iterator();
+            Iterator iter = ((g.getTop()).getEdgeList()).iterator();
             while (iter.hasNext()) {
                 h = (Edge) iter.next();
                 if (h.isVisited() == false) {
@@ -186,7 +184,7 @@ public class Edge implements Comparable<Edge> {
                     h.setVisited(true);
                 }
             }
-            iter = ((g.getBot()).getElist()).iterator();
+            iter = ((g.getBottom()).getEdgeList()).iterator();
             while (iter.hasNext()) {
                 h = (Edge) iter.next();
                 if (h.isVisited() == false) {
@@ -199,7 +197,7 @@ public class Edge implements Comparable<Edge> {
 
     /**
      * This method computes a list of the edges in the split network.
-     * @return
+     * @return The computed list of edges in the split network
      */
     public EdgeList collectEdges() {
 
@@ -215,4 +213,7 @@ public class Edge implements Comparable<Edge> {
         return elist;
     }
 
+    public boolean bottomEquals(Edge e) {
+        return this.getBottom().equals(e.getBottom());
+    }
 }

@@ -1,14 +1,13 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2014  UEA School of Computing Sciences
+ * Copyright (C) 2015  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
- * details.
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
@@ -18,28 +17,24 @@ package uk.ac.uea.cmp.spectre.core.ds.network.draw;
 
 import java.util.SortedSet;
 
-//This class is used to pass data to the implementation
-//of the nnls-algorithm 
-
+/**
+ * This class is used to pass data to the implementation of the nnls-algorithm
+ */
 public class NNLSTempData {
-    //This flag indicates whether we run the
-    //outer loop for the first time or not.
-    //In the first pass we use the generalization
-    //of Chepoi's formula to compute an optimal
-    //unconstrained solution. After that we use
-    //conjugate gradients to solve the unconstrained
-    //subproblems.
-    public boolean firsttime = true;
 
-    //This is the epsilon-bound that can be
-    //provided by the user. It is used in the test
-    //whether we have arrived at a constrained
-    //minimum. The smaller this bound, the tighter
-    //the approximation of the minimum. But this
-    //also means that the number of iterations
-    //and thus the run time grow when this bound
-    //is set to smaller values.
-    public double usereps = 0.0001;
+    /**
+     * This flag indicates whether we run the outer loop for the first time or not. In the first pass we use the generalization
+     * of Chepoi's formula to compute an optimal unconstrained solution. After that we use conjugate gradients to solve
+     * the unconstrained subproblems.
+     */
+    private boolean firstTime;
+
+    /**
+     * This is the epsilon-bound that can be provided by the user. It is used in the test whether we have arrived at a
+     * constrained minimum. The smaller this bound, the tighter the approximation of the minimum. But this also means that
+     * the number of iterations and thus the run time grow when this bound is set to smaller values.
+     */
+    private double userEpsilon = 0.0001;
 
     //This array contains the distance matrix in
     //a 1-dimensional format. The order of the
@@ -100,4 +95,28 @@ public class NNLSTempData {
     //splits that currently have negative length.
     public SortedSet negweights = null;
 
+    public NNLSTempData() {
+        this(0.0001);
+    }
+
+    public NNLSTempData(double userEpsilon) {
+        this.firstTime = true;
+        this.userEpsilon = userEpsilon;
+    }
+
+    public boolean isFirstTime() {
+        return firstTime;
+    }
+
+    public void setFirstTime(boolean firstTime) {
+        this.firstTime = firstTime;
+    }
+
+    public double getUserEpsilon() {
+        return userEpsilon;
+    }
+
+    public void setUserEpsilon(double userEpsilon) {
+        this.userEpsilon = userEpsilon;
+    }
 }

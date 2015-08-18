@@ -1,27 +1,27 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2014  UEA School of Computing Sciences
+ * Copyright (C) 2015  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
- * details.
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
+
 package uk.ac.uea.cmp.spectre.qtools.qnet.holders;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.CanonicalWeightedQuartetMap;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.Quartet;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.QuartetUtils;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.SpectreQuartet;
+import uk.ac.uea.cmp.spectre.core.ds.quad.Quad;
+import uk.ac.uea.cmp.spectre.core.ds.quad.SpectreQuad;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.CanonicalWeightedQuartetMap;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.QuartetUtils;
 import uk.ac.uea.cmp.spectre.qtools.qnet.QNetException;
 
 import java.util.List;
@@ -60,8 +60,8 @@ public class U0Holder extends AbstractBasicHolder {
                         // what is and what isn't a quartet
                         if (QuartetUtils.areDistinct(yA1, yA2, yB1, yB2)) {
 
-                            Quartet q1 = new SpectreQuartet(yA1, yB1, yA2, yB2);
-                            Quartet q2 = new SpectreQuartet(yA2, yB2, yA1, yB1);
+                            Quad q1 = new SpectreQuad(yA1, yB1, yA2, yB2);
+                            Quad q2 = new SpectreQuad(yA2, yB2, yA1, yB1);
 
                             count++;
                             weight += theQuartetWeights.containsKey(q1) ?

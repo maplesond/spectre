@@ -1,14 +1,13 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2014  UEA School of Computing Sciences
+ * Copyright (C) 2015  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
- * details.
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
@@ -18,21 +17,33 @@ package uk.ac.uea.cmp.spectre.core.ds.network;
 
 
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
+import uk.ac.uea.cmp.spectre.core.ds.network.draw.*;
 
 import java.awt.*;
+import java.util.LinkedList;
 import java.util.ListIterator;
+import java.util.TreeSet;
 
 public class Vertex {
 
-    //List of the edges that are incident to this vertex.
-    //The edges are sorted clockwise around the vertex.
-    private EdgeList elist;
+    /**
+     * List of the edges that are incident to this vertex. The edges are sorted clockwise around the vertex.
+     */
+    private EdgeList edgeList;
 
-    //The list of taxa associated to the vertex.
+    /**
+     * The list of taxa associated to the vertex.
+     */
     private IdentifierList taxa;
 
-    //Coordinates of the vertex in the drawing.
+    /**
+     * X coordinate in drawing plane
+     */
     private double x;
+
+    /**
+     * Y coordinate in drawing plane
+     */
     private double y;
 
     //number of vertex in nexus file
@@ -62,23 +73,23 @@ public class Vertex {
     public Vertex(double xcoord, double ycoord) {
         x = xcoord;
         y = ycoord;
-        elist = new EdgeList();
+        edgeList = new EdgeList();
         taxa = new IdentifierList();
         visited = false;
     }
 
     //Methods to add an edge to the list of incident edges.
     public void add_edge_before_first(Edge e) {
-        elist.addFirst(e);
+        edgeList.addFirst(e);
     }
 
     public void add_edge_after_last(Edge e) {
-        elist.addLast(e);
+        edgeList.addLast(e);
     }
 
     @Override
     public String toString() {
-        return nxnum + " [" + x + ", " + y + "] : " + elist.size();
+        return nxnum + " [" + x + ", " + y + "] : " + edgeList.size();
     }
 
     public String toSimpleString() {
@@ -97,7 +108,7 @@ public class Vertex {
     }
 
     public Edge getFirstEdge() {
-        return elist.getFirst();
+        return edgeList.getFirst();
     }
 
     public void setTaxa(IdentifierList taxa) {
@@ -140,12 +151,17 @@ public class Vertex {
         return shape;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        return this.equals((Vertex)o);
+    }
+
     public boolean equals(Vertex v2) {
         return x == v2.x && y == v2.y;
     }
 
-    public EdgeList getElist() {
-        return elist;
+    public EdgeList getEdgeList() {
+        return edgeList;
     }
 
     public void setWidth(int w) {
@@ -238,13 +254,13 @@ public class Vertex {
         while (toBeExplored.size() > 0) {
             u = toBeExplored.removeFirst();
             vlist.addLast(u);
-            ListIterator<Edge> iter = u.getElist().listIterator();
+            ListIterator<Edge> iter = u.getEdgeList().listIterator();
             while (iter.hasNext()) {
                 e = iter.next();
                 if (u == e.getTop()) {
-                    if (!e.getBot().isVisited()) {
-                        toBeExplored.addLast(e.getBot());
-                        (e.getBot()).setVisited(true);
+                    if (!e.getBottom().isVisited()) {
+                        toBeExplored.addLast(e.getBottom());
+                        (e.getBottom()).setVisited(true);
                     }
                 } else {
                     if (!e.getTop().isVisited()) {
@@ -266,7 +282,7 @@ public class Vertex {
 
         EdgeList elist = new EdgeList();
 
-        for (Edge e : this.elist.getFirst().collectEdges()) {
+        for (Edge e : this.edgeList.getFirst().collectEdges()) {
             if (e.getIdxsplit() == splitIndex) {
                 elist.add(e);
             }
@@ -279,8 +295,8 @@ public class Vertex {
 
         EdgeList trivial = new EdgeList();
         for (Vertex w : this.collectVertices()) {
-            if (w.getElist().size() == 1) {
-                trivial.add(w.getElist().getFirst());
+            if (w.getEdgeList().size() == 1) {
+                trivial.add(w.getEdgeList().getFirst());
             }
         }
         return trivial;
@@ -325,31 +341,31 @@ public class Vertex {
         EdgeList ext = new EdgeList();
         Vertex w = null;
 
-        if (v.getElist().size() == 1) {
-            w = (v.getElist().getFirst().getBot() == v) ?
-                    v.getElist().getFirst().getTop() :
-                    v.getElist().getFirst().getBot();
+        if (v.getEdgeList().size() == 1) {
+            w = (v.getEdgeList().getFirst().getBottom() == v) ?
+                    v.getEdgeList().getFirst().getTop() :
+                    v.getEdgeList().getFirst().getBottom();
 
-            first = v.getElist().getFirst();
+            first = v.getEdgeList().getFirst();
 
             Vertex t = w;
             w = v;
             v = t;
         } else {
-            EdgeList elist = v.getElist();
+            EdgeList elist = v.getEdgeList();
 
             for (int i = 0; i < elist.size(); i++) {
                 Vertex ww = null;
-                Vertex w0 = (elist.get(i).getBot() == v) ?
+                Vertex w0 = (elist.get(i).getBottom() == v) ?
                         elist.get(i).getTop() :
-                        elist.get(i).getBot();
+                        elist.get(i).getBottom();
 
                 double angle = 0;
                 for (int j = 0; j < elist.size(); j++) {
                     if (i != j) {
-                        Vertex w1 = (elist.get(j).getBot() == v) ?
+                        Vertex w1 = (elist.get(j).getBottom() == v) ?
                                 elist.get(j).getTop() :
-                                elist.get(j).getBot();
+                                elist.get(j).getBottom();
 
                         double currentAngle = Vertex.getClockwiseAngle(w0, v, w1);
                         if (ww == null || currentAngle < angle) {
@@ -375,8 +391,8 @@ public class Vertex {
             double minAngle = 2 * Math.PI;
             Edge nextE = null;
             Vertex W2 = null;
-            for (Edge e : v.getElist()) {
-                Vertex w2 = (e.getBot() == v) ? e.getTop() : e.getBot();
+            for (Edge e : v.getEdgeList()) {
+                Vertex w2 = (e.getBottom() == v) ? e.getTop() : e.getBottom();
                 double angle = (currentE == e) ? 2 * Math.PI : Vertex.getClockwiseAngle(w, v, w2);
                 if (nextE == null || minAngle > angle) {
                     nextE = e;
@@ -402,9 +418,9 @@ public class Vertex {
 
     /**
      * Calculates the clockwise angle between 3 vertices
-     * @param v1
-     * @param a
-     * @param v2
+     * @param v1 Vertex 1
+     * @param a Vertex A
+     * @param v2 Vertex 2
      * @return The angle between the vertices
      */
     public static double getClockwiseAngle(Vertex v1, Vertex a, Vertex v2) {
@@ -430,5 +446,60 @@ public class Vertex {
             }
         }
         return angle;
+    }
+
+    public Vertex optimiseLayout(PermutationSequenceDraw ps, Network network) {
+
+        // Compute split system
+        SplitSystemDraw ss = new SplitSystemDraw(ps);
+
+        // Collect all vertices in the network
+        LinkedList<Vertex> vertices = this.collectVertices();
+
+        //Initialize array used to store indices of active splits only
+        int[] activeSplits = ps.collectIndicesOfActiveSplits();
+        //Initialize array to keep edges involved in each split
+        TreeSet[] splitedges = ps.collectEdgesForTheSplits(this);
+
+        AngleCalculator angleCalculatorSimple = new AngleCalculatorSimple();
+        AngleCalculator angleCalculatorPrecise = new AngleCalculatorMaximalArea();
+
+        //Two types of box openers are used. Simple one tries to open boxes by
+        //no more than certain constant angle, whereas precise one uses angle
+        //which maximises certain function.
+        BoxOpener boxOpenerSimple = new BoxOpener(angleCalculatorSimple, ss);
+        BoxOpener boxOpenerPrecise = new BoxOpener(angleCalculatorPrecise, ss);
+
+        //CompatibleCorrectors are used to change angles for compatible splits.
+        CompatibleCorrector compatibleCorrectorSimple = new CompatibleCorrector(angleCalculatorSimple);
+        CompatibleCorrector compatibleCorrectorPrecise = new CompatibleCorrector(angleCalculatorPrecise);
+
+        //First step of the layout optimisation consists of a few iterations of
+        //simple box opening followed by a few of more precise one. These two
+        //are repeated a few times. This king of strategy proved to produce
+        //networks that look much better rather than using simple or precise
+        //alone.
+
+        int trivial = 2 + network.getTrivialEdges().size() / 10;
+        int precise = 2 + ps.getNtaxa() / 20;
+        int iterations = 2 + ps.getNtaxa() / 50;
+        int finish = precise + 5;
+        int compatible = 1;// + ps.ntaxa / 40;
+
+        //compatibleCorrectorPrecise.moveTrivial(v, 2 + ((int)(ps.ntaxa * 0.03)), null);
+        for (int j = 0; j < iterations; j++) {
+            for (int i = 0; i < precise; i++) {
+                boxOpenerPrecise.openIncompatible(activeSplits, this, vertices, splitedges, network);
+            }
+            for (int i = 0; i < compatible; i++) {
+                compatibleCorrectorPrecise.moveCompatible(this, 1, network);
+            }
+            compatibleCorrectorPrecise.moveTrivial(this, trivial, network);
+        }
+
+        for (int i = 0; i < finish; i++) {
+            boxOpenerPrecise.openOneIncompatible(activeSplits, this, vertices, splitedges, network);
+        }
+        return this;
     }
 }

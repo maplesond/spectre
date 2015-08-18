@@ -1,14 +1,13 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2014  UEA School of Computing Sciences
+ * Copyright (C) 2015  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
- * details.
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
@@ -371,7 +370,7 @@ public class Window extends JPanel implements KeyListener {
         edges = network.getAllEdges();
         for (Edge e : edges) {
             Line l = new Line(e);
-            l.setPoints(points.get(e.getBot().getNxnum()),
+            l.setPoints(points.get(e.getBottom().getNxnum()),
                     points.get(e.getTop().getNxnum()));
             lines.put(e.getNxnum(), l);
         }
@@ -609,7 +608,7 @@ public class Window extends JPanel implements KeyListener {
     void moveTheVertex(java.awt.Point directionPoint) {
         if (selectedPoint != null) {
             Vertex v = vertices.get(selectedPoint.id);
-            if (v.getElist().size() == 1) {
+            if (v.getEdgeList().size() == 1) {
                 State state = startState();
                 state.vertexPositions.put(v, new double[]{v.getX(), v.getY()});
 
@@ -691,7 +690,7 @@ public class Window extends JPanel implements KeyListener {
                     l.p.suppressed = false;
                 } else {
                     Vertex v = vertices.get(l.p.id);
-                    if (v.getElist().size() == 1) {
+                    if (v.getEdgeList().size() == 1) {
                         ViewerPoint p2 = points.get(v.getFirstEdge().getOther(v).getNxnum());
                         l.p.suppress(p2);
                     }

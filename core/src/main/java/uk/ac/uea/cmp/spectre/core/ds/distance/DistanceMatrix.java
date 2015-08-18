@@ -1,14 +1,13 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2014  UEA School of Computing Sciences
+ * Copyright (C) 2015  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
- * details.
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
@@ -39,8 +38,8 @@ public interface DistanceMatrix {
     /**
      * Retrieves the distance between two taxa
      *
-     * @param taxon1
-     * @param taxon2
+     * @param taxon1 First taxon
+     * @param taxon2 Second taxon
      * @return The distance between taxon1 and taxon2, or null if not found
      */
     double getDistance(final Identifier taxon1, final Identifier taxon2);
@@ -48,8 +47,8 @@ public interface DistanceMatrix {
     /**
      * Retrieves the distance between two taxa, using taxa indices
      *
-     * @param taxon1Id
-     * @param taxon2Id
+     * @param taxon1Id ID of first taxon
+     * @param taxon2Id ID of second taxon
      * @return The distance between taxon1 and taxon2, or null if not found
      */
     double getDistance(final int taxon1Id, final int taxon2Id);
@@ -57,8 +56,8 @@ public interface DistanceMatrix {
     /**
      * Retrieves the distance between two taxa
      *
-     * @param taxon1Name
-     * @param taxon2Name
+     * @param taxon1Name Name of first taxon
+     * @param taxon2Name Name of second taxon
      * @return The distance between taxon1 and taxon2, or null if not found
      */
     double getDistance(final String taxon1Name, final String taxon2Name);
@@ -66,9 +65,9 @@ public interface DistanceMatrix {
     /**
      * Sets the specified distance between the specified taxa
      *
-     * @param taxon1
-     * @param taxon2
-     * @param value
+     * @param taxon1 First taxon
+     * @param taxon2 Second taxon
+     * @param value Distance between first and second taxa
      * @return The previous distance set between the two taxa, or 0.0 if the value has never been set before
      */
     double setDistance(final Identifier taxon1, final Identifier taxon2, final double value);
@@ -76,9 +75,9 @@ public interface DistanceMatrix {
     /**
      * Sets the specified distance between the specified taxa using their names
      *
-     * @param taxonName1
-     * @param taxonName2
-     * @param value
+     * @param taxonName1 Name of first taxon
+     * @param taxonName2 Name of second taxon
+     * @param value Distance between first and second taxa
      * @return The previous distance set between the two taxa, or 0.0 if the value has never been set before
      */
     double setDistance(final String taxonName1, final String taxonName2, final double value);
@@ -86,9 +85,9 @@ public interface DistanceMatrix {
     /**
      * Sets the specified distance between the specified taxa using their ids
      *
-     * @param taxonId1
-     * @param taxonId2
-     * @param value
+     * @param taxonId1 ID of first taxon
+     * @param taxonId2 ID of second taxon
+     * @param value Distance between first and second taxa
      * @return The previous distance set between the two taxa, or 0.0 if the value has never been set before
      */
     double setDistance(final int taxonId1, final int taxonId2, final double value);
@@ -96,9 +95,9 @@ public interface DistanceMatrix {
     /**
      * Increments the distance between taxon1 and taxon2 by incValue.  Returns the new distance between taxon1 and taxon2
      *
-     * @param taxon1
-     * @param taxon2
-     * @param increment
+     * @param taxon1 First taxon
+     * @param taxon2 Second taxon
+     * @param increment Amount to increment distance between first and second taxa
      * @return The value at [row][col] after incrementation.
      */
     double incrementDistance(final Identifier taxon1, final Identifier taxon2, final double increment);
@@ -107,9 +106,9 @@ public interface DistanceMatrix {
      * Using taxa ids, increments the distance between taxon1 and taxon2 by incValue.  Returns the new distance between
      * taxon1 and taxon2
      *
-     * @param taxon1Id
-     * @param taxon2Id
-     * @param increment
+     * @param taxon1Id ID of first taxon
+     * @param taxon2Id ID of second taxon
+     * @param increment Amount to increment distance between first and second taxa
      * @return The value at [row][col] after incrementation.
      */
     double incrementDistance(final int taxon1Id, final int taxon2Id, final double increment);
@@ -118,9 +117,9 @@ public interface DistanceMatrix {
      * Using taxa names, increments the distance between taxon1 and taxon2 by incValue.  Returns the new value between
      * taxon1 and taxon2
      *
-     * @param taxon1Name
-     * @param taxon2Name
-     * @param increment
+     * @param taxon1Name Name of first taxon
+     * @param taxon2Name Name of second taxon
+     * @param increment Amount to increment distance between first and second taxa
      * @return The value at [row][col] after incrementation.
      */
     double incrementDistance(final String taxon1Name, final String taxon2Name, final double increment);
@@ -128,7 +127,7 @@ public interface DistanceMatrix {
     /**
      * Adds a new identifier into this distance matrix.  Should initialise distances from all other idnetifiers in this
      * matrix
-     * @param id
+     * @param id New taxon to add to the matrix
      */
     void addIdentifier(Identifier id);
 
@@ -142,7 +141,7 @@ public interface DistanceMatrix {
 
     /**
      * Retrieves the entire taxa set associated with this DistanceMatrix, using the specified comparator.
-     *
+     * @param comparator The comparator to use
      * @return The set of sorted taxa.
      */
     IdentifierList getTaxa(Comparator<Identifier> comparator);
@@ -162,7 +161,7 @@ public interface DistanceMatrix {
 
     /**
      * Returns a list of DistanceList for all taxa in this matrix
-     * @return
+     * @return A list of distance lists
      */
     List<DistanceList> getAllDistances();
 
@@ -202,21 +201,21 @@ public interface DistanceMatrix {
     /**
      * Removes all entries relating to the supplied taxon from the distance matrix
      *
-     * @param taxon
+     * @param taxon The taxon to remove
      */
     void removeTaxon(Identifier taxon);
 
     /**
      * Removes all entries relating to the supplied taxon, based on its id, from the distance matrix
      *
-     * @param taxonId
+     * @param taxonId ID of the taxon to remove
      */
     void removeTaxon(int taxonId);
 
     /**
      * Removes all entries relating to the supplied taxon, based on its name from the distance matrix
      *
-     * @param taxonName
+     * @param taxonName Name of the taxon to remove
      */
     void removeTaxon(String taxonName);
 

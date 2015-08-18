@@ -1,14 +1,13 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2014  UEA School of Computing Sciences
+ * Copyright (C) 2015  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
- * details.
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
@@ -25,13 +24,13 @@ import uk.ac.tgac.metaopt.Objective;
 import uk.ac.tgac.metaopt.Optimiser;
 import uk.ac.tgac.metaopt.OptimiserException;
 import uk.ac.tgac.metaopt.OptimiserFactory;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.GroupedQuartetSystem;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.QuartetSystem;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.QuartetSystemCombiner;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.QuartetSystemList;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.GroupedQuartetSystem;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.QuartetSystem;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.QuartetSystemCombiner;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.QuartetSystemList;
 import uk.ac.uea.cmp.spectre.core.io.qweight.QWeightWriter;
 import uk.ac.uea.cmp.spectre.qtools.scale.Scaling;
-import uk.ac.uea.cmp.spectre.tools.PhygenTool;
+import uk.ac.uea.cmp.spectre.tools.SpectreTool;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,7 +41,7 @@ import java.io.IOException;
  * format suitable for input to QNet). QMaker first loads all sources into a series of separate quartet systems.  QMaker
  * then optionally scales the weights of each quartet systemalso offers the ability to scale weights of the input
  */
-public class QMaker extends PhygenTool {
+public class QMaker extends SpectreTool {
 
     private static final String DEFAULT_OUTPUT_PREFIX = "qmaker";
     private static final File DEFAULT_OUTPUT_DIR = new File("").getParentFile();

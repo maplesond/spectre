@@ -1,29 +1,31 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2014  UEA School of Computing Sciences
+ * Copyright (C) 2015  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
- * details.
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
+
 package uk.ac.uea.cmp.spectre.qtools.superq;
 
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
 import org.apache.log4j.PropertyConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.tgac.metaopt.Optimiser;
 import uk.ac.tgac.metaopt.OptimiserException;
 import uk.ac.tgac.metaopt.Problem;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.GroupedQuartetSystem;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.GroupedQuartetSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.spectre.core.io.nexus.Nexus;
 import uk.ac.uea.cmp.spectre.core.io.nexus.NexusReader;
@@ -136,7 +138,7 @@ public class SuperQ extends RunnableTool {
                             solution, qnetResult.getComputedWeights().getEtE().toArray());
 
                     // Run the secondary optimisation step
-                    double[] solution2 = this.options.getSecondaryProblem().getName() == "MINIMA" ?
+                    double[] solution2 = this.options.getSecondaryProblem().getName().equalsIgnoreCase("MINIMA") ?
                             this.minimaOptimise(secondarySolver, problem, solution) :     // Special handling of MINIMA objective
                             secondarySolver.optimise(problem).getVariableValues();        // Normally just call child's optimisation method
 
@@ -246,12 +248,13 @@ public class SuperQ extends RunnableTool {
         this.trackerInitUnknownRuntime(message);
     }
 
-    public static void configureLogging() {
+    public static void configureLogging(boolean verbose) {
         // Setup logging
         File propsFile = new File("etc/logging.properties");
 
         if (!propsFile.exists()) {
             BasicConfigurator.configure();
+            LogManager.getRootLogger().setLevel(verbose ? Level.DEBUG : Level.INFO);
             log.info("No logging configuration found.  Using default logging properties.");
         } else {
             PropertyConfigurator.configure(propsFile.getPath());

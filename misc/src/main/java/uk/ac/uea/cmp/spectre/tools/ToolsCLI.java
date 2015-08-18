@@ -1,14 +1,13 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2014  UEA School of Computing Sciences
+ * Copyright (C) 2015  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
- * details.
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
@@ -32,7 +31,7 @@ import uk.ac.uea.cmp.spectre.core.util.SpiFactory;
 public class ToolsCLI {
 
     public static final String OPT_HELP = "help";
-    private static SpiFactory<PhygenTool> phygenToolFactory;
+    private static SpiFactory<SpectreTool> phygenToolFactory;
 
     @SuppressWarnings("static-access")
     private static Options createOptions() {
@@ -54,7 +53,7 @@ public class ToolsCLI {
 
         try {
             // First try to create the phygen tool factory, this gives us access to all the available tools
-            phygenToolFactory = new SpiFactory<>(PhygenTool.class);
+            phygenToolFactory = new SpiFactory<>(SpectreTool.class);
 
             // Process the command line
             CommandLine cmdLine = new PosixParser().parse(createOptions(), args, true);
@@ -63,12 +62,12 @@ public class ToolsCLI {
                 printHelp();
             } else {
                 // Required arguments
-                PhygenTool phygenTool = phygenToolFactory.create(cmdLine.getArgs()[0]);
+                SpectreTool spectreTool = phygenToolFactory.create(cmdLine.getArgs()[0]);
 
-                if (phygenTool == null) {
+                if (spectreTool == null) {
                     throw new ParseException("Requested tool not found: " + cmdLine.getOptionValue(cmdLine.getArgs()[0]));
                 } else {
-                    phygenTool.execute(ArrayUtils.subarray(cmdLine.getArgs(), 1, cmdLine.getArgs().length));
+                    spectreTool.execute(ArrayUtils.subarray(cmdLine.getArgs(), 1, cmdLine.getArgs().length));
                 }
             }
         } catch (Exception e) {

@@ -1,24 +1,24 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2014  UEA School of Computing Sciences
+ * Copyright (C) 2015  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
- * details.
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
+
 package uk.ac.uea.cmp.spectre.qtools.qnet.holders;
 
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.CanonicalWeightedQuartetMap;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.QuartetUtils;
-import uk.ac.uea.cmp.spectre.core.ds.quartet.SpectreQuartet;
+import uk.ac.uea.cmp.spectre.core.ds.quad.SpectreQuad;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.CanonicalWeightedQuartetMap;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.QuartetUtils;
 import uk.ac.uea.cmp.spectre.core.math.tuple.Triplet;
 import uk.ac.uea.cmp.spectre.qtools.qnet.QNetException;
 
@@ -98,9 +98,9 @@ public class WHolder {
                                             int yC = C.get(xC).getId();
                                             int yD = D.get(xD).getId();
 
-                                            SpectreQuartet q1 = new SpectreQuartet(yA, yB, yC, yD);
-                                            SpectreQuartet q2 = new SpectreQuartet(yA, yC, yB, yD);
-                                            SpectreQuartet q3 = new SpectreQuartet(yA, yD, yB, yC);
+                                            SpectreQuad q1 = new SpectreQuad(yA, yB, yC, yD);
+                                            SpectreQuad q2 = new SpectreQuad(yA, yC, yB, yD);
+                                            SpectreQuad q3 = new SpectreQuad(yA, yD, yB, yC);
 
 
                                             count1++;

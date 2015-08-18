@@ -1,14 +1,13 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2014  UEA School of Computing Sciences
+ * Copyright (C) 2015  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
- * details.
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
@@ -16,14 +15,19 @@
 
 package uk.ac.uea.cmp.spectre.core.ds.network.draw;
 
-
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+import uk.ac.uea.cmp.spectre.core.ds.Identifier;
+import uk.ac.uea.cmp.spectre.core.ds.network.Edge;
+import uk.ac.uea.cmp.spectre.core.ds.network.EdgeList;
+import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
 import uk.ac.uea.cmp.spectre.core.ds.split.SpectreSplitBlock;
 import uk.ac.uea.cmp.spectre.core.ds.split.Split;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitBlock;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.spectre.core.util.CollectionUtils;
 
-import java.util.Random;
+import java.util.*;
 
 /**
  * This class is used to store the permutation sequence representing a flat split system
@@ -94,56 +98,15 @@ public class PermutationSequenceDraw {
     //Constructors for this class
     //**********************************************************
 
-    /**
-     * Constructor of this class from a given initial sequence and a sequence of swaps. Exists mainly for testing purposes
-     * @param in_init_sequ
-     * @param in_swaps
-     */
-    public PermutationSequenceDraw(int[] in_init_sequ, int[] in_swaps) {
-        int i = 0;
-
-        ntaxa = initSequ.length;
-        nclasses = ntaxa;
-        nswaps = swaps.length;
-        nActive = nswaps;
-
-        hasWeights = true;
-        hasActiveFlags = true;
-
-        initSequ = new int[ntaxa];
-        representedby = new int[ntaxa];
-        activeTaxa = new boolean[ntaxa];
-        taxaname = new String[ntaxa];
-
-        swaps = new int[nswaps];
-        active = new boolean[nswaps];
-        compressed = new int[nswaps];
-        weights = new double[nswaps];
-
-        for (i = 0; i < ntaxa; i++) {
-            initSequ[i] = in_init_sequ[i];
-            representedby[i] = i;
-            activeTaxa[i] = true;
-            taxaname[i] = "taxon" + i;
-        }
-
-        for (i = 0; i < nswaps; i++) {
-            swaps[i] = in_swaps[i];
-            compressed[i] = i;
-            active[i] = true;
-            weights[i] = 1.0;
-        }
-    }
-
 
     /**
      * Constructor of this class from a given initial sequence, a sequence of swaps, weights and array of active flags.
      * For the transition from PS in FNet.
-     * @param in_init_sequ
-     * @param in_swaps
-     * @param in_weights
-     * @param in_active
-     * @param trivialWeights
+     * @param in_init_sequ Initial sequence
+     * @param in_swaps Sequence of swaps
+     * @param in_weights Weights
+     * @param in_active Active flags
+     * @param trivialWeights Trivial weights
      */
     public PermutationSequenceDraw(int[] in_init_sequ, int[] in_swaps, double[] in_weights, boolean[] in_active, double[] trivialWeights) {
         int i = 0;
@@ -185,21 +148,16 @@ public class PermutationSequenceDraw {
             }
         }
 
-        nActive = CollectionUtils.size(active);
+        nActive = CollectionUtils.nbTrueElements(active);
     }
 
 
     /**
      * Constructor for this class from a SplitSystem-object. This is just used as a quick and dirty way to feed circular
      * split systems into the drawing algorithm and then display them with the viewer.
-     * @param ss
+     * @param ss Circular split system
      */
     public PermutationSequenceDraw(SplitSystem ss){
-        int h = 0;
-        int i = 0;
-        int j = 0;
-        int k = 0;
-        int a = 0;
 
         //first get the number of taxa and number of splits
         //in a full circular split system on that number of taxa
@@ -226,24 +184,30 @@ public class PermutationSequenceDraw {
         weights = new double[nswaps];
 
         //store information about the taxa in arrays
-        for (i = 0; i < ntaxa; i++) {
-            initSequ[i] = i;
+        for (int i = 0; i < ntaxa; i++) {
+            //Initial permutation must equal circular ordering underlying the circular split system.
+            //Assumes that Ids used are 1,2,3,...,ntaxa.
+            initSequ[i] = ss.getOrderedTaxa().get(i).getId()-1;
             representedby[i] = i;
             activeTaxa[i] = true;
-            taxaname[i] = ss.getOrderedTaxa().get(i).getName();
+            taxaname[ss.getOrderedTaxa().get(i).getId()-1] = ss.getOrderedTaxa().get(i).getName();
             trivial[i] = 0.0; //no extra length added to pendant edge;
         }
 
         //array used to store the current permutation from which
         //we extract the current split
         int[] cursequ = new int[ntaxa];
-        for (i = 0; i < ntaxa; i++) {
+        for (int i = 0; i < ntaxa; i++) {
             cursequ[i] = initSequ[i];
         }
 
+        int h = 0;
+        int k = 0;
+        int a = 0;
+
         //the generic structure of a circular split system
-        for (i = 0; i < ntaxa; i++) {
-            for (j = 0; j < ntaxa - i - 1; j++) {
+        for (int i = 0; i < ntaxa; i++) {
+            for (int j = 0; j < ntaxa - i - 1; j++) {
                 swaps[k] = j;
                 compressed[k] = k;
                 weights[k] = 0;
@@ -256,14 +220,17 @@ public class PermutationSequenceDraw {
 
                 //get the split represented by this swap
                 int[] sideA = new int[j+1]; //get one side of the split as an int-array, the elements must be the ids according to the identifier list
-                for(a=0;a<=j;a++) {sideA[a]=cursequ[a];}
+                for(a=0;a<=j;a++) {sideA[a]=cursequ[a]+1;}
                 SplitBlock ssb = new SpectreSplitBlock(sideA);
                 ssb.sort();
 
                 //next check whether the input split system contains a split with one SplitBlock equal to the one we just created
                 for (Split s : ss) {
-                    s.getASide().sort();
-                    if(s.getASide().equals(ssb) || s.getBSide().equals(ssb)){
+                    SplitBlock ssba = s.getASide();
+                    ssba.sort();
+                    SplitBlock ssbb = s.getBSide();
+                    ssbb.sort();
+                    if(ssba.equals(ssb) || ssbb.equals(ssb)){
                         weights[k] = s.getWeight();
                         if(weights[k] > 0) {active[k] = true;}
                     }
@@ -273,336 +240,9 @@ public class PermutationSequenceDraw {
         }
 
         //update number of active splits
-        nActive = CollectionUtils.size(active);
+        nActive = CollectionUtils.nbTrueElements(active);
     }
 
-    //Constructor of this class from a permutation
-    //sequence stored in a nexus file
-    //The threshold can be used to filter
-    //the splits.
-    /*public PermutationSequenceDraw(String filename, double thold) {
-        int i = 0;
-
-        LineNumberReader lnr = NexusIO.openlinereader(filename);
-        taxaname = NexusIO.readtaxa(lnr);
-
-        if (taxaname == null) {
-            System.out.println("Reading the taxa block failed");
-        } else {
-            ntaxa = taxaname.length;
-            nclasses = ntaxa;
-            nswaps = ntaxa * (ntaxa - 1) / 2;
-            nActive = nswaps;
-
-            initSequ = new int[ntaxa];
-            representedby = new int[ntaxa];
-            activeTaxa = new boolean[ntaxa];
-            trivial = new double[ntaxa];
-
-            swaps = new int[nswaps];
-            active = new boolean[nswaps];
-            compressed = new int[nswaps];
-            weights = new double[nswaps];
-
-            for (i = 0; i < ntaxa; i++) {
-                representedby[i] = i;
-                activeTaxa[i] = true;
-            }
-
-            for (i = 0; i < nswaps; i++) {
-                compressed[i] = i;
-                active[i] = true;
-                weights[i] = 1.0;
-            }
-
-            if (NexusIO.readflatsplits(this, lnr) < 0) {
-                System.out.println("Reading the flatsplits block failed");
-            }
-
-            if (thold >= 0.0) {
-                setActive(thold);
-            }
-        }
-        NexusIO.closelinereader(lnr);
-    }
-
-    //Constructor of this class from a set of points
-    //stored in a nexus file. The split system contains
-    //the affine split system induced by these points.
-    public PermutationSequenceDraw(String filename) {
-        int i = 0;
-        int j = 0;
-        int k = 0;
-        int h = 0;
-        int l = 0;
-        double dx = 0.0;
-        double dy = 0.0;
-        double r = 0.0;
-
-        LineNumberReader lnr = NexusIO.openlinereader(filename);
-        taxaname = NexusIO.readtaxa(lnr);
-
-        if (taxaname == null) {
-            System.out.println("Reading the taxa block failed");
-        } else {
-            ntaxa = taxaname.length;
-            nclasses = ntaxa;
-            nswaps = ntaxa * (ntaxa - 1) / 2;
-            nActive = nswaps;
-
-            hasWeights = true;
-            hasActiveFlags = true;
-
-            initSequ = new int[ntaxa];
-            representedby = new int[ntaxa];
-            activeTaxa = new boolean[ntaxa];
-
-            swaps = new int[nswaps];
-            active = new boolean[nswaps];
-            compressed = new int[nswaps];
-            weights = new double[nswaps];
-
-            for (i = 0; i < ntaxa; i++) {
-                representedby[i] = i;
-                activeTaxa[i] = true;
-                initSequ[i] = i;
-            }
-
-            for (i = 0; i < nswaps; i++) {
-                compressed[i] = i;
-                active[i] = true;
-                weights[i] = 1.0;
-            }
-
-            double[] xcoord = new double[ntaxa];
-            double[] ycoord = new double[ntaxa];
-
-            if (NexusIO.readlocations(xcoord, ycoord, lnr) < 0) {
-                System.out.println("Reading the locations block failed");
-            } else {
-                sortinitsequence(xcoord, ycoord);
-
-                int[] cursequ = new int[ntaxa];
-
-                for (i = 0; i < ntaxa; i++) {
-                    cursequ[i] = initSequ[i];
-                }
-
-                boolean[][] swapped = new boolean[ntaxa][ntaxa];
-
-                for (i = 0; i < ntaxa; i++) {
-                    for (j = 0; j < ntaxa; j++) {
-                        swapped[i][j] = false;
-                    }
-                }
-
-                for (k = 0; k < nswaps; k++) {
-                    r = Double.POSITIVE_INFINITY;
-                    h = -1;
-
-                    for (i = 0; i < (ntaxa - 1); i++) {
-                        if (swapped[cursequ[i]][cursequ[i + 1]] == false) {
-                            dx = xcoord[cursequ[i]] - xcoord[cursequ[i + 1]];
-                            dy = ycoord[cursequ[i]] - ycoord[cursequ[i + 1]];
-                            if (dx == 0.0) {
-                                if (r == Double.POSITIVE_INFINITY) {
-                                    h = i;
-                                }
-                            } else {
-                                if (r >= (dy / dx)) {
-                                    r = dy / dx;
-                                    h = i;
-                                }
-                            }
-                        }
-                    }
-
-                    swaps[k] = h;
-                    swapped[cursequ[h]][cursequ[h + 1]] = true;
-                    swapped[cursequ[h + 1]][cursequ[h]] = true;
-                    l = cursequ[h];
-                    cursequ[h] = cursequ[h + 1];
-                    cursequ[h + 1] = l;
-                }
-            }
-        }
-        NexusIO.closelinereader(lnr);
-    }*/
-
-    /**
-     * Constructor of a template for a circular split system from a list of taxa
-     * @param tname
-     */
-    public PermutationSequenceDraw(String[] tname) {
-        ntaxa = tname.length;
-        nswaps = ntaxa * (ntaxa - 1) / 2;
-        nActive = nswaps;
-        nclasses = ntaxa;
-        hasWeights = true;
-        hasActiveFlags = true;
-
-        initSequ = new int[ntaxa];
-        taxaname = new String[ntaxa];
-        swaps = new int[nswaps];
-        active = new boolean[nswaps];
-        compressed = new int[nswaps];
-        representedby = new int[ntaxa];
-        activeTaxa = new boolean[ntaxa];
-        weights = new double[nswaps];
-
-        int i = 0;
-        int j = 0;
-        int k = 0;
-        int h = 0;
-        int r = 0;
-        int a = 0;
-
-        for (i = 0; i < ntaxa; i++) {
-            taxaname[i] = tname[i];
-        }
-
-        //circular split system
-        for (i = 0; i < ntaxa; i++) {
-            initSequ[i] = i;
-        }
-
-        for (i = 0; i < ntaxa; i++) {
-            for (j = 0; j < ntaxa - i - 1; j++) {
-                swaps[k] = j;
-                k++;
-            }
-        }
-    }
-
-    public static enum SplitSystemType {
-        FLAT,
-        CIRCULAR
-    }
-
-    /**
-     * Constructor that generates a random permutation sequence. The first parameter is the number of taxa. The second
-     * parameter is used to indicate the type of split system: general flat or circular
-     * @param n
-     * @param t
-     */
-    public PermutationSequenceDraw(int n, SplitSystemType t) {
-        ntaxa = n;
-        nswaps = ntaxa * (ntaxa - 1) / 2;
-        nActive = nswaps;
-        nclasses = ntaxa;
-        hasWeights = true;
-        hasActiveFlags = true;
-
-        initSequ = new int[ntaxa];
-        taxaname = new String[ntaxa];
-        swaps = new int[nswaps];
-        active = new boolean[nswaps];
-        compressed = new int[nswaps];
-        representedby = new int[ntaxa];
-        activeTaxa = new boolean[ntaxa];
-
-        weights = new double[nswaps];
-
-        Random rgen = new Random();
-
-        int i = 0;
-        int j = 0;
-        int k = 0;
-        int h = 0;
-        int r = 0;
-        int a = 0;
-
-        for (i = 0; i < nswaps; i++) {
-            active[i] = true;
-            weights[i] = rgen.nextDouble();
-            //weights[i] = 1.0;
-            compressed[i] = i;
-        }
-
-        for (i = 0; i < ntaxa; i++) {
-            taxaname[i] = "Taxon" + i;
-            representedby[i] = i;
-            activeTaxa[i] = true;
-        }
-
-        //circular split system
-        if (t == SplitSystemType.CIRCULAR) {
-            for (i = 0; i < ntaxa; i++) {
-                initSequ[i] = i;
-            }
-
-            //generate a random initial permutation
-            for (i = 0; i < ntaxa; i++) {
-                r = rgen.nextInt(ntaxa - i);
-                h = initSequ[i];
-                initSequ[i] = initSequ[i + r];
-                initSequ[i + r] = h;
-            }
-
-            for (i = 0; i < ntaxa; i++) {
-                for (j = 0; j < ntaxa - i - 1; j++) {
-                    swaps[k] = j;
-                    k++;
-                }
-            }
-        }
-        //general flat split system
-        else if (t == SplitSystemType.FLAT) {
-            for (i = 0; i < ntaxa; i++) {
-                initSequ[i] = i;
-            }
-
-            //generate a random initial permutation
-            for (i = 0; i < ntaxa; i++) {
-                r = rgen.nextInt(ntaxa - i);
-                h = initSequ[i];
-                initSequ[i] = initSequ[i + r];
-                initSequ[i + r] = h;
-            }
-
-            //generate random sequence of swaps
-            boolean[][] swapped = new boolean[ntaxa][ntaxa];
-            for (i = 0; i < ntaxa; i++) {
-                for (j = 0; j < ntaxa; j++) {
-                    swapped[i][j] = false;
-                }
-            }
-
-            int[] cursequ = new int[ntaxa];
-            for (i = 0; i < ntaxa; i++) {
-                cursequ[i] = initSequ[i];
-            }
-
-            for (k = 0; k < nswaps; k++) {
-                a = 0;
-                for (i = 0; i < (ntaxa - 1); i++) {
-                    if (swapped[cursequ[i]][cursequ[i + 1]] == false) {
-                        a++;
-                    }
-                }
-
-                r = rgen.nextInt(a) + 1;
-
-                a = 0;
-                for (i = 0; i < (ntaxa - 1); i++) {
-                    if (swapped[cursequ[i]][cursequ[i + 1]] == false) {
-                        a++;
-                    }
-                    if (a == r) {
-                        swaps[k] = i;
-                        swapped[cursequ[i]][cursequ[i + 1]] = true;
-                        swapped[cursequ[i + 1]][cursequ[i]] = true;
-                        h = cursequ[i];
-                        cursequ[i] = cursequ[i + 1];
-                        cursequ[i + 1] = h;
-                        break;
-                    }
-                }
-            }
-        } else {
-            System.out.println("Type of split system not supported by construtor of Perm_sequence");
-        }
-    }
 
     //***********************************
     // Getters
@@ -617,11 +257,11 @@ public class PermutationSequenceDraw {
         return nswaps;
     }
 
-    public boolean isHasWeights() {
+    public boolean hasWeights() {
         return hasWeights;
     }
 
-    public boolean isHasActiveFlags() {
+    public boolean hasActiveFlags() {
         return hasActiveFlags;
     }
 
@@ -655,6 +295,10 @@ public class PermutationSequenceDraw {
 
     public boolean[] getActive() {
         return active;
+    }
+
+    public boolean getActive(int index) {
+        return active[index];
     }
 
     public int[] getRepresentedby() {
@@ -747,7 +391,7 @@ public class PermutationSequenceDraw {
 
     /**
      * This method filters the splits by labeling those with a length below the given threshold inactive.
-     * @param thold
+     * @param thold Threshold value
      */
     public void setActive(double thold) {
         if (active == null) {
@@ -774,11 +418,32 @@ public class PermutationSequenceDraw {
         }
     }
 
-    //This method randomly sets some splits inactive.
-    //For testing purposes. The parameter is a real
-    //number between 0 and 1. This number equals
-    //the probability with which a split is set
-    //to be active.
+    /**
+     * This method is the main public method that should be called for computing a plane split network for a flat split
+     * system given as a permutation sequence.
+     * @param thr Threshold, below which splits are ignored
+     * @return Split graph represented by a single vertex.  The network can be traversed from this vertex.
+     */
+    public Vertex drawSplitSystem(double thr) {
+        this.restoreTrivialWeightsForExternalVertices();
+
+        this.removeSplitsSmallerOrEqualThan(thr);
+
+        //Array of sets of edges, one for each split
+        TreeSet<Edge>[] splitedges = new TreeSet[this.getNswaps()];
+
+        Vertex v = this.computeSplitGraph(splitedges);
+
+        v = this.removeCompatibleBoxes(v, false, splitedges);
+
+        return v;
+    }
+
+    /**
+     * This method randomly sets some splits inactive.  For testing purposes. The parameter is a real number between 0 and
+     * 1. This number equals the probability with which a split is set to be active.
+     * @param thold Threshold value
+     */
     public void knock_out(double thold) {
         int i = 0;
         Random rgen = new Random();
@@ -817,7 +482,7 @@ public class PermutationSequenceDraw {
      * whether every pair of distinct taxe swaps precisely once.  The latter test, in particular, was included to detect
      * potential numerical problems when constructing a permutation sequence from a set of points in the plane whose
      * coordinates are given by floating point numbers.
-     * @return
+     * @return True if consistent, false otherwise
      */
     public boolean checkConsistency() {
         int i = 0;
@@ -1006,64 +671,7 @@ public class PermutationSequenceDraw {
         return dist;
     }
 
-    /**
-     * This method computes information about the graph that corresponds to the arrangement of pseudolines that is used
-     * to carry out matrix-vector multiplications efficiently in the class FitWeight.
-     * @return
-     */
-    public ArrangementData computeArrangement() {
-        //Create the object that stores the information about the arrangement
-        ArrangementData arrdata = new ArrangementData();
-        //Allocate memory for the arrays in this object.
-        arrdata.arr = new int[nswaps][4];
-        arrdata.lastswap = new int[ntaxa];
-        arrdata.upperlower = new int[ntaxa];
-        arrdata.change = new double[nswaps][2];
 
-        int[] cursequ = new int[ntaxa];
-
-        int i = 0;
-        int h = 0;
-
-        for (i = 0; i < ntaxa; i++) {
-            cursequ[i] = initSequ[i];
-            arrdata.lastswap[i] = -i - 1;
-        }
-
-        for (i = 0; i < nswaps; i++) {
-            //store the two edges that lead to the left
-            arrdata.arr[i][0] = arrdata.lastswap[cursequ[swaps[i] + 1]];
-            arrdata.arr[i][1] = arrdata.lastswap[cursequ[swaps[i]]];
-            //store two dummy edges that lead to the right
-            arrdata.arr[i][2] = -cursequ[swaps[i] + 1] - 1;
-            arrdata.arr[i][3] = -cursequ[swaps[i]] - 1;
-            //store edges that go from last swap to the right
-            //if they exist to replace the dummy edges
-            if (arrdata.lastswap[cursequ[swaps[i] + 1]] >= 0) {
-                if (arrdata.upperlower[cursequ[swaps[i] + 1]] == -1) {
-                    arrdata.arr[arrdata.lastswap[cursequ[swaps[i] + 1]]][2] = i;
-                } else {
-                    arrdata.arr[arrdata.lastswap[cursequ[swaps[i] + 1]]][3] = i;
-                }
-            }
-            if (arrdata.lastswap[cursequ[swaps[i]]] >= 0) {
-                if (arrdata.upperlower[cursequ[swaps[i]]] == -1) {
-                    arrdata.arr[arrdata.lastswap[cursequ[swaps[i]]]][2] = i;
-                } else {
-                    arrdata.arr[arrdata.lastswap[cursequ[swaps[i]]]][3] = i;
-                }
-            }
-            //update arrays
-            arrdata.upperlower[cursequ[swaps[i] + 1]] = -1;
-            arrdata.upperlower[cursequ[swaps[i]]] = 1;
-            arrdata.lastswap[cursequ[swaps[i] + 1]] = i;
-            arrdata.lastswap[cursequ[swaps[i]]] = i;
-            h = cursequ[swaps[i] + 1];
-            cursequ[swaps[i] + 1] = cursequ[swaps[i]];
-            cursequ[swaps[i]] = h;
-        }
-        return arrdata;
-    }
 
     /**
      * This method is used to set the flags so that the local search is performed on full flat split systems
@@ -1171,7 +779,7 @@ public class PermutationSequenceDraw {
         for (int i = 0; i < ss.nsplits; i++) {
             if (active[i]) {
                 for (int j = 0; j < ss.nsplits; j++) {
-                    if (!ss.isCompatible(i, j)) {
+                    if (ss.isCompatible(i, j) == SplitSystemDraw.Compatible.NO) {
                         if (weights[i] < weights[j] * threshold) {
                             active[i] = false;
                         } else if (weights[j] < weights[i] * threshold) {
@@ -1205,6 +813,1563 @@ public class PermutationSequenceDraw {
             }
         }
     }
+
+    public int[] collectIndicesOfActiveSplits() {
+        int[] activeSplits = new int[this.getnActive()];
+
+        //Index used to fill in array of active splits
+        int j = 0;
+        //Go through all the splits and select active ones
+        for (int i = 0; i < this.getActive().length; i++) {
+            if (this.getActive(i)) {
+                activeSplits[j++] = i;
+            }
+        }
+        return activeSplits;
+    }
+
+    public TreeSet<Edge>[] collectEdgesForTheSplits(final Vertex v) {
+        TreeSet<Edge>[] splitedges = new TreeSet[this.getNswaps()];
+
+        for (int i = 0; i < this.getActive().length; i++) {
+            LinkedList<Edge> edges = v.collectEdgesForSplit(i);
+            splitedges[i] = new TreeSet<>();
+            for (int k = 0; k < edges.size(); k++) {
+                splitedges[i].add(edges.get(k));
+            }
+        }
+        return splitedges;
+    }
+
+    /**
+     * This method computes a split graph representing the flat split system given by a permutation sequence.  It returns
+     * a vertex of the resulting split graph from which the network can be traversed.  The split graph may contain
+     * unlabeled vertices of degree two and trivial splits may be represented by more than one edge in the network. This
+     * is the first step of the computation of the final network.  It is provided as a public method for testing
+     * purposes.
+     * @param splitedges Array of treesets representing split edges
+     * @return Split graph represented by a single vertex.  The network can be traversed from this vertex.
+     */
+    public Vertex computeSplitGraph(TreeSet[] splitedges) {
+        //Compute the leftmost edges in the network.
+        //This also initializes the sets of edges
+        //associated to each split.
+        Edge[] chain = this.leftmostEdges(splitedges);
+
+        //Complete the network and return it
+        return this.completeNetwork(chain, splitedges);
+    }
+
+    /**
+     * For checking if the resulting network has a minimal number of boxes
+     */
+    public void checkdrawsplitsystem() {
+        //Array of sets of edges, one for each split
+        TreeSet[] splitedges = new TreeSet[this.getNswaps()];
+
+        Vertex v = computeSplitGraph(splitedges);
+        v = this.removeCompatibleBoxes(v, true, splitedges);
+    }
+
+
+    public static enum Direction {
+        LEFT,
+        RIGHT
+    }
+
+
+    // ***********************
+    // *** Private methods ***
+    // ***********************
+
+    /**
+     * This method computes the chain of edges that form the left boundary of the resulting split network before trimming
+     * away unlabeled degree two vertices and pushing out trivial splits.
+     * @param splitedges Set of splits
+     * @return Left-most edges in the split network
+     */
+    private Edge[] leftmostEdges(TreeSet<Edge>[] splitedges) {
+        int i = 0;
+        int j = 0;
+        double dx = 0.0;
+        double dy = 0.0;
+        double xcoord = 0.0;
+        double ycoord = 0.0;
+
+        Vertex u = null;
+        Vertex v = null;
+        Edge e = null;
+
+        Edge[] chain = new Edge[this.getnActive()];
+
+        u = new Vertex(xcoord, ycoord);
+
+        for (i = 0; i < this.getNswaps(); i++) {
+            //create new set for edges associated to this split
+            splitedges[i] = new TreeSet<>();
+
+            if (this.getActive()[i]) {
+                dx = -Math.cos(((j + 1) * Math.PI) / (this.getnActive() + 1));
+                dy = -Math.sin(((j + 1) * Math.PI) / (this.getnActive() + 1));
+
+                xcoord = xcoord + (this.getWeights()[i] * dx);
+                ycoord = ycoord + (this.getWeights()[i] * dy);
+
+                v = u;
+                u = new Vertex(xcoord, ycoord);
+                e = new Edge(v, u, i, 1);
+                splitedges[i].add(e);
+                chain[j] = e;
+                v.add_edge_before_first(e);
+                u.add_edge_after_last(e);
+                j++;
+            }
+        }
+
+        return chain;
+    }
+
+    /**
+     * This method extends the initial chain computed by the method leftmost_edges() to a split network for the split
+     * system.
+     * @param chain Left-most edges in the split network
+     * @param splitedges The split network
+     * @return Completed network
+     */
+    private Vertex completeNetwork(Edge[] chain, TreeSet[] splitedges) {
+        SplitSystemDraw ssyst = new SplitSystemDraw(this);
+
+        int i = 0;
+        int j = 0;
+
+        boolean inverted = true;
+        double dx = 0.0;
+        double dy = 0.0;
+
+        Vertex v = null;
+        Edge e1 = null;
+        Edge e2 = null;
+
+        for (i = 0; i < this.getNtaxa(); i++) {
+            inverted = true;
+            //System.out.println("Taxon " + pseq.initSequ[i]);
+
+            final int initSequI = this.getInitSequ()[i];
+
+            while (inverted) {
+                inverted = false;
+
+                for (j = 1; j < chain.length; j++) {
+                    //test if the splits associated to edges
+                    //chain[j-1] and chain[j] must be inverted
+
+                    if (ssyst.splits[chain[j - 1].getIdxsplit()][initSequI] == 0
+                            && ssyst.splits[chain[j].getIdxsplit()][initSequI] == 1) {
+                        dx = (chain[j].getBottom()).getX() - (chain[j].getTop()).getX();
+                        dy = (chain[j].getBottom()).getY() - (chain[j].getTop()).getY();
+
+                        v = new Vertex((chain[j - 1].getTop()).getX() + dx, (chain[j - 1].getTop()).getY() + dy);
+                        e1 = new Edge(chain[j - 1].getTop(), v, chain[j].getIdxsplit(), chain[j].getTimestp() + 1);
+                        splitedges[e1.getIdxsplit()].add(e1);
+                        e2 = new Edge(v, chain[j].getBottom(), chain[j - 1].getIdxsplit(), chain[j - 1].getTimestp() + 1);
+                        splitedges[e2.getIdxsplit()].add(e2);
+                        chain[j - 1] = e1;
+                        chain[j] = e2;
+                        v.add_edge_before_first(e2);
+                        v.add_edge_after_last(e1);
+                        (e1.getTop()).add_edge_before_first(e1);
+                        (e2.getBottom()).add_edge_after_last(e2);
+                        inverted = true;
+                    }
+                }
+            }
+
+            //Now it remains to find the vertex that should be
+            //labeled by taxon i
+
+            if (chain.length == 0) {
+                if (v == null) {
+                    v = new Vertex(0.0, 0.0);
+                }
+                v.getTaxa().add(new Identifier(taxaname[initSequI], initSequI));
+                this.setRepresentedByAt(initSequI, 0);
+                if (initSequI != 0) {
+                    this.setActiveTaxaAt(initSequI, false);
+                }
+                this.setNClasses(1);
+            } else {
+                v = chain[0].getTop();
+                for (j = 0; j < chain.length; j++) {
+                    if (ssyst.splits[chain[j].getIdxsplit()][initSequI] == 0) {
+                        (chain[j].getTop()).getTaxa().add(new Identifier(taxaname[initSequI], initSequI));
+                        if (chain[j].getTop().getTaxa().size() > 1) {
+                            this.setRepresentedByAt(initSequI, chain[j].getTop().getTaxa().getFirst().getId());
+                            this.setActiveTaxaAt(initSequI, false);
+                            this.decrementNClasses();
+                        }
+                        break;
+                    } else {
+                        if (j == (chain.length - 1)) {
+                            (chain[j].getBottom()).getTaxa().add(new Identifier(taxaname[initSequI], initSequI));
+                            if (chain[j].getBottom().getTaxa().size() > 1) {
+                                this.setRepresentedByAt(initSequI, chain[j].getBottom().getTaxa().getFirst().getId());
+                                this.setActiveTaxaAt(initSequI, false);
+                                this.decrementNClasses();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return v;
+    }
+
+    /**
+     * This method checks whether or not a split in the given split system is trivial.  The split is given by its index
+     * in the 2-dimensional 0-1-array representing the split system.
+     * @param s Split to check
+     * @param ssyst Split system
+     * @return Whether the given split is trivial or not
+     */
+    private boolean isTrivial(int s, SplitSystemDraw ssyst) {
+        int i = 0;
+        int c = 0;
+
+        for (i = 0; i < ssyst.ntaxa; i++) {
+            if (this.getActiveTaxa()[i] == true) {
+                c = c + ssyst.splits[s][i];
+            }
+        }
+
+        return (c == 1) || (c == (this.getNclasses() - 1));
+    }
+
+    /**
+     * This method checks for every pair of distinct splits in the split system whether they are compatible.  If they
+     * are it is checked whether these two splits form a box in the network. If they do we remove it. This ensures that
+     * the resulting split network is minimal.
+     * @param v Starting vertex of the network
+     * @param check Do checking for valid result
+     * @param splitedges Split edges
+     * @return Network with compatible boxes removed
+     */
+    public Vertex removeCompatibleBoxes(Vertex v, boolean check, TreeSet<Edge>[] splitedges) {
+
+        //get the split system from the permutation sequence
+        SplitSystemDraw ssyst = new SplitSystemDraw(this);
+
+        //loop variables
+        int i = 0;
+        int j = 0;
+
+        //count incompatible pairs
+        int count = 0;
+
+        //number of rounds
+        int rounds = 0;
+
+        //vertex in the split network
+        Vertex u = v;
+
+        //code for compatibility pattern
+        SplitSystemDraw.Compatible pattern = null;
+
+        //check all pairs of active splits
+        for (i = 0; i < (this.getNswaps() - 1); i++) {
+            if (this.getActive()[i]) {
+
+                for (j = i + 1; j < this.getNswaps(); j++) {
+                    if (this.getActive()[j]) {
+                        pattern = ssyst.isCompatible(i, j);
+                        if (pattern.isCompatible()) {
+                            //rounds++;
+                            u = this.removeBox(u, i, j, pattern, splitedges);
+                            if (u != null) {
+                                //s = filename + rounds + ".nex";
+                                //write_splits_graph_to_file(u,s,psequ.ntaxa,psequ.taxaname,psequ);
+                            } else {
+                                throw new NullPointerException("Vertex u is null - stop here");
+                            }
+                        } else {
+                            count++;
+                        }
+                    }
+                }
+            }
+        }
+
+        //Check if the numbers of boxes and edges in the output makes sense
+        //First compute the number edges in the network
+        int nedges = 0;
+
+        for (i = 0; i < splitedges.length; i++) {
+            nedges = nedges + splitedges[i].size();
+        }
+
+        final int nbActive = this.getnActive();
+
+        if ((check) && ((nedges - nbActive) / 2) != count) {
+            throw new IllegalStateException("Numbers do not match!!!!!");
+        }
+
+        return u;
+    }
+
+    /**
+     * This method checks whether a pair of distinct compatible splits form a box in the network. If they do the box is
+     * removed.
+     * @param net Network
+     * @param a Split A
+     * @param b Split B
+     * @param pattern Compatibility pattern
+     * @param splitedges Edges in the split network
+     * @return Network with box removed if found, otherwise the same network that was passed in.
+     */
+    private Vertex removeBox(Vertex net, int a, int b, SplitSystemDraw.Compatible pattern, TreeSet<Edge>[] splitedges) {
+
+        //check if a and b form a box in the network
+        NetworkBox netbox = NetworkBox.formBox(a, b, splitedges);
+        if (netbox != null) {
+
+            // Regenerate the network without the box
+            Vertex v = this.removeBoxByFlipping(a, b, pattern, netbox, splitedges);
+
+            if (v == null) {
+                throw new NullPointerException("Got a null vertex back");
+            }
+
+            return v;
+        }
+
+        // Otherwise just return the same network that was passed in
+        return net;
+    }
+
+    /**
+     * This method removes the whole unnecessary part of the network identified by two compatible splits from the
+     * network
+     * @param a Split A
+     * @param b Split B
+     * @param pattern Compatibility pattern
+     * @param netbox Network box
+     * @param splitedges Eplit edges
+     * @return Network with box removed
+     */
+    private Vertex removeBoxByFlipping(int a, int b, SplitSystemDraw.Compatible pattern, NetworkBox netbox, TreeSet[] splitedges) {
+        Vertex u = null;
+
+
+        //direction for splits a and b
+        //-1:left,1:right
+        Direction dira = null;
+        Direction dirb = null;
+        int parta = 0;
+        int partb = 0;
+
+        //determine direction in which we collect edges
+        if (netbox.getF1().getTimestp() < netbox.getF2().getTimestp()) {
+            if (pattern == SplitSystemDraw.Compatible.YES_11) {
+                dira = Direction.LEFT;
+                dirb = Direction.RIGHT;
+                parta = 1;
+                partb = 1;
+            } else if (pattern == SplitSystemDraw.Compatible.YES_10) {
+                dira = Direction.RIGHT;
+                dirb = Direction.RIGHT;
+                parta = 1;
+                partb = 0;
+            } else if (pattern == SplitSystemDraw.Compatible.YES_01) {
+                dira = Direction.LEFT;
+                dirb = Direction.LEFT;
+                parta = 0;
+                partb = 1;
+            } else if (pattern == SplitSystemDraw.Compatible.YES_00) {
+                dira = Direction.RIGHT;
+                dirb = Direction.LEFT;
+                parta = 0;
+                partb = 0;
+            }
+        } else {
+            if (pattern == SplitSystemDraw.Compatible.YES_11) {
+                dira = Direction.RIGHT;
+                dirb = Direction.LEFT;
+                parta = 1;
+                partb = 1;
+            } else if (pattern == SplitSystemDraw.Compatible.YES_10) {
+                dira = Direction.LEFT;
+                dirb = Direction.LEFT;
+                parta = 1;
+                partb = 0;
+            } else if (pattern == SplitSystemDraw.Compatible.YES_01) {
+                dira = Direction.RIGHT;
+                dirb = Direction.RIGHT;
+                parta = 0;
+                partb = 1;
+            } else if (pattern == SplitSystemDraw.Compatible.YES_00) {
+                dira = Direction.LEFT;
+                dirb = Direction.RIGHT;
+                parta = 0;
+                partb = 0;
+            }
+        }
+
+        //now collect edges
+        Pair<EdgeList, EdgeList> aLists = this.collectEdgesFromBox(netbox.getE1(), netbox.getE2(), a, dira, splitedges, parta);
+        Pair<EdgeList, EdgeList> bLists = this.collectEdgesFromBox(netbox.getF1(), netbox.getF2(), b, dirb, splitedges, partb);
+
+        //find splits that cross a and b
+        EdgeList crossboth = this.findCrossBoth(aLists.getRight(), bLists.getRight(), b);
+
+        //Temporary list used when clearing a triangle
+        EdgeList cleanlist = new EdgeList();
+
+        while (crossboth.size() > 1) {
+            //Need to get rid of the splits that cross a and b
+            //First find a triangle
+            int s = this.findTriangle(a, crossboth, cleanlist, splitedges);
+            this.getRidOfTriangle(a, b, s, dira, parta, crossboth, cleanlist, aLists.getLeft(), bLists.getLeft(), splitedges);
+        }
+
+        //now simply cut off the unnecessary part of the network
+        if (crossboth.size() <= 1) {
+            //System.out.println("Cut off quadrant");
+            u = cutOffUnnecessaryPart(a, b, aLists.getLeft(), bLists.getLeft(), dira, dirb, parta, partb, splitedges);
+        }
+
+        return u;
+    }
+
+    /**
+     * Collect the edges that are relevant for clearing the quadrant.
+     * @param h1 Edge 1
+     * @param h2 Edge 2
+     * @param s Split index
+     * @param dirs Direction (Left or Right)
+     * @param splitedges Split system
+     * @param parts Unknown ?
+     * @return A pair of edge lists.  The first represents a list of relevant edges and the second represents those that cross
+     */
+    private Pair<EdgeList, EdgeList> collectEdgesFromBox(Edge h1, Edge h2, int s, Direction dirs,
+                                               TreeSet[] splitedges, int parts) {
+        Iterator iter = splitedges[s].iterator();
+        EdgeList crossLists = new EdgeList();
+        EdgeList eLists = new EdgeList();
+        int stopstp = 0;
+
+        Edge g = null;
+
+        if (h1.getTimestp() < h2.getTimestp()) {
+            if (dirs == Direction.LEFT) {
+                stopstp = h2.getTimestp();
+            } else {
+                stopstp = h1.getTimestp();
+            }
+        } else {
+            if (dirs == Direction.LEFT) {
+                stopstp = h1.getTimestp();
+            } else {
+                stopstp = h2.getTimestp();
+            }
+        }
+
+        if (dirs == Direction.LEFT) {
+            while (iter.hasNext()) {
+                g = (Edge) iter.next();
+                if (g.getTimestp() < stopstp) {
+                    eLists.addFirst(g);
+                    if (parts == 1) {
+                        crossLists.addFirst(g.getTop().getEdgeList().get((g.getTop().getEdgeList().indexOf(g) + g.getTop().getEdgeList().size() - 1) % g.getTop().getEdgeList().size()));
+                    } else {
+                        crossLists.addFirst(g.getBottom().getEdgeList().get((g.getBottom().getEdgeList().indexOf(g) + 1) % g.getBottom().getEdgeList().size()));
+                    }
+                } else {
+                    break;
+                }
+            }
+        } else {
+            while (iter.hasNext()) {
+                g = (Edge) iter.next();
+                if (g.getTimestp() > stopstp) {
+                    eLists.addLast(g);
+                    if (parts == 1) {
+                        crossLists.addLast(g.getTop().getEdgeList().get((g.getTop().getEdgeList().indexOf(g) + 1) % g.getTop().getEdgeList().size()));
+                    } else {
+                        crossLists.addLast(g.getBottom().getEdgeList().get((g.getBottom().getEdgeList().indexOf(g) + g.getBottom().getEdgeList().size() - 1) % g.getBottom().getEdgeList().size()));
+                    }
+                }
+            }
+        }
+
+        return new ImmutablePair<>(eLists, crossLists);
+    }
+
+
+    /**
+     * Extract the edges from crosslist a that correspond to splits that also crosslist b
+     * @param crosslista cross list A
+     * @param crosslistb cross list B
+     * @param b Split
+     * @return Edges that cross both lists
+     */
+    private EdgeList findCrossBoth(EdgeList crosslista, EdgeList crosslistb, int b) {
+        ListIterator itera = crosslista.listIterator();
+        ListIterator iterb = null;
+
+        Edge e = null;
+        Edge f = null;
+
+        EdgeList crossboth = new EdgeList();
+
+        while (itera.hasNext()) {
+            e = (Edge) itera.next();
+
+            if (e.getIdxsplit() == b) {
+                crossboth.addLast(e);
+            } else {
+                iterb = crosslistb.listIterator();
+
+                while (iterb.hasNext()) {
+                    f = (Edge) iterb.next();
+                    if (e.getIdxsplit() == f.getIdxsplit()) {
+                        crossboth.addLast(e);
+                        break;
+                    }
+                }
+            }
+        }
+
+        return crossboth;
+    }
+
+
+    /**
+     * This method locates a triangle and also collects the the cleanlist containing those edges that can be used to
+     * clear the triangle if necessary
+     * @param a
+     * @param crossboth
+     * @param cleanlist
+     * @param splitedges
+     * @return
+     */
+    private int findTriangle(int a, EdgeList crossboth, EdgeList cleanlist, TreeSet[] splitedges) {
+        cleanlist.clear();
+
+        TreeSet<Integer> crossindices = crossboth.getCrossIndices();
+
+        Edge e = null;
+        Edge f = null;
+
+        int indexe = -1;
+        int indexf = -1;
+
+        LinkedList<Edge> liste = new LinkedList<>();
+        LinkedList<Edge> listf = new LinkedList<>();
+
+        ListIterator crossiter = crossboth.listIterator();
+
+        if (crossiter.hasNext()) {
+            e = (Edge) crossiter.next();
+        }
+
+        while (crossiter.hasNext()) {
+            f = (Edge) crossiter.next();
+
+            liste.clear();
+            listf.clear();
+
+            //System.out.println("Find first crossing for e");
+            indexe = go_to_first_crossing(e, a, crossindices, liste, splitedges);
+            //System.out.println("Find first crossing for f");
+            indexf = go_to_first_crossing(f, a, crossindices, listf, splitedges);
+
+            //triangle found?
+            if ((indexe == f.getIdxsplit()) && (indexf == e.getIdxsplit())) {
+                cleanlist.addAll(listf);
+                break;
+            } else {
+                e = f;
+            }
+        }
+
+        return e.getIdxsplit();
+    }
+
+    /**
+     * This method walks through the network to the first scrossing with a split in crossindices
+     * @param e
+     * @param a
+     * @param crossindices
+     * @param liste
+     * @param splitedges
+     * @return
+     */
+    private static int go_to_first_crossing(Edge e, int a, TreeSet crossindices, LinkedList<Edge> liste, TreeSet[] splitedges) {
+        int dire = 0;
+        int sidx = 0;
+
+        //first check in which direction we need to go
+        SortedSet testtail = splitedges[e.getIdxsplit()].tailSet(e);
+
+        Edge f = null;
+
+        if (testtail.size() == 1) {
+            dire = -1;
+        } else if (a == (e.getBottom().getEdgeList().get((e.getBottom().getEdgeList().indexOf(e) + 1) % e.getBottom().getEdgeList().size())).getIdxsplit()) {
+            dire = 1;
+        } else {
+            dire = -1;
+        }
+
+        if (dire == 1) {
+            SortedSet tail = splitedges[e.getIdxsplit()].tailSet(e);
+            Iterator tailiter = tail.iterator();
+            f = (Edge) tailiter.next();
+            while (tailiter.hasNext()) {
+                f = (Edge) tailiter.next();
+                sidx = (f.getTop().getEdgeList().get((f.getTop().getEdgeList().indexOf(f) + 1) % f.getTop().getEdgeList().size())).getIdxsplit();
+                if (crossindices.contains(new Integer(sidx))) {
+                    return sidx;
+                } else {
+                    liste.addLast(f);
+                }
+            }
+        } else {
+            SortedSet head = splitedges[e.getIdxsplit()].headSet(e);
+            Iterator headiter = head.iterator();
+            LinkedList reverse = new LinkedList();
+
+            //Get edges in head in reverse order
+            while (headiter.hasNext()) {
+                f = (Edge) headiter.next();
+                reverse.addFirst(f);
+            }
+
+            Iterator reviter = reverse.iterator();
+
+            while (reviter.hasNext()) {
+                f = (Edge) reviter.next();
+                sidx = ((Edge) f.getBottom().getEdgeList().get((f.getBottom().getEdgeList().indexOf(f) + 1) % f.getBottom().getEdgeList().size())).getIdxsplit();
+                if (crossindices.contains(new Integer(sidx))) {
+                    return sidx;
+                } else {
+                    liste.addLast(f);
+                }
+            }
+        }
+
+        // Something's wrong! :(
+        throw new IllegalStateException("Did not find a first crossing");
+    }
+
+
+
+
+
+    /**
+     * This method removes one triangle from the empty quadrant of two compatible splits
+     * @param a
+     * @param b
+     * @param s
+     * @param dira
+     * @param parta
+     * @param crossboth
+     * @param cleanlist
+     * @param elista
+     * @param elistb
+     * @param splitedges
+     */
+    private void getRidOfTriangle(int a, int b, int s, Direction dira, int parta,
+                                            EdgeList crossboth, EdgeList cleanlist, EdgeList elista,
+                                            EdgeList elistb, TreeSet[] splitedges) {
+        Edge e = cleanlist.getFirst();
+
+        Direction dire = null;
+
+        //first check in which direction we need to go
+        SortedSet testtail = splitedges[e.getIdxsplit()].tailSet(e);
+
+        Edge f = null;
+
+        if (testtail.size() == 1) {
+            dire = Direction.RIGHT;
+        } else if (a == (e.getBottom().getEdgeList().get((e.getBottom().getEdgeList().indexOf(e) + 1) % e.getBottom().getEdgeList().size())).getIdxsplit()) {
+            dire = Direction.LEFT;
+        } else {
+            dire = Direction.RIGHT;
+        }
+
+        Flip flipDir = flipDirection(parta, dira, dire);
+
+        while (!cleanlist.isEmpty()) {
+            this.findFlippableCubeInTriangle(cleanlist, crossboth, flipDir, a, b, s, parta, dira, elista, elistb, splitedges);
+        }
+    }
+
+    public static enum Flip {
+        UP,
+        DOWN
+    }
+
+    private static Flip flipDirection(int partA, Direction d, Direction e) {
+        if (partA == 1) {
+            if (d == Direction.LEFT) {
+                return e == Direction.LEFT ? Flip.DOWN : Flip.UP;
+            } else {
+                return e == Direction.RIGHT ? Flip.DOWN : Flip.UP;
+            }
+        } else {
+            if (d == Direction.LEFT) {
+                return e == Direction.RIGHT ? Flip.DOWN : Flip.UP;
+            } else {
+                return e == Direction.LEFT ? Flip.DOWN : Flip.UP;
+            }
+        }
+    }
+
+
+    /**
+     * This method locates and flips a cube during the removal of a triangle
+     * @param elist
+     * @param crossboth
+     * @param flipdir
+     * @param a
+     * @param b
+     * @param s
+     * @param parta
+     * @param dira
+     * @param elista
+     * @param elistb
+     * @param splitedges
+     */
+    private static void findFlippableCubeInTriangle(EdgeList elist, EdgeList crossboth,
+                                                        Flip flipdir, int a, int b, int s, int parta, Direction dira,
+                                                        EdgeList elista, EdgeList elistb,
+                                                        TreeSet[] splitedges) {
+        if (elist.isEmpty()) {
+            throw new IllegalArgumentException("List of flip edges is empty");
+        }
+
+
+        Edge e = null;
+        Edge h1 = null;
+        Edge h2 = null;
+        Edge h3 = null;
+        Edge e1 = null;
+        Edge e2 = null;
+        Edge e3 = null;
+        Edge e4 = null;
+        Edge e5 = null;
+        Edge e6 = null;
+        Edge e7 = null;
+        Edge e8 = null;
+        Vertex v = null;
+        Vertex v1 = null;
+        Vertex v2 = null;
+        Vertex v3 = null;
+        Vertex v4 = null;
+        Vertex v5 = null;
+        Vertex v6 = null;
+        Vertex v7 = null;
+        Vertex v8 = null;
+        Vertex v9 = null;
+
+        ListIterator iter = null;
+
+        if (flipdir == Flip.UP) {
+            //flip cubes upwards
+
+            iter = elist.listIterator();
+
+            //find a flippable cube
+            while (iter.hasNext()) {
+                e = (Edge) iter.next();
+                v = e.getTop();
+                if (v.getEdgeList().size() == 3) {
+                    e1 = v.getEdgeList().get((v.getEdgeList().indexOf(e) + 2) % 3);
+                    e2 = v.getEdgeList().get((v.getEdgeList().indexOf(e) + 1) % 3);
+                    v5 = e.getBottom();
+                    if (v == e2.getBottom()) {
+                        v1 = e2.getTop();
+                    } else {
+                        v1 = e2.getBottom();
+                    }
+                    if (v == e1.getBottom()) {
+                        v3 = e1.getTop();
+                    } else {
+                        v3 = e1.getBottom();
+                    }
+                    e3 = v3.getEdgeList().get((v3.getEdgeList().indexOf(e1) + 1) % v3.getEdgeList().size());
+                    e4 = v1.getEdgeList().get((v1.getEdgeList().indexOf(e2) + v1.getEdgeList().size() - 1) % v1.getEdgeList().size());
+                    e5 = v1.getEdgeList().get((v1.getEdgeList().indexOf(e2) + 1) % v1.getEdgeList().size());
+                    e6 = v5.getEdgeList().get((v5.getEdgeList().indexOf(e) + v5.getEdgeList().size() - 1) % v5.getEdgeList().size());
+                    e7 = v5.getEdgeList().get((v5.getEdgeList().indexOf(e) + 1) % v5.getEdgeList().size());
+                    e8 = v3.getEdgeList().get((v3.getEdgeList().indexOf(e1) + v3.getEdgeList().size() - 1) % v3.getEdgeList().size());
+                    if (v1 == e4.getBottom()) {
+                        v2 = e4.getTop();
+                    } else {
+                        v2 = e4.getBottom();
+                    }
+                    if (v3 == e3.getBottom()) {
+                        v4 = e3.getTop();
+                    } else {
+                        v4 = e3.getBottom();
+                    }
+                    if (v3 == e8.getBottom()) {
+                        v6 = e8.getTop();
+                    } else {
+                        v6 = e8.getBottom();
+                    }
+                    if (v5 == e7.getBottom()) {
+                        v7 = e7.getTop();
+                    } else {
+                        v7 = e7.getBottom();
+                    }
+                    if (v5 == e6.getBottom()) {
+                        v8 = e6.getTop();
+                    } else {
+                        v8 = e6.getBottom();
+                    }
+                    if (v1 == e5.getBottom()) {
+                        v9 = e5.getTop();
+                    } else {
+                        v9 = e5.getBottom();
+                    }
+                    if ((v2 == v4)
+                            && (v6 == v7)
+                            && (v8 == v9)
+                            && (e.getIdxsplit() == e5.getIdxsplit())
+                            && (e.getIdxsplit() == e8.getIdxsplit())
+                            && (e2.getIdxsplit() == e3.getIdxsplit())
+                            && (e2.getIdxsplit() == e6.getIdxsplit())
+                            && (e1.getIdxsplit() == e4.getIdxsplit())
+                            && (e1.getIdxsplit() == e7.getIdxsplit())) {
+                        break;
+                    }
+                }
+            }
+
+            //flip cube
+            v1.getEdgeList().remove(e2);
+            v3.getEdgeList().remove(e1);
+            v5.getEdgeList().remove(e);
+            v.getEdgeList().clear();
+            v.setX(v2.getX() + (v5.getX() - v.getX()));
+            v.setY(v2.getY() + (v5.getY() - v.getY()));
+            if (v8 == e6.getTop()) {
+                h1 = new Edge(v, v6, e6.getIdxsplit(), e2.getTimestp());
+            } else {
+                h1 = new Edge(v6, v, e6.getIdxsplit(), e2.getTimestp());
+            }
+            v6.getEdgeList().add(v6.getEdgeList().indexOf(e7) + 1, h1);
+            v.getEdgeList().addLast(h1);
+            if (v6 == e7.getTop()) {
+                h2 = new Edge(v, v8, e7.getIdxsplit(), e1.getTimestp());
+            } else {
+                h2 = new Edge(v8, v, e7.getIdxsplit(), e1.getTimestp());
+            }
+            v8.getEdgeList().add(v8.getEdgeList().indexOf(e5) + 1, h2);
+            v.getEdgeList().addLast(h2);
+            h3 = new Edge(v2, v, e.getIdxsplit(), e.getTimestp());
+            v2.getEdgeList().add(v2.getEdgeList().indexOf(e3) + 1, h3);
+            v.getEdgeList().addLast(h3);
+
+            //System.out.println("Size of elist before update: " + elist.size());
+
+            //update lists of edges accordingly
+            splitedges[e.getIdxsplit()].remove(e);
+            splitedges[e.getIdxsplit()].add(h3);
+            splitedges[e2.getIdxsplit()].remove(e2);
+            splitedges[e2.getIdxsplit()].add(h1);
+            splitedges[e1.getIdxsplit()].remove(e1);
+            splitedges[e1.getIdxsplit()].add(h2);
+
+            if (parta == 1) {
+                if (dira == Direction.LEFT) {
+                    elist.add(elist.indexOf(e) + 1, h3);
+                    elist.remove(e);
+                    if ((e6.getIdxsplit() == a) && (e7.getIdxsplit() != s)) {
+                        elist.removeFirst();
+                        crossboth.add(crossboth.indexOf(e5) + 1, h3);
+                        crossboth.remove(e5);
+                        elista.add(elista.indexOf(e2) + 1, h1);
+                        elista.remove(e2);
+                    }
+                    if ((e6.getIdxsplit() == a) && (e7.getIdxsplit() == s) && (s == b)) {
+                        elist.removeFirst();
+                        crossboth.remove(e5);
+                        crossboth.add(crossboth.indexOf(e4) + 1, h2);
+                        crossboth.remove(e4);
+                        elista.remove(e2);
+                        elistb.remove(e1);
+                    }
+                    if ((e6.getIdxsplit() == a) && (e7.getIdxsplit() == s) && (s != b)) {
+                        elist.removeFirst();
+                        crossboth.add(crossboth.indexOf(e4) + 1, h3);
+                        crossboth.remove(e4);
+                        crossboth.add(crossboth.indexOf(e5) + 1, h2);
+                        crossboth.remove(e5);
+                        elista.add(elista.indexOf(e2) + 1, h1);
+                        elista.remove(e2);
+                    }
+                    if ((e6.getIdxsplit() != a) && (e7.getIdxsplit() == s) && (s == b)) {
+                        elist.removeLast();
+                        elistb.add(elistb.indexOf(e1) + 1, h2);
+                        elistb.remove(e1);
+                    }
+                    if ((e6.getIdxsplit() != a) && (e7.getIdxsplit() == s) && (s != b)) {
+                        elist.removeLast();
+                    }
+                } else {
+                    elist.add(elist.indexOf(e) + 1, h3);
+                    elist.remove(e);
+
+                    if ((e7.getIdxsplit() == a) && (e6.getIdxsplit() != s)) {
+                        elist.removeFirst();
+                        crossboth.add(crossboth.indexOf(e8) + 1, h3);
+                        crossboth.remove(e8);
+                        elista.add(elista.indexOf(e1) + 1, h2);
+                        elista.remove(e1);
+                    }
+                    if ((e7.getIdxsplit() == a) && (e6.getIdxsplit() == s) && (s == b)) {
+                        elist.removeFirst();
+                        crossboth.remove(e8);
+                        crossboth.add(crossboth.indexOf(e3) + 1, h1);
+                        crossboth.remove(e3);
+                        elista.remove(e1);
+                        elistb.remove(e2);
+                    }
+                    if ((e7.getIdxsplit() == a) && (e6.getIdxsplit() == s) && (s != b)) {
+                        elist.removeFirst();
+                        crossboth.add(crossboth.indexOf(e3) + 1, h3);
+                        crossboth.remove(e3);
+                        crossboth.add(crossboth.indexOf(e8) + 1, h1);
+                        crossboth.remove(e8);
+                        elista.add(elista.indexOf(e1) + 1, h2);
+                        elista.remove(e1);
+                    }
+                    if ((e7.getIdxsplit() != a) && (e6.getIdxsplit() == s) && (s == b)) {
+                        elist.removeLast();
+                        elistb.add(elistb.indexOf(e2) + 1, h1);
+                        elistb.remove(e2);
+                    }
+                    if ((e7.getIdxsplit() != a) && (e6.getIdxsplit() == s) && (s != b)) {
+                        elist.removeLast();
+                    }
+                }
+            } else {
+                if (dira == Direction.LEFT) {
+                    elist.add(elist.indexOf(e) + 1, h3);
+                    elist.remove(e);
+
+                    if ((e7.getIdxsplit() == a) && (e6.getIdxsplit() != s)) {
+                        elist.removeFirst();
+                        crossboth.add(crossboth.indexOf(e8) + 1, h3);
+                        crossboth.remove(e8);
+                        elista.add(elista.indexOf(e1) + 1, h2);
+                        elista.remove(e1);
+                    }
+                    if ((e7.getIdxsplit() == a) && (e6.getIdxsplit() == s) && (s == b)) {
+                        elist.removeFirst();
+                        crossboth.remove(e8);
+                        crossboth.add(crossboth.indexOf(e3) + 1, h1);
+                        crossboth.remove(e3);
+                        elista.remove(e1);
+                        elistb.remove(e2);
+                    }
+                    if ((e7.getIdxsplit() == a) && (e6.getIdxsplit() == s) && (s != b)) {
+                        elist.removeFirst();
+                        crossboth.add(crossboth.indexOf(e3) + 1, h3);
+                        crossboth.remove(e3);
+                        crossboth.add(crossboth.indexOf(e8) + 1, h1);
+                        crossboth.remove(e8);
+                        elista.add(elista.indexOf(e1) + 1, h2);
+                        elista.remove(e1);
+                    }
+                    if ((e7.getIdxsplit() != a) && (e6.getIdxsplit() == s) && (s == b)) {
+                        elist.removeLast();
+                        elistb.add(elistb.indexOf(e2) + 1, h1);
+                        elistb.remove(e2);
+                    }
+                    if ((e7.getIdxsplit() != a) && (e6.getIdxsplit() == s) && (s != b)) {
+                        elist.removeLast();
+                    }
+                } else {
+                    elist.add(elist.indexOf(e) + 1, h3);
+                    elist.remove(e);
+                    if ((e6.getIdxsplit() == a) && (e7.getIdxsplit() != s)) {
+                        elist.removeFirst();
+                        crossboth.add(crossboth.indexOf(e5) + 1, h3);
+                        crossboth.remove(e5);
+                        elista.add(elista.indexOf(e2) + 1, h1);
+                        elista.remove(e2);
+                    }
+                    if ((e6.getIdxsplit() == a) && (e7.getIdxsplit() == s) && (s == b)) {
+                        elist.removeFirst();
+                        crossboth.remove(e5);
+                        crossboth.add(crossboth.indexOf(e4) + 1, h2);
+                        crossboth.remove(e4);
+                        elista.remove(e2);
+                        elistb.remove(e1);
+                    }
+                    if ((e6.getIdxsplit() == a) && (e7.getIdxsplit() == s) && (s != b)) {
+                        elist.removeFirst();
+                        crossboth.add(crossboth.indexOf(e4) + 1, h3);
+                        crossboth.remove(e4);
+                        crossboth.add(crossboth.indexOf(e5) + 1, h2);
+                        crossboth.remove(e5);
+                        elista.add(elista.indexOf(e2) + 1, h1);
+                        elista.remove(e2);
+                    }
+                    if ((e6.getIdxsplit() != a) && (e7.getIdxsplit() == s) && (s == b)) {
+                        elist.removeLast();
+                        elistb.add(elistb.indexOf(e1) + 1, h2);
+                        elistb.remove(e1);
+                    }
+                    if ((e6.getIdxsplit() != a) && (e7.getIdxsplit() == s) && (s != b)) {
+                        elist.removeLast();
+                    }
+                }
+            }
+        } else {
+            //flip cubes downwards
+
+            iter = elist.listIterator();
+
+            //find flippable cube
+            while (iter.hasNext()) {
+                e = (Edge) iter.next();
+                v = e.getBottom();
+                if (v.getEdgeList().size() == 3) {
+                    e1 = (Edge) v.getEdgeList().get((v.getEdgeList().indexOf(e) + 2) % 3);
+                    e2 = (Edge) v.getEdgeList().get((v.getEdgeList().indexOf(e) + 1) % 3);
+                    v5 = e.getTop();
+                    if (v == e2.getBottom()) {
+                        v1 = e2.getTop();
+                    } else {
+                        v1 = e2.getBottom();
+                    }
+                    if (v == e1.getBottom()) {
+                        v3 = e1.getTop();
+                    } else {
+                        v3 = e1.getBottom();
+                    }
+                    e3 = v3.getEdgeList().get((v3.getEdgeList().indexOf(e1) + 1) % v3.getEdgeList().size());
+                    e4 = v1.getEdgeList().get((v1.getEdgeList().indexOf(e2) + v1.getEdgeList().size() - 1) % v1.getEdgeList().size());
+                    e5 = v1.getEdgeList().get((v1.getEdgeList().indexOf(e2) + 1) % v1.getEdgeList().size());
+                    e6 = v5.getEdgeList().get((v5.getEdgeList().indexOf(e) + v5.getEdgeList().size() - 1) % v5.getEdgeList().size());
+                    e7 = v5.getEdgeList().get((v5.getEdgeList().indexOf(e) + 1) % v5.getEdgeList().size());
+                    e8 = v3.getEdgeList().get((v3.getEdgeList().indexOf(e1) + v3.getEdgeList().size() - 1) % v3.getEdgeList().size());
+                    if (v1 == e4.getBottom()) {
+                        v2 = e4.getTop();
+                    } else {
+                        v2 = e4.getBottom();
+                    }
+                    if (v3 == e3.getBottom()) {
+                        v4 = e3.getTop();
+                    } else {
+                        v4 = e3.getBottom();
+                    }
+                    if (v3 == e8.getBottom()) {
+                        v6 = e8.getTop();
+                    } else {
+                        v6 = e8.getBottom();
+                    }
+                    if (v5 == e7.getBottom()) {
+                        v7 = e7.getTop();
+                    } else {
+                        v7 = e7.getBottom();
+                    }
+                    if (v5 == e6.getBottom()) {
+                        v8 = e6.getTop();
+                    } else {
+                        v8 = e6.getBottom();
+                    }
+                    if (v1 == e5.getBottom()) {
+                        v9 = e5.getTop();
+                    } else {
+                        v9 = e5.getBottom();
+                    }
+                    if ((v2 == v4)
+                            && (v6 == v7)
+                            && (v8 == v9)
+                            && (e.getIdxsplit() == e5.getIdxsplit())
+                            && (e.getIdxsplit() == e8.getIdxsplit())
+                            && (e2.getIdxsplit() == e3.getIdxsplit())
+                            && (e2.getIdxsplit() == e6.getIdxsplit())
+                            && (e1.getIdxsplit() == e4.getIdxsplit())
+                            && (e1.getIdxsplit() == e7.getIdxsplit())) {
+                        break;
+                    }
+                }
+            }
+
+            //flip cube
+            v1.getEdgeList().remove(e2);
+            v3.getEdgeList().remove(e1);
+            v5.getEdgeList().remove(e);
+            v.getEdgeList().clear();
+            v.setX(v2.getX() + (v5.getX() - v.getX()));
+            v.setY(v2.getY() + (v5.getY() - v.getY()));
+            if (v8 == e6.getTop()) {
+                h1 = new Edge(v, v6, e6.getIdxsplit(), e2.getTimestp());
+            } else {
+                h1 = new Edge(v6, v, e6.getIdxsplit(), e2.getTimestp());
+            }
+            v6.getEdgeList().add(v6.getEdgeList().indexOf(e7) + 1, h1);
+            v.getEdgeList().addLast(h1);
+            if (v6 == e7.getTop()) {
+                h2 = new Edge(v, v8, e7.getIdxsplit(), e1.getTimestp());
+            } else {
+                h2 = new Edge(v8, v, e7.getIdxsplit(), e1.getTimestp());
+            }
+            v8.getEdgeList().add(v8.getEdgeList().indexOf(e5) + 1, h2);
+            v.getEdgeList().addLast(h2);
+            h3 = new Edge(v, v2, e.getIdxsplit(), e.getTimestp());
+            v2.getEdgeList().add(v2.getEdgeList().indexOf(e3) + 1, h3);
+            v.getEdgeList().addLast(h3);
+
+            //System.out.println("Size of elist before update: " + elist.size());
+
+            //update lists of edges accordingly
+            splitedges[e.getIdxsplit()].remove(e);
+            splitedges[e.getIdxsplit()].add(h3);
+            splitedges[e2.getIdxsplit()].remove(e2);
+            splitedges[e2.getIdxsplit()].add(h1);
+            splitedges[e1.getIdxsplit()].remove(e1);
+            splitedges[e1.getIdxsplit()].add(h2);
+
+            if (parta == 1) {
+                if (dira == Direction.LEFT) {
+                    elist.add(elist.indexOf(e) + 1, h3);
+                    elist.remove(e);
+                    //System.out.println("Size of elist after first update: " + elist.size());
+
+                    if ((e6.getIdxsplit() == a) && (e7.getIdxsplit() != s)) {
+                        elist.removeFirst();
+                        crossboth.add(crossboth.indexOf(e5) + 1, h3);
+                        crossboth.remove(e5);
+                        elista.add(elista.indexOf(e2) + 1, h1);
+                        elista.remove(e2);
+                    }
+                    if ((e6.getIdxsplit() == a) && (e7.getIdxsplit() == s) && (s == b)) {
+                        elist.removeFirst();
+                        crossboth.remove(e5);
+                        crossboth.add(crossboth.indexOf(e4) + 1, h2);
+                        crossboth.remove(e4);
+                        elista.remove(e2);
+                        elistb.remove(e1);
+                    }
+                    if ((e6.getIdxsplit() == a) && (e7.getIdxsplit() == s) && (s != b)) {
+                        elist.removeFirst();
+                        crossboth.add(crossboth.indexOf(e4) + 1, h3);
+                        crossboth.remove(e4);
+                        crossboth.add(crossboth.indexOf(e5) + 1, h2);
+                        crossboth.remove(e5);
+                        elista.add(elista.indexOf(e2) + 1, h1);
+                        elista.remove(e2);
+                    }
+                    if ((e6.getIdxsplit() != a) && (e7.getIdxsplit() == s) && (s == b)) {
+                        elist.removeLast();
+                        elistb.add(elistb.indexOf(e1) + 1, h2);
+                        elistb.remove(e1);
+                    }
+                    if ((e6.getIdxsplit() != a) && (e7.getIdxsplit() == s) && (s != b)) {
+                        elist.removeLast();
+                    }
+                } else {
+                    elist.add(elist.indexOf(e) + 1, h3);
+                    elist.remove(e);
+
+                    if ((e7.getIdxsplit() == a) && (e6.getIdxsplit() != s)) {
+                        elist.removeFirst();
+                        crossboth.add(crossboth.indexOf(e8) + 1, h3);
+                        crossboth.remove(e8);
+                        elista.add(elista.indexOf(e1) + 1, h2);
+                        elista.remove(e1);
+                    }
+                    if ((e7.getIdxsplit() == a) && (e6.getIdxsplit() == s) && (s == b)) {
+                        elist.removeFirst();
+                        crossboth.remove(e8);
+                        crossboth.add(crossboth.indexOf(e3) + 1, h1);
+                        crossboth.remove(e3);
+                        elista.remove(e1);
+                        elistb.remove(e2);
+                    }
+                    if ((e7.getIdxsplit() == a) && (e6.getIdxsplit() == s) && (s != b)) {
+                        elist.removeFirst();
+                        crossboth.add(crossboth.indexOf(e3) + 1, h3);
+                        crossboth.remove(e3);
+                        crossboth.add(crossboth.indexOf(e8) + 1, h1);
+                        crossboth.remove(e8);
+                        elista.add(elista.indexOf(e1) + 1, h2);
+                        elista.remove(e1);
+                    }
+                    if ((e7.getIdxsplit() != a) && (e6.getIdxsplit() == s) && (s == b)) {
+                        elist.removeLast();
+                        elistb.add(elistb.indexOf(e2) + 1, h1);
+                        elistb.remove(e2);
+                    }
+                    if ((e7.getIdxsplit() != a) && (e6.getIdxsplit() == s) && (s != b)) {
+                        elist.removeLast();
+                    }
+                }
+            } else {
+                if (dira == Direction.LEFT) {
+                    elist.add(elist.indexOf(e) + 1, h3);
+                    elist.remove(e);
+
+                    if ((e7.getIdxsplit() == a) && (e6.getIdxsplit() != s)) {
+                        elist.removeFirst();
+                        crossboth.add(crossboth.indexOf(e8) + 1, h3);
+                        crossboth.remove(e8);
+                        elista.add(elista.indexOf(e1) + 1, h2);
+                        elista.remove(e1);
+                    }
+                    if ((e7.getIdxsplit() == a) && (e6.getIdxsplit() == s) && (s == b)) {
+                        elist.removeFirst();
+                        crossboth.remove(e8);
+                        crossboth.add(crossboth.indexOf(e3) + 1, h1);
+                        crossboth.remove(e3);
+                        elista.remove(e1);
+                        elistb.remove(e2);
+                    }
+                    if ((e7.getIdxsplit() == a) && (e6.getIdxsplit() == s) && (s != b)) {
+                        elist.removeFirst();
+                        crossboth.add(crossboth.indexOf(e3) + 1, h3);
+                        crossboth.remove(e3);
+                        crossboth.add(crossboth.indexOf(e8) + 1, h1);
+                        crossboth.remove(e8);
+                        elista.add(elista.indexOf(e1) + 1, h2);
+                        elista.remove(e1);
+                    }
+                    if ((e7.getIdxsplit() != a) && (e6.getIdxsplit() == s) && (s == b)) {
+                        elist.removeLast();
+                        elistb.add(elistb.indexOf(e2) + 1, h1);
+                        elistb.remove(e2);
+                    }
+                    if ((e7.getIdxsplit() != a) && (e6.getIdxsplit() == s) && (s != b)) {
+                        elist.removeLast();
+                    }
+                } else {
+                    elist.add(elist.indexOf(e) + 1, h3);
+                    elist.remove(e);
+                    if ((e6.getIdxsplit() == a) && (e7.getIdxsplit() != s)) {
+                        elist.removeFirst();
+                        crossboth.add(crossboth.indexOf(e5) + 1, h3);
+                        crossboth.remove(e5);
+                        elista.add(elista.indexOf(e2) + 1, h1);
+                        elista.remove(e2);
+                    }
+                    if ((e6.getIdxsplit() == a) && (e7.getIdxsplit() == s) && (s == b)) {
+                        elist.removeFirst();
+                        crossboth.remove(e5);
+                        crossboth.add(crossboth.indexOf(e4) + 1, h2);
+                        crossboth.remove(e4);
+                        elista.remove(e2);
+                        elistb.remove(e1);
+                    }
+                    if ((e6.getIdxsplit() == a) && (e7.getIdxsplit() == s) && (s != b)) {
+                        elist.removeFirst();
+                        crossboth.add(crossboth.indexOf(e4) + 1, h3);
+                        crossboth.remove(e4);
+                        crossboth.add(crossboth.indexOf(e5) + 1, h2);
+                        crossboth.remove(e5);
+                        elista.add(elista.indexOf(e2) + 1, h1);
+                        elista.remove(e2);
+                    }
+                    if ((e6.getIdxsplit() != a) && (e7.getIdxsplit() == s) && (s == b)) {
+                        elist.removeLast();
+                        elistb.add(elistb.indexOf(e1) + 1, h2);
+                        elistb.remove(e1);
+                    }
+                    if ((e6.getIdxsplit() != a) && (e7.getIdxsplit() == s) && (s != b)) {
+                        elist.removeLast();
+                    }
+                }
+            }
+        }
+    }
+
+
+    //This method cuts off the unecessary part of the network
+    private static Vertex cutOffUnnecessaryPart(int a, int b, LinkedList<Edge> elista, LinkedList<Edge> elistb,
+                                                   Direction dira, Direction dirb, int parta, int partb, TreeSet[] splitedges) {
+        //System.out.println("cut off unnecessary part");
+
+        Vertex u = null;
+
+        Edge e = (Edge) elista.getFirst();
+        Edge g = null;
+        Edge h = null;
+        Edge g1 = null;
+        Edge g2 = null;
+
+        //first eliminate the edges that correspond to splits that cross a
+        if (dira == Direction.LEFT) {
+            SortedSet head = splitedges[e.getIdxsplit()].headSet(e);
+            Iterator headiter = head.iterator();
+            while (headiter.hasNext()) {
+                h = (Edge) headiter.next();
+                g1 = h.getTop().getEdgeList().get((h.getTop().getEdgeList().indexOf(h) + (h.getTop().getEdgeList().size() - 1)) % h.getTop().getEdgeList().size());
+                g2 = h.getBottom().getEdgeList().get((h.getBottom().getEdgeList().indexOf(h) + 1) % h.getBottom().getEdgeList().size());
+
+                if ((parta == 1) && (g1.getTimestp() < g2.getTimestp())) {
+                    while (true) {
+                        g = (Edge) splitedges[g1.getIdxsplit()].last();
+                        if (g.getTimestp() > g1.getTimestp()) {
+                            splitedges[g1.getIdxsplit()].remove(g);
+                        } else {
+                            break;
+                        }
+                    }
+                } else if ((parta == 1) && (g1.getTimestp() > g2.getTimestp())) {
+                    while (true) {
+                        g = (Edge) splitedges[g1.getIdxsplit()].first();
+                        if (g.getTimestp() < g1.getTimestp()) {
+                            splitedges[g1.getIdxsplit()].remove(g);
+                        } else {
+                            break;
+                        }
+                    }
+                } else if ((parta == 0) && (g1.getTimestp() < g2.getTimestp())) {
+                    while (true) {
+                        g = (Edge) splitedges[g2.getIdxsplit()].first();
+                        if (g.getTimestp() < g2.getTimestp()) {
+                            splitedges[g2.getIdxsplit()].remove(g);
+                        } else {
+                            break;
+                        }
+                    }
+                } else if ((parta == 0) && (g1.getTimestp() > g2.getTimestp())) {
+                    while (true) {
+                        g = (Edge) splitedges[g2.getIdxsplit()].last();
+                        if (g.getTimestp() > g2.getTimestp()) {
+                            splitedges[g2.getIdxsplit()].remove(g);
+                        } else {
+                            break;
+                        }
+                    }
+                }
+            }
+        } else {
+            SortedSet tail = splitedges[e.getIdxsplit()].tailSet(e);
+            Iterator tailiter = tail.iterator();
+            //tail contains e!!!
+            h = (Edge) tailiter.next();
+            while (tailiter.hasNext()) {
+                h = (Edge) tailiter.next();
+                g1 = h.getTop().getEdgeList().get((h.getTop().getEdgeList().indexOf(h) + 1) % h.getTop().getEdgeList().size());
+                g2 = h.getBottom().getEdgeList().get((h.getBottom().getEdgeList().indexOf(h) + (h.getBottom().getEdgeList().size() - 1)) % h.getBottom().getEdgeList().size());
+
+                if ((parta == 1) && (g1.getTimestp() < g2.getTimestp())) {
+                    while (true) {
+                        g = (Edge) splitedges[g1.getIdxsplit()].last();
+                        if (g.getTimestp() > g1.getTimestp()) {
+                            splitedges[g1.getIdxsplit()].remove(g);
+                        } else {
+                            break;
+                        }
+                    }
+                } else if ((parta == 1) && (g1.getTimestp() > g2.getTimestp())) {
+                    while (true) {
+                        g = (Edge) splitedges[g1.getIdxsplit()].first();
+                        if (g.getTimestp() < g1.getTimestp()) {
+                            splitedges[g1.getIdxsplit()].remove(g);
+                        } else {
+                            break;
+                        }
+                    }
+                } else if ((parta == 0) && (g1.getTimestp() < g2.getTimestp())) {
+                    while (true) {
+                        g = (Edge) splitedges[g2.getIdxsplit()].first();
+                        if (g.getTimestp() < g2.getTimestp()) {
+                            splitedges[g2.getIdxsplit()].remove(g);
+                        } else {
+                            break;
+                        }
+                    }
+                } else if ((parta == 0) && (g1.getTimestp() > g2.getTimestp())) {
+                    while (true) {
+                        g = (Edge) splitedges[g2.getIdxsplit()].last();
+                        if (g.getTimestp() > g2.getTimestp()) {
+                            splitedges[g2.getIdxsplit()].remove(g);
+                        } else {
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        Edge f = elistb.getFirst();
+
+        //next eliminate edges that correspond to splits thath cross b
+        if (dirb == Direction.LEFT) {
+            SortedSet head = splitedges[f.getIdxsplit()].headSet(f);
+            Iterator headiter = head.iterator();
+            while (headiter.hasNext()) {
+                h = (Edge) headiter.next();
+                g1 = h.getTop().getEdgeList().get((h.getTop().getEdgeList().indexOf(h) + (h.getTop().getEdgeList().size() - 1)) % h.getTop().getEdgeList().size());
+                g2 = h.getBottom().getEdgeList().get((h.getBottom().getEdgeList().indexOf(h) + 1) % h.getBottom().getEdgeList().size());
+
+                if ((partb == 1) && (g1.getTimestp() < g2.getTimestp())) {
+                    while (true) {
+                        g = (Edge) splitedges[g1.getIdxsplit()].last();
+                        if (g.getTimestp() > g1.getTimestp()) {
+                            splitedges[g1.getIdxsplit()].remove(g);
+                        } else {
+                            break;
+                        }
+                    }
+                } else if ((partb == 1) && (g1.getTimestp() > g2.getTimestp())) {
+                    while (true) {
+                        g = (Edge) splitedges[g1.getIdxsplit()].first();
+                        if (g.getTimestp() < g1.getTimestp()) {
+                            splitedges[g1.getIdxsplit()].remove(g);
+                        } else {
+                            break;
+                        }
+                    }
+                } else if ((partb == 0) && (g1.getTimestp() < g2.getTimestp())) {
+                    while (true) {
+                        g = (Edge) splitedges[g2.getIdxsplit()].first();
+                        if (g.getTimestp() < g2.getTimestp()) {
+                            splitedges[g2.getIdxsplit()].remove(g);
+                        } else {
+                            break;
+                        }
+                    }
+                } else if ((partb == 0) && (g1.getTimestp() > g2.getTimestp())) {
+                    while (true) {
+                        g = (Edge) splitedges[g2.getIdxsplit()].last();
+                        if (g.getTimestp() > g2.getTimestp()) {
+                            splitedges[g2.getIdxsplit()].remove(g);
+                        } else {
+                            break;
+                        }
+                    }
+                }
+            }
+        } else {
+            SortedSet tail = splitedges[f.getIdxsplit()].tailSet(f);
+            Iterator tailiter = tail.iterator();
+            //tail contains f!!!
+            h = (Edge) tailiter.next();
+            while (tailiter.hasNext()) {
+                h = (Edge) tailiter.next();
+                g1 = h.getTop().getEdgeList().get((h.getTop().getEdgeList().indexOf(h) + 1) % h.getTop().getEdgeList().size());
+                g2 = h.getBottom().getEdgeList().get((h.getBottom().getEdgeList().indexOf(h) + (h.getBottom().getEdgeList().size() - 1)) % h.getBottom().getEdgeList().size());
+
+                if ((partb == 1) && (g1.getTimestp() < g2.getTimestp())) {
+                    while (true) {
+                        g = (Edge) splitedges[g1.getIdxsplit()].last();
+                        if (g.getTimestp() > g1.getTimestp()) {
+                            splitedges[g1.getIdxsplit()].remove(g);
+                        } else {
+                            break;
+                        }
+                    }
+                } else if ((partb == 1) && (g1.getTimestp() > g2.getTimestp())) {
+                    while (true) {
+                        g = (Edge) splitedges[g1.getIdxsplit()].first();
+                        if (g.getTimestp() < g1.getTimestp()) {
+                            splitedges[g1.getIdxsplit()].remove(g);
+                        } else {
+                            break;
+                        }
+                    }
+                } else if ((partb == 0) && (g1.getTimestp() < g2.getTimestp())) {
+                    while (true) {
+                        g = (Edge) splitedges[g2.getIdxsplit()].first();
+                        if (g.getTimestp() < g2.getTimestp()) {
+                            splitedges[g2.getIdxsplit()].remove(g);
+                        } else {
+                            break;
+                        }
+                    }
+                } else if ((partb == 0) && (g1.getTimestp() > g2.getTimestp())) {
+                    while (true) {
+                        g = (Edge) splitedges[g2.getIdxsplit()].last();
+                        if (g.getTimestp() > g2.getTimestp()) {
+                            splitedges[g2.getIdxsplit()].remove(g);
+                        } else {
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        //now it remains to update the lists of edges for splits a and b
+        if (dira == Direction.LEFT) {
+            while (true) {
+                g = (Edge) splitedges[a].first();
+                if (g.getTimestp() <= e.getTimestp()) {
+                    splitedges[a].remove(g);
+                    if (parta == 1) {
+                        g.getTop().getEdgeList().remove(g);
+                        u = g.getTop();
+                    } else {
+                        g.getBottom().getEdgeList().remove(g);
+                        u = g.getBottom();
+                    }
+                } else {
+                    break;
+                }
+            }
+        } else {
+            while (true) {
+                g = (Edge) splitedges[a].last();
+                if (g.getTimestp() >= e.getTimestp()) {
+                    splitedges[a].remove(g);
+                    if (parta == 1) {
+                        g.getTop().getEdgeList().remove(g);
+                        u = g.getTop();
+                    } else {
+                        g.getBottom().getEdgeList().remove(g);
+                        u = g.getBottom();
+                    }
+                } else {
+                    break;
+                }
+            }
+        }
+
+        if (dirb == Direction.LEFT) {
+            while (true) {
+                g = (Edge) splitedges[b].first();
+                if (g.getTimestp() <= f.getTimestp()) {
+                    splitedges[b].remove(g);
+                    if (partb == 1) {
+                        g.getTop().getEdgeList().remove(g);
+                    } else {
+                        g.getBottom().getEdgeList().remove(g);
+                    }
+                } else {
+                    break;
+                }
+            }
+        } else {
+            while (true) {
+                g = (Edge) splitedges[b].last();
+                if (g.getTimestp() >= f.getTimestp()) {
+                    if (partb == 1) {
+                        g.getTop().getEdgeList().remove(g);
+                    } else {
+                        g.getBottom().getEdgeList().remove(g);
+                    }
+                    splitedges[b].remove(g);
+                } else {
+                    break;
+                }
+            }
+        }
+
+        return u;
+    }
+
+
+
 
 
 }

@@ -96,9 +96,9 @@ as follows:
 | Class Group        | Package name | Description                                                      |
 +====================+==============+==================================================================+
 | Algorithms         | alg          | Implementations of Phylogenetic Algorithms                       |
-+--------------------+--------------+----------+-------------------------------------------------------+
-| Data structures    | ds           | Phylogenetic data structures relating to concepts such as:       |
-|                    |              |  Splits, Trees, Networks, Distances and Quartets                 |
++--------------------+--------------+------------------------------------------------------------------+
+| Data structures    | ds           | Phylogenetic data structures relating to concepts such as        |
+|                    |              | Splits, Trees, Networks, Distances and Quartets                  |
 +--------------------+--------------+------------------------------------------------------------------+
 | File Handling      | io           | Loading and saving common phylogenetic file formats.             |
 |                    |              | Specifically, Nexus and Phylip format.                           |

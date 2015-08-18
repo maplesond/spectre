@@ -1,24 +1,25 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2014  UEA School of Computing Sciences
+ * Copyright (C) 2015  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
- * details.
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
+
 package uk.ac.uea.cmp.spectre.qtools.superq;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.tgac.metaopt.Objective;
@@ -60,8 +61,8 @@ public class SuperQCLI {
 
         try {
 
-            SuperQ.configureLogging();
             SuperQOptions sqOpts = processArgs(commandLine);
+            SuperQ.configureLogging(sqOpts.isVerbose());
             SuperQ superQ = new SuperQ(sqOpts);
             superQ.run();
             if (superQ.failed()) {
@@ -71,11 +72,11 @@ public class SuperQCLI {
                 log.info("Completed successfully");
             }
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            System.err.println("\nException: " + e.toString());
+            System.err.println("\nStack trace:");
+            System.err.println(StringUtils.join(e.getStackTrace(), "\n"));
             System.exit(3);
         }
-
-
     }
 
     private static Options createOptions() {

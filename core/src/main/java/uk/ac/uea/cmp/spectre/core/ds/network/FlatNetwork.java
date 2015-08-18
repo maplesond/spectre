@@ -1,14 +1,13 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2014  UEA School of Computing Sciences
+ * Copyright (C) 2015  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
- * details.
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
@@ -120,7 +119,7 @@ public class FlatNetwork implements Network {
         Vertex last = null;
         //While current edge is not the last one that we need to visit:
 
-        boolean forward = (externalEdges.get(indexBefore).getBot() == a || externalEdges.get(indexBefore).getTop() == a) ? true : false;
+        boolean forward = (externalEdges.get(indexBefore).getBottom() == a || externalEdges.get(indexBefore).getTop() == a) ? true : false;
 
         while (current != e2) {
             if (forward) {
@@ -175,7 +174,7 @@ public class FlatNetwork implements Network {
         // Move some external edges to the trivial edge list
         // Classifies all other edges (i.e. non external or trivial edges) as internal
         for (Edge e : this.edges) {
-            if (e.getBot().getElist().size() == 1 || e.getTop().getElist().size() == 1) {
+            if (e.getBottom().getEdgeList().size() == 1 || e.getTop().getEdgeList().size() == 1) {
                 this.trivialEdges.add(e);
                 while (this.externalEdges.remove(e)) ;
             } else {
@@ -189,7 +188,7 @@ public class FlatNetwork implements Network {
         for (int i = 0; i < externalEdges.size(); i++) {
             Edge e = externalEdges.get(i);
             EdgeList split = collectEdgesForSplit(e.getIdxsplit(), this.edges);
-            if (split.size() == 1 && e.getBot().getElist().size() > 1 && e.getTop().getElist().size() > 1) {
+            if (split.size() == 1 && e.getBottom().getEdgeList().size() > 1 && e.getTop().getEdgeList().size() > 1) {
                 e.setCompatible(true);
             }
         }
@@ -197,9 +196,9 @@ public class FlatNetwork implements Network {
 
     /**
      * This method collects the edges that represent a given split in the network.
-     * @param s
-     * @param elistall
-     * @return
+     * @param s Index of split
+     * @param elistall Complete list of edges in the network
+     * @return Edges that represent the specified split in the network
      */
     protected static EdgeList collectEdgesForSplit(int s, EdgeList elistall) {
         ListIterator iter = elistall.listIterator();
@@ -229,23 +228,23 @@ public class FlatNetwork implements Network {
         EdgeList ext = new EdgeList();
         Vertex w = null;
 
-        if (v.getElist().size() == 1) {
-            w = (v.getElist().getFirst().getBot() == v) ? v.getElist().getFirst().getTop() : v.getElist().getFirst().getBot();
-            first = v.getElist().getFirst();
+        if (v.getEdgeList().size() == 1) {
+            w = (v.getEdgeList().getFirst().getBottom() == v) ? v.getEdgeList().getFirst().getTop() : v.getEdgeList().getFirst().getBottom();
+            first = v.getEdgeList().getFirst();
 
             Vertex t = w;
             w = v;
             v = t;
         } else {
-            java.util.List<Edge> elist = v.getElist();
+            EdgeList elist = v.getEdgeList();
 
             for (int i = 0; i < elist.size(); i++) {
                 Vertex ww = null;
-                Vertex w0 = (elist.get(i).getBot() == v) ? elist.get(i).getTop() : elist.get(i).getBot();
+                Vertex w0 = (elist.get(i).getBottom() == v) ? elist.get(i).getTop() : elist.get(i).getBottom();
                 double angle = 0;
                 for (int j = 0; j < elist.size(); j++) {
                     if (i != j) {
-                        Vertex w1 = (elist.get(j).getBot() == v) ? elist.get(j).getTop() : elist.get(j).getBot();
+                        Vertex w1 = (elist.get(j).getBottom() == v) ? elist.get(j).getTop() : elist.get(j).getBottom();
                         double currentAngle = Vertex.getClockwiseAngle(w0, v, w1);
                         if (ww == null || currentAngle < angle) {
                             ww = w0;
@@ -267,13 +266,13 @@ public class FlatNetwork implements Network {
 
         while (currentE != first || !roundMade) {
             roundMade = true;
-            LinkedList<Edge> vIn = v.getElist();
+            LinkedList<Edge> vIn = v.getEdgeList();
             double minAngle = 2 * Math.PI;
             Edge nextE = null;
             Vertex W2 = null;
             for (int i = 0; i < vIn.size(); i++) {
                 Edge e = vIn.get(i);
-                Vertex w2 = (e.getBot() == v) ? e.getTop() : e.getBot();
+                Vertex w2 = (e.getBottom() == v) ? e.getTop() : e.getBottom();
                 double angle = (currentE == e) ? 2 * Math.PI : Vertex.getClockwiseAngle(w, v, w2);
                 if (nextE == null || minAngle > angle) {
                     nextE = e;

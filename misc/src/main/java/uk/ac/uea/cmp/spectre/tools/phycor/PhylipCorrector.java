@@ -1,14 +1,13 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2014  UEA School of Computing Sciences
+ * Copyright (C) 2015  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
- * details.
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
@@ -22,19 +21,15 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.MetaInfServices;
-import uk.ac.uea.cmp.spectre.tools.PhygenTool;
+import uk.ac.uea.cmp.spectre.tools.SpectreTool;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created with IntelliJ IDEA. User: Dan Date: 15/05/13 Time: 22:10 To change this template use File | Settings | File
- * Templates.
- */
 @MetaInfServices
-public class PhylipCorrector extends PhygenTool {
+public class PhylipCorrector extends SpectreTool {
 
     private static final String OPT_INPUT = "input";
     private static final String OPT_OUTPUT_DIR = "output_dir";

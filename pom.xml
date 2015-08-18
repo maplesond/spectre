@@ -1,20 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
-  ~ Copyright (C) 2014  UEA School of Computing Sciences
+  ~ Copyright (C) 2015  UEA School of Computing Sciences
   ~
   ~ This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
   ~ License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
   ~ later version.
   ~
   ~ This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
-  ~ warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
-  ~ details.
+  ~ warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
   ~
   ~ You should have received a copy of the GNU General Public License along with this program.  If not, see
   ~ <http://www.gnu.org/licenses/>.
   -->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -22,16 +20,16 @@
 
     <groupId>uk.ac.uea.cmp.spectre</groupId>
     <artifactId>spectre</artifactId>
-    <version>0.3.0</version>
+    <version>0.4.0</version>
     <packaging>pom</packaging>
 
     <name>Suite of PhylogEnetiC Tools for Reticulate Evolution</name>
 
     <properties>
-        <spectre-version>0.2.2</spectre-version>
+        <spectre-version>0.4.0</spectre-version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <java-version>1.7</java-version>
+        <java-version>1.8</java-version>
         <slf4j-version>1.6.1</slf4j-version>
         <dist-name>${project.parent.artifactId}-${project.parent.version}</dist-name>
         <dist-dir>${project.basedir}/../build/dist</dist-dir>
@@ -137,6 +135,100 @@
                 <spectre-platform>unix</spectre-platform>
             </properties>
         </profile>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>2.2.1</version>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>2.9.1</version>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                                <configuration>
+                                    <additionalparam>-Xdoclint:none</additionalparam>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.5</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <version>2.17</version>
+                        <dependencies>
+                            <dependency>
+                                <groupId>org.apache.maven.surefire</groupId>
+                                <artifactId>surefire-junit47</artifactId>
+                                <version>2.17</version>
+                            </dependency>
+                        </dependencies>
+                        <executions>
+                            <execution>
+                                <id>failsafe-integration-tests</id>
+                                <phase>integration-test</phase>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                    <goal>verify</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <!-- Integration tests -->
+                    <plugin>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <version>2.17</version>
+                        <dependencies>
+                            <dependency>
+                                <groupId>org.apache.maven.surefire</groupId>
+                                <artifactId>surefire-junit47</artifactId>
+                                <version>2.17</version>
+                            </dependency>
+                        </dependencies>
+                        <executions>
+                            <execution>
+                                <id>failsafe-integration-tests</id>
+                                <phase>integration-test</phase>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                    <goal>verify</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 
     <build>
@@ -152,8 +244,8 @@
                         <source>${java-version}</source>
                         <target>${java-version}</target>
                         <showDeprecation>true</showDeprecation>
-                        <showWarnings>true</showWarnings>
-                        <compilerArgument>-Xlint:unchecked</compilerArgument>
+                        <showWarnings>false</showWarnings>
+                        <!--<compilerArgument>-Xlint:unchecked</compilerArgument>-->
                     </configuration>
                 </plugin>
 
@@ -199,69 +291,6 @@
                 <version>2.17</version>
             </plugin>
 
-            <!-- Integration tests -->
-            <plugin>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <version>2.17</version>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.apache.maven.surefire</groupId>
-                        <artifactId>surefire-junit47</artifactId>
-                        <version>2.17</version>
-                    </dependency>
-                </dependencies>
-                <executions>
-                    <execution>
-                        <id>failsafe-integration-tests</id>
-                        <phase>integration-test</phase>
-                        <goals>
-                            <goal>integration-test</goal>
-                            <goal>verify</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <!-- Creates a jar file containing the sources -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>2.2.1</version>
-                <executions>
-                    <execution>
-                        <id>create-sources-jar</id>
-                        <phase>install</phase>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${build-dir}/support_jars</outputDirectory>
-                        </configuration>
-
-                    </execution>
-                </executions>
-            </plugin>
-
-
-            <!-- Creates javadoc -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.9.1</version>
-                <executions>
-                    <execution>
-                        <id>create-javadoc-jar</id>
-                        <phase>install</phase>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                        <configuration>
-                            <jarOutputDirectory>${build-dir}/support_jars</jarOutputDirectory>
-                            <quiet>true</quiet>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
 
     </build>

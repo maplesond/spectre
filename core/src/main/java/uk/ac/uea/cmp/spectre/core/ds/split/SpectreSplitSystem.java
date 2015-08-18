@@ -1,23 +1,23 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2014  UEA School of Computing Sciences
+ * Copyright (C) 2015  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
- * details.
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
+
 package uk.ac.uea.cmp.spectre.core.ds.split;
 
-import uk.ac.uea.cmp.spectre.core.co.CircularNNLS;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
+import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.CircularNNLS;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -121,7 +121,7 @@ public class SpectreSplitSystem extends ArrayList<Split> implements SplitSystem 
 
     /**
      * Copy constructor
-     * @param splitSystem
+     * @param splitSystem Split system to copy
      */
     public SpectreSplitSystem(SplitSystem splitSystem) {
         this(new IdentifierList(splitSystem.getOrderedTaxa()), new ArrayList<>(splitSystem));
@@ -333,7 +333,7 @@ public class SpectreSplitSystem extends ArrayList<Split> implements SplitSystem 
     /**
      * Deletes all splits and recalculates them.  All splits must have a positive length
      *
-     * @param treeWeights
+     * @param treeWeights Tree weights to use to reweight this split system
      */
     protected void reweight(SplitWeights treeWeights) {
 

@@ -1,18 +1,18 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2014  UEA School of Computing Sciences
+ * Copyright (C) 2015  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
- * details.
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
  */
+
 package uk.ac.uea.cmp.spectre.core.ds;
 
 import java.util.*;
@@ -54,6 +54,7 @@ public class IdentifierList extends ArrayList<Identifier> {
 
     /**
      * Seeded constructor. Add as single element aTaxon.
+     * @param identifier Single element to add into this new list
      */
     public IdentifierList(Identifier identifier) {
 
@@ -87,7 +88,7 @@ public class IdentifierList extends ArrayList<Identifier> {
     /**
      * Copy constructor
      *
-     * @param identifierList
+     * @param identifierList list to copy
      */
     public IdentifierList(IdentifierList identifierList) {
         this();
@@ -243,8 +244,8 @@ public class IdentifierList extends ArrayList<Identifier> {
     /**
      * Overwrites the identifier at a specific position in the list with the one provided.
      *
-     * @param index
-     * @param identifier
+     * @param index index of element in array to modify
+     * @param identifier The identifier to replace element at index
      * @return The identifier that's been set.
      */
     @Override
@@ -268,20 +269,6 @@ public class IdentifierList extends ArrayList<Identifier> {
         return this.numbers.get(id);
     }
 
-    public Quadruple getQuadruple(int a, int b, int c, int d) {
-
-        if (this.size() < 4)
-            throw new IllegalStateException("Identifier list must contain at least 4 taxa for this method to work");
-
-        return new Quadruple(this.getById(a), this.getById(b), this.getById(c), this.getById(d));
-    }
-
-    public boolean contains(Quadruple quad) {
-        return this.contains(quad.getQ1())
-                && this.contains(quad.getQ2())
-                && this.contains(quad.getQ3())
-                && this.contains(quad.getQ4());
-    }
 
     public boolean containsName(String name) {
         return this.names.containsKey(name);
@@ -293,7 +280,8 @@ public class IdentifierList extends ArrayList<Identifier> {
     }
 
     /**
-     * Reverses the ordering.  i.e. places identifier in the opposite order..
+     * Reverses the ordering.  i.e. places identifier in the opposite order.
+     * @return A copy of the indentifier list in reverse order.
      */
     public IdentifierList reverseOrdering() {
 
@@ -347,6 +335,10 @@ public class IdentifierList extends ArrayList<Identifier> {
 
     /**
      * EXCLUSIVE sublist-complement, reverse-order (so front-front, back-back)
+     *
+     * @param I index I
+     * @param J index J
+     * @return sublist-complement in reverse order
      */
     public IdentifierList complement(int I, int J) {
 
@@ -532,6 +524,11 @@ public class IdentifierList extends ArrayList<Identifier> {
     /**
      * Join method. Joins in that order the two lists, in the specified
      * orientation
+     * @param firstList First list to join
+     * @param firstDirection Direction in which to join the first list (i.e. shall we reverse it)
+     * @param secondList Second list to join to the first
+     * @param secondDirection Direction in which to join the second list (i.e. shall we reverse it)
+     * @return joined lists
      */
     public static IdentifierList join(IdentifierList firstList, Direction firstDirection,
                                       IdentifierList secondList, Direction secondDirection) {
@@ -554,7 +551,7 @@ public class IdentifierList extends ArrayList<Identifier> {
     }
 
 
-    public IdentifierList sort(Comparator<Identifier> comparator) {
+    public IdentifierList sortCopy(Comparator<Identifier> comparator) {
 
         IdentifierList identifiers = new IdentifierList(this);
 
@@ -566,12 +563,12 @@ public class IdentifierList extends ArrayList<Identifier> {
 
     public IdentifierList sortById() {
 
-        return this.sort(new Identifier.NumberComparator());
+        return this.sortCopy(new Identifier.NumberComparator());
     }
 
     public IdentifierList sortByName() {
 
-        return this.sort(new Identifier.NameComparator());
+        return this.sortCopy(new Identifier.NameComparator());
     }
 
     public void shuffle() {

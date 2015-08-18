@@ -1,14 +1,13 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2014  UEA School of Computing Sciences
+ * Copyright (C) 2015  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
- * details.
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
@@ -17,12 +16,19 @@
 package uk.ac.uea.cmp.spectre.flatnj.tools;
 
 import uk.ac.uea.cmp.spectre.core.ds.Alignment;
+import uk.ac.uea.cmp.spectre.core.ds.Identifier;
+import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.network.Edge;
 import uk.ac.uea.cmp.spectre.core.ds.network.FlatNetwork;
 import uk.ac.uea.cmp.spectre.core.ds.network.NetworkLabel;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
-import uk.ac.uea.cmp.spectre.flatnj.ds.*;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.Quadruple;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleSystem;
+import uk.ac.uea.cmp.spectre.core.ds.split.flat.FlatSplitSystem;
+import uk.ac.uea.cmp.spectre.core.ds.split.flat.PermutationSequence;
+import uk.ac.uea.cmp.spectre.core.ds.split.flat.Utilities;
+import uk.ac.uea.cmp.spectre.core.util.CollectionUtils;
 
 import java.io.*;
 import java.util.Iterator;
@@ -74,8 +80,8 @@ public class Writer {
         }
     }
 
-    public void write(Taxa taxa) {
-        String[] labels = taxa.getTaxaNames();
+    public void write(IdentifierList taxa) {
+        String[] labels = taxa.getNames();
         writeLine("#NEXUS");
         writeLine();
         writeLine("BEGIN Taxa;");
@@ -126,7 +132,7 @@ public class Writer {
     public void write(QuadrupleSystem qs) {
         writeLine();
         writeLine("BEGIN Quadruples;");
-        writeLine(" DIMENSIONS ntax=" + qs.getnTaxa() + " nquadruples=" + qs.getnQuadruples() + ";");
+        writeLine(" DIMENSIONS ntax=" + qs.getNbActiveTaxa() + " nquadruples=" + qs.getnQuadruples() + ";");
         writeLine(" FORMAT labels=LEFT;");
         writeLine(" MATRIX");
 
@@ -134,7 +140,7 @@ public class Writer {
 
         for (int i = 0; i < quadruples.length; i++) {
             String line = ("  quadruple" + i + " :");
-            int[] taxa = quadruples[i].getTaxa();
+            int[] taxa = quadruples[i].getTaxa().toIntArray();
             double[] weights = quadruples[i].getWeights();
             for (int j = 0; j < 4; j++) {
                 line = line.concat(" " + taxa[j]);
@@ -191,7 +197,7 @@ public class Writer {
         writeLine("END;");
     }
 
-    public void write(SplitSystem ss) {
+    public void write(FlatSplitSystem ss) {
         boolean[][] splits = ss.getSplits();
 
         boolean[] active = ss.getActive();
@@ -201,7 +207,7 @@ public class Writer {
 
         int nTaxa = ss.getnTaxa();
 
-        int nSplits = Utilities.size(active);
+        int nSplits = CollectionUtils.nbTrueElements(active);
 
         writeLine();
         writeLine("BEGIN Splits;");
@@ -267,10 +273,10 @@ public class Writer {
         }
     }
 
-    public void write(Vertex net, int nTaxa, int[] compressed, Taxa taxa) {
+    public void write(Vertex net, int nTaxa, int[] compressed, IdentifierList taxa) {
         Iterator<Vertex> vIter;
         Iterator<Edge> eIter;
-        Iterator taxiter;
+        Iterator<Identifier> taxiter;
         Vertex v;
         Edge e;
 
@@ -291,8 +297,8 @@ public class Writer {
                 String line = String.valueOf(v.getNxnum());
 
                 while (taxiter.hasNext()) {
-                    int index = ((Integer) taxiter.next()).intValue();
-                    line = line.concat(" '" + taxa.getTaxaNames()[index] + "'");
+                    int index = taxiter.next().getId();
+                    line = line.concat(" '" + taxa.getNames()[index] + "'");
                 }
                 line = line.concat(",");
                 writeLine(line);
@@ -321,7 +327,7 @@ public class Writer {
                 String label = new String();
                 taxiter = v.getTaxa().listIterator();
                 while (taxiter.hasNext()) {
-                    label = (taxa.getTaxaNames()[((Integer) taxiter.next()).intValue()] + ", ").concat(label);
+                    label = (taxa.getNames()[taxiter.next().getId()] + ", ").concat(label);
                     //--------------------- just for testing, so that labels are nor visible --------
                     //label = "";
                 }
@@ -379,7 +385,7 @@ public class Writer {
 
             writeLine(e.getNxnum() + " " +
                     (e.getTop()).getNxnum() + " " +
-                    (e.getBot()).getNxnum() +
+                    (e.getBottom()).getNxnum() +
                     " s=" + comp +
                     " l=" + e.getWidth() +
                     " fg=" + color[0] + " " + color[1] + " " + color[2] + ",");
@@ -388,7 +394,7 @@ public class Writer {
         writeLine("END;");
     }
 
-    public void write(FlatNetwork network, Taxa taxa) {
+    public void write(FlatNetwork network, IdentifierList taxa) {
         Iterator<Vertex> vIter;
         Iterator<Edge> eIter;
         Iterator taxiter;
@@ -414,7 +420,7 @@ public class Writer {
                 String line = String.valueOf((v.getNxnum() + 1));
 
                 while (taxiter.hasNext()) {
-                    line = line.concat(" '" + taxa.getTaxaNames()[((Integer) taxiter.next()).intValue()] + "'");
+                    line = line.concat(" '" + taxa.getNames()[((Identifier) taxiter.next()).getId()] + "'");
                 }
                 line = line.concat(",");
                 writeLine(line);
@@ -449,7 +455,7 @@ public class Writer {
                 String label = new String();
                 taxiter = v.getTaxa().listIterator();
                 while (taxiter.hasNext()) {
-                    label = (taxa.getTaxaNames()[((Integer) taxiter.next()).intValue()] + ", ").concat(label);
+                    label = (taxa.getNames()[((Identifier) taxiter.next()).getId()] + ", ").concat(label);
                     //--------------------- just for testing, so that labels are nor visible --------
                     //label = "";
                 }
@@ -477,7 +483,7 @@ public class Writer {
         while (eIter.hasNext()) {
             e = (Edge) eIter.next();
             int[] color = Utilities.colorToInt(e.getColor());
-            writeLine((e.getNxnum() + 1) + " " + ((e.getTop()).getNxnum() + 1) + " " + ((e.getBot()).getNxnum() + 1) + " s=" + (e.getIdxsplit() + 1) + " l=" + e.getWidth() + " fg=" + color[0] + " " + color[1] + " " + color[2] + ",");
+            writeLine((e.getNxnum() + 1) + " " + ((e.getTop()).getNxnum() + 1) + " " + ((e.getBottom()).getNxnum() + 1) + " s=" + (e.getIdxsplit() + 1) + " l=" + e.getWidth() + " fg=" + color[0] + " " + color[1] + " " + color[2] + ",");
         }
         writeLine(";");
         writeLine("END;");

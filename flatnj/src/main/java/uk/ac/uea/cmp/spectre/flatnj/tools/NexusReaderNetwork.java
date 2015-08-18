@@ -1,14 +1,13 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2014  UEA School of Computing Sciences
+ * Copyright (C) 2015  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
- * details.
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
@@ -138,8 +137,8 @@ public class NexusReaderNetwork extends NexusReader {
                     Edge e = new Edge(viTop, viBot, split, 0);
                     e.setNxnum(id);
 
-                    viBot.getElist().add(e);
-                    viTop.getElist().add(e);
+                    viBot.getEdgeList().add(e);
+                    viTop.getEdgeList().add(e);
 
                     e.setIdxsplit(split);
 
@@ -174,10 +173,10 @@ public class NexusReaderNetwork extends NexusReader {
     private void removeZeroEdges() {
         for (int i = 0; i < vertices.size(); i++) {
             Vertex w = vertices.get(i);
-            if (w.getElist().size() == 1) {
+            if (w.getEdgeList().size() == 1) {
                 Edge e = w.getFirstEdge();
 
-                Vertex v = (e.getBot() == w) ? e.getTop() : e.getBot();
+                Vertex v = (e.getBottom() == w) ? e.getTop() : e.getBottom();
 
                 if (w.getX() == v.getX() && w.getY() == v.getY()) {
                     if (v.getLabel() == null) {
@@ -193,8 +192,8 @@ public class NexusReaderNetwork extends NexusReader {
                         v.getLabel().setName(name);
                     }
                     w.setLabel(null);
-                    v.getElist().remove(e);
-                    w.getElist().remove(e);
+                    v.getEdgeList().remove(e);
+                    w.getEdgeList().remove(e);
                 }
             }
         }

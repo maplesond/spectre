@@ -1,14 +1,13 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2014  UEA School of Computing Sciences
+ * Copyright (C) 2015  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
- * details.
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
@@ -24,14 +23,14 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import uk.ac.uea.cmp.spectre.core.co.CircularOrderingCreator;
-import uk.ac.uea.cmp.spectre.core.co.nm.NetMakeCircularOrderer;
-import uk.ac.uea.cmp.spectre.core.co.nm.weighting.GreedyMEWeighting;
-import uk.ac.uea.cmp.spectre.core.co.nm.weighting.TSPWeighting;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.distance.FlexibleDistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
+import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.CircularOrderingCreator;
+import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.nm.NetMakeCircularOrderer;
+import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.nm.weighting.GreedyMEWeighting;
+import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.nm.weighting.TSPWeighting;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,10 +39,6 @@ import java.util.List;
 import static junit.framework.Assert.assertTrue;
 
 
-/**
- * Created with IntelliJ IDEA. User: Dan Date: 12/05/13 Time: 23:27 To change this template use File | Settings | File
- * Templates.
- */
 public class NetMakeTest {
 
     @Before
