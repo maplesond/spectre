@@ -1,3 +1,5 @@
+![alt text](spectre.png "Suite of Phylogenetic Tools for Reticulate Evolution")
+
 Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
 ==============================================================
 
