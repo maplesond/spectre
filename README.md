@@ -153,7 +153,7 @@ on their system.  The tools can be found in the bin subfolder.
 Further Documentation
 =====================
 
-The full manual can be found in the ``doc`` directory, or online at: xxxxxx
+The full manual can be found in the ``doc`` directory, or online at: https://spectre.readthedocs.org/en/latest/
 
 
 Issues
