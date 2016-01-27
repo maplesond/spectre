@@ -48,8 +48,8 @@ Usage examples:
 Viewing a split network
 -----------------------
 
-To view split networks computed with FlatNJ, the SplitsTree package can be used. It can be downloaded from http://www.splitstree.org/.
-[TODO]  Shouldn't we use NetView now??
+The split networks computed with FlatNJ are output to nexus format.  You can either use SPECTRE's internal network viewing
+tool or the external SplitsTree package to view the nexus file.
 
 Walk through usage examples
 ---------------------------
@@ -167,18 +167,6 @@ a set of 4 taxa. The syntax of the block is as follows::
 
 All weights must be written in the same line.
 
-
-Networks
-~~~~~~~~
-
-The resulting split networks are saved in a NETWORK block. These can then be displayed by opening them in NetView (see
-next section).
-
-
-NetView
--------
-
-[TODO]
 
 
 References

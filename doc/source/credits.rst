@@ -30,11 +30,6 @@ NetMake
                 The Neighbor-Net Algorithm.
                 Advances in Applied Mathematics.
 
-PADRE
-                Martin Lott, Andreas Spillner, Katharina T. Huber and Vincent Moulton, 2009
-                PADRE: a package for analyzing and displaying reticulate evolution
-                Bioinformatics Volume 25, Issue 9
-
 QNet
                 Stefan Grünewald, Kristoffer Forslund, Andreas Dress and Vincent Moulton, 2006
                 QNet: An Agglomerative Method for the Construction of Phylogenetic Networks from Weighted Quartets
@@ -53,11 +48,7 @@ Spectre is an international collaboration.  Active contributors to spectre are l
 +--------------------------+-------------------------------+-----------------------------------+-----------------------------------------------------------------------------+
 | Monica Balvociute        | ???                           | University of Otago               | Gen4S, FlatNJ, NetView                                                      |
 +--------------------------+-------------------------------+-----------------------------------+-----------------------------------------------------------------------------+
-| Radoslaw Suchecki        | r.suchecki@gmail.com          | University of Adelaide            | PADRE                                                                       |
-+--------------------------+-------------------------------+-----------------------------------+-----------------------------------------------------------------------------+
-| Katharina Huber          | k.huber@uea.ac.uk             | University of East Anglia (UEA)   | PADRE                                                                       |
-+--------------------------+-------------------------------+-----------------------------------+-----------------------------------------------------------------------------+
-| Andreas Spilner          | anspillner@gmail.com          | University of Greifswald          | Mathematics, Algorithms, Optimisers, Spectre development                    |
+| Andreas Spilner          | anspillner@gmail.com          | NA                                | Mathematics, Algorithms, Optimisers, Spectre development                    |
 +--------------------------+-------------------------------+-----------------------------------+-----------------------------------------------------------------------------+
 | Vincent Moulton          | vincent.moulton@cmp.uea.ac.uk | University of East Anglia (UEA)   | Mathematics, Algorithms                                                     |
 +--------------------------+-------------------------------+-----------------------------------+-----------------------------------------------------------------------------+
@@ -75,9 +66,6 @@ table (in alphabetical order):
 +-------------------------------+----------------------------------------+
 | Stephan Gruenewald            | QNet, SuperQ                           |
 +-------------------------------+----------------------------------------+
-| Martin Lott                   | PADRE                                  |
-+-------------------------------+----------------------------------------+
-| Bengt Oxelman                 | PADRE                                  |
-+-------------------------------+----------------------------------------+
+
 
 

@@ -11,9 +11,6 @@ or want to modify or extend our codebase.
 Making your own apps using our core library
 -------------------------------------------
 
-IMPORTANT NOTE: We have not deployed the core library onto a maven server yet, so this particular section should be read as a wish
-list for the future... it may be complicated by metaopt as we can't easily get JOptimiser, GLPK or gurobi into maven.
-
 If you wish to use our core library within your own applications then we recommend that you use maven for our own project.
 You can then include our library as a maven dependency by adding the following snippet into the dependencies section in
 your pom.xml::
@@ -24,20 +21,8 @@ your pom.xml::
     <version>[PUT-VERSION-HERE]</version>
   </dependency>
 
-Currently, you will also need to add our public maven repository to your pom as well.  This is a temporary measure until
-we can get our core library in maven central (at which point you will not need to add our public facing maven server).
-This snippet should be added to the repositories section of your pom.xml (if the repositories section does not already
-exist then create it)::
-
-  <repository>
-    <id>tgac-repo</id>
-    <name>TGAC Maven Repository</name>
-    <url>https://repos.tgac.ac.uk/maven/repo</url>
-  </repository>
-
-
 And that's it!  You should now automatically download the library when you import maven changes or run your maven build
-cycle.
+cycle.  The published versions can be found at: http://mvnrepository.com/artifact/uk.ac.uea.cmp.spectre/core/
 
 The rest of this section assumes you want to modify or extend the spectre codebase.
 
@@ -95,8 +80,6 @@ as follows:
 +--------------------+--------------+------------------------------------------------------------------+
 | Class Group        | Package name | Description                                                      |
 +====================+==============+==================================================================+
-| Algorithms         | alg          | Implementations of Phylogenetic Algorithms                       |
-+--------------------+--------------+------------------------------------------------------------------+
 | Data structures    | ds           | Phylogenetic data structures relating to concepts such as        |
 |                    |              | Splits, Trees, Networks, Distances and Quartets                  |
 +--------------------+--------------+------------------------------------------------------------------+

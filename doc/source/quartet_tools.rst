@@ -105,7 +105,8 @@ Alternatively, QNet has a simple GUI which can be started by simply running ``qn
 Visualising the results
 -----------------------
 
-The final output will be a Nexus file, which can be viewed by a variety of applications, among them SplitsTree ([1]).
+The final output will be a Nexus file, which can be viewed by the SPECTRE network viewing tool, or by external tools
+such as SplitsTree ([1]).
 
 
 QWeights example file
@@ -151,7 +152,7 @@ The original version of SuperQ was developed by:
 
 * Sarah Bastkowski
 
-The tools have been reengineered, optimised and integrated into spectre by:
+The tools have been reengineered, optimised and integrated into SPECTRE by:
 
 * Daniel Mapleson
 

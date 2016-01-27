@@ -87,15 +87,6 @@
                 <role>developer</role>
             </roles>
         </developer>
-        <developer>
-            <id>rad</id>
-            <name>Radoslaw Suchecki</name>
-            <email>r.suchecki@gmail.com</email>
-            <organization>University of Adelaide</organization>
-            <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
     </developers>
 
     <profiles>
@@ -320,7 +311,7 @@
         <module>net</module>
         <module>qtools</module>
         <module>flatnj</module>
-        <module>padre</module>
+        <!--<module>padre</module>-->
 
         <!-- This gets executed last because it creates the distribution and the manual -->
         <module>dist</module>

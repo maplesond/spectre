@@ -177,7 +177,5 @@ Contact
 * Daniel Mapleson -TGAC
 * Sarah Bastkowski - TGAC
 * Monica Balvociute - ??
-* Radoslaw Suchecki - University of Adelaide
-* Katharina Huber - UEA
 * Andreas Spillner - Universitat de Griefswald
 * Vincent Moulton - UEA
