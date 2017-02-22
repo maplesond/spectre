@@ -1,6 +1,6 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2015  UEA School of Computing Sciences
+ * Copyright (C) 2017  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
@@ -289,10 +289,6 @@ public class FlatNJ {
         // create Options object
         Options options = new Options();
 
-        // Options with arguments
-        options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_INPUT).isRequired().hasArg()
-                .withDescription("Input file - Quadruple data in nexus format.").create("i"));
-
         options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_OUTPUT).hasArg()
                 .withDescription("Output file - Default value (\"" + DEFAULT_OUTPUT + "\")").create("o"));
 
@@ -324,9 +320,8 @@ public class FlatNJ {
      */
     public static void main(String[] args) {
         // Setup the command line options
-        CommandLine commandLine = CommandLineHelper.startApp(createOptions(), "flatnj",
+        CommandLine commandLine = CommandLineHelper.startApp(createOptions(), "flatnj [options] <input>",
                 "Flat NJ computes flat split networks from quadruple data.  Flat NJ also can convert multiple sequence alignment or location data into quadruple data internally.",
-                "input",
                 args);
 
         // If we didn't return a command line object then just return.  Probably the user requested help or

@@ -1,6 +1,6 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2015  UEA School of Computing Sciences
+ * Copyright (C) 2017  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
@@ -64,24 +64,24 @@ public class SpectreReaderFactory {
      *
      * @return The phygen readers as a string.
      */
-    public String getPhygenReadersAsString() {
+    public String getSpectreReadersAsString() {
 
-        return this.getPhygenReadersAsString(new ArrayList<SpectreDataType>());
+        return this.getSpectreReadersAsString(new ArrayList<SpectreDataType>());
     }
 
-    public String getPhygenReadersAsString(SpectreDataType spectreDataType) {
+    public String getSpectreReadersAsString(SpectreDataType spectreDataType) {
 
         List<SpectreDataType> spectreDataTypeList = new ArrayList<>();
         spectreDataTypeList.add(spectreDataType);
-        return this.getPhygenReadersAsString(spectreDataTypeList);
+        return this.getSpectreReadersAsString(spectreDataTypeList);
     }
 
 
-    public String getPhygenReadersAsString(List<SpectreDataType> spectreDataTypes) {
+    public String getSpectreReadersAsString(List<SpectreDataType> spectreDataTypes) {
 
         List<String> typeStrings = new ArrayList<String>();
 
-        for (SpectreReader spectreReader : this.getPhygenReaders(spectreDataTypes)) {
+        for (SpectreReader spectreReader : this.getSpectreReaders(spectreDataTypes)) {
             typeStrings.add(spectreReader.getIdentifier());
         }
 
@@ -89,11 +89,11 @@ public class SpectreReaderFactory {
     }
 
 
-    public List<SpectreReader> getPhygenReaders() {
-        return getPhygenReaders(new ArrayList<SpectreDataType>());
+    public List<SpectreReader> getSpectreReaders() {
+        return getSpectreReaders(new ArrayList<SpectreDataType>());
     }
 
-    public List<SpectreReader> getPhygenReaders(SpectreDataType spectreDataType) {
+    public List<SpectreReader> getSpectreReaders(SpectreDataType spectreDataType) {
 
         List<SpectreDataType> spectreDataTypes = new ArrayList<>();
 
@@ -101,10 +101,10 @@ public class SpectreReaderFactory {
             spectreDataTypes.add(spectreDataType);
         }
 
-        return this.getPhygenReaders(spectreDataTypes);
+        return this.getSpectreReaders(spectreDataTypes);
     }
 
-    public List<SpectreReader> getPhygenReaders(List<SpectreDataType> spectreDataTypeList) {
+    public List<SpectreReader> getSpectreReaders(List<SpectreDataType> spectreDataTypeList) {
 
         Iterator<SpectreReader> it = loader.iterator();
 

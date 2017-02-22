@@ -1,6 +1,6 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2015  UEA School of Computing Sciences
+ * Copyright (C) 2017  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
@@ -49,9 +49,7 @@ public class QMaker extends SpectreTool {
 
     private static Logger log = LoggerFactory.getLogger(QMaker.class);
 
-    private static final String OPT_INPUT_FILE = "input";
-    private static final String OPT_OUTPUT_DIR = "output";
-    private static final String OPT_OUTPUT_PREFIX = "prefix";
+    private static final String OPT_OUTPUT_PREFIX = "output_prefix";
     private static final String OPT_OPTIMISER = "optimiser";
 
     // These variables get set after execution.  Helps the client get a handle on the output.
@@ -65,11 +63,8 @@ public class QMaker extends SpectreTool {
         // Create Options object
         Options options = new Options();
 
-        options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_OUTPUT_DIR).hasArg()
-                .withDescription("The directory, which will contain output from qmaker").create("o"));
-
         options.addOption(OptionBuilder.withArgName("string").withLongOpt(OPT_OUTPUT_PREFIX).hasArg()
-                .withDescription("The prefix for the output files.  Default: " + DEFAULT_OUTPUT_PREFIX).create("p"));
+                .withDescription("The prefix for the output files.  Default: " + DEFAULT_OUTPUT_PREFIX).create("o"));
 
         options.addOption(OptionBuilder.withArgName("string").withLongOpt(OPT_OPTIMISER).hasArg()
                 .withDescription("The optimiser to use: " + OptimiserFactory.getInstance().listOperationalOptimisers()).create("s"));
@@ -80,13 +75,16 @@ public class QMaker extends SpectreTool {
     @Override
     protected void execute(CommandLine commandLine) throws IOException {
 
-        File outputDir = commandLine.hasOption(OPT_OUTPUT_DIR) ?
-                new File(commandLine.getOptionValue(OPT_OUTPUT_DIR)) :
-                DEFAULT_OUTPUT_DIR;
+        File outputDir = DEFAULT_OUTPUT_DIR;
+        String prefix = DEFAULT_OUTPUT_PREFIX;
 
-        String prefix = commandLine.hasOption(OPT_OUTPUT_PREFIX) ?
-                commandLine.getOptionValue(OPT_OUTPUT_PREFIX) :
-                DEFAULT_OUTPUT_PREFIX;
+        if (commandLine.hasOption(OPT_OUTPUT_PREFIX)) {
+            File op = new File(commandLine.getOptionValue(OPT_OUTPUT_PREFIX));
+            if (op.getParentFile() != null) {
+                outputDir = op.getParentFile();
+            }
+            prefix = op.getName();
+        }
 
         String[] args = commandLine.getArgs();
 
@@ -118,10 +116,14 @@ public class QMaker extends SpectreTool {
         return "qmaker";
     }
 
+    @Override
+    public String getPosArgs() {
+        return "(<input>)+";
+    }
 
     @Override
     public String getDescription() {
-        return "QMaker extracts quartet weights from trees";
+        return "QMaker extracts quartet weights from trees.";
     }
 
     public File getInfoFile() {

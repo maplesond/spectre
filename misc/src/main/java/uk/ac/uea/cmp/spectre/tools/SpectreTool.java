@@ -1,6 +1,6 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2015  UEA School of Computing Sciences
+ * Copyright (C) 2017  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
@@ -16,6 +16,7 @@
 package uk.ac.uea.cmp.spectre.tools;
 
 import org.apache.commons.cli.*;
+import uk.ac.uea.cmp.spectre.core.ui.cli.CommandLineHelper;
 import uk.ac.uea.cmp.spectre.core.util.Service;
 
 import java.io.IOException;
@@ -29,6 +30,7 @@ public abstract class SpectreTool implements Service {
     protected abstract void execute(CommandLine commandLine) throws IOException;
 
     public abstract String getDescription();
+    public abstract String getPosArgs();
 
 
     public Options createOptions() {
@@ -38,7 +40,13 @@ public abstract class SpectreTool implements Service {
     }
 
     public void printUsage() {
-        new HelpFormatter().printHelp(this.getClass().getSimpleName(), createOptions());
+        new HelpFormatter().printHelp(
+                CommandLineHelper.DEFAULT_WIDTH,
+                this.getName() + " [options] " + this.getPosArgs(),
+                this.getDescription() + "\nOptions:",
+                createOptions(),
+                CommandLineHelper.DEFAULT_FOOTER,
+                false);
     }
 
     public CommandLine parse(String[] args) throws ParseException {

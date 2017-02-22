@@ -1,6 +1,6 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2015  UEA School of Computing Sciences
+ * Copyright (C) 2017  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
@@ -65,9 +65,9 @@ public class QNetCLI {
     public static void main(String[] args) {
 
         // Parse command line args
-        CommandLine commandLine = CommandLineHelper.startApp(createOptions(), "qnet",
-                "Creates a Circular Weighted Split Network from a set of Taxa and a quartet system\nOptions:",
-                "nexus_file", args);
+        CommandLine commandLine = CommandLineHelper.startApp(createOptions(), "qnet [options] <nexus_file>",
+                "Creates a Circular Weighted Split Network from a set of Taxa and a quartet system.",
+                args);
 
         // If we didn't return a command line object then just return.  Probably the user requested help or
         // input invalid args

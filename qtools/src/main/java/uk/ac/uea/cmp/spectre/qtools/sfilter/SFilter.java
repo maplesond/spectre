@@ -1,6 +1,6 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2015  UEA School of Computing Sciences
+ * Copyright (C) 2017  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
@@ -50,9 +50,6 @@ public class SFilter extends SpectreTool {
         // Create Options object
         Options options = new Options();
 
-        options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_INPUT_FILE).hasArg()
-                .withDescription("The input nexus file containing the splits to filter.").create("i"));
-
         options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_OUTPUT_FILE).hasArg()
                 .withDescription("The output nexus file which will contain the filtered splits.").create("o"));
 
@@ -65,7 +62,14 @@ public class SFilter extends SpectreTool {
     @Override
     protected void execute(CommandLine commandLine) throws IOException {
 
-        File inputFile = new File(commandLine.getOptionValue(OPT_INPUT_FILE));
+        if (commandLine.getArgs().length == 0) {
+            throw new IOException("No input file specified.");
+        }
+        else if (commandLine.getArgs().length > 1) {
+            throw new IOException("Only expected a single input file.");
+        }
+
+        File inputFile = new File(commandLine.getArgs()[0]);
 
         File outputFile = commandLine.hasOption(OPT_OUTPUT_FILE) ?
                 new File(commandLine.getOptionValue(OPT_OUTPUT_FILE)) :
@@ -99,6 +103,11 @@ public class SFilter extends SpectreTool {
     @Override
     public String getName() {
         return "sfilter";
+    }
+
+    @Override
+    public String getPosArgs() {
+        return "<nexus_file>";
     }
 
 

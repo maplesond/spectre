@@ -1,6 +1,6 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2015  UEA School of Computing Sciences
+ * Copyright (C) 2017  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
@@ -49,10 +49,10 @@ public class SuperQCLI {
     public static void main(String args[]) {
 
         // Parse command line args
-        CommandLine commandLine = CommandLineHelper.startApp(createOptions(), BIN_NAME,
+        CommandLine commandLine = CommandLineHelper.startApp(createOptions(), BIN_NAME + " [options] (<input>)+",
                 "Generates a circular split network from a set of trees.\n" +
                         "Input can take the form of one or more, nexus, phylip and newick tree files.\n" +
-                        "Also superQ can automatically generate trees from distance matrices.\nOptions:", "input [input]...", args);
+                        "Also superQ can automatically generate trees from distance matrices.", args);
 
         // If we didn't return a command line object then just return.  Probably the user requested help or
         // input invalid args

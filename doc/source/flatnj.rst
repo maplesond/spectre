@@ -31,7 +31,7 @@ OutOfMemoryError may occur. Heap space can be increased using the Java VM option
 more information on how to adjust these options with spectre scripts.
 
 The split network is constructed from a system of 4-splits. The input system of 4-splits must be provided using
-the ``-i/--in <nexus file>`` option and the output is written to the file indicated by the ``-o/--out <nexus file>``
+the positional argument ``<input>`` and the output is written to the file indicated by the ``-o/--out <nexus file>``
 command line parameter.
 
 Relatively small splits that are incompatible with much bigger splits are filtered out from the network using the approach
@@ -41,8 +41,8 @@ an unfiltered network whereas 1.0 yields a network that is a tree.
 
 Usage examples:
 
-* To compute a split network from a system of 4-splits using the default threshold for filtering splits: ``flatnj -i system_of_4s.nex -o network.nex``
-* To compute a split network from a system of 4-splits using a filtering threshold of 0.2: ``flatnj -i system_of_4s.nex -thr 0.2 -o network.nex``
+* To compute a split network from a system of 4-splits using the default threshold for filtering splits: ``flatnj -o network.nex system_of_4s.nex``
+* To compute a split network from a system of 4-splits using a filtering threshold of 0.2: ``flatnj -thr 0.2 -o network.nex system_of_4s.nex``
 
 
 Viewing a split network
@@ -66,7 +66,7 @@ following steps will guide you through the whole process of the network construc
 
 1. Open a terminal window and change to the directory of FlatNJ.
 
-2. To compute a split network from the protein sequences fasta file type: ``flatnj -i <spectre_dir>/examples/flatnj/colors_aln.faa -o <output_dir>/colors.nex``
+2. To compute a split network from the protein sequences fasta file type: ``flatnj -o <output_dir>/colors.nex <spectre_dir>/examples/flatnj/colors_aln.faa``
 
 3. To view the network launch ``netview`` and open ``<output_dir>/colors.nex``. The network displayed by the viewer should look very similar to the one in Figure 1.
 

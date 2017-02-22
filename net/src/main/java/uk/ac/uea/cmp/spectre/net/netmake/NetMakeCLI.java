@@ -1,6 +1,6 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2015  UEA School of Computing Sciences
+ * Copyright (C) 2017  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
@@ -83,8 +83,8 @@ public class NetMakeCLI {
 
     public static void main(String[] args) {
 
-        CommandLine commandLine = CommandLineHelper.startApp(createOptions(), "netmake",
-                "\nCreates networks from distance matrices.\n\nSupports nexus format input.\n\nOptions:", "distance_matrix_file", args);
+        CommandLine commandLine = CommandLineHelper.startApp(createOptions(), "netmake [options] <distance_matrix_file>",
+                "Creates networks from distance matrices.\nSupports nexus format input.", args);
 
         // If we didn't return a command line object then just return.  Probably the user requested help or
         // input invalid args
