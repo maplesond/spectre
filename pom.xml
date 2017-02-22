@@ -53,8 +53,8 @@
             <id>maplesod</id>
             <name>Daniel Mapleson</name>
             <email>daniel.mapleson@tgac.ac.uk</email>
-            <organization>TGAC</organization>
-            <organizationUrl>http://www.tgac.ac.uk</organizationUrl>
+            <organization>Earlham Institute</organization>
+            <organizationUrl>http://www.earlham.ac.uk</organizationUrl>
             <roles>
                 <role>developer</role>
             </roles>
@@ -63,8 +63,8 @@
             <id>s.bastkowski</id>
             <name>Sarah Bastkowski</name>
             <email>sarah.bastkowski@tgac.ac.uk</email>
-            <organization>TGAC</organization>
-            <organizationUrl>http://www.tgac.ac.uk</organizationUrl>
+            <organization>Earlham Institute</organization>
+            <organizationUrl>http://www.earlham.ac.uk</organizationUrl>
             <roles>
                 <role>developer</role>
             </roles>
@@ -85,6 +85,15 @@
             <organization>Greifswald University</organization>
             <roles>
                 <role>developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>wutaoyang</id>
+            <name>Taoyang Wu</name>
+            <email>taoyang.wu@gmail.com</email>
+            <organization>University of East Anglia</organization>
+            <roles>
+                <role>tester</role>
             </roles>
         </developer>
     </developers>
