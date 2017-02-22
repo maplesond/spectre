@@ -12,5 +12,4 @@ The tools within spectre are divided into sub-groups based on their functionalit
     network_tools
     quartet_tools
     netview
-    #padre
     misc_tools

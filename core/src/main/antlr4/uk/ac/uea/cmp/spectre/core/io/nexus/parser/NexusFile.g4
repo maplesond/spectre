@@ -397,6 +397,7 @@ tree_list :
 tree_label :
       IDENTIFIER length
     | INT length
+    | FLOAT length
     ;
 
 tree_label_optional :

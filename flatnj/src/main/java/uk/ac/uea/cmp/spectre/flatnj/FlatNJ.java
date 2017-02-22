@@ -325,7 +325,7 @@ public class FlatNJ {
     public static void main(String[] args) {
         // Setup the command line options
         CommandLine commandLine = CommandLineHelper.startApp(createOptions(), "flatnj",
-                "Flat NJ computes flat split networks from quadruple data. To generate quadruples please use Gen4S.", args);
+                "Flat NJ computes flat split networks from quadruple data.  Flat NJ also can convert multiple sequence alignment or location data into quadruple data internally.", args);
 
         // If we didn't return a command line object then just return.  Probably the user requested help or
         // input invalid args

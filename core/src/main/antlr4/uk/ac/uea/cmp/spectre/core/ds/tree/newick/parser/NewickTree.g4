@@ -21,10 +21,9 @@ WEIGHT  : ';' DIGIT+ '.' DIGIT+ (EXP)?  // match 1. 39. 3.14159 etc... (but no n
         | ';' DIGIT+
         ;
 
-
 fragment DIGIT : [0-9];     // match single digit
 fragment LETTER : [a-zA-Z];
-fragment OTHER : '_' | '-' | '@' | '#' | '~';
+fragment OTHER : '_' | '-' | '@' | '#' | '~' | '.';
 fragment EXP : ('e' | 'E') ('-')? DIGIT+;
 
 // We're going to ignore all white space characters
