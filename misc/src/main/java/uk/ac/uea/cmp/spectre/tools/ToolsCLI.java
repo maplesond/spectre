@@ -45,7 +45,7 @@ public class ToolsCLI {
                 createOptions(),
                 "phygentools",
                 "Miscellaneous Phylogenetic Tools\n" +
-                        "A collection of tools: " + phygenToolFactory.listServicesAsString());
+                        "A collection of tools: " + phygenToolFactory.listServicesAsString(), "");
     }
 
 

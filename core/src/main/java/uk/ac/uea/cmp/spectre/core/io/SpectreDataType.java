@@ -15,28 +15,20 @@
 
 package uk.ac.uea.cmp.spectre.core.io;
 
-import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
-import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.GroupedQuartetSystem;
-import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.QuartetSystem;
-import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
-
-import java.io.File;
-import java.io.IOException;
-
 /**
  * Created with IntelliJ IDEA.
- * User: Sarah_2
- * Date: 24/04/13
- * Time: 17:13
+ * User: dan
+ * Date: 06/11/13
+ * Time: 20:10
  * To change this template use File | Settings | File Templates.
  */
-public interface PhygenWriter {
+public enum SpectreDataType {
 
-    void writeSplitSystem(File outFile, SplitSystem splitSystem) throws IOException;
-
-    void writeDistanceMatrix(File outFile, DistanceMatrix distanceMatrix) throws IOException;
-
-    void writeQuartets(File outFile, QuartetSystem quartetSystem) throws IOException;
-
-    void writeQuartets(File outFile, GroupedQuartetSystem quartetSystem) throws IOException;
+    DISTANCE_MATRIX,
+    ALIGNMENT,
+    TREE,
+    CIRCULAR_ORDERING,
+    SPLITS,
+    QUARTETS,
+    NETWORK;
 }

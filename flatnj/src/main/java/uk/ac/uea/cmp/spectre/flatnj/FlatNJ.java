@@ -325,7 +325,9 @@ public class FlatNJ {
     public static void main(String[] args) {
         // Setup the command line options
         CommandLine commandLine = CommandLineHelper.startApp(createOptions(), "flatnj",
-                "Flat NJ computes flat split networks from quadruple data.  Flat NJ also can convert multiple sequence alignment or location data into quadruple data internally.", args);
+                "Flat NJ computes flat split networks from quadruple data.  Flat NJ also can convert multiple sequence alignment or location data into quadruple data internally.",
+                "input",
+                args);
 
         // If we didn't return a command line object then just return.  Probably the user requested help or
         // input invalid args
@@ -351,8 +353,16 @@ public class FlatNJ {
             log.info("Running Flat Net Joining Algorithm");
             log.debug("Parsing command line options");
 
+            if (commandLine.getArgs().length == 0) {
+                throw new IOException("No input file specified.");
+            }
+            else if (commandLine.getArgs().length > 1) {
+                throw new IOException("Only expected a single input file.");
+            }
+
+
             // Required
-            File inFile = new File(commandLine.getOptionValue(OPT_INPUT));
+            File inFile = new File(commandLine.getArgs()[0]);
             Optimiser optimiser = OptimiserFactory.getInstance().createOptimiserInstance(commandLine.getOptionValue(OPT_OPTIMISER), Objective.ObjectiveType.QUADRATIC);
 
             if (optimiser == null) {

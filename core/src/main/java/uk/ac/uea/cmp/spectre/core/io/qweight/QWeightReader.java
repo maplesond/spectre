@@ -21,8 +21,9 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.kohsuke.MetaInfServices;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.GroupedQuartetSystem;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.QuartetSystem;
-import uk.ac.uea.cmp.spectre.core.io.AbstractPhygenReader;
-import uk.ac.uea.cmp.spectre.core.io.PhygenDataType;
+import uk.ac.uea.cmp.spectre.core.io.AbstractSpectreReader;
+import uk.ac.uea.cmp.spectre.core.io.SpectreDataType;
+import uk.ac.uea.cmp.spectre.core.io.SpectreReader;
 import uk.ac.uea.cmp.spectre.core.io.qweight.parser.QWeightLexer;
 import uk.ac.uea.cmp.spectre.core.io.qweight.parser.QWeightParser;
 import uk.ac.uea.cmp.spectre.core.io.qweight.parser.QWeightPopulator;
@@ -40,8 +41,8 @@ import java.io.IOException;
  * Time: 22:28
  * To change this template use File | Settings | File Templates.
  */
-@MetaInfServices(uk.ac.uea.cmp.spectre.core.io.PhygenReader.class)
-public class QWeightReader extends AbstractPhygenReader {
+@MetaInfServices(SpectreReader.class)
+public class QWeightReader extends AbstractSpectreReader {
 
     public GroupedQuartetSystem parse(File file) throws IOException {
 
@@ -95,8 +96,8 @@ public class QWeightReader extends AbstractPhygenReader {
     }
 
     @Override
-    public boolean acceptsDataType(PhygenDataType phygenDataType) {
-        if (phygenDataType == PhygenDataType.QUARTETS)
+    public boolean acceptsDataType(SpectreDataType spectreDataType) {
+        if (spectreDataType == SpectreDataType.QUARTETS)
             return true;
 
         return false;

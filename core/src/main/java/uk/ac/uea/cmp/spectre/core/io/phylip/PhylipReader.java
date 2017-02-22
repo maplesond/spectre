@@ -19,8 +19,9 @@ import org.apache.commons.io.FileUtils;
 import org.kohsuke.MetaInfServices;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.distance.FlexibleDistanceMatrix;
-import uk.ac.uea.cmp.spectre.core.io.AbstractPhygenReader;
-import uk.ac.uea.cmp.spectre.core.io.PhygenDataType;
+import uk.ac.uea.cmp.spectre.core.io.AbstractSpectreReader;
+import uk.ac.uea.cmp.spectre.core.io.SpectreDataType;
+import uk.ac.uea.cmp.spectre.core.io.SpectreReader;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,8 +34,8 @@ import java.util.List;
  * Time: 13:18
  * To change this template use File | Settings | File Templates.
  */
-@MetaInfServices(uk.ac.uea.cmp.spectre.core.io.PhygenReader.class)
-public class PhylipReader extends AbstractPhygenReader {
+@MetaInfServices(SpectreReader.class)
+public class PhylipReader extends AbstractSpectreReader {
 
     /**
      * Reads the file specified by this reader and converts it the data into a set
@@ -77,9 +78,9 @@ public class PhylipReader extends AbstractPhygenReader {
     }
 
     @Override
-    public boolean acceptsDataType(PhygenDataType phygenDataType) {
+    public boolean acceptsDataType(SpectreDataType spectreDataType) {
 
-        if (phygenDataType == PhygenDataType.DISTANCE_MATRIX)
+        if (spectreDataType == SpectreDataType.DISTANCE_MATRIX)
             return true;
 
         return false;

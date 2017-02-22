@@ -12,7 +12,7 @@ SuperQ
 ------
 
 Constructs a phylogenetic supernetwork from a set of weighted or unweighted partial trees by using quartets. SuperQ is a pipeline
-that incorperates QMaker, Scaler, QNet and SFilter, which are all described in more detail later in this section.  These
+that incorporates QMaker, Scaler, QNet and SFilter, which are all described in more detail later in this section.  These
 tools are all available for you to use individually in case you wish to conduct a more detailed and controlled experiment
 for generating circular split systems from your partial trees, however in most cases SuperQ will be the only Quartet tool
 you need to use.

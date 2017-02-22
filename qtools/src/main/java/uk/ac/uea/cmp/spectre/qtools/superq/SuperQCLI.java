@@ -44,14 +44,15 @@ public class SuperQCLI {
     private static String OPT_FILTER = "filter";
     private static String OPT_HELP = "help";
     private static String OPT_VERBOSE = "verbose";
-    private static String OPT_INPUT = "input";
 
 
     public static void main(String args[]) {
 
         // Parse command line args
         CommandLine commandLine = CommandLineHelper.startApp(createOptions(), BIN_NAME,
-                "Generates a circular split network from a set of trees", args);
+                "Generates a circular split network from a set of trees.\n" +
+                        "Input can take the form of one or more, nexus, phylip and newick tree files.\n" +
+                        "Also superQ can automatically generate trees from distance matrices.\nOptions:", "input [input]...", args);
 
         // If we didn't return a command line object then just return.  Probably the user requested help or
         // input invalid args
@@ -83,8 +84,6 @@ public class SuperQCLI {
 
         Options options = new Options();
         options.addOption(CommandLineHelper.HELP_OPTION);
-        options.addOption(OptionBuilder.withArgName("file(s)").withLongOpt(OPT_INPUT).isRequired(true).hasArgs()
-                .withDescription(SuperQOptions.DESC_INPUT).create("i"));
         options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_OUTPUT).isRequired(true).hasArg(true)
                 .withDescription(SuperQOptions.DESC_OUTPUT).create("o"));
         options.addOption(OptionBuilder.withArgName("solver").withLongOpt(OPT_PRIMARY_SOLVER).isRequired(false).hasArg(true)
@@ -119,11 +118,10 @@ public class SuperQCLI {
             throw new ParseException("You must specify an output file.");
         }
 
-        if (commandLine.hasOption(OPT_INPUT)) {
-            String[] args = commandLine.getOptionValues(OPT_INPUT);
-            File[] inputFiles = new File[args.length];
-            for (int i = 0; i < args.length; i++) {
-                inputFiles[i] = new File(args[i]);
+        if (commandLine.getArgs().length >= 1) {
+            File[] inputFiles = new File[commandLine.getArgs().length];
+            for (int i = 0; i < commandLine.getArgs().length; i++) {
+                inputFiles[i] = new File(commandLine.getArgs()[i]);
             }
             sqOpts.setInputFiles(inputFiles);
         } else {

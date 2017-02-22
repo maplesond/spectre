@@ -25,6 +25,7 @@ import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.CircularOrderingAlg
 import uk.ac.uea.cmp.spectre.core.ui.cli.CommandLineHelper;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -55,9 +56,6 @@ public class NetMakeCLI {
         // create Options object
         Options options = new Options();
 
-        options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_INPUT).isRequired().hasArg()
-                .withDescription(NetMakeOptions.DESC_INPUT).create("i"));
-
         options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_OUTPUT_NETWORK).hasArg()
                 .withDescription(NetMakeOptions.DESC_OUTPUT_NETWORK).create("on"));
 
@@ -86,7 +84,7 @@ public class NetMakeCLI {
     public static void main(String[] args) {
 
         CommandLine commandLine = CommandLineHelper.startApp(createOptions(), "netmake",
-                "Creates networks from distance matrices", args);
+                "\nCreates networks from distance matrices.\n\nSupports nexus format input.\n\nOptions:", "distance_matrix_file", args);
 
         // If we didn't return a command line object then just return.  Probably the user requested help or
         // input invalid args
@@ -103,7 +101,14 @@ public class NetMakeCLI {
 
             log.info("NetMake: Parsing arguments");
 
-            File input = new File(commandLine.getOptionValue(OPT_INPUT));
+            if (commandLine.getArgs().length == 0) {
+                throw new IOException("No input file specified.");
+            }
+            else if (commandLine.getArgs().length > 1) {
+                throw new IOException("Only expected a single input file.");
+            }
+
+            File input = new File(commandLine.getArgs()[0]);
             File outputNetwork = commandLine.hasOption(OPT_OUTPUT_NETWORK) ? new File(commandLine.getOptionValue(OPT_OUTPUT_NETWORK)) : new File("netmake.nex");
             File outputTree = commandLine.hasOption(OPT_OUTPUT_TREE) ? new File(commandLine.getOptionValue(OPT_OUTPUT_TREE)) : null;
             double treeParam = commandLine.hasOption(OPT_TREE_PARAM) ? Double.parseDouble(commandLine.getOptionValue(OPT_TREE_PARAM)) : NetMakeOptions.DEFAULT_TREE_WEIGHT;

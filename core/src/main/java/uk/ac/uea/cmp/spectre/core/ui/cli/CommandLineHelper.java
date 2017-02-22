@@ -34,10 +34,10 @@ public class CommandLineHelper {
     public static final Option HELP_OPTION = new Option("?", OPT_HELP, false, "Print this message.");
 
 
-    public static void printHelp(Options options, String exeName, String description) {
+    public static void printHelp(Options options, String exeName, String description, String posArgs) {
         new HelpFormatter().printHelp(
                 CommandLineHelper.DEFAULT_WIDTH,
-                exeName,
+                exeName + " " + posArgs,
                 description,
                 options,
                 CommandLineHelper.DEFAULT_FOOTER,
@@ -45,11 +45,11 @@ public class CommandLineHelper {
 
     }
 
-    public static void printUsage(Options options, String exeName) {
+    public static void printUsage(Options options, String exeName, String posArgs) {
         new HelpFormatter().printUsage(
                 new PrintWriter(System.err),
                 HelpFormatter.DEFAULT_WIDTH,
-                exeName,
+                exeName + " " + posArgs,
                 options);
     }
 
@@ -60,14 +60,14 @@ public class CommandLineHelper {
         return options;
     }
 
-    public static CommandLine startApp(Options options, String exeName, String description, String[] args) {
+    public static CommandLine startApp(Options options, String exeName, String description, String posArgs, String[] args) {
 
         try {
             // Test for help first
             CommandLine helpCl = new PosixParser().parse(createHelpOptions(), args, true);
 
             if (helpCl.hasOption(OPT_HELP) || helpCl.getArgList().isEmpty()) {
-                CommandLineHelper.printHelp(options, exeName, description);
+                CommandLineHelper.printHelp(options, exeName, description, posArgs);
                 return null;
             }
 
@@ -75,7 +75,7 @@ public class CommandLineHelper {
             return new PosixParser().parse(options, args);
         } catch (ParseException p) {
             System.err.println(p.getMessage());
-            CommandLineHelper.printUsage(options, exeName);
+            CommandLineHelper.printUsage(options, exeName, posArgs);
             return null;
         }
     }

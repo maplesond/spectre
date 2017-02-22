@@ -32,8 +32,8 @@ import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.nm.NetMakeCircularO
 import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.nm.weighting.Weighting;
 import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.nm.weighting.Weightings;
 import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.nn.NeighborNetImpl;
-import uk.ac.uea.cmp.spectre.core.io.PhygenReader;
-import uk.ac.uea.cmp.spectre.core.io.PhygenReaderFactory;
+import uk.ac.uea.cmp.spectre.core.io.SpectreReaderFactory;
+import uk.ac.uea.cmp.spectre.core.io.SpectreReader;
 import uk.ac.uea.cmp.spectre.core.ui.gui.RunnableTool;
 import uk.ac.uea.cmp.spectre.core.ui.gui.StatusTracker;
 
@@ -143,12 +143,12 @@ public class NetMake extends RunnableTool {
 
             // Load distanceMatrix from input file based on file type
             // Get a handle on the phygen factory
-            PhygenReaderFactory factory = PhygenReaderFactory.getInstance();
+            SpectreReaderFactory factory = SpectreReaderFactory.getInstance();
 
             // Setup appropriate reader to input file based on file type
-            PhygenReader phygenReader = factory.create(FilenameUtils.getExtension(this.options.getInput().getName()));
+            SpectreReader spectreReader = factory.create(FilenameUtils.getExtension(this.options.getInput().getName()));
 
-            DistanceMatrix distanceMatrix = phygenReader.readDistanceMatrix(this.options.getInput());
+            DistanceMatrix distanceMatrix = spectreReader.readDistanceMatrix(this.options.getInput());
 
             log.info("Loaded distance matrix.  Found " + distanceMatrix.size() + " taxa.");
 

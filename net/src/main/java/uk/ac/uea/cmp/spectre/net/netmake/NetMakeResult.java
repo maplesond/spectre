@@ -16,8 +16,8 @@
 package uk.ac.uea.cmp.spectre.net.netmake;
 
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
-import uk.ac.uea.cmp.spectre.core.io.PhygenWriter;
-import uk.ac.uea.cmp.spectre.core.io.PhygenWriterFactory;
+import uk.ac.uea.cmp.spectre.core.io.SpectreWriter;
+import uk.ac.uea.cmp.spectre.core.io.SpectreWriterFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,12 +43,12 @@ public class NetMakeResult {
 
     public void save(File outputNetwork, File outputTree) throws IOException {
 
-        PhygenWriter phygenWriter = PhygenWriterFactory.NEXUS.create();
+        SpectreWriter spectreWriter = SpectreWriterFactory.NEXUS.create();
 
-        phygenWriter.writeSplitSystem(outputNetwork, this.getNetwork());
+        spectreWriter.writeSplitSystem(outputNetwork, this.getNetwork());
 
         if (this.tree != null && outputTree != null) {
-            phygenWriter.writeSplitSystem(outputTree, this.getTree());
+            spectreWriter.writeSplitSystem(outputTree, this.getTree());
         }
     }
 }

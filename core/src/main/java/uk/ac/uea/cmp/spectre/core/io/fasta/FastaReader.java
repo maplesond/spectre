@@ -17,8 +17,9 @@ package uk.ac.uea.cmp.spectre.core.io.fasta;
 
 import org.kohsuke.MetaInfServices;
 import uk.ac.uea.cmp.spectre.core.ds.Alignment;
-import uk.ac.uea.cmp.spectre.core.io.AbstractPhygenReader;
-import uk.ac.uea.cmp.spectre.core.io.PhygenDataType;
+import uk.ac.uea.cmp.spectre.core.io.AbstractSpectreReader;
+import uk.ac.uea.cmp.spectre.core.io.SpectreDataType;
+import uk.ac.uea.cmp.spectre.core.io.SpectreReader;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -30,8 +31,8 @@ import java.util.Map;
 /**
  * @author balvociute + maplesond
  */
-@MetaInfServices(uk.ac.uea.cmp.spectre.core.io.PhygenReader.class)
-public class FastaReader extends AbstractPhygenReader {
+@MetaInfServices(SpectreReader.class)
+public class FastaReader extends AbstractSpectreReader {
 
     private Map<String, String> aln;
     private BufferedReader bufferedReader;
@@ -81,8 +82,8 @@ public class FastaReader extends AbstractPhygenReader {
     }
 
     @Override
-    public boolean acceptsDataType(PhygenDataType phygenDataType) {
-        if (phygenDataType == PhygenDataType.ALIGNMENT)
+    public boolean acceptsDataType(SpectreDataType spectreDataType) {
+        if (spectreDataType == SpectreDataType.ALIGNMENT)
             return true;
 
         return false;

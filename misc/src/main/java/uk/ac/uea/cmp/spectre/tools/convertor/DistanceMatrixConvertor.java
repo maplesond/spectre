@@ -52,7 +52,7 @@ public class DistanceMatrixConvertor extends SpectreTool {
 
         options.addOption(OptionBuilder.withArgName("string").withLongOpt(OPT_DISTANCES_FILE_TYPE).hasArg()
                 .withDescription("The file type of the input distance data file: [" +
-                        StringUtils.join(PhygenReaderFactory.getInstance().getPhygenReaders(PhygenDataType.DISTANCE_MATRIX), ", ") +
+                        StringUtils.join(SpectreReaderFactory.getInstance().getPhygenReaders(SpectreDataType.DISTANCE_MATRIX), ", ") +
                         "].  Use this if your input file has a non-standard extension.").create("t"));
 
         return options;
@@ -85,23 +85,23 @@ public class DistanceMatrixConvertor extends SpectreTool {
     public void execute(File inputFile, File outputFile, String distancesFileType) throws IOException {
 
         // Get a handle on the phygen factory
-        PhygenReaderFactory factory = PhygenReaderFactory.getInstance();
+        SpectreReaderFactory factory = SpectreReaderFactory.getInstance();
 
         // Setup appropriate reader to input file based on file type
-        PhygenReader phygenReader = factory.create(distancesFileType != null ?
+        SpectreReader spectreReader = factory.create(distancesFileType != null ?
                 distancesFileType :
                 FilenameUtils.getExtension(inputFile.getName()));
 
         // Load file
-        DistanceMatrix distanceMatrix = phygenReader.readDistanceMatrix(inputFile);
+        DistanceMatrix distanceMatrix = spectreReader.readDistanceMatrix(inputFile);
 
         // Setup appropriate writer for output file
-        PhygenWriter phygenWriter = phygenReader.getClass().getSimpleName().equals("NexusReader") ?
-                PhygenWriterFactory.PHYLIP.create() :
-                PhygenWriterFactory.NEXUS.create();
+        SpectreWriter spectreWriter = spectreReader.getClass().getSimpleName().equals("NexusReader") ?
+                SpectreWriterFactory.PHYLIP.create() :
+                SpectreWriterFactory.NEXUS.create();
 
         // Write distance matrix out
-        phygenWriter.writeDistanceMatrix(outputFile, distanceMatrix);
+        spectreWriter.writeDistanceMatrix(outputFile, distanceMatrix);
     }
 
     public static void main(String[] args) {

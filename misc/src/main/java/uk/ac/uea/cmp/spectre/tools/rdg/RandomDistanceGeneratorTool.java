@@ -22,8 +22,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.MetaInfServices;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.distance.RandomDistanceGenerator;
-import uk.ac.uea.cmp.spectre.core.io.PhygenWriter;
-import uk.ac.uea.cmp.spectre.core.io.PhygenWriterFactory;
+import uk.ac.uea.cmp.spectre.core.io.SpectreWriter;
+import uk.ac.uea.cmp.spectre.core.io.SpectreWriterFactory;
 import uk.ac.uea.cmp.spectre.core.util.Time;
 import uk.ac.uea.cmp.spectre.tools.SpectreTool;
 
@@ -59,7 +59,7 @@ public class RandomDistanceGeneratorTool extends SpectreTool {
                 .withDescription("The prefix for the output files").create("p"));
 
         options.addOption(OptionBuilder.withArgName("string").withLongOpt(OPT_OUTPUT_TYPE).hasArg()
-                .withDescription("The output file type: " + PhygenWriterFactory.listWriters()).create("t"));
+                .withDescription("The output file type: " + SpectreWriterFactory.listWriters()).create("t"));
 
         return options;
     }
@@ -72,10 +72,10 @@ public class RandomDistanceGeneratorTool extends SpectreTool {
         int s = commandLine.hasOption("s") ? Integer.parseInt(commandLine.getOptionValue("s")) : 1;
         File outputDir = commandLine.hasOption(OPT_OUTPUT_DIR) ? new File(commandLine.getOptionValue(OPT_OUTPUT_DIR)) : new File(".");
         String prefix = commandLine.hasOption(OPT_PREFIX) ? commandLine.getOptionValue(OPT_PREFIX) : "rdg-" + Time.createTimestamp();
-        PhygenWriterFactory phygenWriterFactory = commandLine.hasOption(OPT_OUTPUT_TYPE) ?
-                PhygenWriterFactory.valueOf(commandLine.getOptionValue(OPT_OUTPUT_TYPE)) :
-                PhygenWriterFactory.PHYLIP;
-        PhygenWriter phygenWriter = phygenWriterFactory.create();
+        SpectreWriterFactory spectreWriterFactory = commandLine.hasOption(OPT_OUTPUT_TYPE) ?
+                SpectreWriterFactory.valueOf(commandLine.getOptionValue(OPT_OUTPUT_TYPE)) :
+                SpectreWriterFactory.PHYLIP;
+        SpectreWriter spectreWriter = spectreWriterFactory.create();
 
         // Create the output directory if required
         outputDir.mkdirs();
@@ -87,10 +87,10 @@ public class RandomDistanceGeneratorTool extends SpectreTool {
             DistanceMatrix distanceMatrix = new RandomDistanceGenerator().generateDistances(n);
 
             // Create a filename for this sample
-            File outFile = new File(outputDir, prefix + "-" + i + "." + phygenWriterFactory.getPrimaryExtension());
+            File outFile = new File(outputDir, prefix + "-" + i + "." + spectreWriterFactory.getPrimaryExtension());
 
             // Save to disk
-            phygenWriter.writeDistanceMatrix(outFile, distanceMatrix);
+            spectreWriter.writeDistanceMatrix(outFile, distanceMatrix);
         }
 
 

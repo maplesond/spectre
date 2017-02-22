@@ -29,13 +29,13 @@ import uk.ac.uea.cmp.spectre.core.io.nexus.NexusWriter;
 import uk.ac.uea.cmp.spectre.core.ui.cli.CommandLineHelper;
 
 import java.io.File;
+import java.io.IOException;
 
 
 public class QNetCLI {
 
     private static Logger logger = LoggerFactory.getLogger(QNetCLI.class);
 
-    private static final String OPT_INPUT = "input";
     private static final String OPT_OUTPUT = "output";
     private static final String OPT_LOG = "log";
     private static final String OPT_TOLERANCE = "tolerance";
@@ -46,9 +46,6 @@ public class QNetCLI {
         // create Options object
         Options options = new Options();
         options.addOption(CommandLineHelper.HELP_OPTION);
-
-        options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_INPUT).isRequired().hasArg()
-                .withDescription(QNetOptions.DESC_INPUT).create("i"));
 
         options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_OUTPUT).isRequired().hasArg()
                 .withDescription(QNetOptions.DESC_OUTPUT).create("o"));
@@ -69,7 +66,8 @@ public class QNetCLI {
 
         // Parse command line args
         CommandLine commandLine = CommandLineHelper.startApp(createOptions(), "qnet",
-                "Creates a Circular Weighted Split Network from a set of Taxa and a quartet system", args);
+                "Creates a Circular Weighted Split Network from a set of Taxa and a quartet system\nOptions:",
+                "nexus_file", args);
 
         // If we didn't return a command line object then just return.  Probably the user requested help or
         // input invalid args
@@ -81,8 +79,16 @@ public class QNetCLI {
             // Configure logging
             QNet.configureLogging();
 
+            if (commandLine.getArgs().length == 0) {
+                throw new IOException("No input file specified.");
+            }
+            else if (commandLine.getArgs().length > 1) {
+                throw new IOException("Only expected a single input file.");
+            }
+
+
             // Required arguments
-            File input = new File(commandLine.getOptionValue(OPT_INPUT));
+            File input = new File(commandLine.getArgs()[0]);
             File output = new File(commandLine.getOptionValue(OPT_OUTPUT));
 
             // Options

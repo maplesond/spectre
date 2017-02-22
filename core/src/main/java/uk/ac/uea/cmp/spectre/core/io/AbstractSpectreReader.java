@@ -32,7 +32,7 @@ import java.util.List;
  * Time: 20:02
  * To change this template use File | Settings | File Templates.
  */
-public abstract class AbstractPhygenReader implements PhygenReader {
+public abstract class AbstractSpectreReader implements SpectreReader {
 
 
     @Override
@@ -81,10 +81,10 @@ public abstract class AbstractPhygenReader implements PhygenReader {
     }
 
     @Override
-    public boolean acceptsDataTypes(List<PhygenDataType> phygenDataTypeList) {
+    public boolean acceptsDataTypes(List<SpectreDataType> spectreDataTypeList) {
 
-        for (PhygenDataType phygenDataType : phygenDataTypeList) {
-            if (!this.acceptsDataType(phygenDataType)) {
+        for (SpectreDataType spectreDataType : spectreDataTypeList) {
+            if (!this.acceptsDataType(spectreDataType)) {
                 return false;
             }
         }

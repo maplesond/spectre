@@ -19,7 +19,7 @@ import org.apache.commons.io.FileUtils;
 import uk.ac.uea.cmp.spectre.core.ds.Identifier;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
-import uk.ac.uea.cmp.spectre.core.io.AbstractPhygenWriter;
+import uk.ac.uea.cmp.spectre.core.io.AbstractSpectreWriter;
 import uk.ac.uea.cmp.spectre.core.util.CollectionUtils;
 
 import java.io.File;
@@ -29,7 +29,7 @@ import java.io.IOException;
  * Created with IntelliJ IDEA. User: Dan Date: 14/05/13 Time: 20:24 To change this template use File | Settings | File
  * Templates.
  */
-public class PhylipWriter extends AbstractPhygenWriter {
+public class PhylipWriter extends AbstractSpectreWriter {
 
     @Override
     public void writeDistanceMatrix(File outFile, DistanceMatrix distanceMatrix) throws IOException {

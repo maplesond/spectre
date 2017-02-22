@@ -26,7 +26,7 @@ import java.io.IOException;
 /**
  * Created by dan on 10/12/13.
  */
-public class AbstractPhygenWriter implements PhygenWriter {
+public class AbstractSpectreWriter implements SpectreWriter {
 
     @Override
     public void writeSplitSystem(File outFile, SplitSystem splitSystem) throws IOException {

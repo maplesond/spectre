@@ -3,7 +3,7 @@
 Running SPECTRE Tools
 =====================
 
-Before discussing the tools available in spectre in detail, we will run through some spectre specific considerations
+Before discussing the tools available in spectre in detail, will run through some spectre specific considerations
 that you should be aware of such as where to find the tools, how to change the memory limits.
 
 

@@ -4,7 +4,7 @@ Credits
 =======
 
 The paper for spectre is currently being prepared.  If you use spectre in your work and wish to publish in the meantime
-please refer the project's web page: [TODO]
+please refer the project's web page: https://github.com/maplesond/spectre.git
 
 Additionally, spectre consists on a number of tools that have already been published, if your work uses any of these
 pre-published tools please also cite the associated publication(s).  A reverse chronological list of all publications
@@ -42,13 +42,15 @@ Spectre is an international collaboration.  Active contributors to spectre are l
 +--------------------------+-------------------------------+-----------------------------------+-----------------------------------------------------------------------------+
 | Name                     | Email                         | Current Institute                 | Contribution                                                                |
 +==========================+===============================+===================================+=============================================================================+
-| Daniel Mapleson          | daniel.mapleson@tgac.ac.uk    | The Genome Analysis Centre (TGAC) | General software development, testing, optimisation and codebase management |
+| Daniel Mapleson          | daniel.mapleson@tgac.ac.uk    | Earlham Institute (EI)            | General software development, testing, optimisation and codebase management |
 +--------------------------+-------------------------------+-----------------------------------+-----------------------------------------------------------------------------+
-| Sarah Bastkowski         | sarah.bastkowski@tgac.ac.uk   | The Genome Analysis Centre (TGAC) | SuperQ, NetMake, NetME, NeighborNet Implementation, Algorithms, Optimisers  |
+| Sarah Bastkowski         | sarah.bastkowski@tgac.ac.uk   | Earlham Institute (EI)            | SuperQ, NetMake, NetME, NeighborNet Implementation, Algorithms, Optimisers  |
 +--------------------------+-------------------------------+-----------------------------------+-----------------------------------------------------------------------------+
 | Monica Balvociute        | ???                           | University of Otago               | Gen4S, FlatNJ, NetView                                                      |
 +--------------------------+-------------------------------+-----------------------------------+-----------------------------------------------------------------------------+
 | Andreas Spilner          | anspillner@gmail.com          | NA                                | Mathematics, Algorithms, Optimisers, Spectre development                    |
++--------------------------+-------------------------------+-----------------------------------+-----------------------------------------------------------------------------+
+| Taoyang Wu               | taoyang.wu@gmail.com          | University of East Anglia (UEA)   | Mathematics, Testing                                                        |
 +--------------------------+-------------------------------+-----------------------------------+-----------------------------------------------------------------------------+
 | Vincent Moulton          | vincent.moulton@cmp.uea.ac.uk | University of East Anglia (UEA)   | Mathematics, Algorithms                                                     |
 +--------------------------+-------------------------------+-----------------------------------+-----------------------------------------------------------------------------+

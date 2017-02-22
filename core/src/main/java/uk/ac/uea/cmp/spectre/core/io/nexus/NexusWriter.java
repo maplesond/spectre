@@ -27,7 +27,7 @@ import uk.ac.uea.cmp.spectre.core.ds.network.NetworkLabel;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
 import uk.ac.uea.cmp.spectre.core.ds.split.Split;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
-import uk.ac.uea.cmp.spectre.core.io.AbstractPhygenWriter;
+import uk.ac.uea.cmp.spectre.core.io.AbstractSpectreWriter;
 
 import java.awt.*;
 import java.io.BufferedWriter;
@@ -45,7 +45,7 @@ import java.util.List;
  *
  * @author Dan
  */
-public class NexusWriter extends AbstractPhygenWriter implements Appendable {
+public class NexusWriter extends AbstractSpectreWriter implements Appendable {
 
     /**
      * Stores the file contents before writing to disk.

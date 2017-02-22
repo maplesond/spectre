@@ -16,8 +16,8 @@
 package uk.ac.uea.cmp.spectre.core.io.newick;
 
 import uk.ac.uea.cmp.spectre.core.ds.tree.newick.NewickTree;
-import uk.ac.uea.cmp.spectre.core.io.AbstractPhygenReader;
-import uk.ac.uea.cmp.spectre.core.io.PhygenDataType;
+import uk.ac.uea.cmp.spectre.core.io.AbstractSpectreReader;
+import uk.ac.uea.cmp.spectre.core.io.SpectreDataType;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -29,7 +29,7 @@ import java.util.List;
 /**
  * Can read files that contain newick trees, one per line.
  */
-public class NewickReader extends AbstractPhygenReader {
+public class NewickReader extends AbstractSpectreReader {
 
 
     @Override
@@ -70,9 +70,9 @@ public class NewickReader extends AbstractPhygenReader {
     }
 
     @Override
-    public boolean acceptsDataType(PhygenDataType phygenDataType) {
+    public boolean acceptsDataType(SpectreDataType spectreDataType) {
 
-        if (phygenDataType == PhygenDataType.TREE)
+        if (spectreDataType == SpectreDataType.TREE)
             return true;
 
         return false;

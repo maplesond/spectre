@@ -18,7 +18,7 @@ package uk.ac.uea.cmp.spectre.core.io.qweight;
 import uk.ac.uea.cmp.spectre.core.ds.quad.Quad;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.GroupedQuartetSystem;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.QuartetSystem;
-import uk.ac.uea.cmp.spectre.core.io.AbstractPhygenWriter;
+import uk.ac.uea.cmp.spectre.core.io.AbstractSpectreWriter;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -28,7 +28,7 @@ import java.text.NumberFormat;
 /**
  * Created by dan on 10/12/13.
  */
-public class QWeightWriter extends AbstractPhygenWriter {
+public class QWeightWriter extends AbstractSpectreWriter {
 
 
     @Override
