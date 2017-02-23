@@ -15,7 +15,7 @@
 
 package uk.ac.uea.cmp.spectre.flatnj;
 
-import uk.ac.tgac.metaopt.Optimiser;
+import uk.ac.earlham.metaopt.Optimiser;
 
 /**
  * Computes split weights in the resulting {@linkplain  uk.ac.uea.cmp.spectre.core.ds.split.flat.PermutationSequence} or

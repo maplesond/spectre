@@ -15,7 +15,7 @@
 package uk.ac.uea.cmp.spectre.qtools.superq.problems;
 
 import org.kohsuke.MetaInfServices;
-import uk.ac.tgac.metaopt.*;
+import uk.ac.earlham.metaopt.*;
 
 import java.util.ArrayList;
 import java.util.List;

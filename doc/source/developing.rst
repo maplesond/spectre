@@ -34,7 +34,7 @@ The source code for spectre is version controlled using GIT.  The public reposit
 https://github.com/maplesond/spectre.git
 
 If you plan to make contributions directly to the spectre codebase and want to work closely with us on a new tool or
-feature then please email daniel.mapleson@tgac.ac.uk about your planned changes.  He can grant you write access to the
+feature then please email daniel.mapleson@earlham.ac.uk about your planned changes.  He can grant you write access to the
 codebase.  We use the `Git-Flow <http://nvie.com/posts/a-successful-git-branching-model/>`_ branching
 model in order to make it easier to work on the codebase as a team.  The main takeaway message here is do NOT commit
 changes directly to the master branch as this might effect the stability of the suite for everyone!  To make managing the

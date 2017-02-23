@@ -15,9 +15,9 @@
 
 package uk.ac.uea.cmp.spectre.qtools.qnet;
 
-import uk.ac.tgac.metaopt.Objective;
-import uk.ac.tgac.metaopt.Optimiser;
-import uk.ac.tgac.metaopt.OptimiserFactory;
+import uk.ac.earlham.metaopt.Objective;
+import uk.ac.earlham.metaopt.Optimiser;
+import uk.ac.earlham.metaopt.OptimiserFactory;
 
 import java.io.File;
 

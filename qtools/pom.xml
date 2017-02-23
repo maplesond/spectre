@@ -34,12 +34,12 @@
             <id>gurobi</id>
             <dependencies>
                 <dependency>
-                    <groupId>uk.ac.tgac.metaopt</groupId>
+                    <groupId>uk.ac.earlham.metaopt</groupId>
                     <artifactId>gurobi</artifactId>
-                    <version>0.2.0</version>
+                    <version>0.3.0</version>
                     <exclusions>
                         <exclusion>
-                            <groupId>uk.ac.tgac.metaopt</groupId>
+                            <groupId>uk.ac.earlham.metaopt</groupId>
                             <artifactId>metaopt</artifactId>
                         </exclusion>
                     </exclusions>
@@ -167,9 +167,9 @@
         <!-- Meta optimizer -->
 
         <dependency>
-            <groupId>uk.ac.tgac.metaopt</groupId>
+            <groupId>uk.ac.earlham.metaopt</groupId>
             <artifactId>metaopt</artifactId>
-            <version>0.2.0</version>
+            <version>0.3.0</version>
         </dependency>
 
 

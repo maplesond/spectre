@@ -15,7 +15,7 @@
 
 package uk.ac.uea.cmp.spectre.flatnj;
 
-import uk.ac.tgac.metaopt.*;
+import uk.ac.earlham.metaopt.*;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.flat.PermutationSequence;
 

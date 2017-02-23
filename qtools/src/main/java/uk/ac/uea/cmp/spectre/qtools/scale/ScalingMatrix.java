@@ -438,7 +438,7 @@ public class ScalingMatrix {
                             s[j] = m[k][j] * s[k];
                             reached.add(j);
                         } else {
-                            if (!uk.ac.tgac.metaopt.Equality.approxEquals(s[j], m[k][j] * s[k], LOCAL_TOLERANCE)) {
+                            if (!uk.ac.earlham.metaopt.Equality.approxEquals(s[j], m[k][j] * s[k], LOCAL_TOLERANCE)) {
                                 this.noPerfectMatch();
                             }
                         }

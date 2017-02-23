@@ -15,8 +15,8 @@
 
 package uk.ac.uea.cmp.spectre.qtools.superq.problems;
 
-import uk.ac.tgac.metaopt.Objective;
-import uk.ac.tgac.metaopt.Problem;
+import uk.ac.earlham.metaopt.Objective;
+import uk.ac.earlham.metaopt.Problem;
 
 /**
  * Created with IntelliJ IDEA.

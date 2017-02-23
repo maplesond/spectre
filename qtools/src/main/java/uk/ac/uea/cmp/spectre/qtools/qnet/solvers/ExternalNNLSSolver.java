@@ -15,7 +15,7 @@
 
 package uk.ac.uea.cmp.spectre.qtools.qnet.solvers;
 
-import uk.ac.tgac.metaopt.*;
+import uk.ac.earlham.metaopt.*;
 
 import java.util.ArrayList;
 import java.util.List;

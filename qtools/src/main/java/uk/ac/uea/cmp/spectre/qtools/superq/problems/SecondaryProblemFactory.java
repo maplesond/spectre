@@ -17,7 +17,7 @@ package uk.ac.uea.cmp.spectre.qtools.superq.problems;
 
 
 import org.apache.commons.lang3.StringUtils;
-import uk.ac.tgac.metaopt.Objective;
+import uk.ac.earlham.metaopt.Objective;
 
 import java.util.ArrayList;
 import java.util.List;

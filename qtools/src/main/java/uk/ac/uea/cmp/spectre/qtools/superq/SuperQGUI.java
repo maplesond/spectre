@@ -17,10 +17,10 @@ package uk.ac.uea.cmp.spectre.qtools.superq;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.tgac.metaopt.Objective;
-import uk.ac.tgac.metaopt.Optimiser;
-import uk.ac.tgac.metaopt.OptimiserException;
-import uk.ac.tgac.metaopt.OptimiserFactory;
+import uk.ac.earlham.metaopt.Objective;
+import uk.ac.earlham.metaopt.Optimiser;
+import uk.ac.earlham.metaopt.OptimiserException;
+import uk.ac.earlham.metaopt.OptimiserFactory;
 import uk.ac.uea.cmp.spectre.core.io.nexus.NexusFileFilter;
 import uk.ac.uea.cmp.spectre.core.ui.gui.JobController;
 import uk.ac.uea.cmp.spectre.core.ui.gui.JobControllerWithView;

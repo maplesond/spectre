@@ -23,9 +23,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import uk.ac.tgac.metaopt.Optimiser;
-import uk.ac.tgac.metaopt.OptimiserException;
-import uk.ac.tgac.metaopt.external.JOptimizer;
+import uk.ac.earlham.metaopt.Optimiser;
+import uk.ac.earlham.metaopt.OptimiserException;
+import uk.ac.earlham.metaopt.external.JOptimizer;
 
 import java.io.File;
 

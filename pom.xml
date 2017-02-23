@@ -52,8 +52,8 @@
         <developer>
             <id>maplesod</id>
             <name>Daniel Mapleson</name>
-            <email>daniel.mapleson@tgac.ac.uk</email>
-            <organization>Earlham Institute</organization>
+            <email>daniel.mapleson@earlham.ac.uk</email>
+            <organization>Earlham Institute (EI)</organization>
             <organizationUrl>http://www.earlham.ac.uk</organizationUrl>
             <roles>
                 <role>developer</role>
@@ -62,8 +62,8 @@
         <developer>
             <id>s.bastkowski</id>
             <name>Sarah Bastkowski</name>
-            <email>sarah.bastkowski@tgac.ac.uk</email>
-            <organization>Earlham Institute</organization>
+            <email>sarah.bastkowski@earlham.ac.uk</email>
+            <organization>Earlham Institute (EI)</organization>
             <organizationUrl>http://www.earlham.ac.uk</organizationUrl>
             <roles>
                 <role>developer</role>
