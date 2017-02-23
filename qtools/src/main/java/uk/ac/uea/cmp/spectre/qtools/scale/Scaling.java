@@ -36,7 +36,7 @@ public class Scaling extends SpectreTool {
 
     @Override
     public String getName() {
-        return "scaler";
+        return "scaling";
     }
 
     @Override
@@ -77,7 +77,9 @@ public class Scaling extends SpectreTool {
     protected void execute(CommandLine commandLine) throws IOException {
 
         // All options are required
-        File outputPrefix = new File(commandLine.getOptionValue(OPT_OUTPUT_PREFIX));
+        File outputPrefix = new File(commandLine.hasOption(OPT_OUTPUT_PREFIX) ?
+                commandLine.getOptionValue(OPT_OUTPUT_PREFIX) :
+                "scaling");
 
         String[] args = commandLine.getArgs();
 

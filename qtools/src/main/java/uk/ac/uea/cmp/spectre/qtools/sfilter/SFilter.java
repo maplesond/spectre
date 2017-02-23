@@ -54,7 +54,7 @@ public class SFilter extends SpectreTool {
                 .withDescription("The output nexus file which will contain the filtered splits.").create("o"));
 
         options.addOption(OptionBuilder.withArgName("string").withLongOpt(OPT_MIN_THRESHOLD).hasArg()
-                .withDescription("The minimum threshold for split weights: ").create("t"));
+                .withDescription("The minimum threshold for split weights").create("t"));
 
         return options;
     }

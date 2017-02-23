@@ -25,7 +25,7 @@ public class QNetOptions {
 
     public static final String DESC_INPUT = "The q weight file containing the taxa and quartets to process.";
 
-    public static final String DESC_OUTPUT = "The nexus file that will contain output.";
+    public static final String DESC_OUTPUT = "REQUIRED: The nexus file that will contain output.";
 
     public static final String DESC_LOG = "If false, normalises quartets linearly, if true normalises quartets using natural log";
 

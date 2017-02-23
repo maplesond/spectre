@@ -36,7 +36,7 @@ command line parameter.
 
 Relatively small splits that are incompatible with much bigger splits are filtered out from the network using the approach
 described in (Grunewald et al. 2007). The filtering threshold is a number between 0 and 1. The default filtering threshold
-is 0.15. It can be altered using the ``-thr/--threshold <[0.0,1.0]>`` parameter; choosing 0.0 as the threshold results in
+is 0.15. It can be altered using the ``-t/--threshold <[0.0,1.0]>`` parameter; choosing 0.0 as the threshold results in
 an unfiltered network whereas 1.0 yields a network that is a tree.
 
 Usage examples:
@@ -85,9 +85,8 @@ To illustrate FlatNJ's usage for geographical data, we use coordinates of some o
 The following steps will guide you through the whole process of the network construction for the European capitals data set:
 
 1. Open a terminal window and change to an empty working directory.
-2. To compute a system of 4-splits for the input file ``<spectre_dir>/examples/flatnj/europe.nex`` type: ``gen4s -i <spectre_dir>/examples/flatnj/europe.nex -b LOCATIONS -o <output_dir>/europe.4s``
-3. To compute a split network from the system of 4-splits type: ``flatnj -i <spectre_dir>/examples/flatnj/europe.4s -o <output_dir>/europe_net.nex``
-4. To view the network launch ``netview`` and open europe ``<output_dir>/europe_net.nex``. The network displayed by SplitsTree should look very similar to the one in Figure 2.
+2. To compute a split network from the geographical data type: ``flatnj -o <output_dir>/europe_net.nex <spectre_dir>/examples/flatnj/europe.nex``
+3. To view the network launch ``netview`` and open europe ``<output_dir>/europe_net.nex``. The network displayed by SplitsTree should look very similar to the one in Figure 2.
 
 .. image:: images/flatnj-fig2.png
     :scale: 50 %
