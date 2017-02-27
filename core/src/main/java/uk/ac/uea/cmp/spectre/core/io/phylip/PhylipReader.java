@@ -61,7 +61,7 @@ public class PhylipReader extends AbstractSpectreReader {
         }
 
         // Load file into line collection
-        List<String> inLines = FileUtils.readLines(file);
+        List<String> inLines = FileUtils.readLines(file, "UTF-8");
 
         // Execute Parseing code.
         return alternativeParser(inLines);

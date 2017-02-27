@@ -108,8 +108,8 @@ public class NetMakeTest {
         assertTrue(netout.exists());
         assertTrue(treeout.exists());
 
-        List<String> netlines = FileUtils.readLines(netout);
-        List<String> treelines = FileUtils.readLines(treeout);
+        List<String> netlines = FileUtils.readLines(netout, "UTF-8");
+        List<String> treelines = FileUtils.readLines(treeout, "UTF-8");
 
         assertTrue(!netlines.isEmpty());
         assertTrue(!treelines.isEmpty());
@@ -137,8 +137,8 @@ public class NetMakeTest {
         assertTrue(netout.exists());
         assertTrue(treeout.exists());
 
-        List<String> netlines = FileUtils.readLines(netout);
-        List<String> treelines = FileUtils.readLines(treeout);
+        List<String> netlines = FileUtils.readLines(netout, "UTF-8");
+        List<String> treelines = FileUtils.readLines(treeout, "UTF-8");
 
         assertTrue(!netlines.isEmpty());
         assertTrue(!treelines.isEmpty());
@@ -165,8 +165,8 @@ public class NetMakeTest {
         assertTrue(netout.exists());
         assertTrue(treeout.exists());
 
-        List<String> netlines = FileUtils.readLines(netout);
-        List<String> treelines = FileUtils.readLines(treeout);
+        List<String> netlines = FileUtils.readLines(netout, "UTF-8");
+        List<String> treelines = FileUtils.readLines(treeout, "UTF-8");
 
         assertTrue(!netlines.isEmpty());
         assertTrue(!treelines.isEmpty());

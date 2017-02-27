@@ -16,7 +16,6 @@
 package uk.ac.uea.cmp.spectre.core.io.qweight.parser;
 
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.slf4j.Logger;
@@ -52,132 +51,132 @@ public class QWeightPopulator implements QWeightListener {
     }
 
     @Override
-    public void enterW3(@NotNull QWeightParser.W3Context ctx) {
+    public void enterW3(QWeightParser.W3Context ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public void exitW3(@NotNull QWeightParser.W3Context ctx) {
+    public void exitW3(QWeightParser.W3Context ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public void enterSense(@NotNull QWeightParser.SenseContext ctx) {
+    public void enterSense(QWeightParser.SenseContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public void exitSense(@NotNull QWeightParser.SenseContext ctx) {
+    public void exitSense(QWeightParser.SenseContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public void enterTaxa(@NotNull QWeightParser.TaxaContext ctx) {
+    public void enterTaxa(QWeightParser.TaxaContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public void exitTaxa(@NotNull QWeightParser.TaxaContext ctx) {
+    public void exitTaxa(QWeightParser.TaxaContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public void enterW1(@NotNull QWeightParser.W1Context ctx) {
+    public void enterW1(QWeightParser.W1Context ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public void exitW1(@NotNull QWeightParser.W1Context ctx) {
+    public void exitW1(QWeightParser.W1Context ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public void enterW2(@NotNull QWeightParser.W2Context ctx) {
+    public void enterW2(QWeightParser.W2Context ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public void exitW2(@NotNull QWeightParser.W2Context ctx) {
+    public void exitW2(QWeightParser.W2Context ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public void enterV(@NotNull QWeightParser.VContext ctx) {
+    public void enterV(QWeightParser.VContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public void exitV(@NotNull QWeightParser.VContext ctx) {
+    public void exitV(QWeightParser.VContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public void enterU(@NotNull QWeightParser.UContext ctx) {
+    public void enterU(QWeightParser.UContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public void exitU(@NotNull QWeightParser.UContext ctx) {
+    public void exitU(QWeightParser.UContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public void enterWords(@NotNull QWeightParser.WordsContext ctx) {
+    public void enterWords(QWeightParser.WordsContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public void exitWords(@NotNull QWeightParser.WordsContext ctx) {
+    public void exitWords(QWeightParser.WordsContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public void enterSense_option(@NotNull QWeightParser.Sense_optionContext ctx) {
+    public void enterSense_option(QWeightParser.Sense_optionContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public void exitSense_option(@NotNull QWeightParser.Sense_optionContext ctx) {
+    public void exitSense_option(QWeightParser.Sense_optionContext ctx) {
         this.groupedQuartetSystem.setSense(GroupedQuartetSystem.Sense.valueOf(ctx.getText().toUpperCase()));
     }
 
     @Override
-    public void enterDescription(@NotNull QWeightParser.DescriptionContext ctx) {
+    public void enterDescription(QWeightParser.DescriptionContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public void exitDescription(@NotNull QWeightParser.DescriptionContext ctx) {
+    public void exitDescription(QWeightParser.DescriptionContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public void enterNbtaxa(@NotNull QWeightParser.NbtaxaContext ctx) {
+    public void enterNbtaxa(QWeightParser.NbtaxaContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public void exitNbtaxa(@NotNull QWeightParser.NbtaxaContext ctx) {
+    public void exitNbtaxa(QWeightParser.NbtaxaContext ctx) {
         this.expectedTaxa = Integer.parseInt(ctx.NUMERIC().getText());
     }
 
     @Override
-    public void enterQuartets(@NotNull QWeightParser.QuartetsContext ctx) {
+    public void enterQuartets(QWeightParser.QuartetsContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public void exitQuartets(@NotNull QWeightParser.QuartetsContext ctx) {
+    public void exitQuartets(QWeightParser.QuartetsContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public void enterParse(@NotNull QWeightParser.ParseContext ctx) {
+    public void enterParse(QWeightParser.ParseContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public void exitParse(@NotNull QWeightParser.ParseContext ctx) {
+    public void exitParse(QWeightParser.ParseContext ctx) {
 
         // log some warnings if things aren't proceeding as expected
         final int actualTaxa = this.groupedQuartetSystem.getTaxa().size();
@@ -198,12 +197,12 @@ public class QWeightPopulator implements QWeightListener {
     }
 
     @Override
-    public void enterQuartet(@NotNull QWeightParser.QuartetContext ctx) {
+    public void enterQuartet(QWeightParser.QuartetContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public void exitQuartet(@NotNull QWeightParser.QuartetContext ctx) {
+    public void exitQuartet(QWeightParser.QuartetContext ctx) {
 
         int a = Integer.parseInt(ctx.x().NUMERIC().getText());
         int b = Integer.parseInt(ctx.y().NUMERIC().getText());
@@ -221,54 +220,54 @@ public class QWeightPopulator implements QWeightListener {
     }
 
     @Override
-    public void enterTaxon(@NotNull QWeightParser.TaxonContext ctx) {
+    public void enterTaxon(QWeightParser.TaxonContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public void exitTaxon(@NotNull QWeightParser.TaxonContext ctx) {
+    public void exitTaxon(QWeightParser.TaxonContext ctx) {
         String name = ctx.IDENTIFIER().getText();
         int id = Integer.parseInt(ctx.NUMERIC().getText());
         this.groupedQuartetSystem.getTaxa().add(new Identifier(name, id));
     }
 
     @Override
-    public void enterY(@NotNull QWeightParser.YContext ctx) {
+    public void enterY(QWeightParser.YContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public void exitY(@NotNull QWeightParser.YContext ctx) {
+    public void exitY(QWeightParser.YContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public void enterX(@NotNull QWeightParser.XContext ctx) {
+    public void enterX(QWeightParser.XContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public void exitX(@NotNull QWeightParser.XContext ctx) {
+    public void exitX(QWeightParser.XContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public void visitTerminal(@NotNull TerminalNode node) {
+    public void visitTerminal(TerminalNode node) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public void visitErrorNode(@NotNull ErrorNode node) {
+    public void visitErrorNode(ErrorNode node) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public void enterEveryRule(@NotNull ParserRuleContext ctx) {
+    public void enterEveryRule(ParserRuleContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public void exitEveryRule(@NotNull ParserRuleContext ctx) {
+    public void exitEveryRule(ParserRuleContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 }

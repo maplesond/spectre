@@ -70,7 +70,7 @@ public class PhylipCorrector extends SpectreTool {
 
         File inputFile = new File(commandLine.getArgs()[0]);
 
-        List<String> inlines = FileUtils.readLines(inputFile);
+        List<String> inlines = FileUtils.readLines(inputFile, "UTF-8");
         List<List<String>> outlines = new ArrayList<List<String>>();
         String aline = inlines.get(0);
 

@@ -48,7 +48,7 @@ public class PhylipWriterTest {
 
         new PhylipWriter().writeDistanceMatrix(outputFile, rdm);
 
-        List<String> lines = FileUtils.readLines(outputFile);
+        List<String> lines = FileUtils.readLines(outputFile, "UTF-8");
 
         assertTrue(lines.size() == 11);
         assertTrue(lines.get(1).split(" ").length == 11);

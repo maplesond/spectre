@@ -57,7 +57,7 @@ public class NexusWriterTest {
         // Check output file was created
         assertTrue(outputFile.exists());
 
-        List<String> lines = FileUtils.readLines(outputFile);
+        List<String> lines = FileUtils.readLines(outputFile, "UTF-8");
 
         // Check we have the number of lines we were expecting
         assertTrue(lines.size() == 20 || lines.size() == 21);
@@ -79,7 +79,7 @@ public class NexusWriterTest {
         // Check output file was created
         assertTrue(outputFile.exists());
 
-        List<String> lines = FileUtils.readLines(outputFile);
+        List<String> lines = FileUtils.readLines(outputFile, "UTF-8");
 
         // Check we have the number of lines we were expecting
         assertTrue(lines.size() == 32);  */

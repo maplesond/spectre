@@ -16,7 +16,6 @@
 package uk.ac.uea.cmp.spectre.core.ds.tree.newick.parser;
 
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.slf4j.Logger;
@@ -59,33 +58,33 @@ public class NewickTreePopulator implements NewickTreeListener {
     }
 
     @Override
-    public void enterBranchset(@NotNull NewickTreeParser.BranchsetContext ctx) {
+    public void enterBranchset(NewickTreeParser.BranchsetContext ctx) {
 
 
     }
 
     @Override
-    public void exitBranchset(@NotNull NewickTreeParser.BranchsetContext ctx) {
+    public void exitBranchset(NewickTreeParser.BranchsetContext ctx) {
 
     }
 
     @Override
-    public void enterLeaf(@NotNull NewickTreeParser.LeafContext ctx) {
+    public void enterLeaf(NewickTreeParser.LeafContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public void exitLeaf(@NotNull NewickTreeParser.LeafContext ctx) {
+    public void exitLeaf(NewickTreeParser.LeafContext ctx) {
 
     }
 
     @Override
-    public void enterWeight(@NotNull NewickTreeParser.WeightContext ctx) {
+    public void enterWeight(NewickTreeParser.WeightContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public void exitWeight(@NotNull NewickTreeParser.WeightContext ctx) {
+    public void exitWeight(NewickTreeParser.WeightContext ctx) {
         if (ctx.WEIGHT() != null && !ctx.WEIGHT().getSymbol().getText().isEmpty()) {
 
             String weightStr = ctx.WEIGHT().getText().substring(1);
@@ -103,22 +102,22 @@ public class NewickTreePopulator implements NewickTreeListener {
     }
 
     @Override
-    public void enterSubtree(@NotNull NewickTreeParser.SubtreeContext ctx) {
+    public void enterSubtree(NewickTreeParser.SubtreeContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public void exitSubtree(@NotNull NewickTreeParser.SubtreeContext ctx) {
+    public void exitSubtree(NewickTreeParser.SubtreeContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public void enterName(@NotNull NewickTreeParser.NameContext ctx) {
+    public void enterName(NewickTreeParser.NameContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public void exitName(@NotNull NewickTreeParser.NameContext ctx) {
+    public void exitName(NewickTreeParser.NameContext ctx) {
 
         if (ctx.WORD() != null) {
             String name = ctx.WORD().getText();
@@ -131,12 +130,12 @@ public class NewickTreePopulator implements NewickTreeListener {
     }
 
     @Override
-    public void enterLength(@NotNull NewickTreeParser.LengthContext ctx) {
+    public void enterLength(NewickTreeParser.LengthContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public void exitLength(@NotNull NewickTreeParser.LengthContext ctx) {
+    public void exitLength(NewickTreeParser.LengthContext ctx) {
         if (ctx.LENGTH() != null && !ctx.LENGTH().getText().isEmpty()) {
 
             String lenStr = ctx.LENGTH().getText().substring(1);
@@ -154,7 +153,7 @@ public class NewickTreePopulator implements NewickTreeListener {
     }
 
     @Override
-    public void enterBranch(@NotNull NewickTreeParser.BranchContext ctx) {
+    public void enterBranch(NewickTreeParser.BranchContext ctx) {
         NewickNode newBranch = new NewickSubTree();
         this.currentNode.addBranch(newBranch);
         this.currentNode = newBranch;
@@ -165,7 +164,7 @@ public class NewickTreePopulator implements NewickTreeListener {
     }
 
     @Override
-    public void exitBranch(@NotNull NewickTreeParser.BranchContext ctx) {
+    public void exitBranch(NewickTreeParser.BranchContext ctx) {
 
         this.currentNode = this.currentNode.getParent();
         this.depth--;
@@ -175,42 +174,42 @@ public class NewickTreePopulator implements NewickTreeListener {
     }
 
     @Override
-    public void enterParse(@NotNull NewickTreeParser.ParseContext ctx) {
+    public void enterParse(NewickTreeParser.ParseContext ctx) {
 
     }
 
     @Override
-    public void exitParse(@NotNull NewickTreeParser.ParseContext ctx) {
+    public void exitParse(NewickTreeParser.ParseContext ctx) {
 
     }
 
     @Override
-    public void enterInternal(@NotNull NewickTreeParser.InternalContext ctx) {
+    public void enterInternal(NewickTreeParser.InternalContext ctx) {
 
     }
 
     @Override
-    public void exitInternal(@NotNull NewickTreeParser.InternalContext ctx) {
+    public void exitInternal(NewickTreeParser.InternalContext ctx) {
 
     }
 
     @Override
-    public void visitTerminal(@NotNull TerminalNode node) {
+    public void visitTerminal(TerminalNode node) {
 
     }
 
     @Override
-    public void visitErrorNode(@NotNull ErrorNode node) {
+    public void visitErrorNode(ErrorNode node) {
 
     }
 
     @Override
-    public void enterEveryRule(@NotNull ParserRuleContext ctx) {
+    public void enterEveryRule(ParserRuleContext ctx) {
 
     }
 
     @Override
-    public void exitEveryRule(@NotNull ParserRuleContext ctx) {
+    public void exitEveryRule(ParserRuleContext ctx) {
 
     }
 }

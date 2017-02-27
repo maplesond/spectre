@@ -21,8 +21,6 @@ import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
 import org.antlr.v4.runtime.atn.ATNConfigSet;
 import org.antlr.v4.runtime.dfa.DFA;
-import org.antlr.v4.runtime.misc.NotNull;
-import org.antlr.v4.runtime.misc.Nullable;
 
 import java.util.BitSet;
 
@@ -47,23 +45,23 @@ public class DefaultParsingErrorListener implements ANTLRErrorListener {
      * @param e Recognition Exception object
      */
     @Override
-    public void syntaxError(Recognizer<?, ?> recognizer, @Nullable Object offendingSymbol, int line, int charPositionInLine, String msg, @Nullable RecognitionException e) {
+    public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e) {
         throw new RuntimeException("Line: " + line + "; Char: " + charPositionInLine + "; Message: " + msg, e);
     }
 
 
     @Override
-    public void reportAmbiguity(@NotNull Parser parser, @NotNull DFA dfa, int i, int i2, boolean b, @NotNull BitSet bitSet, @NotNull ATNConfigSet atnConfigs) {
+    public void reportAmbiguity( Parser parser,  DFA dfa, int i, int i2, boolean b,  BitSet bitSet,  ATNConfigSet atnConfigs) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public void reportAttemptingFullContext(@NotNull Parser parser, @NotNull DFA dfa, int i, int i2, @Nullable BitSet bitSet, @NotNull ATNConfigSet atnConfigs) {
+    public void reportAttemptingFullContext( Parser parser,  DFA dfa, int i, int i2, BitSet bitSet,  ATNConfigSet atnConfigs) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public void reportContextSensitivity(@NotNull Parser parser, @NotNull DFA dfa, int i, int i2, int i3, @NotNull ATNConfigSet atnConfigs) {
+    public void reportContextSensitivity( Parser parser,  DFA dfa, int i, int i2, int i3,  ATNConfigSet atnConfigs) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 }

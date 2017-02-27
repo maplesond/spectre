@@ -25,7 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.*;
 
 public class QMakerITCase {
 
@@ -43,7 +43,7 @@ public class QMakerITCase {
 
         assertTrue(qMaker.getQuartetFile().exists());
 
-        List<String> lines = FileUtils.readLines(qMaker.getQuartetFile());
+        List<String> lines = FileUtils.readLines(qMaker.getQuartetFile(), "UTF-8");
 
         assertTrue(lines.size() == 45);
     }
@@ -59,7 +59,7 @@ public class QMakerITCase {
 
         assertTrue(chopper.getQuartetFile().exists());
 
-        List<String> lines = FileUtils.readLines(chopper.getQuartetFile());
+        List<String> lines = FileUtils.readLines(chopper.getQuartetFile(), "UTF-8");
 
         assertTrue(lines.size() == 45);
     }
@@ -75,7 +75,7 @@ public class QMakerITCase {
 
         assertTrue(chopper.getQuartetFile().exists());
 
-        List<String> lines = FileUtils.readLines(chopper.getQuartetFile());
+        List<String> lines = FileUtils.readLines(chopper.getQuartetFile(), "UTF-8");
 
         assertTrue(lines.size() == 31717);
     }

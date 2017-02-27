@@ -27,8 +27,7 @@ import uk.ac.uea.cmp.spectre.core.ds.tree.newick.NewickTree;
 import java.io.IOException;
 import java.util.List;
 
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.*;
 
 public class QMakerTest {
 

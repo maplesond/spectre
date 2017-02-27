@@ -35,7 +35,7 @@ import uk.ac.uea.cmp.spectre.qtools.qmaker.QMaker;
 import java.io.File;
 import java.io.IOException;
 
-import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.*;
 
 public class QNetITCase {
 

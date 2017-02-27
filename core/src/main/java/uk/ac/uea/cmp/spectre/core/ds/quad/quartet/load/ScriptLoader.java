@@ -54,7 +54,7 @@ public class ScriptLoader extends AbstractQLoader {
         QuartetSystemList qnets = new QuartetSystemList();
 
         // Load the script
-        List<String> lines = FileUtils.readLines(inputFile);
+        List<String> lines = FileUtils.readLines(inputFile, "UTF-8");
 
         // Execute each line of the script
         for (String line : lines) {

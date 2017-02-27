@@ -43,7 +43,7 @@ public class TreeLoader implements QLoader {
 
         QuartetSystemList sourceDataList = new QuartetSystemList();
 
-        List<String> lines = FileUtils.readLines(file);
+        List<String> lines = FileUtils.readLines(file, "UTF-8");
         for (String line : lines) {
 
             String trimmedLine = line.trim();
