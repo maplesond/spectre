@@ -54,6 +54,7 @@
                             <jvmSettings>
                                 <extraArguments>
                                     <extraArgument>-Djava.awt.headless=true</extraArgument>
+                                    <extraArgument>-XX:+UseSerialGC</extraArgument>
                                 </extraArguments>
                             </jvmSettings>
                         </program>
@@ -67,6 +68,7 @@
                             <jvmSettings>
                                 <extraArguments>
                                     <extraArgument>-Djava.awt.headless=true</extraArgument>
+                                    <extraArgument>-XX:+UseSerialGC</extraArgument>
                                 </extraArguments>
                             </jvmSettings>
                         </program>
