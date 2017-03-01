@@ -56,7 +56,7 @@ public class BoxOpener {
                 }
             }
         }
-        return maxAngle;
+        return maxAngle == null ? 0.0 : maxAngle.doubleValue();
     }
 
     public void openOneIncompatible(int[] activeSplits, Vertex v, LinkedList<Vertex> vertices, TreeSet[] splitedges, Network network) {
