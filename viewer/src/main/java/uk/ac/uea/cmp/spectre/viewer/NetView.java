@@ -22,6 +22,10 @@ import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfWriter;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.Options;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +38,7 @@ import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
 import uk.ac.uea.cmp.spectre.core.ds.network.draw.PermutationSequenceDraw;
 import uk.ac.uea.cmp.spectre.core.io.nexus.Nexus;
 import uk.ac.uea.cmp.spectre.core.io.nexus.NexusReader;
+import uk.ac.uea.cmp.spectre.core.ui.cli.CommandLineHelper;
 import uk.ac.uea.cmp.spectre.core.ui.gui.LookAndFeel;
 import uk.ac.uea.cmp.spectre.core.ui.gui.geom.Leaders;
 
@@ -53,6 +58,11 @@ import java.util.Set;
  */
 public class NetView extends javax.swing.JFrame {
     private static Logger log = LoggerFactory.getLogger(NetView.class);
+
+    private static String BIN_NAME = "netview";
+
+    private static String OPT_HELP = "help";
+    private static String OPT_VERBOSE = "verbose";
 
     private Point startPoint;
     private JFrame format;
@@ -711,25 +721,64 @@ public class NetView extends javax.swing.JFrame {
         errorMessage(message, null);
     }
 
+
+    private static Options createOptions() {
+
+        Options options = new Options();
+        options.addOption(CommandLineHelper.HELP_OPTION);
+        options.addOption(OptionBuilder.withLongOpt(OPT_VERBOSE).isRequired(false).hasArg(false)
+                .withDescription("Whether to output extra information").create("v"));
+        return options;
+    }
+
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        LookAndFeel.setLookAndFeel(LookAndFeel.NIMBUS);
 
-        BasicConfigurator.configure();
+        try {
+            LookAndFeel.setLookAndFeel(LookAndFeel.NIMBUS);
 
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    new NetView().setVisible(true);
-                } catch (IOException ex) {
-                    errorMessage("Problem occured while running NetView", ex);
-                }
+            BasicConfigurator.configure();
+
+            // Parse command line args
+            CommandLine commandLine = CommandLineHelper.startApp(createOptions(), "netview [options] <input>",
+                    "Visualises a network.  Can take a nexus file as input.", args, false);
+
+            // If we didn't return a command line object then just return.  Probably the user requested help or
+            // input invalid args
+            if (commandLine == null) {
+                return;
             }
-        });
+
+            final File inputfile = commandLine == null || commandLine.getArgs().length == 0 ? null : new File(commandLine.getArgs()[0]);
+
+            if (commandLine.getArgs().length > 1) {
+                throw new IOException("Expected only a single input file.");
+            }
+
+
+            /* Create and display the form */
+            java.awt.EventQueue.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        if (inputfile == null) {
+                            new NetView().setVisible(true);
+                        } else {
+                            new NetView(inputfile).setVisible(true);
+                        }
+                    } catch (IOException ex) {
+                        errorMessage("Problem occured while running NetView", ex);
+                    }
+                }
+            });
+        } catch (Exception e) {
+            System.err.println("\nException: " + e.toString());
+            System.err.println("\nStack trace:");
+            System.err.println(StringUtils.join(e.getStackTrace(), "\n"));
+            System.exit(3);
+        }
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

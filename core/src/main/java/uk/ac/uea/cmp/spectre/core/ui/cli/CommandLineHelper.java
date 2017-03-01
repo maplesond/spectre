@@ -61,12 +61,16 @@ public class CommandLineHelper {
     }
 
     public static CommandLine startApp(Options options, String cmdLineSyntax, String description, String[] args) {
+        return startApp(options, cmdLineSyntax, description, args, true);
+    }
+
+    public static CommandLine startApp(Options options, String cmdLineSyntax, String description, String[] args, boolean helpOnNoArgs) {
 
         try {
             // Test for help first
             CommandLine helpCl = new PosixParser().parse(createHelpOptions(), args, true);
 
-            if (helpCl.hasOption(OPT_HELP) || helpCl.getArgList().isEmpty()) {
+            if (helpCl.hasOption(OPT_HELP) || (helpOnNoArgs && helpCl.getArgList().isEmpty())) {
                 CommandLineHelper.printHelp(options, cmdLineSyntax, description);
                 return null;
             }
