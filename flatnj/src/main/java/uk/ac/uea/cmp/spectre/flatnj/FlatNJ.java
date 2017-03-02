@@ -31,6 +31,7 @@ import uk.ac.earlham.metaopt.Objective;
 import uk.ac.earlham.metaopt.Optimiser;
 import uk.ac.earlham.metaopt.OptimiserException;
 import uk.ac.earlham.metaopt.OptimiserFactory;
+import uk.ac.earlham.metaopt.external.JOptimizer;
 import uk.ac.uea.cmp.spectre.core.ds.Alignment;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
@@ -62,7 +63,6 @@ public class FlatNJ {
 
     private static Logger log = LoggerFactory.getLogger(FlatNJ.class);
 
-    private static final String OPT_INPUT = "input";
     private static final String OPT_OUTPUT = "output";
     private static final String OPT_NEXUS_BLOCK = "nexus_block";
     private static final String OPT_THRESHOLD = "threshold";
@@ -165,30 +165,76 @@ public class FlatNJ {
         }
         else if (extension.equalsIgnoreCase("nex") || extension.equalsIgnoreCase("nexus") || extension.equalsIgnoreCase("4s")) {
 
-            if (nexusBlock == null) {
-                throw new IllegalArgumentException("Nexus file provided as input but no nexus block specified by user");
-            }
-
             // Read taxa block regardless
             taxa = readTaxa(inFile.getAbsolutePath());
 
-            String blockLowerCase = this.nexusBlock.toLowerCase();
-            if (blockLowerCase.contentEquals("data") || blockLowerCase.contentEquals("characters")) {
-                alignment = readAlignment(inFile);
-            } else if (blockLowerCase.contentEquals("distances")) {
-                distanceMatrix = readDistanceMatrix(inFile);
-            } if (blockLowerCase.contentEquals("locations")) {
-                locations = readLocations(inFile);
-            } else if (blockLowerCase.contentEquals("splits")) {
-                ss = readSplitSystem(inFile);
-            } else if (blockLowerCase.contentEquals("quadruples")) {
-                qs = readQuadruples(inFile.getAbsolutePath());
+            if (taxa == null) {
+                throw new IOException("No labels for the taxa were indicated.");
             }
 
-        }
+            if (nexusBlock == null) {
+                log.warn("Nexus file provided as input but no nexus block specified by user.  Will use first suitable block found in nexus file.");
+                try {
+                    alignment = readAlignment(inFile);
+                    log.info("Detected and loaded Alignment Block.");
+                }
+                catch (IOException e1) {
+                    try {
+                        distanceMatrix = readDistanceMatrix(inFile);
+                        log.info("Detected and loaded Distance Matrix Block.");
+                    }
+                    catch (IOException e2) {
+                        // Ignore
+                    }
+                }
 
-        if (taxa == null) {
-            throw new IOException("No labels for the taxa were indicated.");
+                locations = readLocations(inFile);
+                if (locations != null) {
+                    log.info("Detected and loaded Locations Block.");
+                }
+                else {
+                    ss = readSplitSystem(inFile);
+                    if (ss != null) {
+                        log.info("Detected and loaded Split System Block.");
+                    }
+                    else {
+                        qs = readQuadruples(inFile.getAbsolutePath());
+                        if (qs != null) {
+                            log.info("Detected and loaded Quadruples Block.");
+                        }
+                        else {
+                            throw new IOException("Couldn't find a valid block in nexus file.");
+                        }
+                    }
+                }
+            }
+            else {
+
+                boolean loaded = false;
+
+                String blockLowerCase = this.nexusBlock.toLowerCase();
+                if (blockLowerCase.contentEquals("data") || blockLowerCase.contentEquals("characters")) {
+                    alignment = readAlignment(inFile);
+                    loaded = true;
+                } else if (blockLowerCase.contentEquals("distances")) {
+                    distanceMatrix = readDistanceMatrix(inFile);
+                    loaded = true;
+                }
+                if (blockLowerCase.contentEquals("locations")) {
+                    locations = readLocations(inFile);
+                    loaded = true;
+                } else if (blockLowerCase.contentEquals("splits")) {
+                    ss = readSplitSystem(inFile);
+                    loaded = true;
+                } else if (blockLowerCase.contentEquals("quadruples")) {
+                    qs = readQuadruples(inFile.getAbsolutePath());
+                    loaded = true;
+                }
+
+                if (!loaded) {
+                    throw new IOException("Couldn't loaded requested block from nexus file.");
+                }
+            }
         }
 
         // Compute the Quadruple system from alternate information if we didn't just load it from disk
@@ -294,13 +340,14 @@ public class FlatNJ {
 
         options.addOption(OptionBuilder.withArgName("string").withLongOpt(OPT_NEXUS_BLOCK).hasArg()
                 .withDescription("If input file is a nexus file, then the user must specify which block in the file to use as input." +
-                        "May be one of the following:\n" + StringUtils.join(ALLOWED_BLOCKS, ", ") + ".").create("n"));
+                        "Allowed blocks:\n" + StringUtils.join(ALLOWED_BLOCKS, ", ") + ". It is strongly recommended" +
+                        "that you specify this option if processing a nexus file, otherwise FlatNJ will process the first suitable block.").create("n"));
 
         options.addOption(OptionBuilder.withArgName("double").withLongOpt(OPT_THRESHOLD).hasArg()
                 .withDescription("Filtering threshold, i.e. minimal length ratio allowed for two incompatible splits. Default value (" + DEFAULT_THRESHOLD + ")").create("t"));
 
-        options.addOption(OptionBuilder.withArgName("string").withLongOpt(OPT_OPTIMISER).isRequired().hasArg()
-                .withDescription("The optimiser to use: " + OptimiserFactory.getInstance().listOperationalOptimisers()).create("p"));
+        options.addOption(OptionBuilder.withArgName("string").withLongOpt(OPT_OPTIMISER).hasArg()
+                .withDescription("The optimiser to use: " + OptimiserFactory.getInstance().listOperationalOptimisers() + " - Default value (JOptimizer)").create("p"));
 
         options.addOption(OptionBuilder.withLongOpt(OPT_SAVE_STAGES)
                 .withDescription("Output nexus files at all stages in the pipeline.  Will use output file name with additional suffix for intermediary stages - Default: false").create("a"));
@@ -358,10 +405,15 @@ public class FlatNJ {
 
             // Required
             File inFile = new File(commandLine.getArgs()[0]);
-            Optimiser optimiser = OptimiserFactory.getInstance().createOptimiserInstance(commandLine.getOptionValue(OPT_OPTIMISER), Objective.ObjectiveType.QUADRATIC);
+            Optimiser optimiser = commandLine.hasOption(OPT_OPTIMISER) ?
+                    OptimiserFactory.getInstance().createOptimiserInstance(commandLine.getOptionValue(OPT_OPTIMISER), Objective.ObjectiveType.QUADRATIC) :
+                    new JOptimizer();
 
             if (optimiser == null) {
-                throw new OptimiserException("Optimiser not recognised: " + commandLine.getOptionValue(OPT_OPTIMISER));
+                throw new RuntimeException("Error initialising optimiser");
+            }
+            else {
+                log.info("Initialised " + optimiser.getIdentifier());
             }
 
             // Optional
