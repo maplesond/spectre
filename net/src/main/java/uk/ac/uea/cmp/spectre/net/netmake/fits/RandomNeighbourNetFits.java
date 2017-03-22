@@ -215,7 +215,7 @@ public class RandomNeighbourNetFits {
         }
 
         /* Write summary to file */
-        FileUtils.writeStringToFile(summaryFile, fileContent.toString());
+        FileUtils.writeStringToFile(summaryFile, fileContent.toString(), "UTF-8");
 
         log.info("Summary written to \"Summary.txt\" ...");
     }

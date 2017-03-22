@@ -56,6 +56,6 @@ public class NetMEResult {
         nexusWriter.writeSplitSystem(minEvoFile, this.getMeTree());
         nexusWriter.writeSplitSystem(origMinEvoFile, this.getOriginalMETree());
 
-        FileUtils.writeStringToFile(statFile, stats);
+        FileUtils.writeStringToFile(statFile, stats, "UTF-8");
     }
 }

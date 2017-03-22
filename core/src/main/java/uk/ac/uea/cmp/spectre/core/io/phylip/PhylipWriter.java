@@ -53,6 +53,6 @@ public class PhylipWriter extends AbstractSpectreWriter {
         }
 
         // Save
-        FileUtils.writeStringToFile(outFile, fileContent.toString());
+        FileUtils.writeStringToFile(outFile, fileContent.toString(), "UTF-8");
     }
 }
