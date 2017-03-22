@@ -47,19 +47,26 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.dnd.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.StringTokenizer;
 
 /**
  * @author balvociute
  */
-public class NetView extends javax.swing.JFrame {
+public class NetView extends javax.swing.JFrame implements DropTargetListener {
     private static Logger log = LoggerFactory.getLogger(NetView.class);
 
     private static String BIN_NAME = "netview";
@@ -70,6 +77,8 @@ public class NetView extends javax.swing.JFrame {
     private Point startPoint;
     private JFrame format;
     private JFrame formatLabels;
+    private DropTarget dt;
+
 
     private String mainTitle = "NetView";
     private boolean resetlabelPositions = false;
@@ -91,6 +100,7 @@ public class NetView extends javax.swing.JFrame {
         initComponents();
         preparePopupMenu();
         getContentPane().setBackground(Color.white);
+        dt = new DropTarget(drawing, this);
         setIconImage((new ImageIcon("logo.png")).getImage());
         ButtonGroup leaderButtons = new ButtonGroup();
         leaderButtons.add(jRadioButtonBendedLeaders);
@@ -198,7 +208,6 @@ public class NetView extends javax.swing.JFrame {
                 drawingMouseDragged(evt);
             }
         });
-
 
         javax.swing.GroupLayout drawingLayout = new javax.swing.GroupLayout(drawing);
         drawing.setLayout(drawingLayout);
@@ -844,16 +853,7 @@ public class NetView extends javax.swing.JFrame {
     private ViewerConfig config = new ViewerConfig();
 
     private void drawNetwork() {
-        if (config != null) {
-            this.setExtendedState(JFrame.NORMAL);
-            this.setSize(config.getDimensions());
-        }
-        drawing.setGraph(network,
-                drawing.getWidth(),
-                drawing.getHeight(),
-                false,
-                (config != null) ? config.getRatio() : null);
-
+        drawing.setGraph(network, (config != null) ? config.getRatio() : null);
         drawing.showTrivial(config.showTrivial());
         drawing.repaint();
     }
@@ -1010,7 +1010,7 @@ public class NetView extends javax.swing.JFrame {
             readConfig(inFile.getAbsolutePath());
             setTitle(mainTitle + ": " + inFile.getAbsolutePath());
             drawNetwork();
-            drawing.repaintOnResize();
+            drawing.repaint();
         }
     }
 
@@ -1144,4 +1144,73 @@ public class NetView extends javax.swing.JFrame {
         config.setRatio(ratio);
     }
 
+
+    protected void processDrag(DropTargetDragEvent dtde) {
+        try {
+            if (dtde.isDataFlavorSupported(new DataFlavor("text/uri-list;class=java.lang.String"))) {
+                dtde.acceptDrag(DnDConstants.ACTION_COPY);
+            } else {
+                dtde.rejectDrag();
+            }
+        }
+        catch (ClassNotFoundException e) {
+            dtde.rejectDrag();
+        }
+    }
+
+    @Override
+    public void dragEnter(DropTargetDragEvent dtde) {
+        processDrag(dtde);
+        repaint();
+    }
+
+    @Override
+    public void dragOver(DropTargetDragEvent dtde) {
+        processDrag(dtde);
+        repaint();
+    }
+
+    @Override
+    public void dropActionChanged(DropTargetDragEvent dtde) {
+
+    }
+
+    @Override
+    public void dragExit(DropTargetEvent dte) {
+        repaint();
+    }
+
+    @Override
+    public void drop(DropTargetDropEvent dtde) {
+
+        try {
+            DataFlavor df = new DataFlavor("text/uri-list;class=java.lang.String");
+            Transferable transferable = dtde.getTransferable();
+            if (dtde.isDataFlavorSupported(df)) {
+                dtde.acceptDrop(dtde.getDropAction());
+
+                String data = (String) transferable.getTransferData(df);
+                for (StringTokenizer st = new StringTokenizer(data, "\r\n"); st.hasMoreTokens(); ) {
+                    String token = st.nextToken().trim();
+                    if (token.startsWith("#") || token.isEmpty()) {
+                        // comment line, by RFC 2483
+                        continue;
+                    }
+
+                    File file = new File(new URI(token));
+                    directory = file.getPath();
+                    openNetwork(file);
+                }
+                dtde.dropComplete(true);
+            }
+        } catch (IOException e) {
+            errorMessage("File not found", e);
+        } catch (URISyntaxException e) {
+            errorMessage("File not found", e);
+        } catch (UnsupportedFlavorException e) {
+            errorMessage("Unsupported item", e);
+        } catch (ClassNotFoundException e) {
+            errorMessage("Unsupported item", e);
+        }
+    }
 }

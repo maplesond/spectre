@@ -308,7 +308,7 @@ public class Window extends JPanel implements KeyListener {
         return network.getLabeledVertices();
     }
 
-    public void setGraph(Network network, int w, int h, boolean changeColors, Double ratio) {
+    public void setGraph(Network network, Double ratio) {
         clusters.clear();
         points.clear();
         lines.clear();
