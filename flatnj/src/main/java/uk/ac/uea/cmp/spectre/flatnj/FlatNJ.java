@@ -71,7 +71,7 @@ public class FlatNJ {
     private static final String OPT_VERBOSE = "verbose";
 
     private static final double DEFAULT_THRESHOLD = 0.15;
-    private static final String DEFAULT_OUTPUT = "flatnj.out";
+    private static final String DEFAULT_OUTPUT = "flatnj.nex";
 
     private static final String[] ALLOWED_BLOCKS = new String[]{
             "characters",
