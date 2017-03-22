@@ -36,7 +36,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 
 public class NetMakeTest {
