@@ -393,7 +393,7 @@ public class NetView extends javax.swing.JFrame {
         jMenu4.add(jRadioButtonBendedLeaders);
         jMenu4.add(jSeparator1);
 
-        jRadioButtonSolid.setSelected(true);
+
         jRadioButtonSolid.setText("Solid");
         jRadioButtonSolid.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -402,6 +402,7 @@ public class NetView extends javax.swing.JFrame {
         });
         jMenu4.add(jRadioButtonSolid);
 
+        jRadioButtonDashed.setSelected(true);
         jRadioButtonDashed.setText("Dashed");
         jRadioButtonDashed.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -999,7 +1000,8 @@ public class NetView extends javax.swing.JFrame {
 
     private void readConfig(String inFile) {
         try {
-            config = new ViewerConfig(new NexusReader().extractBlock(new File(inFile), "Viewer"));
+            java.util.List<String> viewer_block = new NexusReader().extractBlock(new File(inFile), "Viewer");
+            config = viewer_block.size() > 0 ? new ViewerConfig(viewer_block) : null;
         } catch (IOException e) {
             errorMessage("Problem occured while loading Nexus file containing Viewer configuration: " + inFile, e);
         }
