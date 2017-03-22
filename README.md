@@ -160,7 +160,7 @@ Issues
 ======
 
 Should you discover any issues with spectre, or wish to request a new feature please raise a ticket at https://github.com/maplesond/spectre/issues.
-Alternatively, contact Daniel Mapleson at: daniel.mapleson@tgac.ac.uk
+Alternatively, contact Daniel Mapleson at: daniel.mapleson@earlham.ac.uk
 
 
 Availability:
@@ -174,8 +174,8 @@ License: GPL v3
 Contact
 =======
 
-* Daniel Mapleson -TGAC
-* Sarah Bastkowski - TGAC
-* Monica Balvociute - ??
+* Daniel Mapleson - Earlham Institute (EI)
+* Sarah Bastkowski - Earlham Institute (EI)
+* Taoyang Wu - University of East Anglia (UEA)
 * Andreas Spillner - Universitat de Griefswald
-* Vincent Moulton - UEA
+* Vincent Moulton - University of East Anglia (UEA)
