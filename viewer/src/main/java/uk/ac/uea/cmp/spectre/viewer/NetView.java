@@ -25,6 +25,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
@@ -42,11 +43,13 @@ import uk.ac.uea.cmp.spectre.core.ui.cli.CommandLineHelper;
 import uk.ac.uea.cmp.spectre.core.ui.gui.LookAndFeel;
 import uk.ac.uea.cmp.spectre.core.ui.gui.geom.Leaders;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -462,17 +465,29 @@ public class NetView extends javax.swing.JFrame {
     private void saveImageActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_saveImageActionPerformed
     {//GEN-HEADEREND:event_saveImageActionPerformed
         JFileChooser fileChooser = new JFileChooser(directory);
-        fileChooser.setFileFilter(new FileNameExtensionFilter("pdf", "pdf"));
+        fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Portable Document Format (.pdf)", "pdf"));
+        fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Image File(.png, .jpg, .gif)", "png","jpg","gif"));
         if (fileChooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
-            File pdfFile = fileChooser.getSelectedFile();
+            File image_out = fileChooser.getSelectedFile();
+            String ext = FilenameUtils.getExtension(image_out.getName());
 
-            if (pdfFile != null) {
-                directory = pdfFile.getPath();
+            if (ext.equalsIgnoreCase("pdf")) {
+                directory = image_out.getPath();
                 try {
-                    savePDF(pdfFile);
+                    savePDF(image_out);
                 } catch (DocumentException ex) {
                     errorMessage("Error saving PDF", ex);
                 }
+            }
+            else if (ext.equalsIgnoreCase("png") || ext.equalsIgnoreCase("jpg") || ext.equalsIgnoreCase("gif")) {
+                try {
+                    saveImage(image_out);
+                } catch (IOException ex) {
+                    errorMessage("Error saving PNG", ex);
+                }
+            }
+            else {
+                errorMessage("No recognised extension specified in filename.  Please type an appropriate extension for image.");
             }
         }
     }//GEN-LAST:event_saveImageActionPerformed
@@ -719,7 +734,8 @@ public class NetView extends javax.swing.JFrame {
     }
 
     protected static void errorMessage(String message) {
-        errorMessage(message, null);
+        log.error(message);
+        JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
     }
 
 
@@ -864,6 +880,18 @@ public class NetView extends javax.swing.JFrame {
         } catch (DocumentException de) {
             errorMessage("Document Error");
         }
+    }
+
+    private void saveImage(File image_file) throws IOException {
+
+        // Create image
+        BufferedImage bImage = new BufferedImage(drawing.getWidth(), drawing.getHeight(), BufferedImage.TYPE_INT_RGB);
+        Graphics2D g2d = bImage.createGraphics();
+        drawing.paint(g2d);
+
+        // Save image to disk
+        String ext = FilenameUtils.getExtension(image_file.getName());
+        ImageIO.write(bImage, ext, image_file);
     }
 
     private void saveNetworkAs(File fileToSave) throws IOException {
