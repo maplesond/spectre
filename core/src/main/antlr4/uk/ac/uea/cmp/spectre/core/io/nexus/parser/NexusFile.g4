@@ -681,6 +681,7 @@ matrix_viewer_options :
 matrix_viewer_option :
       vm_ratio
     | vm_showtrivial
+    | vm_showrange
     | vm_showlabels
     | vm_colorlabels
     | vm_leaders
@@ -691,9 +692,8 @@ matrix_viewer_option :
 vm_ratio : 'ratio' '=' FLOAT;
 
 vm_showtrivial : 'showtrivial' '=' boolean_option;
-
+vm_showrange : 'showrange' '=' boolean_option;
 vm_showlabels : 'showlabels' '=' boolean_option;
-
 vm_colorlabels : 'colorlabels' '=' boolean_option;
 
 vm_leaders : 'leaders' '=' IDENTIFIER;

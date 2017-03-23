@@ -2185,6 +2185,17 @@ public class NexusFilePopulator implements NexusFileListener {
     }
 
     @Override
+    public void enterVm_showrange(NexusFileParser.Vm_showrangeContext ctx) {
+
+    }
+
+    @Override
+    public void exitVm_showrange(NexusFileParser.Vm_showrangeContext ctx) {
+        boolean st = Boolean.parseBoolean(ctx.boolean_option().getText());
+        this.viewerConfig.setShowRange(st);
+    }
+
+    @Override
     public void enterVm_showlabels(NexusFileParser.Vm_showlabelsContext ctx) {
 
     }

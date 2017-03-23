@@ -1032,6 +1032,10 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
 
             if (nexus.getViewerConfig() != null) {
                 this.config = nexus.getViewerConfig();
+                applyConfig(this.config);
+            }
+            else {
+                initConfig();
             }
 
             networkFile = inFile;
@@ -1044,7 +1048,6 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
 
     private void showNetwork(File inFile) {
         if (network != null) {
-            readConfig(inFile.getAbsolutePath());
             setTitle(mainTitle + ": " + inFile.getAbsolutePath());
             drawNetwork();
             drawing.repaint();
@@ -1061,20 +1064,6 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
 
     boolean colorLabels() {
         return jCheckBoxColorLabels.isSelected();
-    }
-
-    private void readConfig(String inFile) {
-        try {
-            java.util.List<String> viewer_block = new NexusReader().extractBlock(new File(inFile), "Viewer");
-            config = viewer_block.size() > 0 ? new ViewerConfig(viewer_block) : null;
-        } catch (IOException e) {
-            errorMessage("Problem occured while loading Nexus file containing Viewer configuration: " + inFile, e);
-        }
-        if (config != null) {
-            applyConfig(config);
-        } else {
-            initConfig();
-        }
     }
 
     private void initConfig() {
@@ -1153,6 +1142,7 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
         jCheckBoxColorLabels.setSelected(config.colorLabels());
         jCheckBoxShowLabels.setSelected(config.showLabels());
         jCheckBoxShowTrivial.setSelected(config.showTrivial());
+        jCheckBoxShowRange.setSelected(config.isShowRange());
 
         Set<Integer> fixed = config.getFixed();
         for (Vertex vertex : network.getAllVertices()) {
@@ -1160,6 +1150,9 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
                 vertex.getLabel().movable = false;
             }
         }
+
+        this.drawing.range = config.isShowRange();
+        this.drawing.showTrivial(config.showTrivial());
     }
 
     boolean leadersVisible() {
