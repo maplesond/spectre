@@ -248,13 +248,25 @@ public class Window extends JPanel implements KeyListener {
 
         if (range) {
 
-            int left = (int)(0.01 * ratio);
-            int right = (int)(0.06 * ratio);
+            int delta = (int)(1.0 * ratio);
+            double size = 1.0;
+
+            while (delta < 30) {
+                delta *= 10;
+                size *= 10.0;
+            }
+            while (delta > 300) {
+                delta /= 10;
+                size /= 10.0;
+            }
+
+            int left = 20;
+            int right = 20 + delta;
 
             g.drawLine(left, 22, left, 18);
             g.drawLine(right, 22, right, 18);
             g.drawLine(left, 20, right, 20);
-            g.drawString("0.05", left + ((right - left) / 2) - 10, 32);
+            g.drawString(Double.toString(size), left + ((right - left) / 2) - 10, 32);
         }
 
 

@@ -181,6 +181,7 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
         setTitle("NetVi");
         setForeground(java.awt.Color.white);
         this.setPreferredSize(new Dimension(800,600));
+        this.setMinimumSize(new Dimension(400,300));
 
         drawing.addMouseWheelListener(new java.awt.event.MouseWheelListener() {
             public void mouseWheelMoved(java.awt.event.MouseWheelEvent evt) {
