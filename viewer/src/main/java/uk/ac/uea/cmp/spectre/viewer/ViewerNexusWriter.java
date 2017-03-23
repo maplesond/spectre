@@ -35,6 +35,7 @@ public class ViewerNexusWriter extends NexusWriter {
         this.appendLine(" MATRIX");
         this.appendLine("  ratio=" + config.getRatio());
         this.appendLine("  showtrivial=" + config.showTrivial());
+        this.appendLine("  showrange=" + config.isShowRange());
         this.appendLine("  showlabels=" + config.showLabels());
         this.appendLine("  colorlabels=" + config.colorLabels());
         this.appendLine("  leaders=" + config.getLeaderType());
