@@ -36,7 +36,12 @@ public class FlatNetwork implements Network {
     private EdgeList externalEdges;
     private EdgeList trivialEdges;
 
+    private IdentifierList taxa;
+
     private VertexList labeledVertices;
+
+    private Map<Integer, String> translate;
+    private List<NetworkLabel> vLabels;
 
 
     public FlatNetwork() {
@@ -52,7 +57,12 @@ public class FlatNetwork implements Network {
         this.externalEdges = new EdgeList();
         this.trivialEdges = new EdgeList();
 
+        this.taxa = null;
+
         this.labeledVertices = new VertexList();
+        this.vLabels = new ArrayList<>();
+
+        this.translate = new HashMap<>();
 
         this.classifyVertices();
 
@@ -65,8 +75,13 @@ public class FlatNetwork implements Network {
     }
 
     @Override
+    public void setTaxa(IdentifierList taxa) {
+        this.taxa = taxa;
+    }
+
+    @Override
     public IdentifierList getTaxa() {
-        return null;
+        return this.taxa;
     }
 
     public void setVertices(VertexList vertices) {
@@ -105,6 +120,22 @@ public class FlatNetwork implements Network {
     @Override
     public EdgeList getExternalEdges() {
         return this.externalEdges;
+    }
+
+    public Map<Integer, String> getTranslate() {
+        return translate;
+    }
+
+    public void setTranslate(Map<Integer, String> translate) {
+        this.translate = translate;
+    }
+
+    public List<NetworkLabel> getVertexLabels() {
+        return vLabels;
+    }
+
+    public void setVertexLabels(List<NetworkLabel> vLabels) {
+        this.vLabels = vLabels;
     }
 
     @Override
@@ -155,7 +186,7 @@ public class FlatNetwork implements Network {
 
     @Override
     public int getNbTaxa() {
-        return this.labeledVertices.size();
+        return this.taxa.size();
     }
 
     public void classifyVertices() {

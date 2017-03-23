@@ -13,7 +13,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.viewer;
+package uk.ac.uea.cmp.spectre.core.ds.network.draw;
 
 import uk.ac.uea.cmp.spectre.core.ds.network.VertexList;
 

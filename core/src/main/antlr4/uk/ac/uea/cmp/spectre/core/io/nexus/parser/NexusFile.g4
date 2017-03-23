@@ -14,7 +14,6 @@ options
 INT : ('-')? DIGIT+;
 FLOAT : ('-')? DIGIT* '.' DIGIT+ ('E' ('-')? DIGIT+)?;
 
-
 // A token satisfing the regular expression [_\w]+[\d\w\._]*. Note that an single
 //  _ is considered a valid identifier. In most contexts a single _ means a
 //  "don't care identifier", simmilar to the _ meaning in prolog.
@@ -75,6 +74,7 @@ block_declaration :
     | block_network
   //| block_notes
   //| block_unknown
+    | block_viewer
     ;
 
 
@@ -520,7 +520,7 @@ vlabels_options :
     | vlabels_option vlabels_options
     ;
 
-vlabels_option : nl_l | nl_x | nl_y | nl_font;
+vlabels_option : nl_l | nl_x | nl_y | nl_font | nl_color_lc | nl_color_bg;
 
 nl_l : 'l' '=' INT;
 
@@ -601,8 +601,55 @@ state_composed_list :
     | state_composed_word state_composed_list
     ;
 
+// ----------------------------------------------------------------------------
+// Network definition rules
+// ----------------------------------------------------------------------------
 
+block_viewer : viewer_block_header ';'
+                dimensions_viewer
+                matrix_viewer;
 
+viewer_block_header : 'viewer' | 'Viewer' | 'VIEWER';
+
+dimensions_viewer :
+      // Empty
+    | dimensions vwidth vheight ';'
+    ;
+
+vwidth : 'width' '=' INT;
+
+vheight : 'height' '=' INT;
+
+matrix_viewer :  matrix_header matrix_viewer_options ';';
+
+matrix_viewer_options :
+      // Empty
+    | matrix_viewer_option matrix_viewer_options
+    ;
+
+matrix_viewer_option :
+      vm_ratio
+    | vm_showtrivial
+    | vm_showlabels
+    | vm_colorlabels
+    | vm_leaders
+    | vm_leaderstroke
+    | vm_leadercolor
+    ;
+
+vm_ratio : 'ratio' '=' FLOAT;
+
+vm_showtrivial : 'showtrivial' '=' boolean_option;
+
+vm_showlabels : 'showlabels' '=' boolean_option;
+
+vm_colorlabels : 'colorlabels' '=' boolean_option;
+
+vm_leaders : 'leaders' '=' IDENTIFIER;
+
+vm_leaderstroke : 'leaderstroke' '=' IDENTIFIER;
+
+vm_leadercolor : 'leadercolor' '=' INT INT INT;
 
 // ----------------------------------------------------------------------
 // MISC RULES

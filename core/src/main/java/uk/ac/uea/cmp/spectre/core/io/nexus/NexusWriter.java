@@ -35,6 +35,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * Used to handle streaming data to Nexus format file from SplitSystem objects and other splits and length data. Can
@@ -300,14 +302,24 @@ public class NexusWriter extends AbstractSpectreWriter implements Appendable {
         this.appendLine("TRANSLATE");
 
         //write translate section
-        for(Vertex v : vertices) {
-            if (v.getTaxa().size() > 0) {
-                String line = String.valueOf(v.getNxnum());
-                for(Identifier i : v.getTaxa()) {
-                    line += " '" + i.getName() + "'";
-                }
-                line += ",";
+        if (network.getTranslate() != null && network.getTranslate().size() > 0) {
+            SortedSet<Integer> keys = new TreeSet<Integer>(network.getTranslate().keySet());
+            for (Integer key : keys) {
+                String value = network.getTranslate().get(key);
+                String line = key + " '" + value + "',";
                 this.appendLine(line);
+            }
+        }
+        else{
+            for (Vertex v : vertices) {
+                if (v.getTaxa().size() > 0) {
+                    String line = String.valueOf(v.getNxnum());
+                    for (Identifier i : v.getTaxa()) {
+                        line += " '" + i.getName() + "'";
+                    }
+                    line += ",";
+                    this.appendLine(line);
+                }
             }
         }
         this.appendLine(";");

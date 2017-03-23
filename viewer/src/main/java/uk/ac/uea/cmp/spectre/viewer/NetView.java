@@ -37,6 +37,7 @@ import uk.ac.uea.cmp.spectre.core.ds.network.Network;
 import uk.ac.uea.cmp.spectre.core.ds.network.NetworkLabel;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
 import uk.ac.uea.cmp.spectre.core.ds.network.draw.PermutationSequenceDraw;
+import uk.ac.uea.cmp.spectre.core.ds.network.draw.ViewerConfig;
 import uk.ac.uea.cmp.spectre.core.io.nexus.Nexus;
 import uk.ac.uea.cmp.spectre.core.io.nexus.NexusReader;
 import uk.ac.uea.cmp.spectre.core.ui.cli.CommandLineHelper;
@@ -1007,8 +1008,13 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
             else {
                 network = nexus.getNetwork();
             }
+            this.taxa = nexus.getTaxa();
+            this.network.setTaxa(this.taxa);
 
-            taxa = nexus.getTaxa();
+            if (nexus.getViewerConfig() != null) {
+                this.config = nexus.getViewerConfig();
+            }
+
             networkFile = inFile;
             saveNetwork.setEnabled(true);
             showNetwork(inFile);

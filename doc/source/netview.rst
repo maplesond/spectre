@@ -3,7 +3,8 @@
 Network Viewer
 ==============
 
-The Network Viewing tool allows users to visualise networks that are stored as "network" blocks within a nexus file.
+The Network Viewing tool allows users to visualise networks that are stored as "network" blocks within a nexus file.  The tool
+also provides options for orientating and controlling nodes labels positions, size, styles etc.
 
 
 Opening a file
@@ -14,6 +15,14 @@ There are several ways a user can open a valid nexus file:
  1. Use the file menu
  2. Drag and drop file into window
  3. Launch netview from commandline providing the nexus file as an argument
+
+
+Saving the network
+------------------
+
+Should the user wish to save the network with the current orientation, size, node options, etc.  They can save it to
+nexus format using the Save network or Save network as... menu items in the file menu.  This allows the user to reload a
+network later without having to redo all modifications.
 
 
 Saving an image

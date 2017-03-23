@@ -17,6 +17,7 @@ package uk.ac.uea.cmp.spectre.viewer;
 
 import uk.ac.uea.cmp.spectre.core.ds.network.NetworkLabel;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
+import uk.ac.uea.cmp.spectre.core.ds.network.draw.ViewerConfig;
 import uk.ac.uea.cmp.spectre.core.io.nexus.NexusWriter;
 
 import java.awt.*;

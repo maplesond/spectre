@@ -26,6 +26,7 @@ import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrixBuilder;
 import uk.ac.uea.cmp.spectre.core.ds.network.Edge;
 import uk.ac.uea.cmp.spectre.core.ds.network.NetworkLabel;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
+import uk.ac.uea.cmp.spectre.core.ds.network.draw.ViewerConfig;
 import uk.ac.uea.cmp.spectre.core.ds.split.SpectreSplitBlock;
 import uk.ac.uea.cmp.spectre.core.io.nexus.Nexus;
 
@@ -52,6 +53,7 @@ public class NexusFilePopulator implements NexusFileListener {
     private NexusSplitSystemBuilder splitSystemBuilder;
     private NexusQuartetSystemBuilder quartetSystemBuilder;
     private NexusNetworkBuilder networkBuilder;
+    private ViewerConfig viewerConfig;
 
 
     public NexusFilePopulator(Nexus nexus, boolean verbose) {
@@ -61,6 +63,7 @@ public class NexusFilePopulator implements NexusFileListener {
         this.splitSystemBuilder = new NexusSplitSystemBuilder();
         this.quartetSystemBuilder = new NexusQuartetSystemBuilder();
         this.networkBuilder = new NexusNetworkBuilder();
+        this.viewerConfig = new ViewerConfig();
     }
 
     @Override
@@ -977,13 +980,11 @@ public class NexusFilePopulator implements NexusFileListener {
     @Override
     public void exitVlabels_network_label(NexusFileParser.Vlabels_network_labelContext ctx) {
 
-        NetworkLabel label = this.networkBuilder.getCurrentLabel();
-
         int id = Integer.parseInt(ctx.INT().getText());
         String name = ctx.IDENTIFIER().getText();
 
-        label.setName(name);
-        label.setVertexId(id);
+        this.networkBuilder.getCurrentLabel().setName(name);
+        this.networkBuilder.getCurrentLabel().setVertexId(id);
     }
 
     @Override
@@ -1299,7 +1300,6 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitNedges(NexusFileParser.NedgesContext ctx) {
-
     }
 
     @Override
@@ -1385,6 +1385,7 @@ public class NexusFilePopulator implements NexusFileListener {
     @Override
     public void exitParse(NexusFileParser.ParseContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
+        int i = 0;
     }
 
     @Override
@@ -1618,6 +1619,7 @@ public class NexusFilePopulator implements NexusFileListener {
     @Override
     public void exitBlocks(NexusFileParser.BlocksContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
+        int i = 0;
     }
 
     @Override
@@ -1869,6 +1871,164 @@ public class NexusFilePopulator implements NexusFileListener {
     }
 
     @Override
+    public void enterBlock_viewer(NexusFileParser.Block_viewerContext ctx) {
+    }
+
+    @Override
+    public void exitBlock_viewer(NexusFileParser.Block_viewerContext ctx) {
+        this.nexus.setViewerConfig(this.viewerConfig);
+    }
+
+    @Override
+    public void enterViewer_block_header(NexusFileParser.Viewer_block_headerContext ctx) {
+
+    }
+
+    @Override
+    public void exitViewer_block_header(NexusFileParser.Viewer_block_headerContext ctx) {
+
+    }
+
+    @Override
+    public void enterDimensions_viewer(NexusFileParser.Dimensions_viewerContext ctx) {
+
+    }
+
+    @Override
+    public void exitDimensions_viewer(NexusFileParser.Dimensions_viewerContext ctx) {
+        int width = Integer.parseInt(ctx.vwidth().INT().getText());
+        int height = Integer.parseInt(ctx.vheight().INT().getText());
+        this.viewerConfig.setDimensions(new Dimension(width, height));
+    }
+
+    @Override
+    public void enterVwidth(NexusFileParser.VwidthContext ctx) {
+
+    }
+
+    @Override
+    public void exitVwidth(NexusFileParser.VwidthContext ctx) {
+
+    }
+
+    @Override
+    public void enterVheight(NexusFileParser.VheightContext ctx) {
+
+    }
+
+    @Override
+    public void exitVheight(NexusFileParser.VheightContext ctx) {
+
+    }
+
+    @Override
+    public void enterMatrix_viewer(NexusFileParser.Matrix_viewerContext ctx) {
+
+    }
+
+    @Override
+    public void exitMatrix_viewer(NexusFileParser.Matrix_viewerContext ctx) {
+        int i = 0;
+    }
+
+    @Override
+    public void enterMatrix_viewer_options(NexusFileParser.Matrix_viewer_optionsContext ctx) {
+
+    }
+
+    @Override
+    public void exitMatrix_viewer_options(NexusFileParser.Matrix_viewer_optionsContext ctx) {
+
+    }
+
+    @Override
+    public void enterMatrix_viewer_option(NexusFileParser.Matrix_viewer_optionContext ctx) {
+
+    }
+
+    @Override
+    public void exitMatrix_viewer_option(NexusFileParser.Matrix_viewer_optionContext ctx) {
+
+    }
+
+    @Override
+    public void enterVm_ratio(NexusFileParser.Vm_ratioContext ctx) {
+
+    }
+
+    @Override
+    public void exitVm_ratio(NexusFileParser.Vm_ratioContext ctx) {
+        double ratio = Double.parseDouble(ctx.FLOAT().getText());
+        this.viewerConfig.setRatio(ratio);
+    }
+
+    @Override
+    public void enterVm_showtrivial(NexusFileParser.Vm_showtrivialContext ctx) {
+
+    }
+
+    @Override
+    public void exitVm_showtrivial(NexusFileParser.Vm_showtrivialContext ctx) {
+        boolean st = Boolean.parseBoolean(ctx.boolean_option().getText());
+        this.viewerConfig.setShowTrivial(st);
+    }
+
+    @Override
+    public void enterVm_showlabels(NexusFileParser.Vm_showlabelsContext ctx) {
+
+    }
+
+    @Override
+    public void exitVm_showlabels(NexusFileParser.Vm_showlabelsContext ctx) {
+        boolean sl = Boolean.parseBoolean(ctx.boolean_option().getText());
+        this.viewerConfig.setShowLabels(sl);
+    }
+
+    @Override
+    public void enterVm_colorlabels(NexusFileParser.Vm_colorlabelsContext ctx) {
+
+    }
+
+    @Override
+    public void exitVm_colorlabels(NexusFileParser.Vm_colorlabelsContext ctx) {
+        boolean cl = Boolean.parseBoolean(ctx.boolean_option().getText());
+        this.viewerConfig.setColorLabels(cl);
+    }
+
+    @Override
+    public void enterVm_leaders(NexusFileParser.Vm_leadersContext ctx) {
+
+    }
+
+    @Override
+    public void exitVm_leaders(NexusFileParser.Vm_leadersContext ctx) {
+        this.viewerConfig.setLeaderType(ctx.IDENTIFIER().getText());
+    }
+
+    @Override
+    public void enterVm_leaderstroke(NexusFileParser.Vm_leaderstrokeContext ctx) {
+
+    }
+
+    @Override
+    public void exitVm_leaderstroke(NexusFileParser.Vm_leaderstrokeContext ctx) {
+        this.viewerConfig.setLeaderStroke(ctx.IDENTIFIER().getText());
+    }
+
+    @Override
+    public void enterVm_leadercolor(NexusFileParser.Vm_leadercolorContext ctx) {
+
+    }
+
+    @Override
+    public void exitVm_leadercolor(NexusFileParser.Vm_leadercolorContext ctx) {
+        int r = Integer.parseInt(ctx.INT().get(0).getText());
+        int g = Integer.parseInt(ctx.INT().get(1).getText());
+        int b = Integer.parseInt(ctx.INT().get(2).getText());
+        this.viewerConfig.setLeaderColor(new Color(r, g, b));
+    }
+
+    @Override
     public void enterSc_quartet(NexusFileParser.Sc_quartetContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -1925,7 +2085,7 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitTranslate_network_entry(NexusFileParser.Translate_network_entryContext ctx) {
-
+        this.networkBuilder.getTranslate().put(Integer.parseInt(ctx.INT().getText()), ctx.IDENTIFIER().getText());
     }
 
     @Override
@@ -1935,7 +2095,7 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitNe_split(NexusFileParser.Ne_splitContext ctx) {
-
+        this.networkBuilder.getCurrentEdge().setIdxsplit(Integer.parseInt(ctx.INT().getText()));
     }
 
     @Override
