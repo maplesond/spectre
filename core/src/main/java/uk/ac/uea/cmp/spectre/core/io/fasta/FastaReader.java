@@ -16,7 +16,7 @@
 package uk.ac.uea.cmp.spectre.core.io.fasta;
 
 import org.kohsuke.MetaInfServices;
-import uk.ac.uea.cmp.spectre.core.ds.Alignment;
+import uk.ac.uea.cmp.spectre.core.ds.Sequences;
 import uk.ac.uea.cmp.spectre.core.io.AbstractSpectreReader;
 import uk.ac.uea.cmp.spectre.core.io.SpectreDataType;
 import uk.ac.uea.cmp.spectre.core.io.SpectreReader;
@@ -37,7 +37,7 @@ public class FastaReader extends AbstractSpectreReader {
     private Map<String, String> aln;
     private BufferedReader bufferedReader;
 
-    public Alignment readAlignment(File file) throws IOException {
+    public Sequences readAlignment(File file) throws IOException {
 
         this.aln = new LinkedHashMap<>();
 
@@ -49,7 +49,7 @@ public class FastaReader extends AbstractSpectreReader {
          * different depending on a particular AlignmentReader that is used.
          */
         readAlignmentFromFile();
-        return new Alignment(aln);
+        return new Sequences(aln);
     }
 
     protected void readAlignmentFromFile() throws IOException {

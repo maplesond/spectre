@@ -15,7 +15,7 @@
 
 package uk.ac.uea.cmp.spectre.core.io.nexus;
 
-import uk.ac.uea.cmp.spectre.core.ds.Alignment;
+import uk.ac.uea.cmp.spectre.core.ds.Sequences;
 import uk.ac.uea.cmp.spectre.core.ds.Identifier;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceList;
@@ -218,7 +218,7 @@ public class NexusWriter extends AbstractSpectreWriter implements Appendable {
         return this;
     }
 
-    public NexusWriter append(Alignment a) {
+    public NexusWriter append(Sequences a) {
         String[] id = a.getTaxaLabels();
         String[] sequences = a.getSequences();
 

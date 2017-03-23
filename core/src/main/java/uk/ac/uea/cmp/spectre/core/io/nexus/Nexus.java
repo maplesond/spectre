@@ -15,13 +15,13 @@
 
 package uk.ac.uea.cmp.spectre.core.io.nexus;
 
+import uk.ac.uea.cmp.spectre.core.ds.Sequences;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.network.Network;
 import uk.ac.uea.cmp.spectre.core.ds.network.draw.ViewerConfig;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 
-import javax.swing.text.View;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,6 +40,7 @@ public class Nexus {
     private List<Integer> cycle;
     private Network network;
     private ViewerConfig viewerConfig;
+    private Sequences alignments;
 
     public Nexus() {
         this.taxa = new IdentifierList();
@@ -48,6 +49,7 @@ public class Nexus {
         this.splitSystem = null;
         this.network = null;
         this.viewerConfig = null;
+        this.alignments = null;
     }
 
     public void setTaxa(IdentifierList taxa) {
@@ -109,6 +111,14 @@ public class Nexus {
 
     public void setViewerConfig(ViewerConfig viewerConfig) {
         this.viewerConfig = viewerConfig;
+    }
+
+    public Sequences getAlignments() {
+        return alignments;
+    }
+
+    public void setAlignments(Sequences alignments) {
+        this.alignments = alignments;
     }
 
     /*public Nexus filter(double threshold) {

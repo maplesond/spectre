@@ -24,11 +24,13 @@ import java.util.Map;
  *
  * @author balvociute
  */
-public class Alignment {
+public class Sequences {
     //Taxa labels
     private String[] taxaLabels;
     //Sequences
     private String[] sequences;
+
+    private Format format;
 
     /**
      * Initializes alignment from the map that maps taxa labels to corresponding
@@ -36,7 +38,7 @@ public class Alignment {
      *
      * @param aln multiple sequence alignment
      */
-    public Alignment(Map<String, String> aln) {
+    public Sequences(Map<String, String> aln) {
         taxaLabels = new String[aln.size()];
         sequences = new String[aln.size()];
         Iterator<String> alnIterator = aln.keySet().iterator();
@@ -50,7 +52,7 @@ public class Alignment {
     }
 
     //Initializes alignment from two arrays
-    public Alignment(String[] n, String[] seq) {
+    public Sequences(String[] n, String[] seq) {
         taxaLabels = new String[n.length];
         System.arraycopy(n, 0, taxaLabels, 0, n.length);
         sequences = new String[seq.length];
@@ -75,6 +77,14 @@ public class Alignment {
 
     public void setTaxaLabels(String[] taxaLabels) {
         this.taxaLabels = taxaLabels;
+    }
+
+    public Format getFormat() {
+        return format;
+    }
+
+    public void setFormat(Format format) {
+        this.format = format;
     }
 
     //Returns sequences
@@ -105,4 +115,26 @@ public class Alignment {
         }
         return true;
     }
+
+    public static class Format {
+
+        public boolean labels;
+        public boolean interleaved;
+        public String triangle;
+        public boolean diagonal;
+        public boolean activeFlags;
+        public boolean weights;
+        public boolean confidences;
+
+        public Format() {
+            labels = true;
+            interleaved = true;
+            triangle = "both";
+            diagonal = false;
+            activeFlags = true;
+            weights = true;
+            confidences = false;
+        }
+    }
+
 }

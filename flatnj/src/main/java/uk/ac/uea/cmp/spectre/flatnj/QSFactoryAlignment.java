@@ -15,7 +15,7 @@
 
 package uk.ac.uea.cmp.spectre.flatnj;
 
-import uk.ac.uea.cmp.spectre.core.ds.Alignment;
+import uk.ac.uea.cmp.spectre.core.ds.Sequences;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.Quadruple;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleSystem;
@@ -27,10 +27,10 @@ import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleSystem;
  */
 public class QSFactoryAlignment implements QSFactory {
     /**
-     * {@linkplain Alignment} to be used for the estimation of
+     * {@linkplain Sequences} to be used for the estimation of
      * {@link QuadrupleSystem}.
      */
-    private Alignment a;
+    private Sequences a;
     /**
      * character {@link uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix}.
      */
@@ -38,15 +38,15 @@ public class QSFactoryAlignment implements QSFactory {
 
     /**
      * Constructs {@linkplain QSFactoryAlignment} object that will use
-     * {@linkplain Alignment} and {@linkplain  uk.ac.uea.cmp.spectre.core.ds.distance.FlexibleDistanceMatrix} to compute new
+     * {@linkplain Sequences} and {@linkplain  uk.ac.uea.cmp.spectre.core.ds.distance.FlexibleDistanceMatrix} to compute new
      * {@link QuadrupleSystem}.
      *
-     * @param a  an {@linkplain Alignment} to be used for {@link QuadrupleSystem} estimation.
+     * @param a  an {@linkplain Sequences} to be used for {@link QuadrupleSystem} estimation.
      * @param dm a {@linkplain uk.ac.uea.cmp.spectre.core.ds.distance.FlexibleDistanceMatrix} for more precise quadruple split
      *           weight estimation. In case it is <code>null</code>, inverted
      *           identity matrix will be used by default.
      */
-    public QSFactoryAlignment(Alignment a, DistanceMatrix dm) {
+    public QSFactoryAlignment(Sequences a, DistanceMatrix dm) {
         this.a = a;
         this.dm = dm;
     }

@@ -29,10 +29,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.earlham.metaopt.Objective;
 import uk.ac.earlham.metaopt.Optimiser;
-import uk.ac.earlham.metaopt.OptimiserException;
 import uk.ac.earlham.metaopt.OptimiserFactory;
 import uk.ac.earlham.metaopt.external.JOptimizer;
-import uk.ac.uea.cmp.spectre.core.ds.Alignment;
+import uk.ac.uea.cmp.spectre.core.ds.Sequences;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.network.FlatNetwork;
@@ -153,15 +152,15 @@ public class FlatNJ {
         String extension = FilenameUtils.getExtension(inFile.getName());
 
         IdentifierList taxa = null;
-        Alignment alignment = null;
+        Sequences sequences = null;
         DistanceMatrix distanceMatrix = null;
         Locations locations = null;
         FlatSplitSystem ss = null;
         QuadrupleSystem qs = null;
 
         if (extension.equalsIgnoreCase("fa") || extension.equalsIgnoreCase("faa") || extension.equalsIgnoreCase("fasta")) {
-            alignment = readAlignment(inFile);
-            taxa = new IdentifierList(alignment.getTaxaLabels());
+            sequences = readAlignment(inFile);
+            taxa = new IdentifierList(sequences.getTaxaLabels());
         }
         else if (extension.equalsIgnoreCase("nex") || extension.equalsIgnoreCase("nexus") || extension.equalsIgnoreCase("4s")) {
 
@@ -175,8 +174,8 @@ public class FlatNJ {
             if (nexusBlock == null) {
                 log.warn("Nexus file provided as input but no nexus block specified by user.  Will use first suitable block found in nexus file.");
                 try {
-                    alignment = readAlignment(inFile);
-                    log.info("Detected and loaded Alignment Block.");
+                    sequences = readAlignment(inFile);
+                    log.info("Detected and loaded Sequences Block.");
                 }
                 catch (IOException e1) {
                     try {
@@ -214,7 +213,7 @@ public class FlatNJ {
 
                 String blockLowerCase = this.nexusBlock.toLowerCase();
                 if (blockLowerCase.contentEquals("data") || blockLowerCase.contentEquals("characters")) {
-                    alignment = readAlignment(inFile);
+                    sequences = readAlignment(inFile);
                     loaded = true;
                 } else if (blockLowerCase.contentEquals("distances")) {
                     distanceMatrix = readDistanceMatrix(inFile);
@@ -244,8 +243,8 @@ public class FlatNJ {
 
             QSFactory qsFactory = null;
 
-            if (alignment != null) {
-                qsFactory = new QSFactoryAlignment(alignment, distanceMatrix);
+            if (sequences != null) {
+                qsFactory = new QSFactoryAlignment(sequences, distanceMatrix);
             } else if (locations != null) {
                 qsFactory = new QSFactoryLocation(locations);
             } else if (ss != null) {
@@ -465,14 +464,14 @@ public class FlatNJ {
     }
 
     /**
-     * Reads alignment from fasta file and initializes {@linkplain uk.ac.uea.cmp.spectre.core.ds.Alignment}
+     * Reads alignment from fasta file and initializes {@linkplain Sequences}
      * and {@linkplain uk.ac.uea.cmp.spectre.core.ds.IdentifierList} objects.
      *
      * @param fastaFile fasta file path.
      */
-    protected Alignment readAlignment(File fastaFile) throws IOException {
+    protected Sequences readAlignment(File fastaFile) throws IOException {
         log.debug("Reading sequences");
-        Alignment a = new FastaReader().readAlignment(fastaFile);
+        Sequences a = new FastaReader().readAlignment(fastaFile);
         if (a.getSequences().length == 0) {
             throw new IOException("Could not read sequence alignment from '" + fastaFile + "'");
         }

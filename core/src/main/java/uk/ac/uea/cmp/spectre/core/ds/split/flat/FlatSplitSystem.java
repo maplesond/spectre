@@ -15,7 +15,7 @@
 
 package uk.ac.uea.cmp.spectre.core.ds.split.flat;
 
-import uk.ac.uea.cmp.spectre.core.ds.Alignment;
+import uk.ac.uea.cmp.spectre.core.ds.Sequences;
 import uk.ac.uea.cmp.spectre.core.util.CollectionUtils;
 
 import java.io.*;
@@ -511,11 +511,11 @@ public class FlatSplitSystem {
     public FlatSplitSystem() {
     }
 
-    public void printSplitsInNexus(Writer outputFile, Alignment alignment) throws IOException {
-        if (alignment == null) {
+    public void printSplitsInNexus(Writer outputFile, Sequences sequences) throws IOException {
+        if (sequences == null) {
             Utilities.printFictitiousTaxaBlock(outputFile, nTaxa);
         } else {
-            Utilities.printTaxaBlock(outputFile, alignment.getTaxaLabels());
+            Utilities.printTaxaBlock(outputFile, sequences.getTaxaLabels());
         }
         outputFile.write("BEGIN Splits;\n");
         outputFile.write("DIMENSIONS NTAX=" + nTaxa + " NSPLITS=" + nSplits + ";\n");

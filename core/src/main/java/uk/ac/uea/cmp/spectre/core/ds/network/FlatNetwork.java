@@ -186,7 +186,7 @@ public class FlatNetwork implements Network {
 
     @Override
     public int getNbTaxa() {
-        return this.taxa.size();
+        return this.taxa == null || this.taxa.isEmpty() ? this.labeledVertices.size() : this.taxa.size();
     }
 
     public void classifyVertices() {

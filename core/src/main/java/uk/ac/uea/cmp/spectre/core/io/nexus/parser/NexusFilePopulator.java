@@ -54,6 +54,7 @@ public class NexusFilePopulator implements NexusFileListener {
     private NexusQuartetSystemBuilder quartetSystemBuilder;
     private NexusNetworkBuilder networkBuilder;
     private ViewerConfig viewerConfig;
+    private NexusCharacterBuilder charBuilder;
 
 
     public NexusFilePopulator(Nexus nexus, boolean verbose) {
@@ -64,6 +65,7 @@ public class NexusFilePopulator implements NexusFileListener {
         this.quartetSystemBuilder = new NexusQuartetSystemBuilder();
         this.networkBuilder = new NexusNetworkBuilder();
         this.viewerConfig = new ViewerConfig();
+        this.charBuilder = new NexusCharacterBuilder();
     }
 
     @Override
@@ -679,8 +681,17 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitNv_shape(NexusFileParser.Nv_shapeContext ctx) {
+        this.networkBuilder.getCurrentVertex().setShape(ctx.shape_option().getText());
+    }
 
-        this.networkBuilder.getCurrentVertex().setShape(ctx.getText());
+    @Override
+    public void enterShape_option(NexusFileParser.Shape_optionContext ctx) {
+
+    }
+
+    @Override
+    public void exitShape_option(NexusFileParser.Shape_optionContext ctx) {
+
     }
 
     @Override
@@ -1436,6 +1447,206 @@ public class NexusFilePopulator implements NexusFileListener {
     @Override
     public void exitTax_info_entry(NexusFileParser.Tax_info_entryContext ctx) {
 
+    }
+
+    @Override
+    public void enterBlock_characters(NexusFileParser.Block_charactersContext ctx) {
+
+    }
+
+    @Override
+    public void exitBlock_characters(NexusFileParser.Block_charactersContext ctx) {
+        this.nexus.setAlignments(this.charBuilder.createAlignments(this.nexus.getTaxa()));
+    }
+
+    @Override
+    public void enterCharacters_header(NexusFileParser.Characters_headerContext ctx) {
+
+    }
+
+    @Override
+    public void exitCharacters_header(NexusFileParser.Characters_headerContext ctx) {
+
+    }
+
+    @Override
+    public void enterChar_dimensions(NexusFileParser.Char_dimensionsContext ctx) {
+
+    }
+
+    @Override
+    public void exitChar_dimensions(NexusFileParser.Char_dimensionsContext ctx) {
+        this.charBuilder.setExpectedNbChars(Integer.parseInt(ctx.cd_nchar().INT().getText()));
+    }
+
+    @Override
+    public void enterCd_nchar(NexusFileParser.Cd_ncharContext ctx) {
+
+    }
+
+    @Override
+    public void exitCd_nchar(NexusFileParser.Cd_ncharContext ctx) {
+
+    }
+
+    @Override
+    public void enterChar_format(NexusFileParser.Char_formatContext ctx) {
+
+    }
+
+    @Override
+    public void exitChar_format(NexusFileParser.Char_formatContext ctx) {
+
+    }
+
+    @Override
+    public void enterChar_format_header(NexusFileParser.Char_format_headerContext ctx) {
+
+    }
+
+    @Override
+    public void exitChar_format_header(NexusFileParser.Char_format_headerContext ctx) {
+
+    }
+
+    @Override
+    public void enterChar_format_options(NexusFileParser.Char_format_optionsContext ctx) {
+
+    }
+
+    @Override
+    public void exitChar_format_options(NexusFileParser.Char_format_optionsContext ctx) {
+
+    }
+
+    @Override
+    public void enterChar_format_option(NexusFileParser.Char_format_optionContext ctx) {
+
+    }
+
+    @Override
+    public void exitChar_format_option(NexusFileParser.Char_format_optionContext ctx) {
+
+    }
+
+    @Override
+    public void enterCf_datatype(NexusFileParser.Cf_datatypeContext ctx) {
+
+    }
+
+    @Override
+    public void exitCf_datatype(NexusFileParser.Cf_datatypeContext ctx) {
+        //this.charBuilder.getFormat()
+    }
+
+    @Override
+    public void enterCf_missing(NexusFileParser.Cf_missingContext ctx) {
+
+    }
+
+    @Override
+    public void exitCf_missing(NexusFileParser.Cf_missingContext ctx) {
+        //this.charBuilder.getFormat().
+    }
+
+    @Override
+    public void enterCf_gap(NexusFileParser.Cf_gapContext ctx) {
+
+    }
+
+    @Override
+    public void exitCf_gap(NexusFileParser.Cf_gapContext ctx) {
+        //this.charBuilder.getFormat().
+    }
+
+    @Override
+    public void enterCf_symbols(NexusFileParser.Cf_symbolsContext ctx) {
+
+    }
+
+    @Override
+    public void exitCf_symbols(NexusFileParser.Cf_symbolsContext ctx) {
+        //this.charBuilder.getFormat().
+    }
+
+    @Override
+    public void enterCf_labels(NexusFileParser.Cf_labelsContext ctx) {
+
+    }
+
+    @Override
+    public void exitCf_labels(NexusFileParser.Cf_labelsContext ctx) {
+        this.charBuilder.getFormat().labels = Boolean.getBoolean(ctx.boolean_option().getText());
+    }
+
+    @Override
+    public void enterCf_transpose(NexusFileParser.Cf_transposeContext ctx) {
+
+    }
+
+    @Override
+    public void exitCf_transpose(NexusFileParser.Cf_transposeContext ctx) {
+        //this.charBuilder.getFormat().
+    }
+
+    @Override
+    public void enterCf_interleave(NexusFileParser.Cf_interleaveContext ctx) {
+
+    }
+
+    @Override
+    public void exitCf_interleave(NexusFileParser.Cf_interleaveContext ctx) {
+        this.charBuilder.getFormat().interleaved = Boolean.getBoolean(ctx.boolean_option().getText());
+    }
+
+    @Override
+    public void enterMissing_option(NexusFileParser.Missing_optionContext ctx) {
+
+    }
+
+    @Override
+    public void exitMissing_option(NexusFileParser.Missing_optionContext ctx) {
+
+    }
+
+    @Override
+    public void enterGap_option(NexusFileParser.Gap_optionContext ctx) {
+
+    }
+
+    @Override
+    public void exitGap_option(NexusFileParser.Gap_optionContext ctx) {
+        //this.charBuilder.getFormat().
+    }
+
+    @Override
+    public void enterChar_matrix(NexusFileParser.Char_matrixContext ctx) {
+
+    }
+
+    @Override
+    public void exitChar_matrix(NexusFileParser.Char_matrixContext ctx) {
+
+    }
+
+    @Override
+    public void enterChar_sequences(NexusFileParser.Char_sequencesContext ctx) {
+
+    }
+
+    @Override
+    public void exitChar_sequences(NexusFileParser.Char_sequencesContext ctx) {
+
+    }
+
+    @Override
+    public void enterChar_seq(NexusFileParser.Char_seqContext ctx) {
+
+    }
+
+    @Override
+    public void exitChar_seq(NexusFileParser.Char_seqContext ctx) {
+        this.charBuilder.addSeq(ctx.getText());
     }
 
     @Override

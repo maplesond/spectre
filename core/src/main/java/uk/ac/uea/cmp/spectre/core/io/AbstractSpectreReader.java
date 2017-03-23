@@ -15,7 +15,7 @@
 
 package uk.ac.uea.cmp.spectre.core.io;
 
-import uk.ac.uea.cmp.spectre.core.ds.Alignment;
+import uk.ac.uea.cmp.spectre.core.ds.Sequences;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.QuartetSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
@@ -56,7 +56,7 @@ public abstract class AbstractSpectreReader implements SpectreReader {
     }
 
     @Override
-    public Alignment readAlignment(File file) throws IOException {
+    public Sequences readAlignment(File file) throws IOException {
         throw new UnsupportedOperationException(this.getClass().getCanonicalName() + " does not support reading of alignments.");
     }
 

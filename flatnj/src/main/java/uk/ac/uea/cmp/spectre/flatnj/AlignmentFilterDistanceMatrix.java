@@ -15,6 +15,7 @@
 
 package uk.ac.uea.cmp.spectre.flatnj;
 
+import uk.ac.uea.cmp.spectre.core.ds.Sequences;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 
 import java.util.Set;
@@ -28,7 +29,7 @@ import java.util.Set;
 public class AlignmentFilterDistanceMatrix extends AlignmentFilter {
     /**
      * Set that contains all symbols that are allowed in the
-     * {@linkplain uk.ac.uea.cmp.spectre.core.ds.Alignment}.
+     * {@linkplain Sequences}.
      */
     private Set<String> allowedSymbols;
 

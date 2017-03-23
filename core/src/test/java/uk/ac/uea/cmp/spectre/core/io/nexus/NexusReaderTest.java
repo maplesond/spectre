@@ -224,4 +224,14 @@ public class NexusReaderTest {
 
         assertTrue(nexus.getTaxa().size() == 32);
     }
+
+    @Test
+    public void testCharBlock() throws IOException {
+
+        File testFile = FileUtils.toFile(NexusReaderTest.class.getResource("/gallwasps_aln.nex"));
+
+        Nexus nexus = new NexusReader().parse(testFile);
+
+        assertTrue(nexus.getAlignments().size() == 80);
+    }
 }

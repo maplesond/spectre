@@ -15,17 +15,9 @@
 
 package uk.ac.uea.cmp.spectre.core.ds.split.flat;
 
-import uk.ac.uea.cmp.spectre.core.ds.Alignment;
-
 import java.awt.*;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
 
 /**
  * @author balvociutes

@@ -61,7 +61,7 @@ end     : 'end' | 'END' | 'End' | 'endblock' | 'ENDBLOCK' | 'EndBlock';
 // we haven't implemented everything yet
 block_declaration :
       block_taxa
-  //| block_characters
+    | block_characters
   //| block_unaligned
     | block_distances
     | block_splits
@@ -108,6 +108,55 @@ tax_info_entries :
     ;
 
 tax_info_entry : IDENTIFIER;
+
+// ----------------------------------------------------------------------
+// Characters
+// ----------------------------------------------------------------------
+
+block_characters :
+    characters_header ';'
+    char_dimensions
+    char_format
+    char_matrix
+    ;
+
+characters_header : 'chracters' | 'Characters' | 'CHARACTERS';
+
+char_dimensions : dimensions cd_nchar ';';
+
+cd_nchar : 'nchar' '=' INT;
+
+char_format: char_format_header char_format_options ';';
+
+char_format_header : 'format' | 'Format' | 'FORMAT';
+
+char_format_options :
+      // Empty
+    | char_format_option char_format_options
+    ;
+
+char_format_option : cf_datatype | cf_missing | cf_gap | cf_symbols | cf_labels | cf_transpose | cf_interleave;
+
+cf_datatype : 'datatype' '=' IDENTIFIER;
+cf_missing : 'missing' '=' missing_option;
+cf_gap : 'gap' '=' gap_option;
+cf_symbols : 'symbols' '=' '\"' IDENTIFIER '\"';
+cf_labels : 'labels' '=' boolean_option;
+cf_transpose : 'transpose' '=' boolean_option;
+cf_interleave : 'interleave' '=' boolean_option;
+
+missing_option : '?';
+
+gap_option : '?' | '-' | 'N' | 'n';
+
+char_matrix: matrix_header char_sequences ';';
+
+char_sequences :
+      // Empty
+    | char_seq char_sequences
+    ;
+
+char_seq : IDENTIFIER;
 
 
 
@@ -486,7 +535,9 @@ vertex_options :
 
 vertex_option : nv_shape | nv_width | nv_height | nv_b | nv_color_fg | nv_color_bg;
 
-nv_shape : 's' '=' IDENTIFIER;
+nv_shape : 's' '=' shape_option;
+
+shape_option: 'n';
 
 nv_width : 'w' '=' INT;
 
@@ -665,6 +716,7 @@ identifier_list :
     // Empty
     | IDENTIFIER identifier_list
     | '\'' IDENTIFIER '\'' identifier_list
+    | '\"' IDENTIFIER '\"' identifier_list
     ;
 
 // Might be that this is not expressive enough... original description:
