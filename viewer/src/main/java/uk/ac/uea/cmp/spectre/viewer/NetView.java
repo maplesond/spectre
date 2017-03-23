@@ -159,6 +159,7 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
         jMenuItemFlipHorizontal = new javax.swing.JMenuItem();
         jMenuItemFlipVertical = new javax.swing.JMenuItem();
         jCheckBoxShowTrivial = new javax.swing.JCheckBoxMenuItem();
+        jCheckBoxShowRange = new javax.swing.JCheckBoxMenuItem();
         jCheckBoxShowLabels = new javax.swing.JCheckBoxMenuItem();
         jCheckBoxColorLabels = new javax.swing.JCheckBoxMenuItem();
         jMenuLabeling = new javax.swing.JMenu();
@@ -329,6 +330,15 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
             }
         });
         jMenuLayout.add(jCheckBoxShowTrivial);
+
+        jCheckBoxShowRange.setSelected(true);
+        jCheckBoxShowRange.setText("Show range");
+        jCheckBoxShowRange.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBoxShowRangeActionPerformed(evt);
+            }
+        });
+        jMenuLayout.add(jCheckBoxShowRange);
 
 
 
@@ -670,6 +680,14 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
         config.setShowTrivial(showTrivial);
     }//GEN-LAST:event_jCheckBoxShowTrivialActionPerformed
 
+    private void jCheckBoxShowRangeActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jCheckBoxShowTrivialActionPerformed
+    {
+        Boolean showRange = jCheckBoxShowRange.isSelected();
+        drawing.showRange(showRange);
+        config.setShowRange(showRange);
+        drawing.repaint();
+    }
+
     private void jRadioButtonNoLeadersActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jRadioButtonNoLeadersActionPerformed
     {//GEN-HEADEREND:event_jRadioButtonNoLeadersActionPerformed
         drawing.repaint();
@@ -828,6 +846,7 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
     private javax.swing.JCheckBoxMenuItem jCheckBoxFixLabelPositions;
     private javax.swing.JCheckBoxMenuItem jCheckBoxShowLabels;
     private javax.swing.JCheckBoxMenuItem jCheckBoxShowTrivial;
+    private javax.swing.JCheckBoxMenuItem jCheckBoxShowRange;
     private javax.swing.JMenu jMenu4;
     private javax.swing.JMenu jMenu6;
     private javax.swing.JMenu jMenuEdit;
@@ -1080,6 +1099,7 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
                 leaderStroke,
                 drawing.leaderColor,
                 jCheckBoxShowTrivial.isSelected(),
+                jCheckBoxShowRange.isSelected(),
                 jCheckBoxShowLabels.isSelected(),
                 jCheckBoxColorLabels.isSelected(),
                 new HashSet<Integer>(),

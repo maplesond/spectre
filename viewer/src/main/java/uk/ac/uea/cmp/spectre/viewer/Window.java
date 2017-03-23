@@ -134,6 +134,7 @@ public class Window extends JPanel implements KeyListener {
     Color leaderColor = Color.BLUE;
     ViewerLabel selectedLabel = null;
     boolean rotate = false;
+    boolean range = true;
     java.awt.Point lastPoint = null;
     ClusterFinder cf = new ClusterFinderSplits();
     ClusterPlacementOptimizer cpo = new ClusterPlacementOptimizerBox();
@@ -245,10 +246,23 @@ public class Window extends JPanel implements KeyListener {
             }
         }
 
+        if (range) {
+
+            int left = (int)(0.01 * ratio);
+            int right = (int)(0.06 * ratio);
+
+            g.drawLine(left, 22, left, 18);
+            g.drawLine(right, 22, right, 18);
+            g.drawLine(left, 20, right, 20);
+            g.drawString("0.05", left + ((right - left) / 2) - 10, 32);
+        }
+
+
         if (selectionRectangle != null) {
             g.setColor(Color.red);
             g.drawRect(selectionRectangle[0], selectionRectangle[1], selectionRectangle[2], selectionRectangle[3]);
         }
+
 
         if (rotate) {
             g.setColor(Color.BLUE);
@@ -260,6 +274,8 @@ public class Window extends JPanel implements KeyListener {
             g.drawLine(midX - lLength / 2, midY, midX + lLength / 2, midY);
             g.drawLine(midX, midY - lLength / 2, midX, midY + lLength / 2);
         }
+
+
     }
 
     private static Color getTextColor(Color bg) {
@@ -698,6 +714,10 @@ public class Window extends JPanel implements KeyListener {
             }
             repaintOnResize();
         }
+    }
+
+    void showRange(boolean show) {
+        this.range = show;
     }
 
     private void findCornerPoints() {
