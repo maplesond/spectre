@@ -222,13 +222,14 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
 
         jMenuFile.setText("File");
 
-        openFile.setText("Open network");
+        openFile.setText("Open network...");
         openFile.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 openFileActionPerformed(evt);
             }
         });
         jMenuFile.add(openFile);
+        jMenuFile.addSeparator();
 
         saveNetwork.setText("Save network");
         saveNetwork.setEnabled(false);
@@ -239,7 +240,7 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
         });
         jMenuFile.add(saveNetwork);
 
-        saveNetworkAs.setText("Save network as");
+        saveNetworkAs.setText("Save network as...");
         saveNetworkAs.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 saveNetworkAsActionPerformed(evt);
@@ -247,13 +248,14 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
         });
         jMenuFile.add(saveNetworkAs);
 
-        saveImage.setText("Save image as");
+        saveImage.setText("Save image as...");
         saveImage.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 saveImageActionPerformed(evt);
             }
         });
         jMenuFile.add(saveImage);
+        jMenuFile.addSeparator();
 
         exitProgram.setText("Exit");
         exitProgram.addActionListener(new java.awt.event.ActionListener() {
@@ -275,7 +277,7 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
         });
         jMenuEdit.add(jMenuItemSelectAll);
 
-        jMenuItemFind.setText("Find");
+        jMenuItemFind.setText("Find...");
         jMenuItemFind.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemFindActionPerformed(evt);
@@ -283,13 +285,7 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
         });
         jMenuEdit.add(jMenuItemFind);
 
-        formatNodes.setText("Format selected nodes");
-        formatNodes.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                formatNodesActionPerformed(evt);
-            }
-        });
-        jMenuEdit.add(formatNodes);
+
 
         menuBar.add(jMenuEdit);
 
@@ -322,6 +318,7 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
         jMenu6.add(jMenuItemFlipVertical);
 
         jMenuLayout.add(jMenu6);
+        jMenuLayout.addSeparator();
 
         jCheckBoxShowTrivial.setSelected(true);
         jCheckBoxShowTrivial.setText("Show trivial splits");
@@ -332,6 +329,12 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
         });
         jMenuLayout.add(jCheckBoxShowTrivial);
 
+
+
+        menuBar.add(jMenuLayout);
+
+        jMenuLabeling.setText("Labeling");
+
         jCheckBoxShowLabels.setSelected(true);
         jCheckBoxShowLabels.setText("Show labels");
         jCheckBoxShowLabels.addActionListener(new java.awt.event.ActionListener() {
@@ -339,7 +342,7 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
                 jCheckBoxShowLabelsActionPerformed(evt);
             }
         });
-        jMenuLayout.add(jCheckBoxShowLabels);
+        jMenuLabeling.add(jCheckBoxShowLabels);
 
         jCheckBoxColorLabels.setText("Color labels");
         jCheckBoxColorLabels.addActionListener(new java.awt.event.ActionListener() {
@@ -347,11 +350,18 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
                 jCheckBoxColorLabelsActionPerformed(evt);
             }
         });
-        jMenuLayout.add(jCheckBoxColorLabels);
+        jMenuLabeling.add(jCheckBoxColorLabels);
+        jMenuLabeling.addSeparator();
 
-        menuBar.add(jMenuLayout);
+        formatNodes.setText("Format selected nodes ...");
+        formatNodes.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                formatNodesActionPerformed(evt);
+            }
+        });
+        jMenuLabeling.add(formatNodes);
 
-        jMenuLabeling.setText("Labeling");
+        jMenuLabeling.addSeparator();
 
         jCheckBoxFixLabelPositions.setText("Fix all label positions");
         jCheckBoxFixLabelPositions.addActionListener(new java.awt.event.ActionListener() {
@@ -368,6 +378,8 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
             }
         });
         jMenuLabeling.add(optimizeLabels);
+
+        jMenuLabeling.addSeparator();
 
         jMenu4.setText("Leaders");
 
