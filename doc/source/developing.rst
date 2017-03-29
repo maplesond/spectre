@@ -24,6 +24,9 @@ your pom.xml::
 And that's it!  You should now automatically download the library when you import maven changes or run your maven build
 cycle.  The published versions can be found at: http://mvnrepository.com/artifact/uk.ac.uea.cmp.spectre/core/
 
+Should you prefer not to use maven in your project, you can download the pre-compiled jar from maven central directly, or
+alternatively, build SPECTRE and copy the core jar file from `build/spectre-<version>/repo/uk/ac/uea/cmp/spectre/core/<version>`
+
 The rest of this section assumes you want to modify or extend the spectre codebase.
 
 

@@ -137,6 +137,7 @@ The syntax for this block is as follows::
     ;
   END;
 
+
 Distance matrices
 ~~~~~~~~~~~~~~~~~
 
@@ -171,14 +172,14 @@ All weights must be written in the same line.
 References
 ----------
 
-* M. Balvociute, A. Spillner, and V. Moulton. FlatNJ: A novel network-based approach to visualize evolutionary and biogeographical relationships, 2013. Systematic Biology, 2014.
+* M.Balvociute, A.Spillner and V.Moulton. FlatNJ: A novel network-based approach to visualize evolutionary and biogeographical relationships, 2013. Systematic Biology, 2014.
 
-* D. Bryant and V. Moulton. Neighbor-net: an agglomerative method for the construction of phylogenetic networks. Mol. Biol. Evol., 21:255–265, 2004.
+* D.Bryant and V.Moulton. Neighbor-net: an agglomerative method for the construction of phylogenetic networks. Mol. Biol. Evol., 21:255–265, 2004.
 
-* S. Grunewald, K. Forslund, A. Dress, and V. Moulton. Qnet: An agglomerative method for the construction of phylogenetic networks from weighted quartets. Mol. Biol. Evol., 24(2):532–538, 2007.
+* S.Grunewald, K.Forslund, A.Dress and V.Moulton. Qnet: An agglomerative method for the construction of phylogenetic networks from weighted quartets. Mol. Biol. Evol., 24(2):532–538, 2007.
 
-* D. H. Huson and D. Bryant. Application of phylogenetic networks in evolutionary studies. Mol. Biol. Evol., 23(2):254–267, 2006.
+* D.H.Huson and D.Bryant. Application of phylogenetic networks in evolutionary studies. Mol. Biol. Evol., 23(2):254–267, 2006.
 
-* N. Saitou and M. Nei. The neighbor-joining method: a new method for reconstructing phylogenetic trees. Mol. Biol. Evol., 4:406–425, 1987.
+* N.Saitou and M.Nei. The neighbor-joining method: a new method for reconstructing phylogenetic trees. Mol. Biol. Evol., 4:406–425, 1987.
 
-* A. Spillner, B. Nguyen, and V. Moulton. Constructing and drawing regular planar split networks. IEEE/ACM Trans. Comput. Biol. Bioinform., 9:395–407, 2011.
+* A.Spillner, B.Nguyen, and V.Moulton. Constructing and drawing regular planar split networks. IEEE/ACM Trans. Comput. Biol. Bioinform., 9:395–407, 2011.
