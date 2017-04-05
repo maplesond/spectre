@@ -246,6 +246,10 @@ public class NexusFilePopulator implements NexusFileListener {
 
         if (ctx.tax_labels() != null) {
 
+            if (ctx.tax_labels().IDENTIFIER() == null) {
+                throw new NullPointerException("No taxa name found.  Taxa must start with a letter.");
+            }
+
             taxa.add(new Identifier(ctx.tax_labels().IDENTIFIER().getText()));
 
             NexusFileParser.Identifier_listContext idListCtx = ctx.tax_labels().identifier_list();

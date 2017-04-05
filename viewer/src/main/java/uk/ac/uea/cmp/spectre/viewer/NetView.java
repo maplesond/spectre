@@ -491,7 +491,12 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
         if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
             File inFile = fileChooser.getSelectedFile();
             directory = inFile.getPath();
-            openNetwork(inFile);
+            try {
+                openNetwork(inFile);
+            }
+            catch (IOException e) {
+                errorMessage("Error opening file", e);
+            }
         }
     }//GEN-LAST:event_openFileActionPerformed
 
@@ -827,8 +832,9 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
                         } else {
                             new NetView(inputfile).setVisible(true);
                         }
-                    } catch (IOException ex) {
-                        errorMessage("Problem occured while running NetView", ex);
+                    } catch (Exception e) {
+                        errorMessage("Unexpected problem occured while running NetView", e);
+                        System.exit(4);
                     }
                 }
             });
@@ -1003,49 +1009,46 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
         popupMenu.add(remove);
     }
 
-    private void openNetwork(File inFile) {
+    private void openNetwork(File inFile) throws IOException {
         directory = inFile.getPath();
-        try {
-            Nexus nexus = new NexusReader().parse(inFile);
 
-            // If no network was defined but there is a split system then convert the split system to a network
-            if (nexus.getNetwork() == null && nexus.getSplitSystem() != null) {
+        Nexus nexus = new NexusReader().parse(inFile);
 
-                // Create network
-                network = new FlatNetwork(new PermutationSequenceDraw(nexus.getSplitSystem()).drawSplitSystem(-1.0));
+        // If no network was defined but there is a split system then convert the split system to a network
+        if (nexus.getNetwork() == null && nexus.getSplitSystem() != null) {
 
-                // Setup labels
-                for(Vertex v : network.getAllVertices()) {
-                    if (v.getTaxa().size() > 0) {
-                        String label = new String();
-                        for(Identifier i : v.getTaxa()) {
-                            label = (i.getName() + ", ").concat(label);
-                        }
-                        label = label.substring(0, label.length() - 2);
-                        v.setLabel(new NetworkLabel(label));
+            // Create network
+            network = new FlatNetwork(new PermutationSequenceDraw(nexus.getSplitSystem()).drawSplitSystem(-1.0));
+
+            // Setup labels
+            for(Vertex v : network.getAllVertices()) {
+                if (v.getTaxa().size() > 0) {
+                    String label = new String();
+                    for(Identifier i : v.getTaxa()) {
+                        label = (i.getName() + ", ").concat(label);
                     }
+                    label = label.substring(0, label.length() - 2);
+                    v.setLabel(new NetworkLabel(label));
                 }
             }
-            else {
-                network = nexus.getNetwork();
-            }
-            this.taxa = nexus.getTaxa();
-            this.network.setTaxa(this.taxa);
-
-            if (nexus.getViewerConfig() != null) {
-                this.config = nexus.getViewerConfig();
-                applyConfig(this.config);
-            }
-            else {
-                initConfig();
-            }
-
-            networkFile = inFile;
-            saveNetwork.setEnabled(true);
-            showNetwork(inFile);
-        } catch (IOException e) {
-            errorMessage("Problem occured while loading Nexus file containing Network: " + inFile, e);
         }
+        else {
+            network = nexus.getNetwork();
+        }
+        this.taxa = nexus.getTaxa();
+        this.network.setTaxa(this.taxa);
+
+        if (nexus.getViewerConfig() != null) {
+            this.config = nexus.getViewerConfig();
+            applyConfig(this.config);
+        }
+        else {
+            initConfig();
+        }
+
+        networkFile = inFile;
+        saveNetwork.setEnabled(true);
+        showNetwork(inFile);
     }
 
     private void showNetwork(File inFile) {
