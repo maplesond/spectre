@@ -46,9 +46,6 @@ public class QMaker extends SpectreTool {
     private static final String DEFAULT_OUTPUT_PREFIX = "qmaker";
     private static final File DEFAULT_OUTPUT_DIR = new File("").getParentFile();
 
-
-    private static Logger log = LoggerFactory.getLogger(QMaker.class);
-
     private static final String OPT_OUTPUT_PREFIX = "output_prefix";
     private static final String OPT_OPTIMISER = "optimiser";
 

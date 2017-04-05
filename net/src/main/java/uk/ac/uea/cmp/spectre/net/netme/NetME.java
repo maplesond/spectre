@@ -58,15 +58,6 @@ public class NetME extends RunnableTool {
         this.options = options;
     }
 
-    public static void configureLogging() {
-        // Configure logging
-        if (new File("log4j.properties").exists()) {
-            PropertyConfigurator.configure("log4j.properties");
-        } else {
-            BasicConfigurator.configure();
-        }
-    }
-
     public NetMEOptions getOptions() {
         return options;
     }

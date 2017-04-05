@@ -28,6 +28,8 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.PatternLayout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.spectre.core.ds.Identifier;
@@ -795,9 +797,10 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
     public static void main(String args[]) {
 
         try {
-            LookAndFeel.setLookAndFeel(LookAndFeel.NIMBUS);
+            // Configure logging
+            BasicConfigurator.configure(new ConsoleAppender(new PatternLayout("%d{HH:mm:ss} %p: %m%n")));
 
-            BasicConfigurator.configure();
+            LookAndFeel.setLookAndFeel(LookAndFeel.NIMBUS);
 
             // Parse command line args
             CommandLine commandLine = CommandLineHelper.startApp(createOptions(), "netview [options] <input>",

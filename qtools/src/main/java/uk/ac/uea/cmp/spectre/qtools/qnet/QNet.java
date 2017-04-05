@@ -128,21 +128,6 @@ public class QNet extends RunnableTool {
         this.trackerInitUnknownRuntime(message);
     }
 
-    public static void configureLogging() {
-
-        // Setup logging
-        File propsFile = new File("etc/logging.properties");
-
-        if (!propsFile.exists()) {
-            BasicConfigurator.configure();
-            log.info("No logging configuration found.  Using default logging properties.");
-        } else {
-            PropertyConfigurator.configure(propsFile.getPath());
-            log.info("Found logging configuration: " + propsFile.getAbsoluteFile());
-        }
-    }
-
-
     protected void validateOptions() throws IOException {
         if (this.options == null) {
             throw new IOException("Must specify a valid set of parameters to control superQ.");

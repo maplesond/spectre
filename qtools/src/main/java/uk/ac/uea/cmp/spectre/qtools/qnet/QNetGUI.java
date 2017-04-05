@@ -14,6 +14,9 @@
  */
 package uk.ac.uea.cmp.spectre.qtools.qnet;
 
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.PatternLayout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.earlham.metaopt.Objective;
@@ -487,7 +490,7 @@ public class QNetGUI extends JFrame implements ToolHost {
     public static void main(String args[]) {
 
         // Configure logging
-        QNet.configureLogging();
+        BasicConfigurator.configure(new ConsoleAppender(new PatternLayout("%d{HH:mm:ss} %p: %m%n")));
 
         setLookAndFeel(NIMBUS);
 

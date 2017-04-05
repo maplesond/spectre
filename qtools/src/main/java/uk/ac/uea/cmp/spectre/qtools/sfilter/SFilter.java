@@ -37,8 +37,6 @@ public class SFilter extends SpectreTool {
     private static final String DEFAULT_OUTPUT_FILE = "sfilter.nex";
     private static final double DEFAULT_MIN_THRESHOLD = 0.1;
 
-    private static Logger log = LoggerFactory.getLogger(SFilter.class);
-
     private static final String OPT_INPUT_FILE = "input";
     private static final String OPT_OUTPUT_FILE = "output";
     private static final String OPT_MIN_THRESHOLD = "min_threshold";

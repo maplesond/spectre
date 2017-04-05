@@ -25,7 +25,7 @@ public class NetMEOptions {
 
     public static final String DESC_CIRCULAR_ORDERING = "The nexus file containing the circular ordering.";
 
-    public static final String DESC_OUTPUT_PREFIX = "The output directory prefix to apply to all file names produced by this NetME run.  Default: ./netme-<timestamp>.";
+    public static final String DESC_OUTPUT_PREFIX = "The location and file prefix for output files.  Default: ./netme.";
 
     private File distancesFile;
     private File circularOrderingFile;

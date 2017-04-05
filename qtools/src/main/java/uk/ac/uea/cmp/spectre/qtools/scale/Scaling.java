@@ -29,8 +29,6 @@ import java.io.IOException;
 
 public class Scaling extends SpectreTool {
 
-    private static Logger log = LoggerFactory.getLogger(Scaling.class);
-
     private static final String OPT_OUTPUT_PREFIX = "output";
     private static final String OPT_OPTIMISER = "optimiser";
 

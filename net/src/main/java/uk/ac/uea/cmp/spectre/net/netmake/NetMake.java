@@ -18,6 +18,8 @@ package uk.ac.uea.cmp.spectre.net.netmake;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
 import org.apache.log4j.PropertyConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,15 +67,6 @@ public class NetMake extends RunnableTool {
     public NetMake(NetMakeOptions options, StatusTracker statusTracker) {
         super(statusTracker);
         this.options = options;
-    }
-
-    public static void configureLogging() {
-        // Configure logging
-        if (new File("log4j.properties").exists()) {
-            PropertyConfigurator.configure("log4j.properties");
-        } else {
-            BasicConfigurator.configure();
-        }
     }
 
     public NetMakeOptions getOptions() {
@@ -142,7 +135,7 @@ public class NetMake extends RunnableTool {
             notifyUser("Loading distance matrix from: " + this.options.getInput().getAbsolutePath());
 
             // Load distanceMatrix from input file based on file type
-            // Get a handle on the phygen factory
+            // Get a handle on the spectre factory
             SpectreReaderFactory factory = SpectreReaderFactory.getInstance();
 
             // Setup appropriate reader to input file based on file type

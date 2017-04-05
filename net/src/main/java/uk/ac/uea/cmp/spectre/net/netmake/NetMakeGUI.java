@@ -15,6 +15,9 @@
 
 package uk.ac.uea.cmp.spectre.net.netmake;
 
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.PatternLayout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.CircularOrderingAlgorithms;
@@ -285,7 +288,7 @@ public class NetMakeGUI extends JFrame implements ToolHost {
         txtOutputNetwork.setPreferredSize(new Dimension(200, 25));
         txtOutputNetwork.setToolTipText(NetMakeOptions.DESC_OUTPUT_NETWORK);
 
-        lblOutputNetwork.setText("Output directory:");
+        lblOutputNetwork.setText("Output network file:");
         lblOutputNetwork.setToolTipText(NetMakeOptions.DESC_OUTPUT_NETWORK);
 
         cmdOutputNetwork.setText("...");
@@ -296,7 +299,7 @@ public class NetMakeGUI extends JFrame implements ToolHost {
             }
         });
 
-        lblOutputTree.setText("Output file prefix:");
+        lblOutputTree.setText("Output tree file:");
         lblOutputTree.setToolTipText(NetMakeOptions.DESC_OUTPUT_TREE);
 
         txtOutputTree.setPreferredSize(new Dimension(200, 25));
@@ -587,7 +590,7 @@ public class NetMakeGUI extends JFrame implements ToolHost {
     public static void main(String args[]) {
 
         // Configure logging
-        NetMake.configureLogging();
+        BasicConfigurator.configure(new ConsoleAppender(new PatternLayout("%d{HH:mm:ss} %p: %m%n")));
 
         setLookAndFeel(NIMBUS);
 

@@ -21,10 +21,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.PropertyConfigurator;
+import org.apache.log4j.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.earlham.metaopt.Objective;
@@ -172,54 +169,47 @@ public class FlatNJ {
             }
 
             if (nexusBlock == null) {
-                log.warn("Nexus file provided as input but no nexus block specified by user.  Will use first suitable block found in nexus file.");
-                try {
-                    sequences = readAlignment(inFile);
-                    log.info("Detected and loaded Sequences Block.");
-                }
-                catch (IOException e1) {
-                    try {
-                        distanceMatrix = readDistanceMatrix(inFile);
-                        log.info("Detected and loaded Distance Matrix Block.");
-                    }
-                    catch (IOException e2) {
-                        // Ignore
-                    }
-                }
-
-                locations = readLocations(inFile);
-                if (locations != null) {
-                    log.info("Detected and loaded Locations Block.");
+                log.info("Nexus file provided as input but no nexus block specified by user.  Will use first suitable block found in nexus file.");
+                // First check for existing quadruple system
+                qs = readQuadruples(inFile.getAbsolutePath());
+                if (qs != null) {
+                    log.info("Detected and loaded Quadruples Block.");
                 }
                 else {
-                    ss = readSplitSystem(inFile);
-                    if (ss != null) {
-                        log.info("Detected and loaded Split System Block.");
+                    // Next check for location data
+                    locations = readLocations(inFile);
+                    if (locations != null) {
+                        log.info("Detected and loaded Locations Block.");
                     }
                     else {
-                        qs = readQuadruples(inFile.getAbsolutePath());
-                        if (qs != null) {
-                            log.info("Detected and loaded Quadruples Block.");
+                        // Next check for split system
+                        ss = readSplitSystem(inFile);
+                        if (ss != null) {
+                            log.info("Detected and loaded Split System Block.");
                         }
                         else {
-                            throw new IOException("Couldn't find a valid block in nexus file.");
+                            // Next look for MSA
+                            sequences = readNexusAlignment(inFile);
+                            if (sequences != null) {
+                                log.info("Detected and loaded Sequences Block.");
+                            }
+                            else {
+                                throw new IOException("Couldn't find a valid block in nexus file.");
+                            }
                         }
                     }
                 }
             }
             else {
+                String blockLowerCase = this.nexusBlock.toLowerCase();
 
+                log.info("Searching for " + blockLowerCase + " in nexus file.");
                 boolean loaded = false;
 
-                String blockLowerCase = this.nexusBlock.toLowerCase();
                 if (blockLowerCase.contentEquals("data") || blockLowerCase.contentEquals("characters")) {
-                    sequences = readAlignment(inFile);
+                    sequences = readNexusAlignment(inFile);
                     loaded = true;
-                } else if (blockLowerCase.contentEquals("distances")) {
-                    distanceMatrix = readDistanceMatrix(inFile);
-                    loaded = true;
-                }
-                if (blockLowerCase.contentEquals("locations")) {
+                } else if (blockLowerCase.contentEquals("locations")) {
                     locations = readLocations(inFile);
                     loaded = true;
                 } else if (blockLowerCase.contentEquals("splits")) {
@@ -249,6 +239,12 @@ public class FlatNJ {
                 qsFactory = new QSFactoryLocation(locations);
             } else if (ss != null) {
                 qsFactory = new QSFactorySplitSystem(ss);
+            } else {
+                throw new IOException("No suitable data found to create quadruple system");
+            }
+
+            if (qsFactory == null) {
+                throw new IOException("Error creating quadruple system factory");
             }
 
             qs = qsFactory.computeQS();
@@ -378,17 +374,8 @@ public class FlatNJ {
 
         try {
 
-            // Setup logging
-            File propsFile = new File("etc/logging.properties");
-
-            if (!propsFile.exists()) {
-                BasicConfigurator.configure();
-                LogManager.getRootLogger().setLevel(commandLine.hasOption(OPT_VERBOSE) ? Level.DEBUG : Level.INFO);
-                log.info("No logging configuration found.  Using default logging properties.");
-            } else {
-                PropertyConfigurator.configure(propsFile.getPath());
-                log.info("Found logging configuration: " + propsFile.getAbsoluteFile());
-            }
+            BasicConfigurator.configure(new ConsoleAppender(new PatternLayout("%d{HH:mm:ss} %p: %m%n")));
+            LogManager.getRootLogger().setLevel(commandLine.hasOption(OPT_VERBOSE) ? Level.DEBUG : Level.INFO);
 
             // Parsing the command line.
             log.info("Running Flat Net Joining Algorithm");
@@ -474,6 +461,21 @@ public class FlatNJ {
         Sequences a = new FastaReader().readAlignment(fastaFile);
         if (a.getSequences().length == 0) {
             throw new IOException("Could not read sequence alignment from '" + fastaFile + "'");
+        }
+        return a;
+    }
+
+    /**
+     * Reads MSAs from a nexus file character block {@linkplain Sequences}
+     * and {@linkplain uk.ac.uea.cmp.spectre.core.ds.IdentifierList} objects.
+     *
+     * @param msaNexusFile nexus file containing character block.
+     */
+    protected Sequences readNexusAlignment(File msaNexusFile) throws IOException {
+        log.debug("Reading sequences");
+        Sequences a = new uk.ac.uea.cmp.spectre.core.io.nexus.NexusReader().readAlignment(msaNexusFile);
+        if (a.getSequences().length == 0) {
+            throw new IOException("Could not read sequence alignments from '" + msaNexusFile.getAbsolutePath() + "'");
         }
         return a;
     }

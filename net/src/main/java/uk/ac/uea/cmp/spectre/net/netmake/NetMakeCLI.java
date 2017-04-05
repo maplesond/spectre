@@ -19,10 +19,14 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.PatternLayout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.CircularOrderingAlgorithms;
 import uk.ac.uea.cmp.spectre.core.ui.cli.CommandLineHelper;
+import uk.ac.uea.cmp.spectre.core.util.Time;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,14 +44,11 @@ public class NetMakeCLI {
 
     private static Logger log = LoggerFactory.getLogger(NetMakeCLI.class);
 
-    public static final String OPT_INPUT = "input";
-    public static final String OPT_INPUT_TYPE = "input_file_type";
-    public static final String OPT_OUTPUT_NETWORK = "network_out";
-    public static final String OPT_OUTPUT_TREE = "tree_out";
+    public static final String OPT_OUTPUT_PREFIX = "output_prefix";
     public static final String OPT_TREE_PARAM = "tree_param";
     public static final String OPT_WEIGHTINGS_1 = "weightings_1";
     public static final String OPT_WEIGHTINGS_2 = "weightings_2";
-    public static final String OPT_CO_ALG = "co_alg";
+    public static final String OPT_CO_ALG = "circular_ordering";
     public static final String OPT_HELP = "help";
 
 
@@ -56,11 +57,8 @@ public class NetMakeCLI {
         // create Options object
         Options options = new Options();
 
-        options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_OUTPUT_NETWORK).hasArg()
-                .withDescription(NetMakeOptions.DESC_OUTPUT_NETWORK).create("on"));
-
-        options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_OUTPUT_TREE).hasArg()
-                .withDescription(NetMakeOptions.DESC_OUTPUT_TREE).create("ot"));
+        options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_OUTPUT_PREFIX).hasArg()
+                .withDescription(NetMakeOptions.DESC_OUTPUT_PREFIX).create("p"));
 
         options.addOption(OptionBuilder.withArgName("double").withLongOpt(OPT_TREE_PARAM).hasArg()
                 .withDescription(NetMakeOptions.DESC_TREE_PARAM).create("z"));
@@ -72,7 +70,7 @@ public class NetMakeCLI {
                 .withDescription(NetMakeOptions.DESC_WEIGHTINGS_2).create("x"));
 
         options.addOption(OptionBuilder.withArgName("circular_ordering").withLongOpt(OPT_CO_ALG).hasArg()
-                .withDescription(NetMakeOptions.DESC_CO_ALG).create("ordering"));
+                .withDescription(NetMakeOptions.DESC_CO_ALG).create("c"));
 
 
         options.addOption(CommandLineHelper.HELP_OPTION);
@@ -84,7 +82,8 @@ public class NetMakeCLI {
     public static void main(String[] args) {
 
         CommandLine commandLine = CommandLineHelper.startApp(createOptions(), "netmake [options] <distance_matrix_file>",
-                "Creates networks from distance matrices.\nSupports nexus format input.", args);
+                "Creates a compatible split system and a circular ordering from a distance matrix and either a single weighting or a hybrid\n" +
+                        "weighting configuration.\nSupports nexus format input.", args);
 
         // If we didn't return a command line object then just return.  Probably the user requested help or
         // input invalid args
@@ -94,10 +93,7 @@ public class NetMakeCLI {
 
         try {
 
-
-            DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd-HHmmss");
-            Date date = new Date();
-            String timeStamp = dateFormat.format(date);
+            BasicConfigurator.configure(new ConsoleAppender(new PatternLayout("%d{HH:mm:ss} %p: %m%n")));
 
             log.info("NetMake: Parsing arguments");
 
@@ -108,9 +104,19 @@ public class NetMakeCLI {
                 throw new IOException("Only expected a single input file.");
             }
 
+            String prefix = "netmake";
+            File outputDir = new File(".");
+            if (commandLine.hasOption(OPT_OUTPUT_PREFIX)) {
+                File op = new File(commandLine.getOptionValue(OPT_OUTPUT_PREFIX));
+                if (op.getParentFile() != null) {
+                    outputDir = op.getParentFile();
+                }
+                prefix = op.getName();
+            }
+
             File input = new File(commandLine.getArgs()[0]);
-            File outputNetwork = commandLine.hasOption(OPT_OUTPUT_NETWORK) ? new File(commandLine.getOptionValue(OPT_OUTPUT_NETWORK)) : new File("netmake.nex");
-            File outputTree = commandLine.hasOption(OPT_OUTPUT_TREE) ? new File(commandLine.getOptionValue(OPT_OUTPUT_TREE)) : null;
+            File outputNetwork = new File(outputDir, prefix + ".network.nex");
+            File outputTree = new File(outputDir, prefix + ".tree.nex");
             double treeParam = commandLine.hasOption(OPT_TREE_PARAM) ? Double.parseDouble(commandLine.getOptionValue(OPT_TREE_PARAM)) : NetMakeOptions.DEFAULT_TREE_WEIGHT;
             String weightings1 = commandLine.hasOption(OPT_WEIGHTINGS_1) ? commandLine.getOptionValue(OPT_WEIGHTINGS_1) : "TSP";
             String weightings2 = commandLine.hasOption(OPT_WEIGHTINGS_2) ? commandLine.getOptionValue(OPT_WEIGHTINGS_2) : null;

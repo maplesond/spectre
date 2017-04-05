@@ -15,6 +15,9 @@
 
 package uk.ac.uea.cmp.spectre.net.netme;
 
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.PatternLayout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.spectre.core.ui.gui.JobController;
@@ -421,7 +424,7 @@ public class NetMEGUI extends JFrame implements ToolHost {
     public static void main(String args[]) {
 
         // Configure logging
-        NetME.configureLogging();
+        BasicConfigurator.configure(new ConsoleAppender(new PatternLayout("%d{HH:mm:ss} %p: %m%n")));
 
         setLookAndFeel(NIMBUS);
 

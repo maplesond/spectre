@@ -16,10 +16,7 @@
 package uk.ac.uea.cmp.spectre.qtools.superq;
 
 import org.apache.commons.lang3.time.StopWatch;
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.PropertyConfigurator;
+import org.apache.log4j.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.earlham.metaopt.Optimiser;
@@ -249,16 +246,7 @@ public class SuperQ extends RunnableTool {
     }
 
     public static void configureLogging(boolean verbose) {
-        // Setup logging
-        File propsFile = new File("etc/logging.properties");
-
-        if (!propsFile.exists()) {
-            BasicConfigurator.configure();
-            LogManager.getRootLogger().setLevel(verbose ? Level.DEBUG : Level.INFO);
-            log.info("No logging configuration found.  Using default logging properties.");
-        } else {
-            PropertyConfigurator.configure(propsFile.getPath());
-            log.info("Found logging configuration: " + propsFile.getAbsoluteFile());
-        }
+        BasicConfigurator.configure(new ConsoleAppender(new PatternLayout("%d{HH:mm:ss} %p: %m%n")));
+        LogManager.getRootLogger().setLevel(verbose ? Level.DEBUG : Level.INFO);
     }
 }

@@ -19,6 +19,9 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.PatternLayout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.earlham.metaopt.Objective;
@@ -77,7 +80,7 @@ public class QNetCLI {
 
         try {
             // Configure logging
-            QNet.configureLogging();
+            BasicConfigurator.configure(new ConsoleAppender(new PatternLayout("%d{HH:mm:ss} %p: %m%n")));
 
             if (commandLine.getArgs().length == 0) {
                 throw new IOException("No input file specified.");

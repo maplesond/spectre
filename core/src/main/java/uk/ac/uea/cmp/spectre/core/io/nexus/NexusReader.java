@@ -20,6 +20,7 @@ import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.kohsuke.MetaInfServices;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
+import uk.ac.uea.cmp.spectre.core.ds.Sequences;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.spectre.core.ds.tree.newick.NewickTree;
@@ -96,6 +97,11 @@ public class NexusReader extends AbstractSpectreReader {
         return this.parse(file).getDistanceMatrix();
     }
 
+    @Override
+    public Sequences readAlignment(File file) throws IOException {
+        return this.parse(file).getAlignments();
+    }
+
 
     @Override
     public List<NewickTree> readTrees(File input, double weight) throws IOException {
@@ -131,6 +137,8 @@ public class NexusReader extends AbstractSpectreReader {
         else if (spectreDataType == SpectreDataType.QUARTETS)
             return true;
         else if (spectreDataType == SpectreDataType.NETWORK)
+            return true;
+        else if (spectreDataType == SpectreDataType.ALIGNMENT)
             return true;
 
         return false;

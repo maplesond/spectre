@@ -29,6 +29,8 @@ public class NetMakeOptions {
     // Options descriptions
     public static final String DESC_INPUT = "The file containing the distance matrix to input.";
 
+    public static final String DESC_OUTPUT_PREFIX = "The location and file prefix for output files.  Default: ./netmake";
+
     public static final String DESC_OUTPUT_NETWORK = "The location to write the output network.";
 
     public static final String DESC_OUTPUT_TREE = "The location to write the output tree (if applicable)";
