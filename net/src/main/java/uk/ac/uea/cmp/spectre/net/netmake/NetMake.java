@@ -17,10 +17,6 @@ package uk.ac.uea.cmp.spectre.net.netmake;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.time.StopWatch;
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.PropertyConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
@@ -34,12 +30,10 @@ import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.nm.NetMakeCircularO
 import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.nm.weighting.Weighting;
 import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.nm.weighting.Weightings;
 import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.nn.NeighborNetImpl;
-import uk.ac.uea.cmp.spectre.core.io.SpectreReaderFactory;
 import uk.ac.uea.cmp.spectre.core.io.SpectreReader;
+import uk.ac.uea.cmp.spectre.core.io.SpectreReaderFactory;
 import uk.ac.uea.cmp.spectre.core.ui.gui.RunnableTool;
 import uk.ac.uea.cmp.spectre.core.ui.gui.StatusTracker;
-
-import java.io.File;
 
 /**
  * Performs the NeighborNet algorithm to retrieve a split system and a circular

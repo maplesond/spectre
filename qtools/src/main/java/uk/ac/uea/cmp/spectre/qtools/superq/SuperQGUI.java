@@ -26,6 +26,7 @@ import uk.ac.uea.cmp.spectre.core.ui.gui.JobController;
 import uk.ac.uea.cmp.spectre.core.ui.gui.JobControllerWithView;
 import uk.ac.uea.cmp.spectre.core.ui.gui.StatusTrackerWithView;
 import uk.ac.uea.cmp.spectre.core.ui.gui.ToolHost;
+import uk.ac.uea.cmp.spectre.core.util.LogConfig;
 import uk.ac.uea.cmp.spectre.qtools.superq.problems.SecondaryProblemFactory;
 import uk.ac.uea.cmp.spectre.viewer.NetView;
 
@@ -674,7 +675,7 @@ public class SuperQGUI extends JFrame implements ToolHost {
      */
     public static void main(String args[]) {
 
-        SuperQ.configureLogging(false);
+        LogConfig.defaultConfig();
 
         setLookAndFeel(NIMBUS);
 

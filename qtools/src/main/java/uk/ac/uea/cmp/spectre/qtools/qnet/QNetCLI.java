@@ -19,9 +19,6 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.PatternLayout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.earlham.metaopt.Objective;
@@ -30,6 +27,7 @@ import uk.ac.earlham.metaopt.OptimiserFactory;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.spectre.core.io.nexus.NexusWriter;
 import uk.ac.uea.cmp.spectre.core.ui.cli.CommandLineHelper;
+import uk.ac.uea.cmp.spectre.core.util.LogConfig;
 
 import java.io.File;
 import java.io.IOException;
@@ -80,7 +78,7 @@ public class QNetCLI {
 
         try {
             // Configure logging
-            BasicConfigurator.configure(new ConsoleAppender(new PatternLayout("%d{HH:mm:ss} %p: %m%n")));
+            LogConfig.defaultConfig();
 
             if (commandLine.getArgs().length == 0) {
                 throw new IOException("No input file specified.");

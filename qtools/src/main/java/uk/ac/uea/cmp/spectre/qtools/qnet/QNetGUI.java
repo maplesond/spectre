@@ -14,9 +14,6 @@
  */
 package uk.ac.uea.cmp.spectre.qtools.qnet;
 
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.PatternLayout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.earlham.metaopt.Objective;
@@ -26,6 +23,7 @@ import uk.ac.uea.cmp.spectre.core.io.qweight.QWeightFileFilter;
 import uk.ac.uea.cmp.spectre.core.ui.gui.JobController;
 import uk.ac.uea.cmp.spectre.core.ui.gui.StatusTracker;
 import uk.ac.uea.cmp.spectre.core.ui.gui.ToolHost;
+import uk.ac.uea.cmp.spectre.core.util.LogConfig;
 
 import javax.swing.*;
 import java.awt.*;
@@ -490,7 +488,7 @@ public class QNetGUI extends JFrame implements ToolHost {
     public static void main(String args[]) {
 
         // Configure logging
-        BasicConfigurator.configure(new ConsoleAppender(new PatternLayout("%d{HH:mm:ss} %p: %m%n")));
+        LogConfig.defaultConfig();
 
         setLookAndFeel(NIMBUS);
 

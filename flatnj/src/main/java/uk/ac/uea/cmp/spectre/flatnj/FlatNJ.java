@@ -44,6 +44,7 @@ import uk.ac.uea.cmp.spectre.core.ds.split.flat.PermutationSequence;
 import uk.ac.uea.cmp.spectre.core.ds.split.flat.PermutationSequenceFactory;
 import uk.ac.uea.cmp.spectre.core.io.fasta.FastaReader;
 import uk.ac.uea.cmp.spectre.core.ui.cli.CommandLineHelper;
+import uk.ac.uea.cmp.spectre.core.util.LogConfig;
 import uk.ac.uea.cmp.spectre.flatnj.tools.*;
 
 import java.io.File;
@@ -373,9 +374,8 @@ public class FlatNJ {
         }
 
         try {
-
-            BasicConfigurator.configure(new ConsoleAppender(new PatternLayout("%d{HH:mm:ss} %p: %m%n")));
-            LogManager.getRootLogger().setLevel(commandLine.hasOption(OPT_VERBOSE) ? Level.DEBUG : Level.INFO);
+            // Configure logger
+            LogConfig.defaultConfig(commandLine.hasOption(OPT_VERBOSE));
 
             // Parsing the command line.
             log.info("Running Flat Net Joining Algorithm");

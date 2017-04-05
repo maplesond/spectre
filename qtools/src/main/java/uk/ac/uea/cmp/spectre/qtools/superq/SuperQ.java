@@ -244,9 +244,4 @@ public class SuperQ extends RunnableTool {
         log.info(message);
         this.trackerInitUnknownRuntime(message);
     }
-
-    public static void configureLogging(boolean verbose) {
-        BasicConfigurator.configure(new ConsoleAppender(new PatternLayout("%d{HH:mm:ss} %p: %m%n")));
-        LogManager.getRootLogger().setLevel(verbose ? Level.DEBUG : Level.INFO);
-    }
 }

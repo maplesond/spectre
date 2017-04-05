@@ -26,6 +26,7 @@ import uk.ac.earlham.metaopt.Objective;
 import uk.ac.earlham.metaopt.OptimiserException;
 import uk.ac.earlham.metaopt.OptimiserFactory;
 import uk.ac.uea.cmp.spectre.core.ui.cli.CommandLineHelper;
+import uk.ac.uea.cmp.spectre.core.util.LogConfig;
 import uk.ac.uea.cmp.spectre.qtools.superq.problems.SecondaryProblemFactory;
 
 import java.io.File;
@@ -63,7 +64,7 @@ public class SuperQCLI {
         try {
 
             SuperQOptions sqOpts = processArgs(commandLine);
-            SuperQ.configureLogging(sqOpts.isVerbose());
+            LogConfig.defaultConfig(sqOpts.isVerbose());
             SuperQ superQ = new SuperQ(sqOpts);
             superQ.run();
             if (superQ.failed()) {

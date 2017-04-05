@@ -19,20 +19,14 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.PatternLayout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.CircularOrderingAlgorithms;
 import uk.ac.uea.cmp.spectre.core.ui.cli.CommandLineHelper;
-import uk.ac.uea.cmp.spectre.core.util.Time;
+import uk.ac.uea.cmp.spectre.core.util.LogConfig;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 
 /**
@@ -93,7 +87,7 @@ public class NetMakeCLI {
 
         try {
 
-            BasicConfigurator.configure(new ConsoleAppender(new PatternLayout("%d{HH:mm:ss} %p: %m%n")));
+            LogConfig.defaultConfig();
 
             log.info("NetMake: Parsing arguments");
 
