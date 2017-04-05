@@ -335,8 +335,8 @@ public class FlatNJ {
                 .withDescription("Output file - Default value (\"" + DEFAULT_OUTPUT + "\")").create("o"));
 
         options.addOption(OptionBuilder.withArgName("string").withLongOpt(OPT_NEXUS_BLOCK).hasArg()
-                .withDescription("If input file is a nexus file, then the user must specify which block in the file to use as input." +
-                        "Allowed blocks:\n" + StringUtils.join(ALLOWED_BLOCKS, ", ") + ". It is strongly recommended" +
+                .withDescription("If input file is a nexus file, then the user must specify which block in the file to use as input. " +
+                        "Allowed blocks: " + StringUtils.join(ALLOWED_BLOCKS, ", ") + ". It is recommended " +
                         "that you specify this option if processing a nexus file, otherwise FlatNJ will process the first suitable block.").create("n"));
 
         options.addOption(OptionBuilder.withArgName("double").withLongOpt(OPT_THRESHOLD).hasArg()
@@ -364,7 +364,9 @@ public class FlatNJ {
     public static void main(String[] args) {
         // Setup the command line options
         CommandLine commandLine = CommandLineHelper.startApp(createOptions(), "flatnj [options] <input>",
-                "Flat NJ computes flat split networks from quadruple data.  Flat NJ also can convert multiple sequence alignment or location data into quadruple data internally.",
+                "An implementation of the Flat Net Joining (FlatNJ) algorithm to produce planar networks where labels can appear inside the network.\n" +
+                        "Required input is quartet-like (4-split) data, although flatnj can automatically generate this from multiple sequence alignments, location data (X,Y coordinates) or other compatible split networks.\n" +
+                        "Input can either be nexus format containing: taxa, character, data, distances, locations, splits or quadruples blocks, or a fasta-style format file containing the multiple sequence alignments.",
                 args);
 
         // If we didn't return a command line object then just return.  Probably the user requested help or
