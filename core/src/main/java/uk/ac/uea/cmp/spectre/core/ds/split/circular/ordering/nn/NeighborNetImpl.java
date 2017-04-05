@@ -62,13 +62,15 @@ public class NeighborNetImpl implements CircularOrderingCreator {
             Pair<Identifier, Identifier> selectedVertices = this.selectionStep2(selectedComponents);
 
             // Reduces vertices contained within selected components to a pair.  Using the selected vertices to determine
-            // which vertices to reduce
+            // which vertices to reduce.  Automatically updates V2V matrix if necessary removing reduced verticies and
+            // adding new ones
             Pair<Identifier, Identifier> newVertices = this.reduce(selectedComponents, selectedVertices);
 
             // Merge selected components
             this.merge(selectedComponents, newVertices);
 
-            // Update the managed data structures now that some vertices have been removed and replaced with new ones
+            // Update the distances in the managed data structures now that some vertices have been removed and replaced
+            // with new ones
             this.update();
         }
 

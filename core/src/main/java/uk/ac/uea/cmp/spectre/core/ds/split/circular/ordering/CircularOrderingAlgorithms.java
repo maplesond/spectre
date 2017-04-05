@@ -29,10 +29,8 @@ import java.util.List;
  */
 public enum CircularOrderingAlgorithms {
 
-    NETMAKE {
-    },
-    NEIGHBORNET {
-    }
+    NETMAKE,
+    NEIGHBORNET
     ;
 
     public static String toListString() {

@@ -140,7 +140,7 @@ public class NetMake extends RunnableTool {
             log.info("Loaded distance matrix.  Found " + distanceMatrix.size() + " taxa.");
 
             // Set circular ordering algorithm
-            CircularOrderingAlgorithms coa = CircularOrderingAlgorithms.valueOf(this.options.getCoAlg());
+            CircularOrderingAlgorithms coa = CircularOrderingAlgorithms.valueOf(this.options.getCoAlg().toUpperCase());
             CircularOrderingCreator coc = null;
 
             log.info("Circular ordering algorithm: " + coa.toString());
