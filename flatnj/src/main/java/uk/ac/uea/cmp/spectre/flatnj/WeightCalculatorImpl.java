@@ -123,24 +123,22 @@ public class WeightCalculatorImpl implements WeightCalculator {
     }
 
     @Override
-    public void fitWeights(Optimiser optimiser) {
+    public void fitWeights(Optimiser optimiser) throws OptimiserException {
         //qs.normalizeWeights();
 
         List<Variable> variables = this.createVariables(ps.getnSwaps());
         List<Constraint> constraints = this.createConstraints(variables);
         Objective objective = this.createObjective(variables);
 
-        try {
-            Solution solution = optimiser.optimise(new Problem("flatnj", variables, constraints, objective));
 
-            double[] weights = solution.getVariableValues();
+        Solution solution = optimiser.optimise(new Problem("flatnj", variables, constraints, objective));
 
-            // ps.setFit();???
-            ps.setWeights(weights);
-            ps.setTrivial(qs.getTrivial());
-        } catch (OptimiserException oe) {
-            System.err.println(oe.getMessage());
-        }
+        double[] weights = solution.getVariableValues();
+
+        // ps.setFit();???
+        ps.setWeights(weights);
+        ps.setTrivial(qs.getTrivial());
+
     }
 
 }

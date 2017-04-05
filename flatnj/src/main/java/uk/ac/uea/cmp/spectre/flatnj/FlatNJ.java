@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.earlham.metaopt.Objective;
 import uk.ac.earlham.metaopt.Optimiser;
+import uk.ac.earlham.metaopt.OptimiserException;
 import uk.ac.earlham.metaopt.OptimiserFactory;
 import uk.ac.earlham.metaopt.external.JOptimizer;
 import uk.ac.uea.cmp.spectre.core.ds.Sequences;
@@ -143,7 +144,7 @@ public class FlatNJ {
         this.saveStages = saveStages;
     }
 
-    public Result execute() throws IOException {
+    public Result execute() throws IOException, OptimiserException {
         log.info("Loading input data from: " + inFile);
 
         // Work out input file type
@@ -426,7 +427,7 @@ public class FlatNJ {
             stopWatch.start();
             Result result = flatNJ.execute();
             stopWatch.stop();
-            log.info("FlatNJ completed in: " + result.toString());
+            log.info("FlatNJ completed in: " + stopWatch.toString());
 
             log.info("Saving complete nexus file to: " + outFile.getAbsolutePath());
             result.save(outFile);
@@ -515,9 +516,6 @@ public class FlatNJ {
         log.debug("Reading quadruples");
         NexusReader reader = new NexusReaderQuadruples();
         QuadrupleSystem qs = (QuadrupleSystem) reader.readBlock(inFile);
-        if (qs == null) {
-            throw new IOException("Could not read quadruples from " + inFile);
-        }
         return qs;
     }
 

@@ -16,6 +16,7 @@
 package uk.ac.uea.cmp.spectre.flatnj;
 
 import uk.ac.earlham.metaopt.Optimiser;
+import uk.ac.earlham.metaopt.OptimiserException;
 
 /**
  * Computes split weights in the resulting {@linkplain  uk.ac.uea.cmp.spectre.core.ds.split.flat.PermutationSequence} or
@@ -27,5 +28,5 @@ public interface WeightCalculator {
     /**
      * Computes weights.
      */
-    public void fitWeights(Optimiser optimiser);
+    void fitWeights(Optimiser optimiser) throws OptimiserException;
 }
