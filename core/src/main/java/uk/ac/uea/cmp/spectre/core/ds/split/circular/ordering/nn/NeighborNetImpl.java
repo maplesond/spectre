@@ -25,10 +25,7 @@ import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.CVMatrices;
 import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.CircularOrderingCreator;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Stack;
+import java.util.*;
 
 /**
  * Created by dan on 27/02/14.
@@ -39,11 +36,13 @@ public class NeighborNetImpl implements CircularOrderingCreator {
 
     protected CVMatrices mx;
     protected NeighborNetParams params;
+    protected HashMap<Identifier, Pair<Identifier, Identifier>> expansionMap;
 
     public NeighborNetImpl() {
         this.stackedVertexTriplets = new Stack<>();
         this.mx = new CVMatrices();
         this.params = new NeighborNetParams();
+        this.expansionMap = new HashMap<>();
     }
 
     @Override
@@ -188,61 +187,63 @@ public class NeighborNetImpl implements CircularOrderingCreator {
     protected Pair<Identifier, Identifier> reduce(Pair<Identifier, Identifier> selectedComponents, Pair<Identifier, Identifier> selectedVertices) {
 
         // Both should be 1 or 2 components in length
-        IdentifierList vertices1 = this.mx.getVertices(selectedComponents.getLeft());
-        IdentifierList vertices2 = this.mx.getVertices(selectedComponents.getRight());
+        IdentifierList c1v = this.mx.getVertices(selectedComponents.getLeft());
+        IdentifierList c2v = this.mx.getVertices(selectedComponents.getRight());
 
-        IdentifierList vertexUnion = new IdentifierList();
-        vertexUnion.addAll(vertices1);
-        vertexUnion.addAll(vertices2);
-
-        final int nbVerticies = vertexUnion.size();
-
-        IdentifierList mergedComponent = new IdentifierList();
+        final int nbVerticies = c1v.size() + c2v.size();
 
         if (nbVerticies == 2) {
-            return new ImmutablePair<>(vertexUnion.get(0), vertexUnion.get(1));
+            return new ImmutablePair<>(c1v.get(0), c2v.get(0));
         } else if (nbVerticies == 3) {
 
             Identifier first = null;
             Identifier second = null;
             Identifier third = null;
 
-            if (vertices1.size() == 1) {
+            if (c1v.size() == 1) {
 
-                first = vertices1.get(0);
+                first = c1v.get(0);
 
-                if (vertices2.get(0).equals(selectedVertices.getLeft()) || vertices2.get(0).equals(selectedVertices.getRight())) {
-                    second = vertices2.get(0);
-                    third = vertices2.get(1);
+                if (c2v.get(0).equals(selectedVertices.getLeft()) || c2v.get(0).equals(selectedVertices.getRight())) {
+                    second = c2v.get(0);
+                    third = c2v.get(1);
                 } else {
-                    second = vertices2.get(1);
-                    third = vertices2.get(0);
+                    second = c2v.get(1);
+                    third = c2v.get(0);
                 }
             } else {
-                first = vertices2.get(0);
-
-                if (vertices1.get(0).equals(selectedVertices.getLeft()) || vertices1.get(0).equals(selectedVertices.getRight())) {
-                    second = vertices1.get(0);
-                    third = vertices1.get(1);
+                if (c1v.get(0).equals(selectedVertices.getLeft()) || c1v.get(0).equals(selectedVertices.getRight())) {
+                    first = c1v.get(0);
+                    second = c1v.get(1);
                 } else {
-                    second = vertices1.get(1);
-                    third = vertices1.get(0);
+                    first = c1v.get(1);
+                    second = c1v.get(0);
                 }
+                third = c2v.get(0);
             }
 
             return vertexTripletReduction(new VertexTriplet(first, second, third));
         } else if (nbVerticies == 4) {
 
-            Identifier first = vertices1.get(0).equals(selectedVertices.getLeft()) ?
-                    vertices1.get(1) :
-                    vertices1.get(0);
+            IdentifierList c1 = c1v;
+            IdentifierList c2 = c2v;
+
+            // Ensure that the first selected vertex is within the first components group
+            if (c2v.get(0).equals(selectedVertices.getLeft()) || c2v.get(1).equals(selectedVertices.getLeft())) {
+                c1 = c2v;
+                c2 = c1v;
+            }
+
+            Identifier first = c1.get(0).equals(selectedVertices.getLeft()) ?
+                    c1.get(1) :
+                    c1.get(0);
 
             Identifier second = selectedVertices.getLeft();
             Identifier third = selectedVertices.getRight();
 
-            Identifier fourth = vertices2.get(0).equals(selectedVertices.getRight()) ?
-                    vertices2.get(1) :
-                    vertices2.get(0);
+            Identifier fourth = c2.get(0).equals(selectedVertices.getRight()) ?
+                    c2.get(1) :
+                    c2.get(0);
 
             Pair<Identifier, Identifier> newVertices = this.vertexTripletReduction(new VertexTriplet(first, second, third));
 
@@ -289,19 +290,40 @@ public class NeighborNetImpl implements CircularOrderingCreator {
 
         while (!stackedVertexTriplets.isEmpty()) {
 
-            Integer max = Collections.max(order);
-            int indexOfMax = order.indexOf(max);
-            order.remove(max);
+            int maxval = -1;
+            int maxpos = -1;
+            for(int i = 0; i < order.size(); i++) {
+                int v = order.get(i);
+                if (v > maxval) {
+                    maxval = v;
+                    maxpos = i;
+                }
+            }
+            order.remove(maxpos);
 
-            Integer max2 = Collections.max(order);
-            int indexOfMax2 = order.indexOf(max2);
-            order.remove(max2);
+            int maxval2 = -1;
+            int maxpos2 = -1;
+            for(int i = 0; i < order.size(); i++) {
+                int v = order.get(i);
+                if (v > maxval2) {
+                    maxval2 = v;
+                    maxpos2 = i;
+                }
+            }
+            order.remove(maxpos2);
 
             VertexTriplet vt = stackedVertexTriplets.pop();
 
-            order.add(indexOfMax2, vt.vertex1.getId());
-            order.add(indexOfMax2 + 1, vt.vertex2.getId());
-            order.add(indexOfMax2 + 2, vt.vertex3.getId());
+            if (maxpos > maxpos2) {
+                order.add(maxpos2, vt.vertex1.getId());
+                order.add(maxpos2 + 1, vt.vertex2.getId());
+                order.add(maxpos2 + 2, vt.vertex3.getId());
+            }
+            else {
+                order.add(maxpos2, vt.vertex3.getId());
+                order.add(maxpos2 + 1, vt.vertex2.getId());
+                order.add(maxpos2 + 2, vt.vertex1.getId());
+            }
         }
 
         IdentifierList orderedTaxa = new IdentifierList();
