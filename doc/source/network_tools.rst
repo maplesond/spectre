@@ -5,30 +5,31 @@ Network Tools
 
 
 
-Netmake:
---------
+Netmake
+-------
 
 Creates a compatible split system and a circular ordering from a distance matrix and either a single weighting or a hybrid
 weighting configuration. The following paragraph describes the implemented algorithms.
 
-The NeighborNet algorithm, introduced by D. Bryant and V. Moulton \citep{Bryant2004}, is a popular tool for
-constructing a weighted circular split system that can be represented by a circular split network.
+The NeighborNet algorithm (Bryant and Moulton, 2004) is a popular tool for constructing a weighted circular split system
+that can be represented by a circular split network.
 D. Levy and L. Pachter (levy and Pachter, 2007) propose a framework for constructing circular split systems based on NeighborNet,
 and pointed out that, depending on the adjustment of this framework, it can be used to produce circular split systems with interesting properties.
 For example, constructing a circular split system in a certain way guaranties that it contains a compatible split system corresponding to the NeighborJoining tree.
 we also implemented a new way to construct a circular split system by greedily optimising the minimum evolution criterion.
 Netmake can be run using these different algorithms to construct circular split systems (networks).
 
-For more information please see Thesis Sarah Chapter 3 (can we attach this somehow?)
+For more information please see :download:`Thesis Chapter 3 <assets/spectre_bastkowskis_thesis.pdf>`
 
-To run Netmake use the ``Netmake`` script like this::
 
-  Netmake -o <outfile> [-s <scaling_optimiser> -x <primary_optimiser>
+To run Netmake use the ``netmake`` script like this::
+
+  netmake -on <network_output_file> [-ot <tree_output_file> -ordering <primary_optimiser>
          -y <secondary_optimiser> -b <objective> -f <filter_threshold>] <input_file> [<input_file>]...
 
 
-NetME:
-------
+NetME
+-----
 
 Constructs a minimum evolution (ME) tree from the specified network with its implied circular order.
 
@@ -48,3 +49,8 @@ To run NetME use the ``NetME`` script like this::
 
 Alternatively, NetME and NetMake have a simple combined GUI which can be started by simply running ``netme-gui`` without any arguments.
 
+
+References
+----------
+
+* D.Bryant and V.Moulton. Neighbor-net: an agglomerative method for the construction of phylogenetic networks. Mol. Biol. Evol., 21:255–265, 2004.

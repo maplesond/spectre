@@ -19,6 +19,7 @@ and algorithms that can be leveraged by third party applications.
     running
     tools
     developing
+    resources
     credits
     issues
     availability

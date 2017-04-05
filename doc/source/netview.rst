@@ -1,4 +1,4 @@
-.. _misc_tools:
+.. _viewer:
 
 Network Viewer
 ==============
