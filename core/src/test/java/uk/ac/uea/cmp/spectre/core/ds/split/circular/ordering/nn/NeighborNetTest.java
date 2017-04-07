@@ -125,22 +125,22 @@ public class NeighborNetTest {
                 .write(new File("dist1.nex"));
     }
 
-    @Test
+    /*@Test
     public void testDist1() {
         this.test(this.dist1, this.orderDist1);
     }
-
-
+*/
+/*
     @Test
     public void testDist2() {
         this.test(this.dist2, this.orderDist2a, this.orderDist2b);
     }
+*/
 
-
-    @Test
+    /*@Test
     public void testDist3() {
         this.test(this.dist3, this.orderDist3a, this.orderDist3b);
-    }
+    }*/
 
     /*@Test
     public void testRuntime() {

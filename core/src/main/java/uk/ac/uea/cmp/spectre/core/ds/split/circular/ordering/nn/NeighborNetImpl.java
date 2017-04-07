@@ -126,9 +126,9 @@ public class NeighborNetImpl implements CircularOrderingCreator {
         }
 
         // Ensure we are in canonical form
-        if (bestPair.getLeft().getId() > bestPair.getRight().getId()) {
+        /*if (bestPair.getLeft().getId() > bestPair.getRight().getId()) {
             bestPair = new ImmutablePair<>(bestPair.getRight(), bestPair.getLeft());
-        }
+        }*/
 
         return bestPair;
     }
@@ -177,9 +177,9 @@ public class NeighborNetImpl implements CircularOrderingCreator {
         }
 
         // Ensure we are in canonical form
-        if (bestPair.getLeft().getId() > bestPair.getRight().getId()) {
-            bestPair = new ImmutablePair<>(bestPair.getRight(), bestPair.getLeft());
-        }
+        //if (bestPair.getLeft().getId() > bestPair.getRight().getId()) {
+        //    bestPair = new ImmutablePair<>(bestPair.getRight(), bestPair.getLeft());
+        //}
 
         return bestPair;
     }
@@ -189,6 +189,9 @@ public class NeighborNetImpl implements CircularOrderingCreator {
         // Both should be 1 or 2 components in length
         IdentifierList c1v = this.mx.getVertices(selectedComponents.getLeft());
         IdentifierList c2v = this.mx.getVertices(selectedComponents.getRight());
+
+        Identifier sv1 = selectedVertices.getLeft();
+        Identifier sv2 = selectedVertices.getRight();
 
         final int nbVerticies = c1v.size() + c2v.size();
 
@@ -202,22 +205,21 @@ public class NeighborNetImpl implements CircularOrderingCreator {
 
             if (c1v.size() == 1) {
 
-                first = c1v.get(0);
-
-                if (c2v.get(0).equals(selectedVertices.getLeft()) || c2v.get(0).equals(selectedVertices.getRight())) {
+                if (c2v.get(0).equals(sv1) || c2v.get(0).equals(sv2)) {
+                    first = c2v.get(1);
                     second = c2v.get(0);
-                    third = c2v.get(1);
                 } else {
+                    first = c2v.get(0);
                     second = c2v.get(1);
-                    third = c2v.get(0);
                 }
+                third = c1v.get(0);
             } else {
-                if (c1v.get(0).equals(selectedVertices.getLeft()) || c1v.get(0).equals(selectedVertices.getRight())) {
-                    first = c1v.get(0);
-                    second = c1v.get(1);
-                } else {
+                if (c1v.get(0).equals(sv1) || c1v.get(0).equals(sv2)) {
                     first = c1v.get(1);
                     second = c1v.get(0);
+                } else {
+                    first = c1v.get(0);
+                    second = c1v.get(1);
                 }
                 third = c2v.get(0);
             }
@@ -229,19 +231,19 @@ public class NeighborNetImpl implements CircularOrderingCreator {
             IdentifierList c2 = c2v;
 
             // Ensure that the first selected vertex is within the first components group
-            if (c2v.get(0).equals(selectedVertices.getLeft()) || c2v.get(1).equals(selectedVertices.getLeft())) {
+            if (c2v.get(0).getId() == sv1.getId() || c2v.get(1).getId() == sv2.getId()) {
                 c1 = c2v;
                 c2 = c1v;
             }
 
-            Identifier first = c1.get(0).equals(selectedVertices.getLeft()) ?
+            Identifier first = c1.get(0).equals(sv1) ?
                     c1.get(1) :
                     c1.get(0);
 
-            Identifier second = selectedVertices.getLeft();
-            Identifier third = selectedVertices.getRight();
+            Identifier second = sv1;
+            Identifier third = sv2;
 
-            Identifier fourth = c2.get(0).equals(selectedVertices.getRight()) ?
+            Identifier fourth = c2.get(0).equals(sv2) ?
                     c2.get(1) :
                     c2.get(0);
 
@@ -314,7 +316,7 @@ public class NeighborNetImpl implements CircularOrderingCreator {
 
             VertexTriplet vt = stackedVertexTriplets.pop();
 
-            if (maxpos > maxpos2) {
+            if (maxpos < maxpos2) {
                 order.add(maxpos2, vt.vertex1.getId());
                 order.add(maxpos2 + 1, vt.vertex2.getId());
                 order.add(maxpos2 + 2, vt.vertex3.getId());
@@ -397,21 +399,26 @@ public class NeighborNetImpl implements CircularOrderingCreator {
         final Identifier vertex2 = selectedVertices.vertex2;
         final Identifier vertex3 = selectedVertices.vertex3;
 
+        // Switch order to be consistent with original vertices
+        Pair<Identifier, Identifier> newPair = vertex1.getId() > vertex3.getId() ?
+                new ImmutablePair<>(newVertex1, newVertex2) :
+                new ImmutablePair<>(newVertex2, newVertex1);
+
         // Iterate over all active vertices to set the new distances
         for (Identifier v : this.mx.getVertices()) {
 
             // Only process this vertex if it is not in the selected vertex list
             if (!v.equals(vertex1) && !v.equals(vertex2) && !v.equals(vertex3)) {
 
-                v2v.setDistance(newVertex1, v,
+                v2v.setDistance(newPair.getLeft(), v,
                         ((params.getAlpha() + params.getBeta()) * v2v.getDistance(vertex1, v)) +
                                 (params.getGamma() * v2v.getDistance(vertex2, v)));
 
-                v2v.setDistance(newVertex2, v,
+                v2v.setDistance(newPair.getRight(), v,
                         (params.getAlpha() * v2v.getDistance(vertex2, v)) +
                                 ((1 - params.getAlpha()) * v2v.getDistance(vertex3, v)));
 
-                v2v.setDistance(newVertex1, newVertex2,
+                v2v.setDistance(newPair.getLeft(), newPair.getRight(),
                         (params.getAlpha() * v2v.getDistance(vertex1, vertex2)) +
                                 (params.getBeta() * v2v.getDistance(vertex1, vertex3)) +
                                 (params.getGamma() * v2v.getDistance(vertex2, vertex3)));
@@ -423,7 +430,7 @@ public class NeighborNetImpl implements CircularOrderingCreator {
         v2v.removeTaxon(vertex2);
         v2v.removeTaxon(vertex3);
 
-        return new ImmutablePair<>(newVertex1, newVertex2);
+        return newPair;
     }
 
 
