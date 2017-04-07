@@ -17,7 +17,7 @@ The tools within spectre are divided into sub-groups based on their functionalit
 
 The tools in spectre focus around generating phylogenetic networks from a variety of inputs.  The main workflows are listed here.
 
-*FlatNJ* - Creates a planar split network.  Inputs:
+*FlatNJ* - Creates a flat planar split network from quadruples (systems of 4-splits).  FlatNJ can automatically generate quadruples from the following input types:
 
 1. multiple sequence alignment in Fasta or Nexus format.  If Nexus format is used, distance matrices can be provided to produce split weight estimation.
 2. geographical coordinates in Nexus format
@@ -31,3 +31,5 @@ The tools in spectre focus around generating phylogenetic networks from a variet
 4. Nexus files with distance blocks
 5. Treebase syntax Nexus files with TREES blocks
 6. Newick trees, with or without branch lengths
+
+*NetMake* - Creates a circular split system from a distance matrix.  Allows the user to select NeighborNet or NetMakes one method.
