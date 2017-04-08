@@ -137,6 +137,7 @@ public class CVMatrices {
      */
     private final void setupC2V() {
 
+        // List of vertices for each component
         this.c2vs = new HashMap<>();
         for(Identifier c : this.c2c.getTaxa()) {
             IdentifierList vs = new IdentifierList();
@@ -144,16 +145,16 @@ public class CVMatrices {
             this.c2vs.put(c, vs);
         }
 
+        // Map of each vertex to its parent component
         this.v2c = new HashMap<>();
         for(Identifier v : this.v2v.getTaxa()) {
             this.v2c.put(v, this.componentIdMap.get(v.getId()));
         }
 
-
+        // C2V distances will initially be the same as C2C and V2V so just leverage
+        // the calculations already done there
         for(Identifier c : c2c.getTaxa()) {
             for(Identifier v : v2v.getTaxa()) {
-
-                // Will initially be the same as C2c and V2v
                 this.setDistance(c, v, v2v.getDistance(c.getId(), v.getId()));
             }
         }
@@ -196,6 +197,10 @@ public class CVMatrices {
         return new Identifier("C" + Integer.toString(maxId), maxId);
     }
 
+    /**
+     * Creates a new vertex with appropriate ID and adds it to the v2v matrix
+     * @return
+     */
     public Identifier createNextVertex() {
 
         int maxId = 0;
@@ -208,7 +213,14 @@ public class CVMatrices {
 
         maxId++;
 
-        return new Identifier("V" + Integer.toString(maxId), maxId);
+        Identifier v = new Identifier("V" + Integer.toString(maxId), maxId);
+        this.v2v.getTaxa().add(v);
+
+        return v;
+    }
+
+    public void linkV2C(Identifier v, Identifier c) {
+        this.v2c.put(v, c);
     }
 
     public double setDistance(Identifier component, Identifier vertex, final double value) {
@@ -301,4 +313,16 @@ public class CVMatrices {
         return this.vertexIdMap.get(vertexIndex);
     }
 
+    public void removeVertexTriplet(Identifier vertex1, Identifier vertex2, Identifier vertex3) {
+
+        // Remove the vertces from V2V
+        this.v2v.removeTaxon(vertex1);
+        this.v2v.removeTaxon(vertex2);
+        this.v2v.removeTaxon(vertex3);
+
+        // Also remove vertices from V2C
+        this.v2c.remove(vertex1);
+        this.v2c.remove(vertex2);
+        this.v2c.remove(vertex3);
+    }
 }

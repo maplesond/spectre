@@ -17,6 +17,8 @@ package uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.nn;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.spectre.core.ds.Identifier;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
@@ -31,6 +33,9 @@ import java.util.*;
  * Created by dan on 27/02/14.
  */
 public class NeighborNetImpl implements CircularOrderingCreator {
+
+    private static Logger log = LoggerFactory.getLogger(NeighborNetImpl.class);
+
 
     protected Stack<VertexTriplet> stackedVertexTriplets;
 
@@ -65,12 +70,8 @@ public class NeighborNetImpl implements CircularOrderingCreator {
             // adding new ones
             Pair<Identifier, Identifier> newVertices = this.reduce(selectedComponents, selectedVertices);
 
-            // Merge selected components
+            // Merge selected components containing the new vertices
             this.merge(selectedComponents, newVertices);
-
-            // Update the distances in the managed data structures now that some vertices have been removed and replaced
-            // with new ones
-            this.update();
         }
 
         // Expand back to taxa to get circular ordering and translate back to original nomenclature
@@ -80,6 +81,10 @@ public class NeighborNetImpl implements CircularOrderingCreator {
         if (!this.stackedVertexTriplets.empty()) {
             throw new IllegalStateException("Vertex triplet stack still contains entries.  Something went wrong in the NN algorithm.");
         }
+
+        log.info("NeighborNet produced the following circular ordering:");
+        log.info("... By ID  : " + circularOrdering.toString(IdentifierList.IdentifierFormat.BY_ID));
+        log.info("... By Name: " + circularOrdering.toString(IdentifierList.IdentifierFormat.BY_NAME));
 
         return circularOrdering;
     }
@@ -125,11 +130,6 @@ public class NeighborNetImpl implements CircularOrderingCreator {
             }
         }
 
-        // Ensure we are in canonical form
-        /*if (bestPair.getLeft().getId() > bestPair.getRight().getId()) {
-            bestPair = new ImmutablePair<>(bestPair.getRight(), bestPair.getLeft());
-        }*/
-
         return bestPair;
     }
 
@@ -145,28 +145,38 @@ public class NeighborNetImpl implements CircularOrderingCreator {
         IdentifierList vertices1 = this.mx.getVertices(selectedComponents.getLeft());
         IdentifierList vertices2 = this.mx.getVertices(selectedComponents.getRight());
 
+        // First check if we only have one vertex in each list... in which case just return those
+        if (vertices1.size() == 1 && vertices2.size() == 1) {
+            return new ImmutablePair<>(vertices1.get(0), vertices2.get(0));
+        }
+
         IdentifierList vertexUnion = new IdentifierList();
         vertexUnion.addAll(vertices1);
         vertexUnion.addAll(vertices2);
+
+        final double mhat = this.mx.getNbComponents() + vertexUnion.size() - 2;
 
         for (Identifier v1 : vertices1) {
 
             for (Identifier v2 : vertices2) {
 
-                // Subtract the sum of distances from a given vertex in one of the selected components, from the distance between
-                // the given vertex and the other component.
-                final double sumV1 = this.mx.sumVertex2Components(v1) - this.mx.getDistance(selectedComponents.getRight(), v1);
-                final double sumV2 = this.mx.sumVertex2Components(v2) - this.mx.getDistance(selectedComponents.getLeft(), v2);
+                // Gets the sum of distances from the selected vertex to all other components except the component associated with itself.
+                final double sumV1 = this.mx.sumVertex2Components(v1) - this.mx.getDistance(selectedComponents.getLeft(), v1) - this.mx.getDistance(selectedComponents.getRight(), v1);
+                final double sumV2 = this.mx.sumVertex2Components(v2) - this.mx.getDistance(selectedComponents.getLeft(), v2) - this.mx.getDistance(selectedComponents.getRight(), v2);
 
                 double sumVId1 = 0.0;
                 double sumVId2 = 0.0;
 
                 for (Identifier v : vertexUnion) {
-                    sumVId1 += v2v.getDistance(v1, v);
-                    sumVId2 += v2v.getDistance(v2, v);
+                    if (v.getId() != v1.getId()) {
+                        sumVId1 += v2v.getDistance(v1, v);
+                    }
+                    if (v.getId() != v2.getId()) {
+                        sumVId2 += v2v.getDistance(v2, v);
+                    }
                 }
 
-                double q = ((vertexUnion.size() - 4 + vertices1.size() + vertices2.size()) * v2v.getDistance(v1, v2)) -
+                double q = ((mhat - 4 + vertexUnion.size()) * v2v.getDistance(v1, v2)) -
                         sumV1 - sumV2 - sumVId1 - sumVId2;
 
                 if (q < minQ) {
@@ -175,11 +185,6 @@ public class NeighborNetImpl implements CircularOrderingCreator {
                 }
             }
         }
-
-        // Ensure we are in canonical form
-        //if (bestPair.getLeft().getId() > bestPair.getRight().getId()) {
-        //    bestPair = new ImmutablePair<>(bestPair.getRight(), bestPair.getLeft());
-        //}
 
         return bestPair;
     }
@@ -205,14 +210,16 @@ public class NeighborNetImpl implements CircularOrderingCreator {
 
             if (c1v.size() == 1) {
 
+                first = c1v.get(0);
+
                 if (c2v.get(0).equals(sv1) || c2v.get(0).equals(sv2)) {
-                    first = c2v.get(1);
                     second = c2v.get(0);
+                    third = c2v.get(1);
                 } else {
-                    first = c2v.get(0);
                     second = c2v.get(1);
+                    third = c2v.get(0);
                 }
-                third = c1v.get(0);
+
             } else {
                 if (c1v.get(0).equals(sv1) || c1v.get(0).equals(sv2)) {
                     first = c1v.get(1);
@@ -292,39 +299,42 @@ public class NeighborNetImpl implements CircularOrderingCreator {
 
         while (!stackedVertexTriplets.isEmpty()) {
 
-            int maxval = -1;
-            int maxpos = -1;
+            int maxval1 = -1;
+            int maxpos1 = -1;
             for(int i = 0; i < order.size(); i++) {
                 int v = order.get(i);
-                if (v > maxval) {
-                    maxval = v;
-                    maxpos = i;
+                if (v > maxval1) {
+                    maxval1 = v;
+                    maxpos1 = i;
                 }
             }
-            order.remove(maxpos);
-
             int maxval2 = -1;
             int maxpos2 = -1;
             for(int i = 0; i < order.size(); i++) {
                 int v = order.get(i);
-                if (v > maxval2) {
+                if (v != maxval1 && v > maxval2) {
                     maxval2 = v;
                     maxpos2 = i;
                 }
             }
-            order.remove(maxpos2);
+
+            boolean flip = maxpos1 < maxpos2;
+
+            order.remove(maxpos1);
+            order.remove(flip ? maxpos2 - 1 : maxpos2);
 
             VertexTriplet vt = stackedVertexTriplets.pop();
 
-            if (maxpos < maxpos2) {
+            if (flip) {
+                int p = maxpos2 - 1;
+                order.add(p, vt.vertex3.getId());
+                order.add(p + 1, vt.vertex2.getId());
+                order.add(p + 2, vt.vertex1.getId());
+            }
+            else {
                 order.add(maxpos2, vt.vertex1.getId());
                 order.add(maxpos2 + 1, vt.vertex2.getId());
                 order.add(maxpos2 + 2, vt.vertex3.getId());
-            }
-            else {
-                order.add(maxpos2, vt.vertex3.getId());
-                order.add(maxpos2 + 1, vt.vertex2.getId());
-                order.add(maxpos2 + 2, vt.vertex1.getId());
             }
         }
 
@@ -349,10 +359,12 @@ public class NeighborNetImpl implements CircularOrderingCreator {
         this.mx.getC2Vs().remove(selectedComponents.getLeft());
         this.mx.getC2Vs().remove(selectedComponents.getRight());
         this.mx.getC2Vs().put(newComponent, mergedSet);
-    }
 
-    public void update() {
+        // Update V2C links
+        this.mx.linkV2C(newVertices.getLeft(), newComponent);
+        this.mx.linkV2C(newVertices.getRight(), newComponent);
 
+        // Update matrices
         this.updateC2V();
         this.updateC2C();
     }
@@ -387,12 +399,9 @@ public class NeighborNetImpl implements CircularOrderingCreator {
 
         DistanceMatrix v2v = this.mx.getV2V();
 
-        // Create two new taxa for the reduced
+        // Create two new taxa for the reduced (implicitly add them to v2v matrix)
         Identifier newVertex1 = this.mx.createNextVertex();
-        v2v.getTaxa().add(newVertex1);
-
         Identifier newVertex2 = this.mx.createNextVertex();
-        v2v.getTaxa().add(newVertex2);
 
         // Setup shortcuts
         final Identifier vertex1 = selectedVertices.vertex1;
@@ -400,15 +409,21 @@ public class NeighborNetImpl implements CircularOrderingCreator {
         final Identifier vertex3 = selectedVertices.vertex3;
 
         // Switch order to be consistent with original vertices
-        Pair<Identifier, Identifier> newPair = vertex1.getId() > vertex3.getId() ?
-                new ImmutablePair<>(newVertex1, newVertex2) :
-                new ImmutablePair<>(newVertex2, newVertex1);
+        Pair<Identifier, Identifier> newPair = new ImmutablePair<>(newVertex1, newVertex2);
 
         // Iterate over all active vertices to set the new distances
         for (Identifier v : this.mx.getVertices()) {
 
-            // Only process this vertex if it is not in the selected vertex list
-            if (!v.equals(vertex1) && !v.equals(vertex2) && !v.equals(vertex3)) {
+            // Only process this vertex if it is not in the selected vertex list nor one of the new verticies
+            if (!v.equals(vertex1) && !v.equals(vertex2) && !v.equals(vertex3)
+                    && !v.equals(newVertex1) && !v.equals(newVertex2)) {
+
+                // NOTE:
+                // We've modified this part from what is described in the original neighbornet paper
+                // by Bryant and Moulton as in their distance reduction formula the parameters alpha
+                // beta and gamma do not all multiply up to one in the case of d(u,a) and d(v,a).
+                // We fix this by ensuring all 3 params are used for each new distance calculation.
+                // These changes are described in Bastkowski's thesis.
 
                 v2v.setDistance(newPair.getLeft(), v,
                         ((params.getAlpha() + params.getBeta()) * v2v.getDistance(vertex1, v)) +
@@ -416,19 +431,18 @@ public class NeighborNetImpl implements CircularOrderingCreator {
 
                 v2v.setDistance(newPair.getRight(), v,
                         (params.getAlpha() * v2v.getDistance(vertex2, v)) +
-                                ((1 - params.getAlpha()) * v2v.getDistance(vertex3, v)));
-
-                v2v.setDistance(newPair.getLeft(), newPair.getRight(),
-                        (params.getAlpha() * v2v.getDistance(vertex1, vertex2)) +
-                                (params.getBeta() * v2v.getDistance(vertex1, vertex3)) +
-                                (params.getGamma() * v2v.getDistance(vertex2, vertex3)));
+                                ((params.getBeta() + params.getGamma()) * v2v.getDistance(vertex3, v)));
             }
         }
 
+        // Set distance between the two new vertices
+        v2v.setDistance(newPair.getLeft(), newPair.getRight(),
+                (params.getAlpha() * v2v.getDistance(vertex1, vertex2)) +
+                        (params.getBeta() * v2v.getDistance(vertex1, vertex3)) +
+                        (params.getGamma() * v2v.getDistance(vertex2, vertex3)));
+
         // Remove the selected vertices from v2v
-        v2v.removeTaxon(vertex1);
-        v2v.removeTaxon(vertex2);
-        v2v.removeTaxon(vertex3);
+        this.mx.removeVertexTriplet(vertex1, vertex2, vertex3);
 
         return newPair;
     }
