@@ -59,19 +59,19 @@ public class NeighborNetImpl implements CircularOrderingCreator {
         // Reduce down to a max of 3 vertices
         while (this.mx.getNbVertices() > 3) {
 
-            // Choose a pair of components from c2c that minimise the Q criterion
-            Pair<Identifier, Identifier> selectedComponents = this.selectionStep1(this.mx.getC2C());
+            // Choose a pair of clusters from c2c that minimise the Q criterion
+            Pair<Identifier, Identifier> selectedClusters = this.selectionStep1(this.mx.getC2C());
 
             // Choose a pair of vertices that minimise the Q criterion
-            Pair<Identifier, Identifier> selectedVertices = this.selectionStep2(selectedComponents);
+            Pair<Identifier, Identifier> selectedVertices = this.selectionStep2(selectedClusters);
 
-            // Reduces vertices contained within selected components to a pair.  Using the selected vertices to determine
+            // Reduces vertices contained within selected clusters to a pair.  Using the selected vertices to determine
             // which vertices to reduce.  Automatically updates V2V matrix if necessary removing reduced verticies and
             // adding new ones
-            Pair<Identifier, Identifier> newVertices = this.reduce(selectedComponents, selectedVertices);
+            Pair<Identifier, Identifier> newVertices = this.reduce(selectedClusters, selectedVertices);
 
-            // Merge selected components containing the new vertices
-            this.merge(selectedComponents, newVertices);
+            // Merge selected clusters containing the new vertices
+            this.merge(selectedClusters, newVertices);
         }
 
         // Expand back to taxa to get circular ordering and translate back to original nomenclature
@@ -101,10 +101,10 @@ public class NeighborNetImpl implements CircularOrderingCreator {
 
 
     /**
-     * Choose a pair of components that minimise the Q criterion from c2c
+     * Choose a pair of clusters that minimise the Q criterion from c2c
      *
-     * @param c2c Component to component distance matrix
-     * @return a pair of components that minimise the Q criterion
+     * @param c2c Cluster to cluster distance matrix
+     * @return a pair of clusters that minimise the Q criterion
      */
     protected Pair<Identifier, Identifier> selectionStep1(final DistanceMatrix c2c) {
 
@@ -134,7 +134,7 @@ public class NeighborNetImpl implements CircularOrderingCreator {
     }
 
 
-    protected Pair<Identifier, Identifier> selectionStep2(Pair<Identifier, Identifier> selectedComponents) {
+    protected Pair<Identifier, Identifier> selectionStep2(Pair<Identifier, Identifier> selectedClusters) {
 
         Pair<Identifier, Identifier> bestPair = null;
         double minQ = Double.MAX_VALUE;
@@ -142,8 +142,8 @@ public class NeighborNetImpl implements CircularOrderingCreator {
         DistanceMatrix v2v = this.mx.getV2V();
 
         // Both should be 1 or 2 vertices in length
-        IdentifierList vertices1 = this.mx.getVertices(selectedComponents.getLeft());
-        IdentifierList vertices2 = this.mx.getVertices(selectedComponents.getRight());
+        IdentifierList vertices1 = this.mx.getVertices(selectedClusters.getLeft());
+        IdentifierList vertices2 = this.mx.getVertices(selectedClusters.getRight());
 
         // First check if we only have one vertex in each list... in which case just return those
         if (vertices1.size() == 1 && vertices2.size() == 1) {
@@ -154,34 +154,48 @@ public class NeighborNetImpl implements CircularOrderingCreator {
         vertexUnion.addAll(vertices1);
         vertexUnion.addAll(vertices2);
 
-        final double mhat = this.mx.getNbComponents() + vertexUnion.size() - 2;
+        final double mhat = this.mx.getNbClusters() + vertexUnion.size() - 2;
 
         for (Identifier v1 : vertices1) {
 
             for (Identifier v2 : vertices2) {
 
-                // Gets the sum of distances from the selected vertex to all other components except the component associated with itself.
-                final double sumV1 = this.mx.sumVertex2Components(v1)  ;
-                final double sumV2 = this.mx.sumVertex2Components(v2) ;
+                double q = 0.0;
 
-                double sumVId1 = 0.0;
-                double sumVId2 = 0.0;
+                if (false) {
 
-                for (Identifier v : vertexUnion) {
-                    if (v.getId() != v1.getId()) {
+                    // This implementation of selection step 2 is as described in Sarah's thesis.
+                    // Gets the sum of distances from the selected vertex to all other clusters except the cluster associated with itself.
+                    final double sumV1 = this.mx.sumVertex2Clusters(v1) - this.mx.getDistance(selectedClusters.getRight(), v1);
+                    final double sumV2 = this.mx.sumVertex2Clusters(v2) - this.mx.getDistance(selectedClusters.getLeft(), v2);
+
+                    double sumVId1 = 0.0;
+                    double sumVId2 = 0.0;
+
+                    for (Identifier v : vertexUnion) {
                         sumVId1 += v2v.getDistance(v1, v);
-                    }
-                    if (v.getId() != v2.getId()) {
                         sumVId2 += v2v.getDistance(v2, v);
                     }
+
+                    final double dist = v2v.getDistance(v1, v2);
+                    final double mult = mhat - 2;
+
+                    q = (mult * dist) - sumV1 - sumV2 - sumVId1 - sumVId2;
                 }
+                else {
+                    // This implementation of selection step 2 is as described in the original neighbornet paper.
+                    // Gets the sum of distances from the selected vertex to all other clusters except the cluster associated with itself.
+                    final double sumV1 = this.mx.sumVertex2Clusters(v1);
+                    final double sumV2 = this.mx.sumVertex2Clusters(v2);
 
-                final double sums = sumV1 + sumV2 + sumVId1 + sumVId2;
-                final double dist = v2v.getDistance(v1, v2);
-                //final double mult = mhat - 4 + vertexUnion.size();
-                final double mult = mhat - 2;
+                    double sumVId1 = 0.0;
+                    double sumVId2 = 0.0;
 
-                double q = (mult * dist) - sumV1 - sumV2;
+                    final double dist = v2v.getDistance(v1, v2);
+                    final double mult = mhat - 2;
+
+                    q = (mult * dist) - sumV1 - sumV2;
+                }
 
                 if (q < minQ) {
                     minQ = q;
@@ -193,11 +207,11 @@ public class NeighborNetImpl implements CircularOrderingCreator {
         return bestPair;
     }
 
-    protected Pair<Identifier, Identifier> reduce(Pair<Identifier, Identifier> selectedComponents, Pair<Identifier, Identifier> selectedVertices) {
+    protected Pair<Identifier, Identifier> reduce(Pair<Identifier, Identifier> selectedClusters, Pair<Identifier, Identifier> selectedVertices) {
 
-        // Both should be 1 or 2 components in length
-        IdentifierList c1v = this.mx.getVertices(selectedComponents.getLeft());
-        IdentifierList c2v = this.mx.getVertices(selectedComponents.getRight());
+        // Both should be 1 or 2 vertices in length
+        IdentifierList c1v = this.mx.getVertices(selectedClusters.getLeft());
+        IdentifierList c2v = this.mx.getVertices(selectedClusters.getRight());
 
         Identifier sv1 = selectedVertices.getLeft();
         Identifier sv2 = selectedVertices.getRight();
@@ -208,59 +222,52 @@ public class NeighborNetImpl implements CircularOrderingCreator {
             return new ImmutablePair<>(c1v.get(0), c2v.get(0));
         } else if (nbVerticies == 3) {
 
-            Identifier first = null;
-            Identifier second = null;
-            Identifier third = null;
+            // Work out order of the three vertices across the two clusters
+            Identifier first = c1v.size() != 1 && (c1v.get(0).equals(sv1) || c1v.get(0).equals(sv2)) ? c1v.get(1) : c1v.get(0);
+            Identifier second = c1v.size() == 1 ? (c2v.get(0).equals(sv1) || c2v.get(0).equals(sv2)) ? c2v.get(0) : c2v.get(1) :
+                    (c1v.get(0).equals(sv1) || c1v.get(0).equals(sv2)) ? c1v.get(0) : c1v.get(1);
+            Identifier third = c1v.size() == 1 && (c2v.get(0).equals(sv1) || c2v.get(0).equals(sv2)) ? c2v.get(1) : c2v.get(0);
 
-            if (c1v.size() == 1) {
+            // Put triplet into canonical form (i.e. the first vertex's ID should be lower than third vertex's ID
+            //final boolean reverse = first.getId() > third.getId();
+            final boolean reverse = false;
+            final VertexTriplet triplet = reverse ? new VertexTriplet(third, second, first) : new VertexTriplet(first, second, third);
 
-                first = c1v.get(0);
+            // Add triplet to stack; Reduce triplet of vertices to two new vertices; Update V2V matrix; Return the two new vertices.
+            return vertexTripletReduction(triplet);
 
-                if (c2v.get(0).equals(sv1) || c2v.get(0).equals(sv2)) {
-                    second = c2v.get(0);
-                    third = c2v.get(1);
-                } else {
-                    second = c2v.get(1);
-                    third = c2v.get(0);
-                }
-
-            } else {
-                if (c1v.get(0).equals(sv1) || c1v.get(0).equals(sv2)) {
-                    first = c1v.get(1);
-                    second = c1v.get(0);
-                } else {
-                    first = c1v.get(0);
-                    second = c1v.get(1);
-                }
-                third = c2v.get(0);
-            }
-
-            return vertexTripletReduction(new VertexTriplet(first, second, third));
         } else if (nbVerticies == 4) {
 
-            IdentifierList c1 = c1v;
-            IdentifierList c2 = c2v;
+            if (c1v.size() != 2 && c2v.size() != 2) {
+                throw new IllegalStateException("Found two clusters with 4 vertices but was expecting each cluster to have 2 vertices each.  First cluster contains " + c1v.size() + " vertices.  Second cluster contains " + c2v.size() + " vertices.");
+            }
 
-            // Ensure that the first selected vertex is within the first components group
-            //if (c2v.get(0).getId() == sv1.getId() || c2v.get(1).getId() == sv2.getId()) {
-            //   c1 = c2v;
-            //    c2 = c1v;
-            //}
-
-            Identifier first = c1.get(0).equals(sv1) ?
-                    c1.get(1) :
-                    c1.get(0);
+            Identifier first = c1v.get(0).equals(sv1) ?
+                    c1v.get(1) :
+                    c1v.get(0);
 
             Identifier second = sv1;
             Identifier third = sv2;
 
-            Identifier fourth = c2.get(0).equals(sv2) ?
-                    c2.get(1) :
-                    c2.get(0);
+            Identifier fourth = c2v.get(0).equals(sv2) ?
+                    c2v.get(1) :
+                    c2v.get(0);
 
-            Pair<Identifier, Identifier> newVertices = this.vertexTripletReduction(new VertexTriplet(first, second, third));
+            // Put triplet into canonical form (i.e. the first vertex's ID should be lower than third vertex's ID
+            //final boolean reverse = first.getId() > fourth.getId();
+            final boolean reverse = false;
 
-            return this.vertexTripletReduction(new VertexTriplet(newVertices.getLeft(), newVertices.getRight(), fourth));
+            // Because we have 4 vertices we need to do two triplet reductions
+            if (reverse) {
+                Pair<Identifier, Identifier> newVertices1 = this.vertexTripletReduction(new VertexTriplet(first, second, third));
+                Pair<Identifier, Identifier> newVertices2 = this.vertexTripletReduction(new VertexTriplet(newVertices1.getLeft(), newVertices1.getRight(), fourth));
+                return newVertices2;
+            }
+            else {
+                Pair<Identifier, Identifier> newVertices1 = this.vertexTripletReduction(new VertexTriplet(fourth, third, second));
+                Pair<Identifier, Identifier> newVertices2 = this.vertexTripletReduction(new VertexTriplet(newVertices1.getLeft(), newVertices1.getRight(), first));
+                return newVertices2;
+            }
         }
         else {
             throw new IllegalArgumentException("Number of vertices must be >= 2 || <= 4.  Found " + nbVerticies + " vertices");
@@ -322,6 +329,10 @@ public class NeighborNetImpl implements CircularOrderingCreator {
                 }
             }
 
+            if (Math.abs(maxpos1 - maxpos2) != 1) {
+                throw new IllegalStateException("Top two vertex IDs are not located next to each other. VertexID:" + maxval1 + "(pos=" + maxpos1 + "); VertexID:" + maxval2 + "(pos=" + maxpos2 + ")");
+            }
+
             boolean flip = maxpos1 < maxpos2;
 
             order.remove(maxpos1);
@@ -351,22 +362,22 @@ public class NeighborNetImpl implements CircularOrderingCreator {
         return this.mx.reverseTranslate(orderedTaxa);
     }
 
-    private void merge(Pair<Identifier, Identifier> selectedComponents, Pair<Identifier, Identifier> newVertices) {
+    private void merge(Pair<Identifier, Identifier> selectedClusters, Pair<Identifier, Identifier> newVertices) {
 
-        // Add the grouped vertices to the c2vsmap under a new component
+        // Add the grouped vertices to the c2vsmap under a new cluster
         IdentifierList mergedSet = new IdentifierList();
         mergedSet.add(newVertices.getLeft());
         mergedSet.add(newVertices.getRight());
-        Identifier newComponent = this.mx.createNextComponent();
+        Identifier newCluster = this.mx.createNextCluster();
 
-        // Remove the selected components from step 1 from connected components
-        this.mx.getC2Vs().remove(selectedComponents.getLeft());
-        this.mx.getC2Vs().remove(selectedComponents.getRight());
-        this.mx.getC2Vs().put(newComponent, mergedSet);
+        // Remove the selected clusters and add the new cluster containing the merged vertices
+        this.mx.getC2Vs().remove(selectedClusters.getLeft());
+        this.mx.getC2Vs().remove(selectedClusters.getRight());
+        this.mx.getC2Vs().put(newCluster, mergedSet);
 
         // Update V2C links
-        this.mx.linkV2C(newVertices.getLeft(), newComponent);
-        this.mx.linkV2C(newVertices.getRight(), newComponent);
+        this.mx.linkV2C(newVertices.getLeft(), newCluster);
+        this.mx.linkV2C(newVertices.getRight(), newCluster);
 
         // Update matrices
         this.updateC2V();
@@ -379,20 +390,20 @@ public class NeighborNetImpl implements CircularOrderingCreator {
         // when the number of taxa is large
         DistanceMatrix c2c = new FlexibleDistanceMatrix();
 
-        for (Map.Entry<Identifier, IdentifierList> components1 : this.mx.getMapEntries()) {
+        for (Map.Entry<Identifier, IdentifierList> clusterGroup1 : this.mx.getMapEntries()) {
 
-            for (Map.Entry<Identifier, IdentifierList> components2 : this.mx.getMapEntries()) {
+            for (Map.Entry<Identifier, IdentifierList> clusterGroup2 : this.mx.getMapEntries()) {
 
                 double sum1 = 0.0;
 
-                for (Identifier id1 : components1.getValue()) {
-                    for (Identifier id2 : components2.getValue()) {
+                for (Identifier id1 : clusterGroup1.getValue()) {
+                    for (Identifier id2 : clusterGroup2.getValue()) {
                         sum1 += this.mx.getV2V().getDistance(id1, id2);
                     }
                 }
 
-                c2c.setDistance(components1.getKey(), components2.getKey(),
-                        1.0 / (components1.getValue().size() * components2.getValue().size()) * sum1);
+                c2c.setDistance(clusterGroup1.getKey(), clusterGroup2.getKey(),
+                        1.0 / (clusterGroup1.getValue().size() * clusterGroup2.getValue().size()) * sum1);
             }
         }
 
@@ -456,14 +467,14 @@ public class NeighborNetImpl implements CircularOrderingCreator {
 
         this.mx.getC2V().clear();
 
-        for (Map.Entry<Identifier, IdentifierList> components : this.mx.getMapEntries()) {
+        for (Map.Entry<Identifier, IdentifierList> clusters : this.mx.getMapEntries()) {
 
             for (Identifier v : this.mx.getVertices()) {
 
                     boolean found = false;
                     double sum1 = 0.0;
 
-                    for (Identifier selectedVertex : components.getValue()) {
+                    for (Identifier selectedVertex : clusters.getValue()) {
                         if (selectedVertex.equals(v)) {
                             found = true;
                             break;
@@ -473,8 +484,8 @@ public class NeighborNetImpl implements CircularOrderingCreator {
                     }
 
                     if (!found) {
-                        this.mx.setDistance(components.getKey(), v,
-                                1.0 / components.getValue().size() * sum1);
+                        this.mx.setDistance(clusters.getKey(), v,
+                                1.0 / clusters.getValue().size() * sum1);
                     }
             }
         }

@@ -265,8 +265,8 @@ public class NetMakeCircularOrderer implements CircularOrderingCreator {
 
                 // Subtract the sum of distances from a given vertex in one of the selected components, from the distance between
                 // the given vertex and the other component.
-                final double sumV1 = this.mx.sumVertex2Components(v1) - this.mx.getDistance(selectedComponents.getRight(), v1);
-                final double sumV2 = this.mx.sumVertex2Components(v2) - this.mx.getDistance(selectedComponents.getLeft(), v2);
+                final double sumV1 = this.mx.sumVertex2Clusters(v1) - this.mx.getDistance(selectedComponents.getRight(), v1);
+                final double sumV2 = this.mx.sumVertex2Clusters(v2) - this.mx.getDistance(selectedComponents.getLeft(), v2);
 
                 double sumVId1 = 0.0;
                 double sumVId2 = 0.0;
@@ -298,7 +298,7 @@ public class NetMakeCircularOrderer implements CircularOrderingCreator {
 
         IdentifierList help = new IdentifierList();
 
-        for (Identifier c : this.mx.getComponents()) {
+        for (Identifier c : this.mx.getClusters()) {
             for (Identifier v : this.mx.getVertices(c)) {
                 help.add(v);
             }
@@ -357,7 +357,7 @@ public class NetMakeCircularOrderer implements CircularOrderingCreator {
         IdentifierList mv = this.mergeVertices(selectedVertices, sc1Vertices, sc2Vertices);
 
         // Create new component
-        Identifier next = this.mx.createNextComponent();
+        Identifier next = this.mx.createNextCluster();
 
         // Update C2Vs
         this.mx.getC2Vs().remove(sc1);
