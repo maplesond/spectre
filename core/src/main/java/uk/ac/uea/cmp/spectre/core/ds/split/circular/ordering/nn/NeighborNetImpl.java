@@ -122,7 +122,7 @@ public class NeighborNetImpl implements CircularOrderingCreator {
             final double sumId1 = c2c.getDistances(id1, null).sum() - id1_2_id2;
             final double sumId2 = c2c.getDistances(id2, null).sum() - id1_2_id2;
 
-            final double q = (c2c.size() - 2) * c2c.getDistance(id1, id2) - sumId1 - sumId2;
+            final double q = (c2c.size() - 2) * id1_2_id2 - sumId1 - sumId2;
 
             if (q < minQ) {
                 minQ = q;
@@ -141,7 +141,7 @@ public class NeighborNetImpl implements CircularOrderingCreator {
 
         DistanceMatrix v2v = this.mx.getV2V();
 
-        // Both should be 1 or 2 components in length
+        // Both should be 1 or 2 vertices in length
         IdentifierList vertices1 = this.mx.getVertices(selectedComponents.getLeft());
         IdentifierList vertices2 = this.mx.getVertices(selectedComponents.getRight());
 
@@ -161,8 +161,8 @@ public class NeighborNetImpl implements CircularOrderingCreator {
             for (Identifier v2 : vertices2) {
 
                 // Gets the sum of distances from the selected vertex to all other components except the component associated with itself.
-                final double sumV1 = this.mx.sumVertex2Components(v1) - this.mx.getDistance(selectedComponents.getLeft(), v1) - this.mx.getDistance(selectedComponents.getRight(), v1);
-                final double sumV2 = this.mx.sumVertex2Components(v2) - this.mx.getDistance(selectedComponents.getLeft(), v2) - this.mx.getDistance(selectedComponents.getRight(), v2);
+                final double sumV1 = this.mx.sumVertex2Components(v1)  ;
+                final double sumV2 = this.mx.sumVertex2Components(v2) ;
 
                 double sumVId1 = 0.0;
                 double sumVId2 = 0.0;
@@ -176,8 +176,12 @@ public class NeighborNetImpl implements CircularOrderingCreator {
                     }
                 }
 
-                double q = ((mhat - 4 + vertexUnion.size()) * v2v.getDistance(v1, v2)) -
-                        sumV1 - sumV2 - sumVId1 - sumVId2;
+                final double sums = sumV1 + sumV2 + sumVId1 + sumVId2;
+                final double dist = v2v.getDistance(v1, v2);
+                //final double mult = mhat - 4 + vertexUnion.size();
+                final double mult = mhat - 2;
+
+                double q = (mult * dist) - sumV1 - sumV2;
 
                 if (q < minQ) {
                     minQ = q;
@@ -238,10 +242,10 @@ public class NeighborNetImpl implements CircularOrderingCreator {
             IdentifierList c2 = c2v;
 
             // Ensure that the first selected vertex is within the first components group
-            if (c2v.get(0).getId() == sv1.getId() || c2v.get(1).getId() == sv2.getId()) {
-                c1 = c2v;
-                c2 = c1v;
-            }
+            //if (c2v.get(0).getId() == sv1.getId() || c2v.get(1).getId() == sv2.getId()) {
+            //   c1 = c2v;
+            //    c2 = c1v;
+            //}
 
             Identifier first = c1.get(0).equals(sv1) ?
                     c1.get(1) :
@@ -456,14 +460,22 @@ public class NeighborNetImpl implements CircularOrderingCreator {
 
             for (Identifier v : this.mx.getVertices()) {
 
-                double sum1 = 0.0;
+                    boolean found = false;
+                    double sum1 = 0.0;
 
-                for (Identifier selectedVertex : components.getValue()) {
-                    sum1 += this.mx.getV2V().getDistance(selectedVertex, v);
-                }
+                    for (Identifier selectedVertex : components.getValue()) {
+                        if (selectedVertex.equals(v)) {
+                            found = true;
+                            break;
+                        }
 
-                this.mx.setDistance(components.getKey(), v,
-                        1.0 / components.getValue().size() * sum1);
+                        sum1 += this.mx.getV2V().getDistance(selectedVertex, v);
+                    }
+
+                    if (!found) {
+                        this.mx.setDistance(components.getKey(), v,
+                                1.0 / components.getValue().size() * sum1);
+                    }
             }
         }
 

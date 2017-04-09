@@ -267,9 +267,9 @@ public class CVMatrices {
         return this.c2vs.entrySet();
     }
 
-    public int sumVertex2Components(Identifier v) {
+    public double sumVertex2Components(Identifier v) {
 
-        int sum = 0;
+        double sum = 0.0;
 
         for (Map.Entry<Identifier, Identifier> entry : this.v2c.entrySet()) {
             sum += this.getDistance(entry.getValue(), v);
