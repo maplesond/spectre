@@ -42,7 +42,7 @@ public class NetMakeCLI {
     public static final String OPT_TREE_PARAM = "tree_param";
     public static final String OPT_WEIGHTINGS_1 = "weightings_1";
     public static final String OPT_WEIGHTINGS_2 = "weightings_2";
-    public static final String OPT_CO_ALG = "circular_ordering";
+    public static final String OPT_CO_ALG = "alt_mode";
     public static final String OPT_HELP = "help";
 
 
@@ -52,7 +52,7 @@ public class NetMakeCLI {
         Options options = new Options();
 
         options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_OUTPUT_PREFIX).hasArg()
-                .withDescription(NetMakeOptions.DESC_OUTPUT_PREFIX).create("p"));
+                .withDescription(NetMakeOptions.DESC_OUTPUT_PREFIX).create("o"));
 
         options.addOption(OptionBuilder.withArgName("double").withLongOpt(OPT_TREE_PARAM).hasArg()
                 .withDescription(NetMakeOptions.DESC_TREE_PARAM).create("z"));
@@ -63,8 +63,7 @@ public class NetMakeCLI {
         options.addOption(OptionBuilder.withArgName("weighting").withLongOpt(OPT_WEIGHTINGS_2).hasArg()
                 .withDescription(NetMakeOptions.DESC_WEIGHTINGS_2).create("x"));
 
-        options.addOption(OptionBuilder.withArgName("circular_ordering").withLongOpt(OPT_CO_ALG).hasArg()
-                .withDescription(NetMakeOptions.DESC_CO_ALG).create("c"));
+        options.addOption(OptionBuilder.withLongOpt(OPT_CO_ALG).withDescription(NetMakeOptions.DESC_CO_ALG).create("alt"));
 
 
         options.addOption(CommandLineHelper.HELP_OPTION);
@@ -76,8 +75,11 @@ public class NetMakeCLI {
     public static void main(String[] args) {
 
         CommandLine commandLine = CommandLineHelper.startApp(createOptions(), "netmake [options] <distance_matrix_file>",
-                "Creates a compatible split system and a circular ordering from a distance matrix and either a single weighting or a hybrid\n" +
-                        "weighting configuration.\nSupports nexus format input.", args);
+                "Creates a compatible split system with circular ordering from a distance matrix.\n" +
+                        "By default this is achieved by running the NeighborNet algorithm.  However, netmake can run an" +
+                        "alternative algorithm that can be run in various modes determined be and either a " +
+                        "single weighting or a hybrid weighting configuration.\n" +
+                        "Input can be either nexus format file containing a distances block, or a phylip format distance matrix.", args);
 
         // If we didn't return a command line object then just return.  Probably the user requested help or
         // input invalid args
@@ -114,7 +116,7 @@ public class NetMakeCLI {
             double treeParam = commandLine.hasOption(OPT_TREE_PARAM) ? Double.parseDouble(commandLine.getOptionValue(OPT_TREE_PARAM)) : NetMakeOptions.DEFAULT_TREE_WEIGHT;
             String weightings1 = commandLine.hasOption(OPT_WEIGHTINGS_1) ? commandLine.getOptionValue(OPT_WEIGHTINGS_1) : "TSP";
             String weightings2 = commandLine.hasOption(OPT_WEIGHTINGS_2) ? commandLine.getOptionValue(OPT_WEIGHTINGS_2) : null;
-            String coAlg = commandLine.hasOption(OPT_CO_ALG) ? commandLine.getOptionValue(OPT_CO_ALG) : CircularOrderingAlgorithms.NETMAKE.toString();
+            String coAlg = commandLine.hasOption(OPT_CO_ALG) ? CircularOrderingAlgorithms.NETMAKE.toString() : CircularOrderingAlgorithms.NEIGHBORNET.toString();
 
 
             // Create the configured NetMake object to process

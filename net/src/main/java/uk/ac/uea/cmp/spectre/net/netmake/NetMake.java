@@ -163,6 +163,7 @@ public class NetMake extends RunnableTool {
                 log.info("Weightings configured.");
                 log.info("          - Weighting 1: " + weighting1.toString());
                 log.info("          - Weighting 2: " + (weighting2 == null ? "null" : weighting2.toString()));
+                log.info("Running netmake circular ordering algorithm in mode: " + NetMakeCircularOrderer.getRunMode(weighting1, weighting2).toString());
 
                 coc = new NetMakeCircularOrderer(weighting1, weighting2);
             }

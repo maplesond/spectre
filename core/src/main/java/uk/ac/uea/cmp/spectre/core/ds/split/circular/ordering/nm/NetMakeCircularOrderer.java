@@ -34,7 +34,7 @@ import java.util.Map;
  */
 public class NetMakeCircularOrderer implements CircularOrderingCreator {
 
-    protected enum RunMode {
+    public enum RunMode {
 
         UNKNOWN,
         NORMAL,

@@ -62,7 +62,7 @@ public class NeighborNetImplTest {
     }
 
 
-    //@Test
+    @Test
     public void testReduction() {
 
         DistanceMatrix v2v = new FlexibleDistanceMatrix(new IdentifierList(taxa), distances1);
@@ -116,7 +116,7 @@ public class NeighborNetImplTest {
         assertTrue(selectedComponents.getRight().getName().equals("D"));
     }
 
-    //@Test
+    @Test
     public void testExecuteDist1() {
 
         IdentifierList co = new NeighborNetImpl().createCircularOrdering(new FlexibleDistanceMatrix(distances1));

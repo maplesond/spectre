@@ -90,13 +90,6 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
 
     private double filteringThr = 0.15;
 
-    /**
-     * Creates new form NetVi
-     */
-    public NetView() throws IOException {
-        prepareViewer();
-    }
-
     private void prepareViewer() {
         initComponents();
         preparePopupMenu();
@@ -117,6 +110,16 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
         leaderLineTypes.add(jRadioButtonDotted);
     }
 
+    /**
+     * Creates new form NetVi
+     */
+    public NetView() throws IOException {
+        prepareViewer();
+        initConfig();
+        setTitle(mainTitle);
+        drawing.repaint();
+    }
+
     public NetView(File inFile) throws IOException {
         prepareViewer();
         directory = inFile.getPath();
@@ -128,7 +131,9 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
         directory = inFile.getPath();
         this.network = network;
         this.taxa = taxa;
-        showNetwork(inFile);
+        setTitle(mainTitle + ": " + inFile.getAbsolutePath());
+        drawNetwork();
+        drawing.repaint();
     }
 
     /**
@@ -177,7 +182,7 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
         jSeparator2 = new javax.swing.JPopupMenu.Separator();
         jMenuItemChangeLeaderColor = new javax.swing.JMenuItem();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("NetVi");
         setForeground(java.awt.Color.white);
         this.setPreferredSize(new Dimension(800,600));
@@ -702,6 +707,7 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
 
     private void exitProgramActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_exitProgramActionPerformed
     {//GEN-HEADEREND:event_exitProgramActionPerformed
+        log.info("Shutting down netview");
         System.exit(0);
     }//GEN-LAST:event_exitProgramActionPerformed
 
@@ -711,7 +717,7 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
             this.saveNetwork(networkFile);
         }
         catch (IOException ioe) {
-            log.error("Problem occured while trying to save network", ioe);
+            errorMessage("Problem occured while trying to save network", ioe);
         }
     }//GEN-LAST:event_saveNetworkActionPerformed
 
@@ -807,7 +813,10 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
 
             // Parse command line args
             CommandLine commandLine = CommandLineHelper.startApp(createOptions(), "netview [options] <input>",
-                    "Visualises a network.  Can take a nexus file as input.", args, false);
+                    "Visualises a network in nexus format.  The nexus file can contain a pre-drawn network in " +
+                            "a network block, or a split system to be drawn.\n" +
+                            "The viewer can be passed the nexus file as a command line argument at startup, selected by " +
+                            "the user via a file dialog or through a file being dragged and dropped into the window.", args, false);
 
             // If we didn't return a command line object then just return.  Probably the user requested help or
             // input invalid args
@@ -820,6 +829,12 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
             if (commandLine.getArgs().length > 1) {
                 throw new IOException("Expected only a single input file.");
             }
+            else if (commandLine.getArgs().length == 1) {
+                log.info("Opening netview with input file: " + inputfile.getAbsolutePath());
+            }
+            else {
+                log.info("Opening netview with no input");
+            }
 
 
             /* Create and display the form */
@@ -829,9 +844,13 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
                     try {
                         if (inputfile == null) {
                             new NetView().setVisible(true);
+                            log.info("Viewer initalised");
                         } else {
                             new NetView(inputfile).setVisible(true);
+                            log.info("Viewer initalised");
+                            log.info("Input loaded");
                         }
+
                     } catch (Exception e) {
                         errorMessage("Unexpected problem occured while running NetView", e);
                         System.exit(4);
@@ -1048,15 +1067,9 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
 
         networkFile = inFile;
         saveNetwork.setEnabled(true);
-        showNetwork(inFile);
-    }
-
-    private void showNetwork(File inFile) {
-        if (network != null) {
-            setTitle(mainTitle + ": " + inFile.getAbsolutePath());
-            drawNetwork();
-            drawing.repaint();
-        }
+        setTitle(mainTitle + ": " + inFile.getAbsolutePath());
+        drawNetwork();
+        drawing.repaint();
     }
 
     public Window getDrawing() {
@@ -1098,7 +1111,7 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
                 jCheckBoxColorLabels.isSelected(),
                 new HashSet<Integer>(),
                 null,
-                network.getLabeledVertices());
+                network == null ? null : network.getLabeledVertices());
     }
 
     boolean dashedLeaders() {

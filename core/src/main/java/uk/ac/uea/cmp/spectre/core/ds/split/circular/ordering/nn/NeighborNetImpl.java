@@ -184,9 +184,6 @@ public class NeighborNetImpl implements CircularOrderingCreator {
                     final double sumV1 = this.mx.sumVertex2Clusters(v1);
                     final double sumV2 = this.mx.sumVertex2Clusters(v2);
 
-                    double sumVId1 = 0.0;
-                    double sumVId2 = 0.0;
-
                     final double dist = v2v.getDistance(v1, v2);
                     final double mult = mhat - 2;
 
