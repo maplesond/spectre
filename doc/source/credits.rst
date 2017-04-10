@@ -39,21 +39,21 @@ QNet
 Spectre is an international collaboration.  Active contributors to spectre are listed in the following table
 (in publication order):
 
-+--------------------------+-------------------------------+-----------------------------------+-----------------------------------------------------------------------------+
-| Name                     | Email                         | Current Institute                 | Contribution                                                                |
-+==========================+===============================+===================================+=============================================================================+
-| Daniel Mapleson          | daniel.mapleson@tgac.ac.uk    | Earlham Institute (EI)            | General software development, testing, optimisation and codebase management |
-+--------------------------+-------------------------------+-----------------------------------+-----------------------------------------------------------------------------+
-| Sarah Bastkowski         | sarah.bastkowski@tgac.ac.uk   | Earlham Institute (EI)            | SuperQ, NetMake, NetME, NeighborNet Implementation, Algorithms, Optimisers  |
-+--------------------------+-------------------------------+-----------------------------------+-----------------------------------------------------------------------------+
-| Monica Balvociute        | ???                           | University of Otago               | Gen4S, FlatNJ, NetView                                                      |
-+--------------------------+-------------------------------+-----------------------------------+-----------------------------------------------------------------------------+
-| Andreas Spilner          | anspillner@gmail.com          | NA                                | Mathematics, Algorithms, Optimisers, Spectre development                    |
-+--------------------------+-------------------------------+-----------------------------------+-----------------------------------------------------------------------------+
-| Taoyang Wu               | taoyang.wu@gmail.com          | University of East Anglia (UEA)   | Mathematics, Testing                                                        |
-+--------------------------+-------------------------------+-----------------------------------+-----------------------------------------------------------------------------+
-| Vincent Moulton          | vincent.moulton@cmp.uea.ac.uk | University of East Anglia (UEA)   | Mathematics, Algorithms                                                     |
-+--------------------------+-------------------------------+-----------------------------------+-----------------------------------------------------------------------------+
++--------------------------+--------------------------------+-----------------------------------+-----------------------------------------------------------------------------+
+| Name                     | Email                          | Current Institute                 | Contribution                                                                |
++==========================+================================+===================================+=============================================================================+
+| Daniel Mapleson          | daniel.mapleson@earlham.ac.uk  | Earlham Institute (EI)            | General software development, testing, optimisation and codebase management |
++--------------------------+--------------------------------+-----------------------------------+-----------------------------------------------------------------------------+
+| Sarah Bastkowski         | sarah.bastkowski@earlham.ac.uk | Earlham Institute (EI)            | SuperQ, NetMake, NetME, NeighborNet Implementation, Algorithms, Optimisers  |
++--------------------------+--------------------------------+-----------------------------------+-----------------------------------------------------------------------------+
+| Monica Balvociute        | ???                            | University of Otago               | FlatNJ, NetView                                                             |
++--------------------------+--------------------------------+-----------------------------------+-----------------------------------------------------------------------------+
+| Andreas Spilner          | anspillner@gmail.com           | NA                                | Mathematics, Algorithms, Optimisers, Spectre development                    |
++--------------------------+--------------------------------+-----------------------------------+-----------------------------------------------------------------------------+
+| Taoyang Wu               | taoyang.wu@gmail.com           | University of East Anglia (UEA)   | Mathematics, Testing                                                        |
++--------------------------+--------------------------------+-----------------------------------+-----------------------------------------------------------------------------+
+| Vincent Moulton          | vincent.moulton@cmp.uea.ac.uk  | University of East Anglia (UEA)   | Mathematics, Algorithms                                                     |
++--------------------------+--------------------------------+-----------------------------------+-----------------------------------------------------------------------------+
 
 
 In addition, the people that contributed to the original tools which are now contained within spectre are listed in the following

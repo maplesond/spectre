@@ -3,18 +3,6 @@
 The Tools
 =========
 
-The tools within spectre are divided into sub-groups based on their functionality.  These sub groups are:
-
-.. toctree::
-    :maxdepth: 1
-
-    network_tools
-    flatnj
-    quartet_tools
-    netview
-    misc_tools
-
-
 The tools in spectre focus around generating phylogenetic networks from a variety of inputs.  The main workflows are listed here.
 
 *NetMake* - Creates a circular split system from a distance matrix producing an outer-planar network.
@@ -42,3 +30,15 @@ quartets from the following input types:
 5. Treebase syntax Nexus files with TREES blocks
 6. Newick trees, with or without branch lengths
 
+The tools within spectre are divided into sub-groups based on their functionality.  More detail about the specific tools are listed in these sub-groups:
+
+
+.. toctree::
+        :numbered:
+        :maxdepth: 1
+
+        network_tools
+        flatnj
+        quartet_tools
+        netview
+        misc_tools
