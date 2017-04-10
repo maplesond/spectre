@@ -60,14 +60,12 @@ public class NetMECLI {
         CommandLine commandLine = CommandLineHelper.startApp(createOptions(), "netme [options] <distance_matrix_file> <circular_ordering_file>",
                 "Finds minimum evolution tree within a circular split system.\n\n" +
                         "Takes in a nexus or phylip file containing a distance matrix and a nexus file containing a circular " +
-                        "ordering (this file can be obtained by, for example, running NeighborNet in SplitsTree4 and saving the " +
-                        "split system in nexus format to disk).  NetME outputs three files:\n" +
+                        "ordering (this file can be obtained by, for example, running Neighbor-Net via netmake.  NetME outputs three files:\n" +
                         " - the weighted split system, in nexus format, corresponding to a restricted minimum evolution tree, where the weights " +
                         "are derived from the Ordinary Least Squares (OLS) method used for constructing the tree.\n" +
                         " - the weighted split system, in nexus format, corresponding to a restricted minimum evolution tree, where the weights " +
                         "are recalculated by using a Non-Negative Least Squares (NNLS) method.\n" +
-                        " - a file containing the tree length of tree weighted with OLS.\n\n" +
-                        "The resulting split systems in nexus format can be visualised in SplitsTree4.", args);
+                        " - a file containing the tree length of tree weighted with OLS.\n", args);
 
         // If we didn't return a command line object then just return.  Probably the user requested help or
         // input invalid args
