@@ -48,7 +48,6 @@ public class NetMake extends RunnableTool {
     private static Logger log = LoggerFactory.getLogger(NetMake.class);
 
     private NetMakeOptions options;
-    private CircularOrderingCreator circularOrderingCreator;
 
     public NetMake() {
         this(new NetMakeOptions());
@@ -76,7 +75,13 @@ public class NetMake extends RunnableTool {
 
         IdentifierList permutation = circularOrderingCreator.createCircularOrdering(distanceMatrix);
 
+        log.info("Determined circular ordering:");
+        log.info("... By ID  : " + permutation.toString(IdentifierList.IdentifierFormat.BY_ID));
+        log.info("... By Name: " + permutation.toString(IdentifierList.IdentifierFormat.BY_NAME));
+
         SplitSystem network = new SpectreSplitSystem(distanceMatrix, permutation, SpectreSplitSystem.LeastSquaresCalculator.CIRCULAR);
+
+        log.info("Splits network created");
 
         SplitSystem tree = null;
 
@@ -88,6 +93,8 @@ public class NetMake extends RunnableTool {
 
             // Create tree and network split systems
             tree = new SpectreSplitSystem(distanceMatrix, permutation, SpectreSplitSystem.LeastSquaresCalculator.TREE_IN_CYCLE, treeSplits);
+
+            log.info("Splits tree created");
         }
 
         return new NetMakeResult(tree, network);

@@ -82,10 +82,6 @@ public class NeighborNetImpl implements CircularOrderingCreator {
             throw new IllegalStateException("Vertex triplet stack still contains entries.  Something went wrong in the NN algorithm.");
         }
 
-        log.info("NeighborNet produced the following circular ordering:");
-        log.info("... By ID  : " + circularOrdering.toString(IdentifierList.IdentifierFormat.BY_ID));
-        log.info("... By Name: " + circularOrdering.toString(IdentifierList.IdentifierFormat.BY_NAME));
-
         return circularOrdering;
     }
 
@@ -359,7 +355,33 @@ public class NeighborNetImpl implements CircularOrderingCreator {
             orderedTaxa.add(this.mx.getVertex(i));
         }
 
-        return this.mx.reverseTranslate(orderedTaxa);
+        // Produce list containing the original tax used
+        IdentifierList translated = this.mx.reverseTranslate(orderedTaxa);
+
+        // Now rotate the list until the first taxa ID is first in the list
+        return this.rotate(translated);
+    }
+
+    private IdentifierList rotate(IdentifierList translated) {
+
+        int firstpos = -1;
+        int minid = Integer.MAX_VALUE;
+        for (int i = 0; i < translated.size(); i++) {
+            int id = translated.get(i).getId();
+            if (translated.get(i).getId() < minid) {
+                minid = id;
+                firstpos = i;
+            }
+        }
+
+        IdentifierList rotated = new IdentifierList();
+        for (int i = firstpos; i < translated.size(); i++) {
+            rotated.add(translated.get(i));
+        }
+        for (int i = 0; i < firstpos; i++) {
+            rotated.add(translated.get(i));
+        }
+        return rotated;
     }
 
     private void merge(Pair<Identifier, Identifier> selectedClusters, Pair<Identifier, Identifier> newVertices) {
