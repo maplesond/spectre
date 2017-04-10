@@ -1,6 +1,6 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2015  UEA School of Computing Sciences
+ * Copyright (C) 2017  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
@@ -15,7 +15,7 @@
 
 package uk.ac.uea.cmp.spectre.core.io.nexus;
 
-import uk.ac.uea.cmp.spectre.core.ds.Alignment;
+import uk.ac.uea.cmp.spectre.core.ds.Sequences;
 import uk.ac.uea.cmp.spectre.core.ds.Identifier;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceList;
@@ -27,7 +27,7 @@ import uk.ac.uea.cmp.spectre.core.ds.network.NetworkLabel;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
 import uk.ac.uea.cmp.spectre.core.ds.split.Split;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
-import uk.ac.uea.cmp.spectre.core.io.AbstractPhygenWriter;
+import uk.ac.uea.cmp.spectre.core.io.AbstractSpectreWriter;
 
 import java.awt.*;
 import java.io.BufferedWriter;
@@ -35,6 +35,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * Used to handle streaming data to Nexus format file from SplitSystem objects and other splits and length data. Can
@@ -45,7 +47,7 @@ import java.util.List;
  *
  * @author Dan
  */
-public class NexusWriter extends AbstractPhygenWriter implements Appendable {
+public class NexusWriter extends AbstractSpectreWriter implements Appendable {
 
     /**
      * Stores the file contents before writing to disk.
@@ -216,7 +218,7 @@ public class NexusWriter extends AbstractPhygenWriter implements Appendable {
         return this;
     }
 
-    public NexusWriter append(Alignment a) {
+    public NexusWriter append(Sequences a) {
         String[] id = a.getTaxaLabels();
         String[] sequences = a.getSequences();
 
@@ -300,14 +302,24 @@ public class NexusWriter extends AbstractPhygenWriter implements Appendable {
         this.appendLine("TRANSLATE");
 
         //write translate section
-        for(Vertex v : vertices) {
-            if (v.getTaxa().size() > 0) {
-                String line = String.valueOf(v.getNxnum());
-                for(Identifier i : v.getTaxa()) {
-                    line += " '" + i.getName() + "'";
-                }
-                line += ",";
+        if (network.getTranslate() != null && network.getTranslate().size() > 0) {
+            SortedSet<Integer> keys = new TreeSet<Integer>(network.getTranslate().keySet());
+            for (Integer key : keys) {
+                String value = network.getTranslate().get(key);
+                String line = key + " '" + value + "',";
                 this.appendLine(line);
+            }
+        }
+        else{
+            for (Vertex v : vertices) {
+                if (v.getTaxa().size() > 0) {
+                    String line = String.valueOf(v.getNxnum());
+                    for (Identifier i : v.getTaxa()) {
+                        line += " '" + i.getName() + "'";
+                    }
+                    line += ",";
+                    this.appendLine(line);
+                }
             }
         }
         this.appendLine(";");

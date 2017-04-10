@@ -1,6 +1,6 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2015  UEA School of Computing Sciences
+ * Copyright (C) 2017  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
@@ -57,7 +57,7 @@ public class NexusWriterTest {
         // Check output file was created
         assertTrue(outputFile.exists());
 
-        List<String> lines = FileUtils.readLines(outputFile);
+        List<String> lines = FileUtils.readLines(outputFile, "UTF-8");
 
         // Check we have the number of lines we were expecting
         assertTrue(lines.size() == 20 || lines.size() == 21);
@@ -79,7 +79,7 @@ public class NexusWriterTest {
         // Check output file was created
         assertTrue(outputFile.exists());
 
-        List<String> lines = FileUtils.readLines(outputFile);
+        List<String> lines = FileUtils.readLines(outputFile, "UTF-8");
 
         // Check we have the number of lines we were expecting
         assertTrue(lines.size() == 32);  */

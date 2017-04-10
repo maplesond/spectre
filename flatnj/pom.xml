@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
-  ~ Copyright (C) 2015  UEA School of Computing Sciences
+  ~ Copyright (C) 2017  UEA School of Computing Sciences
   ~
   ~ This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
   ~ License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
@@ -20,12 +20,12 @@
     <parent>
         <artifactId>spectre</artifactId>
         <groupId>uk.ac.uea.cmp.spectre</groupId>
-        <version>0.4.0</version>
+        <version>0.5.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>flatnj</artifactId>
-    <version>2.0.3</version>
+    <version>2.1.0</version>
 
     <name>Spectre: FlatNJ</name>
 
@@ -34,12 +34,12 @@
             <id>gurobi</id>
             <dependencies>
                 <dependency>
-                    <groupId>uk.ac.tgac.metaopt</groupId>
+                    <groupId>uk.ac.earlham.metaopt</groupId>
                     <artifactId>gurobi</artifactId>
-                    <version>0.2.0</version>
+                    <version>0.3.0</version>
                     <exclusions>
                         <exclusion>
-                            <groupId>uk.ac.tgac.metaopt</groupId>
+                            <groupId>uk.ac.earlham.metaopt</groupId>
                             <artifactId>metaopt</artifactId>
                         </exclusion>
                     </exclusions>
@@ -72,6 +72,7 @@
                             <jvmSettings>
                                 <extraArguments>
                                     <extraArgument>-Djava.awt.headless=true</extraArgument>
+                                    <extraArgument>-XX:+UseSerialGC</extraArgument>
                                 </extraArguments>
                             </jvmSettings>
                         </program>
@@ -117,9 +118,9 @@
         <!-- Meta optimizer -->
 
         <dependency>
-            <groupId>uk.ac.tgac.metaopt</groupId>
+            <groupId>uk.ac.earlham.metaopt</groupId>
             <artifactId>metaopt</artifactId>
-            <version>0.2.0</version>
+            <version>0.4.0</version>
         </dependency>
 
 

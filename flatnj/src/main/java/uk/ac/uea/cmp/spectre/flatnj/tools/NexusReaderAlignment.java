@@ -1,6 +1,6 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2015  UEA School of Computing Sciences
+ * Copyright (C) 2017  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
@@ -15,7 +15,7 @@
 
 package uk.ac.uea.cmp.spectre.flatnj.tools;
 
-import uk.ac.uea.cmp.spectre.core.ds.Alignment;
+import uk.ac.uea.cmp.spectre.core.ds.Sequences;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -60,8 +60,8 @@ public class NexusReaderAlignment extends NexusReader {
     }
 
     @Override
-    protected Alignment createObject(Dimensions dimensions, Cycle cycle, Draw draw) {
-        Alignment a = new Alignment(aln);
+    protected Sequences createObject(Dimensions dimensions, Cycle cycle, Draw draw) {
+        Sequences a = new Sequences(aln);
         if (!a.sameLength()) {
             a = null;
             System.err.println("Sequences in the alignment are not the same length.");

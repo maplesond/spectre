@@ -1,6 +1,6 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2015  UEA School of Computing Sciences
+ * Copyright (C) 2017  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.spectre.core.ui.gui.JobController;
 import uk.ac.uea.cmp.spectre.core.ui.gui.StatusTracker;
 import uk.ac.uea.cmp.spectre.core.ui.gui.ToolHost;
+import uk.ac.uea.cmp.spectre.core.util.LogConfig;
 import uk.ac.uea.cmp.spectre.net.netmake.NetMakeOptions;
 
 import javax.swing.*;
@@ -421,7 +422,7 @@ public class NetMEGUI extends JFrame implements ToolHost {
     public static void main(String args[]) {
 
         // Configure logging
-        NetME.configureLogging();
+        LogConfig.defaultConfig();
 
         setLookAndFeel(NIMBUS);
 

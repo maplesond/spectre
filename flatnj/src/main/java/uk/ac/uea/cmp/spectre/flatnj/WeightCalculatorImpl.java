@@ -1,6 +1,6 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2015  UEA School of Computing Sciences
+ * Copyright (C) 2017  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
@@ -15,7 +15,7 @@
 
 package uk.ac.uea.cmp.spectre.flatnj;
 
-import uk.ac.tgac.metaopt.*;
+import uk.ac.earlham.metaopt.*;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.flat.PermutationSequence;
 
@@ -123,24 +123,22 @@ public class WeightCalculatorImpl implements WeightCalculator {
     }
 
     @Override
-    public void fitWeights(Optimiser optimiser) {
+    public void fitWeights(Optimiser optimiser) throws OptimiserException {
         //qs.normalizeWeights();
 
         List<Variable> variables = this.createVariables(ps.getnSwaps());
         List<Constraint> constraints = this.createConstraints(variables);
         Objective objective = this.createObjective(variables);
 
-        try {
-            Solution solution = optimiser.optimise(new Problem("flatnj", variables, constraints, objective));
 
-            double[] weights = solution.getVariableValues();
+        Solution solution = optimiser.optimise(new Problem("flatnj", variables, constraints, objective));
 
-            // ps.setFit();???
-            ps.setWeights(weights);
-            ps.setTrivial(qs.getTrivial());
-        } catch (OptimiserException oe) {
-            System.err.println(oe.getMessage());
-        }
+        double[] weights = solution.getVariableValues();
+
+        // ps.setFit();???
+        ps.setWeights(weights);
+        ps.setTrivial(qs.getTrivial());
+
     }
 
 }

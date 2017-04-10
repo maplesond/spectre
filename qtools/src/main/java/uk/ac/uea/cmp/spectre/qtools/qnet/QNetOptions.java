@@ -1,6 +1,6 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2015  UEA School of Computing Sciences
+ * Copyright (C) 2017  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
@@ -15,9 +15,9 @@
 
 package uk.ac.uea.cmp.spectre.qtools.qnet;
 
-import uk.ac.tgac.metaopt.Objective;
-import uk.ac.tgac.metaopt.Optimiser;
-import uk.ac.tgac.metaopt.OptimiserFactory;
+import uk.ac.earlham.metaopt.Objective;
+import uk.ac.earlham.metaopt.Optimiser;
+import uk.ac.earlham.metaopt.OptimiserFactory;
 
 import java.io.File;
 
@@ -25,7 +25,7 @@ public class QNetOptions {
 
     public static final String DESC_INPUT = "The q weight file containing the taxa and quartets to process.";
 
-    public static final String DESC_OUTPUT = "The nexus file that will contain output.";
+    public static final String DESC_OUTPUT = "REQUIRED: The nexus file that will contain output.";
 
     public static final String DESC_LOG = "If false, normalises quartets linearly, if true normalises quartets using natural log";
 

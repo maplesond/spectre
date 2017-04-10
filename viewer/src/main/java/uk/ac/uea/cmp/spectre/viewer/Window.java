@@ -1,6 +1,6 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2015  UEA School of Computing Sciences
+ * Copyright (C) 2017  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
@@ -134,6 +134,7 @@ public class Window extends JPanel implements KeyListener {
     Color leaderColor = Color.BLUE;
     ViewerLabel selectedLabel = null;
     boolean rotate = false;
+    boolean range = true;
     java.awt.Point lastPoint = null;
     ClusterFinder cf = new ClusterFinderSplits();
     ClusterPlacementOptimizer cpo = new ClusterPlacementOptimizerBox();
@@ -245,10 +246,35 @@ public class Window extends JPanel implements KeyListener {
             }
         }
 
+        if (range) {
+
+            int delta = (int)(1.0 * ratio);
+            double size = 1.0;
+
+            while (delta < 30) {
+                delta *= 10;
+                size *= 10.0;
+            }
+            while (delta > 300) {
+                delta /= 10;
+                size /= 10.0;
+            }
+
+            int left = 20;
+            int right = 20 + delta;
+
+            g.drawLine(left, 22, left, 18);
+            g.drawLine(right, 22, right, 18);
+            g.drawLine(left, 20, right, 20);
+            g.drawString(Double.toString(size), left + ((right - left) / 2) - 10, 32);
+        }
+
+
         if (selectionRectangle != null) {
             g.setColor(Color.red);
             g.drawRect(selectionRectangle[0], selectionRectangle[1], selectionRectangle[2], selectionRectangle[3]);
         }
+
 
         if (rotate) {
             g.setColor(Color.BLUE);
@@ -260,6 +286,8 @@ public class Window extends JPanel implements KeyListener {
             g.drawLine(midX - lLength / 2, midY, midX + lLength / 2, midY);
             g.drawLine(midX, midY - lLength / 2, midX, midY + lLength / 2);
         }
+
+
     }
 
     private static Color getTextColor(Color bg) {
@@ -308,7 +336,7 @@ public class Window extends JPanel implements KeyListener {
         return network.getLabeledVertices();
     }
 
-    public void setGraph(Network network, int w, int h, boolean changeColors, Double ratio) {
+    public void setGraph(Network network, Double ratio) {
         clusters.clear();
         points.clear();
         lines.clear();
@@ -698,6 +726,10 @@ public class Window extends JPanel implements KeyListener {
             }
             repaintOnResize();
         }
+    }
+
+    void showRange(boolean show) {
+        this.range = show;
     }
 
     private void findCornerPoints() {

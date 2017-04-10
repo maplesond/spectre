@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
-  ~ Copyright (C) 2015  UEA School of Computing Sciences
+  ~ Copyright (C) 2017  UEA School of Computing Sciences
   ~
   ~ This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
   ~ License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
@@ -20,12 +20,12 @@
     <parent>
         <artifactId>spectre</artifactId>
         <groupId>uk.ac.uea.cmp.spectre</groupId>
-        <version>0.4.0</version>
+        <version>0.5.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>net</artifactId>
-    <version>0.4.0</version>
+    <version>0.5.0</version>
 
     <name>Spectre: Network Tools</name>
 
@@ -54,6 +54,7 @@
                             <jvmSettings>
                                 <extraArguments>
                                     <extraArgument>-Djava.awt.headless=true</extraArgument>
+                                    <extraArgument>-XX:+UseSerialGC</extraArgument>
                                 </extraArguments>
                             </jvmSettings>
                         </program>
@@ -67,6 +68,7 @@
                             <jvmSettings>
                                 <extraArguments>
                                     <extraArgument>-Djava.awt.headless=true</extraArgument>
+                                    <extraArgument>-XX:+UseSerialGC</extraArgument>
                                 </extraArguments>
                             </jvmSettings>
                         </program>

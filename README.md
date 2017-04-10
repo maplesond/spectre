@@ -1,8 +1,12 @@
+![alt text](spectre.png "Suite of Phylogenetic Tools for Reticulate Evolution")
+
 Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
 ==============================================================
 
 The aim of this project was to create a single project that contains a number of reusable tools for modelling and
-visualising reticulate evolution via phylogenetic trees and networks.
+visualising reticulate evolution via phylogenetic trees and networks.  It contains a number of previous published tools 
+for generating phylogenetic networks for various types from a range of different inputs.  SPECTRE also contains a library 
+containing data structures and algorithms that can be leveraged by third party applications.
 
 
 Installing
@@ -48,10 +52,10 @@ From source
 Spectre is a java 1.8 / maven project. Before compiling the source code, please make sure the following tools are installed:
 
 * GIT
-* Maven (make sure you set the m2_home environment variable to point at your Maven directory)
+* Maven (make sure you set the m2_home environment variable to point at your Maven directory) https://maven.apache.org/
 * JDK v1.8+  (make sure you set the JAVA_HOME environment variable to point at your JDK directory)
 * Make
-* Sphinx (may require you to install python, also make sure the sphinx-build is on the path environment variable)
+* Sphinx (may require you to install python, also make sure the sphinx-build is on the path environment variable) http://www.sphinx-doc.org/en/stable/
 
 You also need to make sure that the system to are compiling on has internet access, as it will try to automatically
 incorporate any required java dependencies via maven. Because spectre is a maven project, almost all the other
@@ -151,14 +155,14 @@ on their system.  The tools can be found in the bin subfolder.
 Further Documentation
 =====================
 
-The full manual can be found in the ``doc`` directory, or online at: xxxxxx
+The full manual can be found in the ``doc`` directory, or online at: https://spectre.readthedocs.org/en/latest/
 
 
 Issues
 ======
 
 Should you discover any issues with spectre, or wish to request a new feature please raise a ticket at https://github.com/maplesond/spectre/issues.
-Alternatively, contact Daniel Mapleson at: daniel.mapleson@tgac.ac.uk
+Alternatively, contact Daniel Mapleson at: daniel.mapleson@earlham.ac.uk
 
 
 Availability:
@@ -172,10 +176,8 @@ License: GPL v3
 Contact
 =======
 
-* Daniel Mapleson -TGAC
-* Sarah Bastkowski - TGAC
-* Monica Balvociute - ??
-* Radoslaw Suchecki - University of Adelaide
-* Katharina Huber - UEA
+* Daniel Mapleson - Earlham Institute (EI)
+* Sarah Bastkowski - Earlham Institute (EI)
+* Taoyang Wu - University of East Anglia (UEA)
 * Andreas Spillner - Universitat de Griefswald
-* Vincent Moulton - UEA
+* Vincent Moulton - University of East Anglia (UEA)

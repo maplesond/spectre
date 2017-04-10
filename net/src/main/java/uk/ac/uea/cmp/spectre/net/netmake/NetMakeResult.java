@@ -1,6 +1,6 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2015  UEA School of Computing Sciences
+ * Copyright (C) 2017  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
@@ -16,8 +16,8 @@
 package uk.ac.uea.cmp.spectre.net.netmake;
 
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
-import uk.ac.uea.cmp.spectre.core.io.PhygenWriter;
-import uk.ac.uea.cmp.spectre.core.io.PhygenWriterFactory;
+import uk.ac.uea.cmp.spectre.core.io.SpectreWriter;
+import uk.ac.uea.cmp.spectre.core.io.SpectreWriterFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,12 +43,12 @@ public class NetMakeResult {
 
     public void save(File outputNetwork, File outputTree) throws IOException {
 
-        PhygenWriter phygenWriter = PhygenWriterFactory.NEXUS.create();
+        SpectreWriter spectreWriter = SpectreWriterFactory.NEXUS.create();
 
-        phygenWriter.writeSplitSystem(outputNetwork, this.getNetwork());
+        spectreWriter.writeSplitSystem(outputNetwork, this.getNetwork());
 
         if (this.tree != null && outputTree != null) {
-            phygenWriter.writeSplitSystem(outputTree, this.getTree());
+            spectreWriter.writeSplitSystem(outputTree, this.getTree());
         }
     }
 }

@@ -1,6 +1,6 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2015  UEA School of Computing Sciences
+ * Copyright (C) 2017  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
@@ -13,7 +13,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.viewer;
+package uk.ac.uea.cmp.spectre.core.ds.network.draw;
 
 import uk.ac.uea.cmp.spectre.core.ds.network.VertexList;
 
@@ -31,6 +31,7 @@ public class ViewerConfig {
     private String leaderStroke = "";
     private Color leaderColor;
     private boolean showTrivial;
+    private boolean showRange;
     private boolean showLabels;
     private boolean colorLabels;
     private Set<Integer> fixed;
@@ -46,6 +47,7 @@ public class ViewerConfig {
                 true,
                 true,
                 true,
+                true,
                 new HashSet<Integer>(),
                 0.0,
                 new VertexList());
@@ -56,6 +58,7 @@ public class ViewerConfig {
                         String leaderStroke,
                         Color leaderColor,
                         boolean showTrivial,
+                        boolean showRange,
                         boolean showLabels,
                         boolean colorLabels,
                         Set<Integer> fixed,
@@ -66,6 +69,7 @@ public class ViewerConfig {
         this.leaderStroke = leaderStroke;
         this.leaderColor = leaderColor;
         this.showTrivial = showTrivial;
+        this.showRange = showRange;
         this.showLabels = showLabels;
         this.colorLabels = colorLabels;
         this.fixed = fixed;
@@ -106,6 +110,13 @@ public class ViewerConfig {
         return showTrivial;
     }
 
+    public boolean isShowRange() {
+        return showRange;
+    }
+
+    public void setShowRange(boolean showRange) {
+        this.showRange = showRange;
+    }
 
     public void setShowLabels(boolean showLabels) {
         this.showLabels = showLabels;
@@ -164,6 +175,10 @@ public class ViewerConfig {
         String matched = scannerLC.findInLine("showtrivial\\s*=\\s*(\\S+)");
         if (matched != null) {
             this.showTrivial = Boolean.parseBoolean(scannerLC.match().group(1));
+        }
+        matched = scannerLC.findInLine("showrange\\s*=\\s*(\\S+)");
+        if (matched != null) {
+            this.showRange = Boolean.parseBoolean(scannerLC.match().group(1));
         }
         scannerLC = new Scanner(lineLC);
         matched = scannerLC.findInLine("showlabels\\s*=\\s*(\\S+)");

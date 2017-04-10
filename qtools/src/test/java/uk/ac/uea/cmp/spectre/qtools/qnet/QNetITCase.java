@@ -1,6 +1,6 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2015  UEA School of Computing Sciences
+ * Copyright (C) 2017  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
@@ -21,9 +21,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import uk.ac.tgac.metaopt.Equality;
-import uk.ac.tgac.metaopt.OptimiserException;
-import uk.ac.tgac.metaopt.external.JOptimizer;
+import uk.ac.earlham.metaopt.Equality;
+import uk.ac.earlham.metaopt.OptimiserException;
+import uk.ac.earlham.metaopt.external.JOptimizer;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.GroupedQuartetSystem;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.QuartetSystem;
@@ -35,7 +35,7 @@ import uk.ac.uea.cmp.spectre.qtools.qmaker.QMaker;
 import java.io.File;
 import java.io.IOException;
 
-import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.*;
 
 public class QNetITCase {
 

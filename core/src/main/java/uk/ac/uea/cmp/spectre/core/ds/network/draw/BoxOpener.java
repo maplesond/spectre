@@ -1,6 +1,6 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2015  UEA School of Computing Sciences
+ * Copyright (C) 2017  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
@@ -14,6 +14,9 @@
  */
 
 package uk.ac.uea.cmp.spectre.core.ds.network.draw;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import uk.ac.uea.cmp.spectre.core.ds.network.Edge;
 import uk.ac.uea.cmp.spectre.core.ds.network.EdgeList;
@@ -29,6 +32,8 @@ import java.util.TreeSet;
  * @author balvociute
  */
 public class BoxOpener {
+
+    private static Logger log = LoggerFactory.getLogger(BoxOpener.class);
 
     private AngleCalculator angleCalculator;
     private SplitSystemDraw splitSystemDraw;
@@ -56,12 +61,13 @@ public class BoxOpener {
                 }
             }
         }
-        return maxAngle;
+        return maxAngle == null ? 0.0 : maxAngle.doubleValue();
     }
 
     public void openOneIncompatible(int[] activeSplits, Vertex v, LinkedList<Vertex> vertices, TreeSet[] splitedges, Network network) {
         boolean foundSplit = false;
-        while (!foundSplit) {
+        int count = 0;
+        while (!foundSplit && count < 10000) {
             int S = activeSplits[nr++];
             EdgeList edges = v.collectEdgesForSplit(S);
             if (edges.size() > 1) {
@@ -71,6 +77,11 @@ public class BoxOpener {
             if (nr == activeSplits.length) {
                 nr = 0;
             }
+            count++;
+        }
+
+        if (count >= 10000) {
+            log.warn("Cancelling network layout optimisation.  Couldn't find a split in dataset for over 10000 iterations.  Probably your input is too small to process.");
         }
     }
 

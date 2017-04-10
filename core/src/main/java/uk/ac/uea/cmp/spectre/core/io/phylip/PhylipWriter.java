@@ -1,6 +1,6 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2015  UEA School of Computing Sciences
+ * Copyright (C) 2017  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
@@ -19,7 +19,7 @@ import org.apache.commons.io.FileUtils;
 import uk.ac.uea.cmp.spectre.core.ds.Identifier;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
-import uk.ac.uea.cmp.spectre.core.io.AbstractPhygenWriter;
+import uk.ac.uea.cmp.spectre.core.io.AbstractSpectreWriter;
 import uk.ac.uea.cmp.spectre.core.util.CollectionUtils;
 
 import java.io.File;
@@ -29,7 +29,7 @@ import java.io.IOException;
  * Created with IntelliJ IDEA. User: Dan Date: 14/05/13 Time: 20:24 To change this template use File | Settings | File
  * Templates.
  */
-public class PhylipWriter extends AbstractPhygenWriter {
+public class PhylipWriter extends AbstractSpectreWriter {
 
     @Override
     public void writeDistanceMatrix(File outFile, DistanceMatrix distanceMatrix) throws IOException {
@@ -53,6 +53,6 @@ public class PhylipWriter extends AbstractPhygenWriter {
         }
 
         // Save
-        FileUtils.writeStringToFile(outFile, fileContent.toString());
+        FileUtils.writeStringToFile(outFile, fileContent.toString(), "UTF-8");
     }
 }

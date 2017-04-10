@@ -1,6 +1,6 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2015  UEA School of Computing Sciences
+ * Copyright (C) 2017  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
@@ -19,13 +19,13 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import uk.ac.tgac.metaopt.OptimiserException;
+import uk.ac.earlham.metaopt.OptimiserException;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.*;
 
 public class QMakerITCase {
 
@@ -43,7 +43,7 @@ public class QMakerITCase {
 
         assertTrue(qMaker.getQuartetFile().exists());
 
-        List<String> lines = FileUtils.readLines(qMaker.getQuartetFile());
+        List<String> lines = FileUtils.readLines(qMaker.getQuartetFile(), "UTF-8");
 
         assertTrue(lines.size() == 45);
     }
@@ -59,7 +59,7 @@ public class QMakerITCase {
 
         assertTrue(chopper.getQuartetFile().exists());
 
-        List<String> lines = FileUtils.readLines(chopper.getQuartetFile());
+        List<String> lines = FileUtils.readLines(chopper.getQuartetFile(), "UTF-8");
 
         assertTrue(lines.size() == 45);
     }
@@ -75,7 +75,7 @@ public class QMakerITCase {
 
         assertTrue(chopper.getQuartetFile().exists());
 
-        List<String> lines = FileUtils.readLines(chopper.getQuartetFile());
+        List<String> lines = FileUtils.readLines(chopper.getQuartetFile(), "UTF-8");
 
         assertTrue(lines.size() == 31717);
     }

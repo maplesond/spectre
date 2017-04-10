@@ -31,25 +31,25 @@ OutOfMemoryError may occur. Heap space can be increased using the Java VM option
 more information on how to adjust these options with spectre scripts.
 
 The split network is constructed from a system of 4-splits. The input system of 4-splits must be provided using
-the ``-i/--in <nexus file>`` option and the output is written to the file indicated by the ``-o/--out <nexus file>``
+the positional argument ``<input>`` and the output is written to the file indicated by the ``-o/--out <nexus file>``
 command line parameter.
 
 Relatively small splits that are incompatible with much bigger splits are filtered out from the network using the approach
 described in (Grunewald et al. 2007). The filtering threshold is a number between 0 and 1. The default filtering threshold
-is 0.15. It can be altered using the ``-thr/--threshold <[0.0,1.0]>`` parameter; choosing 0.0 as the threshold results in
+is 0.15. It can be altered using the ``-t/--threshold <[0.0,1.0]>`` parameter; choosing 0.0 as the threshold results in
 an unfiltered network whereas 1.0 yields a network that is a tree.
 
 Usage examples:
 
-* To compute a split network from a system of 4-splits using the default threshold for filtering splits: ``flatnj -i system_of_4s.nex -o network.nex``
-* To compute a split network from a system of 4-splits using a filtering threshold of 0.2: ``flatnj -i system_of_4s.nex -thr 0.2 -o network.nex``
+* To compute a split network from a system of 4-splits using the default threshold for filtering splits: ``flatnj -o network.nex system_of_4s.nex``
+* To compute a split network from a system of 4-splits using a filtering threshold of 0.2: ``flatnj -thr 0.2 -o network.nex system_of_4s.nex``
 
 
 Viewing a split network
 -----------------------
 
-To view split networks computed with FlatNJ, the SplitsTree package can be used. It can be downloaded from http://www.splitstree.org/.
-[TODO]  Shouldn't we use NetView now??
+The split networks computed with FlatNJ are output to nexus format.  You can either use SPECTRE's internal network viewing
+tool or the external SplitsTree package to view the nexus file.
 
 Walk through usage examples
 ---------------------------
@@ -66,7 +66,7 @@ following steps will guide you through the whole process of the network construc
 
 1. Open a terminal window and change to the directory of FlatNJ.
 
-2. To compute a split network from the protein sequences fasta file type: ``flatnj -i <spectre_dir>/examples/flatnj/colors_aln.faa -o <output_dir>/colors.nex``
+2. To compute a split network from the protein sequences fasta file type: ``flatnj -o <output_dir>/colors.nex <spectre_dir>/examples/flatnj/colors_aln.faa``
 
 3. To view the network launch ``netview`` and open ``<output_dir>/colors.nex``. The network displayed by the viewer should look very similar to the one in Figure 1.
 
@@ -85,9 +85,8 @@ To illustrate FlatNJ's usage for geographical data, we use coordinates of some o
 The following steps will guide you through the whole process of the network construction for the European capitals data set:
 
 1. Open a terminal window and change to an empty working directory.
-2. To compute a system of 4-splits for the input file ``<spectre_dir>/examples/flatnj/europe.nex`` type: ``gen4s -i <spectre_dir>/examples/flatnj/europe.nex -b LOCATIONS -o <output_dir>/europe.4s``
-3. To compute a split network from the system of 4-splits type: ``flatnj -i <spectre_dir>/examples/flatnj/europe.4s -o <output_dir>/europe_net.nex``
-4. To view the network launch ``netview`` and open europe ``<output_dir>/europe_net.nex``. The network displayed by SplitsTree should look very similar to the one in Figure 2.
+2. To compute a split network from the geographical data type: ``flatnj -o <output_dir>/europe_net.nex <spectre_dir>/examples/flatnj/europe.nex``
+3. To view the network launch ``netview`` and open europe ``<output_dir>/europe_net.nex``. The network displayed by SplitsTree should look very similar to the one in Figure 2.
 
 .. image:: images/flatnj-fig2.png
     :scale: 50 %
@@ -138,6 +137,7 @@ The syntax for this block is as follows::
     ;
   END;
 
+
 Distance matrices
 ~~~~~~~~~~~~~~~~~
 
@@ -168,30 +168,18 @@ a set of 4 taxa. The syntax of the block is as follows::
 All weights must be written in the same line.
 
 
-Networks
-~~~~~~~~
-
-The resulting split networks are saved in a NETWORK block. These can then be displayed by opening them in NetView (see
-next section).
-
-
-NetView
--------
-
-[TODO]
-
 
 References
 ----------
 
-* M. Balvociute, A. Spillner, and V. Moulton. FlatNJ: A novel network-based approach to visualize evolutionary and biogeographical relationships, 2013. Systematic Biology, 2014.
+* M.Balvociute, A.Spillner and V.Moulton. FlatNJ: A novel network-based approach to visualize evolutionary and biogeographical relationships, 2013. Systematic Biology, 2014.
 
-* D. Bryant and V. Moulton. Neighbor-net: an agglomerative method for the construction of phylogenetic networks. Mol. Biol. Evol., 21:255–265, 2004.
+* D.Bryant and V.Moulton. Neighbor-net: an agglomerative method for the construction of phylogenetic networks. Mol. Biol. Evol., 21:255–265, 2004.
 
-* S. Grunewald, K. Forslund, A. Dress, and V. Moulton. Qnet: An agglomerative method for the construction of phylogenetic networks from weighted quartets. Mol. Biol. Evol., 24(2):532–538, 2007.
+* S.Grunewald, K.Forslund, A.Dress and V.Moulton. Qnet: An agglomerative method for the construction of phylogenetic networks from weighted quartets. Mol. Biol. Evol., 24(2):532–538, 2007.
 
-* D. H. Huson and D. Bryant. Application of phylogenetic networks in evolutionary studies. Mol. Biol. Evol., 23(2):254–267, 2006.
+* D.H.Huson and D.Bryant. Application of phylogenetic networks in evolutionary studies. Mol. Biol. Evol., 23(2):254–267, 2006.
 
-* N. Saitou and M. Nei. The neighbor-joining method: a new method for reconstructing phylogenetic trees. Mol. Biol. Evol., 4:406–425, 1987.
+* N.Saitou and M.Nei. The neighbor-joining method: a new method for reconstructing phylogenetic trees. Mol. Biol. Evol., 4:406–425, 1987.
 
-* A. Spillner, B. Nguyen, and V. Moulton. Constructing and drawing regular planar split networks. IEEE/ACM Trans. Comput. Biol. Bioinform., 9:395–407, 2011.
+* A.Spillner, B.Nguyen, and V.Moulton. Constructing and drawing regular planar split networks. IEEE/ACM Trans. Comput. Biol. Bioinform., 9:395–407, 2011.

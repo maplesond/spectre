@@ -1,6 +1,6 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2015  UEA School of Computing Sciences
+ * Copyright (C) 2017  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
@@ -17,6 +17,7 @@ package uk.ac.uea.cmp.spectre.viewer;
 
 import uk.ac.uea.cmp.spectre.core.ds.network.NetworkLabel;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
+import uk.ac.uea.cmp.spectre.core.ds.network.draw.ViewerConfig;
 import uk.ac.uea.cmp.spectre.core.io.nexus.NexusWriter;
 
 import java.awt.*;
@@ -34,6 +35,7 @@ public class ViewerNexusWriter extends NexusWriter {
         this.appendLine(" MATRIX");
         this.appendLine("  ratio=" + config.getRatio());
         this.appendLine("  showtrivial=" + config.showTrivial());
+        this.appendLine("  showrange=" + config.isShowRange());
         this.appendLine("  showlabels=" + config.showLabels());
         this.appendLine("  colorlabels=" + config.colorLabels());
         this.appendLine("  leaders=" + config.getLeaderType());

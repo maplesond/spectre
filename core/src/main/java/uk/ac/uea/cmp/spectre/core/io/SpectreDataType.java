@@ -1,6 +1,6 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2015  UEA School of Computing Sciences
+ * Copyright (C) 2017  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
@@ -13,11 +13,22 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.viewer;
+package uk.ac.uea.cmp.spectre.core.io;
 
 /**
- * Created by dan on 29/07/14.
+ * Created with IntelliJ IDEA.
+ * User: dan
+ * Date: 06/11/13
+ * Time: 20:10
+ * To change this template use File | Settings | File Templates.
  */
-public class ViewerNexusReader {
+public enum SpectreDataType {
 
+    DISTANCE_MATRIX,
+    ALIGNMENT,
+    TREE,
+    CIRCULAR_ORDERING,
+    SPLITS,
+    QUARTETS,
+    NETWORK;
 }

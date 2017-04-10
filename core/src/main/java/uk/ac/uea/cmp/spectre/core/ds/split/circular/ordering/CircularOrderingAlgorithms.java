@@ -1,6 +1,6 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2015  UEA School of Computing Sciences
+ * Copyright (C) 2017  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
@@ -29,10 +29,8 @@ import java.util.List;
  */
 public enum CircularOrderingAlgorithms {
 
-    NETMAKE {
-    },
-    NEIGHBORNET {
-    }
+    NETMAKE,
+    NEIGHBORNET
     ;
 
     public static String toListString() {

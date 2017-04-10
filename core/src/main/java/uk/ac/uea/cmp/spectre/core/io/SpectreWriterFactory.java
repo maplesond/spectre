@@ -1,6 +1,6 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2015  UEA School of Computing Sciences
+ * Copyright (C) 2017  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
@@ -29,11 +29,11 @@ import java.util.List;
  * Time: 20:12
  * To change this template use File | Settings | File Templates.
  */
-public enum PhygenWriterFactory {
+public enum SpectreWriterFactory {
 
     NEXUS {
         @Override
-        public PhygenWriter create() {
+        public SpectreWriter create() {
             return new NexusWriter();
         }
 
@@ -44,7 +44,7 @@ public enum PhygenWriterFactory {
     },
     PHYLIP {
         @Override
-        public PhygenWriter create() {
+        public SpectreWriter create() {
             return new PhylipWriter();
         }
 
@@ -54,13 +54,13 @@ public enum PhygenWriterFactory {
         }
     };
 
-    public abstract PhygenWriter create();
+    public abstract SpectreWriter create();
 
     public abstract String[] getValidExtensions();
 
-    public static PhygenWriter create(String fileExtension) {
+    public static SpectreWriter create(String fileExtension) {
 
-        for (PhygenWriterFactory pwf : PhygenWriterFactory.values()) {
+        for (SpectreWriterFactory pwf : SpectreWriterFactory.values()) {
 
             for (String ext : pwf.getValidExtensions()) {
                 if (ext.equalsIgnoreCase(fileExtension)) {
@@ -80,7 +80,7 @@ public enum PhygenWriterFactory {
 
         List<String> writerStrings = new ArrayList<String>();
 
-        for (PhygenWriterFactory mode : PhygenWriterFactory.values()) {
+        for (SpectreWriterFactory mode : SpectreWriterFactory.values()) {
             writerStrings.add(mode.name());
         }
 

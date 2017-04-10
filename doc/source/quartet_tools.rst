@@ -12,15 +12,15 @@ SuperQ
 ------
 
 Constructs a phylogenetic supernetwork from a set of weighted or unweighted partial trees by using quartets. SuperQ is a pipeline
-that incorperates QMaker, Scaler, QNet and SFilter, which are all described in more detail later in this section.  These
+that incorporates QMaker, Scaler, QNet and SFilter, which are all described in more detail later in this section.  These
 tools are all available for you to use individually in case you wish to conduct a more detailed and controlled experiment
 for generating circular split systems from your partial trees, however in most cases SuperQ will be the only Quartet tool
 you need to use.
 
 To run SuperQ use the ``superq`` script like this::
 
-  superq -i <input file(s)> -o <outfile> [-s <scaling optimiser> -x <primary optimise>
-         -y <secondary optimiser> -b <objective> -f <filter threshold>]
+  superq -o <outfile> [-s <scaling_optimiser> -x <primary_optimiser>
+         -y <secondary_optimiser> -b <objective> -f <filter_threshold>] <input_file> [<input_file>]...
 
 Alternatively, SuperQ has a simple GUI which can be started by simply running ``superq-gui`` without any arguments.
 
@@ -46,7 +46,7 @@ Currently supported input types include:
 
 To run QMaker use the ``qmaker`` script like this::
 
-  qmaker -i <input file(s)> -o <output dir> -p <output prefix> [-s <scaling optimiser>]
+  qmaker [--output_prefix <output_prefix> --optimiser <scaling optimiser>] <input_file> [<input_file>]...
 
 QMaker will automatically determine the file type based on the filename extension.
 
@@ -71,9 +71,9 @@ SFilter
 -------
 
 Once a phylogenetic supernetwork has been computed, it may be desirable to filter out weakly supported splits that may
-result from numerical error or noise. This can be done using the SFilter tool.
+result from numerical error or noise. This can be done using the SFilter tool::
 
-sfilter -i <infile> -o <outfile> -t <threshold>
+    sfilter [--output <outfile> --min_threshold <threshold>] <infile>
 
 <infile> and <outfile> should be Nexus files with st splits blocks, whereas <threshold> is a real number. Only those splits
 whose weight is higher than the threshold number times the weight of the most highly weighted conflicting split are
@@ -95,7 +95,7 @@ threshold ratio times the weight of the strongest split that conflicts with this
 
 To run QNet use the ``qnet`` script like this::
 
-  qnet <lin/log> <infile> <outfile>
+  qnet sfilter -o <outfile> [--log --tolerance <threshold> --optimiser <optimiser>] <infile>
 
 Alternatively, QNet has a simple GUI which can be started by simply running ``qnet-gui`` without any arguments.
 
@@ -105,7 +105,8 @@ Alternatively, QNet has a simple GUI which can be started by simply running ``qn
 Visualising the results
 -----------------------
 
-The final output will be a Nexus file, which can be viewed by a variety of applications, among them SplitsTree ([1]).
+The final output will be a Nexus file, which can be viewed by the SPECTRE network viewing tool, or by external tools
+such as SplitsTree ([1]).
 
 
 QWeights example file
@@ -151,7 +152,7 @@ The original version of SuperQ was developed by:
 
 * Sarah Bastkowski
 
-The tools have been reengineered, optimised and integrated into spectre by:
+The tools have been reengineered, optimised and integrated into SPECTRE by:
 
 * Daniel Mapleson
 

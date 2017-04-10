@@ -4,7 +4,7 @@ Credits
 =======
 
 The paper for spectre is currently being prepared.  If you use spectre in your work and wish to publish in the meantime
-please refer the project's web page: [TODO]
+please refer the project's web page: https://github.com/maplesond/spectre.git
 
 Additionally, spectre consists on a number of tools that have already been published, if your work uses any of these
 pre-published tools please also cite the associated publication(s).  A reverse chronological list of all publications
@@ -30,11 +30,6 @@ NetMake
                 The Neighbor-Net Algorithm.
                 Advances in Applied Mathematics.
 
-PADRE
-                Martin Lott, Andreas Spillner, Katharina T. Huber and Vincent Moulton, 2009
-                PADRE: a package for analyzing and displaying reticulate evolution
-                Bioinformatics Volume 25, Issue 9
-
 QNet
                 Stefan Grünewald, Kristoffer Forslund, Andreas Dress and Vincent Moulton, 2006
                 QNet: An Agglomerative Method for the Construction of Phylogenetic Networks from Weighted Quartets
@@ -47,17 +42,15 @@ Spectre is an international collaboration.  Active contributors to spectre are l
 +--------------------------+-------------------------------+-----------------------------------+-----------------------------------------------------------------------------+
 | Name                     | Email                         | Current Institute                 | Contribution                                                                |
 +==========================+===============================+===================================+=============================================================================+
-| Daniel Mapleson          | daniel.mapleson@tgac.ac.uk    | The Genome Analysis Centre (TGAC) | General software development, testing, optimisation and codebase management |
+| Daniel Mapleson          | daniel.mapleson@tgac.ac.uk    | Earlham Institute (EI)            | General software development, testing, optimisation and codebase management |
 +--------------------------+-------------------------------+-----------------------------------+-----------------------------------------------------------------------------+
-| Sarah Bastkowski         | sarah.bastkowski@tgac.ac.uk   | The Genome Analysis Centre (TGAC) | SuperQ, NetMake, NetME, NeighborNet Implementation, Algorithms, Optimisers  |
+| Sarah Bastkowski         | sarah.bastkowski@tgac.ac.uk   | Earlham Institute (EI)            | SuperQ, NetMake, NetME, NeighborNet Implementation, Algorithms, Optimisers  |
 +--------------------------+-------------------------------+-----------------------------------+-----------------------------------------------------------------------------+
 | Monica Balvociute        | ???                           | University of Otago               | Gen4S, FlatNJ, NetView                                                      |
 +--------------------------+-------------------------------+-----------------------------------+-----------------------------------------------------------------------------+
-| Radoslaw Suchecki        | r.suchecki@gmail.com          | University of Adelaide            | PADRE                                                                       |
+| Andreas Spilner          | anspillner@gmail.com          | NA                                | Mathematics, Algorithms, Optimisers, Spectre development                    |
 +--------------------------+-------------------------------+-----------------------------------+-----------------------------------------------------------------------------+
-| Katharina Huber          | k.huber@uea.ac.uk             | University of East Anglia (UEA)   | PADRE                                                                       |
-+--------------------------+-------------------------------+-----------------------------------+-----------------------------------------------------------------------------+
-| Andreas Spilner          | anspillner@gmail.com          | University of Greifswald          | Mathematics, Algorithms, Optimisers, Spectre development                    |
+| Taoyang Wu               | taoyang.wu@gmail.com          | University of East Anglia (UEA)   | Mathematics, Testing                                                        |
 +--------------------------+-------------------------------+-----------------------------------+-----------------------------------------------------------------------------+
 | Vincent Moulton          | vincent.moulton@cmp.uea.ac.uk | University of East Anglia (UEA)   | Mathematics, Algorithms                                                     |
 +--------------------------+-------------------------------+-----------------------------------+-----------------------------------------------------------------------------+
@@ -75,9 +68,6 @@ table (in alphabetical order):
 +-------------------------------+----------------------------------------+
 | Stephan Gruenewald            | QNet, SuperQ                           |
 +-------------------------------+----------------------------------------+
-| Martin Lott                   | PADRE                                  |
-+-------------------------------+----------------------------------------+
-| Bengt Oxelman                 | PADRE                                  |
-+-------------------------------+----------------------------------------+
+
 
 

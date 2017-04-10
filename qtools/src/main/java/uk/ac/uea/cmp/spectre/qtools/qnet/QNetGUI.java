@@ -1,6 +1,6 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2015  UEA School of Computing Sciences
+ * Copyright (C) 2017  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
@@ -16,13 +16,14 @@ package uk.ac.uea.cmp.spectre.qtools.qnet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.tgac.metaopt.Objective;
-import uk.ac.tgac.metaopt.OptimiserException;
-import uk.ac.tgac.metaopt.OptimiserFactory;
+import uk.ac.earlham.metaopt.Objective;
+import uk.ac.earlham.metaopt.OptimiserException;
+import uk.ac.earlham.metaopt.OptimiserFactory;
 import uk.ac.uea.cmp.spectre.core.io.qweight.QWeightFileFilter;
 import uk.ac.uea.cmp.spectre.core.ui.gui.JobController;
 import uk.ac.uea.cmp.spectre.core.ui.gui.StatusTracker;
 import uk.ac.uea.cmp.spectre.core.ui.gui.ToolHost;
+import uk.ac.uea.cmp.spectre.core.util.LogConfig;
 
 import javax.swing.*;
 import java.awt.*;
@@ -487,7 +488,7 @@ public class QNetGUI extends JFrame implements ToolHost {
     public static void main(String args[]) {
 
         // Configure logging
-        QNet.configureLogging();
+        LogConfig.defaultConfig();
 
         setLookAndFeel(NIMBUS);
 

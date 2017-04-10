@@ -1,6 +1,6 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2015  UEA School of Computing Sciences
+ * Copyright (C) 2017  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
@@ -17,14 +17,12 @@ package uk.ac.uea.cmp.spectre.net.netme;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.time.StopWatch;
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.PropertyConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
-import uk.ac.uea.cmp.spectre.core.io.PhygenReader;
-import uk.ac.uea.cmp.spectre.core.io.PhygenReaderFactory;
+import uk.ac.uea.cmp.spectre.core.io.SpectreReader;
+import uk.ac.uea.cmp.spectre.core.io.SpectreReaderFactory;
 import uk.ac.uea.cmp.spectre.core.io.nexus.NexusReader;
 import uk.ac.uea.cmp.spectre.core.ui.gui.RunnableTool;
 import uk.ac.uea.cmp.spectre.core.ui.gui.StatusTracker;
@@ -58,15 +56,6 @@ public class NetME extends RunnableTool {
         this.options = options;
     }
 
-    public static void configureLogging() {
-        // Configure logging
-        if (new File("log4j.properties").exists()) {
-            PropertyConfigurator.configure("log4j.properties");
-        } else {
-            BasicConfigurator.configure();
-        }
-    }
-
     public NetMEOptions getOptions() {
         return options;
     }
@@ -95,12 +84,12 @@ public class NetME extends RunnableTool {
             this.notifyUser("Loading distance matrix from: " + this.options.getDistancesFile().getAbsolutePath());
 
             // Get a handle on the phygen factory
-            PhygenReaderFactory factory = PhygenReaderFactory.getInstance();
+            SpectreReaderFactory factory = SpectreReaderFactory.getInstance();
 
             // Setup appropriate reader to input file based on file type
-            PhygenReader phygenReader = factory.create(FilenameUtils.getExtension(this.options.getDistancesFile().getName()));
+            SpectreReader spectreReader = factory.create(FilenameUtils.getExtension(this.options.getDistancesFile().getName()));
 
-            DistanceMatrix distanceMatrix = phygenReader.readDistanceMatrix(this.options.getDistancesFile());
+            DistanceMatrix distanceMatrix = spectreReader.readDistanceMatrix(this.options.getDistancesFile());
 
             log.info("Distance Matrix Loaded from file: " + this.options.getDistancesFile().getAbsolutePath());
 

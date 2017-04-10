@@ -1,6 +1,6 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2015  UEA School of Computing Sciences
+ * Copyright (C) 2017  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
@@ -16,9 +16,10 @@
 package uk.ac.uea.cmp.spectre.core.io.fasta;
 
 import org.kohsuke.MetaInfServices;
-import uk.ac.uea.cmp.spectre.core.ds.Alignment;
-import uk.ac.uea.cmp.spectre.core.io.AbstractPhygenReader;
-import uk.ac.uea.cmp.spectre.core.io.PhygenDataType;
+import uk.ac.uea.cmp.spectre.core.ds.Sequences;
+import uk.ac.uea.cmp.spectre.core.io.AbstractSpectreReader;
+import uk.ac.uea.cmp.spectre.core.io.SpectreDataType;
+import uk.ac.uea.cmp.spectre.core.io.SpectreReader;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -30,13 +31,13 @@ import java.util.Map;
 /**
  * @author balvociute + maplesond
  */
-@MetaInfServices(uk.ac.uea.cmp.spectre.core.io.PhygenReader.class)
-public class FastaReader extends AbstractPhygenReader {
+@MetaInfServices(SpectreReader.class)
+public class FastaReader extends AbstractSpectreReader {
 
     private Map<String, String> aln;
     private BufferedReader bufferedReader;
 
-    public Alignment readAlignment(File file) throws IOException {
+    public Sequences readAlignment(File file) throws IOException {
 
         this.aln = new LinkedHashMap<>();
 
@@ -48,7 +49,7 @@ public class FastaReader extends AbstractPhygenReader {
          * different depending on a particular AlignmentReader that is used.
          */
         readAlignmentFromFile();
-        return new Alignment(aln);
+        return new Sequences(aln);
     }
 
     protected void readAlignmentFromFile() throws IOException {
@@ -81,8 +82,8 @@ public class FastaReader extends AbstractPhygenReader {
     }
 
     @Override
-    public boolean acceptsDataType(PhygenDataType phygenDataType) {
-        if (phygenDataType == PhygenDataType.ALIGNMENT)
+    public boolean acceptsDataType(SpectreDataType spectreDataType) {
+        if (spectreDataType == SpectreDataType.ALIGNMENT)
             return true;
 
         return false;

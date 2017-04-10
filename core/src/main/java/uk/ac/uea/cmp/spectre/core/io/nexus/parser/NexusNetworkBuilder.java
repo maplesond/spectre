@@ -1,6 +1,6 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2015  UEA School of Computing Sciences
+ * Copyright (C) 2017  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.spectre.core.ds.network.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,6 +46,8 @@ public class NexusNetworkBuilder {
     private Map<Integer, Edge> edges;
     private Edge currentEdge;
 
+    private Map<Integer, String> translate;
+
     public NexusNetworkBuilder() {
 
         this.nbExpectedEdges = 0;
@@ -62,6 +65,8 @@ public class NexusNetworkBuilder {
 
         this.edges = new HashMap<>();
         this.currentEdge = null;
+
+        this.translate = new HashMap<>();
     }
 
     public void setExpectedDimensions(int nbExpectedTaxa, int nbExpectedVertices, int nbExpectedEdges) {
@@ -159,6 +164,10 @@ public class NexusNetworkBuilder {
         this.currentEdge = currentEdge;
     }
 
+    public Map<Integer, String> getTranslate() {
+        return translate;
+    }
+
     public Network createNetwork() {
 
         if (this.vertices.size() != this.nbExpectedVertices) {
@@ -179,8 +188,9 @@ public class NexusNetworkBuilder {
         FlatNetwork network = new FlatNetwork();
 
         network.setVertices(new VertexList(this.vertices.values()));
-        //network.setVertexLabels(new LinkedList<>(this.labels.values()));
+        network.setVertexLabels(new ArrayList<>(this.labels.values()));
         network.setEdges(new EdgeList(this.edges.values()));
+        network.setTranslate(this.translate);
 
         return network;
     }

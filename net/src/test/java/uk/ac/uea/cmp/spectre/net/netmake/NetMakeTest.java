@@ -1,6 +1,6 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2015  UEA School of Computing Sciences
+ * Copyright (C) 2017  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
@@ -36,7 +36,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 
 public class NetMakeTest {
@@ -108,8 +108,8 @@ public class NetMakeTest {
         assertTrue(netout.exists());
         assertTrue(treeout.exists());
 
-        List<String> netlines = FileUtils.readLines(netout);
-        List<String> treelines = FileUtils.readLines(treeout);
+        List<String> netlines = FileUtils.readLines(netout, "UTF-8");
+        List<String> treelines = FileUtils.readLines(treeout, "UTF-8");
 
         assertTrue(!netlines.isEmpty());
         assertTrue(!treelines.isEmpty());
@@ -137,8 +137,8 @@ public class NetMakeTest {
         assertTrue(netout.exists());
         assertTrue(treeout.exists());
 
-        List<String> netlines = FileUtils.readLines(netout);
-        List<String> treelines = FileUtils.readLines(treeout);
+        List<String> netlines = FileUtils.readLines(netout, "UTF-8");
+        List<String> treelines = FileUtils.readLines(treeout, "UTF-8");
 
         assertTrue(!netlines.isEmpty());
         assertTrue(!treelines.isEmpty());
@@ -165,8 +165,8 @@ public class NetMakeTest {
         assertTrue(netout.exists());
         assertTrue(treeout.exists());
 
-        List<String> netlines = FileUtils.readLines(netout);
-        List<String> treelines = FileUtils.readLines(treeout);
+        List<String> netlines = FileUtils.readLines(netout, "UTF-8");
+        List<String> treelines = FileUtils.readLines(treeout, "UTF-8");
 
         assertTrue(!netlines.isEmpty());
         assertTrue(!treelines.isEmpty());

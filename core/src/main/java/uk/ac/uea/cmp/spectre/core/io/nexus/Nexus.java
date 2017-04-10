@@ -1,6 +1,6 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2015  UEA School of Computing Sciences
+ * Copyright (C) 2017  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
@@ -15,9 +15,11 @@
 
 package uk.ac.uea.cmp.spectre.core.io.nexus;
 
+import uk.ac.uea.cmp.spectre.core.ds.Sequences;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.network.Network;
+import uk.ac.uea.cmp.spectre.core.ds.network.draw.ViewerConfig;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 
 import java.util.ArrayList;
@@ -37,6 +39,8 @@ public class Nexus {
     private SplitSystem splitSystem;
     private List<Integer> cycle;
     private Network network;
+    private ViewerConfig viewerConfig;
+    private Sequences alignments;
 
     public Nexus() {
         this.taxa = new IdentifierList();
@@ -44,6 +48,8 @@ public class Nexus {
         this.cycle = new ArrayList<>();
         this.splitSystem = null;
         this.network = null;
+        this.viewerConfig = null;
+        this.alignments = null;
     }
 
     public void setTaxa(IdentifierList taxa) {
@@ -97,6 +103,22 @@ public class Nexus {
 
     public void setNetwork(Network network) {
         this.network = network;
+    }
+
+    public ViewerConfig getViewerConfig() {
+        return viewerConfig;
+    }
+
+    public void setViewerConfig(ViewerConfig viewerConfig) {
+        this.viewerConfig = viewerConfig;
+    }
+
+    public Sequences getAlignments() {
+        return alignments;
+    }
+
+    public void setAlignments(Sequences alignments) {
+        this.alignments = alignments;
     }
 
     /*public Nexus filter(double threshold) {

@@ -1,6 +1,6 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2015  UEA School of Computing Sciences
+ * Copyright (C) 2017  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
@@ -21,6 +21,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.MetaInfServices;
+import uk.ac.uea.cmp.spectre.core.util.Time;
 import uk.ac.uea.cmp.spectre.tools.SpectreTool;
 
 import java.io.File;
@@ -31,8 +32,6 @@ import java.util.List;
 @MetaInfServices
 public class PhylipCorrector extends SpectreTool {
 
-    private static final String OPT_INPUT = "input";
-    private static final String OPT_OUTPUT_DIR = "output_dir";
     private static final String OPT_PREFIX = "prefix";
 
 
@@ -42,14 +41,8 @@ public class PhylipCorrector extends SpectreTool {
         // Create Options object
         Options options = new Options();
 
-        options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_INPUT).hasArg().isRequired()
-                .withDescription("The phylip file to correct.").create("i"));
-
-        options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_OUTPUT_DIR).hasArg().isRequired()
-                .withDescription("The path to the directory which will contain the output.").create("o"));
-
-        options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_PREFIX).hasArg().isRequired()
-                .withDescription("The prefix for the output files").create("p"));
+        options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_PREFIX).hasArg()
+                .withDescription("The prefix for the output files").create("o"));
 
         return options;
     }
@@ -57,11 +50,27 @@ public class PhylipCorrector extends SpectreTool {
     @Override
     protected void execute(CommandLine commandLine) throws IOException {
 
-        File inputFile = new File(commandLine.getOptionValue(OPT_INPUT));
-        File outputFile = new File(commandLine.getOptionValue(OPT_OUTPUT_DIR));
-        String prefix = commandLine.getOptionValue(OPT_PREFIX);
+        File outputDir = new File("");
+        String prefix = "corrected-" + Time.createTimestamp();
 
-        List<String> inlines = FileUtils.readLines(inputFile);
+        if (commandLine.hasOption(OPT_PREFIX)) {
+            File op = new File(commandLine.getOptionValue(OPT_PREFIX));
+            if (op.getParentFile() != null) {
+                outputDir = op.getParentFile();
+            }
+            prefix = op.getName();
+        }
+
+        if (commandLine.getArgs().length == 0) {
+            throw new IOException("No input file specified.");
+        }
+        else if (commandLine.getArgs().length > 1) {
+            throw new IOException("Only expected a single input file.");
+        }
+
+        File inputFile = new File(commandLine.getArgs()[0]);
+
+        List<String> inlines = FileUtils.readLines(inputFile, "UTF-8");
         List<List<String>> outlines = new ArrayList<List<String>>();
         String aline = inlines.get(0);
 
@@ -109,7 +118,7 @@ public class PhylipCorrector extends SpectreTool {
         int i = 1;
         for (List<String> group : outlines) {
 
-            File groupOut = new File(outputFile, prefix + "_" + i + ".phy");
+            File groupOut = new File(outputDir, prefix + "_" + i + ".phy");
             FileUtils.writeLines(groupOut, group);
 
             i++;
@@ -118,13 +127,17 @@ public class PhylipCorrector extends SpectreTool {
 
     @Override
     public String getName() {
-        return "pc";
+        return "phycor";
     }
 
+    @Override
+    public String getPosArgs() {
+        return "<phylip_file>";
+    }
 
     @Override
     public String getDescription() {
-        return "Corrects a broken phylip file";
+        return "Corrects a broken phylip file.";
     }
 
     public static void main(String[] args) {

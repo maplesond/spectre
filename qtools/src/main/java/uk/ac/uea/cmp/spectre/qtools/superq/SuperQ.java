@@ -1,6 +1,6 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2015  UEA School of Computing Sciences
+ * Copyright (C) 2017  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
@@ -16,15 +16,12 @@
 package uk.ac.uea.cmp.spectre.qtools.superq;
 
 import org.apache.commons.lang3.time.StopWatch;
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.PropertyConfigurator;
+import org.apache.log4j.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.tgac.metaopt.Optimiser;
-import uk.ac.tgac.metaopt.OptimiserException;
-import uk.ac.tgac.metaopt.Problem;
+import uk.ac.earlham.metaopt.Optimiser;
+import uk.ac.earlham.metaopt.OptimiserException;
+import uk.ac.earlham.metaopt.Problem;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.GroupedQuartetSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.spectre.core.io.nexus.Nexus;
@@ -246,19 +243,5 @@ public class SuperQ extends RunnableTool {
     private void notifyUser(String message) {
         log.info(message);
         this.trackerInitUnknownRuntime(message);
-    }
-
-    public static void configureLogging(boolean verbose) {
-        // Setup logging
-        File propsFile = new File("etc/logging.properties");
-
-        if (!propsFile.exists()) {
-            BasicConfigurator.configure();
-            LogManager.getRootLogger().setLevel(verbose ? Level.DEBUG : Level.INFO);
-            log.info("No logging configuration found.  Using default logging properties.");
-        } else {
-            PropertyConfigurator.configure(propsFile.getPath());
-            log.info("Found logging configuration: " + propsFile.getAbsoluteFile());
-        }
     }
 }

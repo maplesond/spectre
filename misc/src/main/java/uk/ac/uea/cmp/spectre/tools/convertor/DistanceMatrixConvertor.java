@@ -1,6 +1,6 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2015  UEA School of Computing Sciences
+ * Copyright (C) 2017  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
@@ -44,16 +44,13 @@ public class DistanceMatrixConvertor extends SpectreTool {
         // Create Options object
         Options options = new Options();
 
-        options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_INPUT).hasArg().isRequired()
-                .withDescription("The file with distance matrix to convert, must be either nexus or phylip format.").create("i"));
-
         options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_OUTPUT).hasArg().isRequired()
                 .withDescription("The converted file.").create("o"));
 
         options.addOption(OptionBuilder.withArgName("string").withLongOpt(OPT_DISTANCES_FILE_TYPE).hasArg()
-                .withDescription("The file type of the input distance data file: [" +
-                        StringUtils.join(PhygenReaderFactory.getInstance().getPhygenReaders(PhygenDataType.DISTANCE_MATRIX), ", ") +
-                        "].  Use this if your input file has a non-standard extension.").create("t"));
+                .withDescription("The file type of the input distance data file: " +
+                        SpectreReaderFactory.getInstance().getSpectreReadersAsString(SpectreDataType.DISTANCE_MATRIX) +"." +
+                        "Use this if your input file has a non-standard extension.").create("t"));
 
         return options;
     }
@@ -61,7 +58,14 @@ public class DistanceMatrixConvertor extends SpectreTool {
     @Override
     protected void execute(CommandLine commandLine) throws IOException {
 
-        File inputFile = new File(commandLine.getOptionValue(OPT_INPUT));
+        if (commandLine.getArgs().length == 0) {
+            throw new IOException("No input file specified.");
+        }
+        else if (commandLine.getArgs().length > 1) {
+            throw new IOException("Only expected a single input file.");
+        }
+
+        File inputFile = new File(commandLine.getArgs()[0]);
         File outputFile = new File(commandLine.getOptionValue(OPT_OUTPUT));
         String distancesFileType = commandLine.hasOption(OPT_DISTANCES_FILE_TYPE) ? commandLine.getOptionValue(OPT_DISTANCES_FILE_TYPE) : null;
 
@@ -70,7 +74,12 @@ public class DistanceMatrixConvertor extends SpectreTool {
 
     @Override
     public String getName() {
-        return "convertor";
+        return "distmxconv";
+    }
+
+    @Override
+    public String getPosArgs() {
+        return "<phylip/nexus_file>";
     }
 
     @Override
@@ -85,23 +94,23 @@ public class DistanceMatrixConvertor extends SpectreTool {
     public void execute(File inputFile, File outputFile, String distancesFileType) throws IOException {
 
         // Get a handle on the phygen factory
-        PhygenReaderFactory factory = PhygenReaderFactory.getInstance();
+        SpectreReaderFactory factory = SpectreReaderFactory.getInstance();
 
         // Setup appropriate reader to input file based on file type
-        PhygenReader phygenReader = factory.create(distancesFileType != null ?
+        SpectreReader spectreReader = factory.create(distancesFileType != null ?
                 distancesFileType :
                 FilenameUtils.getExtension(inputFile.getName()));
 
         // Load file
-        DistanceMatrix distanceMatrix = phygenReader.readDistanceMatrix(inputFile);
+        DistanceMatrix distanceMatrix = spectreReader.readDistanceMatrix(inputFile);
 
         // Setup appropriate writer for output file
-        PhygenWriter phygenWriter = phygenReader.getClass().getSimpleName().equals("NexusReader") ?
-                PhygenWriterFactory.PHYLIP.create() :
-                PhygenWriterFactory.NEXUS.create();
+        SpectreWriter spectreWriter = spectreReader.getClass().getSimpleName().equals("NexusReader") ?
+                SpectreWriterFactory.PHYLIP.create() :
+                SpectreWriterFactory.NEXUS.create();
 
         // Write distance matrix out
-        phygenWriter.writeDistanceMatrix(outputFile, distanceMatrix);
+        spectreWriter.writeDistanceMatrix(outputFile, distanceMatrix);
     }
 
     public static void main(String[] args) {

@@ -1,6 +1,6 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2015  UEA School of Computing Sciences
+ * Copyright (C) 2017  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
@@ -18,6 +18,7 @@ package uk.ac.uea.cmp.spectre.core.ds.network;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -25,6 +26,7 @@ import java.util.Set;
  */
 public interface Network {
 
+    void setTaxa(IdentifierList taxa);
     IdentifierList getTaxa();
 
     VertexList getAllVertices();
@@ -44,6 +46,8 @@ public interface Network {
     EdgeList getTrivialEdges();
 
     void addTrivialEdges(VertexList toAdd);
+
+    Map<Integer,String> getTranslate();
 
     List<NetworkLabel> getLabels();
 

@@ -1,6 +1,6 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2015  UEA School of Computing Sciences
+ * Copyright (C) 2017  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
@@ -15,7 +15,7 @@
 
 package uk.ac.uea.cmp.spectre.core.io;
 
-import uk.ac.uea.cmp.spectre.core.ds.Alignment;
+import uk.ac.uea.cmp.spectre.core.ds.Sequences;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.QuartetSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
@@ -32,7 +32,7 @@ import java.util.List;
  * Time: 20:02
  * To change this template use File | Settings | File Templates.
  */
-public abstract class AbstractPhygenReader implements PhygenReader {
+public abstract class AbstractSpectreReader implements SpectreReader {
 
 
     @Override
@@ -56,7 +56,7 @@ public abstract class AbstractPhygenReader implements PhygenReader {
     }
 
     @Override
-    public Alignment readAlignment(File file) throws IOException {
+    public Sequences readAlignment(File file) throws IOException {
         throw new UnsupportedOperationException(this.getClass().getCanonicalName() + " does not support reading of alignments.");
     }
 
@@ -81,10 +81,10 @@ public abstract class AbstractPhygenReader implements PhygenReader {
     }
 
     @Override
-    public boolean acceptsDataTypes(List<PhygenDataType> phygenDataTypeList) {
+    public boolean acceptsDataTypes(List<SpectreDataType> spectreDataTypeList) {
 
-        for (PhygenDataType phygenDataType : phygenDataTypeList) {
-            if (!this.acceptsDataType(phygenDataType)) {
+        for (SpectreDataType spectreDataType : spectreDataTypeList) {
+            if (!this.acceptsDataType(spectreDataType)) {
                 return false;
             }
         }

@@ -1,6 +1,6 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2015  UEA School of Computing Sciences
+ * Copyright (C) 2017  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
@@ -15,7 +15,7 @@
 
 package uk.ac.uea.cmp.spectre.core.io;
 
-import uk.ac.uea.cmp.spectre.core.ds.Alignment;
+import uk.ac.uea.cmp.spectre.core.ds.Sequences;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.QuartetSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
@@ -32,7 +32,7 @@ import java.util.List;
  * Time: 17:12
  * To change this template use File | Settings | File Templates.
  */
-public interface PhygenReader {
+public interface SpectreReader {
 
     /**
      * Loads a distance matrix from a file
@@ -73,7 +73,7 @@ public interface PhygenReader {
     QuartetSystem readQuartets(File file) throws IOException;
 
 
-    Alignment readAlignment(File file) throws IOException;
+    Sequences readAlignment(File file) throws IOException;
 
     /**
      * Commonly used file extensions for this type of reader.
@@ -85,7 +85,7 @@ public interface PhygenReader {
     /**
      * An identifier with which the client.
      *
-     * @return An identifier for this PhygenReader.
+     * @return An identifier for this SpectreReader.
      */
     String getIdentifier();
 
@@ -93,24 +93,24 @@ public interface PhygenReader {
      * Whether or not this phygen reader accepts the given identifier.
      *
      * @param identifier The phygen reader identifier.
-     * @return True if this PhygenReader recognises the identifier, false otherwise.
+     * @return True if this SpectreReader recognises the identifier, false otherwise.
      */
     boolean acceptsIdentifier(String identifier);
 
     /**
-     * Whether or not this PhygenReader can handle the specified data type.
+     * Whether or not this SpectreReader can handle the specified data type.
      *
-     * @param phygenDataType The data type.
-     * @return True, if this PhygenReader can load the specified data type, false otherwise.
+     * @param spectreDataType The data type.
+     * @return True, if this SpectreReader can load the specified data type, false otherwise.
      */
-    boolean acceptsDataType(PhygenDataType phygenDataType);
+    boolean acceptsDataType(SpectreDataType spectreDataType);
 
     /**
-     * Whether or not this PhygenReader can handle the list of specified data types.
+     * Whether or not this SpectreReader can handle the list of specified data types.
      *
-     * @param phygenDataTypeList A list of data types.
-     * @return True, if this PhygenReader can load ALL the specified data types, false otherwise.
+     * @param spectreDataTypeList A list of data types.
+     * @return True, if this SpectreReader can load ALL the specified data types, false otherwise.
      */
-    boolean acceptsDataTypes(List<PhygenDataType> phygenDataTypeList);
+    boolean acceptsDataTypes(List<SpectreDataType> spectreDataTypeList);
 
 }

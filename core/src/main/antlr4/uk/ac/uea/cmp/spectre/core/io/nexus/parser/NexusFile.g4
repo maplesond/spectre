@@ -14,7 +14,6 @@ options
 INT : ('-')? DIGIT+;
 FLOAT : ('-')? DIGIT* '.' DIGIT+ ('E' ('-')? DIGIT+)?;
 
-
 // A token satisfing the regular expression [_\w]+[\d\w\._]*. Note that an single
 //  _ is considered a valid identifier. In most contexts a single _ means a
 //  "don't care identifier", simmilar to the _ meaning in prolog.
@@ -62,7 +61,7 @@ end     : 'end' | 'END' | 'End' | 'endblock' | 'ENDBLOCK' | 'EndBlock';
 // we haven't implemented everything yet
 block_declaration :
       block_taxa
-  //| block_characters
+    | block_characters
   //| block_unaligned
     | block_distances
     | block_splits
@@ -75,6 +74,7 @@ block_declaration :
     | block_network
   //| block_notes
   //| block_unknown
+    | block_viewer
     ;
 
 
@@ -108,6 +108,55 @@ tax_info_entries :
     ;
 
 tax_info_entry : IDENTIFIER;
+
+// ----------------------------------------------------------------------
+// Characters
+// ----------------------------------------------------------------------
+
+block_characters :
+    characters_header ';'
+    char_dimensions
+    char_format
+    char_matrix
+    ;
+
+characters_header : 'chracters' | 'Characters' | 'CHARACTERS';
+
+char_dimensions : dimensions cd_nchar ';';
+
+cd_nchar : 'nchar' '=' INT;
+
+char_format: char_format_header char_format_options ';';
+
+char_format_header : 'format' | 'Format' | 'FORMAT';
+
+char_format_options :
+      // Empty
+    | char_format_option char_format_options
+    ;
+
+char_format_option : cf_datatype | cf_missing | cf_gap | cf_symbols | cf_labels | cf_transpose | cf_interleave;
+
+cf_datatype : 'datatype' '=' IDENTIFIER;
+cf_missing : 'missing' '=' missing_option;
+cf_gap : 'gap' '=' gap_option;
+cf_symbols : 'symbols' '=' '\"' IDENTIFIER '\"';
+cf_labels : 'labels' '=' boolean_option;
+cf_transpose : 'transpose' '=' boolean_option;
+cf_interleave : 'interleave' '=' boolean_option;
+
+missing_option : '?';
+
+gap_option : '?' | '-' | 'N' | 'n';
+
+char_matrix: matrix_header char_sequences ';';
+
+char_sequences :
+      // Empty
+    | char_seq char_sequences
+    ;
+
+char_seq : IDENTIFIER;
 
 
 
@@ -397,6 +446,7 @@ tree_list :
 tree_label :
       IDENTIFIER length
     | INT length
+    | FLOAT length
     ;
 
 tree_label_optional :
@@ -485,7 +535,9 @@ vertex_options :
 
 vertex_option : nv_shape | nv_width | nv_height | nv_b | nv_color_fg | nv_color_bg;
 
-nv_shape : 's' '=' IDENTIFIER;
+nv_shape : 's' '=' shape_option;
+
+shape_option: 'n';
 
 nv_width : 'w' '=' INT;
 
@@ -519,7 +571,7 @@ vlabels_options :
     | vlabels_option vlabels_options
     ;
 
-vlabels_option : nl_l | nl_x | nl_y | nl_font;
+vlabels_option : nl_l | nl_x | nl_y | nl_font | nl_color_lc | nl_color_bg;
 
 nl_l : 'l' '=' INT;
 
@@ -600,8 +652,55 @@ state_composed_list :
     | state_composed_word state_composed_list
     ;
 
+// ----------------------------------------------------------------------------
+// Network definition rules
+// ----------------------------------------------------------------------------
 
+block_viewer : viewer_block_header ';'
+                dimensions_viewer
+                matrix_viewer;
 
+viewer_block_header : 'viewer' | 'Viewer' | 'VIEWER';
+
+dimensions_viewer :
+      // Empty
+    | dimensions vwidth vheight ';'
+    ;
+
+vwidth : 'width' '=' INT;
+
+vheight : 'height' '=' INT;
+
+matrix_viewer :  matrix_header matrix_viewer_options ';';
+
+matrix_viewer_options :
+      // Empty
+    | matrix_viewer_option matrix_viewer_options
+    ;
+
+matrix_viewer_option :
+      vm_ratio
+    | vm_showtrivial
+    | vm_showrange
+    | vm_showlabels
+    | vm_colorlabels
+    | vm_leaders
+    | vm_leaderstroke
+    | vm_leadercolor
+    ;
+
+vm_ratio : 'ratio' '=' FLOAT;
+
+vm_showtrivial : 'showtrivial' '=' boolean_option;
+vm_showrange : 'showrange' '=' boolean_option;
+vm_showlabels : 'showlabels' '=' boolean_option;
+vm_colorlabels : 'colorlabels' '=' boolean_option;
+
+vm_leaders : 'leaders' '=' IDENTIFIER;
+
+vm_leaderstroke : 'leaderstroke' '=' IDENTIFIER;
+
+vm_leadercolor : 'leadercolor' '=' INT INT INT;
 
 // ----------------------------------------------------------------------
 // MISC RULES
@@ -617,6 +716,7 @@ identifier_list :
     // Empty
     | IDENTIFIER identifier_list
     | '\'' IDENTIFIER '\'' identifier_list
+    | '\"' IDENTIFIER '\"' identifier_list
     ;
 
 // Might be that this is not expressive enough... original description:

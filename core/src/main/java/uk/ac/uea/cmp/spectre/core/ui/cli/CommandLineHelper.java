@@ -1,6 +1,6 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2015  UEA School of Computing Sciences
+ * Copyright (C) 2017  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
@@ -26,30 +26,30 @@ import java.io.PrintWriter;
 public class CommandLineHelper {
 
     public static final int DEFAULT_WIDTH = 100;
-    public static final String DEFAULT_FOOTER = "Created in collaboration by the University of East Anglia (UEA), The " +
-            "Genome Analysis Centre (TGAC) and the University of Greifswald, as part of the " +
+    public static final String DEFAULT_FOOTER = "Created in collaboration by the University of East Anglia (UEA), the " +
+            "Earlham Institute (EI) and the University of Greifswald, as part of the " +
             "Suite of PhylogEnetiCs Tools for Reticulate Evolution (SPECTRE)";
 
     public static final String OPT_HELP = "help";
     public static final Option HELP_OPTION = new Option("?", OPT_HELP, false, "Print this message.");
 
 
-    public static void printHelp(Options options, String exeName, String description) {
+    public static void printHelp(Options options, String cmdLineSyntax, String description) {
         new HelpFormatter().printHelp(
                 CommandLineHelper.DEFAULT_WIDTH,
-                exeName,
-                description,
+                cmdLineSyntax,
+                description + "\nOptions:",
                 options,
                 CommandLineHelper.DEFAULT_FOOTER,
-                true);
+                false);
 
     }
 
-    public static void printUsage(Options options, String exeName) {
+    public static void printUsage(Options options, String cmdLineSyntax) {
         new HelpFormatter().printUsage(
                 new PrintWriter(System.err),
                 HelpFormatter.DEFAULT_WIDTH,
-                exeName,
+                cmdLineSyntax,
                 options);
     }
 
@@ -60,14 +60,18 @@ public class CommandLineHelper {
         return options;
     }
 
-    public static CommandLine startApp(Options options, String exeName, String description, String[] args) {
+    public static CommandLine startApp(Options options, String cmdLineSyntax, String description, String[] args) {
+        return startApp(options, cmdLineSyntax, description, args, true);
+    }
+
+    public static CommandLine startApp(Options options, String cmdLineSyntax, String description, String[] args, boolean helpOnNoArgs) {
 
         try {
             // Test for help first
             CommandLine helpCl = new PosixParser().parse(createHelpOptions(), args, true);
 
-            if (helpCl.hasOption(OPT_HELP) || helpCl.getArgList().isEmpty()) {
-                CommandLineHelper.printHelp(options, exeName, description);
+            if (helpCl.hasOption(OPT_HELP) || (helpOnNoArgs && helpCl.getArgList().isEmpty())) {
+                CommandLineHelper.printHelp(options, cmdLineSyntax, description);
                 return null;
             }
 
@@ -75,7 +79,7 @@ public class CommandLineHelper {
             return new PosixParser().parse(options, args);
         } catch (ParseException p) {
             System.err.println(p.getMessage());
-            CommandLineHelper.printUsage(options, exeName);
+            CommandLineHelper.printUsage(options, cmdLineSyntax);
             return null;
         }
     }

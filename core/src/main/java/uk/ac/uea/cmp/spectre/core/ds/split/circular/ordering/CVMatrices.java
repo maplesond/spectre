@@ -1,6 +1,6 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2015  UEA School of Computing Sciences
+ * Copyright (C) 2017  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
@@ -32,12 +32,12 @@ import java.util.Set;
  */
 public class CVMatrices {
 
-    private Map<Integer, Identifier> componentIdMap;
+    private Map<Integer, Identifier> clusterIdMap;
     private Map<Integer, Identifier> vertexIdMap;
 
     private Map<Identifier, Identifier> vertexTranslation;          // User 2 canonical
     private Map<Identifier, Identifier> reverseVertexTranslation;   // Canonical 2 user
-    private Map<Identifier, Identifier> componentTranslation;
+    private Map<Identifier, Identifier> clusterTranslation;
 
     private DistanceMatrix c2c;
     private DistanceMatrix v2v;
@@ -48,12 +48,12 @@ public class CVMatrices {
 
     public CVMatrices() {
 
-        this.componentIdMap = new HashMap<>();
+        this.clusterIdMap = new HashMap<>();
         this.vertexIdMap = new HashMap<>();
 
         this.vertexTranslation = new HashMap<>();
         this.reverseVertexTranslation = new HashMap<>();
-        this.componentTranslation = new HashMap<>();
+        this.clusterTranslation = new HashMap<>();
 
         this.v2v = new FlexibleDistanceMatrix();
         this.c2c = new FlexibleDistanceMatrix();
@@ -63,7 +63,7 @@ public class CVMatrices {
     }
 
     /**
-     * Assumes id of vertex can be translated to component id
+     * Assumes id of vertex can be translated to cluster id
      * @param userMatrix The user distance matrix
      */
     public CVMatrices(DistanceMatrix userMatrix) {
@@ -73,13 +73,13 @@ public class CVMatrices {
         // Do vertexTranslation from user taxa and create lookup maps
         this.setupMaps(userMatrix);
 
-        // Setup the component to component matrix (derived form user matrix)
+        // Setup the cluster to cluster matrix (derived form user matrix)
         this.setupC2C(userMatrix);
 
         // Setup the vertex to vertex matrix (also derived from user matrix)
         this.setupV2V(userMatrix);
 
-        // Setup the linkage between components and vertices
+        // Setup the linkage between clusters and vertices
         this.setupC2V();
     }
 
@@ -93,11 +93,11 @@ public class CVMatrices {
         int i = 1;
         for(Identifier user : userMatrix.getTaxa()) {
             Identifier vertexCanonical = new Identifier("V" + i, i);
-            Identifier componentCanonical = new Identifier("C" + i, i);
+            Identifier clusterCanonical = new Identifier("C" + i, i);
             this.vertexTranslation.put(user, vertexCanonical);
             this.reverseVertexTranslation.put(vertexCanonical, user);
-            this.componentTranslation.put(user, componentCanonical);
-            this.componentIdMap.put(componentCanonical.getId(), componentCanonical);
+            this.clusterTranslation.put(user, clusterCanonical);
+            this.clusterIdMap.put(clusterCanonical.getId(), clusterCanonical);
             this.vertexIdMap.put(vertexCanonical.getId(), vertexCanonical);
             i++;
         }
@@ -118,14 +118,14 @@ public class CVMatrices {
     }
 
     /**
-     * Create the initial component -> component distance matrix derived from the user matrix but using canonical taxa
+     * Create the initial cluster -> cluster distance matrix derived from the user matrix but using canonical taxa
      * @param userMatrix The user distance matrix
      */
     private final void setupC2C(DistanceMatrix userMatrix) {
         for(Identifier x : userMatrix.getTaxa()) {
-            Identifier xCanonical = componentTranslation.get(x);
+            Identifier xCanonical = clusterTranslation.get(x);
             for(Identifier y : userMatrix.getTaxa()) {
-                Identifier yCanonical = componentTranslation.get(y);
+                Identifier yCanonical = clusterTranslation.get(y);
                 this.c2c.setDistance(xCanonical , yCanonical, userMatrix.getDistance(x, y));
             }
         }
@@ -133,10 +133,11 @@ public class CVMatrices {
 
 
     /**
-     * Creates the linkage between components and vertices.  Manages the distances between them.
+     * Creates the linkage between clusters and vertices.  Manages the distances between them.
      */
     private final void setupC2V() {
 
+        // List of vertices for each cluster
         this.c2vs = new HashMap<>();
         for(Identifier c : this.c2c.getTaxa()) {
             IdentifierList vs = new IdentifierList();
@@ -144,22 +145,22 @@ public class CVMatrices {
             this.c2vs.put(c, vs);
         }
 
+        // Map of each vertex to its parent cluster
         this.v2c = new HashMap<>();
         for(Identifier v : this.v2v.getTaxa()) {
-            this.v2c.put(v, this.componentIdMap.get(v.getId()));
+            this.v2c.put(v, this.clusterIdMap.get(v.getId()));
         }
 
-
+        // C2V distances will initially be the same as C2C and V2V so just leverage
+        // the calculations already done there
         for(Identifier c : c2c.getTaxa()) {
             for(Identifier v : v2v.getTaxa()) {
-
-                // Will initially be the same as C2c and V2v
                 this.setDistance(c, v, v2v.getDistance(c.getId(), v.getId()));
             }
         }
     }
 
-    public IdentifierList getComponents() {
+    public IdentifierList getClusters() {
         return c2c.getTaxa();
     }
 
@@ -171,7 +172,7 @@ public class CVMatrices {
         return this.c2vs;
     }
 
-    public int getNbComponents() {
+    public int getNbClusters() {
         return this.c2c.size();
     }
 
@@ -181,11 +182,11 @@ public class CVMatrices {
         return this.v2v.size();
     }
 
-    public Identifier createNextComponent() {
+    public Identifier createNextCluster() {
 
         int maxId = 0;
 
-        for (Identifier t : this.getComponents()) {
+        for (Identifier t : this.getClusters()) {
             if (maxId < t.getId()) {
                 maxId = t.getId();
             }
@@ -196,6 +197,10 @@ public class CVMatrices {
         return new Identifier("C" + Integer.toString(maxId), maxId);
     }
 
+    /**
+     * Creates a new vertex with appropriate ID and adds it to the v2v matrix
+     * @return
+     */
     public Identifier createNextVertex() {
 
         int maxId = 0;
@@ -208,33 +213,40 @@ public class CVMatrices {
 
         maxId++;
 
-        return new Identifier("V" + Integer.toString(maxId), maxId);
+        Identifier v = new Identifier("V" + Integer.toString(maxId), maxId);
+        this.v2v.getTaxa().add(v);
+
+        return v;
     }
 
-    public double setDistance(Identifier component, Identifier vertex, final double value) {
+    public void linkV2C(Identifier v, Identifier c) {
+        this.v2c.put(v, c);
+    }
 
-        if (component == null || vertex == null)
+    public double setDistance(Identifier cluster, Identifier vertex, final double value) {
+
+        if (cluster == null || vertex == null)
             throw new IllegalArgumentException("Need two valid taxa to set a distance");
 
-        Pair<Identifier, Identifier> pair = new ImmutablePair<>(component, vertex);
+        Pair<Identifier, Identifier> pair = new ImmutablePair<>(cluster, vertex);
         Double oldVal = this.c2v.get(pair);
         this.c2v.put(pair, value);
 
         return oldVal == null ? 0.0 : oldVal;
     }
 
-    public double getDistance(final Identifier component, final Identifier vertex) {
+    public double getDistance(final Identifier cluster, final Identifier vertex) {
 
-        if (component == null || vertex == null)
+        if (cluster == null || vertex == null)
             throw new IllegalArgumentException("Need two valid taxa to get a distance");
 
-        Double val = this.c2v.get(new ImmutablePair<>(component, vertex));
+        Double val = this.c2v.get(new ImmutablePair<>(cluster, vertex));
 
         return val == null ? 0.0 : val;
     }
 
-    public IdentifierList getVertices(Identifier component) {
-        return this.c2vs.get(component);
+    public IdentifierList getVertices(Identifier cluster) {
+        return this.c2vs.get(cluster);
     }
 
 
@@ -255,12 +267,12 @@ public class CVMatrices {
         return this.c2vs.entrySet();
     }
 
-    public int sumVertex2Components(Identifier v) {
+    public double sumVertex2Clusters(Identifier v) {
 
-        int sum = 0;
+        double sum = 0.0;
 
-        for (Map.Entry<Identifier, Identifier> entry : this.v2c.entrySet()) {
-            sum += this.getDistance(entry.getValue(), v);
+        for (Identifier c : this.c2c.getTaxa()) {
+            sum += this.getDistance(c, v);
         }
 
         return sum;
@@ -301,4 +313,16 @@ public class CVMatrices {
         return this.vertexIdMap.get(vertexIndex);
     }
 
+    public void removeVertexTriplet(Identifier vertex1, Identifier vertex2, Identifier vertex3) {
+
+        // Remove the vertces from V2V
+        this.v2v.removeTaxon(vertex1);
+        this.v2v.removeTaxon(vertex2);
+        this.v2v.removeTaxon(vertex3);
+
+        // Also remove vertices from V2C
+        this.v2c.remove(vertex1);
+        this.v2c.remove(vertex2);
+        this.v2c.remove(vertex3);
+    }
 }

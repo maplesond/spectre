@@ -1,6 +1,6 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2015  UEA School of Computing Sciences
+ * Copyright (C) 2017  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
@@ -18,7 +18,7 @@ package uk.ac.uea.cmp.spectre.core.io.qweight;
 import uk.ac.uea.cmp.spectre.core.ds.quad.Quad;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.GroupedQuartetSystem;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.QuartetSystem;
-import uk.ac.uea.cmp.spectre.core.io.AbstractPhygenWriter;
+import uk.ac.uea.cmp.spectre.core.io.AbstractSpectreWriter;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -28,7 +28,7 @@ import java.text.NumberFormat;
 /**
  * Created by dan on 10/12/13.
  */
-public class QWeightWriter extends AbstractPhygenWriter {
+public class QWeightWriter extends AbstractSpectreWriter {
 
 
     @Override

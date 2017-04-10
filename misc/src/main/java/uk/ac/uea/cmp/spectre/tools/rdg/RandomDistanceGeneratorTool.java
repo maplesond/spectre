@@ -1,6 +1,6 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2015  UEA School of Computing Sciences
+ * Copyright (C) 2017  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
@@ -22,8 +22,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.MetaInfServices;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.distance.RandomDistanceGenerator;
-import uk.ac.uea.cmp.spectre.core.io.PhygenWriter;
-import uk.ac.uea.cmp.spectre.core.io.PhygenWriterFactory;
+import uk.ac.uea.cmp.spectre.core.io.SpectreWriter;
+import uk.ac.uea.cmp.spectre.core.io.SpectreWriterFactory;
 import uk.ac.uea.cmp.spectre.core.util.Time;
 import uk.ac.uea.cmp.spectre.tools.SpectreTool;
 
@@ -33,11 +33,9 @@ import java.io.IOException;
 @MetaInfServices
 public class RandomDistanceGeneratorTool extends SpectreTool {
 
-    private static final String OPT_PREFIX = "prefix";
-    private static final String OPT_OUTPUT_DIR = "output";
+    private static final String OPT_PREFIX = "output_prefix";
     private static final String OPT_OUTPUT_TYPE = "output_type";
     private static final String OPT_SAMPLES = "samples";
-    private static final String OPT_NB_TAXA = "taxa";
 
 
     @Override
@@ -46,20 +44,14 @@ public class RandomDistanceGeneratorTool extends SpectreTool {
         // Create Options object
         Options options = new Options();
 
-        options.addOption(OptionBuilder.withArgName("integer").withLongOpt(OPT_NB_TAXA).hasArg().isRequired()
-                .withDescription("The number of taxa for the new distance matrix").create("n"));
-
         options.addOption(OptionBuilder.withArgName("integer").withLongOpt(OPT_SAMPLES).hasArg()
                 .withDescription("The number of samples to generate").create("s"));
 
-        options.addOption(OptionBuilder.withArgName("file").withLongOpt(OPT_OUTPUT_DIR).hasArg()
-                .withDescription("The directory for the new distance matricies").create("o"));
-
         options.addOption(OptionBuilder.withArgName("string").withLongOpt(OPT_PREFIX).hasArg()
-                .withDescription("The prefix for the output files").create("p"));
+                .withDescription("The prefix for the output files").create("o"));
 
         options.addOption(OptionBuilder.withArgName("string").withLongOpt(OPT_OUTPUT_TYPE).hasArg()
-                .withDescription("The output file type: " + PhygenWriterFactory.listWriters()).create("t"));
+                .withDescription("The output file type: " + SpectreWriterFactory.listWriters()).create("t"));
 
         return options;
     }
@@ -67,15 +59,31 @@ public class RandomDistanceGeneratorTool extends SpectreTool {
     @Override
     protected void execute(CommandLine commandLine) throws IOException {
 
+        File outputDir = new File("");
+        String prefix = "rdg-" + Time.createTimestamp();
+
+        if (commandLine.hasOption(OPT_PREFIX)) {
+            File op = new File(commandLine.getOptionValue(OPT_PREFIX));
+            if (op.getParentFile() != null) {
+                outputDir = op.getParentFile();
+            }
+            prefix = op.getName();
+        }
+
+        if (commandLine.getArgs().length == 0) {
+            throw new IOException("Did not specify number of taxa.");
+        }
+        else if (commandLine.getArgs().length > 1) {
+            throw new IOException("Only expected a single positive integer to represent number of taxa.");
+        }
+
         // Get the arguments
-        int n = Integer.parseInt(commandLine.getOptionValue("n"));
+        int n = Integer.parseInt(commandLine.getArgs()[0]);
         int s = commandLine.hasOption("s") ? Integer.parseInt(commandLine.getOptionValue("s")) : 1;
-        File outputDir = commandLine.hasOption(OPT_OUTPUT_DIR) ? new File(commandLine.getOptionValue(OPT_OUTPUT_DIR)) : new File(".");
-        String prefix = commandLine.hasOption(OPT_PREFIX) ? commandLine.getOptionValue(OPT_PREFIX) : "rdg-" + Time.createTimestamp();
-        PhygenWriterFactory phygenWriterFactory = commandLine.hasOption(OPT_OUTPUT_TYPE) ?
-                PhygenWriterFactory.valueOf(commandLine.getOptionValue(OPT_OUTPUT_TYPE)) :
-                PhygenWriterFactory.PHYLIP;
-        PhygenWriter phygenWriter = phygenWriterFactory.create();
+        SpectreWriterFactory spectreWriterFactory = commandLine.hasOption(OPT_OUTPUT_TYPE) ?
+                SpectreWriterFactory.valueOf(commandLine.getOptionValue(OPT_OUTPUT_TYPE)) :
+                SpectreWriterFactory.PHYLIP;
+        SpectreWriter spectreWriter = spectreWriterFactory.create();
 
         // Create the output directory if required
         outputDir.mkdirs();
@@ -87,10 +95,10 @@ public class RandomDistanceGeneratorTool extends SpectreTool {
             DistanceMatrix distanceMatrix = new RandomDistanceGenerator().generateDistances(n);
 
             // Create a filename for this sample
-            File outFile = new File(outputDir, prefix + "-" + i + "." + phygenWriterFactory.getPrimaryExtension());
+            File outFile = new File(outputDir, prefix + "-" + i + "." + spectreWriterFactory.getPrimaryExtension());
 
             // Save to disk
-            phygenWriter.writeDistanceMatrix(outFile, distanceMatrix);
+            spectreWriter.writeDistanceMatrix(outFile, distanceMatrix);
         }
 
 
@@ -101,10 +109,15 @@ public class RandomDistanceGeneratorTool extends SpectreTool {
         return "rdg";
     }
 
+    @Override
+    public String getPosArgs() {
+        return "<nb_taxa>";
+    }
+
 
     @Override
     public String getDescription() {
-        return "Creates a random distance matricies of a given size";
+        return "Creates a random distance matrix of a given number of taxa.";
     }
 
     public static void main(String[] args) {

@@ -1,6 +1,6 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2015  UEA School of Computing Sciences
+ * Copyright (C) 2017  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
@@ -28,6 +28,8 @@ public class NetMakeOptions {
 
     // Options descriptions
     public static final String DESC_INPUT = "The file containing the distance matrix to input.";
+
+    public static final String DESC_OUTPUT_PREFIX = "The location and file prefix for output files.  Default: ./netmake";
 
     public static final String DESC_OUTPUT_NETWORK = "The location to write the output network.";
 

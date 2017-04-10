@@ -1,6 +1,6 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2015  UEA School of Computing Sciences
+ * Copyright (C) 2017  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
@@ -20,7 +20,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.tgac.metaopt.*;
+import uk.ac.earlham.metaopt.*;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.QuartetSystemList;
 import uk.ac.uea.cmp.spectre.tools.SpectreTool;
 
@@ -29,19 +29,22 @@ import java.io.IOException;
 
 public class Scaling extends SpectreTool {
 
-    private static Logger log = LoggerFactory.getLogger(Scaling.class);
-
     private static final String OPT_OUTPUT_PREFIX = "output";
     private static final String OPT_OPTIMISER = "optimiser";
 
     @Override
     public String getName() {
-        return "scaler";
+        return "scaling";
+    }
+
+    @Override
+    public String getPosArgs() {
+        return "(<input>)+";
     }
 
     @Override
     public String getDescription() {
-        return "Scales input trees to a given range based on their quartet weights (uses \"qmaker\" to get the quartet weights from the trees)";
+        return "Scales input trees to a given range based on their quartet weights (uses \"qmaker\" to get the quartet weights from the trees).";
     }
 
     @Override
@@ -72,7 +75,9 @@ public class Scaling extends SpectreTool {
     protected void execute(CommandLine commandLine) throws IOException {
 
         // All options are required
-        File outputPrefix = new File(commandLine.getOptionValue(OPT_OUTPUT_PREFIX));
+        File outputPrefix = new File(commandLine.hasOption(OPT_OUTPUT_PREFIX) ?
+                commandLine.getOptionValue(OPT_OUTPUT_PREFIX) :
+                "scaling");
 
         String[] args = commandLine.getArgs();
 

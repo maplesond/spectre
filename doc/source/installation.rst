@@ -23,7 +23,7 @@ The installation process from tarball is simple.  The first step is acquire the 
 Then unpacking the compressed tarball to a directory of your choice.  The unpack command is: ``tar -xvf spectre-<version>.tar.gz``.
 This will create a sub-directory called ``spectre-<version>`` and in there should be the following further sub-directories:
 
-* bin - contains scripts allowing the user to easily run all the tools.  In general, the scripts are all command line tools except for those having a ``-gui`` suffix.  Scripts for all platforms are available, in general, those with no extension should work on linux and mac platforms, and those with a ``.bat`` extension should run on windows.  TODO: Actually, we currently we only produce scripts for the detected platform... we should add a linux/mac and windows distribution on github for each version
+* bin - contains scripts allowing the user to easily run all the tools.  In general, the scripts are all command line tools except for those having a ``-gui`` suffix.  Scripts for all platforms are available, in general, those with no extension should work on linux and mac platforms, and those with a ``.bat`` extension should run on windows.
 * doc - a html, pdf and text copy of the complete manual
 * etc - contains examples and configuration files
 * examples - Example files to help you get started with the spectre tools
@@ -42,10 +42,10 @@ From source
 Spectre is a java 1.8 / maven project. Before compiling the source code, please make sure the following tools are installed:
 
 * GIT
-* Maven (make sure you set the m2_home environment variable to point at your Maven directory)
+* Maven (make sure you set the m2_home environment variable to point at your Maven directory) https://maven.apache.org/
 * JDK v1.8+  (make sure you set the JAVA_HOME environment variable to point at your JDK directory)
 * Make
-* Sphinx (may require you to install python, also make sure the sphinx-build is on the path environment variable)
+* Sphinx (may require you to install python, also make sure the sphinx-build is on the path environment variable) http://www.sphinx-doc.org/en/stable/
 
 You also need to make sure that the system to are compiling on has internet access, as it will try to automatically
 incorporate any required java dependencies via maven. Because spectre is a maven project, almost all the other

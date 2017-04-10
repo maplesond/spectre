@@ -1,6 +1,6 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2015  UEA School of Computing Sciences
+ * Copyright (C) 2017  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
@@ -20,11 +20,13 @@ import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.kohsuke.MetaInfServices;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
+import uk.ac.uea.cmp.spectre.core.ds.Sequences;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.spectre.core.ds.tree.newick.NewickTree;
-import uk.ac.uea.cmp.spectre.core.io.AbstractPhygenReader;
-import uk.ac.uea.cmp.spectre.core.io.PhygenDataType;
+import uk.ac.uea.cmp.spectre.core.io.AbstractSpectreReader;
+import uk.ac.uea.cmp.spectre.core.io.SpectreDataType;
+import uk.ac.uea.cmp.spectre.core.io.SpectreReader;
 import uk.ac.uea.cmp.spectre.core.io.nexus.parser.NexusFileLexer;
 import uk.ac.uea.cmp.spectre.core.io.nexus.parser.NexusFileParser;
 import uk.ac.uea.cmp.spectre.core.io.nexus.parser.NexusFilePopulator;
@@ -42,8 +44,8 @@ import java.util.List;
  *
  * @author Dan
  */
-@MetaInfServices(uk.ac.uea.cmp.spectre.core.io.PhygenReader.class)
-public class NexusReader extends AbstractPhygenReader {
+@MetaInfServices(SpectreReader.class)
+public class NexusReader extends AbstractSpectreReader {
 
 
     public Nexus parse(File file) throws IOException {
@@ -95,6 +97,11 @@ public class NexusReader extends AbstractPhygenReader {
         return this.parse(file).getDistanceMatrix();
     }
 
+    @Override
+    public Sequences readAlignment(File file) throws IOException {
+        return this.parse(file).getAlignments();
+    }
+
 
     @Override
     public List<NewickTree> readTrees(File input, double weight) throws IOException {
@@ -117,19 +124,21 @@ public class NexusReader extends AbstractPhygenReader {
     }
 
     @Override
-    public boolean acceptsDataType(PhygenDataType phygenDataType) {
+    public boolean acceptsDataType(SpectreDataType spectreDataType) {
 
-        if (phygenDataType == PhygenDataType.DISTANCE_MATRIX)
+        if (spectreDataType == SpectreDataType.DISTANCE_MATRIX)
             return true;
-        else if (phygenDataType == PhygenDataType.TREE)
+        else if (spectreDataType == SpectreDataType.TREE)
             return true;
-        else if (phygenDataType == PhygenDataType.CIRCULAR_ORDERING)
+        else if (spectreDataType == SpectreDataType.CIRCULAR_ORDERING)
             return true;
-        else if (phygenDataType == PhygenDataType.SPLITS)
+        else if (spectreDataType == SpectreDataType.SPLITS)
             return true;
-        else if (phygenDataType == PhygenDataType.QUARTETS)
+        else if (spectreDataType == SpectreDataType.QUARTETS)
             return true;
-        else if (phygenDataType == PhygenDataType.NETWORK)
+        else if (spectreDataType == SpectreDataType.NETWORK)
+            return true;
+        else if (spectreDataType == SpectreDataType.ALIGNMENT)
             return true;
 
         return false;

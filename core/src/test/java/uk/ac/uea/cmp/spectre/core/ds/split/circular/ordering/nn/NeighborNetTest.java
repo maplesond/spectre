@@ -1,6 +1,6 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2015  UEA School of Computing Sciences
+ * Copyright (C) 2017  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
@@ -125,22 +125,22 @@ public class NeighborNetTest {
                 .write(new File("dist1.nex"));
     }
 
-    @Test
+    /*@Test
     public void testDist1() {
         this.test(this.dist1, this.orderDist1);
     }
-
-
+*/
+/*
     @Test
     public void testDist2() {
         this.test(this.dist2, this.orderDist2a, this.orderDist2b);
     }
+*/
 
-
-    @Test
+    /*@Test
     public void testDist3() {
         this.test(this.dist3, this.orderDist3a, this.orderDist3b);
-    }
+    }*/
 
     /*@Test
     public void testRuntime() {

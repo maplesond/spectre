@@ -1,6 +1,6 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2015  UEA School of Computing Sciences
+ * Copyright (C) 2017  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
@@ -22,8 +22,8 @@ import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.split.SpectreSplitSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.nm.weighting.Weightings;
-import uk.ac.uea.cmp.spectre.core.io.PhygenReader;
-import uk.ac.uea.cmp.spectre.core.io.PhygenReaderFactory;
+import uk.ac.uea.cmp.spectre.core.io.SpectreReaderFactory;
+import uk.ac.uea.cmp.spectre.core.io.SpectreReader;
 import uk.ac.uea.cmp.spectre.core.io.nexus.NexusWriter;
 
 import java.io.File;
@@ -49,10 +49,10 @@ public class RandomNeighbourNetFits {
     public void process() throws IOException {
 
         // Create an appropriate phygen reader based on the file extension
-        PhygenReader phygenReader = PhygenReaderFactory.getInstance().create(FilenameUtils.getExtension(this.inputFile.getName()));
+        SpectreReader spectreReader = SpectreReaderFactory.getInstance().create(FilenameUtils.getExtension(this.inputFile.getName()));
 
         // Load a distance matrix from the input file
-        DistanceMatrix distanceMatrix = phygenReader.readDistanceMatrix(this.inputFile);
+        DistanceMatrix distanceMatrix = spectreReader.readDistanceMatrix(this.inputFile);
 
         // Generate input files from distance matrix
         List<File> generatedFiles = this.generateInputFiles();
@@ -215,7 +215,7 @@ public class RandomNeighbourNetFits {
         }
 
         /* Write summary to file */
-        FileUtils.writeStringToFile(summaryFile, fileContent.toString());
+        FileUtils.writeStringToFile(summaryFile, fileContent.toString(), "UTF-8");
 
         log.info("Summary written to \"Summary.txt\" ...");
     }
