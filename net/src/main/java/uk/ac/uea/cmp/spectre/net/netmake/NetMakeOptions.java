@@ -38,7 +38,7 @@ public class NetMakeOptions {
     public static final String DESC_TREE_PARAM = "The weighting parameter passed to the chosen weighting algorithm. " +
             " Value must be between 0.0 and 1.0.  Default: " + DEFAULT_TREE_WEIGHT;
 
-    public static final String DESC_CO_ALG = "The circular ordering algorithm to use: " + CircularOrderingAlgorithms.toListString() + ". Default: NETMAKE";
+    public static final String DESC_CO_ALG = "The circular ordering algorithm to use: " + CircularOrderingAlgorithms.toListString() + ". Default: NEIGHBORNET";
 
     public static final String DESC_WEIGHTINGS_1 = "For NETMAKE circular ordering algorithm, select 1st weighting type: " + Weightings.toListString() + ".  Required if circular algorithm is NETMAKE.  Default: TSP";
 

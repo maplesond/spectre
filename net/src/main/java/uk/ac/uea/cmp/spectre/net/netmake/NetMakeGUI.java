@@ -25,6 +25,7 @@ import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.nm.weighting.Weight
 import uk.ac.uea.cmp.spectre.core.ui.gui.JobController;
 import uk.ac.uea.cmp.spectre.core.ui.gui.StatusTracker;
 import uk.ac.uea.cmp.spectre.core.ui.gui.ToolHost;
+import uk.ac.uea.cmp.spectre.core.util.LogConfig;
 
 import javax.swing.*;
 import java.awt.*;
@@ -412,6 +413,10 @@ public class NetMakeGUI extends JFrame implements ToolHost {
         pnlOptions.add(Box.createRigidArea(new Dimension(0, 10)));
         pnlOptions.add(pnlOutput);
 
+        // Set algorithm to neighbornet
+        cboAlgorithm.setSelectedItem(CircularOrderingAlgorithms.NEIGHBORNET);
+        this.enableWeightingsPanel(false);
+
 
         // ***** Layout *****
 
@@ -590,12 +595,12 @@ public class NetMakeGUI extends JFrame implements ToolHost {
     public static void main(String args[]) {
 
         // Configure logging
-        BasicConfigurator.configure(new ConsoleAppender(new PatternLayout("%d{HH:mm:ss} %p: %m%n")));
+        LogConfig.defaultConfig();
 
         setLookAndFeel(NIMBUS);
 
         try {
-            log.info("Running in GUI mode");
+            log.info("Started netmake GUI");
 
             EventQueue.invokeLater(new Runnable() {
 
