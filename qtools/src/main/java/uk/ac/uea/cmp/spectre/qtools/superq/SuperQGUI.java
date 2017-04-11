@@ -88,12 +88,14 @@ public class SuperQGUI extends JFrame implements ToolHost {
     private JobController go_control;
     private SuperQRunner superqRunner;
     private File lastOutput;
+    private File cwd;
 
     public SuperQGUI() {
 
         this.dialog = new JDialog(this, "SUPERQ");
         this.gui = new JFrame("SUPERQ");
         this.lastOutput = null;
+        this.cwd = null;
 
         this.setPreferredSize(new Dimension(600, 500));
 
@@ -422,7 +424,7 @@ public class SuperQGUI extends JFrame implements ToolHost {
 
         // ***** Layout *****
 
-        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
 
         getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.PAGE_AXIS));
@@ -441,7 +443,7 @@ public class SuperQGUI extends JFrame implements ToolHost {
      */
     private void cmdSaveActionPerformed(java.awt.event.ActionEvent evt) {
 
-        final JFileChooser fc = new JFileChooser();
+        final JFileChooser fc = cwd == null ? new JFileChooser() : new JFileChooser(cwd);
         if (evt.getSource() == cmdSave) {
             fc.addChoosableFileFilter(new NexusFileFilter());
             fc.setSelectedFile(new File("outfile.nex"));
@@ -451,6 +453,7 @@ public class SuperQGUI extends JFrame implements ToolHost {
                 File file = fc.getSelectedFile();
                 String z = file.getAbsolutePath();
                 txtSave.setText(z);
+                this.cwd = file.getParentFile();
             } else {
                 log.debug("Open command cancelled by user.");
             }
@@ -496,7 +499,7 @@ public class SuperQGUI extends JFrame implements ToolHost {
     private void cmdInputActionPerformed(java.awt.event.ActionEvent evt) {
 
         if (evt.getSource() == cmdInput) {
-            final JFileChooser fc = new JFileChooser();
+            final JFileChooser fc = cwd != null ? new JFileChooser(cwd) : new JFileChooser();
             fc.addChoosableFileFilter(new NexusFileFilter());
             fc.addChoosableFileFilter(new FileNameExtensionFilter("QWeight", "qw"));
             fc.addChoosableFileFilter(new FileNameExtensionFilter("Phylip/Newick", "phylip", "newick", "tree", "tre"));
@@ -512,6 +515,9 @@ public class SuperQGUI extends JFrame implements ToolHost {
                     sb.append("; ");
                 }
                 txtInput.setText(sb.toString());
+                if (files.length > 0) {
+                    cwd = files[0].getParentFile();
+                }
             } else {
                 log.debug("Open command cancelled by user.");
             }
@@ -546,8 +552,7 @@ public class SuperQGUI extends JFrame implements ToolHost {
      * @param evt
      */
     private void cmdViewActionPerformed(ActionEvent evt) {
-
-        NetView.startWithInput(this.lastOutput);
+        NetView.main(new String[]{this.lastOutput.getAbsolutePath(), "--dispose_on_close"});
     }
 
     /**

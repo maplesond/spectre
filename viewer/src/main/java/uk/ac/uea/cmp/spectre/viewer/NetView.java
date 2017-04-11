@@ -75,6 +75,7 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
     private static String BIN_NAME = "netview";
 
     private static String OPT_VERBOSE = "verbose";
+    private static String OPT_DISPOSE = "dispose_on_close";
     private final String TITLE = "NetView";
 
     private Point startPoint;
@@ -780,26 +781,6 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
         drawing.fixLabels(!fix);
     }
 
-
-    /**
-     * @param input the input file to load and display
-     */
-    public static void startWithInput(final File input) {
-        LookAndFeel.setLookAndFeel(LookAndFeel.NIMBUS);
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    new NetView(input).setVisible(true);
-                } catch (IOException ex) {
-                    errorMessage("Problem occured while running NetView", ex);
-                }
-            }
-        });
-    }
-
     protected static void errorMessage(String message, Exception ex) {
         log.error(message, ex);
         JOptionPane.showMessageDialog(null, message + "\n" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -811,77 +792,7 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
     }
 
 
-    private static Options createOptions() {
 
-        Options options = new Options();
-        options.addOption(CommandLineHelper.HELP_OPTION);
-        options.addOption(OptionBuilder.withLongOpt(OPT_VERBOSE).isRequired(false).hasArg(false)
-                .withDescription("Whether to output extra information").create("v"));
-        return options;
-    }
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-
-        try {
-            // Configure logging
-            LogConfig.defaultConfig();
-
-            LookAndFeel.setLookAndFeel(LookAndFeel.NIMBUS);
-
-            // Parse command line args
-            CommandLine commandLine = CommandLineHelper.startApp(createOptions(), "netview [options] <input>",
-                    "Visualises a network in nexus format.  The nexus file can contain a pre-drawn network in " +
-                            "a network block, or a split system to be drawn.\n" +
-                            "The viewer can be passed the nexus file as a command line argument at startup, selected by " +
-                            "the user via a file dialog or through a file being dragged and dropped into the window.", args, false);
-
-            // If we didn't return a command line object then just return.  Probably the user requested help or
-            // input invalid args
-            if (commandLine == null) {
-                return;
-            }
-
-            final File inputfile = commandLine == null || commandLine.getArgs().length == 0 ? null : new File(commandLine.getArgs()[0]);
-
-            if (commandLine.getArgs().length > 1) {
-                throw new IOException("Expected only a single input file.");
-            } else if (commandLine.getArgs().length == 1) {
-                log.info("Opening netview with input file: " + inputfile.getAbsolutePath());
-            } else {
-                log.info("Opening netview with no input");
-            }
-
-
-            /* Create and display the form */
-            java.awt.EventQueue.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        if (inputfile == null) {
-                            new NetView().setVisible(true);
-                            log.info("Viewer initalised");
-                        } else {
-                            new NetView(inputfile).setVisible(true);
-                            log.info("Viewer initalised");
-                            log.info("Input loaded");
-                        }
-
-                    } catch (Exception e) {
-                        errorMessage("Unexpected problem occured while running NetView", e);
-                        System.exit(4);
-                    }
-                }
-            });
-        } catch (Exception e) {
-            System.err.println("\nException: " + e.toString());
-            System.err.println("\nStack trace:");
-            System.err.println(StringUtils.join(e.getStackTrace(), "\n"));
-            System.exit(3);
-        }
-    }
 
 
     private Network network;
@@ -1239,6 +1150,78 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
             errorMessage("Unsupported item", e);
         } catch (ClassNotFoundException e) {
             errorMessage("Unsupported item", e);
+        }
+    }
+
+    private static Options createOptions() {
+
+        Options options = new Options();
+        options.addOption(CommandLineHelper.HELP_OPTION);
+        options.addOption(OptionBuilder.withLongOpt(OPT_DISPOSE).hasArg(false)
+                .withDescription("Whether to just close this window when closing netview.  By default we close all linked applications and windows when closing netview.")
+                .isRequired(false).create("d"));
+        options.addOption(OptionBuilder.withLongOpt(OPT_VERBOSE).isRequired(false).hasArg(false)
+                .withDescription("Whether to output extra information").create("v"));
+        return options;
+    }
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+
+        try {
+            // Configure logging
+            LogConfig.defaultConfig();
+
+            LookAndFeel.setLookAndFeel(LookAndFeel.NIMBUS);
+
+            // Parse command line args
+            final CommandLine commandLine = CommandLineHelper.startApp(createOptions(), "netview [options] <input>",
+                    "Visualises a network in nexus format.  The nexus file can contain a pre-drawn network in " +
+                            "a network block, or a split system to be drawn.\n" +
+                            "The viewer can be passed the nexus file as a command line argument at startup, selected by " +
+                            "the user via a file dialog or through a file being dragged and dropped into the window.", args, false);
+
+            // If we didn't return a command line object then just return.  Probably the user requested help or
+            // input invalid args
+            if (commandLine == null) {
+                return;
+            }
+
+            final File inputfile = commandLine == null || commandLine.getArgs().length == 0 ? null : new File(commandLine.getArgs()[0]);
+
+            if (commandLine.getArgs().length > 1) {
+                throw new IOException("Expected only a single input file.");
+            } else if (commandLine.getArgs().length == 1) {
+                log.info("Opening netview with input file: " + inputfile.getAbsolutePath());
+            } else {
+                log.info("Opening netview with no input");
+            }
+
+
+            /* Create and display the form */
+            java.awt.EventQueue.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        NetView nv = inputfile == null ? new NetView() : new NetView(inputfile);
+                        log.info("Viewer initalised");
+                        nv.setVisible(true);
+                        nv.setDefaultCloseOperation(commandLine.hasOption(OPT_DISPOSE) ? WindowConstants.DISPOSE_ON_CLOSE : javax.swing.WindowConstants.EXIT_ON_CLOSE);
+                        nv.revalidate();
+                        nv.repaint();
+                    } catch (Exception e) {
+                        errorMessage("Unexpected problem occured while running NetView", e);
+                        System.exit(4);
+                    }
+                }
+            });
+        } catch (Exception e) {
+            System.err.println("\nException: " + e.toString());
+            System.err.println("\nStack trace:");
+            System.err.println(StringUtils.join(e.getStackTrace(), "\n"));
+            System.exit(3);
         }
     }
 }
