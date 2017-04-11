@@ -157,7 +157,7 @@ public class FlatNJ {
         FlatSplitSystem ss = null;
         QuadrupleSystem qs = null;
 
-        if (extension.equalsIgnoreCase("fa") || extension.equalsIgnoreCase("faa") || extension.equalsIgnoreCase("fasta")) {
+        if (extension.equalsIgnoreCase("fa") || extension.equalsIgnoreCase("faa") || extension.equalsIgnoreCase("fas") || extension.equalsIgnoreCase("fasta")) {
             sequences = readAlignment(inFile);
             taxa = new IdentifierList(sequences.getTaxaLabels());
         }

@@ -15,9 +15,12 @@
 
 package uk.ac.uea.cmp.spectre.net.netmake;
 
+import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.spectre.core.io.SpectreWriter;
 import uk.ac.uea.cmp.spectre.core.io.SpectreWriterFactory;
+import uk.ac.uea.cmp.spectre.core.io.nexus.Nexus;
+import uk.ac.uea.cmp.spectre.core.io.nexus.NexusWriter;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,8 +30,10 @@ public class NetMakeResult {
 
     private SplitSystem tree;
     private SplitSystem network;
+    private DistanceMatrix dm;
 
-    public NetMakeResult(SplitSystem tree, SplitSystem network) {
+    public NetMakeResult(DistanceMatrix dm, SplitSystem tree, SplitSystem network) {
+        this.dm = dm;
         this.tree = tree;
         this.network = network;
     }
@@ -43,12 +48,18 @@ public class NetMakeResult {
 
     public void save(File outputNetwork, File outputTree) throws IOException {
 
-        SpectreWriter spectreWriter = SpectreWriterFactory.NEXUS.create();
-
-        spectreWriter.writeSplitSystem(outputNetwork, this.getNetwork());
+        Nexus nexus = new Nexus();
+        nexus.setTaxa(this.dm.getTaxa());
+        nexus.setDistanceMatrix(this.dm);
+        nexus.setSplitSystem(this.network);
+        new NexusWriter().writeNexusData(outputNetwork, nexus);
 
         if (this.tree != null && outputTree != null) {
-            spectreWriter.writeSplitSystem(outputTree, this.getTree());
+            Nexus nextree = new Nexus();
+            nexus.setTaxa(this.dm.getTaxa());
+            nexus.setDistanceMatrix(this.dm);
+            nexus.setSplitSystem(this.tree);
+            new NexusWriter().writeNexusData(outputTree, nextree);
         }
     }
 }

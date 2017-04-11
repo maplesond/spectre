@@ -97,7 +97,7 @@ public class NetMake extends RunnableTool {
             log.info("Splits tree created");
         }
 
-        return new NetMakeResult(tree, network);
+        return new NetMakeResult(distanceMatrix, tree, network);
     }
 
 
