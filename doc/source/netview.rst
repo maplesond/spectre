@@ -45,14 +45,14 @@ The user can select nodes either by selecting via mouse click or by dragging a b
 Edit menu provides options for either selecting all nodes, or by selecting nodes through a text search of labels.
 
 
-Layout Options
---------------
+View options
+------------
 
-Users can orientate the image via the Layout menu.  The clicking the rotation option (or holding the Ctrl key) puts the
-window in rotation mode.  Then by holding the left-mouse button and moving the mouse the user can alter the rotation of
-the image.  The user can also flip the image either vertically or horizontally via the menu button.
+Users can orientate the image via mouse controls and the Layout menu.  To rotate the image the user can hold the right-mouse
+button and move relative to the centre point.  Zooming is controlled via the mouse scroll wheel.
 
-The user can also collapse trivial split in the network in order to simplify the image via the menu button in the Layout menu
+The user can flip the image either vertically or horizontally via the layout menu button.  The user can also collapse
+trivial splits in the network in order to simplify the image via the menu button in the Layout menu
 
 
 Labelling Options

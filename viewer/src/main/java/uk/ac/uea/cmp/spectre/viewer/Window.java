@@ -25,6 +25,7 @@ import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.*;
@@ -70,28 +71,47 @@ public class Window extends JPanel implements KeyListener {
     public Window(NetView frame) {
 
         externalFrame = frame;
+
+        setupKeyListener();
+
+    }
+
+    private void setupKeyListener() {
         this.addKeyListener(this);
 
-        // Next to try it with just the control key
-        final String controlKeyPressed = "control key pressed";
-        inputmap.put(KeyStroke.getKeyStroke(KeyEvent.VK_CONTROL,
-                KeyEvent.CTRL_DOWN_MASK), controlKeyPressed );
-        actionmap.put(controlKeyPressed, new AbstractAction() {
-
+        final String rightKeyPressed = "right arrow pressed";
+        inputmap.put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), rightKeyPressed);
+        actionmap.put(rightKeyPressed, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                activateRotation(true);
+                //pan(true);
             }
         });
 
-        final String controlKeyReleased = "control key released";
-        inputmap.put(KeyStroke.getKeyStroke(KeyEvent.VK_CONTROL,
-                0, true), controlKeyReleased );
-        actionmap.put(controlKeyReleased, new AbstractAction() {
-
+        final String leftKeyPressed = "left arrow pressed";
+        inputmap.put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), leftKeyPressed);
+        actionmap.put(leftKeyPressed, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                activateRotation(false);
+                //pan(true);
+            }
+        });
+
+        final String upKeyPressed = "up arrow pressed";
+        inputmap.put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), upKeyPressed);
+        actionmap.put(upKeyPressed, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                //pan(true);
+            }
+        });
+
+        final String downKeyPressed = "down arrow pressed";
+        inputmap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), downKeyPressed);
+        actionmap.put(downKeyPressed, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                //pan(true);
             }
         });
     }
@@ -772,10 +792,15 @@ public class Window extends JPanel implements KeyListener {
 
     void rotate(java.awt.Point startPoint, java.awt.Point endPoint) {
         startPoint = (lastPoint != null) ? lastPoint : startPoint;
-        double angle = Vertex.getClockwiseAngle(
+        final double angle = Vertex.getClockwiseAngle(
                 new Vertex(endPoint.x, endPoint.y),
                 new Vertex(midX, midY),
                 new Vertex(startPoint.getX(), startPoint.getY()));
+        rotate(angle);
+        lastPoint = endPoint;
+    }
+
+    void rotate(final double angle) {
 
         double vX = (midX - deltaX) / ratio + minX;
         double vY = (midY - deltaY) / ratio + minY;
@@ -830,10 +855,8 @@ public class Window extends JPanel implements KeyListener {
                     xt * Math.sin(angle) + yt * Math.cos(angle) - c.height / 2 + bY);
         }
 
-        lastPoint = endPoint;
-
-        //repaint();
-        repaintOnResize();
+        computeIntegerCoordinates(ratio);
+        repaint();
     }
 
     void flipNetwork(boolean horizontal) {
@@ -1253,6 +1276,12 @@ public class Window extends JPanel implements KeyListener {
     @Override
     public void keyReleased(KeyEvent e) {
         activateRotation(false);
+    }
+
+    public void zoom(double amount) {
+
+        this.ratio -= amount;
+        this.computeIntegerCoordinates(this.ratio);
     }
 
     private class State {

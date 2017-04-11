@@ -160,6 +160,7 @@ public class FlatNJ {
         if (extension.equalsIgnoreCase("fa") || extension.equalsIgnoreCase("faa") || extension.equalsIgnoreCase("fas") || extension.equalsIgnoreCase("fasta")) {
             sequences = readAlignment(inFile);
             taxa = new IdentifierList(sequences.getTaxaLabels());
+            log.info("Extracted " + taxa.size() + " sequences.");
         }
         else if (extension.equalsIgnoreCase("nex") || extension.equalsIgnoreCase("nexus") || extension.equalsIgnoreCase("4s")) {
 

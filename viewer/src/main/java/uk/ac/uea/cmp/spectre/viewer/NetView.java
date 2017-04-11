@@ -54,6 +54,7 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -65,155 +66,177 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 /**
- * @author balvociute
+ * @author balvociute and maplesond
  */
 public class NetView extends javax.swing.JFrame implements DropTargetListener {
+
     private static Logger log = LoggerFactory.getLogger(NetView.class);
 
     private static String BIN_NAME = "netview";
 
-    private static String OPT_HELP = "help";
     private static String OPT_VERBOSE = "verbose";
+    private final String TITLE = "NetView";
 
     private Point startPoint;
     private JFrame format;
     private JFrame formatLabels;
     private DropTarget dt;
+    private Window drawing;
+    private javax.swing.JMenuBar menuBar;
+    private javax.swing.JMenu mnuFile;
+    private javax.swing.JMenuItem mnuFileOpen;
+    private javax.swing.JMenuItem mnuFileSave;
+    private javax.swing.JMenuItem mnuFileSaveas;
+    private javax.swing.JMenuItem mnuFileSaveimage;
+    private javax.swing.JMenuItem mnuFileExit;
+    private javax.swing.JMenuItem mnuLabelingFormat;
+    private javax.swing.JMenu mnuEdit;
+    private javax.swing.JMenuItem mnuEditCopy;
+    private javax.swing.JMenuItem mnuEditSelectall;
+    private javax.swing.JMenuItem mnuEditFind;
+    private javax.swing.JMenu mnuView;
+    private javax.swing.JMenuItem mnuViewRotateleft;
+    private javax.swing.JMenuItem mnuViewRotateright;
+    private javax.swing.JMenuItem mnuViewZoomin;
+    private javax.swing.JMenuItem mnuViewZoomout;
+    private javax.swing.JMenuItem mnuViewFliphorizontal;
+    private javax.swing.JMenuItem mnuViewFlipvertical;
+    private javax.swing.JMenuItem mnuViewOptimiseLayout;
+    private javax.swing.JCheckBoxMenuItem mnuViewShowTrivial;
+    private javax.swing.JCheckBoxMenuItem mnuViewShowRange;
+    private javax.swing.JMenu mnuLabeling;
+    private javax.swing.JCheckBoxMenuItem mnuLabelingColor;
+    private javax.swing.JCheckBoxMenuItem mnuLabelingFix;
+    private javax.swing.JCheckBoxMenuItem mnuLabelingShow;
+    private javax.swing.JMenu mnuLabelingLeaders;
+    private javax.swing.JMenuItem mnuLabelingLeadersColor;
+    private javax.swing.JRadioButtonMenuItem mnuLabelingLeadersBended;
+    private javax.swing.JRadioButtonMenuItem mnuLabelingLeadersDashed;
+    private javax.swing.JRadioButtonMenuItem mnuLabelingLeadersDotted;
+    private javax.swing.JRadioButtonMenuItem mnuLabelingLeadersNo;
+    private javax.swing.JRadioButtonMenuItem mnuLabelingLeadersSlanted;
+    private javax.swing.JRadioButtonMenuItem mnuLabelingLeadersSolid;
+    private javax.swing.JRadioButtonMenuItem mnuLabelingLeadersStraight;
 
+    private javax.swing.JPopupMenu popupMenu;
 
-    private String mainTitle = "NetView";
-    private boolean resetlabelPositions = false;
-    private NexusReader read;
 
     private File networkFile = null;
-    int nDots = 40;
 
-    private double filteringThr = 0.15;
 
     private void prepareViewer() {
-        initComponents();
-        preparePopupMenu();
-        getContentPane().setBackground(Color.white);
-        dt = new DropTarget(drawing, this);
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle(TITLE);
+        this.setPreferredSize(new Dimension(800, 600));
+        this.setMinimumSize(new Dimension(400, 300));
+        getContentPane().setBackground(Color.white); // TODO Allow user to control background color
+        setForeground(java.awt.Color.white);
         setIconImage((new ImageIcon("logo.png")).getImage());
-        ButtonGroup leaderButtons = new ButtonGroup();
-        leaderButtons.add(jRadioButtonBendedLeaders);
-        leaderButtons.add(jRadioButtonSlantedLeaders);
-        leaderButtons.add(jRadioButtonStraightLeaders);
-        leaderButtons.add(jRadioButtonNoLeaders);
-        format = new Formating(drawing);
-        formatLabels = new FormatLabels(drawing);
-        //setLocationRelativeTo(null);
-        ButtonGroup leaderLineTypes = new ButtonGroup();
-        leaderLineTypes.add(jRadioButtonSolid);
-        leaderLineTypes.add(jRadioButtonDashed);
-        leaderLineTypes.add(jRadioButtonDotted);
+
+        prepareDrawing();
+        prepareMenu();
+        preparePopupMenu();
     }
 
     /**
-     * Creates new form NetVi
+     * Creates new netview instance without any input data.
+     * Normal initialisation.
      */
     public NetView() throws IOException {
         prepareViewer();
         initConfig();
-        setTitle(mainTitle);
-        drawing.repaint();
+        mnuFileSave.setEnabled(false);
+        drawing.repaintOnResize();
     }
 
+    /**
+     * Creates a netview instance with the given file loaded at startup
+     * Intended to be used from CLI
+     *
+     * @param inFile
+     * @throws IOException
+     */
     public NetView(File inFile) throws IOException {
         prepareViewer();
-        directory = inFile.getPath();
         openNetwork(inFile);
     }
 
+    /**
+     * Creates a newview instance with the given network loaded at startup
+     * Intended to be used from other SPECTRE GUIs.
+     *
+     * @param network
+     * @param inFile
+     * @param taxa
+     */
     public NetView(Network network, File inFile, IdentifierList taxa) {
         prepareViewer();
         directory = inFile.getPath();
         this.network = network;
         this.taxa = taxa;
-        setTitle(mainTitle + ": " + inFile.getAbsolutePath());
+        setTitle(TITLE + ": " + inFile.getAbsolutePath());
         drawNetwork();
         drawing.repaint();
     }
 
-    /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
-     */
-    @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents() {
-
-        popupMenu = new javax.swing.JPopupMenu();
+    private void prepareDrawing() {
         drawing = new Window(this);
-        menuBar = new javax.swing.JMenuBar();
-        jMenuFile = new javax.swing.JMenu();
-        openFile = new javax.swing.JMenuItem();
-        saveNetwork = new javax.swing.JMenuItem();
-        saveNetworkAs = new javax.swing.JMenuItem();
-        saveImage = new javax.swing.JMenuItem();
-        exitProgram = new javax.swing.JMenuItem();
-        jMenuEdit = new javax.swing.JMenu();
-        jMenuItemSelectAll = new javax.swing.JMenuItem();
-        jMenuItemFind = new javax.swing.JMenuItem();
-        formatNodes = new javax.swing.JMenuItem();
-        jMenuLayout = new javax.swing.JMenu();
-        jMenuItemRotate = new javax.swing.JMenuItem();
-        jMenu6 = new javax.swing.JMenu();
-        jMenuItemFlipHorizontal = new javax.swing.JMenuItem();
-        jMenuItemFlipVertical = new javax.swing.JMenuItem();
-        jCheckBoxShowTrivial = new javax.swing.JCheckBoxMenuItem();
-        jCheckBoxShowRange = new javax.swing.JCheckBoxMenuItem();
-        jCheckBoxShowLabels = new javax.swing.JCheckBoxMenuItem();
-        jCheckBoxColorLabels = new javax.swing.JCheckBoxMenuItem();
-        jMenuLabeling = new javax.swing.JMenu();
-        jCheckBoxFixLabelPositions = new javax.swing.JCheckBoxMenuItem();
-        optimizeLabels = new javax.swing.JMenuItem();
-        jMenu4 = new javax.swing.JMenu();
-        jRadioButtonNoLeaders = new javax.swing.JRadioButtonMenuItem();
-        jRadioButtonStraightLeaders = new javax.swing.JRadioButtonMenuItem();
-        jRadioButtonSlantedLeaders = new javax.swing.JRadioButtonMenuItem();
-        jRadioButtonBendedLeaders = new javax.swing.JRadioButtonMenuItem();
-        jSeparator1 = new javax.swing.JPopupMenu.Separator();
-        jRadioButtonSolid = new javax.swing.JRadioButtonMenuItem();
-        jRadioButtonDashed = new javax.swing.JRadioButtonMenuItem();
-        jRadioButtonDotted = new javax.swing.JRadioButtonMenuItem();
-        jSeparator2 = new javax.swing.JPopupMenu.Separator();
-        jMenuItemChangeLeaderColor = new javax.swing.JMenuItem();
-
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("NetVi");
-        setForeground(java.awt.Color.white);
-        this.setPreferredSize(new Dimension(800,600));
-        this.setMinimumSize(new Dimension(400,300));
-
         drawing.addMouseWheelListener(new java.awt.event.MouseWheelListener() {
             public void mouseWheelMoved(java.awt.event.MouseWheelEvent evt) {
-                drawingMouseWheelMoved(evt);
+                drawing.zoom(evt.getPreciseWheelRotation() * 100.0);
             }
         });
         drawing.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                drawingMouseClicked(evt);
+                java.awt.Point clickedPoint = evt.getPoint();
+                if (SwingUtilities.isRightMouseButton(evt)) {
+                    popupMenu.show(drawing, clickedPoint.x, clickedPoint.y);
+                } else {
+                    drawing.setSelection(clickedPoint, evt.isControlDown());
+                }
             }
 
             public void mousePressed(java.awt.event.MouseEvent evt) {
-                drawingMousePressed(evt);
+                if (SwingUtilities.isRightMouseButton(evt)) {
+                    drawing.activateRotation(true);
+                }
+                startPoint = evt.getPoint();
+                if (!drawing.markLabel(startPoint)) {
+                    drawing.markPoint(startPoint);
+                }
             }
 
             public void mouseReleased(java.awt.event.MouseEvent evt) {
-                drawingMouseReleased(evt);
+                if (drawing.rotate) {
+                    drawing.activateRotation(false);
+                }
+                drawing.removeSelectionRectangle();
             }
         });
         drawing.addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentResized(java.awt.event.ComponentEvent evt) {
-                drawingComponentResized(evt);
+                drawing.repaintOnResize();
             }
         });
         drawing.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
             public void mouseDragged(java.awt.event.MouseEvent evt) {
-                drawingMouseDragged(evt);
+                java.awt.Point endPoint = evt.getPoint();
+                if (!drawing.rotate) {
+                    if (network != null && drawing.isOnLabel()) {
+                        drawing.moveLabels(endPoint);
+                    } else if (network != null && drawing.isOnPoint()) {
+                        drawing.moveTheVertex(endPoint);
+                    } else {
+                        drawing.setSelection(startPoint,
+                                endPoint,
+                                evt.isControlDown());
+                    }
+                } else {
+                    if (network != null) {
+                        drawing.rotate(startPoint, endPoint);
+                    }
+                }
             }
         });
 
@@ -228,250 +251,419 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
                         .addGap(0, 322, Short.MAX_VALUE)
         );
 
-        jMenuFile.setText("File");
+        dt = new DropTarget(drawing, this);
+        format = new Formating(drawing);
+        formatLabels = new FormatLabels(drawing);
+    }
 
-        openFile.setText("Open network...");
-        openFile.addActionListener(new java.awt.event.ActionListener() {
+    @SuppressWarnings("unchecked")
+    private void prepareMenu() {
+
+        menuBar = new javax.swing.JMenuBar();
+
+        mnuView = new javax.swing.JMenu();
+        mnuViewRotateleft = new javax.swing.JMenuItem();
+        mnuViewRotateright = new javax.swing.JMenuItem();
+        mnuViewZoomin = new javax.swing.JMenuItem();
+        mnuViewZoomout = new javax.swing.JMenuItem();
+        mnuViewFliphorizontal = new javax.swing.JMenuItem();
+        mnuViewFlipvertical = new javax.swing.JMenuItem();
+        mnuViewOptimiseLayout = new javax.swing.JMenuItem();
+        mnuViewShowTrivial = new javax.swing.JCheckBoxMenuItem();
+        mnuViewShowRange = new javax.swing.JCheckBoxMenuItem();
+
+        mnuLabeling = new javax.swing.JMenu();
+        mnuLabelingFormat = new javax.swing.JMenuItem();
+        mnuLabelingShow = new javax.swing.JCheckBoxMenuItem();
+        mnuLabelingColor = new javax.swing.JCheckBoxMenuItem();
+        mnuLabelingFix = new javax.swing.JCheckBoxMenuItem();
+        mnuLabelingLeaders = new javax.swing.JMenu();
+        mnuLabelingLeadersNo = new javax.swing.JRadioButtonMenuItem();
+        mnuLabelingLeadersStraight = new javax.swing.JRadioButtonMenuItem();
+        mnuLabelingLeadersSlanted = new javax.swing.JRadioButtonMenuItem();
+        mnuLabelingLeadersBended = new javax.swing.JRadioButtonMenuItem();
+        mnuLabelingLeadersSolid = new javax.swing.JRadioButtonMenuItem();
+        mnuLabelingLeadersDashed = new javax.swing.JRadioButtonMenuItem();
+        mnuLabelingLeadersDotted = new javax.swing.JRadioButtonMenuItem();
+        mnuLabelingLeadersColor = new javax.swing.JMenuItem();
+
+        mnuFile = new javax.swing.JMenu();
+        mnuFile.setText("File");
+        mnuFile.setMnemonic('F');
+
+        mnuFileOpen = new javax.swing.JMenuItem();
+        mnuFileOpen.setText("Open network...");
+        mnuFileOpen.setMnemonic('O');
+        mnuFileOpen.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O,
+                java.awt.Event.CTRL_MASK));
+        mnuFileOpen.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 openFileActionPerformed(evt);
             }
         });
-        jMenuFile.add(openFile);
-        jMenuFile.addSeparator();
+        mnuFile.add(mnuFileOpen);
+        mnuFile.addSeparator();
 
-        saveNetwork.setText("Save network");
-        saveNetwork.setEnabled(false);
-        saveNetwork.addActionListener(new java.awt.event.ActionListener() {
+        mnuFileSave = new javax.swing.JMenuItem();
+        mnuFileSave.setText("Save network");
+        mnuFileSave.setMnemonic('S');
+        mnuFileSave.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S,
+                java.awt.Event.CTRL_MASK));
+        mnuFileSave.setEnabled(false);
+        mnuFileSave.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 saveNetworkActionPerformed(evt);
             }
         });
-        jMenuFile.add(saveNetwork);
+        mnuFileSave.setAccelerator(KeyStroke.getKeyStroke('S', Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+        mnuFile.add(mnuFileSave);
 
-        saveNetworkAs.setText("Save network as...");
-        saveNetworkAs.addActionListener(new java.awt.event.ActionListener() {
+        mnuFileSaveas = new javax.swing.JMenuItem();
+        mnuFileSaveas.setText("Save network as...");
+        mnuFileSaveas.setMnemonic('A');
+        mnuFileSaveas.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 saveNetworkAsActionPerformed(evt);
             }
         });
-        jMenuFile.add(saveNetworkAs);
+        mnuFile.add(mnuFileSaveas);
 
-        saveImage.setText("Save image as...");
-        saveImage.addActionListener(new java.awt.event.ActionListener() {
+        mnuFileSaveimage = new javax.swing.JMenuItem();
+        mnuFileSaveimage.setText("Save image as...");
+        mnuFileSaveimage.setMnemonic('I');
+        mnuFileSaveimage.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 saveImageActionPerformed(evt);
             }
         });
-        jMenuFile.add(saveImage);
-        jMenuFile.addSeparator();
+        mnuFile.add(mnuFileSaveimage);
+        mnuFile.addSeparator();
 
-        exitProgram.setText("Exit");
-        exitProgram.addActionListener(new java.awt.event.ActionListener() {
+        mnuFileExit = new javax.swing.JMenuItem();
+        mnuFileExit.setText("Exit");
+        mnuFileExit.setMnemonic('X');
+        mnuFileExit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                exitProgramActionPerformed(evt);
+                log.info("Shutting down netview");
+                System.exit(0);
             }
         });
-        jMenuFile.add(exitProgram);
+        mnuFile.add(mnuFileExit);
 
-        menuBar.add(jMenuFile);
+        menuBar.add(mnuFile);
 
-        jMenuEdit.setText("Edit");
+        mnuEdit = new javax.swing.JMenu();
+        mnuEdit.setText("Edit");
+        mnuEdit.setMnemonic('E');
 
-        jMenuItemSelectAll.setText("Select all");
-        jMenuItemSelectAll.addActionListener(new java.awt.event.ActionListener() {
+        mnuEditCopy = new javax.swing.JMenuItem();
+        mnuEditCopy.setText("Copy");
+        mnuEditCopy.setMnemonic('C');
+        mnuEditCopy.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C,
+                java.awt.Event.CTRL_MASK));
+        mnuEditCopy.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                drawing.copySelectedTaxa();
+            }
+        });
+        mnuEdit.add(mnuEditCopy);
+
+        mnuEdit.addSeparator();
+
+        mnuEditSelectall = new javax.swing.JMenuItem();
+        mnuEditSelectall.setText("Select all");
+        mnuEditSelectall.setMnemonic('S');
+        mnuEditSelectall.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A,
+                java.awt.Event.CTRL_MASK));
+        mnuEditSelectall.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItemSelectAllActionPerformed(evt);
             }
         });
-        jMenuEdit.add(jMenuItemSelectAll);
+        mnuEdit.add(mnuEditSelectall);
 
-        jMenuItemFind.setText("Find...");
-        jMenuItemFind.addActionListener(new java.awt.event.ActionListener() {
+        mnuEdit.addSeparator();
+
+        mnuEditFind = new javax.swing.JMenuItem();
+        mnuEditFind.setText("Find...");
+        mnuEditFind.setMnemonic('F');
+        mnuEditFind.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F,
+                java.awt.Event.CTRL_MASK));
+        mnuEditFind.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemFindActionPerformed(evt);
+                find.setVisible(true);
             }
         });
-        jMenuEdit.add(jMenuItemFind);
+        mnuEdit.add(mnuEditFind);
 
 
+        menuBar.add(mnuEdit);
 
-        menuBar.add(jMenuEdit);
+        mnuView.setText("View");
+        mnuView.setMnemonic('V');
 
-        jMenuLayout.setText("Layout");
-
-        jMenuItemRotate.setText("Rotate");
-        jMenuItemRotate.addActionListener(new java.awt.event.ActionListener() {
+        mnuViewRotateleft.setText("Rotate Left");
+        mnuViewRotateleft.setMnemonic('L');
+        mnuViewRotateleft.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT,
+                java.awt.Event.CTRL_MASK));
+        mnuViewRotateleft.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemRotateActionPerformed(evt);
+                drawing.rotate(-0.1);
             }
         });
-        jMenuLayout.add(jMenuItemRotate);
+        mnuView.add(mnuViewRotateleft);
 
-        jMenu6.setText("Flip");
-
-        jMenuItemFlipHorizontal.setText("Horizontal");
-        jMenuItemFlipHorizontal.addActionListener(new java.awt.event.ActionListener() {
+        mnuViewRotateright.setText("Rotate Right");
+        mnuViewRotateright.setMnemonic('R');
+        mnuViewRotateright.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_RIGHT,
+                java.awt.Event.CTRL_MASK));
+        mnuViewRotateright.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemFlipHorizontalActionPerformed(evt);
+                drawing.rotate(0.1);
             }
         });
-        jMenu6.add(jMenuItemFlipHorizontal);
+        mnuView.add(mnuViewRotateright);
 
-        jMenuItemFlipVertical.setText("Vertical");
-        jMenuItemFlipVertical.addActionListener(new java.awt.event.ActionListener() {
+        mnuViewZoomin.setText("Zoom in");
+        mnuViewZoomin.setMnemonic('I');
+        mnuViewZoomin.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_UP,
+                java.awt.Event.CTRL_MASK));
+        mnuViewZoomin.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemFlipVerticalActionPerformed(evt);
+                drawing.zoom(-500.0);
             }
         });
-        jMenu6.add(jMenuItemFlipVertical);
+        mnuView.add(mnuViewZoomin);
 
-        jMenuLayout.add(jMenu6);
-        jMenuLayout.addSeparator();
-
-        jCheckBoxShowTrivial.setSelected(true);
-        jCheckBoxShowTrivial.setText("Show trivial splits");
-        jCheckBoxShowTrivial.addActionListener(new java.awt.event.ActionListener() {
+        mnuViewZoomout.setText("Zoom out");
+        mnuViewZoomout.setMnemonic('O');
+        mnuViewZoomout.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN,
+                java.awt.Event.CTRL_MASK));
+        mnuViewZoomout.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBoxShowTrivialActionPerformed(evt);
+                drawing.zoom(500.0);
             }
         });
-        jMenuLayout.add(jCheckBoxShowTrivial);
+        mnuView.add(mnuViewZoomout);
 
-        jCheckBoxShowRange.setSelected(true);
-        jCheckBoxShowRange.setText("Show range");
-        jCheckBoxShowRange.addActionListener(new java.awt.event.ActionListener() {
+        mnuViewFliphorizontal.setText("Flip Horizontal");
+        mnuViewFliphorizontal.setMnemonic('H');
+        mnuViewFliphorizontal.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_H,
+                java.awt.Event.CTRL_MASK + Event.SHIFT_MASK));
+        mnuViewFliphorizontal.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBoxShowRangeActionPerformed(evt);
+                drawing.flipNetwork(true);
             }
         });
-        jMenuLayout.add(jCheckBoxShowRange);
+        mnuView.add(mnuViewFliphorizontal);
 
-
-
-        menuBar.add(jMenuLayout);
-
-        jMenuLabeling.setText("Labeling");
-
-        jCheckBoxShowLabels.setSelected(true);
-        jCheckBoxShowLabels.setText("Show labels");
-        jCheckBoxShowLabels.addActionListener(new java.awt.event.ActionListener() {
+        mnuViewFlipvertical.setText("Flip Vertical");
+        mnuViewFlipvertical.setMnemonic('V');
+        mnuViewFlipvertical.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_V,
+                java.awt.Event.CTRL_MASK + Event.SHIFT_MASK));
+        mnuViewFlipvertical.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBoxShowLabelsActionPerformed(evt);
+                drawing.flipNetwork(false);
             }
         });
-        jMenuLabeling.add(jCheckBoxShowLabels);
+        mnuView.add(mnuViewFlipvertical);
 
-        jCheckBoxColorLabels.setText("Color labels");
-        jCheckBoxColorLabels.addActionListener(new java.awt.event.ActionListener() {
+        mnuView.addSeparator();
+
+        mnuViewOptimiseLayout.setText("Optimize layout");
+        mnuViewOptimiseLayout.setMnemonic('P');
+        mnuViewOptimiseLayout.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_P,
+                java.awt.Event.CTRL_MASK));
+        mnuViewOptimiseLayout.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBoxColorLabelsActionPerformed(evt);
+                if (network != null) {
+                    drawing.resetLabelPositions(true);
+                    drawing.repaintOnResize();
+                }
             }
         });
-        jMenuLabeling.add(jCheckBoxColorLabels);
-        jMenuLabeling.addSeparator();
+        mnuView.add(mnuViewOptimiseLayout);
 
-        formatNodes.setText("Format selected nodes ...");
-        formatNodes.addActionListener(new java.awt.event.ActionListener() {
+        mnuView.addSeparator();
+
+        mnuViewShowTrivial.setSelected(true);
+        mnuViewShowTrivial.setMnemonic('T');
+        mnuViewShowTrivial.setText("Show trivial splits");
+        mnuViewShowTrivial.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                Boolean showTrivial = mnuViewShowTrivial.isSelected();
+                drawing.showTrivial(showTrivial);
+                config.setShowTrivial(showTrivial);
+            }
+        });
+        mnuView.add(mnuViewShowTrivial);
+
+        mnuViewShowRange.setSelected(true);
+        mnuViewShowRange.setMnemonic('R');
+        mnuViewShowRange.setText("Show range");
+        mnuViewShowRange.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                Boolean showRange = mnuViewShowRange.isSelected();
+                drawing.showRange(showRange);
+                config.setShowRange(showRange);
+                drawing.repaint();
+            }
+        });
+        mnuView.add(mnuViewShowRange);
+
+        menuBar.add(mnuView);
+
+        mnuLabeling.setText("Labeling");
+        mnuLabeling.setMnemonic('B');
+
+        mnuLabelingShow.setSelected(true);
+        mnuLabelingShow.setText("Show labels");
+        mnuLabelingShow.setMnemonic('S');
+        mnuLabelingShow.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                drawing.repaintOnResize();
+            }
+        });
+        mnuLabeling.add(mnuLabelingShow);
+
+        mnuLabelingColor.setText("Color labels");
+        mnuLabelingColor.setMnemonic('C');
+        mnuLabelingColor.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                drawing.repaint();
+            }
+        });
+        mnuLabeling.add(mnuLabelingColor);
+
+        mnuLabeling.addSeparator();
+
+        mnuLabelingFormat.setText("Format selected nodes ...");
+        mnuLabelingFormat.setMnemonic('F');
+        mnuLabelingFormat.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 formatNodesActionPerformed(evt);
             }
         });
-        jMenuLabeling.add(formatNodes);
+        mnuLabeling.add(mnuLabelingFormat);
 
-        jMenuLabeling.addSeparator();
+        mnuLabeling.addSeparator();
 
-        jCheckBoxFixLabelPositions.setText("Fix all label positions");
-        jCheckBoxFixLabelPositions.addActionListener(new java.awt.event.ActionListener() {
+        mnuLabelingFix.setText("Fix all label positions");
+        mnuLabelingFix.setMnemonic('X');
+        mnuLabelingFix.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jCheckBoxFixLabelPositionsActionPerformed(evt);
             }
         });
-        jMenuLabeling.add(jCheckBoxFixLabelPositions);
+        mnuLabeling.add(mnuLabelingFix);
 
-        optimizeLabels.setText("Optimize labels");
-        optimizeLabels.addActionListener(new java.awt.event.ActionListener() {
+
+        mnuLabeling.addSeparator();
+
+        mnuLabelingLeaders.setText("Leaders");
+        mnuLabelingLeaders.setMnemonic('L');
+
+        ButtonGroup leaderConnectorGroup1 = new ButtonGroup();
+
+        mnuLabelingLeadersNo.setText("None");
+        mnuLabelingLeadersNo.setMnemonic('N');
+        mnuLabelingLeadersNo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                optimizeLabelsActionPerformed(evt);
+                drawing.repaint();
+                config.setLeaderType("none");
             }
         });
-        jMenuLabeling.add(optimizeLabels);
+        leaderConnectorGroup1.add(mnuLabelingLeadersNo);
+        mnuLabelingLeaders.add(mnuLabelingLeadersNo);
 
-        jMenuLabeling.addSeparator();
-
-        jMenu4.setText("Leaders");
-
-        jRadioButtonNoLeaders.setText("None");
-        jRadioButtonNoLeaders.addActionListener(new java.awt.event.ActionListener() {
+        mnuLabelingLeadersStraight.setText("Straight");
+        mnuLabelingLeadersStraight.setMnemonic('S');
+        mnuLabelingLeadersStraight.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jRadioButtonNoLeadersActionPerformed(evt);
+                drawing.repaint();
+                config.setLeaderType("straight");
             }
         });
-        jMenu4.add(jRadioButtonNoLeaders);
+        leaderConnectorGroup1.add(mnuLabelingLeadersStraight);
+        mnuLabelingLeaders.add(mnuLabelingLeadersStraight);
 
-        jRadioButtonStraightLeaders.setText("Straight");
-        jRadioButtonStraightLeaders.addActionListener(new java.awt.event.ActionListener() {
+        mnuLabelingLeadersSlanted.setSelected(true);
+        mnuLabelingLeadersSlanted.setText("Slanted");
+        mnuLabelingLeadersSlanted.setMnemonic('N');
+        mnuLabelingLeadersSlanted.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jRadioButtonStraightLeadersActionPerformed(evt);
+                drawing.repaint();
+                config.setLeaderType("slanted");
             }
         });
-        jMenu4.add(jRadioButtonStraightLeaders);
+        leaderConnectorGroup1.add(mnuLabelingLeadersSlanted);
+        mnuLabelingLeaders.add(mnuLabelingLeadersSlanted);
 
-        jRadioButtonSlantedLeaders.setSelected(true);
-        jRadioButtonSlantedLeaders.setText("Slanted");
-        jRadioButtonSlantedLeaders.addActionListener(new java.awt.event.ActionListener() {
+        mnuLabelingLeadersBended.setText("Bended");
+        mnuLabelingLeadersBended.setMnemonic('B');
+        mnuLabelingLeadersBended.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jRadioButtonSlantedLeadersActionPerformed(evt);
+                drawing.repaint();
+                config.setLeaderType("bended");
             }
         });
-        jMenu4.add(jRadioButtonSlantedLeaders);
+        leaderConnectorGroup1.add(mnuLabelingLeadersBended);
+        mnuLabelingLeaders.add(mnuLabelingLeadersBended);
 
-        jRadioButtonBendedLeaders.setText("Bended");
-        jRadioButtonBendedLeaders.addActionListener(new java.awt.event.ActionListener() {
+        mnuLabelingLeaders.addSeparator();
+
+        ButtonGroup leaderConnectorGroup2 = new ButtonGroup();
+
+        mnuLabelingLeadersSolid.setText("Solid");
+        mnuLabelingLeadersSolid.setMnemonic('O');
+        mnuLabelingLeadersSolid.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jRadioButtonBendedLeadersActionPerformed(evt);
+                config.setLeaderStroke("solid");
+                drawing.repaint();
             }
         });
-        jMenu4.add(jRadioButtonBendedLeaders);
-        jMenu4.add(jSeparator1);
+        leaderConnectorGroup2.add(mnuLabelingLeadersSolid);
+        mnuLabelingLeaders.add(mnuLabelingLeadersSolid);
 
-
-        jRadioButtonSolid.setText("Solid");
-        jRadioButtonSolid.addActionListener(new java.awt.event.ActionListener() {
+        mnuLabelingLeadersDashed.setSelected(true);
+        mnuLabelingLeadersDashed.setText("Dashed");
+        mnuLabelingLeadersDashed.setMnemonic('D');
+        mnuLabelingLeadersDashed.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jRadioButtonSolidActionPerformed(evt);
+                config.setLeaderStroke("dashed");
+                drawing.repaint();
             }
         });
-        jMenu4.add(jRadioButtonSolid);
+        leaderConnectorGroup2.add(mnuLabelingLeadersDashed);
+        mnuLabelingLeaders.add(mnuLabelingLeadersDashed);
 
-        jRadioButtonDashed.setSelected(true);
-        jRadioButtonDashed.setText("Dashed");
-        jRadioButtonDashed.addActionListener(new java.awt.event.ActionListener() {
+        mnuLabelingLeadersDotted.setText("Dotted");
+        mnuLabelingLeadersDotted.setMnemonic('E');
+        mnuLabelingLeadersDotted.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jRadioButtonDashedActionPerformed(evt);
+                config.setLeaderType("dotted");
+                drawing.repaint();
             }
         });
-        jMenu4.add(jRadioButtonDashed);
+        leaderConnectorGroup2.add(mnuLabelingLeadersDotted);
+        mnuLabelingLeaders.add(mnuLabelingLeadersDotted);
 
-        jRadioButtonDotted.setText("Dotted");
-        jRadioButtonDotted.addActionListener(new java.awt.event.ActionListener() {
+        mnuLabelingLeaders.addSeparator();
+
+        mnuLabelingLeadersColor.setText("Set color");
+        mnuLabelingLeadersColor.setMnemonic('C');
+        mnuLabelingLeadersColor.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jRadioButtonDottedActionPerformed(evt);
+                cmdLeaderColorSelectActionPerformed(evt);
             }
         });
-        jMenu4.add(jRadioButtonDotted);
-        jMenu4.add(jSeparator2);
+        mnuLabelingLeaders.add(mnuLabelingLeadersColor);
 
-        jMenuItemChangeLeaderColor.setText("Set color");
-        jMenuItemChangeLeaderColor.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemChangeLeaderColorActionPerformed(evt);
-            }
-        });
-        jMenu4.add(jMenuItemChangeLeaderColor);
+        mnuLabeling.add(mnuLabelingLeaders);
 
-        jMenuLabeling.add(jMenu4);
-
-        menuBar.add(jMenuLabeling);
+        menuBar.add(mnuLabeling);
 
         setJMenuBar(menuBar);
 
@@ -487,10 +679,19 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
         );
 
         pack();
-    }// </editor-fold>//GEN-END:initComponents
+    }
 
-    private void openFileActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_openFileActionPerformed
-    {//GEN-HEADEREND:event_openFileActionPerformed
+
+    private void cmdLeaderColorSelectActionPerformed(ActionEvent evt) {
+        Color newLeaderColor = JColorChooser.showDialog(this, "Font color", drawing.leaderColor);
+        if (newLeaderColor != null) {
+            config.setLeaderColor(newLeaderColor);
+            drawing.leaderColor = newLeaderColor;
+            drawing.repaint();
+        }
+    }
+
+    private void openFileActionPerformed(java.awt.event.ActionEvent evt) {
         JFileChooser fileChooser = new JFileChooser(directory);
         fileChooser.setMultiSelectionEnabled(false);
         if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
@@ -498,18 +699,16 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
             directory = inFile.getPath();
             try {
                 openNetwork(inFile);
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 errorMessage("Error opening file", e);
             }
         }
-    }//GEN-LAST:event_openFileActionPerformed
+    }
 
-    private void saveImageActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_saveImageActionPerformed
-    {//GEN-HEADEREND:event_saveImageActionPerformed
+    private void saveImageActionPerformed(java.awt.event.ActionEvent evt) {
         JFileChooser fileChooser = new JFileChooser(directory);
         fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Portable Document Format (.pdf)", "pdf"));
-        fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Image File(.png, .jpg, .gif)", "png","jpg","gif"));
+        fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Image File(.png, .jpg, .gif)", "png", "jpg", "gif"));
         if (fileChooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
             File image_out = fileChooser.getSelectedFile();
             String ext = FilenameUtils.getExtension(image_out.getName());
@@ -521,22 +720,19 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
                 } catch (DocumentException ex) {
                     errorMessage("Error saving PDF", ex);
                 }
-            }
-            else if (ext.equalsIgnoreCase("png") || ext.equalsIgnoreCase("jpg") || ext.equalsIgnoreCase("gif")) {
+            } else if (ext.equalsIgnoreCase("png") || ext.equalsIgnoreCase("jpg") || ext.equalsIgnoreCase("gif")) {
                 try {
                     saveImage(image_out);
                 } catch (IOException ex) {
                     errorMessage("Error saving PNG", ex);
                 }
-            }
-            else {
+            } else {
                 errorMessage("No recognised extension specified in filename.  Please type an appropriate extension for image.");
             }
         }
-    }//GEN-LAST:event_saveImageActionPerformed
+    }
 
-    private void saveNetworkAsActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_saveNetworkAsActionPerformed
-    {//GEN-HEADEREND:event_saveNetworkAsActionPerformed
+    private void saveNetworkAsActionPerformed(java.awt.event.ActionEvent evt) {
         JFileChooser fileChooser = new JFileChooser(directory);
         if (fileChooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
             File fileToSave = fileChooser.getSelectedFile();
@@ -545,220 +741,44 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
                 int confirm = JOptionPane.YES_OPTION;
                 if (fileToSave.exists()) {
                     confirm = JOptionPane.showConfirmDialog(this, "File " + fileToSave.getName() +
-                            " already exists.\nOverwrite?", "Overwrite?",
+                                    " already exists.\nOverwrite?", "Overwrite?",
                             JOptionPane.YES_NO_OPTION);
                 }
                 if (confirm == JOptionPane.YES_OPTION) {
                     try {
                         saveNetworkAs(fileToSave);
-                    }
-                    catch(IOException ioe) {
+                    } catch (IOException ioe) {
                         errorMessage("Problem occured while trying to save network", ioe);
                     }
                 }
             }
         }
-    }//GEN-LAST:event_saveNetworkAsActionPerformed
+    }
 
-    private void optimizeLabelsActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_optimizeLabelsActionPerformed
-    {//GEN-HEADEREND:event_optimizeLabelsActionPerformed
-        if (network != null) {
-            drawing.resetLabelPositions(true);
-            drawing.repaintOnResize();
-        }
-    }//GEN-LAST:event_optimizeLabelsActionPerformed
-
-    private void jRadioButtonStraightLeadersActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jRadioButtonStraightLeadersActionPerformed
-    {//GEN-HEADEREND:event_jRadioButtonStraightLeadersActionPerformed
-        drawing.repaint();
-        config.setLeaderType("straight");
-    }//GEN-LAST:event_jRadioButtonStraightLeadersActionPerformed
-
-    private void jRadioButtonSlantedLeadersActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jRadioButtonSlantedLeadersActionPerformed
-    {//GEN-HEADEREND:event_jRadioButtonSlantedLeadersActionPerformed
-        drawing.repaint();
-        config.setLeaderType("slanted");
-    }//GEN-LAST:event_jRadioButtonSlantedLeadersActionPerformed
-
-    private void formatNodesActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_formatNodesActionPerformed
-    {//GEN-HEADEREND:event_formatNodesActionPerformed
+    private void formatNodesActionPerformed(java.awt.event.ActionEvent evt) {
         if (drawing.isSelected()) {
             ((Formating) format).setVisible();
         } else {
             JOptionPane.showMessageDialog(this, "No nodes are selected.");
         }
-    }//GEN-LAST:event_formatNodesActionPerformed
-
-    private void drawingMouseDragged(java.awt.event.MouseEvent evt)//GEN-FIRST:event_drawingMouseDragged
-    {//GEN-HEADEREND:event_drawingMouseDragged
-        java.awt.Point endPoint = evt.getPoint();
-        if (!drawing.rotate) {
-            if (network != null && drawing.isOnLabel()) {
-                drawing.moveLabels(endPoint);
-            } else if (network != null && drawing.isOnPoint()) {
-                drawing.moveTheVertex(endPoint);
-            } else {
-                drawing.setSelection(startPoint,
-                        endPoint,
-                        evt.isControlDown());
-            }
-        } else {
-            if (network != null) {
-                drawing.rotate(startPoint, endPoint);
-            }
-        }
-    }//GEN-LAST:event_drawingMouseDragged
-
-    private void drawingComponentResized(java.awt.event.ComponentEvent evt)//GEN-FIRST:event_drawingComponentResized
-    {//GEN-HEADEREND:event_drawingComponentResized
-        drawing.repaintOnResize();
-        config.setDimensions(this.getSize());
-    }//GEN-LAST:event_drawingComponentResized
-
-    private void drawingMouseReleased(java.awt.event.MouseEvent evt)//GEN-FIRST:event_drawingMouseReleased
-    {//GEN-HEADEREND:event_drawingMouseReleased
-        if (drawing.rotate) {
-            drawing.activateRotation(false);
-        }
-        drawing.removeSelectionRectangle();
-        //drawing.repaintOnResize();
-    }//GEN-LAST:event_drawingMouseReleased
-
-    private void drawingMousePressed(java.awt.event.MouseEvent evt)//GEN-FIRST:event_drawingMousePressed
-    {//GEN-HEADEREND:event_drawingMousePressed
-        startPoint = evt.getPoint();
-        if (!drawing.markLabel(startPoint)) {
-            drawing.markPoint(startPoint);
-        }
-    }//GEN-LAST:event_drawingMousePressed
-
-    private void drawingMouseClicked(java.awt.event.MouseEvent evt)//GEN-FIRST:event_drawingMouseClicked
-    {//GEN-HEADEREND:event_drawingMouseClicked
-        java.awt.Point clickedPoint = evt.getPoint();
-        if (SwingUtilities.isRightMouseButton(evt)) {
-            popupMenu.show(drawing, clickedPoint.x, clickedPoint.y);
-        } else {
-            drawing.setSelection(clickedPoint, evt.isControlDown());
-        }
-    }//GEN-LAST:event_drawingMouseClicked
-
-    private void drawingMouseWheelMoved(java.awt.event.MouseWheelEvent evt)//GEN-FIRST:event_drawingMouseWheelMoved
-    {//GEN-HEADEREND:event_drawingMouseWheelMoved
-        /*drawing.zoom(evt.getPreciseWheelRotation(),
-            MouseInfo.getPointerInfo().getLocation());*/
-    }//GEN-LAST:event_drawingMouseWheelMoved
-
-    private void jMenuItemRotateActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButtonRotateActionPerformed
-    {//GEN-HEADEREND:event_jButtonRotateActionPerformed
-        drawing.activateRotation(true);
-    }//GEN-LAST:event_jButtonRotateActionPerformed
-
-    private void jMenuItemFlipHorizontalActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jMenuItemFlipHorizontalActionPerformed
-    {//GEN-HEADEREND:event_jMenuItemFlipHorizontalActionPerformed
-        drawing.flipNetwork(true);
-    }//GEN-LAST:event_jMenuItemFlipHorizontalActionPerformed
-
-    private void jMenuItemFlipVerticalActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jMenuItemFlipVerticalActionPerformed
-    {//GEN-HEADEREND:event_jMenuItemFlipVerticalActionPerformed
-        drawing.flipNetwork(false);
-    }//GEN-LAST:event_jMenuItemFlipVerticalActionPerformed
-
-    private void jRadioButtonBendedLeadersActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jRadioButtonBendedLeadersActionPerformed
-    {//GEN-HEADEREND:event_jRadioButtonBendedLeadersActionPerformed
-        drawing.repaint();
-        config.setLeaderType("bended");
-    }//GEN-LAST:event_jRadioButtonBendedLeadersActionPerformed
-
-    private void jMenuItemFindActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jMenuItemFindActionPerformed
-    {//GEN-HEADEREND:event_jMenuItemFindActionPerformed
-        find.setVisible(true);
-    }//GEN-LAST:event_jMenuItemFindActionPerformed
-
-    private void jCheckBoxShowLabelsActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jCheckBoxShowLabelsActionPerformed
-    {//GEN-HEADEREND:event_jCheckBoxShowLabelsActionPerformed
-        drawing.repaintOnResize();
-    }//GEN-LAST:event_jCheckBoxShowLabelsActionPerformed
-
-    private void jCheckBoxColorLabelsActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jCheckBoxColorLabelsActionPerformed
-    {//GEN-HEADEREND:event_jCheckBoxColorLabelsActionPerformed
-        drawing.repaint();
-    }//GEN-LAST:event_jCheckBoxColorLabelsActionPerformed
-
-    private void jCheckBoxShowTrivialActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jCheckBoxShowTrivialActionPerformed
-    {//GEN-HEADEREND:event_jCheckBoxShowTrivialActionPerformed
-        Boolean showTrivial = jCheckBoxShowTrivial.isSelected();
-        drawing.showTrivial(showTrivial);
-        config.setShowTrivial(showTrivial);
-    }//GEN-LAST:event_jCheckBoxShowTrivialActionPerformed
-
-    private void jCheckBoxShowRangeActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jCheckBoxShowTrivialActionPerformed
-    {
-        Boolean showRange = jCheckBoxShowRange.isSelected();
-        drawing.showRange(showRange);
-        config.setShowRange(showRange);
-        drawing.repaint();
     }
 
-    private void jRadioButtonNoLeadersActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jRadioButtonNoLeadersActionPerformed
-    {//GEN-HEADEREND:event_jRadioButtonNoLeadersActionPerformed
-        drawing.repaint();
-        config.setLeaderType("none");
-    }//GEN-LAST:event_jRadioButtonNoLeadersActionPerformed
-
-    private void exitProgramActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_exitProgramActionPerformed
-    {//GEN-HEADEREND:event_exitProgramActionPerformed
-        log.info("Shutting down netview");
-        System.exit(0);
-    }//GEN-LAST:event_exitProgramActionPerformed
-
-    private void saveNetworkActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_saveNetworkActionPerformed
-    {//GEN-HEADEREND:event_saveNetworkActionPerformed
+    private void saveNetworkActionPerformed(java.awt.event.ActionEvent evt) {
         try {
             this.saveNetwork(networkFile);
-        }
-        catch (IOException ioe) {
+        } catch (IOException ioe) {
             errorMessage("Problem occured while trying to save network", ioe);
         }
-    }//GEN-LAST:event_saveNetworkActionPerformed
+    }
 
-    private void jRadioButtonSolidActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jRadioButtonSolidActionPerformed
-    {//GEN-HEADEREND:event_jRadioButtonSolidActionPerformed
-        config.setLeaderStroke("solid");
-        drawing.repaint();
-    }//GEN-LAST:event_jRadioButtonSolidActionPerformed
-
-    private void jRadioButtonDashedActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jRadioButtonDashedActionPerformed
-    {//GEN-HEADEREND:event_jRadioButtonDashedActionPerformed
-        config.setLeaderStroke("dashed");
-        drawing.repaint();
-    }//GEN-LAST:event_jRadioButtonDashedActionPerformed
-
-    private void jRadioButtonDottedActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jRadioButtonDottedActionPerformed
-    {//GEN-HEADEREND:event_jRadioButtonDottedActionPerformed
-        config.setLeaderType("dotted");
-        drawing.repaint();
-    }//GEN-LAST:event_jRadioButtonDottedActionPerformed
-
-    private void jMenuItemChangeLeaderColorActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jMenuItemChangeLeaderColorActionPerformed
-    {//GEN-HEADEREND:event_jMenuItemChangeLeaderColorActionPerformed
-        Color newLeaderColor = JColorChooser.showDialog(this, "Font color", drawing.leaderColor);
-        if (newLeaderColor != null) {
-            config.setLeaderColor(newLeaderColor);
-            drawing.leaderColor = newLeaderColor;
-            drawing.repaint();
-        }
-    }//GEN-LAST:event_jMenuItemChangeLeaderColorActionPerformed
-
-    private void jMenuItemSelectAllActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jMenuItemSelectAllActionPerformed
-    {//GEN-HEADEREND:event_jMenuItemSelectAllActionPerformed
+    private void jMenuItemSelectAllActionPerformed(java.awt.event.ActionEvent evt) {
         drawing.selectAll();
-    }//GEN-LAST:event_jMenuItemSelectAllActionPerformed
+    }
 
-    private void jCheckBoxFixLabelPositionsActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jCheckBoxFixLabelPositionsActionPerformed
-    {//GEN-HEADEREND:event_jCheckBoxFixLabelPositionsActionPerformed
-        boolean fix = jCheckBoxFixLabelPositions.isSelected();
+    private void jCheckBoxFixLabelPositionsActionPerformed(java.awt.event.ActionEvent evt) {
+        boolean fix = mnuLabelingFix.isSelected();
         drawing.fixLabels(!fix);
-    }//GEN-LAST:event_jCheckBoxFixLabelPositionsActionPerformed
+    }
 
 
     /**
@@ -771,11 +791,11 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
         java.awt.EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
-            try {
-                new NetView(input).setVisible(true);
-            } catch (IOException ex) {
-                errorMessage("Problem occured while running NetView", ex);
-            }
+                try {
+                    new NetView(input).setVisible(true);
+                } catch (IOException ex) {
+                    errorMessage("Problem occured while running NetView", ex);
+                }
             }
         });
     }
@@ -828,11 +848,9 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
 
             if (commandLine.getArgs().length > 1) {
                 throw new IOException("Expected only a single input file.");
-            }
-            else if (commandLine.getArgs().length == 1) {
+            } else if (commandLine.getArgs().length == 1) {
                 log.info("Opening netview with input file: " + inputfile.getAbsolutePath());
-            }
-            else {
+            } else {
                 log.info("Opening netview with no input");
             }
 
@@ -865,45 +883,7 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
         }
     }
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private Window drawing;
-    private javax.swing.JMenuItem exitProgram;
-    private javax.swing.JMenuItem formatNodes;
-    private javax.swing.JCheckBoxMenuItem jCheckBoxColorLabels;
-    private javax.swing.JCheckBoxMenuItem jCheckBoxFixLabelPositions;
-    private javax.swing.JCheckBoxMenuItem jCheckBoxShowLabels;
-    private javax.swing.JCheckBoxMenuItem jCheckBoxShowTrivial;
-    private javax.swing.JCheckBoxMenuItem jCheckBoxShowRange;
-    private javax.swing.JMenu jMenu4;
-    private javax.swing.JMenu jMenu6;
-    private javax.swing.JMenu jMenuEdit;
-    private javax.swing.JMenu jMenuFile;
-    private javax.swing.JMenuItem jMenuItemChangeLeaderColor;
-    private javax.swing.JMenuItem jMenuItemFind;
-    private javax.swing.JMenuItem jMenuItemFlipHorizontal;
-    private javax.swing.JMenuItem jMenuItemFlipVertical;
-    private javax.swing.JMenuItem jMenuItemRotate;
-    private javax.swing.JMenuItem jMenuItemSelectAll;
-    private javax.swing.JMenu jMenuLabeling;
-    private javax.swing.JMenu jMenuLayout;
-    private javax.swing.JRadioButtonMenuItem jRadioButtonBendedLeaders;
-    private javax.swing.JRadioButtonMenuItem jRadioButtonDashed;
-    private javax.swing.JRadioButtonMenuItem jRadioButtonDotted;
-    private javax.swing.JRadioButtonMenuItem jRadioButtonNoLeaders;
-    private javax.swing.JRadioButtonMenuItem jRadioButtonSlantedLeaders;
-    private javax.swing.JRadioButtonMenuItem jRadioButtonSolid;
-    private javax.swing.JRadioButtonMenuItem jRadioButtonStraightLeaders;
-    private javax.swing.JPopupMenu.Separator jSeparator1;
-    private javax.swing.JPopupMenu.Separator jSeparator2;
-    private javax.swing.JMenuBar menuBar;
-    private javax.swing.JMenuItem openFile;
-    private javax.swing.JMenuItem optimizeLabels;
-    private javax.swing.JPopupMenu popupMenu;
-    private javax.swing.JMenuItem saveImage;
-    private javax.swing.JMenuItem saveNetwork;
-    private javax.swing.JMenuItem saveNetworkAs;
 
-    // End of variables declaration//GEN-END:variables
     private Network network;
     private IdentifierList taxa;
     private static Leaders leaders;
@@ -957,8 +937,8 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
 
         this.saveNetwork(fileToSave);
 
-        setTitle(mainTitle + ": " + fileToSave.getAbsolutePath());
-        saveNetwork.setEnabled(true);
+        setTitle(TITLE + ": " + fileToSave.getAbsolutePath());
+        mnuFileSave.setEnabled(true);
         networkFile = fileToSave;
     }
 
@@ -979,10 +959,13 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
     }
 
     public boolean fixedLabelPositions() {
-        return jMenuLabeling.isSelected();
+        return mnuLabeling.isSelected();
     }
 
     private void preparePopupMenu() {
+
+        popupMenu = new javax.swing.JPopupMenu();
+
         JMenuItem copySelectedTaxa = new JMenuItem("Copy selected labels");
         copySelectedTaxa.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C,
                 java.awt.Event.CTRL_MASK));
@@ -1040,18 +1023,17 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
             network = new FlatNetwork(new PermutationSequenceDraw(nexus.getSplitSystem()).drawSplitSystem(-1.0));
 
             // Setup labels
-            for(Vertex v : network.getAllVertices()) {
+            for (Vertex v : network.getAllVertices()) {
                 if (v.getTaxa().size() > 0) {
                     String label = new String();
-                    for(Identifier i : v.getTaxa()) {
+                    for (Identifier i : v.getTaxa()) {
                         label = (i.getName() + ", ").concat(label);
                     }
                     label = label.substring(0, label.length() - 2);
                     v.setLabel(new NetworkLabel(label));
                 }
             }
-        }
-        else {
+        } else {
             network = nexus.getNetwork();
         }
         this.taxa = nexus.getTaxa();
@@ -1060,14 +1042,13 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
         if (nexus.getViewerConfig() != null) {
             this.config = nexus.getViewerConfig();
             applyConfig(this.config);
-        }
-        else {
+        } else {
             initConfig();
         }
 
         networkFile = inFile;
-        saveNetwork.setEnabled(true);
-        setTitle(mainTitle + ": " + inFile.getAbsolutePath());
+        mnuFileSave.setEnabled(true);
+        setTitle(TITLE + ": " + inFile.getAbsolutePath());
         drawNetwork();
         drawing.repaint();
     }
@@ -1077,27 +1058,26 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
     }
 
     boolean showLabels() {
-        return jCheckBoxShowLabels.isSelected();
+        return mnuLabelingShow.isSelected();
     }
 
     boolean colorLabels() {
-        return jCheckBoxColorLabels.isSelected();
+        return mnuLabelingColor.isSelected();
     }
 
     private void initConfig() {
-        resetlabelPositions = true;
         String leaderType = null;
-        if (jRadioButtonBendedLeaders.isSelected()) {
+        if (mnuLabelingLeadersBended.isSelected()) {
             leaderType = "bended";
-        } else if (jRadioButtonSlantedLeaders.isSelected()) {
+        } else if (mnuLabelingLeadersSlanted.isSelected()) {
             leaderType = "slanted";
-        } else if (jRadioButtonStraightLeaders.isSelected()) {
+        } else if (mnuLabelingLeadersStraight.isSelected()) {
             leaderType = "straight";
         }
         String leaderStroke = "solid";
-        if (jRadioButtonDashed.isSelected()) {
+        if (mnuLabelingLeadersDashed.isSelected()) {
             leaderStroke = "dashed";
-        } else if (jRadioButtonDotted.isSelected()) {
+        } else if (mnuLabelingLeadersDotted.isSelected()) {
             leaderStroke = "dotted";
         }
 
@@ -1105,50 +1085,50 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
                 leaderType,
                 leaderStroke,
                 drawing.leaderColor,
-                jCheckBoxShowTrivial.isSelected(),
-                jCheckBoxShowRange.isSelected(),
-                jCheckBoxShowLabels.isSelected(),
-                jCheckBoxColorLabels.isSelected(),
+                mnuViewShowTrivial.isSelected(),
+                mnuViewShowRange.isSelected(),
+                mnuLabelingShow.isSelected(),
+                mnuLabelingColor.isSelected(),
                 new HashSet<Integer>(),
                 null,
                 network == null ? null : network.getLabeledVertices());
     }
 
     boolean dashedLeaders() {
-        return jRadioButtonDashed.isSelected();
+        return mnuLabelingLeadersDashed.isSelected();
     }
 
     boolean dottedLeaders() {
-        return jRadioButtonDotted.isSelected();
+        return mnuLabelingLeadersDotted.isSelected();
     }
 
     private void applyConfig(ViewerConfig config) {
         String leaderType = config.getLeaderType();
         switch (leaderType) {
             case "straight":
-                jRadioButtonStraightLeaders.setSelected(true);
+                mnuLabelingLeadersStraight.setSelected(true);
                 break;
             case "bended":
-                jRadioButtonBendedLeaders.setSelected(true);
+                mnuLabelingLeadersBended.setSelected(true);
                 break;
             case "slanted":
-                jRadioButtonSlantedLeaders.setSelected(true);
+                mnuLabelingLeadersSlanted.setSelected(true);
                 break;
             default:
-                jRadioButtonNoLeaders.setSelected(true);
+                mnuLabelingLeadersNo.setSelected(true);
                 break;
         }
 
         String stroke = config.getLeaderStroke();
         switch (stroke) {
             case "dashed":
-                jRadioButtonDashed.setSelected(true);
+                mnuLabelingLeadersDashed.setSelected(true);
                 break;
             case "dotted":
-                jRadioButtonDotted.setSelected(true);
+                mnuLabelingLeadersDotted.setSelected(true);
                 break;
             default:
-                jRadioButtonSolid.setSelected(true);
+                mnuLabelingLeadersSolid.setSelected(true);
                 break;
         }
 
@@ -1157,10 +1137,10 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
             drawing.leaderColor = leaderColor;
         }
 
-        jCheckBoxColorLabels.setSelected(config.colorLabels());
-        jCheckBoxShowLabels.setSelected(config.showLabels());
-        jCheckBoxShowTrivial.setSelected(config.showTrivial());
-        jCheckBoxShowRange.setSelected(config.isShowRange());
+        mnuLabelingColor.setSelected(config.colorLabels());
+        mnuLabelingShow.setSelected(config.showLabels());
+        mnuViewShowTrivial.setSelected(config.showTrivial());
+        mnuViewShowRange.setSelected(config.isShowRange());
 
         Set<Integer> fixed = config.getFixed();
         for (Vertex vertex : network.getAllVertices()) {
@@ -1174,19 +1154,19 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
     }
 
     boolean leadersVisible() {
-        return !jRadioButtonNoLeaders.isSelected();
+        return !mnuLabelingLeadersNo.isSelected();
     }
 
     boolean straightLeaders() {
-        return jRadioButtonStraightLeaders.isSelected();
+        return mnuLabelingLeadersStraight.isSelected();
     }
 
     boolean bendedLeaders() {
-        return jRadioButtonBendedLeaders.isSelected();
+        return mnuLabelingLeadersBended.isSelected();
     }
 
     boolean slantedLeaders() {
-        return jRadioButtonSlantedLeaders.isSelected();
+        return mnuLabelingLeadersSlanted.isSelected();
     }
 
     void setRatio(double ratio) {
@@ -1201,8 +1181,7 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
             } else {
                 dtde.rejectDrag();
             }
-        }
-        catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException e) {
             dtde.rejectDrag();
         }
     }
