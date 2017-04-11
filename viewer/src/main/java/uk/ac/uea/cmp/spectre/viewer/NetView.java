@@ -147,8 +147,6 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
     public NetView() throws IOException {
         prepareViewer();
         initConfig();
-        mnuFileSave.setEnabled(false);
-        drawing.repaintOnResize();
     }
 
     /**
@@ -161,24 +159,6 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
     public NetView(File inFile) throws IOException {
         prepareViewer();
         openNetwork(inFile);
-    }
-
-    /**
-     * Creates a newview instance with the given network loaded at startup
-     * Intended to be used from other SPECTRE GUIs.
-     *
-     * @param network
-     * @param inFile
-     * @param taxa
-     */
-    public NetView(Network network, File inFile, IdentifierList taxa) {
-        prepareViewer();
-        directory = inFile.getPath();
-        this.network = network;
-        this.taxa = taxa;
-        setTitle(TITLE + ": " + inFile.getAbsolutePath());
-        drawNetwork();
-        drawing.repaint();
     }
 
     private void prepareDrawing() {

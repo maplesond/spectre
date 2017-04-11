@@ -24,8 +24,10 @@ import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.CircularOrderingAlg
 import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.nm.weighting.Weightings;
 import uk.ac.uea.cmp.spectre.core.ui.gui.JobController;
 import uk.ac.uea.cmp.spectre.core.ui.gui.StatusTracker;
+import uk.ac.uea.cmp.spectre.core.ui.gui.StatusTrackerWithView;
 import uk.ac.uea.cmp.spectre.core.ui.gui.ToolHost;
 import uk.ac.uea.cmp.spectre.core.util.LogConfig;
+import uk.ac.uea.cmp.spectre.viewer.NetView;
 
 import javax.swing.*;
 import java.awt.*;
@@ -76,6 +78,7 @@ public class NetMakeGUI extends JFrame implements ToolHost {
     private JPanel pnlControlButtons;
     private JButton cmdCancel;
     private JButton cmdRun;
+    private JButton cmdViewOutput;
     private JLabel lblStatus;
     private JProgressBar progStatus;
 
@@ -85,9 +88,14 @@ public class NetMakeGUI extends JFrame implements ToolHost {
     private JobController go_control;
     private NetMakeRunner netMakeRunner;
 
+    private File lastOutput;
+    private File cwd;
+
     public NetMakeGUI() {
         initComponents();
         setTitle(TITLE);
+        this.lastOutput = null;
+        this.cwd = null;
 
         cmdRun.setEnabled(true);
 
@@ -381,10 +389,22 @@ public class NetMakeGUI extends JFrame implements ToolHost {
         cmdCancel = new JButton();
         cmdCancel.setText("Cancel");
 
+        cmdViewOutput = new JButton();
+        cmdViewOutput.setText("View Network");
+        cmdViewOutput.setToolTipText("Visualise the produced network in NetView");
+        cmdViewOutput.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmdViewActionPerformed(evt);
+            }
+        });
+        cmdViewOutput.setEnabled(false);
+
         pnlControlButtons = new JPanel();
         pnlControlButtons.setLayout(new BoxLayout(pnlControlButtons, BoxLayout.LINE_AXIS));
         pnlControlButtons.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
         pnlControlButtons.add(Box.createHorizontalGlue());
+        pnlControlButtons.add(cmdViewOutput);
+        pnlControlButtons.add(Box.createRigidArea(new Dimension(10, 0)));
         pnlControlButtons.add(cmdRun);
         pnlControlButtons.add(Box.createRigidArea(new Dimension(10, 0)));
         pnlControlButtons.add(cmdCancel);
@@ -441,11 +461,23 @@ public class NetMakeGUI extends JFrame implements ToolHost {
 
             if (alg == CircularOrderingAlgorithms.NEIGHBORNET) {
                 this.enableWeightingsPanel(false);
+                this.enableTreeOutput(false);
             }
             else if (alg == CircularOrderingAlgorithms.NETMAKE) {
                 this.enableWeightingsPanel(true);
+                this.enableTreeOutput(true);
             }
         }
+    }
+
+    private void enableTreeOutput(boolean b) {
+        this.lblOutputTree.setEnabled(b);
+        this.txtOutputTree.setEnabled(b);
+        this.cmdOutputTree.setEnabled(b);
+    }
+
+    private void cmdViewActionPerformed(ActionEvent evt) {
+        NetView.main(new String[]{this.lastOutput.getAbsolutePath(), "--dispose_on_close"});
     }
 
     /**
@@ -455,7 +487,7 @@ public class NetMakeGUI extends JFrame implements ToolHost {
      */
     private void cmdOutputNetworkActionPerformed(java.awt.event.ActionEvent evt) {
 
-        final JFileChooser fc = new JFileChooser();
+        final JFileChooser fc = cwd == null ? new JFileChooser() : new JFileChooser(cwd);
         if (evt.getSource() == cmdOutputNetwork) {
             int returnVal = fc.showSaveDialog(NetMakeGUI.this);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -463,6 +495,7 @@ public class NetMakeGUI extends JFrame implements ToolHost {
                 File file = fc.getSelectedFile();
                 String z = file.getAbsolutePath();
                 txtOutputNetwork.setText(z);
+                this.cwd = file.getParentFile();
             } else {
                 log.debug("Open command cancelled by user.");
             }
@@ -476,7 +509,7 @@ public class NetMakeGUI extends JFrame implements ToolHost {
      */
     private void cmdOutputTreeActionPerformed(java.awt.event.ActionEvent evt) {
 
-        final JFileChooser fc = new JFileChooser();
+        final JFileChooser fc = cwd == null ? new JFileChooser() : new JFileChooser(cwd);
         if (evt.getSource() == cmdOutputTree) {
             int returnVal = fc.showSaveDialog(NetMakeGUI.this);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -484,6 +517,7 @@ public class NetMakeGUI extends JFrame implements ToolHost {
                 File file = fc.getSelectedFile();
                 String z = file.getAbsolutePath();
                 txtOutputTree.setText(z);
+                this.cwd = file.getParentFile();
             } else {
                 log.debug("Open command cancelled by user.");
             }
@@ -497,7 +531,7 @@ public class NetMakeGUI extends JFrame implements ToolHost {
      */
     private void cmdInputActionPerformed(java.awt.event.ActionEvent evt) {
 
-        final JFileChooser fc = new JFileChooser();
+        final JFileChooser fc = cwd == null ? new JFileChooser() : new JFileChooser(cwd);
         if (evt.getSource() == cmdInput) {
             int returnVal = fc.showOpenDialog(NetMakeGUI.this);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -505,6 +539,7 @@ public class NetMakeGUI extends JFrame implements ToolHost {
                 String z = "";
                 z = file.getAbsolutePath();
                 txtInput.setText(z);
+                this.cwd = file.getParentFile();
             } else {
                 log.debug("Open command cancelled by user.");
             }
@@ -521,8 +556,13 @@ public class NetMakeGUI extends JFrame implements ToolHost {
         NetMakeOptions options = buildNetMakeOptions();
 
         if (options != null)
-            this.netMakeRunner.runNetMake(options, new StatusTracker(this.progStatus, this.lblStatus));
+            if (options.getOutputNetwork() == null || options.getOutputNetwork().getName().isEmpty()) {
+                showErrorDialog("Can't run without circular ordering file specified.");
+                return;
+            }
 
+            this.lastOutput = options.getOutputNetwork();
+            this.netMakeRunner.runNetMake(options, new StatusTrackerWithView(this.progStatus, this.lblStatus, this.cmdViewOutput));
     }
 
 
