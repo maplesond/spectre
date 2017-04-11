@@ -52,9 +52,7 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -82,7 +80,7 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
     private JFrame format;
     private JFrame formatLabels;
     private DropTarget dt;
-    private Window drawing;
+    public Window drawing;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JMenu mnuFile;
     private javax.swing.JMenuItem mnuFileOpen;
@@ -127,6 +125,10 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
 
     private void prepareViewer() {
 
+        prepareMenu();
+
+        preparePopupMenu();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle(TITLE);
         this.setPreferredSize(new Dimension(800, 600));
@@ -135,9 +137,6 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
         setForeground(java.awt.Color.white);
         setIconImage((new ImageIcon("logo.png")).getImage());
 
-        prepareDrawing();
-        prepareMenu();
-        preparePopupMenu();
     }
 
     /**
@@ -146,7 +145,6 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
      */
     public NetView() throws IOException {
         prepareViewer();
-        initConfig();
     }
 
     /**
@@ -158,6 +156,8 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
      */
     public NetView(File inFile) throws IOException {
         prepareViewer();
+        prepareDrawing();
+        initConfig();
         openNetwork(inFile);
     }
 
@@ -232,9 +232,22 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
                         .addGap(0, 322, Short.MAX_VALUE)
         );
 
-        dt = new DropTarget(drawing, this);
+        dt = new DropTarget(this, this);
         format = new Formating(drawing);
         formatLabels = new FormatLabels(drawing);
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+
+        layout.setHorizontalGroup(
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(drawing, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        layout.setVerticalGroup(
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(drawing, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+
     }
 
     @SuppressWarnings("unchecked")
@@ -647,19 +660,6 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
         menuBar.add(mnuLabeling);
 
         setJMenuBar(menuBar);
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(drawing, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(drawing, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
-
-        pack();
     }
 
 
@@ -679,6 +679,10 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
             File inFile = fileChooser.getSelectedFile();
             directory = inFile.getPath();
             try {
+                if (drawing == null) {
+                    prepareDrawing();
+                    initConfig();
+                }
                 openNetwork(inFile);
             } catch (IOException e) {
                 errorMessage("Error opening file", e);
@@ -1118,6 +1122,10 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
 
                     File file = new File(new URI(token));
                     directory = file.getPath();
+                    if (drawing == null) {
+                        prepareDrawing();
+                        initConfig();
+                    }
                     openNetwork(file);
                 }
                 dtde.dropComplete(true);
@@ -1186,17 +1194,16 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
                 public void run() {
                     try {
                         NetView nv = inputfile == null ? new NetView() : new NetView(inputfile);
-                        log.info("Viewer initalised");
-                        nv.setVisible(true);
+                        log.info("Viewer initialised");
                         nv.setDefaultCloseOperation(commandLine.hasOption(OPT_DISPOSE) ? WindowConstants.DISPOSE_ON_CLOSE : javax.swing.WindowConstants.EXIT_ON_CLOSE);
-                        nv.revalidate();
-                        nv.repaint();
+                        nv.setVisible(true);
                     } catch (Exception e) {
-                        errorMessage("Unexpected problem occured while running NetView", e);
+                        errorMessage("Unexpected problem occurred while running NetView", e);
                         System.exit(4);
                     }
                 }
             });
+            return;
         } catch (Exception e) {
             System.err.println("\nException: " + e.toString());
             System.err.println("\nStack trace:");
