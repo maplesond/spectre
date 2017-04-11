@@ -381,7 +381,7 @@ public class FlatNJ {
             LogConfig.defaultConfig(commandLine.hasOption(OPT_VERBOSE));
 
             // Parsing the command line.
-            log.info("Running Flat Net Joining Algorithm");
+            log.info("Running Flat Neighbor Joining (FlatNJ) Algorithm");
             log.debug("Parsing command line options");
 
             if (commandLine.getArgs().length == 0) {

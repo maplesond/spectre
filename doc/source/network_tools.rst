@@ -10,12 +10,13 @@ Netmake
 
 Netmake creates a compatible split system with circular ordering from a distance matrix.  Netmake's default mode uses the
 well-known Neighbor-Net algorithm (Bryant and Moulton, 2004) for quickly (O(n^3)) constructing circular split systems.
-NeighborNet is an extension of the Neighbor Joining algorithm that is used to create trees, with the difference that instead
+Neighbor-Net is an extension of the Neighbor Joining (NJ) algorithm that is used to create trees, with the difference that instead
 of agglomerating two neighbors into a new node immediately, Neighbor-Net pairs up another set of candidate nodes before agglomerating
 into a new node.  This process generates a collection of splits for which it might not be possible to represent in a single
 tree, hence can be used to create split networks.  Running Neighbor-Net via netmake is straight forward. The only option
 the user might wish to specify is the output_prefix. The input file can be either nexus format file containing a distances
-block, or a phylip format distance matrix and netmake will produce a circular split network in nexus format.  So a typical
+block, a phylip format distance matrix or a emboss format distance matrix.  Note if you only have multiple sequence alignment data
+we recommend converting to a distance matrix using a tool like emboss or phylip.  Netmake will produce a circular split network in nexus format.  So a typical
 Neighbor-Net run producing an output file called "bees_out.network.nex" looks like this::
 
   netmake -o bees_out bees.nex
