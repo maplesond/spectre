@@ -1284,6 +1284,11 @@ public class Window extends JPanel implements KeyListener {
         this.computeIntegerCoordinates(this.ratio);
     }
 
+    public double getRatio() {
+        return ratio;
+    }
+
+
     private class State {
 
         Map<ViewerLabel, int[]> labelPositions;

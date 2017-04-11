@@ -185,7 +185,7 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
         drawing = new Window(this);
         drawing.addMouseWheelListener(new java.awt.event.MouseWheelListener() {
             public void mouseWheelMoved(java.awt.event.MouseWheelEvent evt) {
-                drawing.zoom(evt.getPreciseWheelRotation() * 100.0);
+                drawing.zoom(evt.getPreciseWheelRotation() * drawing.getRatio() / 50.0);
             }
         });
         drawing.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -433,7 +433,7 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
                 java.awt.Event.CTRL_MASK));
         mnuViewZoomin.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                drawing.zoom(-500.0);
+                drawing.zoom(-drawing.getRatio() / 10.0);
             }
         });
         mnuView.add(mnuViewZoomin);
@@ -444,7 +444,7 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
                 java.awt.Event.CTRL_MASK));
         mnuViewZoomout.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                drawing.zoom(500.0);
+                drawing.zoom(drawing.getRatio() / 10.0);
             }
         });
         mnuView.add(mnuViewZoomout);
