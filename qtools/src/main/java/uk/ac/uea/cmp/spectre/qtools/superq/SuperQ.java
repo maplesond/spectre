@@ -51,25 +51,6 @@ public class SuperQ extends RunnableTool {
         this.options = options;
     }
 
-    protected void validateOptions() throws IOException {
-        if (this.options == null) {
-            throw new IOException("Must specify a valid set of parameters to control superQ.");
-        }
-
-        if (this.options.getInputFiles() == null || this.options.getInputFiles().length == 0) {
-            throw new IOException("Must specify at least one valid input file.");
-        }
-
-        if (this.options.getOutputFile() == null || this.options.getOutputFile().isDirectory()) {
-            throw new IOException("Must specify a valid path where to create the output file.");
-        }
-
-    }
-
-    protected void printOptions() {
-        log.info("Recognised these options:\n\n" +
-                this.options.toString());
-    }
 
     @Override
     public void run() {
@@ -77,10 +58,21 @@ public class SuperQ extends RunnableTool {
         try {
 
             // Check we have something sensible to work with
-            validateOptions();
+            if (this.options == null) {
+                throw new IOException("Must specify a valid set of parameters to control superQ.");
+            }
+
+            if (this.options.getInputFiles() == null || this.options.getInputFiles().length == 0) {
+                throw new IOException("Must specify at least one valid input file.");
+            }
+
+            if (this.options.getOutputFile() == null || this.options.getOutputFile().isDirectory()) {
+                throw new IOException("Must specify a valid path where to create the output file.");
+            }
 
             // Print the validated options
-            printOptions();
+            log.info("Recognised these options:\n\n" +
+                    this.options.toString());
 
             // Get a shortcut to runtime object for checking memory usage
             Runtime rt = Runtime.getRuntime();

@@ -43,6 +43,7 @@ import uk.ac.uea.cmp.spectre.core.ui.cli.CommandLineHelper;
 import uk.ac.uea.cmp.spectre.core.ui.gui.LookAndFeel;
 import uk.ac.uea.cmp.spectre.core.ui.gui.geom.Leaders;
 import uk.ac.uea.cmp.spectre.core.util.LogConfig;
+import uk.ac.uea.cmp.spectre.flatnj.FlatNJGUI;
 import uk.ac.uea.cmp.spectre.net.netmake.NetMakeGUI;
 import uk.ac.uea.cmp.spectre.net.netme.NetMEGUI;
 import uk.ac.uea.cmp.spectre.qtools.superq.SuperQGUI;
@@ -829,7 +830,36 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Call netmake GUI
+                try {
+                    EventQueue.invokeLater(new Runnable() {
+
+                        @Override
+                        public void run() {
+
+                            FlatNJGUI fnj = new FlatNJGUI();
+                            fnj.addPropertyChangeListener("done", new PropertyChangeListener() {
+                                @Override
+                                public void propertyChange(PropertyChangeEvent evt) {
+                                    if (evt.getNewValue() != null) {
+                                        File f = (File)evt.getNewValue();
+                                        if (f.exists()) {
+                                            try {
+                                                openNetwork(f);
+                                            }
+                                            catch (Exception e) {
+                                                errorMessage("Error trying to view network", e);
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                            fnj.setVisible(true);
+                        }
+                    });
+                    return;
+                } catch (Exception ex) {
+                    errorMessage("Unexpected problem occurred with Neighbor-Net", ex);
+                }
             }
         });
         mnuTools.add(mnuToolsFlatnj);

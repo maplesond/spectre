@@ -46,12 +46,13 @@ public class FlatNJITCase {
     @Test
     public void testFourPoints() throws OptimiserException, IOException {
         
-        FlatNJ flatnj = new FlatNJ(
-            FileUtils.toFile(FlatNJITCase.class.getResource("/tw_fourpoint.faa")),
-            new File(simpleOutput, "test.nex"),
-            new JOptimizer());
+        FlatNJOptions options = new FlatNJOptions();
+        options.setInFile(FileUtils.toFile(FlatNJITCase.class.getResource("/tw_fourpoint.faa")));
+        options.setOutputFile(new File(simpleOutput, "test.nex"));
 
-        flatnj.execute();
+        FlatNJ flatnj = new FlatNJ(options);
+
+        flatnj.run();
         
         
     }

@@ -67,7 +67,7 @@
                     </platforms>
                     <programs>
                         <program>
-                            <mainClass>uk.ac.uea.cmp.spectre.flatnj.FlatNJ</mainClass>
+                            <mainClass>uk.ac.uea.cmp.spectre.flatnj.FlatNJCLI</mainClass>
                             <id>flatnj</id>
                             <jvmSettings>
                                 <extraArguments>
@@ -95,7 +95,6 @@
                         <configuration>
                             <target>
                                 <chmod file="${build-dir}/bin/flatnj" perm="755"/>
-                                <chmod file="${build-dir}/bin/gen4s" perm="755"/>
                             </target>
                         </configuration>
                     </execution>
