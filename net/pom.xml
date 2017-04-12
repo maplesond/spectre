@@ -58,10 +58,10 @@
                                 </extraArguments>
                             </jvmSettings>
                         </program>
-                        <program>
+                        <!--<program>
                             <mainClass>uk.ac.uea.cmp.spectre.net.netmake.NetMakeGUI</mainClass>
                             <id>netmake-gui</id>
-                        </program>
+                        </program>-->
                         <program>
                             <mainClass>uk.ac.uea.cmp.spectre.net.netme.NetMECLI</mainClass>
                             <id>netme</id>
@@ -72,10 +72,10 @@
                                 </extraArguments>
                             </jvmSettings>
                         </program>
-                        <program>
+                        <!--<program>
                             <mainClass>uk.ac.uea.cmp.spectre.net.netme.NetMEGUI</mainClass>
                             <id>netme-gui</id>
-                        </program>
+                        </program>-->
                     </programs>
                 </configuration>
             </plugin>
@@ -95,9 +95,9 @@
                         <configuration>
                             <target>
                                 <chmod file="${build-dir}/bin/netmake" perm="755"/>
-                                <chmod file="${build-dir}/bin/netmake-gui" perm="755"/>
+                                <!--<chmod file="${build-dir}/bin/netmake-gui" perm="755"/>-->
                                 <chmod file="${build-dir}/bin/netme" perm="755"/>
-                                <chmod file="${build-dir}/bin/netme-gui" perm="755"/>
+                                <!--<chmod file="${build-dir}/bin/netme-gui" perm="755"/>-->
                             </target>
                         </configuration>
                     </execution>
@@ -113,11 +113,6 @@
             <groupId>uk.ac.uea.cmp.spectre</groupId>
             <artifactId>core</artifactId>
             <version>${spectre-version}</version>
-        </dependency>
-        <dependency>
-            <groupId>uk.ac.uea.cmp.spectre</groupId>
-            <artifactId>viewer</artifactId>
-            <version>0.6.0</version>
         </dependency>
 
     </dependencies>

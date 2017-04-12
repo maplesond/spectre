@@ -77,10 +77,10 @@
                                 </extraArguments>
                             </jvmSettings>
                         </program>
-                        <program>
+                       <!-- <program>
                             <mainClass>uk.ac.uea.cmp.spectre.qtools.superq.SuperQGUI</mainClass>
                             <id>superq-gui</id>
-                        </program>
+                        </program>-->
                         <program>
                             <mainClass>uk.ac.uea.cmp.spectre.qtools.qnet.QNetCLI</mainClass>
                             <id>qnet</id>
@@ -91,10 +91,10 @@
                                 </extraArguments>
                             </jvmSettings>
                         </program>
-                        <program>
+                        <!--<program>
                             <mainClass>uk.ac.uea.cmp.spectre.qtools.qnet.QNetGUI</mainClass>
                             <id>qnet-gui</id>
-                        </program>
+                        </program>-->
                         <program>
                             <mainClass>uk.ac.uea.cmp.spectre.qtools.qmaker.QMaker</mainClass>
                             <id>qmaker</id>
@@ -144,9 +144,7 @@
                         <configuration>
                             <target>
                                 <chmod file="${build-dir}/bin/superq" perm="755"/>
-                                <chmod file="${build-dir}/bin/superq-gui" perm="755"/>
                                 <chmod file="${build-dir}/bin/qnet" perm="755"/>
-                                <chmod file="${build-dir}/bin/qnet-gui" perm="755"/>
                                 <chmod file="${build-dir}/bin/qmaker" perm="755"/>
                                 <chmod file="${build-dir}/bin/scaling" perm="755"/>
                                 <chmod file="${build-dir}/bin/sfilter" perm="755"/>
@@ -190,17 +188,6 @@
             </exclusions>
         </dependency>
 
-        <dependency>
-            <groupId>uk.ac.uea.cmp.spectre</groupId>
-            <artifactId>viewer</artifactId>
-            <version>${spectre-version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>uk.ac.uea.cmp.spectre</groupId>
-                    <artifactId>core</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
 
     </dependencies>
 

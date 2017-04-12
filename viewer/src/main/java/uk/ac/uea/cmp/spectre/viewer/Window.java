@@ -25,7 +25,6 @@ import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
-import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.*;
@@ -68,7 +67,7 @@ public class Window extends JPanel implements KeyListener {
         this(null);
     }
 
-    public Window(NetView frame) {
+    public Window(Spectre frame) {
 
         externalFrame = frame;
 
@@ -119,7 +118,7 @@ public class Window extends JPanel implements KeyListener {
     Stack<State> undo = new Stack();
     Stack<State> redo = new Stack();
     State currentState;
-    NetView externalFrame;
+    Spectre externalFrame;
     double ratio;
     Double minX = null;
     Double maxX = null;

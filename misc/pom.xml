@@ -52,13 +52,13 @@
                             <mainClass>uk.ac.uea.cmp.spectre.tools.convertor.DistanceMatrixConvertor</mainClass>
                             <id>distmxconv</id>
                         </program>
-                        <program>
+                        <!--<program>
                             <mainClass>uk.ac.uea.cmp.spectre.tools.phycor.PhylipCorrector</mainClass>
                             <id>phycor</id>
-                        </program>
+                        </program>-->
                         <program>
                             <mainClass>uk.ac.uea.cmp.spectre.tools.rdg.RandomDistanceGeneratorTool</mainClass>
-                            <id>rdg</id>
+                            <id>random_distmat</id>
                         </program>
                     </programs>
                 </configuration>
@@ -79,8 +79,8 @@
                         <configuration>
                             <target>
                                 <chmod file="${build-dir}/bin/distmxconv" perm="755"/>
-                                <chmod file="${build-dir}/bin/phycor" perm="755"/>
-                                <chmod file="${build-dir}/bin/rdg" perm="755"/>
+                                <!--<chmod file="${build-dir}/bin/phycor" perm="755"/>-->
+                                <chmod file="${build-dir}/bin/random_distmat" perm="755"/>
                             </target>
                         </configuration>
                     </execution>

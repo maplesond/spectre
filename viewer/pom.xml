@@ -48,8 +48,8 @@
                     </platforms>
                     <programs>
                         <program>
-                            <mainClass>uk.ac.uea.cmp.spectre.viewer.NetView</mainClass>
-                            <id>netview</id>
+                            <mainClass>uk.ac.uea.cmp.spectre.viewer.Spectre</mainClass>
+                            <id>spectre</id>
                         </program>
                     </programs>
                 </configuration>
@@ -69,7 +69,7 @@
                         </goals>
                         <configuration>
                             <target>
-                                <chmod file="${build-dir}/bin/netview" perm="755"/>
+                                <chmod file="${build-dir}/bin/spectre" perm="755"/>
                             </target>
                         </configuration>
                     </execution>
@@ -89,6 +89,18 @@
             <version>${spectre-version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>uk.ac.uea.cmp.spectre</groupId>
+            <artifactId>net</artifactId>
+            <version>${spectre-version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>uk.ac.uea.cmp.spectre</groupId>
+            <artifactId>qtools</artifactId>
+            <version>2.1.0</version>
+        </dependency>
+
 
         <!-- itext pdf -->
 
@@ -97,6 +109,7 @@
             <artifactId>itextpdf</artifactId>
             <version>5.5.0</version>
         </dependency>
+
 
     </dependencies>
 

@@ -28,7 +28,6 @@ import uk.ac.uea.cmp.spectre.core.ui.gui.StatusTrackerWithView;
 import uk.ac.uea.cmp.spectre.core.ui.gui.ToolHost;
 import uk.ac.uea.cmp.spectre.core.util.LogConfig;
 import uk.ac.uea.cmp.spectre.qtools.superq.problems.SecondaryProblemFactory;
-import uk.ac.uea.cmp.spectre.viewer.NetView;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -381,7 +380,7 @@ public class SuperQGUI extends JFrame implements ToolHost {
 
         cmdViewOutput = new JButton();
         cmdViewOutput.setText("View Network");
-        cmdViewOutput.setToolTipText("Visualise the produced network in NetView");
+        cmdViewOutput.setToolTipText("Visualise the produced network in Spectre");
         cmdViewOutput.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cmdViewActionPerformed(evt);
@@ -424,7 +423,7 @@ public class SuperQGUI extends JFrame implements ToolHost {
 
         // ***** Layout *****
 
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setResizable(false);
 
         getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.PAGE_AXIS));
@@ -552,7 +551,8 @@ public class SuperQGUI extends JFrame implements ToolHost {
      * @param evt
      */
     private void cmdViewActionPerformed(ActionEvent evt) {
-        NetView.main(new String[]{this.lastOutput.getAbsolutePath(), "--dispose_on_close"});
+        this.firePropertyChange("done", null, this.lastOutput);
+        //Spectre.main(new String[]{this.lastOutput.getAbsolutePath(), "--dispose_on_close"});
     }
 
     /**

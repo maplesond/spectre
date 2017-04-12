@@ -43,6 +43,9 @@ import uk.ac.uea.cmp.spectre.core.ui.cli.CommandLineHelper;
 import uk.ac.uea.cmp.spectre.core.ui.gui.LookAndFeel;
 import uk.ac.uea.cmp.spectre.core.ui.gui.geom.Leaders;
 import uk.ac.uea.cmp.spectre.core.util.LogConfig;
+import uk.ac.uea.cmp.spectre.net.netmake.NetMakeGUI;
+import uk.ac.uea.cmp.spectre.net.netme.NetMEGUI;
+import uk.ac.uea.cmp.spectre.qtools.superq.SuperQGUI;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -54,6 +57,8 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -66,15 +71,15 @@ import java.util.StringTokenizer;
 /**
  * @author balvociute and maplesond
  */
-public class NetView extends javax.swing.JFrame implements DropTargetListener {
+public class Spectre extends javax.swing.JFrame implements DropTargetListener {
 
-    private static Logger log = LoggerFactory.getLogger(NetView.class);
+    private static Logger log = LoggerFactory.getLogger(Spectre.class);
 
     private static String BIN_NAME = "netview";
 
     private static String OPT_VERBOSE = "verbose";
     private static String OPT_DISPOSE = "dispose_on_close";
-    private final String TITLE = "NetView";
+    private final String TITLE = "SPECTRE";
 
     private Point startPoint;
     private JFrame format;
@@ -118,6 +123,13 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
     private javax.swing.JRadioButtonMenuItem mnuLabelingLeadersSlanted;
     private javax.swing.JRadioButtonMenuItem mnuLabelingLeadersSolid;
     private javax.swing.JRadioButtonMenuItem mnuLabelingLeadersStraight;
+    private javax.swing.JMenu mnuTools;
+    private javax.swing.JMenuItem mnuToolsNeighbornet;
+    private javax.swing.JMenuItem mnuToolsNetmake;
+    private javax.swing.JMenuItem mnuToolsNetme;
+    private javax.swing.JMenuItem mnuToolsFlatnj;
+    private javax.swing.JMenuItem mnuToolsSuperq;
+
 
     private javax.swing.JPopupMenu popupMenu;
 
@@ -145,8 +157,7 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
     private void prepareOpenPane() {
         pnlOpen.setLayout(new GridBagLayout());
 
-        lblOpenMsg = new JLabel();
-        lblOpenMsg.setText("To open a network or split system, use the File menu or drop the file into this pane.");
+        lblOpenMsg = new JLabel("<html><div style='text-align: center;'>To open a network or split system, use the File menu or drop the file into this pane.<br>Alternatively, run a SPECTRE tool via the Tools menu.</html>");
         pnlOpen.add(lblOpenMsg);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -168,7 +179,7 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
      * Creates new netview instance without any input data.
      * Normal initialisation.
      */
-    public NetView() throws IOException {
+    public Spectre() throws IOException {
         prepareViewer();
         prepareOpenPane();
     }
@@ -180,10 +191,8 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
      * @param inFile
      * @throws IOException
      */
-    public NetView(File inFile) throws IOException {
+    public Spectre(File inFile) throws IOException {
         prepareViewer();
-        prepareDrawing();
-        initConfig();
         openNetwork(inFile);
     }
 
@@ -684,6 +693,190 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
 
         menuBar.add(mnuLabeling);
 
+        mnuTools = new javax.swing.JMenu();
+        mnuTools.setText("Tools");
+        mnuTools.setMnemonic('T');
+
+        mnuToolsNeighbornet = new javax.swing.JMenuItem();
+        mnuToolsNeighbornet.setText("Neighbor-Net");
+        mnuToolsNeighbornet.setMnemonic('N');
+        mnuToolsNeighbornet.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    EventQueue.invokeLater(new Runnable() {
+
+                        @Override
+                        public void run() {
+
+                            NetMakeGUI nn = new NetMakeGUI();
+                            nn.neighbornetConfig();
+                            nn.addPropertyChangeListener("done", new PropertyChangeListener() {
+                                @Override
+                                public void propertyChange(PropertyChangeEvent evt) {
+                                    if (evt.getNewValue() != null) {
+                                        File f = (File)evt.getNewValue();
+                                        if (f.exists()) {
+                                            try {
+                                                openNetwork(f);
+                                            }
+                                            catch (Exception e) {
+                                                errorMessage("Error trying to view network", e);
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                            nn.setVisible(true);
+                        }
+                    });
+                    return;
+                } catch (Exception ex) {
+                    errorMessage("Unexpected problem occurred with Neighbor-Net", ex);
+                }
+            }
+        });
+        mnuTools.add(mnuToolsNeighbornet);
+
+        mnuToolsNetmake = new javax.swing.JMenuItem();
+        mnuToolsNetmake.setText("Netmake");
+        mnuToolsNetmake.setMnemonic('K');
+        mnuToolsNetmake.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    EventQueue.invokeLater(new Runnable() {
+
+                        @Override
+                        public void run() {
+
+                            NetMakeGUI nm = new NetMakeGUI();
+                            nm.netmakeConfig();
+                            nm.addPropertyChangeListener("done", new PropertyChangeListener() {
+                                @Override
+                                public void propertyChange(PropertyChangeEvent evt) {
+                                    if (evt.getNewValue() != null) {
+                                        File f = (File)evt.getNewValue();
+                                        if (f.exists()) {
+                                            try {
+                                                openNetwork(f);
+                                            }
+                                            catch (Exception e) {
+                                                errorMessage("Error trying to view network", e);
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                            nm.setVisible(true);
+                        }
+                    });
+                    return;
+                } catch (Exception ex) {
+                    errorMessage("Unexpected problem occurred with Netmake", ex);
+                }
+            }
+        });
+        mnuTools.add(mnuToolsNetmake);
+
+        mnuToolsNetme = new javax.swing.JMenuItem();
+        mnuToolsNetme.setText("NetME");
+        mnuToolsNetme.setMnemonic('M');
+        mnuToolsNetme.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    EventQueue.invokeLater(new Runnable() {
+
+                        @Override
+                        public void run() {
+
+                            NetMEGUI nm = new NetMEGUI();
+                            /*nm.addPropertyChangeListener("done", new PropertyChangeListener() {
+                                @Override
+                                public void propertyChange(PropertyChangeEvent evt) {
+                                    if (evt.getNewValue() != null) {
+                                        File f = (File)evt.getNewValue();
+                                        if (f.exists()) {
+                                            try {
+                                                openNetwork(f);
+                                            }
+                                            catch (Exception e) {
+                                                errorMessage("Error trying to view network", e);
+                                            }
+                                        }
+                                    }
+                                }
+                            });*/
+                            nm.setVisible(true);
+                        }
+                    });
+                    return;
+                } catch (Exception ex) {
+                    errorMessage("Unexpected problem occurred with NetME", ex);
+                }
+            }
+        });
+        mnuTools.add(mnuToolsNetme);
+
+        mnuToolsFlatnj = new javax.swing.JMenuItem();
+        mnuToolsFlatnj.setText("Flat Neighbor Joining (FlatNJ)");
+        mnuToolsFlatnj.setMnemonic('F');
+        mnuToolsFlatnj.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Call netmake GUI
+            }
+        });
+        mnuTools.add(mnuToolsFlatnj);
+
+        mnuToolsSuperq = new javax.swing.JMenuItem();
+        mnuToolsSuperq.setText("SuperQ");
+        mnuToolsSuperq.setMnemonic('S');
+        mnuToolsSuperq.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    EventQueue.invokeLater(new Runnable() {
+
+                        @Override
+                        public void run() {
+
+                            SuperQGUI sq = new SuperQGUI();
+                            sq.addPropertyChangeListener("done", new PropertyChangeListener() {
+                                @Override
+                                public void propertyChange(PropertyChangeEvent evt) {
+                                    if (evt.getNewValue() != null) {
+                                        File f = (File)evt.getNewValue();
+                                        if (f.exists()) {
+                                            try {
+                                                openNetwork(f);
+                                            }
+                                            catch (Exception e) {
+                                                errorMessage("Error trying to view network", e);
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                            sq.setVisible(true);
+                        }
+                    });
+                    return;
+                } catch (Exception ex) {
+                    errorMessage("Unexpected problem occurred with Neighbor-Net", ex);
+                }
+            }
+        });
+        mnuTools.add(mnuToolsSuperq);
+
+        menuBar.add(mnuTools);
+
         setJMenuBar(menuBar);
     }
 
@@ -701,14 +894,8 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
         JFileChooser fileChooser = new JFileChooser(directory);
         fileChooser.setMultiSelectionEnabled(false);
         if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-            File inFile = fileChooser.getSelectedFile();
-            directory = inFile.getPath();
             try {
-                if (drawing == null) {
-                    prepareDrawing();
-                    initConfig();
-                }
-                openNetwork(inFile);
+                openNetwork(fileChooser.getSelectedFile());
             } catch (IOException e) {
                 errorMessage("Error opening file", e);
             }
@@ -932,6 +1119,12 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
     }
 
     private void openNetwork(File inFile) throws IOException {
+
+        if (drawing == null) {
+            prepareDrawing();
+            initConfig();
+        }
+
         directory = inFile.getPath();
 
         Nexus nexus = new NexusReader().parse(inFile);
@@ -1145,13 +1338,7 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
                         continue;
                     }
 
-                    File file = new File(new URI(token));
-                    directory = file.getPath();
-                    if (drawing == null) {
-                        prepareDrawing();
-                        initConfig();
-                    }
-                    openNetwork(file);
+                    openNetwork(new File(new URI(token)));
                 }
                 dtde.dropComplete(true);
             }
@@ -1218,12 +1405,12 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
                 @Override
                 public void run() {
                     try {
-                        NetView nv = inputfile == null ? new NetView() : new NetView(inputfile);
+                        Spectre nv = inputfile == null ? new Spectre() : new Spectre(inputfile);
                         log.info("Viewer initialised");
                         nv.setDefaultCloseOperation(commandLine.hasOption(OPT_DISPOSE) ? WindowConstants.DISPOSE_ON_CLOSE : javax.swing.WindowConstants.EXIT_ON_CLOSE);
                         nv.setVisible(true);
                     } catch (Exception e) {
-                        errorMessage("Unexpected problem occurred while running NetView", e);
+                        errorMessage("Unexpected problem occurred while running Spectre", e);
                         System.exit(4);
                     }
                 }

@@ -15,19 +15,14 @@
 
 package uk.ac.uea.cmp.spectre.net.netmake;
 
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.PatternLayout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.CircularOrderingAlgorithms;
 import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.nm.weighting.Weightings;
 import uk.ac.uea.cmp.spectre.core.ui.gui.JobController;
-import uk.ac.uea.cmp.spectre.core.ui.gui.StatusTracker;
 import uk.ac.uea.cmp.spectre.core.ui.gui.StatusTrackerWithView;
 import uk.ac.uea.cmp.spectre.core.ui.gui.ToolHost;
 import uk.ac.uea.cmp.spectre.core.util.LogConfig;
-import uk.ac.uea.cmp.spectre.viewer.NetView;
 
 import javax.swing.*;
 import java.awt.*;
@@ -391,7 +386,7 @@ public class NetMakeGUI extends JFrame implements ToolHost {
 
         cmdViewOutput = new JButton();
         cmdViewOutput.setText("View Network");
-        cmdViewOutput.setToolTipText("Visualise the produced network in NetView");
+        cmdViewOutput.setToolTipText("Visualise the produced network in Spectre");
         cmdViewOutput.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cmdViewActionPerformed(evt);
@@ -477,7 +472,7 @@ public class NetMakeGUI extends JFrame implements ToolHost {
     }
 
     private void cmdViewActionPerformed(ActionEvent evt) {
-        NetView.main(new String[]{this.lastOutput.getAbsolutePath(), "--dispose_on_close"});
+        this.firePropertyChange("done", null, this.lastOutput);
     }
 
     /**
@@ -577,6 +572,13 @@ public class NetMakeGUI extends JFrame implements ToolHost {
         this.txtWeight.setEnabled(enabled);
     }
 
+    private void enableAlgPanel(boolean enabled) {
+
+        this.pnlAlgorithm.setEnabled(enabled);
+        this.lblAlgorithm.setEnabled(enabled);
+        this.cboAlgorithm.setEnabled(enabled);
+    }
+
     /**
      * Setup configuration using values specified in the GUI
      *
@@ -625,6 +627,20 @@ public class NetMakeGUI extends JFrame implements ToolHost {
                 message,
                 "Net Make Error",
                 JOptionPane.ERROR_MESSAGE);
+    }
+
+    public void neighbornetConfig() {
+        this.enableWeightingsPanel(false);
+        this.enableTreeOutput(false);
+        this.cboAlgorithm.setSelectedItem(CircularOrderingAlgorithms.NEIGHBORNET);
+        this.enableAlgPanel(false);
+    }
+
+    public void netmakeConfig() {
+        this.enableWeightingsPanel(true);
+        this.enableTreeOutput(true);
+        this.cboAlgorithm.setSelectedItem(CircularOrderingAlgorithms.NETMAKE);
+        this.enableAlgPanel(false);
     }
 
     /**

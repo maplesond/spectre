@@ -114,7 +114,7 @@ public class FindDIalog extends javax.swing.JDialog {
     private void jButtonFindActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jButtonFindActionPerformed
     {//GEN-HEADEREND:event_jButtonFindActionPerformed
         setVisible(false);
-        Window parent = ((NetView) getParent()).getDrawing();
+        Window parent = ((Spectre) getParent()).getDrawing();
         parent.find(jTextFieldText.getText(), jCheckBoxRegex.isSelected());
     }//GEN-LAST:event_jButtonFindActionPerformed
 
