@@ -521,8 +521,12 @@ public class Window extends JPanel implements KeyListener {
     }
 
     void repaintOnResize() {
+        repaintOnResize(null);
+    }
+
+    void repaintOnResize(Double ratio) {
         if (network != null) {
-            computeIntegerCoordinates(null);
+            computeIntegerCoordinates(ratio);
         }
         repaint();
     }
@@ -855,8 +859,7 @@ public class Window extends JPanel implements KeyListener {
                     xt * Math.sin(angle) + yt * Math.cos(angle) - c.height / 2 + bY);
         }
 
-        computeIntegerCoordinates(ratio);
-        repaint();
+        repaintOnResize(ratio);
     }
 
     void flipNetwork(boolean horizontal) {
@@ -879,7 +882,8 @@ public class Window extends JPanel implements KeyListener {
             for (ViewerLabel label : labels.values()) {
                 label.computeMiddleDistance();
             }
-            repaintOnResize();
+
+            repaintOnResize(ratio);
         }
     }
 

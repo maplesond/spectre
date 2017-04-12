@@ -81,6 +81,8 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
     private JFrame formatLabels;
     private DropTarget dt;
     public Window drawing;
+    private javax.swing.JPanel pnlOpen;
+    private javax.swing.JLabel lblOpenMsg;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JMenu mnuFile;
     private javax.swing.JMenuItem mnuFileOpen;
@@ -131,12 +133,35 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle(TITLE);
-        this.setPreferredSize(new Dimension(800, 600));
-        this.setMinimumSize(new Dimension(400, 300));
+        setPreferredSize(new Dimension(800, 600));
+        setMinimumSize(new Dimension(640, 480));
         getContentPane().setBackground(Color.white); // TODO Allow user to control background color
         setForeground(java.awt.Color.white);
         setIconImage((new ImageIcon("logo.png")).getImage());
+        pnlOpen = new JPanel();
 
+    }
+
+    private void prepareOpenPane() {
+        pnlOpen.setLayout(new GridBagLayout());
+
+        lblOpenMsg = new JLabel();
+        lblOpenMsg.setText("To open a network or split system, use the File menu or drop the file into this pane.");
+        pnlOpen.add(lblOpenMsg);
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+
+        layout.setHorizontalGroup(
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(pnlOpen, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        layout.setVerticalGroup(
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(pnlOpen, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        dt = new DropTarget(pnlOpen, this);
+        pnlOpen.setVisible(true);
     }
 
     /**
@@ -145,6 +170,7 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
      */
     public NetView() throws IOException {
         prepareViewer();
+        prepareOpenPane();
     }
 
     /**
@@ -197,7 +223,7 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
         });
         drawing.addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentResized(java.awt.event.ComponentEvent evt) {
-                drawing.repaintOnResize();
+                drawing.repaintOnResize(drawing.getRatio());
             }
         });
         drawing.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
@@ -247,7 +273,6 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
                 layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addComponent(drawing, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
-
     }
 
     @SuppressWarnings("unchecked")
@@ -517,7 +542,7 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
         mnuLabelingShow.setMnemonic('S');
         mnuLabelingShow.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                drawing.repaintOnResize();
+                drawing.repaint();
             }
         });
         mnuLabeling.add(mnuLabelingShow);
@@ -789,7 +814,7 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
     private void drawNetwork() {
         drawing.setGraph(network, (config != null) ? config.getRatio() : null);
         drawing.showTrivial(config.showTrivial());
-        drawing.repaint();
+        drawing.repaintOnResize();
     }
 
     private void savePDF(File pdfFile) throws DocumentException {
@@ -944,8 +969,8 @@ public class NetView extends javax.swing.JFrame implements DropTargetListener {
         networkFile = inFile;
         mnuFileSave.setEnabled(true);
         setTitle(TITLE + ": " + inFile.getAbsolutePath());
+        pnlOpen.setVisible(false);
         drawNetwork();
-        drawing.repaint();
     }
 
     public Window getDrawing() {
