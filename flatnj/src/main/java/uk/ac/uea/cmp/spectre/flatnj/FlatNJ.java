@@ -160,7 +160,7 @@ public class FlatNJ {
         if (extension.equalsIgnoreCase("fa") || extension.equalsIgnoreCase("faa") || extension.equalsIgnoreCase("fas") || extension.equalsIgnoreCase("fasta")) {
             sequences = readAlignment(inFile);
             taxa = new IdentifierList(sequences.getTaxaLabels());
-            log.info("Extracted " + taxa.size() + " sequences.");
+            log.info("Extracted " + taxa.size() + " sequences");
         }
         else if (extension.equalsIgnoreCase("nex") || extension.equalsIgnoreCase("nexus") || extension.equalsIgnoreCase("4s")) {
 
@@ -168,33 +168,33 @@ public class FlatNJ {
             taxa = readTaxa(inFile.getAbsolutePath());
 
             if (taxa == null) {
-                throw new IOException("No labels for the taxa were indicated.");
+                throw new IOException("No labels for the taxa were indicated");
             }
 
             if (nexusBlock == null) {
-                log.info("Nexus file provided as input but no nexus block specified by user.  Will use first suitable block found in nexus file.");
+                log.info("Nexus file provided as input but no nexus block specified by user.  Will use first suitable block found in nexus file");
                 // First check for existing quadruple system
                 qs = readQuadruples(inFile.getAbsolutePath());
                 if (qs != null) {
-                    log.info("Detected and loaded Quadruples Block.");
+                    log.info("Detected and loaded Quadruples Block");
                 }
                 else {
                     // Next check for location data
                     locations = readLocations(inFile);
                     if (locations != null) {
-                        log.info("Detected and loaded Locations Block.");
+                        log.info("Detected and loaded Locations Block");
                     }
                     else {
                         // Next check for split system
                         ss = readSplitSystem(inFile);
                         if (ss != null) {
-                            log.info("Detected and loaded Split System Block.");
+                            log.info("Detected and loaded Split System Block containing " + ss.getnSplits() + " splits over " + ss.getnTaxa() + " taxa");
                         }
                         else {
                             // Next look for MSA
                             sequences = readNexusAlignment(inFile);
                             if (sequences != null) {
-                                log.info("Detected and loaded Sequences Block.");
+                                log.info("Detected and loaded Sequences Block.  Found " + sequences.size() + " sequences");
                             }
                             else {
                                 throw new IOException("Couldn't find a valid block in nexus file.");
@@ -265,8 +265,9 @@ public class FlatNJ {
         }
 
         qs.subtractMin();   //Subtract minimal weights. They will be added back when the network is computed.
+        log.info("Computed " + qs.getnQuadruples() + " quadruples");
 
-        log.info("Computing flat split system");
+        log.info("Computing ordering");
         PermutationSequence ps = new PermutationSequenceFactory().computePermutationSequence(qs);
 
         // Updates Permutation Sequence permutationSequence
@@ -276,9 +277,10 @@ public class FlatNJ {
         log.info("Filtering splits below threshold: " + threshold);
         ps.filterSplits(threshold);
 
-        log.debug("Finalising splits system and setting active splits");
+        log.debug("Finalising splits system");
         ps.setTaxaNames(taxa.getNames());
         ss = new FlatSplitSystemFinal(ps);
+        log.info("Split system contains " + ss.getnSplits() + " splits");
         //ss.setActive(ps.getActive());  // Do we want to reset this from active (extra trivial splits would have been added in the constructor)
 
         if (this.saveStages) {

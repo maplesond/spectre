@@ -37,8 +37,8 @@ public class NexusCharacterBuilder {
     private static Logger log = LoggerFactory.getLogger(NexusCharacterBuilder.class);
 
     private int expectedNbChars;
-    private List<String> seqs;
     private Sequences.Format format;
+    private List<String> seqs;
 
 
     public NexusCharacterBuilder() {
@@ -50,14 +50,27 @@ public class NexusCharacterBuilder {
 
     public Sequences createAlignments(IdentifierList taxa) {
 
-        if (taxa.size() != this.seqs.size()) {
+        final int nbseqs = format.labels ? this.seqs.size() / 2 : this.seqs.size();
+        if (taxa.size() != nbseqs) {
             throw new IllegalStateException("Nexus file contains " + taxa.size() + " taxa however we only found " + this.seqs.size() + " sequences in the Character block.");
         }
 
         Map<String,String> alns = new HashMap<>();
-
-        for (int i = 0; i < this.seqs.size(); i++) {
-            alns.put(taxa.get(i).getName(), seqs.get(i));
+        if (!format.labels) {
+            for (int i = 0; i < this.seqs.size(); i++) {
+                if (seqs.get(i).length() != this.expectedNbChars) {
+                    log.warn("Sequence " + i + " has an unexpected size.  Sequence contains " + seqs.get(i).length() + " characters but Nexus Characters block specified " + this.expectedNbChars + " characters per sequence.");
+                }
+                alns.put(taxa.get(i).getName(), seqs.get(i));
+            }
+        }
+        else {
+            for (int i = 0; i < this.seqs.size(); i+=2) {
+                if (seqs.get(i+1).length() != this.expectedNbChars) {
+                    log.warn("Sequence " + i + " has an unexpected size.  Sequence contains " + seqs.get(i+1).length() + " characters but Nexus Characters block specified " + this.expectedNbChars + " characters per sequence.");
+                }
+                alns.put(seqs.get(i), seqs.get(i+1));
+            }
         }
 
         Sequences s = new Sequences(alns);
@@ -67,10 +80,6 @@ public class NexusCharacterBuilder {
     }
 
     public void addSeq(String seq) {
-
-        if (seq.length() != this.expectedNbChars) {
-            log.warn("Sequence is unexpected size.");
-        }
         this.seqs.add(seq);
     }
 

@@ -124,7 +124,7 @@ characters_header : 'chracters' | 'Characters' | 'CHARACTERS';
 
 char_dimensions : dimensions cd_nchar ';';
 
-cd_nchar : 'nchar' '=' INT;
+cd_nchar : ('nchar'|'NCHAR') '=' INT;
 
 char_format: char_format_header char_format_options ';';
 
@@ -137,13 +137,13 @@ char_format_options :
 
 char_format_option : cf_datatype | cf_missing | cf_gap | cf_symbols | cf_labels | cf_transpose | cf_interleave;
 
-cf_datatype : 'datatype' '=' IDENTIFIER;
-cf_missing : 'missing' '=' missing_option;
-cf_gap : 'gap' '=' gap_option;
-cf_symbols : 'symbols' '=' '\"' IDENTIFIER '\"';
-cf_labels : 'labels' '=' boolean_option;
-cf_transpose : 'transpose' '=' boolean_option;
-cf_interleave : 'interleave' '=' boolean_option;
+cf_datatype : ('datatype'|'DATATYPE') '=' IDENTIFIER;
+cf_missing : ('missing'|'MISSING') '=' missing_option;
+cf_gap : ('gap'|'GAP') '=' gap_option;
+cf_symbols : ('symbols'|'SYMBOLS') '=' '\"' IDENTIFIER '\"';
+cf_labels : ('labels'|'LABELS') '=' boolean_option;
+cf_transpose : ('transpose'|'TRANSPOSE') '=' boolean_option;
+cf_interleave : ('interleave'|'INTERLEAVE') '=' boolean_option;
 
 missing_option : '?';
 
@@ -153,10 +153,10 @@ char_matrix: matrix_header char_sequences ';';
 
 char_sequences :
       // Empty
-    | char_seq char_sequences
+    | char_seq_entry char_sequences
     ;
 
-char_seq : IDENTIFIER;
+char_seq_entry : IDENTIFIER;
 
 
 
