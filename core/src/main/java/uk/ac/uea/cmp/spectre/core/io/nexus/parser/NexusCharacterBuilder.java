@@ -52,7 +52,7 @@ public class NexusCharacterBuilder {
 
         final int nbseqs = format.labels ? this.seqs.size() / 2 : this.seqs.size();
         if (taxa.size() != nbseqs) {
-            throw new IllegalStateException("Nexus file contains " + taxa.size() + " taxa however we only found " + this.seqs.size() + " sequences in the Character block.");
+            throw new IllegalStateException("Nexus file contains " + taxa.size() + " taxa however we found " + this.seqs.size() + " sequences in the Character block.");
         }
 
         Map<String,String> alns = new HashMap<>();

@@ -15,6 +15,9 @@
 
 package uk.ac.uea.cmp.spectre.flatnj;
 
+import org.apache.commons.math3.util.CombinatoricsUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.Quadruple;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.flat.FlatSplitSystem;
@@ -25,6 +28,9 @@ import uk.ac.uea.cmp.spectre.core.ds.split.flat.FlatSplitSystem;
  * @author balvociute
  */
 public class QSFactorySplitSystem implements QSFactory {
+
+    private static Logger log = LoggerFactory.getLogger(QSFactorySplitSystem.class);
+
     /**
      * {@linkplain uk.ac.uea.cmp.spectre.core.ds.split.flat.FlatSplitSystem} to be used for the estimation of
      * {@link QuadrupleSystem}.
@@ -55,15 +61,24 @@ public class QSFactorySplitSystem implements QSFactory {
 
     @Override
     public QuadrupleSystem computeQS() {
+        return computeQS(false);
+    }
+
+        @Override
+    public QuadrupleSystem computeQS(boolean notify) {
         int nTaxa = ss.getnTaxa();
         splits = ss.getSplits();
         weights = ss.getWeights();
+
+        if (notify) {
+            log.info("Expecting " + CombinatoricsUtils.binomialCoefficient(nTaxa, 4) + " quadruples.");
+        }
 
         QuadrupleSystem qs = new QuadrupleSystem(nTaxa);
 
         int[] inTaxa = new int[4];
         double[] inWeights = new double[7];
-
+        int count = 0;
         for (int i1 = 0; i1 < nTaxa - 3; i1++) {
             inTaxa[0] = i1;
             for (int i2 = i1 + 1; i2 < nTaxa - 2; i2++) {
@@ -83,6 +98,10 @@ public class QSFactorySplitSystem implements QSFactory {
                         inWeights[6] = computeWeight(i1, i4, i2, i3, i1, i2);
 
                         qs.add(new Quadruple(inTaxa, inWeights));
+                        count++;
+                        if (notify && count % 10000 == 0 && count > 0) {
+                            log.info("Processed " + count + " quadruples. Current sequence: " + i1);
+                        }
                     }
                 }
             }

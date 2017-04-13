@@ -15,6 +15,9 @@
 
 package uk.ac.uea.cmp.spectre.flatnj;
 
+import org.apache.commons.math3.util.CombinatoricsUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.Quadruple;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleSystem;
 import uk.ac.uea.cmp.spectre.core.ui.gui.geom.IndexedPoint;
@@ -25,6 +28,9 @@ import uk.ac.uea.cmp.spectre.core.ui.gui.geom.IndexedPoint;
  * @author balvociute
  */
 public class QSFactoryLocation implements QSFactory {
+
+    private static Logger log = LoggerFactory.getLogger(QSFactoryLocation.class);
+
     /**
      * {@linkplain Locations} to be used for the estimation of
      * {@link QuadrupleSystem}.
@@ -44,7 +50,17 @@ public class QSFactoryLocation implements QSFactory {
 
     @Override
     public QuadrupleSystem computeQS() {
+        return computeQS(false);
+    }
+
+    @Override
+    public QuadrupleSystem computeQS(boolean notify) {
         IndexedPoint[] locations = l.getLocations();
+
+        if (notify) {
+            log.info("Expecting " + CombinatoricsUtils.binomialCoefficient(locations.length, 4) + " quadruples.");
+        }
+
         QuadrupleSystem qs = new QuadrupleSystem(locations.length);
         double[][] matrix = new double[locations.length][locations.length];
         for (int i = 0; i < locations.length; i++) {
@@ -58,6 +74,7 @@ public class QSFactoryLocation implements QSFactory {
 
         int[] inLocations = new int[4];
         double[] weights;
+        int count = 0;
         for (int i1 = 0; i1 < locations.length; i1++) {
             inLocations[0] = i1;
             for (int i2 = i1 + 1; i2 < locations.length; i2++) {
@@ -81,6 +98,10 @@ public class QSFactoryLocation implements QSFactory {
                         }
                         Quadruple q = new Quadruple(inLocations, weights);
                         qs.add(q);
+                        count++;
+                        if (notify && count % 10000 == 0 && count > 0) {
+                            log.info("Processed " + count + " quadruples. Current sequence: " + i1);
+                        }
                     }
                 }
             }

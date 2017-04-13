@@ -17,12 +17,12 @@ FLOAT : ('-')? DIGIT* '.' DIGIT+ ('E' ('-')? DIGIT+)?;
 // A token satisfing the regular expression [_\w]+[\d\w\._]*. Note that an single
 //  _ is considered a valid identifier. In most contexts a single _ means a
 //  "don't care identifier", simmilar to the _ meaning in prolog.
-IDENTIFIER : LETTER_US+ (LETTER_US | DIGIT | '.' | '-' | '/' )*;
+IDENTIFIER : LETTER_US+ (LETTER_US | DIGIT | '.' | '-' | '/' | '?' )*;
 
 fragment DIGIT : [0-9];     // match single digit
 fragment NZ_DIGIT : [1-9];
 fragment LETTER : [a-zA-Z];
-LETTER_US : [a-zA-Z] | '_';
+LETTER_US : [a-zA-Z] | '_' | '?' | '-';
 
 // A String must consist of either lower or uppercase A-z characters, nothing fancy.  So we don't allow numbers or whitespace.
 //WORD : LETTER+

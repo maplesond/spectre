@@ -28,5 +28,6 @@ public interface QSFactory {
      *
      * @return a {@link QuadrupleSystem}  object.
      */
-    public abstract QuadrupleSystem computeQS();
+    QuadrupleSystem computeQS();
+    QuadrupleSystem computeQS(boolean notify);
 }

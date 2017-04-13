@@ -134,13 +134,14 @@ public class FlatNJOptions {
     public String toString() {
 
         StringBuilder sb = new StringBuilder();
+        final String NL = System.getProperty("line.separator");
 
-        sb.append("Input File: " + this.inFile.getAbsolutePath());
-        sb.append("Output File: " + this.outputFile.getAbsolutePath() + "\n");
-        sb.append("Nexus block: " + (this.block != null ? this.block : "N/A") + "\n");
-        sb.append("Threshold value: " + threshold);
-        sb.append("Optimizer: " + (this.optimiser != null ? this.optimiser.getIdentifier() : "N/A"));
-        sb.append("Verbose: " + this.verbose);
+        sb.append("Input File: " + this.inFile.getAbsolutePath() + NL);
+        sb.append("Output File: " + this.outputFile.getAbsolutePath() + NL);
+        sb.append("Nexus block: " + (this.block != null ? this.block : "N/A") + NL);
+        sb.append("Threshold value: " + threshold + NL);
+        sb.append("Optimizer: " + (this.optimiser != null ? this.optimiser.getIdentifier() : "N/A") + NL);
+        sb.append("Verbose: " + this.verbose + NL);
 
         return sb.toString();
     }

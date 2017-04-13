@@ -221,7 +221,7 @@ public class FlatNJ extends RunnableTool {
                     throw new IOException("Error creating quadruple system factory");
                 }
 
-                qs = qsFactory.computeQS();
+                qs = qsFactory.computeQS(true);
 
                 if (options.isSaveStages()) {
 

@@ -15,6 +15,10 @@
 
 package uk.ac.uea.cmp.spectre.flatnj;
 
+import org.apache.commons.math3.util.CombinatoricsUtils;
+import org.apache.commons.math3.util.MathUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.spectre.core.ds.Sequences;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.Quadruple;
@@ -26,6 +30,8 @@ import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleSystem;
  * @author balvociute
  */
 public class QSFactoryAlignment implements QSFactory {
+
+    private static Logger log = LoggerFactory.getLogger(QSFactoryAlignment.class);
     /**
      * {@linkplain Sequences} to be used for the estimation of
      * {@link QuadrupleSystem}.
@@ -53,9 +59,19 @@ public class QSFactoryAlignment implements QSFactory {
 
     @Override
     public QuadrupleSystem computeQS() {
-        QuadrupleSystem qs;
+        return computeQS(false);
+    }
+
+    @Override
+    public QuadrupleSystem computeQS(boolean notify) {
+
 
         char[][] seq = a.getSequencesAsCharArray();
+
+        if (notify) {
+            log.info("Expecting " + CombinatoricsUtils.binomialCoefficient(seq.length, 4) + " quadruples.");
+        }
+
 
         SplitsEstimator splitsEstimator = new SplitsEstimator(dm);
         
@@ -63,7 +79,7 @@ public class QSFactoryAlignment implements QSFactory {
          * variable to store quadruple system for given alignment is
          * initialized
          */
-        qs = new QuadrupleSystem(a.size());
+        QuadrupleSystem qs = new QuadrupleSystem(a.size());
         
         /* 
          * inTaxa is an array to store indexes of sequences that ought to be
@@ -73,6 +89,7 @@ public class QSFactoryAlignment implements QSFactory {
 
         int[] inTaxa = new int[4];
         char[][] inSequences = new char[4][seq[0].length];
+        int count = 0;
         for (int i1 = 0; i1 < seq.length; i1++) {
             inTaxa[0] = i1;
             inSequences[0] = seq[i1];
@@ -90,9 +107,14 @@ public class QSFactoryAlignment implements QSFactory {
                         Quadruple quadruple = new Quadruple(inTaxa, inWeights);
                         /* and added to the current quadruple system */
                         qs.add(quadruple);
+                        count++;
+                        if (notify && count % 10000 == 0 && count > 0) {
+                            log.info("Processed " + count + " quadruples. Current sequence: " + i1);
+                        }
                     }
                 }
             }
+
         }
         return qs;
     }

@@ -92,6 +92,8 @@ public class Sequences {
         return sequences;
     }
 
+    public String getSeq(int index) { return sequences[index]; }
+
     //Transforms sequences from strings to the arrays of characters
     public char[][] getSequencesAsCharArray() {
         char[][] s = new char[sequences.length][sequences[0].length()];
