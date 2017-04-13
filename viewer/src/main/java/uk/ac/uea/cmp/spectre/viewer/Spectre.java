@@ -210,52 +210,97 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
                 if (SwingUtilities.isRightMouseButton(evt)) {
                     popupMenu.show(drawing, clickedPoint.x, clickedPoint.y);
                 } else {
-                    drawing.setSelection(clickedPoint, evt.isControlDown());
+                    drawing.setSelection(clickedPoint, evt.isControlDown() || evt.isShiftDown());
                 }
             }
 
-            public void mousePressed(java.awt.event.MouseEvent evt) {
+            public void mouseDragged(java.awt.event.MouseEvent evt) {
                 if (SwingUtilities.isRightMouseButton(evt)) {
-                    drawing.activateRotation(true);
+                    drawing.rotate(startPoint, evt.getPoint());
                 }
-                startPoint = evt.getPoint();
-                if (!drawing.markLabel(startPoint)) {
-                    drawing.markPoint(startPoint);
+                else if (SwingUtilities.isLeftMouseButton(evt)) {
+                    if (evt.isShiftDown() || evt.isControlDown()) {
+                        drawing.setSelection(startPoint,
+                                evt.getPoint(),
+                                true);
+                    }
+                    else if (drawing.isOnLabel(evt.getPoint())) {
+                        drawing.moveLabels(evt.getPoint());
+                    }
+                    else if (drawing.isOnPoint()) {
+                        drawing.moveTheVertex(evt.getPoint());
+                    }
+                    else {
+                        drawing.pan(startPoint, evt.getPoint());
+                    }
+                }
+
+            }
+
+
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+
+                if (network != null) {
+                    startPoint = evt.getPoint();
+                    if (SwingUtilities.isRightMouseButton(evt)) {
+                        drawing.activateRotation(true);
+                        setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
+                    } else if (SwingUtilities.isLeftMouseButton(evt)) {
+                        if (evt.isShiftDown() || evt.isControlDown()) {
+                            drawing.selectmode = true;
+                        } else if (drawing.isOnLabel(evt.getPoint())) {
+                            drawing.markLabel(startPoint);
+                        } else if (drawing.isOnPoint()) {
+                            drawing.markPoint(startPoint);
+                        } else {
+                            // Do panning
+                            drawing.panmode = true;
+                            setCursor(new Cursor(Cursor.MOVE_CURSOR));
+                        }
+                    }
                 }
             }
 
             public void mouseReleased(java.awt.event.MouseEvent evt) {
-                if (drawing.rotate) {
+                if (network != null) {
                     drawing.activateRotation(false);
+                    drawing.removeSelectionRectangle();
+                    drawing.panmode = false;
+                    drawing.selectmode = false;
+                    setCursor(Cursor.getDefaultCursor());
+                    startPoint = null;
                 }
-                drawing.removeSelectionRectangle();
             }
         });
-        drawing.addComponentListener(new java.awt.event.ComponentAdapter() {
-            public void componentResized(java.awt.event.ComponentEvent evt) {
-                drawing.repaintOnResize(drawing.getRatio());
-            }
-        });
+
         drawing.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
             public void mouseDragged(java.awt.event.MouseEvent evt) {
-                java.awt.Point endPoint = evt.getPoint();
-                if (!drawing.rotate) {
-                    if (network != null && drawing.isOnLabel()) {
-                        drawing.moveLabels(endPoint);
-                    } else if (network != null && drawing.isOnPoint()) {
-                        drawing.moveTheVertex(endPoint);
-                    } else {
-                        drawing.setSelection(startPoint,
-                                endPoint,
-                                evt.isControlDown());
-                    }
-                } else {
-                    if (network != null) {
-                        drawing.rotate(startPoint, endPoint);
+                if (network != null) {
+                    if (SwingUtilities.isRightMouseButton(evt)) {
+                        drawing.rotate(startPoint, evt.getPoint());
+                    } else if (SwingUtilities.isLeftMouseButton(evt)) {
+                        if (evt.isShiftDown() || evt.isControlDown()) {
+                            drawing.setSelection(startPoint,
+                                    evt.getPoint(),
+                                    true);
+                        } else if (drawing.isOnLabel(evt.getPoint())) {
+                            drawing.moveLabels(evt.getPoint());
+                        } else if (drawing.isOnPoint()) {
+                            drawing.moveTheVertex(evt.getPoint());
+                        } else {
+                            drawing.pan(startPoint, evt.getPoint());
+                        }
                     }
                 }
             }
         });
+
+        drawing.addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentResized(java.awt.event.ComponentEvent evt) {
+                drawing.repaintOnResize();
+            }
+        });
+
 
         javax.swing.GroupLayout drawingLayout = new javax.swing.GroupLayout(drawing);
         drawing.setLayout(drawingLayout);
@@ -508,6 +553,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         mnuViewOptimiseLayout.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 if (network != null) {
+                    drawing.rescale();
                     drawing.resetLabelPositions(true);
                     drawing.repaintOnResize();
                 }
@@ -1311,11 +1357,6 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
     boolean slantedLeaders() {
         return mnuLabelingLeadersSlanted.isSelected();
     }
-
-    void setRatio(double ratio) {
-        config.setRatio(ratio);
-    }
-
 
     protected void processDrag(DropTargetDragEvent dtde) {
         try {

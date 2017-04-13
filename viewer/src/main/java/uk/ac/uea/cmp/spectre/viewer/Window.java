@@ -152,7 +152,9 @@ public class Window extends JPanel implements KeyListener {
     Color selectionColor = Color.RED;
     Color leaderColor = Color.BLUE;
     ViewerLabel selectedLabel = null;
-    boolean rotate = false;
+    boolean rotatemode = false;
+    boolean selectmode = false;
+    boolean panmode = false;
     boolean range = true;
     java.awt.Point lastPoint = null;
     ClusterFinder cf = new ClusterFinderSplits();
@@ -295,7 +297,7 @@ public class Window extends JPanel implements KeyListener {
         }
 
 
-        if (rotate) {
+        if (rotatemode) {
             g.setColor(Color.BLUE);
 
             int cSize = 8;
@@ -447,7 +449,7 @@ public class Window extends JPanel implements KeyListener {
         }
     }
 
-    void resetLabelPositions(boolean all) {
+    public void resetLabelPositions(boolean all) {
         midY = getHeight() / 2;
         midX = getWidth() / 2;
 
@@ -549,8 +551,14 @@ public class Window extends JPanel implements KeyListener {
         system.setContents(sel, sel);
     }
 
-    boolean isOnLabel() {
-        return selectedLabel != null;
+    boolean isOnLabel(Point sp) {
+        for (ViewerLabel l : labels.values()) {
+            if (l.getX() <= sp.x && l.getX() + l.label.getWidth() >= sp.x
+                    && l.getY() >= sp.y && l.getY() - l.label.getHeight() <= sp.y) {
+                return true;
+            }
+        }
+        return false;
     }
 
     boolean moveInAction = false;
@@ -786,7 +794,7 @@ public class Window extends JPanel implements KeyListener {
     }
 
     void activateRotation(boolean rotate) {
-        this.rotate = rotate;
+        this.rotatemode = rotate;
         if (!rotate) {
             lastPoint = null;
         }
@@ -802,6 +810,8 @@ public class Window extends JPanel implements KeyListener {
         rotate(angle);
         lastPoint = endPoint;
     }
+
+
 
     void rotate(final double angle) {
 
@@ -856,6 +866,25 @@ public class Window extends JPanel implements KeyListener {
 
             c.setLabelCoordinates(xt * Math.cos(angle) - yt * Math.sin(angle) - c.width / 2 + bX,
                     xt * Math.sin(angle) + yt * Math.cos(angle) - c.height / 2 + bY);
+        }
+
+        repaintOnResize(ratio);
+    }
+
+    void pan(java.awt.Point startPoint, java.awt.Point endPoint) {
+
+        double dX = (endPoint.x - startPoint.x) / ratio;
+        double dY = (endPoint.y - startPoint.y) / ratio;
+
+        for (Vertex v : vertices.values()) {
+            v.setCoordinates(v.getX() + dX, v.getY() + dY);
+        }
+        for (Cluster c : clusters) {
+            for (ViewerPoint p : c.points) {
+                p.setX(p.getX() + dX);
+                p.setY(p.getY() + dY);
+            }
+            c.setLabelCoordinates(c.x + dX, c.y + dY);
         }
 
         repaintOnResize(ratio);
@@ -1147,7 +1176,6 @@ public class Window extends JPanel implements KeyListener {
             ratio = 0;
         }
 
-        externalFrame.setRatio(ratio);
         change = (lastRatio * ratio == 0) ? 1 : ratio / lastRatio;
     }
 
@@ -1165,7 +1193,7 @@ public class Window extends JPanel implements KeyListener {
         return maxOff;
     }
 
-    private void rescale() {
+    public void rescale() {
         if (vertices != null) {
             if (externalFrame.showLabels()) {
                 findCornerPointsLabelsIncluded();
@@ -1273,12 +1301,14 @@ public class Window extends JPanel implements KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        activateRotation(e.isControlDown());
+        this.selectmode = e.isShiftDown();
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-        activateRotation(false);
+        if (this.selectmode) {
+            this.selectmode = false;
+        }
     }
 
     public void zoom(double amount) {
