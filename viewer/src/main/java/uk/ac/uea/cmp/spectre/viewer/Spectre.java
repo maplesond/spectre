@@ -29,19 +29,17 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.uea.cmp.spectre.core.ds.Identifier;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.network.FlatNetwork;
 import uk.ac.uea.cmp.spectre.core.ds.network.Network;
-import uk.ac.uea.cmp.spectre.core.ds.network.NetworkLabel;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
+import uk.ac.uea.cmp.spectre.core.ds.network.draw.Leader;
 import uk.ac.uea.cmp.spectre.core.ds.network.draw.PermutationSequenceDraw;
 import uk.ac.uea.cmp.spectre.core.ds.network.draw.ViewerConfig;
 import uk.ac.uea.cmp.spectre.core.io.nexus.Nexus;
 import uk.ac.uea.cmp.spectre.core.io.nexus.NexusReader;
 import uk.ac.uea.cmp.spectre.core.ui.cli.CommandLineHelper;
 import uk.ac.uea.cmp.spectre.core.ui.gui.LookAndFeel;
-import uk.ac.uea.cmp.spectre.core.ui.gui.geom.Leaders;
 import uk.ac.uea.cmp.spectre.core.util.LogConfig;
 import uk.ac.uea.cmp.spectre.flatnj.FlatNJGUI;
 import uk.ac.uea.cmp.spectre.net.netmake.NetMakeGUI;
@@ -51,6 +49,7 @@ import uk.ac.uea.cmp.spectre.qtools.superq.SuperQGUI;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.text.View;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -70,25 +69,50 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 /**
+ * The main SPECTRE GUI Frame.
+ *
+ * This frame mainly just manages the menu and initial UI for drawing networks.
+ *
+ * Most of the heavy lifting is done in the Window class, which represents the
+ * drawing canvas for the network.
+ *
  * @author balvociute and maplesond
  */
 public class Spectre extends javax.swing.JFrame implements DropTargetListener {
 
     private static Logger log = LoggerFactory.getLogger(Spectre.class);
 
-    private static String BIN_NAME = "netview";
+    // Constants
+    private static final String BIN_NAME = "netview";
+    private static final String OPT_VERBOSE = "verbose";
+    private static final String OPT_DISPOSE = "dispose_on_close";
+    private static final String TITLE = "SPECTRE";
 
-    private static String OPT_VERBOSE = "verbose";
-    private static String OPT_DISPOSE = "dispose_on_close";
-    private final String TITLE = "SPECTRE";
+    // The data
+    private Network network;
+    private IdentifierList taxa;
 
-    private Point startPoint;
+    // Record of current working directory and currently open file
+    private static String directory = ".";
+    private File networkFile = null;
+
+    // Dialog for finding labels
+    private FindDIalog find = new FindDIalog(this, true);
+
+    // Viewer configuration
+    //private ViewerConfig config = new ViewerConfig();
+
     private JFrame format;
     private JFrame formatLabels;
+
+    // Handles file drops onto drawing canvas or initial opening canvas
     private DropTarget dt;
-    public Window drawing;
-    private javax.swing.JPanel pnlOpen;
-    private javax.swing.JLabel lblOpenMsg;
+
+    private Window drawing;                 // Network drawing canvas
+    private javax.swing.JPanel pnlOpen;     // Initial panel containing help message
+    private javax.swing.JLabel lblOpenMsg;  // Initial help message
+
+    // Main menu
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JMenu mnuFile;
     private javax.swing.JMenuItem mnuFileOpen;
@@ -132,49 +156,6 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
     private javax.swing.JMenuItem mnuToolsSuperq;
 
 
-    private javax.swing.JPopupMenu popupMenu;
-
-
-    private File networkFile = null;
-
-
-    private void prepareViewer() {
-
-        prepareMenu();
-
-        preparePopupMenu();
-
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle(TITLE);
-        setPreferredSize(new Dimension(800, 600));
-        setMinimumSize(new Dimension(640, 480));
-        getContentPane().setBackground(Color.white); // TODO Allow user to control background color
-        setForeground(java.awt.Color.white);
-        setIconImage((new ImageIcon("logo.png")).getImage());
-        pnlOpen = new JPanel();
-
-    }
-
-    private void prepareOpenPane() {
-        pnlOpen.setLayout(new GridBagLayout());
-
-        lblOpenMsg = new JLabel("<html><div style='text-align: center;'>To open a network or split system, use the File menu or drop the file into this pane.<br>Alternatively, run a SPECTRE tool via the Tools menu.</html>");
-        pnlOpen.add(lblOpenMsg);
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-
-        layout.setHorizontalGroup(
-                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(pnlOpen, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(pnlOpen, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
-        dt = new DropTarget(pnlOpen, this);
-        pnlOpen.setVisible(true);
-    }
 
     /**
      * Creates new netview instance without any input data.
@@ -197,123 +178,45 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         openNetwork(inFile);
     }
 
+    private void prepareViewer() {
+
+        prepareMenu();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle(TITLE);
+        setPreferredSize(new Dimension(800, 600));
+        setMinimumSize(new Dimension(640, 480));
+        getContentPane().setBackground(Color.white); // TODO Allow user to control background color
+        setForeground(java.awt.Color.white);
+        setIconImage((new ImageIcon("logo.png")).getImage());
+    }
+
+    private void prepareOpenPane() {
+        pnlOpen = new JPanel();
+        pnlOpen.setLayout(new GridBagLayout());
+
+        lblOpenMsg = new JLabel("<html><div style='text-align: center;'>To open a network or split system, use the File menu or drop the file into this pane.<br>Alternatively, run a SPECTRE tool via the Tools menu.</html>");
+        pnlOpen.add(lblOpenMsg);
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+
+        layout.setHorizontalGroup(
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(pnlOpen, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        layout.setVerticalGroup(
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(pnlOpen, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        dt = new DropTarget(pnlOpen, this);
+        pnlOpen.setVisible(true);
+    }
+
     private void prepareDrawing() {
-        drawing = new Window(this);
-        drawing.addMouseWheelListener(new java.awt.event.MouseWheelListener() {
-            public void mouseWheelMoved(java.awt.event.MouseWheelEvent evt) {
-                drawing.zoom(evt.getPreciseWheelRotation() * drawing.getRatio() / 50.0);
-            }
-        });
-        drawing.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                java.awt.Point clickedPoint = evt.getPoint();
-                if (SwingUtilities.isRightMouseButton(evt)) {
-                    popupMenu.show(drawing, clickedPoint.x, clickedPoint.y);
-                } else {
-                    drawing.setSelection(clickedPoint, evt.isControlDown() || evt.isShiftDown());
-                }
-            }
+        drawing = new Window();
 
-            public void mouseDragged(java.awt.event.MouseEvent evt) {
-                if (SwingUtilities.isRightMouseButton(evt)) {
-                    drawing.rotate(startPoint, evt.getPoint());
-                }
-                else if (SwingUtilities.isLeftMouseButton(evt)) {
-                    if (evt.isShiftDown() || evt.isControlDown()) {
-                        drawing.setSelection(startPoint,
-                                evt.getPoint(),
-                                true);
-                    }
-                    else if (drawing.isOnLabel(evt.getPoint())) {
-                        drawing.moveLabels(evt.getPoint());
-                    }
-                    else if (drawing.isOnPoint()) {
-                        drawing.moveTheVertex(evt.getPoint());
-                    }
-                    else {
-                        drawing.pan(startPoint, evt.getPoint());
-                    }
-                }
-
-            }
-
-
-            public void mousePressed(java.awt.event.MouseEvent evt) {
-
-                if (network != null) {
-                    startPoint = evt.getPoint();
-                    if (SwingUtilities.isRightMouseButton(evt)) {
-                        drawing.activateRotation(true);
-                        setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
-                    } else if (SwingUtilities.isLeftMouseButton(evt)) {
-                        if (evt.isShiftDown() || evt.isControlDown()) {
-                            drawing.selectmode = true;
-                        } else if (drawing.isOnLabel(evt.getPoint())) {
-                            drawing.markLabel(startPoint);
-                        } else if (drawing.isOnPoint()) {
-                            drawing.markPoint(startPoint);
-                        } else {
-                            // Do panning
-                            drawing.panmode = true;
-                            setCursor(new Cursor(Cursor.MOVE_CURSOR));
-                        }
-                    }
-                }
-            }
-
-            public void mouseReleased(java.awt.event.MouseEvent evt) {
-                if (network != null) {
-                    drawing.activateRotation(false);
-                    drawing.removeSelectionRectangle();
-                    drawing.panmode = false;
-                    drawing.selectmode = false;
-                    setCursor(Cursor.getDefaultCursor());
-                    startPoint = null;
-                }
-            }
-        });
-
-        drawing.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
-            public void mouseDragged(java.awt.event.MouseEvent evt) {
-                if (network != null) {
-                    if (SwingUtilities.isRightMouseButton(evt)) {
-                        drawing.rotate(startPoint, evt.getPoint());
-                    } else if (SwingUtilities.isLeftMouseButton(evt)) {
-                        if (evt.isShiftDown() || evt.isControlDown()) {
-                            drawing.setSelection(startPoint,
-                                    evt.getPoint(),
-                                    true);
-                        } else if (drawing.isOnLabel(evt.getPoint())) {
-                            drawing.moveLabels(evt.getPoint());
-                        } else if (drawing.isOnPoint()) {
-                            drawing.moveTheVertex(evt.getPoint());
-                        } else {
-                            drawing.pan(startPoint, evt.getPoint());
-                        }
-                    }
-                }
-            }
-        });
-
-        drawing.addComponentListener(new java.awt.event.ComponentAdapter() {
-            public void componentResized(java.awt.event.ComponentEvent evt) {
-                drawing.repaintOnResize();
-            }
-        });
-
-
-        javax.swing.GroupLayout drawingLayout = new javax.swing.GroupLayout(drawing);
-        drawing.setLayout(drawingLayout);
-        drawingLayout.setHorizontalGroup(
-                drawingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGap(0, 513, Short.MAX_VALUE)
-        );
-        drawingLayout.setVerticalGroup(
-                drawingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGap(0, 322, Short.MAX_VALUE)
-        );
-
-        dt = new DropTarget(this, this);
+        dt = new DropTarget(drawing, this);
         format = new Formating(drawing);
         formatLabels = new FormatLabels(drawing);
 
@@ -386,7 +289,11 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         mnuFileSave.setEnabled(false);
         mnuFileSave.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                saveNetworkActionPerformed(evt);
+                try {
+                    saveNetwork(networkFile);
+                } catch (IOException ioe) {
+                    errorMessage("Problem occured while trying to save network", ioe);
+                }
             }
         });
         mnuFileSave.setAccelerator(KeyStroke.getKeyStroke('S', Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
@@ -453,7 +360,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
                 java.awt.Event.CTRL_MASK));
         mnuEditSelectall.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemSelectAllActionPerformed(evt);
+                drawing.selectAll();
             }
         });
         mnuEdit.add(mnuEditSelectall);
@@ -506,7 +413,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
                 java.awt.Event.CTRL_MASK));
         mnuViewZoomin.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                drawing.zoom(-drawing.getRatio() / 10.0);
+                drawing.zoom(-drawing.config.getRatio() / 10.0);
             }
         });
         mnuView.add(mnuViewZoomin);
@@ -517,7 +424,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
                 java.awt.Event.CTRL_MASK));
         mnuViewZoomout.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                drawing.zoom(drawing.getRatio() / 10.0);
+                drawing.zoom(drawing.config.getRatio() / 10.0);
             }
         });
         mnuView.add(mnuViewZoomout);
@@ -568,9 +475,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         mnuViewShowTrivial.setText("Show trivial splits");
         mnuViewShowTrivial.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                Boolean showTrivial = mnuViewShowTrivial.isSelected();
-                drawing.showTrivial(showTrivial);
-                config.setShowTrivial(showTrivial);
+                drawing.showTrivial(mnuViewShowTrivial.isSelected());
             }
         });
         mnuView.add(mnuViewShowTrivial);
@@ -580,10 +485,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         mnuViewShowRange.setText("Show range");
         mnuViewShowRange.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                Boolean showRange = mnuViewShowRange.isSelected();
-                drawing.showRange(showRange);
-                config.setShowRange(showRange);
-                drawing.repaint();
+                drawing.showRange(mnuViewShowRange.isSelected());
             }
         });
         mnuView.add(mnuViewShowRange);
@@ -629,7 +531,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         mnuLabelingFix.setMnemonic('X');
         mnuLabelingFix.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBoxFixLabelPositionsActionPerformed(evt);
+                drawing.fixLabels(!mnuLabelingFix.isSelected());
             }
         });
         mnuLabeling.add(mnuLabelingFix);
@@ -646,8 +548,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         mnuLabelingLeadersNo.setMnemonic('N');
         mnuLabelingLeadersNo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                drawing.repaint();
-                config.setLeaderType("none");
+                drawing.setLeaderType(Leader.LeaderType.NONE);
             }
         });
         leaderConnectorGroup1.add(mnuLabelingLeadersNo);
@@ -657,8 +558,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         mnuLabelingLeadersStraight.setMnemonic('S');
         mnuLabelingLeadersStraight.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                drawing.repaint();
-                config.setLeaderType("straight");
+                drawing.setLeaderType(Leader.LeaderType.STRAIGHT);
             }
         });
         leaderConnectorGroup1.add(mnuLabelingLeadersStraight);
@@ -669,8 +569,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         mnuLabelingLeadersSlanted.setMnemonic('N');
         mnuLabelingLeadersSlanted.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                drawing.repaint();
-                config.setLeaderType("slanted");
+                drawing.setLeaderType(Leader.LeaderType.SLANTED);
             }
         });
         leaderConnectorGroup1.add(mnuLabelingLeadersSlanted);
@@ -680,8 +579,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         mnuLabelingLeadersBended.setMnemonic('B');
         mnuLabelingLeadersBended.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                drawing.repaint();
-                config.setLeaderType("bended");
+                drawing.setLeaderType(Leader.LeaderType.BENDED);
             }
         });
         leaderConnectorGroup1.add(mnuLabelingLeadersBended);
@@ -695,8 +593,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         mnuLabelingLeadersSolid.setMnemonic('O');
         mnuLabelingLeadersSolid.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                config.setLeaderStroke("solid");
-                drawing.repaint();
+                drawing.setLeaderStroke(Leader.LeaderStroke.SOLID);
             }
         });
         leaderConnectorGroup2.add(mnuLabelingLeadersSolid);
@@ -707,8 +604,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         mnuLabelingLeadersDashed.setMnemonic('D');
         mnuLabelingLeadersDashed.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                config.setLeaderStroke("dashed");
-                drawing.repaint();
+                drawing.setLeaderStroke(Leader.LeaderStroke.DASHED);
             }
         });
         leaderConnectorGroup2.add(mnuLabelingLeadersDashed);
@@ -718,8 +614,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         mnuLabelingLeadersDotted.setMnemonic('E');
         mnuLabelingLeadersDotted.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                config.setLeaderType("dotted");
-                drawing.repaint();
+                drawing.setLeaderStroke(Leader.LeaderStroke.DOTTED);
             }
         });
         leaderConnectorGroup2.add(mnuLabelingLeadersDotted);
@@ -958,11 +853,9 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
 
 
     private void cmdLeaderColorSelectActionPerformed(ActionEvent evt) {
-        Color newLeaderColor = JColorChooser.showDialog(this, "Font color", drawing.leaderColor);
+        Color newLeaderColor = JColorChooser.showDialog(this, "Font color", drawing.config.getLeaderColor());
         if (newLeaderColor != null) {
-            config.setLeaderColor(newLeaderColor);
-            drawing.leaderColor = newLeaderColor;
-            drawing.repaint();
+            drawing.setLeaderColour(newLeaderColor);
         }
     }
 
@@ -1044,15 +937,6 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         }
     }
 
-    private void jMenuItemSelectAllActionPerformed(java.awt.event.ActionEvent evt) {
-        drawing.selectAll();
-    }
-
-    private void jCheckBoxFixLabelPositionsActionPerformed(java.awt.event.ActionEvent evt) {
-        boolean fix = mnuLabelingFix.isSelected();
-        drawing.fixLabels(!fix);
-    }
-
     protected static void errorMessage(String message, Exception ex) {
         log.error(message, ex);
         JOptionPane.showMessageDialog(null, message + "\n" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -1067,18 +951,6 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
 
 
 
-    private Network network;
-    private IdentifierList taxa;
-    private static Leaders leaders;
-    private static String directory = ".";
-    private FindDIalog find = new FindDIalog(this, true);
-    private ViewerConfig config = new ViewerConfig();
-
-    private void drawNetwork() {
-        drawing.setGraph(network, (config != null) ? config.getRatio() : null);
-        drawing.showTrivial(config.showTrivial());
-        drawing.repaintOnResize();
-    }
 
     private void savePDF(File pdfFile) throws DocumentException {
         try {
@@ -1125,10 +997,6 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         networkFile = fileToSave;
     }
 
-    private void saveNetwork() throws IOException {
-        this.saveNetwork(networkFile);
-    }
-
     private void saveNetwork(File file) throws IOException {
         ViewerNexusWriter writer = new ViewerNexusWriter();
         writer.appendHeader();
@@ -1137,149 +1005,87 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         writer.appendLine();
         writer.append(network);
         writer.appendLine();
-        writer.append(config);
+        writer.append(drawing.config);
         writer.write(file);
     }
 
-    public boolean fixedLabelPositions() {
-        return mnuLabeling.isSelected();
-    }
 
-    private void preparePopupMenu() {
-
-        popupMenu = new javax.swing.JPopupMenu();
-
-        JMenuItem copySelectedTaxa = new JMenuItem("Copy selected labels");
-        copySelectedTaxa.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C,
-                java.awt.Event.CTRL_MASK));
-        copySelectedTaxa.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                drawing.copySelectedTaxa();
-            }
-        });
-        popupMenu.add(copySelectedTaxa);
-
-        JMenuItem selectGroup = new JMenuItem("Select group");
-        selectGroup.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_G,
-                java.awt.Event.CTRL_MASK));
-        selectGroup.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                drawing.selectGroup();
-            }
-        });
-        popupMenu.add(selectGroup);
-
-        JMenuItem group = new JMenuItem("Group selected");
-        group.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                drawing.makeGroup();
-            }
-        });
-        popupMenu.add(group);
-
-        JMenuItem remove = new JMenuItem("Remove from group");
-        remove.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                drawing.removeFromGroup();
-            }
-        });
-        popupMenu.add(remove);
-    }
 
     private void openNetwork(File inFile) throws IOException {
 
+        // Setup drawing pane if it's not already setup
         if (drawing == null) {
             prepareDrawing();
-            initConfig();
         }
 
+        // Record this directory in case we open any file dialogs in the future
         directory = inFile.getPath();
 
+        // Load the given nexus file
         Nexus nexus = new NexusReader().parse(inFile);
 
-        // If no network was defined but there is a split system then convert the split system to a network
-        if (nexus.getNetwork() == null && nexus.getSplitSystem() != null) {
-
-            // Create network
-            network = new FlatNetwork(new PermutationSequenceDraw(nexus.getSplitSystem()).drawSplitSystem(-1.0));
-
-            // Setup labels
-            for (Vertex v : network.getAllVertices()) {
-                if (v.getTaxa().size() > 0) {
-                    String label = new String();
-                    for (Identifier i : v.getTaxa()) {
-                        label = (i.getName() + ", ").concat(label);
-                    }
-                    label = label.substring(0, label.length() - 2);
-                    v.setLabel(new NetworkLabel(label));
-                }
-            }
-        } else {
-            network = nexus.getNetwork();
-        }
+        // Extract taxa from nexus file
         this.taxa = nexus.getTaxa();
+
+        // If no network was defined but there is a split system then convert the split system to a network
+        this.network = nexus.getNetwork() == null && nexus.getSplitSystem() != null ?
+                new FlatNetwork(new PermutationSequenceDraw(nexus.getSplitSystem()).drawSplitSystem(-1.0)) :
+                nexus.getNetwork();
+
+        // Assign taxa to network
         this.network.setTaxa(this.taxa);
 
-        if (nexus.getViewerConfig() != null) {
-            this.config = nexus.getViewerConfig();
-            applyConfig(this.config);
-        } else {
-            initConfig();
+        // Load config if present in the nexus file otherwise initialise with defaults
+        ViewerConfig config = nexus.getViewerConfig() != null ? nexus.getViewerConfig() : createDefaultConfig();
+
+        // Apply config
+        this.applyConfig(config);
+
+        // If we've got this far then the file loaded correctly.
+        networkFile = inFile;           // Record the file for future saving etc
+        mnuFileSave.setEnabled(true);   // Ensure we can save menu is enabled
+        setTitle(TITLE + ": " + inFile.getAbsolutePath());  // Update title with the filename
+
+        // If the open panel was used, make sure the opening panel is invisible... not required any more.
+        if (pnlOpen != null) {
+            pnlOpen.setVisible(false);
         }
 
-        networkFile = inFile;
-        mnuFileSave.setEnabled(true);
-        setTitle(TITLE + ": " + inFile.getAbsolutePath());
-        pnlOpen.setVisible(false);
-        drawNetwork();
+        // Now draw the network into the drawing canvas
+        drawing.drawNetwork(config, this.network);
     }
 
     public Window getDrawing() {
         return drawing;
     }
 
-    boolean showLabels() {
-        return mnuLabelingShow.isSelected();
-    }
+    private ViewerConfig createDefaultConfig() {
 
-    boolean colorLabels() {
-        return mnuLabelingColor.isSelected();
-    }
-
-    private void initConfig() {
-        String leaderType = null;
+        Leader.LeaderType leaderType = Leader.LeaderType.NONE;
         if (mnuLabelingLeadersBended.isSelected()) {
-            leaderType = "bended";
+            leaderType = Leader.LeaderType.BENDED;
         } else if (mnuLabelingLeadersSlanted.isSelected()) {
-            leaderType = "slanted";
+            leaderType = Leader.LeaderType.SLANTED;
         } else if (mnuLabelingLeadersStraight.isSelected()) {
-            leaderType = "straight";
+            leaderType = Leader.LeaderType.STRAIGHT;
         }
-        String leaderStroke = "solid";
+        Leader.LeaderStroke leaderStroke = Leader.LeaderStroke.SOLID;
         if (mnuLabelingLeadersDashed.isSelected()) {
-            leaderStroke = "dashed";
+            leaderStroke = Leader.LeaderStroke.DASHED;
         } else if (mnuLabelingLeadersDotted.isSelected()) {
-            leaderStroke = "dotted";
+            leaderStroke = Leader.LeaderStroke.DOTTED;
         }
 
-        config = new ViewerConfig(drawing.getSize(),
+        return new ViewerConfig(drawing.getSize(),
                 leaderType,
                 leaderStroke,
-                drawing.leaderColor,
+                drawing != null ? drawing.config.getLeaderColor() : new Color(0,0,0),
                 mnuViewShowTrivial.isSelected(),
                 mnuViewShowRange.isSelected(),
                 mnuLabelingShow.isSelected(),
                 mnuLabelingColor.isSelected(),
                 new HashSet<Integer>(),
-                null,
+                1.0,
                 network == null ? null : network.getLabeledVertices());
     }
 
@@ -1292,15 +1098,15 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
     }
 
     private void applyConfig(ViewerConfig config) {
-        String leaderType = config.getLeaderType();
-        switch (leaderType) {
-            case "straight":
+
+        switch (config.getLeaderType()) {
+            case STRAIGHT:
                 mnuLabelingLeadersStraight.setSelected(true);
                 break;
-            case "bended":
+            case BENDED:
                 mnuLabelingLeadersBended.setSelected(true);
                 break;
-            case "slanted":
+            case SLANTED:
                 mnuLabelingLeadersSlanted.setSelected(true);
                 break;
             default:
@@ -1308,12 +1114,11 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
                 break;
         }
 
-        String stroke = config.getLeaderStroke();
-        switch (stroke) {
-            case "dashed":
+        switch (config.getLeaderStroke()) {
+            case DASHED:
                 mnuLabelingLeadersDashed.setSelected(true);
                 break;
-            case "dotted":
+            case DOTTED:
                 mnuLabelingLeadersDotted.setSelected(true);
                 break;
             default:
@@ -1321,15 +1126,21 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
                 break;
         }
 
-        Color leaderColor = config.getLeaderColor();
-        if (leaderColor != null) {
-            drawing.leaderColor = leaderColor;
+        if (config.getLeaderColor() != null) {
+            drawing.config.setLeaderColor(config.getLeaderColor());
         }
 
         mnuLabelingColor.setSelected(config.colorLabels());
+        this.drawing.config.setColorLabels(config.colorLabels());
+
         mnuLabelingShow.setSelected(config.showLabels());
+        this.drawing.config.setShowLabels(config.showLabels());
+
         mnuViewShowTrivial.setSelected(config.showTrivial());
-        mnuViewShowRange.setSelected(config.isShowRange());
+        this.drawing.config.setShowTrivial(config.showTrivial());
+
+        mnuViewShowRange.setSelected(config.showRange());
+        this.drawing.config.setShowRange(config.showRange());
 
         Set<Integer> fixed = config.getFixed();
         for (Vertex vertex : network.getAllVertices()) {
@@ -1337,25 +1148,6 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
                 vertex.getLabel().movable = false;
             }
         }
-
-        this.drawing.range = config.isShowRange();
-        this.drawing.showTrivial(config.showTrivial());
-    }
-
-    boolean leadersVisible() {
-        return !mnuLabelingLeadersNo.isSelected();
-    }
-
-    boolean straightLeaders() {
-        return mnuLabelingLeadersStraight.isSelected();
-    }
-
-    boolean bendedLeaders() {
-        return mnuLabelingLeadersBended.isSelected();
-    }
-
-    boolean slantedLeaders() {
-        return mnuLabelingLeadersSlanted.isSelected();
     }
 
     protected void processDrag(DropTargetDragEvent dtde) {

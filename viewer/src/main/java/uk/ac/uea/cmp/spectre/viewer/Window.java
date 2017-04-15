@@ -18,15 +18,15 @@ package uk.ac.uea.cmp.spectre.viewer;
 import uk.ac.uea.cmp.spectre.core.ds.network.Edge;
 import uk.ac.uea.cmp.spectre.core.ds.network.Network;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
+import uk.ac.uea.cmp.spectre.core.ds.network.draw.Leader;
+import uk.ac.uea.cmp.spectre.core.ds.network.draw.ViewerConfig;
 import uk.ac.uea.cmp.spectre.core.ui.gui.geom.Leaders;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.event.*;
 import java.util.*;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -35,47 +35,102 @@ import java.util.regex.Pattern;
 /**
  * @author balvociute
  */
-public class Window extends JPanel implements KeyListener {
+public class Window extends JPanel implements KeyListener, ComponentListener {
     private ViewerPoint selectedPoint;
     private Set<Cluster> clusters = new HashSet<>();
     double maxLabelH;
     double maxLabelW;
+    private double maxOffX = 0.0;
+    private double maxOffY = 0.0;
+
+    private int offsetX;
+    private int offsetY;
+
     private java.awt.Point last = null;
-    private final Stroke dashedStroke = new BasicStroke(
-            1.0f,
-            BasicStroke.CAP_BUTT,
-            BasicStroke.JOIN_MITER,
-            10.0f,
-            new float[]{5.0f},
-            0.0f);
-    private final Stroke dottedStroke = new BasicStroke(
-            1.0f,
-            BasicStroke.CAP_BUTT,
-            BasicStroke.JOIN_MITER,
-            10.0f,
-            new float[]{1.0f},
-            0.0f);
-    private double maxOffX;
-    private double maxOffY;
+    private Point startPoint;
+
     private double change;
     private final int extraSpace = 20;
     private final int maximalLabelWidth = 40;
+
+    // Maps for keys
     private InputMap inputmap = this.getInputMap(JPanel.WHEN_IN_FOCUSED_WINDOW);
     private ActionMap actionmap = this.getActionMap();
 
+    // Popup menu which occurs on right click
+    private javax.swing.JPopupMenu popupMenu;
+
+    // Leave public so external frame can modify based on menu item selections
+    public ViewerConfig config;
+
+
     public Window() {
-        this(null);
+
+        // Setup default configuration
+        this.config = new ViewerConfig();
+
+        this.offsetX = 0;
+        this.offsetY = 0;
+
+        // Create popup menu
+        preparePopupMenu();
+
+        // Setup listeners
+        setupKeyListeners();
+        setupMouseListeners();
     }
 
-    public Window(Spectre frame) {
+    private void preparePopupMenu() {
 
-        externalFrame = frame;
+        popupMenu = new javax.swing.JPopupMenu();
 
-        setupKeyListener();
+        JMenuItem copySelectedTaxa = new JMenuItem("Copy selected labels");
+        copySelectedTaxa.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C,
+                java.awt.Event.CTRL_MASK));
+        copySelectedTaxa.addActionListener(new ActionListener() {
 
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                copySelectedTaxa();
+            }
+        });
+        popupMenu.add(copySelectedTaxa);
+
+        JMenuItem selectGroup = new JMenuItem("Select group");
+        selectGroup.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_G,
+                java.awt.Event.CTRL_MASK));
+        selectGroup.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                selectGroup();
+            }
+        });
+        popupMenu.add(selectGroup);
+
+        JMenuItem group = new JMenuItem("Group selected");
+        group.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                makeGroup();
+            }
+        });
+        popupMenu.add(group);
+
+        JMenuItem remove = new JMenuItem("Remove from group");
+        remove.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                removeFromGroup();
+            }
+        });
+        popupMenu.add(remove);
     }
 
-    private void setupKeyListener() {
+
+    private void setupKeyListeners() {
         this.addKeyListener(this);
 
         final String rightKeyPressed = "right arrow pressed";
@@ -115,23 +170,128 @@ public class Window extends JPanel implements KeyListener {
         });
     }
 
-    Stack<State> undo = new Stack();
-    Stack<State> redo = new Stack();
-    State currentState;
-    Spectre externalFrame;
-    double ratio;
-    Double minX = null;
-    Double maxX = null;
-    Double minY = null;
-    Double maxY = null;
-    ViewerPoint pMinX;
-    ViewerPoint pMaxX;
-    ViewerPoint pMinY;
-    ViewerPoint pMaxY;
+    private void setupMouseListeners() {
+
+        // **** Mouse Listeners ****
+
+        this.addMouseWheelListener(new java.awt.event.MouseWheelListener() {
+            public void mouseWheelMoved(java.awt.event.MouseWheelEvent evt) {
+                zoom(evt.getPreciseWheelRotation() * config.getRatio() / 50.0);
+            }
+        });
+
+        this.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                java.awt.Point clickedPoint = evt.getPoint();
+                if (SwingUtilities.isRightMouseButton(evt)) {
+                    popupMenu.show(evt.getComponent(), clickedPoint.x, clickedPoint.y);
+                } else {
+                    setSelection(clickedPoint, evt.isControlDown() || evt.isShiftDown());
+                }
+            }
+
+            public void mouseDragged(java.awt.event.MouseEvent evt) {
+                if (SwingUtilities.isRightMouseButton(evt)) {
+                    rotate(startPoint, evt.getPoint());
+                }
+                else if (SwingUtilities.isLeftMouseButton(evt)) {
+                    if (evt.isShiftDown() || evt.isControlDown()) {
+                        setSelection(startPoint,
+                                evt.getPoint(),
+                                true);
+                    }
+                    else if (isOnLabel(evt.getPoint())) {
+                        moveLabels(evt.getPoint());
+                    }
+                    else if (isOnPoint()) {
+                        moveTheVertex(evt.getPoint());
+                    }
+                    else {
+                        pan(startPoint, evt.getPoint());
+                    }
+                }
+            }
+
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+
+                if (network != null) {
+                    startPoint = evt.getPoint();
+                    if (SwingUtilities.isRightMouseButton(evt)) {
+                        activateRotation(true);
+                        setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
+                    } else if (SwingUtilities.isLeftMouseButton(evt)) {
+                        if (evt.isShiftDown() || evt.isControlDown()) {
+                            selectmode = true;
+                        } else if (isOnLabel(evt.getPoint())) {
+                            markLabel(startPoint);
+                        } else if (isOnPoint()) {
+                            markPoint(startPoint);
+                        } else {
+                            // Do panning
+                            panmode = true;
+                            setCursor(new Cursor(Cursor.MOVE_CURSOR));
+                        }
+                    }
+                }
+            }
+
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                if (network != null) {
+                    activateRotation(false);
+                    removeSelectionRectangle();
+                    panmode = false;
+                    selectmode = false;
+                    setCursor(Cursor.getDefaultCursor());
+                    startPoint = null;
+                }
+            }
+        });
+
+        this.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseDragged(java.awt.event.MouseEvent evt) {
+                if (network != null) {
+                    if (SwingUtilities.isRightMouseButton(evt)) {
+                        rotate(startPoint, evt.getPoint());
+                    } else if (SwingUtilities.isLeftMouseButton(evt)) {
+                        if (evt.isShiftDown() || evt.isControlDown()) {
+                            setSelection(startPoint,
+                                    evt.getPoint(),
+                                    true);
+                        } else if (isOnLabel(evt.getPoint())) {
+                            moveLabels(evt.getPoint());
+                        } else if (isOnPoint()) {
+                            moveTheVertex(evt.getPoint());
+                        } else {
+                            pan(startPoint, evt.getPoint());
+                        }
+                    }
+                }
+            }
+        });
+
+        this.addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentResized(java.awt.event.ComponentEvent evt) {
+                midY = getHeight() / 2;
+                midX = getWidth() / 2;
+
+                repaintOnResize();
+            }
+        });
+
+
+
+    }
+
+    private void setupMouseListener() {
+
+    }
+
+    History history = new History();
+
+    NetworkExtents dimensions;
     double rotationAngle = 0.0;
     List<Edge> edges;
     Network network;
-    boolean trivialVisible = true;
     Leaders leaders = new Leaders();
     Map<Integer, ViewerPoint> points = new HashMap<>();
     Map<Integer, Line> lines = new HashMap<>();
@@ -150,12 +310,11 @@ public class Window extends JPanel implements KeyListener {
     Set<ViewerPoint> pointsToHighlight = new SelectableSet();
     Set<Line> linesToHightlight = new HashSet();
     Color selectionColor = Color.RED;
-    Color leaderColor = Color.BLUE;
     ViewerLabel selectedLabel = null;
     boolean rotatemode = false;
     boolean selectmode = false;
     boolean panmode = false;
-    boolean range = true;
+
     java.awt.Point lastPoint = null;
     ClusterFinder cf = new ClusterFinderSplits();
     ClusterPlacementOptimizer cpo = new ClusterPlacementOptimizerBox();
@@ -168,35 +327,28 @@ public class Window extends JPanel implements KeyListener {
 
         Graphics2D g2 = (Graphics2D) g;
 
-        if (lines != null && lines.size() > 0) {
+        if (lines != null) {
             for (Line l : lines.values()) {
                 g2.setStroke(new BasicStroke(l.getWidth()));
                 g.setColor(l.fg);
                 g2.drawLine(l.p1.getXint(), l.p1.getYint(), l.p2.getXint(), l.p2.getYint());
             }
         }
-        g2.setStroke(new BasicStroke(1));
 
-        if (labels != null && labels.size() > 0 && externalFrame.showLabels() && externalFrame.leadersVisible()) {
-            if (externalFrame.dashedLeaders()) {
-                g2.setStroke(dashedStroke);
-            } else if (externalFrame.dottedLeaders()) {
-                g2.setStroke(dottedStroke);
-            }
-
-            boolean straight = externalFrame.straightLeaders();
+        if (labels != null && labels.size() > 0 && config.showLabels() && config.leadersVisible()) {
+            g2.setStroke(config.getLeaderStroke().getStroke());
 
             for (ViewerLabel l : labels.values()) {
                 if (l.leader) {
                     if (l.p.isSelected()) {
                         g.setColor(Color.red);
                     } else {
-                        g.setColor(leaderColor);
+                        g.setColor(this.config.getLeaderColor());
                     }
-                    if (straight) {
+                    if (config.getLeaderType() == Leader.LeaderType.STRAIGHT) {
                         g.drawLine(l.p.getXint(), l.p.getYint(), l.getlX(), l.getlY());
                     } else {
-                        ViewerPoint bentPoint = l.computeBendingPoint(midX, midY, externalFrame.bendedLeaders());
+                        ViewerPoint bentPoint = l.computeBendingPoint(midX, midY, config.getLeaderType() == Leader.LeaderType.BENDED);
                         int[] x = new int[]{l.p.getXint(), bentPoint.getXint(), l.getlX()};
                         int[] y = new int[]{l.p.getYint(), bentPoint.getYint(), l.getlY()};
                         g.drawPolyline(x, y, 3);
@@ -237,8 +389,8 @@ public class Window extends JPanel implements KeyListener {
                 }
             }
         }
-        if (labels != null && labels.size() > 0 && externalFrame.showLabels()) {
-            boolean colorLabels = externalFrame.colorLabels();
+        if (labels != null && labels.size() > 0 && config.showLabels()) {
+            boolean colorLabels = config.colorLabels();
             for (ViewerLabel l : labels.values()) {
                 boolean selected = l.p.isSelected();
 
@@ -267,9 +419,10 @@ public class Window extends JPanel implements KeyListener {
             }
         }
 
-        if (range) {
+        // Draw the range indicator in the top left
+        if (config.showRange()) {
 
-            int delta = (int)(1.0 * ratio);
+            int delta = (int)(config.getRatio());
             double size = 1.0;
 
             while (delta < 30) {
@@ -290,13 +443,13 @@ public class Window extends JPanel implements KeyListener {
             g.drawString(Double.toString(size), left + ((right - left) / 2) - 10, 32);
         }
 
-
+        // Highlight mouse drag window when in selection mode
         if (selectionRectangle != null) {
             g.setColor(Color.red);
             g.drawRect(selectionRectangle[0], selectionRectangle[1], selectionRectangle[2], selectionRectangle[3]);
         }
 
-
+        // Draw a blue crosshair in centre of screen to indicate we are in rotate mode
         if (rotatemode) {
             g.setColor(Color.BLUE);
 
@@ -311,6 +464,16 @@ public class Window extends JPanel implements KeyListener {
 
     }
 
+    public void drawNetwork(final ViewerConfig config, Network network) {
+        this.network = network;
+        this.config = config;
+        this.setGraph();
+        this.showTrivial(config.showTrivial());
+        this.recomputeRatio();
+        //this.rescale();
+        this.repaintOnResize();
+    }
+
     private static Color getTextColor(Color bg) {
         if (bg.getRed() <= 50 && bg.getGreen() <= 50 && bg.getBlue() <= 50) {
             return Color.white;
@@ -319,19 +482,19 @@ public class Window extends JPanel implements KeyListener {
         }
     }
 
-    private void computeIntegerCoordinates(Double ratio) {
+    private void computeIntegerCoordinates() {
+
         if (vertices != null) {
-            findCornerPoints();
-            scaleCoordinates(ratio);
-            if (externalFrame.showLabels()) {
-                findMaxOffsets();
+            this.dimensions = NetworkExtents.determineRange(this.points.values(), this.vertices);
+            //scaleCoordinates();
+            if (config.showLabels()) {
                 sideMargin = sideMarginSaved + maxOffX;
                 heightMargin = heightMarginSaved + maxOffY;
             } else {
                 sideMargin = extraSpace;
                 heightMargin = extraSpace;
             }
-            scaleCoordinates(ratio);
+            scaleCoordinates();
         }
 
         resetLabelPositions(false);
@@ -345,26 +508,13 @@ public class Window extends JPanel implements KeyListener {
         repaint();
     }
 
-    public Map<Integer, Vertex> getVertices() {
-        return vertices;
-    }
 
-    public List<Edge> getEdges() {
-        return edges;
-    }
-
-    public List<Vertex> getLabeled() {
-        return network.getLabeledVertices();
-    }
-
-    public void setGraph(Network network, Double ratio) {
+    public void setGraph() {
         clusters.clear();
         points.clear();
         lines.clear();
         labels.clear();
         vertices.clear();
-
-        this.network = network;
 
         List<Vertex> verticesList = network.getAllVertices();
 
@@ -424,15 +574,15 @@ public class Window extends JPanel implements KeyListener {
             lines.put(e.getNxnum(), l);
         }
 
-        computeIntegerCoordinates(ratio);
+        computeIntegerCoordinates();
     }
 
     private int computeX(double x, int delta) {
-        return (int) ((x - minX) * ratio) + delta;
+        return (int) ((x - this.dimensions.vertices.minX) * config.getRatio()) + delta;
     }
 
     private int computeY(double y, int delta) {
-        return (int) ((y - minY) * ratio) + delta;
+        return (int) ((y - this.dimensions.vertices.minY) * config.getRatio()) + delta;
     }
 
     private void rotate(List<Vertex> vertices, double rotationAngle) {
@@ -450,8 +600,6 @@ public class Window extends JPanel implements KeyListener {
     }
 
     public void resetLabelPositions(boolean all) {
-        midY = getHeight() / 2;
-        midX = getWidth() / 2;
 
         LabelPlacementOptimizer lpo = new LabelPlacementOptimizer8Points();
         lpo.placeLabels(labels.values(), lines.values(), this, all);
@@ -522,12 +670,8 @@ public class Window extends JPanel implements KeyListener {
     }
 
     void repaintOnResize() {
-        repaintOnResize(null);
-    }
-
-    void repaintOnResize(Double ratio) {
         if (network != null) {
-            computeIntegerCoordinates(ratio);
+            computeIntegerCoordinates();
         }
         repaint();
     }
@@ -605,7 +749,7 @@ public class Window extends JPanel implements KeyListener {
                         }
                     }
                 } else {
-                    JOptionPane.showMessageDialog(externalFrame,
+                    JOptionPane.showMessageDialog(this.getParent(),
                             "Some of the highlighted labels belong to groups. Ungroup them before moving separately.",
                             "Warning",
                             JOptionPane.WARNING_MESSAGE);
@@ -668,7 +812,7 @@ public class Window extends JPanel implements KeyListener {
         if (selectedPoint != null) {
             Vertex v = vertices.get(selectedPoint.id);
             if (v.getEdgeList().size() == 1) {
-                State state = startState();
+                State state = this.history.startState();
                 state.vertexPositions.put(v, new double[]{v.getX(), v.getY()});
 
                 Edge e = v.getFirstEdge();
@@ -687,7 +831,7 @@ public class Window extends JPanel implements KeyListener {
                 v.setCoordinates(xt * Math.cos(angle) - yt * Math.sin(angle) + c.getX(),
                         xt * Math.sin(angle) + yt * Math.cos(angle) + c.getY());
 
-                currentState.vertexPositions.put(v, new double[]{v.getX(), v.getY()});
+                history.currentState.vertexPositions.put(v, new double[]{v.getX(), v.getY()});
                 repaintOnResize();
             }
         }
@@ -701,7 +845,7 @@ public class Window extends JPanel implements KeyListener {
                              boolean bold, boolean changeBold,
                              boolean italic, boolean changeItalic) {
         if (!pointsToHighlight.isEmpty()) {
-            State state = startState();
+            State state = this.history.startState();
 
             for (ViewerPoint p : pointsToHighlight) {
                 if (changeShape) {
@@ -740,8 +884,8 @@ public class Window extends JPanel implements KeyListener {
     }
 
     void showTrivial(boolean show) {
-        if (show != trivialVisible) {
-            trivialVisible = show;
+        if (show != config.showTrivial()) {
+            config.setShowTrivial(show);
             Iterator<ViewerLabel> labelIt = labels.values().iterator();
             while (labelIt.hasNext()) {
                 ViewerLabel l = labelIt.next();
@@ -760,36 +904,9 @@ public class Window extends JPanel implements KeyListener {
     }
 
     void showRange(boolean show) {
-        this.range = show;
-    }
-
-    private void findCornerPoints() {
-        Iterator<ViewerPoint> pIt = points.values().iterator();
-        minX = null;
-        minY = null;
-        maxX = null;
-        maxY = null;
-        while (pIt.hasNext()) {
-            ViewerPoint p = pIt.next();
-            if (!p.suppressed) {
-                Vertex v = vertices.get(p.id);
-                if (minX == null || minX > v.getX()) {
-                    minX = v.getX();
-                    pMinX = p;
-                }
-                if (maxX == null || maxX < v.getX()) {
-                    maxX = v.getX();
-                    pMaxX = p;
-                }
-                if (minY == null || minY > v.getY()) {
-                    minY = v.getY();
-                    pMinY = p;
-                }
-                if (maxY == null || maxY < v.getY()) {
-                    maxY = v.getY();
-                    pMaxY = p;
-                }
-            }
+        if (show != config.showRange()) {
+            config.setShowRange(show);
+            repaint();
         }
     }
 
@@ -812,11 +929,14 @@ public class Window extends JPanel implements KeyListener {
     }
 
 
-
+    /**
+     * When rotating actually modify the real vertex values
+     * @param angle
+     */
     void rotate(final double angle) {
 
-        double vX = (midX - deltaX) / ratio + minX;
-        double vY = (midY - deltaY) / ratio + minY;
+        double vX = (midX - deltaX) / config.getRatio() + dimensions.vertices.minX;
+        double vY = (midY - deltaY) / config.getRatio() + dimensions.vertices.minY;
 
         double bX = midX;
         double bY = midY;
@@ -868,13 +988,13 @@ public class Window extends JPanel implements KeyListener {
                     xt * Math.sin(angle) + yt * Math.cos(angle) - c.height / 2 + bY);
         }
 
-        repaintOnResize(ratio);
+        repaintOnResize();
     }
 
     void pan(java.awt.Point startPoint, java.awt.Point endPoint) {
 
-        double dX = (endPoint.x - startPoint.x) / ratio;
-        double dY = (endPoint.y - startPoint.y) / ratio;
+        /*double dX = (endPoint.x - startPoint.x);
+        double dY = (endPoint.y - startPoint.y);
 
         for (Vertex v : vertices.values()) {
             v.setCoordinates(v.getX() + dX, v.getY() + dY);
@@ -886,8 +1006,8 @@ public class Window extends JPanel implements KeyListener {
             }
             c.setLabelCoordinates(c.x + dX, c.y + dY);
         }
-
-        repaintOnResize(ratio);
+        */
+        repaintOnResize();
     }
 
     void flipNetwork(boolean horizontal) {
@@ -911,7 +1031,7 @@ public class Window extends JPanel implements KeyListener {
                 label.computeMiddleDistance();
             }
 
-            repaintOnResize(ratio);
+            repaintOnResize();
         }
     }
 
@@ -949,7 +1069,7 @@ public class Window extends JPanel implements KeyListener {
                 group = label.cluster;
             } else {
                 if (group != label.cluster) {
-                    JOptionPane.showMessageDialog(this, "Cannot select group:\n"
+                    JOptionPane.showMessageDialog(this.getParent(), "Cannot select group:\n"
                             + "selected labels belong to separate groups.");
                     return;
                 }
@@ -1006,7 +1126,7 @@ public class Window extends JPanel implements KeyListener {
             Object[] options = {"Keep current",
                     "Assign random",
                     "Select new color"};
-            int n = JOptionPane.showOptionDialog(externalFrame,
+            int n = JOptionPane.showOptionDialog(this.getParent(),
                     "Change coloring?",
                     "",
                     JOptionPane.YES_NO_CANCEL_OPTION,
@@ -1052,35 +1172,19 @@ public class Window extends JPanel implements KeyListener {
         }
     }
 
-    void undo() {
-        if (!undo.isEmpty()) {
-            redo.add(currentState);
-            currentState = undo.pop();
-            currentState.returnTo();
-        }
-    }
 
-    void redo() {
-        if (!redo.isEmpty()) {
-            undo.add(currentState);
-            currentState = redo.pop();
-            currentState.returnTo();
+    void removeFromGroup() {
+        for (ViewerPoint p : pointsToHighlight) {
+            ViewerLabel label = p.l;
+            if (label.cluster != null) {
+                label.cluster.remove(label);
+            }
         }
-    }
-
-    private State startState() {
-        State state;
-        if (!undo.isEmpty()) {
-            state = currentState;
-        } else {
-            state = new State();
+        for (Cluster cluster : clusters) {
+            if (cluster.isEmpty()) {
+                clusters.remove(cluster);
+            }
         }
-        currentState = new State();
-        undo.add(state);
-        if (!redo.isEmpty()) {
-            redo.clear();
-        }
-        return state;
     }
 
 
@@ -1088,36 +1192,6 @@ public class Window extends JPanel implements KeyListener {
         return !pointsToHighlight.isEmpty();
     }
 
-    private void findMaxOffsets() {
-        maxOffX = 0;
-        maxOffY = 0;
-
-        if (pMaxX.getX() != 0 && pMaxY.getY() != 0) {
-            for (ViewerLabel l : labels.values()) {
-                if (!l.label.movable || l.cluster != null) {
-                    double offXMi = l.getX() - pMinX.getX() + maxLabelW + extraSpace;
-                    double offXMa = pMaxX.getX() - (l.getX() + l.label.getWidth()) + maxLabelW + extraSpace;
-                    double offX = (offXMi < offXMa) ? offXMi : offXMa;
-                    if (offX < 0) {
-                        offX = 0 - offX;
-                        if (maxOffX < offX) {
-                            maxOffX = offX;
-                        }
-                    }
-
-                    double offYMi = l.getY() - (pMinY.getY() + l.label.getHeight()) + maxLabelH + extraSpace;
-                    double offYMa = pMaxY.getY() - l.getY() + maxLabelH + extraSpace;
-                    double offY = (offYMi < offYMa) ? offYMi : offYMa;
-                    if (offY < 0) {
-                        offY = 0 - offY;
-                        if (maxOffY < offY) {
-                            maxOffY = offY;
-                        }
-                    }
-                }
-            }
-        }
-    }
 
     void selectAll() {
         pointsToHighlight.clear();
@@ -1131,15 +1205,10 @@ public class Window extends JPanel implements KeyListener {
         return labels;
     }
 
-    private void scaleCoordinates(Double savedRatio) {
-        if (savedRatio != null) {
-            this.ratio = savedRatio;
-        } else {
-            computeRatio();
-        }
+    private void scaleCoordinates() {
 
-        deltaX = getWidth() / 2 - computeX((maxX + minX) / 2, 0);
-        deltaY = getHeight() / 2 - computeY((maxY + minY) / 2, 0);
+        deltaX = getWidth() / 2 - computeX(dimensions.vertices.width() / 2, offsetX);
+        deltaY = getHeight() / 2 - computeY(dimensions.vertices.height() / 2, offsetY);
 
         for (ViewerPoint p : points.values()) {
             p.setX(computeX(p.v.getX(), deltaX));
@@ -1163,126 +1232,51 @@ public class Window extends JPanel implements KeyListener {
         }
     }
 
-    private void computeRatio() {
-        double lastRatio = ratio;
+    private void recomputeRatio() {
+
+        final double lastRatio = config.getRatio();
 
         double width = (getWidth() / 2.0 - 20.0 > sideMargin) ? (getWidth() - 2.0 * sideMargin) : 40;
         double height = (getHeight() / 2.0 - 20.0 > heightMargin) ? (getHeight() - 2.0 * heightMargin) : 40;
 
-        ratio = Math.min(width / Math.abs(maxX - minX),
-                height / Math.abs(maxY - minY));
+        double newRatio = Math.min(width / Math.abs(dimensions.vertices.width()),
+                height / Math.abs(dimensions.vertices.height()));
 
-        if (ratio <= 0) {
-            ratio = 0;
-        }
-
-        change = (lastRatio * ratio == 0) ? 1 : ratio / lastRatio;
-    }
-
-    private int checkOffset(int l, int pMi, int pMa, int maxOff) {
-        int diffMin = l - pMi;
-        int diffMax = pMa - l;
-        int minDiff = (diffMin < diffMax) ? diffMin : diffMax;
-        if (minDiff < 0) {
-            int off = Math.abs(minDiff);
-            if (maxOff < off) {
-                maxOff = off;
-            }
-        }
-
-        return maxOff;
+        change = (lastRatio * newRatio == 0) ? 1 : newRatio / lastRatio;
+        config.setRatio(newRatio);
     }
 
     public void rescale() {
+
         if (vertices != null) {
-            if (externalFrame.showLabels()) {
-                findCornerPointsLabelsIncluded();
-            } else {
-                findCornerPoints();
-            }
+            this.dimensions = NetworkExtents.determineRange(points.values(), vertices);
             rescaleCoordinates();
             resetLabelPositions(false);
         }
     }
 
-    private void findCornerPointsLabelsIncluded() {
-        if (points != null) {
-            minX = null;
-            maxX = null;
-            minY = null;
-            maxY = null;
-            for (ViewerPoint p : points.values()) {
-                double xMi = p.getX() - p.getSize() / 2;
-                double xMa = p.getX() + p.getSize() / 2;
-                double yMi = p.getY() - p.getSize() / 2;
-                double yMa = p.getY() + p.getSize() / 2;
-
-                if (p.l != null) {
-                    if (p.l.label.getOffsetX() < 0) {
-                        xMi = p.l.getX();
-                    }
-                    double mxl = p.l.getX() + p.l.label.getWidth();
-                    if (mxl > xMa) {
-                        xMa = mxl;
-                    }
-
-                    if (p.l.label.getOffsetY() > 0) {
-                        yMa = p.l.getY();
-                    }
-                    double myl = p.l.getY() - p.l.label.getHeight();
-                    if (myl < yMi) {
-                        yMi = myl;
-                    }
-                }
-
-                if (minX == null || minX > xMi) {
-                    minX = xMi;
-                }
-                if (maxX == null || maxX < xMa) {
-                    maxX = xMa;
-                }
-                if (minY == null || minY > yMi) {
-                    minY = yMi;
-                }
-                if (maxY == null || maxY < yMa) {
-                    maxY = yMa;
-                }
-            }
+    private ViewerPoint rescalePoint(ViewerPoint p) {
+        final double ratio = config.getRatio();
+        p.setX((p.getX() - this.dimensions.vertices.minX) * ratio);
+        p.setY((p.getY() - this.dimensions.vertices.minY) * ratio);
+        if (p.l != null) {
+            p.l.label.setOffsetX((p.l.label.getOffsetX() * ratio));
+            p.l.label.setOffsetY((p.l.label.getOffsetY() * ratio));
         }
+        return p;
     }
 
     private void rescaleCoordinates() {
-        ratio = Math.min(getWidth() / (maxX - minX), getHeight() / (maxY - minY));
 
-        Iterator<Integer> idIt = points.keySet().iterator();
-        while (idIt.hasNext()) {
-            int id = idIt.next();
-            ViewerPoint p = points.get(id);
-            double nX = (p.getX() - minX) * ratio;
-            double nY = (p.getY() - minY) * ratio;
-            p.setX(nX);
-            p.setY(nY);
-            if (p.l != null)// && !labelsToHighlight.contains(p.l))
-            {
-                p.l.label.setOffsetX((p.l.label.getOffsetX() * ratio));
-                p.l.label.setOffsetY((p.l.label.getOffsetY() * ratio));
-            }
+        // Reset ratio to optimal
+        config.setRatio(Math.min(getWidth() / this.dimensions.vertices.width(), getHeight() / this.dimensions.vertices.height()));
+
+
+        for (int id : points.keySet()) {
+            rescalePoint(points.get(id));
         }
     }
 
-    void removeFromGroup() {
-        for (ViewerPoint p : pointsToHighlight) {
-            ViewerLabel label = p.l;
-            if (label.cluster != null) {
-                label.cluster.remove(label);
-            }
-        }
-        for (Cluster cluster : clusters) {
-            if (cluster.isEmpty()) {
-                clusters.remove(cluster);
-            }
-        }
-    }
 
     void fixLabels(boolean fix) {
         for (ViewerLabel label : labels.values()) {
@@ -1293,6 +1287,15 @@ public class Window extends JPanel implements KeyListener {
             }
         }
     }
+
+    public void zoom(double amount) {
+
+        this.config.setRatio(this.config.getRatio()- amount);
+        this.computeIntegerCoordinates();
+    }
+
+
+    // **** Keylistener methods ****
 
     @Override
     public void keyTyped(KeyEvent e) {
@@ -1311,16 +1314,77 @@ public class Window extends JPanel implements KeyListener {
         }
     }
 
-    public void zoom(double amount) {
 
-        this.ratio -= amount;
-        this.computeIntegerCoordinates(this.ratio);
+
+    // **** Component listener methods ****
+
+    @Override
+    public void componentResized(ComponentEvent e) {
+
     }
 
-    public double getRatio() {
-        return ratio;
+    @Override
+    public void componentMoved(ComponentEvent e) {
+
     }
 
+    @Override
+    public void componentShown(ComponentEvent e) {
+
+    }
+
+    @Override
+    public void componentHidden(ComponentEvent e) {
+
+    }
+
+    public void setLeaderType(Leader.LeaderType leaderType) {
+        if (leaderType != this.config.getLeaderType()) {
+            this.config.setLeaderType(leaderType);
+            this.repaint();
+        }
+    }
+
+    public void setLeaderStroke(Leader.LeaderStroke leaderStroke) {
+        if (leaderStroke != this.config.getLeaderStroke()) {
+            this.config.setLeaderStroke(leaderStroke);
+            this.repaint();
+        }
+    }
+
+    public void setLeaderColour(Color leaderColour) {
+        if (!leaderColour.equals(this.config.getLeaderColor())) {
+            this.config.setLeaderColor(leaderColour);
+            this.repaint();
+        }
+    }
+
+    private class History {
+        private Stack<State> undo = new Stack();
+        private Stack<State> redo = new Stack();
+        private State currentState;
+
+        public History() {
+            this.undo = new Stack<>();
+            this.redo = new Stack<>();
+            this.currentState = new State();
+        }
+
+        private State startState() {
+            State state;
+            if (!this.undo.isEmpty()) {
+                state = this.currentState;
+            } else {
+                state = new State();
+            }
+            this.currentState = new State();
+            this.undo.add(state);
+            if (!this.redo.isEmpty()) {
+                this.redo.clear();
+            }
+            return state;
+        }
+    }
 
     private class State {
 
@@ -1365,4 +1429,116 @@ public class Window extends JPanel implements KeyListener {
             }
         }
     }
+
+    private static class Range2D {
+        public double minX;
+        public double maxX;
+        public double minY;
+        public double maxY;
+
+        public Range2D() {
+            this.minX = Double.MAX_VALUE;
+            this.maxX = -Double.MAX_VALUE;
+            this.minY = Double.MAX_VALUE;
+            this.maxY = -Double.MAX_VALUE;
+        }
+
+        public double width() {
+            return maxX - minX;
+        }
+
+        public double height() {
+            return maxY - minY;
+        }
+
+
+        public void addPoint(final ViewerPoint p) {
+
+            double xMi = p.getX() - p.getSize() / 2;
+            double xMa = p.getX() + p.getSize() / 2;
+            double yMi = p.getY() - p.getSize() / 2;
+            double yMa = p.getY() + p.getSize() / 2;
+
+            if (p.l != null) {
+                if (p.l.label.getOffsetX() < 0) {
+                    xMi = p.l.getX();
+                }
+                double mxl = p.l.getX() + p.l.label.getWidth();
+                if (mxl > xMa) {
+                    xMa = mxl;
+                }
+
+                if (p.l.label.getOffsetY() > 0) {
+                    yMa = p.l.getY();
+                }
+                double myl = p.l.getY() - p.l.label.getHeight();
+                if (myl < yMi) {
+                    yMi = myl;
+                }
+            }
+
+            // Add both bottom left and top right of viewpoint to push extents
+            addPoint(xMi, yMi);
+            addPoint(xMa, yMa);
+        }
+
+        public void addPoint(final Vertex p) {
+            addPoint(p.getX(), p.getY());
+        }
+
+        public void addPoint(final double x, final double y) {
+            if (minX > x) {
+                minX = x;
+            }
+            if (maxX < x) {
+                maxX = x;
+            }
+            if (minY > y) {
+                minY = y;
+            }
+            if (maxY < y) {
+                maxY = y;
+            }
+        }
+
+    }
+
+    private static class NetworkExtents {
+
+        public Range2D vertices;
+        public Range2D labels;
+
+        /*public ViewerPoint pMinX;
+        public ViewerPoint pMaxX;
+        public ViewerPoint pMinY;
+        public ViewerPoint pMaxY;*/
+
+        public NetworkExtents() {
+            this.vertices = new Range2D();
+            this.labels = new Range2D();
+
+            /*this.pMinX = null;
+            this.pMaxX = null;
+            this.pMinY = null;
+            this.pMaxY = null;*/
+        }
+
+
+        public static NetworkExtents determineRange(Collection<ViewerPoint> points, Map<Integer, Vertex> vertices) {
+
+            NetworkExtents dims = new NetworkExtents();
+
+            for (ViewerPoint p : points) {
+
+                dims.labels.addPoint(p);
+
+                if (!p.suppressed) {
+                    dims.vertices.addPoint(vertices.get(p.id));
+                }
+            }
+            return dims;
+        }
+    }
+
+
 }

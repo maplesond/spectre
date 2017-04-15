@@ -15,6 +15,7 @@
 
 package uk.ac.uea.cmp.spectre.viewer;
 
+import uk.ac.uea.cmp.spectre.core.ds.network.draw.Leader;
 import uk.ac.uea.cmp.spectre.core.ds.network.draw.Translocator;
 
 import java.awt.*;
@@ -378,40 +379,44 @@ public class Cluster {
             l.forceLeader(x, y);
         }
 
-        if (window != null && !window.externalFrame.bendedLeaders()) {
-            Iterator<ViewerPoint> pointIt = points.iterator();
-            while (pointIt.hasNext()) {
-                ViewerPoint p1 = pointIt.next();
-                ViewerLabel l1 = p1.l;
-                Iterator<ViewerPoint> pointIt2 = points.iterator();
-                while (pointIt2.hasNext()) {
-                    ViewerPoint p2 = pointIt2.next();
-                    if (p1 != p2) {
-                        ViewerLabel l2 = p2.l;
-                        if (window.externalFrame.straightLeaders()) {
-                            if (Translocator.cross(p1.getX(), p1.getY(), l1.getlX(), l1.getlY(),
-                                    p2.getX(), p2.getY(), l2.getlX(), l2.getlY())) {
-                                l1.changePositionsWith(l2);
-                            }
-                        } else if (window.externalFrame.slantedLeaders()) {
-                            ViewerPoint b1 = l1.computeBendingPoint(window.midX,
-                                    window.midY,
-                                    false);
-                            ViewerPoint b2 = l2.computeBendingPoint(window.midX,
-                                    window.midY,
-                                    false);
-                            if (Translocator.cross(p1.getX(), p1.getY(), b1.getX(), b1.getY(),
-                                    p2.getX(), p2.getY(), b2.getX(), b2.getY())
-                                    ||
-                                    Translocator.cross(p1.getX(), p1.getY(), b1.getX(), b1.getY(),
-                                            b2.getX(), b2.getY(), l2.getlX(), l2.getlY())
-                                    ||
-                                    Translocator.cross(b1.getX(), b1.getY(), l1.getlX(), l1.getlY(),
-                                            p2.getX(), p2.getY(), b2.getX(), b2.getY())
-                                    ||
-                                    Translocator.cross(b1.getX(), b1.getY(), l1.getlX(), l1.getlY(),
-                                            b2.getX(), b2.getY(), l2.getlX(), l2.getlY())) {
-                                l1.changePositionsWith(l2);
+        if (window != null) {
+
+            final Leader.LeaderType leaderType = window.config.getLeaderType();
+            if (leaderType != Leader.LeaderType.BENDED) {
+                Iterator<ViewerPoint> pointIt = points.iterator();
+                while (pointIt.hasNext()) {
+                    ViewerPoint p1 = pointIt.next();
+                    ViewerLabel l1 = p1.l;
+                    Iterator<ViewerPoint> pointIt2 = points.iterator();
+                    while (pointIt2.hasNext()) {
+                        ViewerPoint p2 = pointIt2.next();
+                        if (p1 != p2) {
+                            ViewerLabel l2 = p2.l;
+                            if (leaderType == Leader.LeaderType.STRAIGHT) {
+                                if (Translocator.cross(p1.getX(), p1.getY(), l1.getlX(), l1.getlY(),
+                                        p2.getX(), p2.getY(), l2.getlX(), l2.getlY())) {
+                                    l1.changePositionsWith(l2);
+                                }
+                            } else if (leaderType == Leader.LeaderType.SLANTED) {
+                                ViewerPoint b1 = l1.computeBendingPoint(window.midX,
+                                        window.midY,
+                                        false);
+                                ViewerPoint b2 = l2.computeBendingPoint(window.midX,
+                                        window.midY,
+                                        false);
+                                if (Translocator.cross(p1.getX(), p1.getY(), b1.getX(), b1.getY(),
+                                        p2.getX(), p2.getY(), b2.getX(), b2.getY())
+                                        ||
+                                        Translocator.cross(p1.getX(), p1.getY(), b1.getX(), b1.getY(),
+                                                b2.getX(), b2.getY(), l2.getlX(), l2.getlY())
+                                        ||
+                                        Translocator.cross(b1.getX(), b1.getY(), l1.getlX(), l1.getlY(),
+                                                p2.getX(), p2.getY(), b2.getX(), b2.getY())
+                                        ||
+                                        Translocator.cross(b1.getX(), b1.getY(), l1.getlX(), l1.getlY(),
+                                                b2.getX(), b2.getY(), l2.getlX(), l2.getlY())) {
+                                    l1.changePositionsWith(l2);
+                                }
                             }
                         }
                     }

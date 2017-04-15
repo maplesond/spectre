@@ -26,6 +26,7 @@ import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrixBuilder;
 import uk.ac.uea.cmp.spectre.core.ds.network.Edge;
 import uk.ac.uea.cmp.spectre.core.ds.network.NetworkLabel;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
+import uk.ac.uea.cmp.spectre.core.ds.network.draw.Leader;
 import uk.ac.uea.cmp.spectre.core.ds.network.draw.ViewerConfig;
 import uk.ac.uea.cmp.spectre.core.ds.split.SpectreSplitBlock;
 import uk.ac.uea.cmp.spectre.core.io.nexus.Nexus;
@@ -2228,7 +2229,7 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitVm_leaders(NexusFileParser.Vm_leadersContext ctx) {
-        this.viewerConfig.setLeaderType(ctx.IDENTIFIER().getText());
+        this.viewerConfig.setLeaderType(Leader.LeaderType.valueOf(ctx.IDENTIFIER().getText().toUpperCase()));
     }
 
     @Override
@@ -2238,7 +2239,7 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitVm_leaderstroke(NexusFileParser.Vm_leaderstrokeContext ctx) {
-        this.viewerConfig.setLeaderStroke(ctx.IDENTIFIER().getText());
+        this.viewerConfig.setLeaderStroke(Leader.LeaderStroke.valueOf(ctx.IDENTIFIER().getText().toUpperCase()));
     }
 
     @Override

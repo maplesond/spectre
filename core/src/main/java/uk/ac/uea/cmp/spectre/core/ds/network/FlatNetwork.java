@@ -15,6 +15,7 @@
 
 package uk.ac.uea.cmp.spectre.core.ds.network;
 
+import uk.ac.uea.cmp.spectre.core.ds.Identifier;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 
 import java.util.*;
@@ -72,6 +73,7 @@ public class FlatNetwork implements Network {
 
     public FlatNetwork(Vertex v) {
         this(v.collectVertices(), v.getFirstEdge().collectEdges());
+        this.setupLabels();
     }
 
     @Override
@@ -355,6 +357,19 @@ public class FlatNetwork implements Network {
             this.labeledVertices.add(v);
             this.trivialEdges.add(v.getFirstEdge());
             this.edges.add(v.getFirstEdge());
+        }
+    }
+
+    public void setupLabels() {
+        for (Vertex v : this.getAllVertices()) {
+            if (v.getTaxa().size() > 0) {
+                String label = new String();
+                for (Identifier i : v.getTaxa()) {
+                    label = (i.getName() + ", ").concat(label);
+                }
+                label = label.substring(0, label.length() - 2);
+                v.setLabel(new NetworkLabel(label));
+            }
         }
     }
 }
