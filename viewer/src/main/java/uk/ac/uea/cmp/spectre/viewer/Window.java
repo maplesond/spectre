@@ -36,6 +36,9 @@ import java.util.regex.Pattern;
  * @author balvociute
  */
 public class Window extends JPanel implements KeyListener, ComponentListener {
+
+    private final static int PAN_STEP = 5;
+
     private ViewerPoint selectedPoint;
     private Set<Cluster> clusters = new HashSet<>();
     double maxLabelH;
@@ -43,8 +46,8 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
     private double maxOffX = 0.0;
     private double maxOffY = 0.0;
 
-    private int offsetX;
-    private int offsetY;
+    private Point centrePoint;
+    private Point offset;
 
     private java.awt.Point last = null;
     private Point startPoint;
@@ -52,6 +55,8 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
     private double change;
     private final int extraSpace = 20;
     private final int maximalLabelWidth = 40;
+
+    private ViewMode viewMode;
 
     // Maps for keys
     private InputMap inputmap = this.getInputMap(JPanel.WHEN_IN_FOCUSED_WINDOW);
@@ -63,14 +68,22 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
     // Leave public so external frame can modify based on menu item selections
     public ViewerConfig config;
 
+    // Stores history of changes so that we can implement undo / redo functionality
+    History history = new History();
+
+
 
     public Window() {
 
         // Setup default configuration
         this.config = new ViewerConfig();
 
-        this.offsetX = 0;
-        this.offsetY = 0;
+        // Setup window markers
+        this.centrePoint = new Point(this.getWidth() / 2,this.getHeight() / 2);
+        this.offset = new Point(0,0);
+
+        // Set default view mode to normal
+        this.viewMode = ViewMode.NORMAL;
 
         // Create popup menu
         preparePopupMenu();
@@ -138,7 +151,7 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
         actionmap.put(rightKeyPressed, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                //pan(true);
+                pan(PAN_STEP, 0);
             }
         });
 
@@ -147,7 +160,7 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
         actionmap.put(leftKeyPressed, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                //pan(true);
+                pan(-PAN_STEP, 0);
             }
         });
 
@@ -156,7 +169,7 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
         actionmap.put(upKeyPressed, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                //pan(true);
+                pan(0, -PAN_STEP);
             }
         });
 
@@ -165,7 +178,7 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
         actionmap.put(downKeyPressed, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                //pan(true);
+                pan(0, PAN_STEP);
             }
         });
     }
@@ -176,7 +189,7 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
 
         this.addMouseWheelListener(new java.awt.event.MouseWheelListener() {
             public void mouseWheelMoved(java.awt.event.MouseWheelEvent evt) {
-                zoom(evt.getPreciseWheelRotation() * config.getRatio() / 50.0);
+                zoom(evt.getPreciseWheelRotation() * config.getRatio() / 50.0, evt.getPoint());
             }
         });
 
@@ -217,32 +230,37 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
                 if (network != null) {
                     startPoint = evt.getPoint();
                     if (SwingUtilities.isRightMouseButton(evt)) {
-                        activateRotation(true);
+                        viewMode = ViewMode.ROTATE;
                         setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
                     } else if (SwingUtilities.isLeftMouseButton(evt)) {
                         if (evt.isShiftDown() || evt.isControlDown()) {
-                            selectmode = true;
+                            viewMode = ViewMode.SELECT;
                         } else if (isOnLabel(evt.getPoint())) {
                             markLabel(startPoint);
                         } else if (isOnPoint()) {
                             markPoint(startPoint);
                         } else {
                             // Do panning
-                            panmode = true;
+                            viewMode = ViewMode.PAN;
                             setCursor(new Cursor(Cursor.MOVE_CURSOR));
                         }
                     }
+                    repaint();
                 }
             }
 
             public void mouseReleased(java.awt.event.MouseEvent evt) {
                 if (network != null) {
-                    activateRotation(false);
-                    removeSelectionRectangle();
-                    panmode = false;
-                    selectmode = false;
+                    if (viewMode == ViewMode.ROTATE || viewMode == ViewMode.PAN) {
+                        lastPoint = null;
+                    }
+                    else if (viewMode == ViewMode.SELECT) {
+                        removeSelectionRectangle();
+                    }
+                    viewMode = ViewMode.NORMAL;
                     setCursor(Cursor.getDefaultCursor());
                     startPoint = null;
+                    repaint();
                 }
             }
         });
@@ -271,22 +289,13 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
 
         this.addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentResized(java.awt.event.ComponentEvent evt) {
-                midY = getHeight() / 2;
-                midX = getWidth() / 2;
-
+                centrePoint = new Point(getWidth() / 2, getHeight() / 2);
                 repaintOnResize();
             }
         });
-
-
-
     }
 
-    private void setupMouseListener() {
 
-    }
-
-    History history = new History();
 
     NetworkExtents dimensions;
     double rotationAngle = 0.0;
@@ -299,8 +308,6 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
     Map<Integer, Vertex> vertices = new HashMap<>();
     int[] selectionRectangle = null;
     boolean resetedLabelPositions = false;
-    public int midX = 0;
-    public int midY = 0;
     double heightMargin = 0;
     double sideMargin = 0;
     double heightMarginSaved = 0;
@@ -311,9 +318,6 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
     Set<Line> linesToHightlight = new HashSet();
     Color selectionColor = Color.RED;
     ViewerLabel selectedLabel = null;
-    boolean rotatemode = false;
-    boolean selectmode = false;
-    boolean panmode = false;
 
     java.awt.Point lastPoint = null;
     ClusterFinder cf = new ClusterFinderSplits();
@@ -348,7 +352,7 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
                     if (config.getLeaderType() == Leader.LeaderType.STRAIGHT) {
                         g.drawLine(l.p.getXint(), l.p.getYint(), l.getlX(), l.getlY());
                     } else {
-                        ViewerPoint bentPoint = l.computeBendingPoint(midX, midY, config.getLeaderType() == Leader.LeaderType.BENDED);
+                        ViewerPoint bentPoint = l.computeBendingPoint(config.getLeaderType() == Leader.LeaderType.BENDED);
                         int[] x = new int[]{l.p.getXint(), bentPoint.getXint(), l.getlX()};
                         int[] y = new int[]{l.p.getYint(), bentPoint.getYint(), l.getlY()};
                         g.drawPolyline(x, y, 3);
@@ -444,17 +448,20 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
         }
 
         // Highlight mouse drag window when in selection mode
-        if (selectionRectangle != null) {
+        if (viewMode == ViewMode.SELECT && selectionRectangle != null) {
             g.setColor(Color.red);
             g.drawRect(selectionRectangle[0], selectionRectangle[1], selectionRectangle[2], selectionRectangle[3]);
         }
 
         // Draw a blue crosshair in centre of screen to indicate we are in rotate mode
-        if (rotatemode) {
+        if (viewMode == ViewMode.ROTATE) {
             g.setColor(Color.BLUE);
 
             int cSize = 8;
             int lLength = 16;
+
+            int midX = this.centrePoint.x;
+            int midY = this.centrePoint.y;
 
             g.drawOval(midX - cSize / 2, midY - cSize / 2, cSize, cSize);
             g.drawLine(midX - lLength / 2, midY, midX + lLength / 2, midY);
@@ -470,7 +477,7 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
         this.setGraph();
         this.showTrivial(config.showTrivial());
         this.recomputeRatio();
-        //this.rescale();
+        this.optimiseScale(true);
         this.repaintOnResize();
     }
 
@@ -485,8 +492,6 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
     private void computeIntegerCoordinates() {
 
         if (vertices != null) {
-            this.dimensions = NetworkExtents.determineRange(this.points.values(), this.vertices);
-            //scaleCoordinates();
             if (config.showLabels()) {
                 sideMargin = sideMarginSaved + maxOffX;
                 heightMargin = heightMarginSaved + maxOffY;
@@ -578,11 +583,11 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
     }
 
     private int computeX(double x, int delta) {
-        return (int) ((x - this.dimensions.vertices.minX) * config.getRatio()) + delta;
+        return (int) ((x - this.dimensions.vertices.minX) * this.config.getRatio()) + delta;
     }
 
     private int computeY(double y, int delta) {
-        return (int) ((y - this.dimensions.vertices.minY) * config.getRatio()) + delta;
+        return (int) ((y - this.dimensions.vertices.minY) * this.config.getRatio()) + delta;
     }
 
     private void rotate(List<Vertex> vertices, double rotationAngle) {
@@ -910,19 +915,11 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
         }
     }
 
-    void activateRotation(boolean rotate) {
-        this.rotatemode = rotate;
-        if (!rotate) {
-            lastPoint = null;
-        }
-        repaint();
-    }
-
     void rotate(java.awt.Point startPoint, java.awt.Point endPoint) {
         startPoint = (lastPoint != null) ? lastPoint : startPoint;
         final double angle = Vertex.getClockwiseAngle(
-                new Vertex(endPoint.x, endPoint.y),
-                new Vertex(midX, midY),
+                new Vertex(endPoint.getX(), endPoint.getY()),
+                new Vertex(centrePoint.getX(), centrePoint.getY()),
                 new Vertex(startPoint.getX(), startPoint.getY()));
         rotate(angle);
         lastPoint = endPoint;
@@ -935,11 +932,11 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
      */
     void rotate(final double angle) {
 
-        double vX = (midX - deltaX) / config.getRatio() + dimensions.vertices.minX;
-        double vY = (midY - deltaY) / config.getRatio() + dimensions.vertices.minY;
+        double vX = (centrePoint.getX() - deltaX) / config.getRatio() + dimensions.vertices.minX;
+        double vY = (centrePoint.getY() - deltaY) / config.getRatio() + dimensions.vertices.minY;
 
-        double bX = midX;
-        double bY = midY;
+        double bX = centrePoint.getX();
+        double bY = centrePoint.getY();
 
         for (Vertex v : vertices.values()) {
             double xt = v.getX() - vX;
@@ -991,22 +988,35 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
         repaintOnResize();
     }
 
+    void pan(int deltaX, int deltaY) {
+
+        this.offset.x += deltaX;
+        this.offset.y += deltaY;
+
+        repaintOnResize();
+    }
+
     void pan(java.awt.Point startPoint, java.awt.Point endPoint) {
 
-        /*double dX = (endPoint.x - startPoint.x);
-        double dY = (endPoint.y - startPoint.y);
+        startPoint = (lastPoint != null) ? lastPoint : startPoint;
 
-        for (Vertex v : vertices.values()) {
-            v.setCoordinates(v.getX() + dX, v.getY() + dY);
-        }
-        for (Cluster c : clusters) {
-            for (ViewerPoint p : c.points) {
-                p.setX(p.getX() + dX);
-                p.setY(p.getY() + dY);
-            }
-            c.setLabelCoordinates(c.x + dX, c.y + dY);
-        }
-        */
+        this.offset.x += startPoint.x - endPoint.x;
+        this.offset.y += startPoint.y - endPoint.y;
+
+        repaintOnResize();
+
+        lastPoint = endPoint;
+    }
+
+    public void zoom(double amount) {
+        zoom(amount, this.centrePoint);
+    }
+
+    public void zoom(double amount, Point point) {
+
+        this.config.setRatio(this.config.getRatio() - amount);
+        this.offset.x += centrePoint.x - point.x;
+        this.offset.y += centrePoint.y - point.y;
         repaintOnResize();
     }
 
@@ -1207,9 +1217,15 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
 
     private void scaleCoordinates() {
 
-        deltaX = getWidth() / 2 - computeX(dimensions.vertices.width() / 2, offsetX);
-        deltaY = getHeight() / 2 - computeY(dimensions.vertices.height() / 2, offsetY);
+        // Recalculate dimensions of the network
+        this.dimensions = NetworkExtents.determineRange(this.points.values(), this.vertices);
 
+        // Get the offset to centre point of the canvas.  This takes into account the canvas size and any user defined
+        // offset due to panning
+        this.deltaX = computeX(this.dimensions.vertices.centreX(), this.offset.x);
+        this.deltaY = computeY(this.dimensions.vertices.centreY(), this.offset.y);
+
+        // Iterate through the points recalculating the locations in screen space
         for (ViewerPoint p : points.values()) {
             p.setX(computeX(p.v.getX(), deltaX));
             p.setY(computeY(p.v.getY(), deltaY));
@@ -1239,44 +1255,31 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
         double width = (getWidth() / 2.0 - 20.0 > sideMargin) ? (getWidth() - 2.0 * sideMargin) : 40;
         double height = (getHeight() / 2.0 - 20.0 > heightMargin) ? (getHeight() - 2.0 * heightMargin) : 40;
 
-        double newRatio = Math.min(width / Math.abs(dimensions.vertices.width()),
-                height / Math.abs(dimensions.vertices.height()));
+        double newRatio = Math.min(width / dimensions.vertices.width(), height / dimensions.vertices.height());
 
         change = (lastRatio * newRatio == 0) ? 1 : newRatio / lastRatio;
         config.setRatio(newRatio);
     }
 
-    public void rescale() {
+    /**
+     * Places network optimally within the viewing window
+     * Resets offsets to 0, rescales all coordinates to optimal values and then repaints
+     * @param resetLabels Whether or not to consider labels when rescaling coordinates of network
+     */
+    public void optimiseScale(boolean resetLabels) {
+
+        this.offset.x = 0;
+        this.offset.y = 0;
 
         if (vertices != null) {
             this.dimensions = NetworkExtents.determineRange(points.values(), vertices);
-            rescaleCoordinates();
-            resetLabelPositions(false);
+            recomputeRatio();
+            scaleCoordinates();
+            resetLabelPositions(resetLabels);
         }
+
+        repaintOnResize();
     }
-
-    private ViewerPoint rescalePoint(ViewerPoint p) {
-        final double ratio = config.getRatio();
-        p.setX((p.getX() - this.dimensions.vertices.minX) * ratio);
-        p.setY((p.getY() - this.dimensions.vertices.minY) * ratio);
-        if (p.l != null) {
-            p.l.label.setOffsetX((p.l.label.getOffsetX() * ratio));
-            p.l.label.setOffsetY((p.l.label.getOffsetY() * ratio));
-        }
-        return p;
-    }
-
-    private void rescaleCoordinates() {
-
-        // Reset ratio to optimal
-        config.setRatio(Math.min(getWidth() / this.dimensions.vertices.width(), getHeight() / this.dimensions.vertices.height()));
-
-
-        for (int id : points.keySet()) {
-            rescalePoint(points.get(id));
-        }
-    }
-
 
     void fixLabels(boolean fix) {
         for (ViewerLabel label : labels.values()) {
@@ -1288,11 +1291,7 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
         }
     }
 
-    public void zoom(double amount) {
 
-        this.config.setRatio(this.config.getRatio()- amount);
-        this.computeIntegerCoordinates();
-    }
 
 
     // **** Keylistener methods ****
@@ -1304,13 +1303,15 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        this.selectmode = e.isShiftDown();
+        if (e.isShiftDown()) {
+            this.viewMode = ViewMode.SELECT;
+        };
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-        if (this.selectmode) {
-            this.selectmode = false;
+        if (this.viewMode == ViewMode.SELECT) {
+            this.viewMode = ViewMode.NORMAL;
         }
     }
 
@@ -1357,6 +1358,10 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
             this.config.setLeaderColor(leaderColour);
             this.repaint();
         }
+    }
+
+    public Point getCentrePoint() {
+        return centrePoint;
     }
 
     private class History {
@@ -1451,6 +1456,14 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
             return maxY - minY;
         }
 
+        public double centreX() {
+            return maxX - (width() / 2.0);
+        }
+
+        public double centreY() {
+            return maxY - (height() / 2.0);
+        }
+
 
         public void addPoint(final ViewerPoint p) {
 
@@ -1508,19 +1521,9 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
         public Range2D vertices;
         public Range2D labels;
 
-        /*public ViewerPoint pMinX;
-        public ViewerPoint pMaxX;
-        public ViewerPoint pMinY;
-        public ViewerPoint pMaxY;*/
-
         public NetworkExtents() {
             this.vertices = new Range2D();
             this.labels = new Range2D();
-
-            /*this.pMinX = null;
-            this.pMaxX = null;
-            this.pMinY = null;
-            this.pMaxY = null;*/
         }
 
 
@@ -1538,6 +1541,13 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
             }
             return dims;
         }
+    }
+
+    private enum ViewMode {
+        NORMAL,
+        ROTATE,
+        SELECT,
+        PAN
     }
 
 

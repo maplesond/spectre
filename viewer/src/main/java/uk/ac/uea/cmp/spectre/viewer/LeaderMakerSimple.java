@@ -50,7 +50,7 @@ class LeaderMakerSimple implements LeaderMaker {
                 }
                 if (b1.getScore() > 40) {
                     ViewerPoint p = labels[id].p;
-                    double xPosition = ((p.getX() < drawing.midX) ? 10 : drawing.getWidth() - 10 - labels[id].label.getWidth());
+                    double xPosition = ((p.getX() < drawing.getCentrePoint().x) ? 10 : drawing.getWidth() - 10 - labels[id].label.getWidth());
                     double yPosition = p.getY() + labels[id].label.getHeight() / 2;
 
                     List<Integer[]> slots = (xPosition == 10) ? slotsLeft : slotsRight;

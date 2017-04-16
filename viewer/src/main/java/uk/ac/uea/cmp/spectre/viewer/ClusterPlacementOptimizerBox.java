@@ -172,7 +172,7 @@ public class ClusterPlacementOptimizerBox extends ClusterPlacementOptimizer {
             }
         }
 
-        return (x < window.midX) ? x1 - cluster.width - bufferX : x2 + bufferX;
+        return (x < window.getCentrePoint().x) ? x1 - cluster.width - bufferX : x2 + bufferX;
     }
 
 }

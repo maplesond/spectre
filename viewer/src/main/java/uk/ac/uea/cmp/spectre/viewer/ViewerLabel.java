@@ -169,11 +169,11 @@ public class ViewerLabel extends Element {
     void setAutomaticMovable(boolean b) {
         label.movable = b;
         if (!b) {
-            double cX = mainFrame.midX;
+            double cX = mainFrame.getCentrePoint().getX();
             double pX = p.getX();
             double lX = middleX();
 
-            double cY = mainFrame.midY;
+            double cY = mainFrame.getCentrePoint().getY();
             double pY = p.getY();
             double lY = middleY();
 
@@ -314,7 +314,7 @@ public class ViewerLabel extends Element {
         return getY() - label.getHeight() / 2;
     }
 
-    ViewerPoint computeBendingPoint(double cx, double cy, boolean bended) {
+    ViewerPoint computeBendingPoint(boolean bended) {
         int bx;
         int by;
 

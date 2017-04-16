@@ -398,12 +398,8 @@ public class Cluster {
                                     l1.changePositionsWith(l2);
                                 }
                             } else if (leaderType == Leader.LeaderType.SLANTED) {
-                                ViewerPoint b1 = l1.computeBendingPoint(window.midX,
-                                        window.midY,
-                                        false);
-                                ViewerPoint b2 = l2.computeBendingPoint(window.midX,
-                                        window.midY,
-                                        false);
+                                ViewerPoint b1 = l1.computeBendingPoint(false);
+                                ViewerPoint b2 = l2.computeBendingPoint(false);
                                 if (Translocator.cross(p1.getX(), p1.getY(), b1.getX(), b1.getY(),
                                         p2.getX(), p2.getY(), b2.getX(), b2.getY())
                                         ||

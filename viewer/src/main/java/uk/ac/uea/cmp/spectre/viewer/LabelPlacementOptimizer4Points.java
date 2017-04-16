@@ -41,8 +41,8 @@ public class LabelPlacementOptimizer4Points implements LabelPlacementOptimizer {
                             Collection<Line> lineSet,
                             Window drawing,
                             boolean all) {
-        int midX = drawing.midX;
-        int midY = drawing.midY;
+        int midX = drawing.getCentrePoint().x;
+        int midY = drawing.getCentrePoint().y;
 
         int n = labelSet.size();
 

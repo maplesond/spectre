@@ -76,7 +76,7 @@ class ClusterPlacementOptimizerSimple extends ClusterPlacementOptimizer {
                 int y = (int) ((topY + botY - cluster.getHeight()) * 0.5);
                 x /= pp.size();
 
-                x = (x < window.midX) ? 0 : window.midX * 2 - cluster.width;
+                x = (x < window.getCentrePoint().x) ? 0 : window.getCentrePoint().x * 2 - cluster.width;
 
                 cluster.setLabelCoordinates(x, y);
             }

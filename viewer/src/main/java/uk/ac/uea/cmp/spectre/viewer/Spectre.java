@@ -49,7 +49,6 @@ import uk.ac.uea.cmp.spectre.qtools.superq.SuperQGUI;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.text.View;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -460,9 +459,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         mnuViewOptimiseLayout.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 if (network != null) {
-                    drawing.rescale();
-                    drawing.resetLabelPositions(true);
-                    drawing.repaintOnResize();
+                    drawing.optimiseScale(true);
                 }
             }
         });
@@ -946,10 +943,6 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         log.error(message);
         JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
     }
-
-
-
-
 
 
     private void savePDF(File pdfFile) throws DocumentException {
