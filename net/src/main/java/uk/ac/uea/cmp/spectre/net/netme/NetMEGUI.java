@@ -26,6 +26,7 @@ import uk.ac.uea.cmp.spectre.net.netmake.NetMakeOptions;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
+import java.net.URISyntaxException;
 
 import static uk.ac.uea.cmp.spectre.core.ui.gui.LookAndFeel.NIMBUS;
 import static uk.ac.uea.cmp.spectre.core.ui.gui.LookAndFeel.setLookAndFeel;
@@ -75,6 +76,12 @@ public class NetMEGUI extends JFrame implements ToolHost {
     public NetMEGUI() {
         initComponents();
         setTitle(TITLE);
+
+        try {
+            setIconImage((new ImageIcon(uk.ac.uea.cmp.spectre.core.ui.gui.LookAndFeel.getLogoFilePath()).getImage()));
+        } catch (URISyntaxException e) {
+            showErrorDialog("Couldn't load logo.");
+        }
 
         cmdRun.setEnabled(true);
 

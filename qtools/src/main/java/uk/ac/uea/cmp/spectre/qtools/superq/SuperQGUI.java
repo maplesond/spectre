@@ -22,10 +22,7 @@ import uk.ac.earlham.metaopt.Optimiser;
 import uk.ac.earlham.metaopt.OptimiserException;
 import uk.ac.earlham.metaopt.OptimiserFactory;
 import uk.ac.uea.cmp.spectre.core.io.nexus.NexusFileFilter;
-import uk.ac.uea.cmp.spectre.core.ui.gui.JobController;
-import uk.ac.uea.cmp.spectre.core.ui.gui.JobControllerWithView;
-import uk.ac.uea.cmp.spectre.core.ui.gui.StatusTrackerWithView;
-import uk.ac.uea.cmp.spectre.core.ui.gui.ToolHost;
+import uk.ac.uea.cmp.spectre.core.ui.gui.*;
 import uk.ac.uea.cmp.spectre.core.util.LogConfig;
 import uk.ac.uea.cmp.spectre.qtools.superq.problems.SecondaryProblemFactory;
 
@@ -34,6 +31,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Vector;
 
@@ -100,6 +98,12 @@ public class SuperQGUI extends JFrame implements ToolHost {
 
         initComponents();
         setTitle("SUPERQ");
+
+        try {
+            setIconImage((new ImageIcon(uk.ac.uea.cmp.spectre.core.ui.gui.LookAndFeel.getLogoFilePath()).getImage()));
+        } catch (URISyntaxException e) {
+            showErrorDialog("Couldn't load logo.");
+        }
 
         this.txtFilter.setEnabled(false);
 

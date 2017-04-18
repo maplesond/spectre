@@ -26,8 +26,8 @@ import java.io.PrintWriter;
 public class CommandLineHelper {
 
     public static final int DEFAULT_WIDTH = 100;
-    public static final String DEFAULT_FOOTER = "Created in collaboration by the University of East Anglia (UEA), the " +
-            "Earlham Institute (EI) and the University of Greifswald, as part of the " +
+    public static final String DEFAULT_FOOTER = "Created in collaboration by the University of East Anglia (UEA) and the " +
+            "Earlham Institute (EI), as part of the " +
             "Suite of PhylogEnetiCs Tools for Reticulate Evolution (SPECTRE)";
 
     public static final String OPT_HELP = "help";

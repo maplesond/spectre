@@ -28,6 +28,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.net.URISyntaxException;
 
 import static uk.ac.uea.cmp.spectre.core.ui.gui.LookAndFeel.NIMBUS;
 import static uk.ac.uea.cmp.spectre.core.ui.gui.LookAndFeel.setLookAndFeel;
@@ -89,6 +90,13 @@ public class NetMakeGUI extends JFrame implements ToolHost {
     public NetMakeGUI() {
         initComponents();
         setTitle(TITLE);
+
+        try {
+            setIconImage((new ImageIcon(uk.ac.uea.cmp.spectre.core.ui.gui.LookAndFeel.getLogoFilePath()).getImage()));
+        } catch (URISyntaxException e) {
+            showErrorDialog("Couldn't load logo.");
+        }
+
         this.lastOutput = null;
         this.cwd = null;
 

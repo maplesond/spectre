@@ -48,10 +48,10 @@
                     </platforms>
                     <extraJvmArguments>-Djava.awt.headless=true</extraJvmArguments>
                     <programs>
-                        <program>
+                        <!--<program>
                             <mainClass>uk.ac.uea.cmp.spectre.tools.convertor.DistanceMatrixConvertor</mainClass>
                             <id>distmxconv</id>
-                        </program>
+                        </program>-->
                         <!--<program>
                             <mainClass>uk.ac.uea.cmp.spectre.tools.phycor.PhylipCorrector</mainClass>
                             <id>phycor</id>

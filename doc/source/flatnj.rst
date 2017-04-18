@@ -137,7 +137,7 @@ The syntax for this block is as follows::
 Distance matrices
 ~~~~~~~~~~~~~~~~~
 
-Character distance matrices that are used by Gen4S for the estimation of 4-split weights from multiple sequence
+Character distance matrices that are used by FlatNJ for the estimation of 4-split weights from multiple sequence
 alignments must be placed in the DISTANCES block.
 
 

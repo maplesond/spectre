@@ -106,7 +106,7 @@ public class RandomDistanceGeneratorTool extends SpectreTool {
 
     @Override
     public String getName() {
-        return "rdg";
+        return "random_distmat";
     }
 
     @Override

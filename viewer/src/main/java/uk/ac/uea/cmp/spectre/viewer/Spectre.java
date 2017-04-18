@@ -206,7 +206,13 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         setMinimumSize(new Dimension(700, 500));
         getContentPane().setBackground(Color.white); // TODO Allow user to control background color
         setForeground(java.awt.Color.white);
-        setIconImage((new ImageIcon(getLogoFilePath()).getImage()));
+
+        try {
+            setIconImage((new ImageIcon(LookAndFeel.getLogoFilePath()).getImage()));
+        } catch (URISyntaxException e) {
+            errorMessage("Couldn't load logo.", e);
+        }
+
         setLayout(new BorderLayout());
 
 
@@ -214,19 +220,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
 
     }
 
-    private String getLogoFilePath() {
 
-        File logo = new File("");
-        try {
-            logo = new File(new File(Spectre.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).getParentFile(), "etc/logo.png");
-        } catch (URISyntaxException e) {
-            errorMessage("Error trying to retrieve logo");
-        }
-        if (!logo.exists()) {
-            logo = FileUtils.toFile(Spectre.class.getResource("/logo.png"));
-        }
-        return logo.getAbsolutePath();
-    }
 
     private void prepareStatus() {
         this.pnlStatus = new JPanel();

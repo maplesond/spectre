@@ -30,11 +30,11 @@ Changing the JVM memory limits
 Normally 64-bit java processes are capped to 2GB of Heap Space, although you can find out the actual limit on your system
 by typing on a linux, mac or cygwin machine::
 
-  ``java -XX:+PrintFlagsFinal -version | grep MaxHeapSize``.
+  java -XX:+PrintFlagsFinal -version | grep MaxHeapSize.
 
 On windows just type::
 
-  ``java -XX:+PrintFlagsFinal -version``
+  java -XX:+PrintFlagsFinal -version
 
 And then manually find the line containing MaxHeapSize.  Sometimes some of the
 tools may need more memory than this when processing large datasets.  If you encounter an OutOfMemory error while running
@@ -77,8 +77,6 @@ Currently the following optimizers are supported by metaopt, each of which has i
 | Optimiser       | Quadratic? | Configuration | Free | Description                                                 |
 +=================+============+===============+======+=============================================================+
 | Apache Math 3   | No         | Built in      | Yes  | Part of Apache Math 3, available through maven central      |
-+-----------------+------------+---------------+------+-------------------------------------------------------------+
-| GLPK            | No         | External      | Yes  | GNU Linear Programming Toolkit                              |
 +-----------------+------------+---------------+------+-------------------------------------------------------------+
 | JOptimizer      | Yes        | Bundled       | Yes  | Pure java implementation but some dependencies not in maven |
 +-----------------+------------+---------------+------+-------------------------------------------------------------+
