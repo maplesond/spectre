@@ -478,6 +478,7 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
         this.config = config;
         this.setGraph();
         this.showTrivial(config.showTrivial());
+        this.repaintOnResize();
         if (optimiseLayout) {
             this.optimiseScale(true);
         }

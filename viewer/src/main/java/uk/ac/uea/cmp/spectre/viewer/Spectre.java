@@ -279,6 +279,14 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         format = new Formating(drawing);
         formatLabels = new FormatLabels(drawing);
 
+       
+        drawing.addMouseWheelListener(new MouseWheelListener() {
+            @Override
+            public void mouseWheelMoved(MouseWheelEvent e) {
+                updateStatus(e.getX(), e.getY());
+            }
+        });
+
         drawing.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseMoved(MouseEvent e) {
