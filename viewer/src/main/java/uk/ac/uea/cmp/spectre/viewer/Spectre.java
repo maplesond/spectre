@@ -567,6 +567,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         mnuLabelingShow.setMnemonic('S');
         mnuLabelingShow.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
+                drawing.config.setShowLabels(mnuLabelingShow.isSelected());
                 drawing.repaint();
             }
         });
@@ -576,6 +577,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         mnuLabelingColor.setMnemonic('C');
         mnuLabelingColor.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
+                drawing.config.setColorLabels(mnuLabelingColor.isSelected());
                 drawing.repaint();
             }
         });

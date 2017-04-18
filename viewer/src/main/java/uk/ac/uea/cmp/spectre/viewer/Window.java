@@ -1222,7 +1222,7 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
             recomputeRatio();
             Point2D centreNet = new Point2D.Double(this.dimensions.vertices.centreX(), this.dimensions.vertices.centreY());
             Point2D screenOffset = this.getCurrentTransform().transform(centreNet, null);
-            this.offset.setLocation(centreNet.getX(), centreNet.getY());
+            this.offset.setLocation(-centreNet.getX(), -centreNet.getY());
 
             scaleCoordinates();
             resetLabelPositions(resetLabels);
