@@ -5,10 +5,10 @@ Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
 .. image:: images/spectre.png
     :scale: 50%
 
-SPECTRE (a Suite of PhylogEnetiC Tools for Reticulate Evolution) is a toolbox for modelling and visualising reticulate
-evolution via phylogenetic trees and networks.  It contains a number of previous published tools for generating phylogenetic
-networks for various types from a range of different inputs.  SPECTRE also contains a library containing data structures
-and algorithms that can be leveraged by third party applications.
+Spectre is an open source project containing a collection of tools for inferring and visualising reticulate evolution.
+ The tools are primarily based around generating and processing split systems (a collection of bipartitions of the taxa).
+It contains a number of previously published methods for generating networks and trees for various types from a range of different inputs.
+Spectre also contains a library containing data structures and algorithms that can be leveraged by third party applications.
 
 
 .. toctree::
