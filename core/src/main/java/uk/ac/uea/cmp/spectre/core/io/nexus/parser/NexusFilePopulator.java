@@ -2179,6 +2179,17 @@ public class NexusFilePopulator implements NexusFileListener {
     }
 
     @Override
+    public void enterVm_angle(NexusFileParser.Vm_angleContext ctx) {
+
+    }
+
+    @Override
+    public void exitVm_angle(NexusFileParser.Vm_angleContext ctx) {
+        double angle = Double.parseDouble(ctx.FLOAT().getText());
+        this.viewerConfig.setRatio(angle);
+    }
+
+    @Override
     public void enterVm_showtrivial(NexusFileParser.Vm_showtrivialContext ctx) {
 
     }

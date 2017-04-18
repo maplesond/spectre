@@ -680,6 +680,7 @@ matrix_viewer_options :
 
 matrix_viewer_option :
       vm_ratio
+    | vm_angle
     | vm_showtrivial
     | vm_showrange
     | vm_showlabels
@@ -690,6 +691,7 @@ matrix_viewer_option :
     ;
 
 vm_ratio : 'ratio' '=' FLOAT;
+vm_angle : 'angle' '=' FLOAT;
 
 vm_showtrivial : 'showtrivial' '=' boolean_option;
 vm_showrange : 'showrange' '=' boolean_option;

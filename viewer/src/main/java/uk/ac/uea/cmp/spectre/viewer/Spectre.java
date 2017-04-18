@@ -48,6 +48,7 @@ import uk.ac.uea.cmp.spectre.qtools.superq.SuperQGUI;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.border.BevelBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
@@ -55,6 +56,7 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.*;
 import java.awt.event.*;
+import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -63,6 +65,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.DecimalFormat;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -87,6 +90,8 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
     private static final String OPT_DISPOSE = "dispose_on_close";
     private static final String TITLE = "SPECTRE";
 
+    private static DecimalFormat df2 = new DecimalFormat(".###");
+
     // The data
     private Network network;
     private IdentifierList taxa;
@@ -108,8 +113,21 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
     private DropTarget dt;
 
     private Window drawing;                 // Network drawing canvas
+
     private javax.swing.JPanel pnlOpen;     // Initial panel containing help message
     private javax.swing.JLabel lblOpenMsg;  // Initial help message
+
+    private javax.swing.JPanel pnlStatus;   // Status bar
+    private javax.swing.JPanel pnlNetCoords;
+    private javax.swing.JLabel lblNetCoords;
+    private javax.swing.JPanel pnlScreenCoords;
+    private javax.swing.JLabel lblScreenCoords;
+    private javax.swing.JPanel pnlOffset;
+    private javax.swing.JLabel lblOffset;
+    private javax.swing.JPanel pnlRatio;
+    private javax.swing.JLabel lblZoomRatio;
+    private javax.swing.JPanel pnlAngle;
+    private javax.swing.JLabel lblAngle;
 
     // Main menu
     private javax.swing.JMenuBar menuBar;
@@ -181,6 +199,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
 
         prepareMenu();
 
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle(TITLE);
         setPreferredSize(new Dimension(800, 600));
@@ -188,6 +207,55 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         getContentPane().setBackground(Color.white); // TODO Allow user to control background color
         setForeground(java.awt.Color.white);
         setIconImage((new ImageIcon("logo.png")).getImage());
+        setLayout(new BorderLayout());
+
+
+        prepareStatus();
+
+    }
+
+    private void prepareStatus() {
+        this.pnlStatus = new JPanel();
+        this.pnlStatus.setBorder(new BevelBorder(BevelBorder.LOWERED));
+        this.pnlStatus.setPreferredSize(new Dimension(this.getWidth(), 28));
+        this.pnlStatus.setLayout(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+
+        this.pnlNetCoords = new JPanel();
+        this.pnlNetCoords.setPreferredSize(new Dimension(150, 18));
+        this.lblNetCoords = new JLabel("Net:");
+        this.lblNetCoords.setHorizontalAlignment(SwingConstants.LEFT);
+        this.pnlNetCoords.add(this.lblNetCoords);
+        this.pnlStatus.add(this.pnlNetCoords);
+
+        this.pnlScreenCoords = new JPanel();
+        this.pnlScreenCoords.setPreferredSize(new Dimension(150, 18));
+        this.lblScreenCoords = new JLabel("Screen:");
+        this.lblScreenCoords.setHorizontalAlignment(SwingConstants.LEFT);
+        this.pnlScreenCoords.add(this.lblScreenCoords);
+        this.pnlStatus.add(this.pnlScreenCoords);
+
+        this.pnlRatio = new JPanel();
+        this.pnlRatio.setPreferredSize(new Dimension(150, 18));
+        this.lblZoomRatio = new JLabel("Zoom:");
+        this.lblZoomRatio.setHorizontalAlignment(SwingConstants.LEFT);
+        this.pnlRatio.add(this.lblZoomRatio);
+        this.pnlStatus.add(this.pnlRatio);
+
+        this.pnlAngle = new JPanel();
+        this.pnlAngle.setPreferredSize(new Dimension(150, 18));
+        this.lblAngle = new JLabel("Angle:");
+        this.lblAngle.setHorizontalAlignment(SwingConstants.LEFT);
+        this.pnlAngle.add(this.lblAngle);
+        this.pnlStatus.add(this.pnlAngle);
+
+        this.pnlOffset = new JPanel();
+        this.pnlOffset.setPreferredSize(new Dimension(150, 18));
+        this.pnlStatus.add(this.pnlOffset);
+        this.lblOffset = new JLabel("Offset:");
+        this.lblOffset.setHorizontalAlignment(SwingConstants.LEFT);
+        this.pnlOffset.add(this.lblOffset);
+
+        this.add(this.pnlStatus, BorderLayout.SOUTH);
     }
 
     private void prepareOpenPane() {
@@ -197,19 +265,10 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         lblOpenMsg = new JLabel("<html><div style='text-align: center;'>To open a network or split system, use the File menu or drop the file into this pane.<br>Alternatively, run a SPECTRE tool via the Tools menu.</html>");
         pnlOpen.add(lblOpenMsg);
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-
-        layout.setHorizontalGroup(
-                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(pnlOpen, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(pnlOpen, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
         dt = new DropTarget(pnlOpen, this);
         pnlOpen.setVisible(true);
+
+        this.add(pnlOpen, BorderLayout.CENTER);
     }
 
     private void prepareDrawing() {
@@ -219,17 +278,27 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         format = new Formating(drawing);
         formatLabels = new FormatLabels(drawing);
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
+        drawing.addMouseMotionListener(new MouseMotionAdapter() {
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                updateStatus(e.getX(), e.getY());
+            }
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                updateStatus(e.getX(), e.getY());
+            }
+        });
 
-        layout.setHorizontalGroup(
-                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(drawing, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(drawing, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
+        this.add(drawing, BorderLayout.CENTER);
+    }
+
+    private void updateStatus(int x, int y) {
+        Point2D net = drawing.getTranslatedPoint(x, y);
+        lblNetCoords.setText("Net: " + df2.format(net.getX()) + "," + df2.format(net.getY()));
+        lblScreenCoords.setText("Screen: " + x + "," + y);
+        lblOffset.setText("Offset: " + df2.format(drawing.getOffset().getX()) + "," + df2.format(drawing.getOffset().getY()));
+        lblZoomRatio.setText("Zoom: " + df2.format(drawing.config.getRatio()));
+        lblAngle.setText("Angle: " + df2.format(drawing.config.getAngle() * 180.0 / Math.PI));
     }
 
     @SuppressWarnings("unchecked")
@@ -1079,6 +1148,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
                 mnuLabelingColor.isSelected(),
                 new HashSet<Integer>(),
                 1.0,
+                0.0,
                 network == null ? null : network.getLabeledVertices());
     }
 

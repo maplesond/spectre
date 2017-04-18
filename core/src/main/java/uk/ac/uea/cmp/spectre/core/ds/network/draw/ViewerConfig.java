@@ -37,6 +37,7 @@ public class ViewerConfig {
     private boolean colorLabels;
     private Set<Integer> fixed;
     private double ratio;
+    private double angle;
     private VertexList labeledVertices;
 
     public ViewerConfig() {
@@ -51,6 +52,7 @@ public class ViewerConfig {
                 true,
                 new HashSet<Integer>(),
                 1.0,
+                0.0,
                 new VertexList());
     }
 
@@ -64,6 +66,7 @@ public class ViewerConfig {
                         boolean colorLabels,
                         Set<Integer> fixed,
                         double ratio,
+                        double angle,
                         VertexList labeledVertices) {
         this.dimensions = dimensions;
         this.leaderType = leaderType;
@@ -75,6 +78,7 @@ public class ViewerConfig {
         this.colorLabels = colorLabels;
         this.fixed = fixed;
         this.ratio = ratio;
+        this.angle = angle;
         this.labeledVertices = labeledVertices;
     }
 
@@ -157,6 +161,25 @@ public class ViewerConfig {
 
     public double getRatio() {
         return ratio;
+    }
+
+    public double getAngle() {
+        return angle;
+    }
+
+    public void setAngle(double angle) {
+        this.angle = angle;
+    }
+
+    public void incAngle(double delta) {
+        final double PI2 = 2 * Math.PI;
+        this.angle += delta;
+        while (this.angle > PI2) {
+            this.angle -= PI2;
+        }
+        while (this.angle < 0.0) {
+            this.angle += PI2;
+        }
     }
 
     public VertexList getLabeledVertices() {

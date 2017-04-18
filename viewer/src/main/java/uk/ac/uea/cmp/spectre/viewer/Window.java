@@ -27,6 +27,9 @@ import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
+import java.awt.geom.Point2D;
 import java.util.*;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -47,7 +50,7 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
     private double maxOffY = 0.0;
 
     private Point centrePoint;
-    private Point offset;
+    private Point2D offset;
 
     private java.awt.Point last = null;
     private Point startPoint;
@@ -80,7 +83,7 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
 
         // Setup window markers
         this.centrePoint = new Point(this.getWidth() / 2,this.getHeight() / 2);
-        this.offset = new Point(0,0);
+        this.offset = new Point2D.Double(0.0, 0.0);
 
         // Set default view mode to normal
         this.viewMode = ViewMode.NORMAL;
@@ -151,7 +154,7 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
         actionmap.put(rightKeyPressed, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                pan(PAN_STEP, 0);
+                pan(-PAN_STEP, 0);
             }
         });
 
@@ -160,7 +163,7 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
         actionmap.put(leftKeyPressed, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                pan(-PAN_STEP, 0);
+                pan(PAN_STEP, 0);
             }
         });
 
@@ -169,7 +172,7 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
         actionmap.put(upKeyPressed, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                pan(0, -PAN_STEP);
+                pan(0, PAN_STEP);
             }
         });
 
@@ -178,7 +181,7 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
         actionmap.put(downKeyPressed, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                pan(0, PAN_STEP);
+                pan(0, -PAN_STEP);
             }
         });
     }
@@ -220,7 +223,7 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
                         moveTheVertex(evt.getPoint());
                     }
                     else {
-                        pan(startPoint, evt.getPoint());
+                        pan(evt.getPoint());
                     }
                 }
             }
@@ -280,7 +283,7 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
                         } else if (isOnPoint()) {
                             moveTheVertex(evt.getPoint());
                         } else {
-                            pan(startPoint, evt.getPoint());
+                            pan(evt.getPoint());
                         }
                     }
                 }
@@ -298,7 +301,6 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
 
 
     NetworkExtents dimensions;
-    double rotationAngle = 0.0;
     List<Edge> edges;
     Network network;
     Leaders leaders = new Leaders();
@@ -460,8 +462,8 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
             int cSize = 8;
             int lLength = 16;
 
-            int midX = this.centrePoint.x;
-            int midY = this.centrePoint.y;
+            int midX = (int)this.centrePoint.getX();
+            int midY = (int)this.centrePoint.getY();
 
             g.drawOval(midX - cSize / 2, midY - cSize / 2, cSize, cSize);
             g.drawLine(midX - lLength / 2, midY, midX + lLength / 2, midY);
@@ -492,6 +494,9 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
     private void computeIntegerCoordinates() {
 
         if (vertices != null) {
+            // Recalculate dimensions of the network
+            this.dimensions = NetworkExtents.determineRange(this.points.values(), this.vertices);
+
             if (config.showLabels()) {
                 sideMargin = sideMarginSaved + maxOffX;
                 heightMargin = heightMarginSaved + maxOffY;
@@ -525,10 +530,6 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
 
         for (Vertex v : verticesList) {
             vertices.put(v.getNxnum(), v);
-        }
-
-        if (rotationAngle != 0) {
-            rotate(verticesList, rotationAngle);
         }
 
         heightMargin = 0;
@@ -582,25 +583,28 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
         computeIntegerCoordinates();
     }
 
-    private int computeX(double x, int delta) {
-        return (int) ((x - this.dimensions.vertices.minX) * this.config.getRatio()) + delta;
+    private AffineTransform getCurrentTransform() {
+        AffineTransform tx = new AffineTransform();
+        tx.translate(this.centrePoint.getX(), this.centrePoint.getY());
+        tx.scale(this.config.getRatio(), this.config.getRatio());
+        tx.rotate(this.config.getAngle());
+        tx.translate(this.offset.getX(), this.offset.getY());
+        return tx;
     }
 
-    private int computeY(double y, int delta) {
-        return (int) ((y - this.dimensions.vertices.minY) * this.config.getRatio()) + delta;
-    }
+    // Convert the panel coordinates into the cooresponding coordinates on the translated image.
+    public Point2D getTranslatedPoint(double panelX, double panelY) {
 
-    private void rotate(List<Vertex> vertices, double rotationAngle) {
-        Iterator<Vertex> vertexIt = vertices.iterator();
-        while (vertexIt.hasNext()) {
-            Vertex v = vertexIt.next();
-            double x = v.getX();
-            double y = v.getY();
-
-            double newX = x * Math.cos(rotationAngle) - y * Math.sin(rotationAngle);
-            double newY = x * Math.sin(rotationAngle) + y * Math.cos(rotationAngle);
-
-            v.setCoordinates(newX, newY);
+        AffineTransform tx = getCurrentTransform();
+        Point2D point2d = new Point2D.Double(panelX, panelY);
+        try {
+            return tx.inverseTransform(point2d, null);
+        } catch (NoninvertibleTransformException e) {
+            JOptionPane.showMessageDialog(this.getParent(),
+                    "Non invertible transform.",
+                    "Warning",
+                    JOptionPane.WARNING_MESSAGE);
+            return null;
         }
     }
 
@@ -915,108 +919,58 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
         }
     }
 
-    void rotate(java.awt.Point startPoint, java.awt.Point endPoint) {
-        startPoint = (lastPoint != null) ? lastPoint : startPoint;
-        final double angle = Vertex.getClockwiseAngle(
-                new Vertex(endPoint.getX(), endPoint.getY()),
-                new Vertex(centrePoint.getX(), centrePoint.getY()),
-                new Vertex(startPoint.getX(), startPoint.getY()));
-        rotate(angle);
-        lastPoint = endPoint;
-    }
-
-
-    /**
-     * When rotating actually modify the real vertex values
-     * @param angle
-     */
-    void rotate(final double angle) {
-
-        double vX = (centrePoint.getX() - deltaX) / config.getRatio() + dimensions.vertices.minX;
-        double vY = (centrePoint.getY() - deltaY) / config.getRatio() + dimensions.vertices.minY;
-
-        double bX = centrePoint.getX();
-        double bY = centrePoint.getY();
-
-        for (Vertex v : vertices.values()) {
-            double xt = v.getX() - vX;
-            double yt = v.getY() - vY;
-
-            v.setCoordinates(xt * Math.cos(angle) - yt * Math.sin(angle) + vX,
-                    xt * Math.sin(angle) + yt * Math.cos(angle) + vY);
-
-            ViewerLabel l = labels.get(v.getNxnum());
-            if (l != null && !l.label.movable && l.cluster == null) {
-                xt = l.middleX() - bX;
-                yt = l.middleY() - bY;
-
-                ViewerPoint p = l.p;
-                double pX = p.getX() - bX;
-                double pY = p.getY() - bY;
-
-                double npX = pX * Math.cos(angle) - pY * Math.sin(angle) + bX;
-                double npY = pX * Math.sin(angle) + pY * Math.cos(angle) + bY;
-
-                p.setX(npX);
-                p.setY(npY);
-
-                double nX = xt * Math.cos(angle) - yt * Math.sin(angle) + bX;
-                double nY = xt * Math.sin(angle) + yt * Math.cos(angle) + bY;
-
-                l.setRotated(nX, nY);
-            }
-        }
-        for (Cluster c : clusters) {
-            double xt = c.x + c.width / 2 - bX;
-            double yt = c.y + c.height / 2 - bY;
-
-            for (ViewerPoint p : c.points) {
-                double pX = p.getX() - bX;
-                double pY = p.getY() - bY;
-
-                double npX = pX * Math.cos(angle) - pY * Math.sin(angle) + bX;
-                double npY = pX * Math.sin(angle) + pY * Math.cos(angle) + bY;
-
-                p.setX(npX);
-                p.setY(npY);
-            }
-
-            c.setLabelCoordinates(xt * Math.cos(angle) - yt * Math.sin(angle) - c.width / 2 + bX,
-                    xt * Math.sin(angle) + yt * Math.cos(angle) - c.height / 2 + bY);
-        }
-
+    void rotate(double delta) {
+        this.config.incAngle(delta);
         repaintOnResize();
     }
+
+    void rotate(java.awt.Point startPoint, java.awt.Point endPoint) {
+        startPoint = (lastPoint != null) ? lastPoint : startPoint;
+        this.config.incAngle(Vertex.getClockwiseAngle(
+                new Vertex(endPoint.getX(), endPoint.getY()),
+                new Vertex(centrePoint.getX(), centrePoint.getY()),
+                new Vertex(startPoint.getX(), startPoint.getY())));
+        lastPoint = endPoint;
+        repaintOnResize();
+    }
+
 
     void pan(int deltaX, int deltaY) {
 
-        this.offset.x += deltaX;
-        this.offset.y += deltaY;
-
+        Point2D adjNewPoint = getCurrentTransform().transform(this.offset, null);
+        adjNewPoint.setLocation(adjNewPoint.getX() + deltaX, adjNewPoint.getY() + deltaY);
+        this.offset = getTranslatedPoint(adjNewPoint.getX(), adjNewPoint.getY());
         repaintOnResize();
     }
 
-    void pan(java.awt.Point startPoint, java.awt.Point endPoint) {
+    void pan(java.awt.Point endPoint) {
 
-        startPoint = (lastPoint != null) ? lastPoint : startPoint;
+        // Determine the old and new mouse coordinates based on the translated coordinate space.
+        Point2D adjPreviousPoint = getTranslatedPoint(startPoint.getX(), startPoint.getY());
+        Point2D adjNewPoint = getTranslatedPoint(endPoint.getX(), endPoint.getY());
 
-        this.offset.x += startPoint.x - endPoint.x;
-        this.offset.y += startPoint.y - endPoint.y;
+        double newX = adjNewPoint.getX() - adjPreviousPoint.getX();
+        double newY = adjNewPoint.getY() - adjPreviousPoint.getY();
+
+        this.startPoint.setLocation((int)endPoint.getX(), (int)endPoint.getY());
+
+        this.offset.setLocation(this.offset.getX() + newX, this.offset.getY() + newY);
 
         repaintOnResize();
-
-        lastPoint = endPoint;
     }
 
     public void zoom(double amount) {
-        zoom(amount, this.centrePoint);
+        this.config.setRatio(this.config.getRatio() - amount);
+        repaintOnResize();
     }
 
     public void zoom(double amount, Point point) {
-
+        /*Point2D translated = this.getTranslatedPoint(point.getX(), point.getY());
         this.config.setRatio(this.config.getRatio() - amount);
-        this.offset.x += centrePoint.x - point.x;
-        this.offset.y += centrePoint.y - point.y;
+        Point2D newoffset = this.getCurrentTransform().transform(translated, null);
+        this.offset.x = (int)newoffset.getX();
+        this.offset.y = (int)newoffset.getY();*/
+        this.config.setRatio(this.config.getRatio() - amount);
         repaintOnResize();
     }
 
@@ -1217,18 +1171,12 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
 
     private void scaleCoordinates() {
 
-        // Recalculate dimensions of the network
-        this.dimensions = NetworkExtents.determineRange(this.points.values(), this.vertices);
-
-        // Get the offset to centre point of the canvas.  This takes into account the canvas size and any user defined
-        // offset due to panning
-        this.deltaX = computeX(this.dimensions.vertices.centreX(), this.offset.x);
-        this.deltaY = computeY(this.dimensions.vertices.centreY(), this.offset.y);
-
         // Iterate through the points recalculating the locations in screen space
         for (ViewerPoint p : points.values()) {
-            p.setX(computeX(p.v.getX(), deltaX));
-            p.setY(computeY(p.v.getY(), deltaY));
+            Point2D src = new Point2D.Double(p.v.getX(), p.v.getY());
+            Point2D dst = getCurrentTransform().transform(src, null);
+            p.setX(dst.getX());
+            p.setY(dst.getY());
             if (change != 0 && p.l != null && !p.selected) {
                 if (change != 1) {
                     double offX = p.l.label.getOffsetX() * change;
@@ -1268,12 +1216,13 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
      */
     public void optimiseScale(boolean resetLabels) {
 
-        this.offset.x = 0;
-        this.offset.y = 0;
-
         if (vertices != null) {
             this.dimensions = NetworkExtents.determineRange(points.values(), vertices);
             recomputeRatio();
+            Point2D centreNet = new Point2D.Double(this.dimensions.vertices.centreX(), this.dimensions.vertices.centreY());
+            Point2D screenOffset = this.getCurrentTransform().transform(centreNet, null);
+            this.offset.setLocation(centreNet.getX(), centreNet.getY());
+
             scaleCoordinates();
             resetLabelPositions(resetLabels);
         }
@@ -1362,6 +1311,9 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
 
     public Point getCentrePoint() {
         return centrePoint;
+    }
+    public Point2D getOffset() {
+        return offset;
     }
 
     private class History {
