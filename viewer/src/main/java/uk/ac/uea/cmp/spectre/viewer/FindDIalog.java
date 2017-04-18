@@ -30,6 +30,8 @@ public class FindDIalog extends javax.swing.JDialog {
     public FindDIalog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        this.jTextFieldText.requestFocus();
+        this.getRootPane().setDefaultButton(this.jButtonFind);
     }
 
     /**
@@ -125,6 +127,10 @@ public class FindDIalog extends javax.swing.JDialog {
      */
     public boolean regEx() {
         return jCheckBoxRegex.isSelected();
+    }
+
+    public void clearText() {
+        this.jTextFieldText.setText("");
     }
 
     /**

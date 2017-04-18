@@ -200,19 +200,32 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
 
         prepareMenu();
 
-
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle(TITLE);
         setPreferredSize(new Dimension(800, 600));
         setMinimumSize(new Dimension(700, 500));
         getContentPane().setBackground(Color.white); // TODO Allow user to control background color
         setForeground(java.awt.Color.white);
-        setIconImage((new ImageIcon(FileUtils.toFile(Spectre.class.getResource("/logo.png")).getAbsolutePath()).getImage()));
+        setIconImage((new ImageIcon(getLogoFilePath()).getImage()));
         setLayout(new BorderLayout());
 
 
         prepareStatus();
 
+    }
+
+    private String getLogoFilePath() {
+
+        File logo = new File("");
+        try {
+            logo = new File(new File(Spectre.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).getParentFile(), "etc/logo.png");
+        } catch (URISyntaxException e) {
+            errorMessage("Error trying to retrieve logo");
+        }
+        if (!logo.exists()) {
+            logo = FileUtils.toFile(Spectre.class.getResource("/logo.png"));
+        }
+        return logo.getAbsolutePath();
     }
 
     private void prepareStatus() {
@@ -279,7 +292,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         format = new Formating(drawing);
         formatLabels = new FormatLabels(drawing);
 
-       
+
         drawing.addMouseWheelListener(new MouseWheelListener() {
             @Override
             public void mouseWheelMoved(MouseWheelEvent e) {
@@ -451,6 +464,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
                 java.awt.Event.CTRL_MASK));
         mnuEditFind.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
+                find.clearText();
                 find.setVisible(true);
             }
         });
@@ -547,6 +561,8 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
 
         mnuViewShowTrivial.setSelected(true);
         mnuViewShowTrivial.setMnemonic('T');
+        mnuViewShowTrivial.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_T,
+                java.awt.Event.CTRL_MASK));
         mnuViewShowTrivial.setText("Show trivial splits");
         mnuViewShowTrivial.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -557,6 +573,8 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
 
         mnuViewShowRange.setSelected(true);
         mnuViewShowRange.setMnemonic('R');
+        mnuViewShowRange.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R,
+                java.awt.Event.CTRL_MASK));
         mnuViewShowRange.setText("Show range");
         mnuViewShowRange.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -573,6 +591,8 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         mnuLabelingShow.setSelected(true);
         mnuLabelingShow.setText("Show labels");
         mnuLabelingShow.setMnemonic('S');
+        mnuLabelingShow.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_L,
+                java.awt.Event.CTRL_MASK));
         mnuLabelingShow.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 drawing.config.setShowLabels(mnuLabelingShow.isSelected());
