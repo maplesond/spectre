@@ -25,6 +25,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -90,7 +91,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
     private static final String OPT_DISPOSE = "dispose_on_close";
     private static final String TITLE = "SPECTRE";
 
-    private static DecimalFormat df2 = new DecimalFormat(".###");
+    private static DecimalFormat df2 = new DecimalFormat("#.##");
 
     // The data
     private Network network;
@@ -203,10 +204,10 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle(TITLE);
         setPreferredSize(new Dimension(800, 600));
-        setMinimumSize(new Dimension(640, 480));
+        setMinimumSize(new Dimension(700, 500));
         getContentPane().setBackground(Color.white); // TODO Allow user to control background color
         setForeground(java.awt.Color.white);
-        setIconImage((new ImageIcon("logo.png")).getImage());
+        setIconImage((new ImageIcon(FileUtils.toFile(Spectre.class.getResource("/logo.png")).getAbsolutePath()).getImage()));
         setLayout(new BorderLayout());
 
 
@@ -217,39 +218,39 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
     private void prepareStatus() {
         this.pnlStatus = new JPanel();
         this.pnlStatus.setBorder(new BevelBorder(BevelBorder.LOWERED));
-        this.pnlStatus.setPreferredSize(new Dimension(this.getWidth(), 28));
-        this.pnlStatus.setLayout(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        this.pnlStatus.setPreferredSize(new Dimension(this.getWidth(), 30));
+        this.pnlStatus.setLayout(new FlowLayout(FlowLayout.RIGHT, 0, 0));
 
         this.pnlNetCoords = new JPanel();
-        this.pnlNetCoords.setPreferredSize(new Dimension(150, 18));
+        this.pnlNetCoords.setPreferredSize(new Dimension(140, 20));
         this.lblNetCoords = new JLabel("Net:");
         this.lblNetCoords.setHorizontalAlignment(SwingConstants.LEFT);
         this.pnlNetCoords.add(this.lblNetCoords);
         this.pnlStatus.add(this.pnlNetCoords);
 
         this.pnlScreenCoords = new JPanel();
-        this.pnlScreenCoords.setPreferredSize(new Dimension(150, 18));
+        this.pnlScreenCoords.setPreferredSize(new Dimension(140, 20));
         this.lblScreenCoords = new JLabel("Screen:");
         this.lblScreenCoords.setHorizontalAlignment(SwingConstants.LEFT);
         this.pnlScreenCoords.add(this.lblScreenCoords);
         this.pnlStatus.add(this.pnlScreenCoords);
 
         this.pnlRatio = new JPanel();
-        this.pnlRatio.setPreferredSize(new Dimension(150, 18));
+        this.pnlRatio.setPreferredSize(new Dimension(120, 20));
         this.lblZoomRatio = new JLabel("Zoom:");
         this.lblZoomRatio.setHorizontalAlignment(SwingConstants.LEFT);
         this.pnlRatio.add(this.lblZoomRatio);
         this.pnlStatus.add(this.pnlRatio);
 
         this.pnlAngle = new JPanel();
-        this.pnlAngle.setPreferredSize(new Dimension(150, 18));
+        this.pnlAngle.setPreferredSize(new Dimension(100, 20));
         this.lblAngle = new JLabel("Angle:");
         this.lblAngle.setHorizontalAlignment(SwingConstants.LEFT);
         this.pnlAngle.add(this.lblAngle);
         this.pnlStatus.add(this.pnlAngle);
 
         this.pnlOffset = new JPanel();
-        this.pnlOffset.setPreferredSize(new Dimension(150, 18));
+        this.pnlOffset.setPreferredSize(new Dimension(150, 20));
         this.pnlStatus.add(this.pnlOffset);
         this.lblOffset = new JLabel("Offset:");
         this.lblOffset.setHorizontalAlignment(SwingConstants.LEFT);
@@ -1098,7 +1099,8 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         this.network.setTaxa(this.taxa);
 
         // Load config if present in the nexus file otherwise initialise with defaults
-        ViewerConfig config = nexus.getViewerConfig() != null ? nexus.getViewerConfig() : createDefaultConfig();
+        boolean optimiseLayout = nexus.getViewerConfig() == null;
+        ViewerConfig config = optimiseLayout ? createDefaultConfig() : nexus.getViewerConfig();
 
         // Apply config
         this.applyConfig(config);
@@ -1114,7 +1116,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         }
 
         // Now draw the network into the drawing canvas
-        drawing.drawNetwork(config, this.network);
+        drawing.drawNetwork(config, this.network, optimiseLayout);
     }
 
     public Window getDrawing() {

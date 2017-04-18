@@ -473,13 +473,14 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
 
     }
 
-    public void drawNetwork(final ViewerConfig config, Network network) {
+    public void drawNetwork(final ViewerConfig config, Network network, boolean optimiseLayout) {
         this.network = network;
         this.config = config;
         this.setGraph();
         this.showTrivial(config.showTrivial());
-        this.recomputeRatio();
-        this.optimiseScale(true);
+        if (optimiseLayout) {
+            this.optimiseScale(true);
+        }
         this.repaintOnResize();
     }
 
