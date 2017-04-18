@@ -22,10 +22,14 @@ To run SuperQ use the ``superq`` script like this::
   superq -o <outfile> [-s <scaling_optimiser> -x <primary_optimiser>
          -y <secondary_optimiser> -b <objective> -f <filter_threshold>] <input_file> [<input_file>]...
 
-Alternatively, SuperQ has a simple GUI which can be started by simply running ``superq-gui`` without any arguments.
+Alternatively, SuperQ has a graphical interface that can be accessed via the Tools menu in the Spectre viewer.  This interface
+provides all the same options as available through the command line.
+
+.. image:: images/superq-gui.png
+    :scale: 100 %
 
 When running SuperQ for large datasets, it is recommended to allocate more RAM for the heap space. Otherwise an
-OutOfMemoryError may occur. Heap space can be increased using the Java VM options ``-Xms`` or ``-Xmx``. See _tools for
+OutOfMemoryError may occur. Heap space can be increased using the Java VM options ``-Xms`` or ``-Xmx``. See :ref:`running` for
 more information on how to adjust these options.
 
 

@@ -39,8 +39,7 @@ And the command line run netmake in hybrid greedy minimum evolution would look l
   netmake -alt -o bees.t -w GREEDY_ME -x TREE bees.nex
 
 
-Note that we also provide a graphical user interface for netmake which can be started using the ``netmake-gui`` tool.  The
-same options are available in the GUI as the command line.
+Alternatively, Neighbor-Net and the netmake alternative can be invoked through the Tools menu in Spectre Viewer.
 
 
 NetME
@@ -63,7 +62,7 @@ NetME can be run from the command line like this::
 
   netme [-o <output_prefix>] <distance_matrix_input_file> <circular_split_system_file>
 
-Alternatively, NetME has a simple GUI which can be started by simply running ``netme-gui`` without any arguments.
+Alternatively, NetME can be invoked through the Tools menu in Spectre Viewer.
 
 
 References

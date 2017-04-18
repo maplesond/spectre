@@ -4,7 +4,6 @@ Flat Neighbor Joining (FlatNJ)
 ==============================
 
 The Flat Net Joining (FlatNJ) method for constructing split networks is presented in (Balvociute et al. 2013).
-
 FlatNJ first generates a system of 4-splits (quadruples) from one of the following types of data:
 
 1. multiple sequence alignment
@@ -13,7 +12,6 @@ FlatNJ first generates a system of 4-splits (quadruples) from one of the followi
 
 In a system of 4-splits on a set `X` with `|X| >= 4`, for each 4-element subset fa; b; c; dg of X, all seven possible 4-splits
 `a|bcd, b|acd, c|abd, d|abc, ab|cd, ac|bd and ad|bc` are assigned a non-negative weight.
-
 FlatNJ then, from a given system of 4-splits, generates a split network that is guaranteed to be (almost) planar. FlatNJ
 is based on an agglomerative approach similar to the one used in methods such as NeighborJoining (Saitou and Nei, 1987)
 and NeighborNet (Bryant and Moulton, 2004).
@@ -44,12 +42,10 @@ Usage examples:
 * To compute a split network from a system of 4-splits using the default threshold for filtering splits: ``flatnj -o network.nex system_of_4s.nex``
 * To compute a split network from a system of 4-splits using a filtering threshold of 0.2: ``flatnj -thr 0.2 -o network.nex system_of_4s.nex``
 
+Alternatively, FlatNJ can be invoked through the Tools menu of the SPECTRE viewer.
 
-Viewing a split network
------------------------
-
-The split networks computed with FlatNJ are output to nexus format.  You can either use SPECTRE's internal network viewing
-tool or the external SplitsTree package to view the nexus file.
+.. image:: images/flatnj-gui.png
+    :scale: 100 %
 
 Walk through usage examples
 ---------------------------
