@@ -39,6 +39,12 @@ public interface SplitSystem extends List<Split> {
     int getNbTaxa();
 
     /**
+     * Gets the number of splits in the split system
+     * @return The number of splits
+     */
+    int getNbSplits();
+
+    /**
      * Gets the actual taxa object stored in this split system
      *
      * @return The taxa

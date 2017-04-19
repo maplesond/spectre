@@ -39,16 +39,19 @@ import uk.ac.uea.cmp.spectre.core.ds.network.draw.AngleCalculatorMaximalArea;
 import uk.ac.uea.cmp.spectre.core.ds.network.draw.CompatibleCorrector;
 import uk.ac.uea.cmp.spectre.core.ds.network.draw.PermutationSequenceDraw;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleSystem;
+import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.flat.FlatSplitSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.flat.FlatSplitSystemFinal;
 import uk.ac.uea.cmp.spectre.core.ds.split.flat.PermutationSequence;
 import uk.ac.uea.cmp.spectre.core.ds.split.flat.PermutationSequenceFactory;
 import uk.ac.uea.cmp.spectre.core.io.fasta.FastaReader;
+import uk.ac.uea.cmp.spectre.core.io.nexus.*;
 import uk.ac.uea.cmp.spectre.core.ui.cli.CommandLineHelper;
 import uk.ac.uea.cmp.spectre.core.ui.gui.RunnableTool;
 import uk.ac.uea.cmp.spectre.core.ui.gui.StatusTrackerWithView;
 import uk.ac.uea.cmp.spectre.core.util.LogConfig;
 import uk.ac.uea.cmp.spectre.flatnj.tools.*;
+import uk.ac.uea.cmp.spectre.flatnj.tools.NexusReader;
 
 import java.io.File;
 import java.io.IOException;
@@ -136,7 +139,10 @@ public class FlatNJ extends RunnableTool {
             } else if (extension.equalsIgnoreCase("nex") || extension.equalsIgnoreCase("nexus") || extension.equalsIgnoreCase("4s")) {
 
                 // Read taxa block regardless
-                taxa = readTaxa(inFile.getAbsolutePath());
+
+                Nexus nexus = new uk.ac.uea.cmp.spectre.core.io.nexus.NexusReader().parse(inFile);
+
+                taxa = nexus.getTaxa();
 
                 if (taxa == null) {
                     throw new IOException("No labels for the taxa were indicated");
@@ -160,7 +166,7 @@ public class FlatNJ extends RunnableTool {
                                 log.info("Detected and loaded Split System Block containing " + ss.getnSplits() + " splits over " + ss.getnTaxa() + " taxa");
                             } else {
                                 // Next look for MSA
-                                sequences = readNexusAlignment(inFile);
+                                sequences = nexus.getAlignments();
                                 if (sequences != null) {
                                     log.info("Detected and loaded Sequences Block.  Found " + sequences.size() + " sequences");
                                 } else {
@@ -176,7 +182,7 @@ public class FlatNJ extends RunnableTool {
                     boolean loaded = false;
 
                     if (blockLowerCase.contentEquals("data") || blockLowerCase.contentEquals("characters")) {
-                        sequences = readNexusAlignment(inFile);
+                        sequences = nexus.getAlignments();
                         loaded = true;
                     } else if (blockLowerCase.contentEquals("locations")) {
                         locations = readLocations(inFile);
@@ -345,17 +351,6 @@ public class FlatNJ extends RunnableTool {
         }
     }
 
-
-    /**
-     * Reads TAXA block and prints progress messages
-     *
-     * @param inFile input file
-     */
-    protected IdentifierList readTaxa(String inFile) {
-        log.debug("Reading taxa labels");
-        NexusReader reader = new NexusReaderTaxa();
-        return (IdentifierList) reader.readBlock(inFile);
-    }
 
     /**
      * Reads alignment from fasta file and initializes {@linkplain Sequences}

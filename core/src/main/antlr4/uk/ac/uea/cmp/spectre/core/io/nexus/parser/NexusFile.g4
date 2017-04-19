@@ -11,18 +11,15 @@ options
 // TOKENS
 // ----------------------------------------------------------------------
 
-INT : ('-')? DIGIT+;
+
 FLOAT : ('-')? DIGIT* '.' DIGIT+ ('E' ('-')? DIGIT+)?;
+INT : ('-')? (DIGIT)+;
+ID : (DIGIT | '_' | '.' | '?' | '-' | CHAR)+;
+QDIGIT : '\'' DIGIT '\'';
+QCHAR : '\'' CHAR '\'';
+DIGIT : [0-9];     // match single digit
+CHAR : [a-zA-Z];
 
-// A token satisfing the regular expression [_\w]+[\d\w\._]*. Note that an single
-//  _ is considered a valid identifier. In most contexts a single _ means a
-//  "don't care identifier", simmilar to the _ meaning in prolog.
-IDENTIFIER : LETTER_US+ (LETTER_US | DIGIT | '.' | '-' | '/' | '?' )*;
-
-fragment DIGIT : [0-9];     // match single digit
-fragment NZ_DIGIT : [1-9];
-fragment LETTER : [a-zA-Z];
-LETTER_US : [a-zA-Z] | '_' | '?' | '-';
 
 // A String must consist of either lower or uppercase A-z characters, nothing fancy.  So we don't allow numbers or whitespace.
 //WORD : LETTER+
@@ -104,10 +101,10 @@ tax_info_header : 'taxinfo' | 'TAXINFO';
 
 tax_info_entries :
      //Empty
-    | tax_info_entry tax_info_entries
+    | identifier tax_info_entries
     ;
 
-tax_info_entry : IDENTIFIER;
+tax_info_entry : identifier;
 
 // ----------------------------------------------------------------------
 // Characters
@@ -124,7 +121,7 @@ characters_header : 'chracters' | 'Characters' | 'CHARACTERS';
 
 char_dimensions : dimensions cd_nchar ';';
 
-cd_nchar : ('nchar'|'NCHAR') '=' INT;
+cd_nchar : ('nchar'|'NCHAR') '=' integer;
 
 char_format: char_format_header char_format_options ';';
 
@@ -137,10 +134,10 @@ char_format_options :
 
 char_format_option : cf_datatype | cf_missing | cf_gap | cf_symbols | cf_labels | cf_transpose | cf_interleave;
 
-cf_datatype : ('datatype'|'DATATYPE') '=' IDENTIFIER;
+cf_datatype : ('datatype'|'DATATYPE') '=' identifier;
 cf_missing : ('missing'|'MISSING') '=' missing_option;
 cf_gap : ('gap'|'GAP') '=' gap_option;
-cf_symbols : ('symbols'|'SYMBOLS') '=' '\"' IDENTIFIER '\"';
+cf_symbols : ('symbols'|'SYMBOLS') '=' identifier;
 cf_labels : ('labels'|'LABELS') '=' boolean_option;
 cf_transpose : ('transpose'|'TRANSPOSE') '=' boolean_option;
 cf_interleave : ('interleave'|'INTERLEAVE') '=' boolean_option;
@@ -156,7 +153,7 @@ char_sequences :
     | char_seq_entry char_sequences
     ;
 
-char_seq_entry : IDENTIFIER;
+char_seq_entry : identifier;
 
 
 
@@ -180,7 +177,7 @@ dimensions_distances :
 
 nchar :
     // Empty
-    | 'nchar' '=' INT
+    | 'nchar' '=' integer
     ;
 
 format_distances :
@@ -313,23 +310,16 @@ cycle_item_list :
     | cycle_item cycle_item_list
     ;
 
-cycle_item : INT;
+cycle_item : integer;
 
 matrix_splits_data :
       // Empty
-    | matrix_split_identifier FLOAT matrix_splits_list ',' matrix_splits_data
+    | (identifier)? floatingp matrix_splits_list ',' matrix_splits_data
     ;
-
-matrix_split_identifier :
-      // Empty
-    |  '\'' INT '\''
-    | INT
-    ;
-
 
 matrix_splits_list :
     // Empty
-    | INT matrix_splits_list
+    | integer matrix_splits_list
     ;
 
 
@@ -348,23 +338,7 @@ matrix_quartets_data :
     | matrix_quartet ',' matrix_splits_data
     ;
 
-matrix_quartet : label_quartet weight_quartet x_quartet y_quartet sc_quartet u_quartet cs_quartet v_quartet;
-
-label_quartet : IDENTIFIER;
-
-weight_quartet : INT;
-
-x_quartet : INT;
-
-y_quartet : INT;
-
-u_quartet : INT;
-
-v_quartet : INT;
-
-sc_quartet : IDENTIFIER;
-
-cs_quartet: IDENTIFIER;
+matrix_quartet : identifier integer integer integer identifier integer identifier integer;
 
 
 // ----------------------------------------------------------------------------
@@ -381,9 +355,9 @@ assumptions_data :
     ;
 
 assumptions_data_entry :
-      IDENTIFIER key_value_pairs
+      identifier key_value_pairs
     | key_value_pair
-    | IDENTIFIER
+    | identifier
     ;
 
 key_value_pairs :
@@ -392,8 +366,8 @@ key_value_pairs :
     ;
 
 key_value_pair :
-      IDENTIFIER '=' IDENTIFIER
-    | IDENTIFIER '=' INT
+      identifier '=' identifier
+    | identifier '=' integer
     ;
 
 
@@ -425,7 +399,7 @@ newick_tree :
 
 tree_header : 'tree' | 'utree' | 'TREE' | 'UTREE';
 
-tree_rest : star IDENTIFIER '=' root tree_definition ';' newick_tree;
+tree_rest : star identifier '=' root tree_definition ';' newick_tree;
 
 tree_definition :
       '(' tree_definition tree_list ')' tree_label_optional
@@ -444,9 +418,9 @@ tree_list :
     ;
 
 tree_label :
-      IDENTIFIER length
-    | INT length
-    | FLOAT length
+      identifier length
+    | integer length
+    | floatingp length
     ;
 
 tree_label_optional :
@@ -456,7 +430,7 @@ tree_label_optional :
 
 length :
     // Empty
-    | ':' INT
+    | ':' integer
     ;
 
 
@@ -498,7 +472,7 @@ draw_network_option :
 
 scale_network : 'to_scale';
 
-rotate_network : 'rotateAbout' '=' FLOAT;
+rotate_network : 'rotateAbout' '=' floatingp;
 
 translate_network :
       // Empty
@@ -512,7 +486,7 @@ translate_network_data :
     | translate_network_entry ',' translate_network_data
     ;
 
-translate_network_entry : INT '\'' IDENTIFIER '\'';
+translate_network_entry : integer identifier;
 
 vertices_network :
       // Empty
@@ -526,7 +500,7 @@ vertices_network_data :
     | vertices_network_entry ',' vertices_network_data
     ;
 
-vertices_network_entry : INT FLOAT FLOAT vertex_options;
+vertices_network_entry : integer floatingp floatingp vertex_options;
 
 vertex_options :
       // Empty
@@ -539,15 +513,15 @@ nv_shape : 's' '=' shape_option;
 
 shape_option: 'n';
 
-nv_width : 'w' '=' INT;
+nv_width : 'w' '=' integer;
 
-nv_height : 'h' '=' INT;
+nv_height : 'h' '=' integer;
 
-nv_b : 'b' '=' INT INT INT;
+nv_b : 'b' '=' integer integer integer;
 
-nv_color_fg : 'fg' '=' INT INT INT;
+nv_color_fg : 'fg' '=' integer integer integer;
 
-nv_color_bg : 'bg' '=' INT INT INT;
+nv_color_bg : 'bg' '=' integer integer integer;
 
 
 vlabels_network :
@@ -564,7 +538,7 @@ vlabels_network_data :
 
 vlabels_network_entry : vlabels_network_label vlabels_options;
 
-vlabels_network_label : INT '\'' IDENTIFIER '\'';
+vlabels_network_label : integer identifier;
 
 vlabels_options :
       // Empty
@@ -573,17 +547,17 @@ vlabels_options :
 
 vlabels_option : nl_l | nl_x | nl_y | nl_font | nl_color_lc | nl_color_bg;
 
-nl_l : 'l' '=' INT;
+nl_l : 'l' '=' integer;
 
-nl_x : 'x' '=' INT;
+nl_x : 'x' '=' integer;
 
-nl_y : 'y' '=' INT;
+nl_y : 'y' '=' integer;
 
-nl_font : 'f' '=' '\'' IDENTIFIER '\'';
+nl_font : 'f' '=' identifier;
 
-nl_color_lc : 'lc' '=' INT INT INT;
+nl_color_lc : 'lc' '=' integer integer integer;
 
-nl_color_bg : 'lk' '=' INT INT INT;
+nl_color_bg : 'lk' '=' integer integer integer;
 
 
 edges_network :
@@ -598,7 +572,7 @@ edges_network_data :
     | edges_network_entry ',' edges_network_data
     ;
 
-edges_network_entry : INT INT INT edges_network_options;
+edges_network_entry : integer integer integer edges_network_options;
 
 edges_network_options :
       //Empty
@@ -607,13 +581,13 @@ edges_network_options :
 
 edges_network_option : ne_split | ne_width | ne_color | ne_unknown;
 
-ne_split : 's' '=' INT;
+ne_split : 's' '=' integer;
 
-ne_unknown : 'w' '=' FLOAT;
+ne_unknown : 'w' '=' floatingp;
 
-ne_width : 'l' '=' INT;
+ne_width : 'l' '=' integer;
 
-ne_color : 'fg' '=' INT INT INT;
+ne_color : 'fg' '=' integer integer integer;
 
 
 // ----------------------------------------------------------------------------
@@ -626,8 +600,7 @@ matrix_header : 'matrix' | 'MATRIX' | 'Matrix';
 
 matrix_data :
     // Empty
-    | '\'' IDENTIFIER '\'' matrix_entry_list matrix_data
-    | IDENTIFIER matrix_entry_list matrix_data
+    | identifier matrix_entry_list matrix_data
     ;
 
 matrix_entry_list :
@@ -667,9 +640,9 @@ dimensions_viewer :
     | dimensions vwidth vheight ';'
     ;
 
-vwidth : 'width' '=' INT;
+vwidth : 'width' '=' integer;
 
-vheight : 'height' '=' INT;
+vheight : 'height' '=' integer;
 
 matrix_viewer :  matrix_header matrix_viewer_options ';';
 
@@ -690,19 +663,19 @@ matrix_viewer_option :
     | vm_leadercolor
     ;
 
-vm_ratio : 'ratio' '=' FLOAT;
-vm_angle : 'angle' '=' FLOAT;
+vm_ratio : 'ratio' '=' floatingp;
+vm_angle : 'angle' '=' floatingp;
 
 vm_showtrivial : 'showtrivial' '=' boolean_option;
 vm_showrange : 'showrange' '=' boolean_option;
 vm_showlabels : 'showlabels' '=' boolean_option;
 vm_colorlabels : 'colorlabels' '=' boolean_option;
 
-vm_leaders : 'leaders' '=' IDENTIFIER;
+vm_leaders : 'leaders' '=' identifier;
 
-vm_leaderstroke : 'leaderstroke' '=' IDENTIFIER;
+vm_leaderstroke : 'leaderstroke' '=' identifier;
 
-vm_leadercolor : 'leadercolor' '=' INT INT INT;
+vm_leadercolor : 'leadercolor' '=' integer integer integer;
 
 // ----------------------------------------------------------------------
 // MISC RULES
@@ -716,16 +689,19 @@ format : 'format' | 'FORMAT' | 'Format';
 
 identifier_list :
     // Empty
-    | IDENTIFIER identifier_list
-    | '\'' IDENTIFIER '\'' identifier_list
-    | '\"' IDENTIFIER '\"' identifier_list
+    |  identifier identifier_list
     ;
+
+identifier : sqidentifier | dqidentifier | id;
+sqidentifier : '\'' id '\'';
+dqidentifier : '\"' id '\"';
+id : ID | QDIGIT | DIGIT | QCHAR | CHAR;
 
 // Might be that this is not expressive enough... original description:
 // Any character except any of the following: \n\s()[]{}<>/\,;:=*^'"
-missing : 'missing' '=' LETTER_US;
+missing : 'missing' '=' ID;
 
-ntax : ntax_header '=' INT;
+ntax : ntax_header '=' integer;
 
 ntax_header : 'ntax' | 'NTAX';
 
@@ -739,17 +715,17 @@ newtaxa_optional :
     | newtaxa
     ;
 
-nsplits : 'nsplits' '=' INT;
+nsplits : 'nsplits' '=' integer;
 
-nvertices : 'nvertices' '=' INT;
+nvertices : 'nvertices' '=' integer;
 
-nedges : 'nedges' '=' INT;
+nedges : 'nedges' '=' integer;
 
 properties : 'properties' | 'PROPERTIES';
 
 reference :
     number
-  | IDENTIFIER
+  | identifier
   ;
 
 star :
@@ -757,10 +733,7 @@ star :
     | '*'
     ;
 
-tax_labels :
-      tax_labels_header IDENTIFIER identifier_list ';'
-    | tax_labels_header '\'' IDENTIFIER '\'' identifier_list ';'
-    ;
+tax_labels : tax_labels_header identifier_list ';';
 
 tax_labels_optional :
     // Empty
@@ -769,5 +742,8 @@ tax_labels_optional :
 
 tax_labels_header : 'taxlabels' | 'TAXLABELS';
 
+integer : INT | DIGIT;
+floatingp : FLOAT | DIGIT;
 
-number : INT | FLOAT;
+number : integer | floatingp | DIGIT;
+

@@ -127,6 +127,9 @@ public class Sequences {
         public boolean activeFlags;
         public boolean weights;
         public boolean confidences;
+        public String symbols;
+        public char missing;
+        public char gap;
 
         public Format() {
             labels = true;
@@ -136,6 +139,9 @@ public class Sequences {
             activeFlags = true;
             weights = true;
             confidences = false;
+            symbols = "atgcATGC";
+            missing = '?';
+            gap = '-';
         }
     }
 

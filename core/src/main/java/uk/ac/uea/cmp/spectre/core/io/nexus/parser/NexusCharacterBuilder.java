@@ -61,6 +61,22 @@ public class NexusCharacterBuilder {
                 if (seqs.get(i).length() != this.expectedNbChars) {
                     log.warn("Sequence " + i + " has an unexpected size.  Sequence contains " + seqs.get(i).length() + " characters but Nexus Characters block specified " + this.expectedNbChars + " characters per sequence.");
                 }
+                // Check that sequence is valid according to spec provided
+                boolean valid = true;
+                for (int j = 0; j < seqs.get(i).length(); j++) {
+                    char c = seqs.get(i).charAt(j);
+                    if (this.format.symbols.indexOf(c) == -1) {
+                        if (c != this.format.missing && c != this.format.gap) {
+                            valid = false;
+                            break;
+                        }
+                    }
+                }
+                if (!valid) {
+                    log.warn("Sequence " + i + " has unexpected content.  Defined symbols are: " + this.format.symbols +
+                            "; Defined missing character is: " + this.format.missing + "; Defined gap character is: " + this.format.gap +
+                            "; Sequence is: " + this.seqs.get(i));
+                }
                 alns.put(taxa.get(i).getName(), seqs.get(i));
             }
         }

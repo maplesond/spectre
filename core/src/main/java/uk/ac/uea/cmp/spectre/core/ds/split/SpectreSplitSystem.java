@@ -143,6 +143,11 @@ public class SpectreSplitSystem extends ArrayList<Split> implements SplitSystem 
         return this.orderedTaxa.size();
     }
 
+    @Override
+    public int getNbSplits() {
+        return this.size();
+    }
+
     public void setCircularOrdering(IdentifierList orderedTaxa) {
         this.orderedTaxa = orderedTaxa;
     }
