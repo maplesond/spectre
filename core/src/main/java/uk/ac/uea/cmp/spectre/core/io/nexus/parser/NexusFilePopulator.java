@@ -636,26 +636,6 @@ public class NexusFilePopulator implements NexusFileListener {
     }
 
     @Override
-    public void enterSqidentifier(NexusFileParser.SqidentifierContext ctx) {
-
-    }
-
-    @Override
-    public void exitSqidentifier(NexusFileParser.SqidentifierContext ctx) {
-
-    }
-
-    @Override
-    public void enterDqidentifier(NexusFileParser.DqidentifierContext ctx) {
-
-    }
-
-    @Override
-    public void exitDqidentifier(NexusFileParser.DqidentifierContext ctx) {
-
-    }
-
-    @Override
     public void enterId(NexusFileParser.IdContext ctx) {
 
     }
@@ -1007,7 +987,7 @@ public class NexusFilePopulator implements NexusFileListener {
     @Override
     public void exitVlabels_network_label(NexusFileParser.Vlabels_network_labelContext ctx) {
 
-        int id = Integer.parseInt(ctx.identifier().getText());
+        int id = Integer.parseInt(ctx.integer().getText());
         String name = StringUtils.stripQuotes(ctx.identifier().getText());
 
         this.networkBuilder.getCurrentLabel().setName(name);

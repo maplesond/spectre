@@ -88,7 +88,7 @@ public class Writer {
         writeLine(" DIMENSIONS ntax=" + labels.length + ";");
         writeLine(" TAXLABELS");
         for (int i = 0; i < labels.length; i++) {
-            writeLine("  [" + (i + 1) + "]\t" + labels[i]);
+            writeLine("  [" + (i + 1) + "]\t'" + labels[i] + "'");
         }
         writeLine(" ;");
         writeLine("END;");

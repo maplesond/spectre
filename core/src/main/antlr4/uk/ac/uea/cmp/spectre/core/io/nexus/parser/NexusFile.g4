@@ -14,11 +14,14 @@ options
 
 FLOAT : ('-')? DIGIT* '.' DIGIT+ ('E' ('-')? DIGIT+)?;
 INT : ('-')? (DIGIT)+;
+SQSTRING : SQUOTE ( ~('\''|'\\') | ('\\' .) )* SQUOTE;
+DQSTRING : DQUOTE ( ~('\''|'\\') | ('\\' .) )* DQUOTE;
 ID : (DIGIT | '_' | '.' | '?' | '-' | CHAR)+;
-QDIGIT : '\'' DIGIT '\'';
-QCHAR : '\'' CHAR '\'';
 DIGIT : [0-9];     // match single digit
 CHAR : [a-zA-Z];
+SQUOTE : '\'';
+DQUOTE : '\"';
+EQUALS : '=';
 
 
 // A String must consist of either lower or uppercase A-z characters, nothing fancy.  So we don't allow numbers or whitespace.
@@ -121,7 +124,7 @@ characters_header : 'chracters' | 'Characters' | 'CHARACTERS';
 
 char_dimensions : dimensions cd_nchar ';';
 
-cd_nchar : ('nchar'|'NCHAR') '=' integer;
+cd_nchar : ('nchar'|'NCHAR') EQUALS integer;
 
 char_format: char_format_header char_format_options ';';
 
@@ -134,13 +137,13 @@ char_format_options :
 
 char_format_option : cf_datatype | cf_missing | cf_gap | cf_symbols | cf_labels | cf_transpose | cf_interleave;
 
-cf_datatype : ('datatype'|'DATATYPE') '=' identifier;
-cf_missing : ('missing'|'MISSING') '=' missing_option;
-cf_gap : ('gap'|'GAP') '=' gap_option;
-cf_symbols : ('symbols'|'SYMBOLS') '=' identifier;
-cf_labels : ('labels'|'LABELS') '=' boolean_option;
-cf_transpose : ('transpose'|'TRANSPOSE') '=' boolean_option;
-cf_interleave : ('interleave'|'INTERLEAVE') '=' boolean_option;
+cf_datatype : ('datatype'|'DATATYPE') EQUALS identifier;
+cf_missing : ('missing'|'MISSING') EQUALS missing_option;
+cf_gap : ('gap'|'GAP') EQUALS gap_option;
+cf_symbols : ('symbols'|'SYMBOLS') EQUALS identifier;
+cf_labels : ('labels'|'LABELS') EQUALS boolean_option;
+cf_transpose : ('transpose'|'TRANSPOSE') EQUALS boolean_option;
+cf_interleave : ('interleave'|'INTERLEAVE') EQUALS boolean_option;
 
 missing_option : '?';
 
@@ -177,7 +180,7 @@ dimensions_distances :
 
 nchar :
     // Empty
-    | 'nchar' '=' integer
+    | 'nchar' EQUALS integer
     ;
 
 format_distances :
@@ -199,9 +202,9 @@ format_distances_item :
     | interleave
     ;
 
-interleave : 'interleave' ('=' labels_option)?;
+interleave : 'interleave' (EQUALS labels_option)?;
 
-triangle : 'triangle' '=' triangle_option;
+triangle : 'triangle' EQUALS triangle_option;
 
 triangle_option :
       'lower' | 'LOWER'
@@ -214,7 +217,7 @@ diagonal :
     | 'nodiagonal' | 'NODIAGONAL'
     ;
 
-labels : labels_header ('=' labels_option)?;
+labels : labels_header (EQUALS labels_option)?;
 
 labels_header :
       'labels'
@@ -266,17 +269,17 @@ format_splits_item :
     | intervals_splits
     ;
 
-labels_splits : labels_header ('=' labels_option)?;
+labels_splits : labels_header (EQUALS labels_option)?;
 
-weights_splits : weights_header '=' boolean_option;
+weights_splits : weights_header EQUALS boolean_option;
 
 weights_header : 'weights';
 
-confidences_splits : confidences_header '=' boolean_option;
+confidences_splits : confidences_header EQUALS boolean_option;
 
 confidences_header : 'confidences';
 
-intervals_splits : intervals_header '=' boolean_option;
+intervals_splits : intervals_header EQUALS boolean_option;
 
 intervals_header : 'intervals';
 
@@ -290,7 +293,7 @@ properties_splits_list :
     | properties_splits_item properties_splits_list
     ;
 
-properties_splits_item : properties_splits_name ('=' number)?;
+properties_splits_item : properties_splits_name (EQUALS number)?;
 
 properties_splits_name :
       'fit'
@@ -366,8 +369,8 @@ key_value_pairs :
     ;
 
 key_value_pair :
-      identifier '=' identifier
-    | identifier '=' integer
+      identifier EQUALS identifier
+    | identifier EQUALS integer
     ;
 
 
@@ -399,7 +402,7 @@ newick_tree :
 
 tree_header : 'tree' | 'utree' | 'TREE' | 'UTREE';
 
-tree_rest : star identifier '=' root tree_definition ';' newick_tree;
+tree_rest : star identifier EQUALS root tree_definition ';' newick_tree;
 
 tree_definition :
       '(' tree_definition tree_list ')' tree_label_optional
@@ -472,7 +475,7 @@ draw_network_option :
 
 scale_network : 'to_scale';
 
-rotate_network : 'rotateAbout' '=' floatingp;
+rotate_network : 'rotateAbout' EQUALS floatingp;
 
 translate_network :
       // Empty
@@ -509,19 +512,19 @@ vertex_options :
 
 vertex_option : nv_shape | nv_width | nv_height | nv_b | nv_color_fg | nv_color_bg;
 
-nv_shape : 's' '=' shape_option;
+nv_shape : 's' EQUALS shape_option;
 
 shape_option: 'n';
 
-nv_width : 'w' '=' integer;
+nv_width : 'w' EQUALS integer;
 
-nv_height : 'h' '=' integer;
+nv_height : 'h' EQUALS integer;
 
-nv_b : 'b' '=' integer integer integer;
+nv_b : 'b' EQUALS integer integer integer;
 
-nv_color_fg : 'fg' '=' integer integer integer;
+nv_color_fg : 'fg' EQUALS integer integer integer;
 
-nv_color_bg : 'bg' '=' integer integer integer;
+nv_color_bg : 'bg' EQUALS integer integer integer;
 
 
 vlabels_network :
@@ -547,17 +550,17 @@ vlabels_options :
 
 vlabels_option : nl_l | nl_x | nl_y | nl_font | nl_color_lc | nl_color_bg;
 
-nl_l : 'l' '=' integer;
+nl_l : 'l' EQUALS integer;
 
-nl_x : 'x' '=' integer;
+nl_x : 'x' EQUALS integer;
 
-nl_y : 'y' '=' integer;
+nl_y : 'y' EQUALS integer;
 
-nl_font : 'f' '=' identifier;
+nl_font : 'f' EQUALS identifier;
 
-nl_color_lc : 'lc' '=' integer integer integer;
+nl_color_lc : 'lc' EQUALS integer integer integer;
 
-nl_color_bg : 'lk' '=' integer integer integer;
+nl_color_bg : 'lk' EQUALS integer integer integer;
 
 
 edges_network :
@@ -581,13 +584,13 @@ edges_network_options :
 
 edges_network_option : ne_split | ne_width | ne_color | ne_unknown;
 
-ne_split : 's' '=' integer;
+ne_split : 's' EQUALS integer;
 
-ne_unknown : 'w' '=' floatingp;
+ne_unknown : 'w' EQUALS floatingp;
 
-ne_width : 'l' '=' integer;
+ne_width : 'l' EQUALS integer;
 
-ne_color : 'fg' '=' integer integer integer;
+ne_color : 'fg' EQUALS integer integer integer;
 
 
 // ----------------------------------------------------------------------------
@@ -640,9 +643,9 @@ dimensions_viewer :
     | dimensions vwidth vheight ';'
     ;
 
-vwidth : 'width' '=' integer;
+vwidth : 'width' EQUALS integer;
 
-vheight : 'height' '=' integer;
+vheight : 'height' EQUALS integer;
 
 matrix_viewer :  matrix_header matrix_viewer_options ';';
 
@@ -663,19 +666,19 @@ matrix_viewer_option :
     | vm_leadercolor
     ;
 
-vm_ratio : 'ratio' '=' floatingp;
-vm_angle : 'angle' '=' floatingp;
+vm_ratio : 'ratio' EQUALS floatingp;
+vm_angle : 'angle' EQUALS floatingp;
 
-vm_showtrivial : 'showtrivial' '=' boolean_option;
-vm_showrange : 'showrange' '=' boolean_option;
-vm_showlabels : 'showlabels' '=' boolean_option;
-vm_colorlabels : 'colorlabels' '=' boolean_option;
+vm_showtrivial : 'showtrivial' EQUALS boolean_option;
+vm_showrange : 'showrange' EQUALS boolean_option;
+vm_showlabels : 'showlabels' EQUALS boolean_option;
+vm_colorlabels : 'colorlabels' EQUALS boolean_option;
 
-vm_leaders : 'leaders' '=' identifier;
+vm_leaders : 'leaders' EQUALS identifier;
 
-vm_leaderstroke : 'leaderstroke' '=' identifier;
+vm_leaderstroke : 'leaderstroke' EQUALS identifier;
 
-vm_leadercolor : 'leadercolor' '=' integer integer integer;
+vm_leadercolor : 'leadercolor' EQUALS integer integer integer;
 
 // ----------------------------------------------------------------------
 // MISC RULES
@@ -692,16 +695,14 @@ identifier_list :
     |  identifier identifier_list
     ;
 
-identifier : sqidentifier | dqidentifier | id;
-sqidentifier : '\'' id '\'';
-dqidentifier : '\"' id '\"';
-id : ID | QDIGIT | DIGIT | QCHAR | CHAR;
+identifier : SQSTRING | DQSTRING | id;
+id : ID | DIGIT | CHAR;
 
 // Might be that this is not expressive enough... original description:
 // Any character except any of the following: \n\s()[]{}<>/\,;:=*^'"
-missing : 'missing' '=' ID;
+missing : 'missing' EQUALS (DIGIT | '_' | '.' | '?' | '-' | CHAR);
 
-ntax : ntax_header '=' integer;
+ntax : ntax_header EQUALS integer;
 
 ntax_header : 'ntax' | 'NTAX';
 
@@ -715,11 +716,11 @@ newtaxa_optional :
     | newtaxa
     ;
 
-nsplits : 'nsplits' '=' integer;
+nsplits : 'nsplits' EQUALS integer;
 
-nvertices : 'nvertices' '=' integer;
+nvertices : 'nvertices' EQUALS integer;
 
-nedges : 'nedges' '=' integer;
+nedges : 'nedges' EQUALS integer;
 
 properties : 'properties' | 'PROPERTIES';
 
