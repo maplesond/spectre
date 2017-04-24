@@ -28,7 +28,6 @@ import java.util.Set;
  * This class implements methods to handle a weighted split system
  */
 public class FlatSplitSystem {
-    //number of taxa
 
     protected int nTaxa = 0;
     protected int[] taxaMap;

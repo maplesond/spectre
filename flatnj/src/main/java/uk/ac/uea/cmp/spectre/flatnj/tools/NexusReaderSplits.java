@@ -113,7 +113,7 @@ public class NexusReaderSplits extends NexusReader {
 
     @Override
     protected FlatSplitSystem createObject(Dimensions dimensions, Cycle cycle, Draw draw) {
-        return new FlatSplitSystem(splits, weights, cycle.permutation, active);
+        return new FlatSplitSystem(splits, weights, cycle != null ? cycle.permutation : null, active);
     }
 
 }
