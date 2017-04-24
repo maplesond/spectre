@@ -157,13 +157,13 @@ public class SpectreSplitSystem extends ArrayList<Split> implements SplitSystem 
         return this.orderedTaxa;
     }
 
-    @Override
-    public void removeLastSplit() {
-        this.remove(this.size() - 1);
-    }
-
     public int getLastSplitIndex() {
         return this.size() - 1;
+    }
+
+    @Override
+    public Split removeLastSplit() {
+        return this.remove(this.getLastSplitIndex());
     }
 
     public Split getLastSplit() {
@@ -363,7 +363,7 @@ public class SpectreSplitSystem extends ArrayList<Split> implements SplitSystem 
     }
 
 
-    public static enum LeastSquaresCalculator {
+    public enum LeastSquaresCalculator {
 
         CIRCULAR {
             @Override

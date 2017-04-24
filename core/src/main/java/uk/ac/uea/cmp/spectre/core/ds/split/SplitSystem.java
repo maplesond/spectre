@@ -55,9 +55,9 @@ public interface SplitSystem extends List<Split> {
     // **** Standard split methods ****
 
     /**
-     * Removes the last split in the split system
+     * Removes the last split in the split system and returns it
      */
-    void removeLastSplit();
+    Split removeLastSplit();
 
     /**
      * Merges the splits at the given indexes.  After merging Split i will contain the contents of both split i and split
