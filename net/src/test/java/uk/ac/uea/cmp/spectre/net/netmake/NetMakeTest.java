@@ -72,7 +72,7 @@ public class NetMakeTest {
         CircularOrderingCreator circularOrderingCreator = new NetMakeCircularOrderer(new GreedyMEWeighting(distanceMatrix), new TSPWeighting());
         NetMakeResult result = new NetMake().execute(distanceMatrix, circularOrderingCreator);
 
-        SplitSystem tree = result.getTree();
+        SplitSystem tree = result.getTreeSS();
 
        /* assertTrue(tree.getNbSplits() == 11);
 
@@ -80,9 +80,9 @@ public class NetMakeTest {
             assertTrue(Equality.approxEquals(s.getWeight(), 1.0, 0.01));
         }
 
-        assertTrue(result.getNetwork().getNbSplits() == 11);
+        assertTrue(result.getNetworkSS().getNbSplits() == 11);
 
-        for(Split s : result.getNetwork().getSplits()) {
+        for(Split s : result.getNetworkSS().getSplits()) {
             assertTrue(s.getWeight() == 1.0);
         }   */
     }

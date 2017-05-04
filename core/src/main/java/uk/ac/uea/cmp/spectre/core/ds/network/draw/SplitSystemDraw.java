@@ -97,7 +97,7 @@ public class SplitSystemDraw {
         }
     }
 
-    public static enum Compatible {
+    public enum Compatible {
         NO {
             @Override
             public boolean isCompatible() {

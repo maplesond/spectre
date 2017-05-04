@@ -18,9 +18,7 @@ package uk.ac.uea.cmp.spectre.core.ds.network.draw;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import uk.ac.uea.cmp.spectre.core.ds.Identifier;
-import uk.ac.uea.cmp.spectre.core.ds.network.Edge;
-import uk.ac.uea.cmp.spectre.core.ds.network.EdgeList;
-import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
+import uk.ac.uea.cmp.spectre.core.ds.network.*;
 import uk.ac.uea.cmp.spectre.core.ds.split.SpectreSplitBlock;
 import uk.ac.uea.cmp.spectre.core.ds.split.Split;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitBlock;
@@ -388,6 +386,24 @@ public class PermutationSequenceDraw {
 
         return sb.toString();
     }
+
+    public Network createOptimisedNetwork() {
+        Vertex net = drawSplitSystem(-1.0);
+        SpectreNetwork network = new SpectreNetwork(net);
+        net = net.optimiseLayout(this, network);
+        /*CompatibleCorrector compatibleCorrectorPrecise = new CompatibleCorrector(new AngleCalculatorMaximalArea());
+        compatibleCorrectorPrecise.addInnerTrivial(net, this, network);
+        if (!network.veryLongTrivial()) {
+            compatibleCorrectorPrecise.moveTrivial(net, 5, network);
+        }*/
+        for(Vertex v : network.getLabeledVertices()) {
+            v.setSize(3);
+            v.setShape(null);
+        }
+
+        return network;
+    }
+
 
     /**
      * This method filters the splits by labeling those with a length below the given threshold inactive.

@@ -132,54 +132,13 @@ public class NexusWriter extends AbstractSpectreWriter implements Appendable {
             this.append(nexusData.getSplitSystem());
         }
 
+        if (nexusData.getNetwork() != null) {
+            this.appendLine();
+            this.append(nexusData.getNetwork());
+        }
+
         // Save to disk
         this.write(file);
-
-        /*
-        SplitSystem ss = nexusData.getSplitSystem();
-
-
-        StringBuilder nexusString = new StringBuilder();
-
-        final int N = nexusData.getNbTaxa();
-
-        nexusString.append("#NEXUS\nBEGIN taxa;\nDIMENSIONS ntax=").append(N).append(";\nTAXLABELS\n");
-
-        for (Taxon taxon : nexusData.getActive()) {
-            nexusString.append(taxon.getName()).append("\n");
-        }
-
-        nexusString.append(";\nEND;\n\nBEGIN st_splits;\nDIMENSIONS ntax=" + N + " nsplits=").append(ss.getNbSplits()).append(";\n");
-        nexusString.append("FORMAT\nlabels\nweights\n;\nPROPERTIES\nFIT=100\nweakly compatible\ncyclic\n;\nCYCLE");
-
-        for (int n = 0; n < N; n++) {
-            nexusString.append(" ").append(nexusData.getCycleAt(n));
-        }
-
-        nexusString.append(";\nMATRIX\n");
-
-
-        for (int n = 0; n < ss.getNbSplits(); n++) {
-
-            // Add one for splitstree...
-            nexusString.append(n + 1).append("   ").append(ss.getWeightAt(n)).append("  ");
-
-            SplitBlock aSplit = ss.getSplitAt(n).getASide();
-
-            for (int p = 0; p < aSplit.size(); p++) {
-
-                // Add one for splitstree...
-                nexusString.append(" ").append(aSplit.get(p));
-            }
-
-            nexusString.append(",\n");
-        }
-
-        nexusString.append(";\nEND;");
-
-
-        // Save
-        FileUtils.writeStringToFile(outFile, nexusString.toString());*/
     }
 
 
@@ -344,14 +303,14 @@ public class NexusWriter extends AbstractSpectreWriter implements Appendable {
         //write vertex labels section
         this.appendLine("VLABELS");
         for(Vertex v : vertices) {
-            if (v.getTaxa().size() > 0) {
+            /*if (v.getTaxa().size() > 0) {
                 String label = new String();
                 for(Identifier i : v.getTaxa()) {
                     label = (i.getName() + ", ").concat(label);
                 }
                 label = label.substring(0, label.length() - 2);
                 this.appendLine(v.getNxnum() + " '" + label + "' x=2 y=2 f='Dialog-PLAIN-10',");
-            } else if (v.getLabel() != null) {
+            } else */ if (v.getLabel() != null) {
                 NetworkLabel l = v.getLabel();
                 String label = v.getNxnum() + " '" + l.getName() + "' x=" + ((int) l.getOffsetX()) + " y=" + ((int) l.getOffsetY()) + " f='" + l.getFontFamily() + "-" + l.getFontStyle() + "-" + l.getFontSize() + "'";
                 if (l.getFontColor() != null) {

@@ -148,7 +148,7 @@ public class RandomNeighbourNetFits {
 
             NetMake netMake = new NetMake(inputData, weighting.create(inputData.size()));
             netMake.process();
-            CircularSplitSystem network = netMake.getNetwork();
+            CircularSplitSystem network = netMake.getNetworkSS();
             network.calculateTreeWeighting();
             DistanceMatrix calculatedDistances = network.generateDistanceMatrix();
 

@@ -19,10 +19,7 @@ import uk.ac.uea.cmp.spectre.core.ds.Sequences;
 import uk.ac.uea.cmp.spectre.core.ds.Identifier;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
-import uk.ac.uea.cmp.spectre.core.ds.network.Edge;
-import uk.ac.uea.cmp.spectre.core.ds.network.FlatNetwork;
-import uk.ac.uea.cmp.spectre.core.ds.network.NetworkLabel;
-import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
+import uk.ac.uea.cmp.spectre.core.ds.network.*;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.Quadruple;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.flat.FlatSplitSystem;
@@ -273,133 +270,10 @@ public class Writer {
         }
     }
 
-    public void write(Vertex net, int nTaxa, int[] compressed, IdentifierList taxa) {
+    public void write(Network network, IdentifierList taxa) {
         Iterator<Vertex> vIter;
-        Iterator<Edge> eIter;
-        Iterator<Identifier> taxiter;
-        Vertex v;
-        Edge e;
-
-        List<Vertex> vertices = net.collectVertices();
-        List<Edge> edges = net.getFirstEdge().collectEdges();
-
-        writeLine();
-        writeLine("BEGIN Network;");
-        writeLine("DIMENSIONS ntax=" + nTaxa + " nvertices=" + vertices.size() + " nedges=" + edges.size() + ";");
-        writeLine("DRAW to_scale;");
-        writeLine("TRANSLATE");
-        //write translate section
-        vIter = vertices.listIterator();
-        while (vIter.hasNext()) {
-            v = vIter.next();
-            if (v.getTaxa().size() > 0) {
-                taxiter = v.getTaxa().listIterator();
-                String line = String.valueOf(v.getNxnum());
-
-                while (taxiter.hasNext()) {
-                    int index = taxiter.next().getId();
-                    line = line.concat(" '" + taxa.getNames()[index] + "'");
-                }
-                line = line.concat(",");
-                writeLine(line);
-            }
-        }
-        writeLine(";");
-        //write vertices section
-        writeLine("VERTICES");
-        vIter = vertices.listIterator();
-        while (vIter.hasNext()) {
-            v = vIter.next();
-            int[] color = Utilities.colorToInt(v.getBackgroundColor());
-            String line = v.getNxnum() + " " + v.getX() + " " + v.getY() + " w=" + v.getWidth() + " h=" + v.getHeight() + (v.getShape() != null ? " s=" + v.getShape() : "");
-            if (color[0] + color[1] + color[2] > 0) {
-                line = line.concat(" fg=" + color[0] + " " + color[1] + " " + color[2] + " bg=" + color[0] + " " + color[1] + " " + color[2]);
-            }
-            writeLine(line + ",");
-        }
-        writeLine(";");
-        //write vertex labels section
-        writeLine("VLABELS");
-        vIter = vertices.listIterator();
-        while (vIter.hasNext()) {
-            v = vIter.next();
-            if (v.getTaxa().size() > 0) {
-                String label = new String();
-                taxiter = v.getTaxa().listIterator();
-                while (taxiter.hasNext()) {
-                    label = (taxa.getNames()[taxiter.next().getId()] + ", ").concat(label);
-                    //--------------------- just for testing, so that labels are nor visible --------
-                    //label = "";
-                }
-                label = label.substring(0, label.length() - 2);
-                writeLine(v.getNxnum() + " '" + label + "' x=2 y=2 f='Dialog-PLAIN-10',");
-            } else if (v.getLabel() != null) {
-                NetworkLabel l = v.getLabel();
-                String label = v.getNxnum() + " '" + l.getName() + "' x=" + ((int) l.getOffsetX()) + " y=" + ((int) l.getOffsetY()) + " f='" + l.getFontFamily() + "-" + l.getFontStyle() + "-" + l.getFontSize() + "'";
-                if (l.getFontColor() != null) {
-                    int[] c = Utilities.colorToInt(l.getFontColor());
-                    label = label.concat(" lc=" + c[0] + " " + c[1] + " " + c[2]);
-                }
-                if (l.getBackgroundColor() != null) {
-                    int[] c = Utilities.colorToInt(l.getBackgroundColor());
-                    label = label.concat(" lk=" + c[0] + " " + c[1] + " " + c[2]);
-                }
-                label = label.concat(",");
-                writeLine(label);
-            }
-        }
-        writeLine(";");
-        //Write the edges.
-        writeLine("EDGES");
-        eIter = edges.iterator();
-
-        int maxCompressed = 0;
-        for (int i = 0; i < compressed.length; i++) {
-            if (compressed[i] > maxCompressed) {
-                maxCompressed = compressed[i];
-            }
-        }
-        maxCompressed++;
-
-        while (eIter.hasNext()) {
-            e = (Edge) eIter.next();
-            int[] color = Utilities.colorToInt(e.getColor());
-
-            int comp = e.getIdxsplit() + 1;
-
-//            if(compressed != null && e.getIdxsplit() < compressed.length)
-//            {
-//                comp = compressed[e.getIdxsplit()] + 1;
-//                System.out.println("1: " + comp);
-//            }
-//            else if(compressed == null)
-//            {
-//                comp = e.getIdxsplit() + 1;
-//                System.out.println("2: " + comp);
-//            }
-//            else
-//            {
-//                comp = ++maxCompressed;
-//                System.out.println("3: " + comp);
-//            }
-
-            writeLine(e.getNxnum() + " " +
-                    (e.getTop()).getNxnum() + " " +
-                    (e.getBottom()).getNxnum() +
-                    " s=" + comp +
-                    " l=" + e.getWidth() +
-                    " fg=" + color[0] + " " + color[1] + " " + color[2] + ",");
-        }
-        writeLine(";");
-        writeLine("END;");
-    }
-
-    public void write(FlatNetwork network, IdentifierList taxa) {
-        Iterator<Vertex> vIter;
-        Iterator<Edge> eIter;
         Iterator taxiter;
         Vertex v;
-        Edge e;
 
         int nTaxa = network.getNbTaxa();
 
@@ -479,9 +353,7 @@ public class Writer {
         writeLine(";");
         //Write the edges.
         writeLine("EDGES");
-        eIter = edges.iterator();
-        while (eIter.hasNext()) {
-            e = (Edge) eIter.next();
+        for (Edge e : edges) {
             int[] color = Utilities.colorToInt(e.getColor());
             writeLine((e.getNxnum() + 1) + " " + ((e.getTop()).getNxnum() + 1) + " " + ((e.getBottom()).getNxnum() + 1) + " s=" + (e.getIdxsplit() + 1) + " l=" + e.getWidth() + " fg=" + color[0] + " " + color[1] + " " + color[2] + ",");
         }

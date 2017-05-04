@@ -30,12 +30,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
-import uk.ac.uea.cmp.spectre.core.ds.network.FlatNetwork;
 import uk.ac.uea.cmp.spectre.core.ds.network.Network;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
-import uk.ac.uea.cmp.spectre.core.ds.network.draw.Leader;
-import uk.ac.uea.cmp.spectre.core.ds.network.draw.PermutationSequenceDraw;
-import uk.ac.uea.cmp.spectre.core.ds.network.draw.ViewerConfig;
+import uk.ac.uea.cmp.spectre.core.ds.network.draw.*;
 import uk.ac.uea.cmp.spectre.core.io.nexus.Nexus;
 import uk.ac.uea.cmp.spectre.core.io.nexus.NexusReader;
 import uk.ac.uea.cmp.spectre.core.io.nexus.NexusWriter;
@@ -1115,17 +1112,9 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         this.taxa = nexus.getTaxa();
 
         // If no network was defined but there is a split system then convert the split system to a network
-        this.network = null;
-        if (nexus.getNetwork() == null && nexus.getSplitSystem() != null) {
-            this.network = new FlatNetwork(new PermutationSequenceDraw(nexus.getSplitSystem()).drawSplitSystem(-1.0));
-            for(Vertex v : network.getLabeledVertices()) {
-                v.setSize(3);
-                v.setShape(null);
-            }
-        }
-        else {
-            this.network = nexus.getNetwork();
-        }
+        this.network = nexus.getNetwork() == null && nexus.getSplitSystem() != null ?
+                new PermutationSequenceDraw(nexus.getSplitSystem()).createOptimisedNetwork() :
+                nexus.getNetwork();
 
         // Assign taxa to network
         this.network.setTaxa(this.taxa);

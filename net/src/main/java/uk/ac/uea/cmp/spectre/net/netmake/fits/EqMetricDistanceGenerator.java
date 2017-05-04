@@ -33,7 +33,7 @@ public class EqMetricDistanceGenerator implements DistanceMatrixGenerator {
 
 
         NetMakeResult netMakeResult = , null).execute(inputData);
-        SplitSystem splits = netMakeResult.getTree();           */
+        SplitSystem splits = netMakeResult.getTreeSS();           */
         /*double[][] treeWeights = splits.calculateSplitWeighting();
 
         for (int i = 0; i < n; i++) {

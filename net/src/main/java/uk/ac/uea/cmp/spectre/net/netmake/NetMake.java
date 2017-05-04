@@ -24,6 +24,8 @@ import uk.ac.uea.cmp.spectre.core.ds.Sequences;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceCalculatorFactory;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrixCalculator;
+import uk.ac.uea.cmp.spectre.core.ds.network.Network;
+import uk.ac.uea.cmp.spectre.core.ds.network.draw.PermutationSequenceDraw;
 import uk.ac.uea.cmp.spectre.core.ds.split.SpectreSplitSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitBlock;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
@@ -79,31 +81,39 @@ public class NetMake extends RunnableTool {
 
     public NetMakeResult execute(DistanceMatrix distanceMatrix, CircularOrderingCreator circularOrderingCreator) {
 
+        log.info("Calculating circular ordering:");
         IdentifierList permutation = circularOrderingCreator.createCircularOrdering(distanceMatrix);
 
-        log.info("Determined circular ordering:");
         log.info("... By ID  : " + permutation.toString(IdentifierList.IdentifierFormat.BY_ID));
         log.info("... By Name: " + permutation.toString(IdentifierList.IdentifierFormat.BY_NAME));
 
-        SplitSystem network = new SpectreSplitSystem(distanceMatrix, permutation, SpectreSplitSystem.LeastSquaresCalculator.CIRCULAR);
+        log.info("Creating splits network");
 
-        log.info("Splits network created");
+        SplitSystem networkSS = new SpectreSplitSystem(distanceMatrix, permutation, SpectreSplitSystem.LeastSquaresCalculator.CIRCULAR);
 
-        SplitSystem tree = null;
+        log.info("Creating network");
+        Network network = new PermutationSequenceDraw(networkSS).createOptimisedNetwork();
+
+        SplitSystem treeSS = null;
+        Network tree = null;
 
         if (circularOrderingCreator.createsTreeSplits() && this.getOptions().getOutputTree() != null) {
+
+            log.info("Creating splits tree");
 
             SplitSystem treeSplits = circularOrderingCreator.getTreeSplits();
 
             organiseSplits(treeSplits, permutation);
 
             // Create tree and network split systems
-            tree = new SpectreSplitSystem(distanceMatrix, permutation, SpectreSplitSystem.LeastSquaresCalculator.TREE_IN_CYCLE, treeSplits);
+            treeSS = new SpectreSplitSystem(distanceMatrix, permutation, SpectreSplitSystem.LeastSquaresCalculator.TREE_IN_CYCLE, treeSplits);
 
-            log.info("Splits tree created");
+            log.info("Creating tree");
+            tree = new PermutationSequenceDraw(networkSS).createOptimisedNetwork();
         }
 
-        return new NetMakeResult(distanceMatrix, tree, network);
+
+        return new NetMakeResult(distanceMatrix, treeSS, tree, networkSS, network);
     }
 
 

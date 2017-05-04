@@ -26,8 +26,6 @@ import java.util.*;
  */
 public class CompatibleCorrector {
 
-    private static final double BALLOON_ANGLE = Math.PI * 0.99;
-
     private AngleCalculator angleCalculator;
 
     public CompatibleCorrector(AngleCalculator ac) {
@@ -63,13 +61,6 @@ public class CompatibleCorrector {
     public double correctAngles(EdgeList edges, LinkedList<Vertex> vertices) {
         Edge split = edges.getFirst();
 
-        Vertex bottom = split.getBottom();
-        Vertex top = split.getTop();
-
-        Vertex v = bottom;
-        Vertex w = top;
-
-
         Set<Edge> topEdges = Collector.getAllEdges(edges, true);
         Set<Edge> bottomEdges = Collector.getAllEdges(edges, false);
 
@@ -87,43 +78,6 @@ public class CompatibleCorrector {
             return deltaAlpha;
         }
         return 0.0;
-    }
-
-    public Vertex addEdgesforExternalTrivialSplits(Vertex v, PermutationSequenceDraw pseq) {
-        Double minW = null;
-
-        LinkedList<Edge> allEdges = v.getEdgeList().getFirst().collectEdges();
-        for (int i = 0; i < allEdges.size(); i++) {
-            minW = ((minW == null || minW > allEdges.get(i).length()) ? allEdges.get(i).length() : minW);
-        }
-        minW /= 10;
-
-        Set<Edge> externalEdges = new HashSet<>();
-        Collector.getExternalEdges(externalEdges, v.getEdgeList().getFirst(), v, v.getEdgeList().getFirst());
-
-        double[] trivial = pseq.getTrivial();
-        if (trivial != null) {
-            Set<Vertex> externalVertices = Collector.getExternalVertices(v.getEdgeList().getFirst(), v.getEdgeList().getFirst().getTop(), v.getEdgeList().getFirst());
-            externalVertices.addAll(Collector.getExternalVertices(v.getEdgeList().getFirst(), v.getEdgeList().getFirst().getBottom(), v.getEdgeList().getFirst()));
-            Iterator<Vertex> it = externalVertices.iterator();
-            while (it.hasNext()) {
-                Vertex vertex = it.next();
-                int partitions = 0;
-                for (int i = 0; i < vertex.getTaxa().size(); i++) {
-                    int taxaNr = vertex.getTaxa().get(i).getId();
-                    double w = trivial[taxaNr];
-                    if (w > 0) {
-                        partitions++;
-                    }
-                }
-                if (partitions > 0) {
-                    Edge left;
-                    Edge right;
-
-                }
-            }
-        }
-        return v;
     }
 
     public void addInnerTrivial(Vertex V, PermutationSequenceDraw ps, Network network) {
@@ -261,67 +215,10 @@ public class CompatibleCorrector {
         return max;
     }
 
-    public void correctCompatible(LinkedList<Edge> allEdges, Vertex V) {
-
-        LinkedList<LinkedList<Edge>> balloons = Collector.collectBallons(BALLOON_ANGLE, V);
-        LinkedList<Vertex>[] verticesInBalloons = Collector.assignVerticesToBalloons(balloons, V);
-
-        for (int i = 0; i < balloons.size(); i++) {
-            LinkedList<Edge> edges = balloons.get(i);
-            //Vertex c = computeCenterPoint(edges);
-
-            LinkedList<Edge> edgesBefore = (i == 0) ? balloons.getLast() : balloons.get(i - 1);
-            LinkedList<Edge> edgesAfter = (i == balloons.size() - 1) ? balloons.getFirst() : balloons.get(i + 1);
-            Vertex c = computeCenterPoint(edgesBefore, edges, edgesAfter);
-
-            LinkedList<Vertex> vertices = verticesInBalloons[i];
-
-            for (int j = 0; j < vertices.size(); j++) {
-                Vertex w = vertices.get(j);
-                if (w.getEdgeList().size() == 1) {
-                    Edge e = w.getEdgeList().getFirst();
-
-                    double x;
-                    double y;
-                    Vertex v = (e.getTop() == w) ? e.getBottom() : e.getTop();
-                    double sinAlpha = getSinusAlpha(v, c);
-
-
-                    double length = e.length();
-                    if (v.getY() >= c.getY()) {
-                        y = v.getY() + length * sinAlpha;
-                    } else {
-                        y = v.getY() - length * sinAlpha;
-                    }
-
-                    double cosAlpha = getCosinusAlpha(v, c);
-
-                    if (v.getX() >= c.getX()) {
-                        x = v.getX() + length * cosAlpha;
-                    } else {
-                        x = v.getX() - length * cosAlpha;
-                    }
-
-                    if (!Translocator.twoLinesCrosses(v.getX(), v.getY(), x, y, new HashSet<>(allEdges))
-                            && !Translocator.twoLinesCrosses(w.getX(), w.getY(), x, y, new HashSet<>(allEdges))) {
-                        w.setX(x);
-                        w.setY(y);
-                    }
-                }
-            }
-        }
-    }
-
     private double getSinusAlpha(Vertex v, Vertex c) {
         double sinAlpha = Math.abs(v.getY() - c.getY()) / Math.sqrt((v.getX() - c.getX()) * (v.getX() - c.getX()) + (v.getY() - c.getY()) * (v.getY() - c.getY()));
         return sinAlpha;
     }
-
-    private double getCosinusAlpha(Vertex v, Vertex c) {
-        double sinAlpha = Math.abs(v.getX() - c.getX()) / Math.sqrt((v.getX() - c.getX()) * (v.getX() - c.getX()) + (v.getY() - c.getY()) * (v.getY() - c.getY()));
-        return sinAlpha;
-    }
-
 
 
     private Vertex computeCenterPoint(Vertex net) {
@@ -329,43 +226,6 @@ public class CompatibleCorrector {
         double x = 0.5 * (corners[0] + corners[1]);
         double y = 0.5 * (corners[2] + corners[3]);
         return new Vertex(x, y);
-    }
-
-    private Vertex computeCenterPoint(LinkedList<Edge> edgesBefore, LinkedList<Edge> edges, LinkedList<Edge> edgesAfter) {
-        Line first = getMiddleLine(edgesBefore, edges);
-        Line last = getMiddleLine(edges, edgesAfter);
-        double x = (first.b - last.b) / (last.a - first.a);
-        double y = first.a * x + first.b;
-        return new Vertex(x, y);
-    }
-
-    private Line getMiddleLine(LinkedList<Edge> edges1, LinkedList<Edge> edges2) {
-        Edge beforeLast = edges1.getLast();
-        Edge fist = edges2.getFirst();
-
-        Set<Vertex> vertices1 = getVerticesFromEdges(edges1);
-        Set<Vertex> vertices2 = getVerticesFromEdges(edges2);
-
-        Vertex v = (beforeLast.getBottom() == fist.getBottom() || beforeLast.getBottom() == fist.getTop()) ? beforeLast.getBottom() : beforeLast.getTop();
-        Vertex w1 = (beforeLast.getBottom() == v) ? beforeLast.getTop() : beforeLast.getBottom();
-        Vertex w2 = (fist.getBottom() == v) ? fist.getTop() : fist.getBottom();
-
-        vertices1.remove(v);
-        vertices2.remove(v);
-
-        AngleCalculatorSimple angleCalculatorSimple = new AngleCalculatorSimple();
-        Vertex striker = angleCalculatorSimple.findStrikerOnTheRight(v, w1, vertices1);
-        Vertex defender = angleCalculatorSimple.findDefenderOnTheRight(v, w2, vertices2);
-
-        double alpha = Vertex.getClockwiseAngle(striker, v, defender) * 0.5;
-        double xt = w2.getX() - v.getX();
-        double yt = w2.getY() - v.getY();
-
-        double x = xt * Math.cos(alpha) - yt * Math.sin(alpha) + v.getX();
-        double y = xt * Math.sin(alpha) + yt * Math.cos(alpha) + v.getY();
-
-        return new Line(v, new Vertex(x, y));
-
     }
 
     private Set<Vertex> getVerticesFromEdges(LinkedList<Edge> edges) {

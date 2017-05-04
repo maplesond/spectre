@@ -15,41 +15,28 @@
 
 package uk.ac.uea.cmp.spectre.flatnj;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.OptionBuilder;
-import org.apache.commons.cli.Options;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
-import org.apache.log4j.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.earlham.metaopt.Objective;
-import uk.ac.earlham.metaopt.Optimiser;
-import uk.ac.earlham.metaopt.OptimiserException;
-import uk.ac.earlham.metaopt.OptimiserFactory;
-import uk.ac.earlham.metaopt.external.JOptimizer;
 import uk.ac.uea.cmp.spectre.core.ds.Sequences;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
-import uk.ac.uea.cmp.spectre.core.ds.network.FlatNetwork;
+import uk.ac.uea.cmp.spectre.core.ds.network.SpectreNetwork;
 import uk.ac.uea.cmp.spectre.core.ds.network.Network;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
 import uk.ac.uea.cmp.spectre.core.ds.network.draw.AngleCalculatorMaximalArea;
 import uk.ac.uea.cmp.spectre.core.ds.network.draw.CompatibleCorrector;
 import uk.ac.uea.cmp.spectre.core.ds.network.draw.PermutationSequenceDraw;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleSystem;
-import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.flat.FlatSplitSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.flat.FlatSplitSystemFinal;
 import uk.ac.uea.cmp.spectre.core.ds.split.flat.PermutationSequence;
 import uk.ac.uea.cmp.spectre.core.ds.split.flat.PermutationSequenceFactory;
 import uk.ac.uea.cmp.spectre.core.io.fasta.FastaReader;
 import uk.ac.uea.cmp.spectre.core.io.nexus.*;
-import uk.ac.uea.cmp.spectre.core.ui.cli.CommandLineHelper;
 import uk.ac.uea.cmp.spectre.core.ui.gui.RunnableTool;
 import uk.ac.uea.cmp.spectre.core.ui.gui.StatusTrackerWithView;
-import uk.ac.uea.cmp.spectre.core.util.LogConfig;
 import uk.ac.uea.cmp.spectre.flatnj.tools.*;
 import uk.ac.uea.cmp.spectre.flatnj.tools.NexusReader;
 
@@ -295,44 +282,13 @@ public class FlatNJ extends RunnableTool {
                     ps.getWeights(),
                     ps.getActive(),
                     ps.getTrivial());
-
-            this.continueRun();
-
-            log.debug("Drawing split system");
-            Vertex net = psDraw.drawSplitSystem(-1.0);
-
-            this.continueRun();
-
-            Network network = new FlatNetwork(net);
-            notifyUser("Optimising network layout");
-            net = net.optimiseLayout(psDraw, network);
-
-            this.continueRun();
-
-            log.info("Correcting compatible splits");
-            CompatibleCorrector compatibleCorrectorPrecise = new CompatibleCorrector(new AngleCalculatorMaximalArea());
-            compatibleCorrectorPrecise.addInnerTrivial(net, psDraw, network);
-
-            if (!network.veryLongTrivial()) {
-                log.debug("Correcting trivial splits");
-                compatibleCorrectorPrecise.moveTrivial(net, 5, network);
-            }
-
-            if (options.isSaveStages()) {
-                File netFile = new File(outFile.getParentFile(), outFile.getName() + ".network.nex");
-                log.info("Saving network to: " + netFile.getAbsolutePath());
-                Writer writer = new Writer();
-                writer.open(netFile.getAbsolutePath());
-                writer.write(taxa);
-                writer.write((FlatNetwork) network, taxa);
-                writer.close();
-            }
+            Network network = psDraw.createOptimisedNetwork();
 
             Writer writer = new Writer();
             writer.open(outFile.getAbsolutePath());
             writer.write(taxa);
             writer.write(ss);
-            writer.write(net, ps.getnTaxa(), ps.getCompressed(), taxa); // Do we need to do this here?
+            writer.write(network, taxa); // Do we need to do this here?
             writer.close();
 
             log.info("Saving complete nexus file to: " + outFile.getAbsolutePath());

@@ -23,7 +23,7 @@ import java.util.*;
 /**
  * Created by dan on 20/03/14.
  */
-public class FlatNetwork implements Network {
+public class SpectreNetwork implements Network {
 
 
     private VertexList vertices;
@@ -45,11 +45,11 @@ public class FlatNetwork implements Network {
     private List<NetworkLabel> vLabels;
 
 
-    public FlatNetwork() {
+    public SpectreNetwork() {
         this(new VertexList(), new EdgeList());
     }
 
-    public FlatNetwork(VertexList vertices, EdgeList edges) {
+    public SpectreNetwork(VertexList vertices, EdgeList edges) {
 
         this.vertices = vertices;
         this.edges = edges;
@@ -71,7 +71,7 @@ public class FlatNetwork implements Network {
         this.classifyEdges();
     }
 
-    public FlatNetwork(Vertex v) {
+    public SpectreNetwork(Vertex v) {
         this(v.collectVertices(), v.getFirstEdge().collectEdges());
         this.setupLabels();
     }

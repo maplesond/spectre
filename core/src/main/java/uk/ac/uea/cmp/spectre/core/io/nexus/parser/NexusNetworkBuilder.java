@@ -185,7 +185,7 @@ public class NexusNetworkBuilder {
                     "number of edges we expected to see (" + this.nbExpectedEdges + ")");
         }
 
-        FlatNetwork network = new FlatNetwork();
+        SpectreNetwork network = new SpectreNetwork();
 
         network.setVertices(new VertexList(this.vertices.values()));
         network.setVertexLabels(new ArrayList<>(this.labels.values()));
