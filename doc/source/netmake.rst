@@ -8,11 +8,13 @@ well-known Neighbor-Net algorithm (Bryant and Moulton, 2004) for quickly (O(n^3)
 Neighbor-Net is an extension of the Neighbor Joining (NJ) algorithm that is used to create trees, with the difference that instead
 of agglomerating two neighbors into a new node immediately, Neighbor-Net pairs up another set of candidate nodes before agglomerating
 into a new node.  This process generates a collection of splits for which it might not be possible to represent in a single
-tree, hence can be used to create split networks.  Running Neighbor-Net via netmake is straight forward. The only option
-the user might wish to specify is the output_prefix. The input file can be either nexus format file containing a distances
-block, a phylip format distance matrix or a emboss format distance matrix.  Note if you only have multiple sequence alignment data
-we recommend converting to a distance matrix using a tool like emboss or phylip.  Netmake will produce a circular split network in nexus format.  So a typical
-Neighbor-Net run producing an output file called "bees_out.network.nex" looks like this::
+tree, hence can be used to create split networks.
+
+Neighbor-Net via netmake takes in either a distance matrix in nexus, phylip or emboss format, or an MSA in fasta or nexus format.
+If an MSA is provided netmake calculates the distance matrix from the MSA using the Jukes Cantor method by default, although the user
+can user an alternate distance calculation using the '-dc' option.  Netmake will produce a circular split network in nexus format so
+a typical Neighbor-Net run from a nexus file (bees.nex) containing a distance matrix would produce a circular split system
+in an output file called "bees_out.network.nex" with the following command::
 
   netmake -o bees_out bees.nex
 

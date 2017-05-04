@@ -21,12 +21,21 @@ whose weight is higher than the threshold number times the weight of the most hi
 retained from <infile> to <outfile>.
 
 
-Random Distance Generator
+Distance Matrix Generator
 -------------------------
 
-Creates one or more phylip or nexus files with a randomly generated distance matrix given a defined number of taxa.  Example usage::
+This tool can be run in one of two ways.  The first mode is determined by the positional argument passed in.  If that argument
+ is an integer then this tool creates one or more phylip or nexus files with a randomly generated distance matrix using the
+ integer value representing the number of taxa.  Example usage::
 
-    random_distmat -s 10 -t nexus -o randomdm 20
+    distmatgen -s 10 -t nexus -o randomdm 20
 
-This will create 10 nexus files containing a "distances" block containing 20 taxa each, with distances between each taxa randomly
+So this will create 10 nexus files containing a "distances" block containing 20 taxa each, with distances between each taxa randomly
 generated separately for each file.  Output filenames will be of the format "randomdm-<sample_index>.nex".
+
+Alternatively, if the argument is an MSA file in Fasta or Nexus format then we generate a distance matrix based on the
+specified calculator.  By default this is Jukes Cantor.  Example usage::
+
+    distmatgen -t phylip -o bees bees.fa
+
+This command line would generate a distance matrix output to a phylip file called "bees.phy" from an MSA stored in fasta format.
