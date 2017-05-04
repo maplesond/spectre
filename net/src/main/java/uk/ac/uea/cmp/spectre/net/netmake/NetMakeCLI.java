@@ -21,6 +21,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceCalculatorFactory;
 import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.CircularOrderingAlgorithms;
 import uk.ac.uea.cmp.spectre.core.ui.cli.CommandLineHelper;
 import uk.ac.uea.cmp.spectre.core.util.LogConfig;
@@ -43,6 +44,7 @@ public class NetMakeCLI {
     public static final String OPT_WEIGHTINGS_1 = "weightings_1";
     public static final String OPT_WEIGHTINGS_2 = "weightings_2";
     public static final String OPT_CO_ALG = "alt_mode";
+    public static final String OPT_DIST_CALC = "dist_calc";
     public static final String OPT_HELP = "help";
 
 
@@ -65,6 +67,8 @@ public class NetMakeCLI {
 
         options.addOption(OptionBuilder.withLongOpt(OPT_CO_ALG).withDescription(NetMakeOptions.DESC_CO_ALG).create("alt"));
 
+        options.addOption(OptionBuilder.withArgName("dist_calc").withLongOpt(OPT_DIST_CALC).hasArg()
+                .withDescription(NetMakeOptions.DESC_DIST_CALC).create("dc"));
 
         options.addOption(CommandLineHelper.HELP_OPTION);
 
@@ -117,7 +121,7 @@ public class NetMakeCLI {
             String weightings1 = commandLine.hasOption(OPT_WEIGHTINGS_1) ? commandLine.getOptionValue(OPT_WEIGHTINGS_1) : "TSP";
             String weightings2 = commandLine.hasOption(OPT_WEIGHTINGS_2) ? commandLine.getOptionValue(OPT_WEIGHTINGS_2) : null;
             String coAlg = commandLine.hasOption(OPT_CO_ALG) ? CircularOrderingAlgorithms.NETMAKE.toString() : CircularOrderingAlgorithms.NEIGHBORNET.toString();
-
+            String dc = commandLine.hasOption(OPT_DIST_CALC) ? commandLine.getOptionValue(OPT_DIST_CALC) : DistanceCalculatorFactory.JUKES_CANTOR.name();
 
             // Create the configured NetMake object to process
             NetMakeOptions netMakeOptions = new NetMakeOptions();
@@ -128,6 +132,7 @@ public class NetMakeCLI {
             netMakeOptions.setWeighting1(weightings1);
             netMakeOptions.setWeighting2(weightings2);
             netMakeOptions.setCoAlg(coAlg);
+            netMakeOptions.setDc(dc);
 
             // Run NetMake
             new NetMake(netMakeOptions).run();

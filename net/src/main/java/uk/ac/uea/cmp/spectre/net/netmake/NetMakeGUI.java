@@ -17,6 +17,7 @@ package uk.ac.uea.cmp.spectre.net.netmake;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceCalculatorFactory;
 import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.CircularOrderingAlgorithms;
 import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.nm.weighting.Weightings;
 import uk.ac.uea.cmp.spectre.core.ui.gui.JobController;
@@ -50,8 +51,10 @@ public class NetMakeGUI extends JFrame implements ToolHost {
     private JButton cmdInput;
 
     private JPanel pnlAlgorithm;
-    private JLabel lblAlgorithm;
-    private JComboBox<CircularOrderingAlgorithms> cboAlgorithm;
+    private JLabel lblCoAlgorithm;
+    private JComboBox<CircularOrderingAlgorithms> cboCoAlgorithm;
+    private JLabel lblDmAlgorithm;
+    private JComboBox<DistanceCalculatorFactory> cboDmAlgorithm;
     private JPanel pnlWeightings;
     private JLabel lblWeighting1;
     private JComboBox<Weightings> cboWeighting1;
@@ -154,19 +157,28 @@ public class NetMakeGUI extends JFrame implements ToolHost {
 
     private void initAlgorithmComponents() {
 
-        cboAlgorithm = new JComboBox<>();
-        lblAlgorithm = new JLabel();
+        cboCoAlgorithm = new JComboBox<>();
+        cboDmAlgorithm = new JComboBox<>();
+        lblCoAlgorithm = new JLabel();
+        lblDmAlgorithm = new JLabel();
 
-        cboAlgorithm.setModel(new DefaultComboBoxModel<>(CircularOrderingAlgorithms.values()));
-        cboAlgorithm.setToolTipText(NetMakeOptions.DESC_CO_ALG);
-        cboAlgorithm.addActionListener(new java.awt.event.ActionListener() {
+        cboCoAlgorithm.setModel(new DefaultComboBoxModel<>(CircularOrderingAlgorithms.values()));
+        cboCoAlgorithm.setToolTipText(NetMakeOptions.DESC_CO_ALG);
+        cboCoAlgorithm.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cmdSelectAlgorithmActionPerformed(evt);
             }
         });
 
-        lblAlgorithm.setText("Select circular ordering algorithm:");
-        lblAlgorithm.setToolTipText(NetMakeOptions.DESC_CO_ALG);
+        lblCoAlgorithm.setText("Select circular ordering algorithm:");
+        lblCoAlgorithm.setToolTipText(NetMakeOptions.DESC_CO_ALG);
+
+        cboDmAlgorithm.setModel(new DefaultComboBoxModel<>(DistanceCalculatorFactory.values()));
+        cboDmAlgorithm.setToolTipText(NetMakeOptions.DESC_DIST_CALC);
+        cboDmAlgorithm.setSelectedItem(DistanceCalculatorFactory.JUKES_CANTOR);
+
+        lblDmAlgorithm.setText("Select distance matrix calculator:");
+        lblDmAlgorithm.setToolTipText(NetMakeOptions.DESC_DIST_CALC);
 
         pnlAlgorithm = new JPanel();
 
@@ -178,23 +190,29 @@ public class NetMakeGUI extends JFrame implements ToolHost {
         algLayout.setHorizontalGroup(
                 algLayout.createSequentialGroup()
                         .addGroup(algLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-                                        .addComponent(lblAlgorithm)
+                                        .addComponent(lblCoAlgorithm)
+                                        .addComponent(lblDmAlgorithm)
                         )
                         .addGroup(algLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                        .addComponent(cboAlgorithm)
+                                        .addComponent(cboCoAlgorithm)
+                                        .addComponent(cboDmAlgorithm)
                         )
 
         );
         algLayout.setVerticalGroup(
                 algLayout.createSequentialGroup()
                         .addGroup(algLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                        .addComponent(lblAlgorithm)
-                                        .addComponent(cboAlgorithm)
+                                        .addComponent(lblCoAlgorithm)
+                                        .addComponent(cboCoAlgorithm)
+                        )
+                        .addGroup(algLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                                .addComponent(lblDmAlgorithm)
+                                .addComponent(cboDmAlgorithm)
                         )
         );
 
         pnlAlgorithm.setLayout(algLayout);
-        pnlAlgorithm.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), "Circular Ordering Algorithm:"));
+        pnlAlgorithm.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), "Algorithms:"));
 
         pack();
     }
@@ -437,7 +455,7 @@ public class NetMakeGUI extends JFrame implements ToolHost {
         pnlOptions.add(pnlOutput);
 
         // Set algorithm to neighbornet
-        cboAlgorithm.setSelectedItem(CircularOrderingAlgorithms.NEIGHBORNET);
+        cboCoAlgorithm.setSelectedItem(CircularOrderingAlgorithms.NEIGHBORNET);
         this.enableWeightingsPanel(false);
 
 
@@ -458,9 +476,9 @@ public class NetMakeGUI extends JFrame implements ToolHost {
 
     private void cmdSelectAlgorithmActionPerformed(ActionEvent evt) {
 
-        if (evt.getSource() == cboAlgorithm) {
+        if (evt.getSource() == cboCoAlgorithm) {
 
-            CircularOrderingAlgorithms alg = (CircularOrderingAlgorithms)cboAlgorithm.getSelectedItem();
+            CircularOrderingAlgorithms alg = (CircularOrderingAlgorithms) cboCoAlgorithm.getSelectedItem();
 
             if (alg == CircularOrderingAlgorithms.NEIGHBORNET) {
                 this.enableWeightingsPanel(false);
@@ -583,8 +601,8 @@ public class NetMakeGUI extends JFrame implements ToolHost {
     private void enableAlgPanel(boolean enabled) {
 
         this.pnlAlgorithm.setEnabled(enabled);
-        this.lblAlgorithm.setEnabled(enabled);
-        this.cboAlgorithm.setEnabled(enabled);
+        this.lblCoAlgorithm.setEnabled(enabled);
+        this.cboCoAlgorithm.setEnabled(enabled);
     }
 
     /**
@@ -607,7 +625,8 @@ public class NetMakeGUI extends JFrame implements ToolHost {
             return null;
         }
 
-        options.setCoAlg(this.cboAlgorithm.getSelectedItem().toString());
+        options.setCoAlg(this.cboCoAlgorithm.getSelectedItem().toString());
+        options.setDc(this.cboDmAlgorithm.getSelectedItem().toString());
 
         // May need some more validation here.
         options.setWeighting1(this.cboWeighting1.getSelectedItem().toString());
@@ -640,14 +659,14 @@ public class NetMakeGUI extends JFrame implements ToolHost {
     public void neighbornetConfig() {
         this.enableWeightingsPanel(false);
         this.enableTreeOutput(false);
-        this.cboAlgorithm.setSelectedItem(CircularOrderingAlgorithms.NEIGHBORNET);
+        this.cboCoAlgorithm.setSelectedItem(CircularOrderingAlgorithms.NEIGHBORNET);
         this.enableAlgPanel(false);
     }
 
     public void netmakeConfig() {
         this.enableWeightingsPanel(true);
         this.enableTreeOutput(true);
-        this.cboAlgorithm.setSelectedItem(CircularOrderingAlgorithms.NETMAKE);
+        this.cboCoAlgorithm.setSelectedItem(CircularOrderingAlgorithms.NETMAKE);
         this.enableAlgPanel(false);
     }
 

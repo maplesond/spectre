@@ -15,6 +15,7 @@
 
 package uk.ac.uea.cmp.spectre.net.netmake;
 
+import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceCalculatorFactory;
 import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.CircularOrderingAlgorithms;
 import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.nm.weighting.Weightings;
 
@@ -40,6 +41,8 @@ public class NetMakeOptions {
 
     public static final String DESC_CO_ALG = "The circular ordering algorithm to use: " + CircularOrderingAlgorithms.toListString() + ". Default: NEIGHBORNET";
 
+    public static final String DESC_DIST_CALC = "If running from MSAs, the distance matrix calculator to use: " + DistanceCalculatorFactory.toListString() + ". Default: " + DistanceCalculatorFactory.JUKES_CANTOR.name();
+
     public static final String DESC_WEIGHTINGS_1 = "For NETMAKE circular ordering algorithm, select 1st weighting type: " + Weightings.toListString() + ".  Required if circular algorithm is NETMAKE.  Default: TSP";
 
     public static final String DESC_WEIGHTINGS_2 = "For NETMAKE circular ordering algorithm, select 2nd weighting type: " + Weightings.toListString() + ". Default: NONE";
@@ -52,13 +55,14 @@ public class NetMakeOptions {
     private String weighting2;
     private double treeParam;
     private String coAlg;
+    private String dc;
 
 
     public NetMakeOptions() {
-        this(null, null, null, null, null, DEFAULT_TREE_WEIGHT, "NETMAKE");
+        this(null, null, null, null, null, DEFAULT_TREE_WEIGHT, "NEIGHBORNET", DistanceCalculatorFactory.JUKES_CANTOR.name());
     }
 
-    public NetMakeOptions(File input, File outputNetwork, File outputTree, String weighting1, String weighting2, double treeParam, String coAlg) {
+    public NetMakeOptions(File input, File outputNetwork, File outputTree, String weighting1, String weighting2, double treeParam, String coAlg, String dc) {
 
         // Validates that we have sensible input for the weightings
         if (weighting1 != null && !weighting1.isEmpty())
@@ -74,6 +78,7 @@ public class NetMakeOptions {
         this.weighting2 = weighting2;
         this.treeParam = treeParam;
         this.coAlg = coAlg;
+        this.dc = dc;
     }
 
     public File getInput() {
@@ -130,5 +135,13 @@ public class NetMakeOptions {
 
     public void setCoAlg(String coAlg) {
         this.coAlg = coAlg;
+    }
+
+    public String getDc() {
+        return dc;
+    }
+
+    public void setDc(String dc) {
+        this.dc = dc;
     }
 }

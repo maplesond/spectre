@@ -48,6 +48,9 @@ public class FlexibleDistanceMatrix extends AbstractDistanceMatrix {
 
         this.matrix = new HashMap<>();
         this.taxa = taxa;
+        for (Identifier id : this.taxa) {
+            this.addIdentifier(id);
+        }
     }
 
     public FlexibleDistanceMatrix(DistanceMatrix copy) {

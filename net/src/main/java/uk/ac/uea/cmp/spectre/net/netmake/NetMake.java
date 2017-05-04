@@ -20,7 +20,10 @@ import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
+import uk.ac.uea.cmp.spectre.core.ds.Sequences;
+import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceCalculatorFactory;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
+import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrixCalculator;
 import uk.ac.uea.cmp.spectre.core.ds.split.SpectreSplitSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitBlock;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
@@ -32,8 +35,11 @@ import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.nm.weighting.Weight
 import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.nn.NeighborNetImpl;
 import uk.ac.uea.cmp.spectre.core.io.SpectreReader;
 import uk.ac.uea.cmp.spectre.core.io.SpectreReaderFactory;
+import uk.ac.uea.cmp.spectre.core.io.nexus.Nexus;
 import uk.ac.uea.cmp.spectre.core.ui.gui.RunnableTool;
 import uk.ac.uea.cmp.spectre.core.ui.gui.StatusTracker;
+
+import java.io.IOException;
 
 /**
  * Performs the NeighborNet algorithm to retrieve a split system and a circular
@@ -142,9 +148,38 @@ public class NetMake extends RunnableTool {
             // Setup appropriate reader to input file based on file type
             SpectreReader spectreReader = factory.create(FilenameUtils.getExtension(this.options.getInput().getName()));
 
-            DistanceMatrix distanceMatrix = spectreReader.readDistanceMatrix(this.options.getInput());
+            // Work out if we have a distance matrix already or if we have to calculate it from MSA
+            DistanceMatrix distanceMatrix = null;
+            Sequences seqs = null;
+            if (spectreReader.getIdentifier() == "FASTA") {
+                seqs = spectreReader.readAlignment(this.options.getInput());
+            }
+            else if (spectreReader.getIdentifier() == "NEXUS") {
 
-            log.info("Loaded distance matrix.  Found " + distanceMatrix.size() + " taxa.");
+                // First try to use distance matrix
+                distanceMatrix = spectreReader.readDistanceMatrix(this.options.getInput());
+
+                // If not present then look for alignments
+                if (distanceMatrix == null) {
+                    seqs = spectreReader.readAlignment(this.options.getInput());
+                }
+            }
+            else {
+                distanceMatrix = spectreReader.readDistanceMatrix(this.options.getInput());
+            }
+
+            if (distanceMatrix == null && seqs != null) {
+                log.info("Loaded MSA containing " + seqs.size() + " sequences of length " + seqs.getSeq(0).length());
+
+                DistanceCalculatorFactory dcf = DistanceCalculatorFactory.valueOf(this.options.getDc().toUpperCase().trim());
+                distanceMatrix = dcf.createDistanceMatrix(seqs);
+                log.info("Distance matrix calculated from MSA using " + dcf.name());
+            }
+            else if (distanceMatrix == null) {
+                throw new IOException("Could not find or generate distance matrix from input");
+            }
+
+            log.info("Distance matrix contains " + distanceMatrix.size() + " taxa.");
 
             // Set circular ordering algorithm
             CircularOrderingAlgorithms coa = CircularOrderingAlgorithms.valueOf(this.options.getCoAlg().toUpperCase());

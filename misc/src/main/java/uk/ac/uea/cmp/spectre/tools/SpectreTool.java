@@ -17,6 +17,7 @@ package uk.ac.uea.cmp.spectre.tools;
 
 import org.apache.commons.cli.*;
 import uk.ac.uea.cmp.spectre.core.ui.cli.CommandLineHelper;
+import uk.ac.uea.cmp.spectre.core.util.LogConfig;
 import uk.ac.uea.cmp.spectre.core.util.Service;
 
 import java.io.IOException;
@@ -56,6 +57,8 @@ public abstract class SpectreTool implements Service {
     public void execute(String[] args) throws IOException {
 
         try {
+            LogConfig.defaultConfig();
+
             CommandLine commandLine = this.parse(args);
 
             if (commandLine.hasOption(OPT_HELP) || commandLine.getArgs().length == 0) {

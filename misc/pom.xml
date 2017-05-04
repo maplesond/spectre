@@ -57,8 +57,8 @@
                             <id>phycor</id>
                         </program>-->
                         <program>
-                            <mainClass>uk.ac.uea.cmp.spectre.tools.rdg.RandomDistanceGeneratorTool</mainClass>
-                            <id>random_distmat</id>
+                            <mainClass>uk.ac.uea.cmp.spectre.tools.dmg.DistanceMatrixGeneratorTool</mainClass>
+                            <id>distmatgen</id>
                         </program>
                     </programs>
                 </configuration>
@@ -78,9 +78,9 @@
                         </goals>
                         <configuration>
                             <target>
-                                <chmod file="${build-dir}/bin/distmxconv" perm="755"/>
+                                <!--<chmod file="${build-dir}/bin/distmxconv" perm="755"/>-->
                                 <!--<chmod file="${build-dir}/bin/phycor" perm="755"/>-->
-                                <chmod file="${build-dir}/bin/random_distmat" perm="755"/>
+                                <chmod file="${build-dir}/bin/distmatgen" perm="755"/>
                             </target>
                         </configuration>
                     </execution>
