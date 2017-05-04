@@ -21,7 +21,7 @@ import java.util.HashSet;
  * @param <T>
  * @author Monika
  */
-public class SelectableSet<T> extends HashSet<T> {
+public class SelectableSet<T extends Selectable> extends HashSet<T> {
 
     public SelectableSet() {
         super();
@@ -30,7 +30,7 @@ public class SelectableSet<T> extends HashSet<T> {
     @Override
     public boolean add(T t) {
         try {
-            ((Selectable) t).setSelected(true);
+            t.setSelected(true);
         } catch (Exception ex) {
         }
         return super.add(t);
@@ -40,7 +40,7 @@ public class SelectableSet<T> extends HashSet<T> {
     public void clear() {
         for (T t : this) {
             try {
-                ((Selectable) t).setSelected(false);
+                t.setSelected(false);
             } catch (Exception ex) {
             }
         }

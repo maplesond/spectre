@@ -1,13 +1,14 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2017  UEA School of Computing Sciences
+ * Copyright (C) 2014  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
@@ -326,23 +327,23 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
     ClusterPlacementOptimizer cpo = new ClusterPlacementOptimizerBox();
 
     @Override
-    public void paint(Graphics g) {
-        super.paint(g);
+    public void paint(Graphics graphics) {
+        super.paint(graphics);
 
         setBackground(Color.white);
 
-        Graphics2D g2 = (Graphics2D) g;
+        Graphics2D g = (Graphics2D)graphics;
 
         if (lines != null) {
             for (Line l : lines.values()) {
-                g2.setStroke(new BasicStroke(l.getWidth()));
+                g.setStroke(new BasicStroke(l.getWidth()));
                 g.setColor(l.fg);
-                g2.drawLine(l.p1.getXint(), l.p1.getYint(), l.p2.getXint(), l.p2.getYint());
+                g.drawLine(l.p1.getXint(), l.p1.getYint(), l.p2.getXint(), l.p2.getYint());
             }
         }
 
         if (labels != null && labels.size() > 0 && config.showLabels() && config.leadersVisible()) {
-            g2.setStroke(config.getLeaderStroke().getStroke());
+            g.setStroke(config.getLeaderStroke().getStroke());
 
             for (ViewerLabel l : labels.values()) {
                 if (l.leader) {
@@ -363,65 +364,20 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
             }
         }
 
-        g2.setStroke(new BasicStroke());
+        g.setStroke(new BasicStroke());
+
+        // Draw all viewer points
         if (points != null && points.size() > 0) {
             for (ViewerPoint p : points.values()) {
-                boolean selected = p.isSelected();
-
-                g.setColor(vertices.get(p.id).getBackgroundColor());
-
-                int x = p.getXint() - (int) (((double) p.width) / 2.0);
-                int y = p.getYint() - (int) (((double) p.height) / 2.0);
-
-                if (p.round) {
-                    g.fillOval(x, y, p.width, p.height);
-                } else {
-                    g.fillRect(x, y, p.width, p.height);
-                }
-
-                g.setColor(vertices.get(p.id).getLineColor());
-                if (p.round && p.width > 0 && p.height > 0) {
-                    g.drawOval(x, y, p.width, p.height);
-                    if (selected) {
-                        g.setColor(selectionColor);
-                        g.drawOval(x - 1, y - 1, p.width + 2, p.height + 2);
-                    }
-                } else {
-                    g.drawRect(x, y, p.width, p.height);
-                    if (selected) {
-                        g.setColor(selectionColor);
-                        g.drawRect(x - 1, y - 1, p.width + 2, p.height + 2);
-                    }
-                }
+                // vertices.get(p.getId()).getBackgroundColor(), vertices.get(p.getId()).getLineColor()
+                p.draw(g, selectionColor);
             }
         }
+
+        // Draw labels
         if (labels != null && labels.size() > 0 && config.showLabels()) {
-            boolean colorLabels = config.colorLabels();
             for (ViewerLabel l : labels.values()) {
-                boolean selected = l.p.isSelected();
-
-                if (l.label.getFontFamily() == null) {
-                    l.label.setFontFamily("Helvetica");
-                }
-                g.setFont(new Font(l.label.getFontFamily(), l.label.getFontStyle(), l.label.getFontSize()));
-
-                int lx = l.getXint();
-                int ly = l.getYint();
-
-                if (l.p.v.getBackgroundColor() != null && colorLabels) {
-                    g.setColor(l.p.v.getBackgroundColor());
-                    g2.fillRect(lx - 1, ly - l.label.getHeight() + 2, l.label.getWidth() + 3, l.label.getHeight());
-                }
-                if (selected) {
-                    g.setColor(selectionColor);
-                    g2.drawRect(lx, ly - l.label.getHeight() + 1, l.label.getWidth(), l.label.getHeight());
-                }
-                Color textColor = l.label.getFontColor();
-                if (l.p.v.getBackgroundColor() != null && colorLabels) {
-                    textColor = getTextColor(l.p.v.getBackgroundColor());
-                }
-                g.setColor(textColor);
-                g.drawString(l.name, lx, ly - 1);
+                l.draw(g, selectionColor, config.colorLabels());
             }
         }
 
@@ -485,13 +441,7 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
         this.repaintOnResize();
     }
 
-    private static Color getTextColor(Color bg) {
-        if (bg.getRed() <= 50 && bg.getGreen() <= 50 && bg.getBlue() <= 50) {
-            return Color.white;
-        } else {
-            return Color.black;
-        }
-    }
+
 
     private void computeIntegerCoordinates() {
 
@@ -697,8 +647,7 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
         String selectedTaxa = "";
         if (pointsToHighlight != null) {
             for (ViewerPoint p : pointsToHighlight) {
-                ViewerLabel l = p.l;
-                selectedTaxa += l.name + "\n";
+                selectedTaxa += p.getLabelName() + "\n";
             }
         }
         Clipboard system = Toolkit.getDefaultToolkit().getSystemClipboard();
@@ -856,20 +805,9 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
                              boolean bold, boolean changeBold,
                              boolean italic, boolean changeItalic) {
         if (!pointsToHighlight.isEmpty()) {
-            State state = this.history.startState();
-
             for (ViewerPoint p : pointsToHighlight) {
                 if (changeShape) {
-                    switch (shape) {
-                        case "square":
-                            p.round = false;
-                            p.v.setShape("r");
-                            break;
-                        case "circle":
-                            p.round = true;
-                            p.v.setShape(null);
-                            break;
-                    }
+                    p.setShape(shape);
                 }
                 if (changeSize) {
                     p.setSize(size);
@@ -901,7 +839,7 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
             while (labelIt.hasNext()) {
                 ViewerLabel l = labelIt.next();
                 if (show) {
-                    l.p.suppressed = false;
+                    l.p.setSuppressed(false);
                 } else {
                     Vertex v = vertices.get(l.p.id);
                     if (v.getEdgeList().size() == 1) {
@@ -1179,7 +1117,7 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
             Point2D dst = getCurrentTransform().transform(src, null);
             p.setX(dst.getX());
             p.setY(dst.getY());
-            if (change != 0 && p.l != null && !p.selected) {
+            if (change != 0 && p.l != null && !p.isSelected()) {
                 if (change != 1) {
                     double offX = p.l.label.getOffsetX() * change;
                     if (offX == 0) {
@@ -1489,7 +1427,7 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
 
                 dims.labels.addPoint(p);
 
-                if (!p.suppressed) {
+                if (!p.isSuppressed()) {
                     dims.vertices.addPoint(vertices.get(p.id));
                 }
             }

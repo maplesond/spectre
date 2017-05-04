@@ -25,7 +25,6 @@ import com.itextpdf.text.pdf.PdfWriter;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -39,6 +38,7 @@ import uk.ac.uea.cmp.spectre.core.ds.network.draw.PermutationSequenceDraw;
 import uk.ac.uea.cmp.spectre.core.ds.network.draw.ViewerConfig;
 import uk.ac.uea.cmp.spectre.core.io.nexus.Nexus;
 import uk.ac.uea.cmp.spectre.core.io.nexus.NexusReader;
+import uk.ac.uea.cmp.spectre.core.io.nexus.NexusWriter;
 import uk.ac.uea.cmp.spectre.core.ui.cli.CommandLineHelper;
 import uk.ac.uea.cmp.spectre.core.ui.gui.LookAndFeel;
 import uk.ac.uea.cmp.spectre.core.util.LogConfig;
@@ -102,7 +102,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
     private File networkFile = null;
 
     // Dialog for finding labels
-    private FindDIalog find = new FindDIalog(this, true);
+    private FindDialog find = new FindDialog(this, true);
 
     // Viewer configuration
     //private ViewerConfig config = new ViewerConfig();
@@ -1085,7 +1085,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
     }
 
     private void saveNetwork(File file) throws IOException {
-        ViewerNexusWriter writer = new ViewerNexusWriter();
+        NexusWriter writer = new NexusWriter();
         writer.appendHeader();
         writer.appendLine();
         writer.append(taxa);

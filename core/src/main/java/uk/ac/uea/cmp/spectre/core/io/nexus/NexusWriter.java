@@ -25,6 +25,7 @@ import uk.ac.uea.cmp.spectre.core.ds.network.Edge;
 import uk.ac.uea.cmp.spectre.core.ds.network.Network;
 import uk.ac.uea.cmp.spectre.core.ds.network.NetworkLabel;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
+import uk.ac.uea.cmp.spectre.core.ds.network.draw.ViewerConfig;
 import uk.ac.uea.cmp.spectre.core.ds.split.Split;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.spectre.core.io.AbstractSpectreWriter;
@@ -374,6 +375,33 @@ public class NexusWriter extends AbstractSpectreWriter implements Appendable {
         }
         this.appendLine(";");
         this.appendLine("END;");
+
+        return this;
+    }
+
+    public NexusWriter append(ViewerConfig config) {
+        Dimension dm = config.getDimensions();
+
+        this.appendLine("BEGIN Viewer;");
+        this.appendLine("DIMENSIONS width=" + dm.width + " height=" + dm.height + ";");
+        this.appendLine(" MATRIX");
+        this.appendLine("  ratio=" + config.getRatio());
+        this.appendLine("  showtrivial=" + config.showTrivial());
+        this.appendLine("  showrange=" + config.showRange());
+        this.appendLine("  showlabels=" + config.showLabels());
+        this.appendLine("  colorlabels=" + config.colorLabels());
+        this.appendLine("  leaders=" + config.getLeaderType());
+        this.appendLine("  leaderstroke=" + config.getLeaderStroke());
+        Color leaderColor = config.getLeaderColor();
+        this.appendLine("  leadercolor=" + leaderColor.getRed() + " " +
+                leaderColor.getGreen() + " " + leaderColor.getBlue());
+        for (Vertex v : config.getLabeledVertices()) {
+            NetworkLabel label = v.getLabel();
+            if (!label.movable) {
+                this.appendLine("  fix " + (v.getNxnum() + 1));
+            }
+        }
+        this.appendLine(" ;\nEND [Viewer];");
 
         return this;
     }
