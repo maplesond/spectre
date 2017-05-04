@@ -626,6 +626,16 @@ public class NexusFilePopulator implements NexusFileListener {
     }
 
     @Override
+    public void enterName_list(NexusFileParser.Name_listContext ctx) {
+
+    }
+
+    @Override
+    public void exitName_list(NexusFileParser.Name_listContext ctx) {
+
+    }
+
+    @Override
     public void enterIdentifier(NexusFileParser.IdentifierContext ctx) {
 
     }
@@ -642,6 +652,16 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitId(NexusFileParser.IdContext ctx) {
+
+    }
+
+    @Override
+    public void enterName(NexusFileParser.NameContext ctx) {
+
+    }
+
+    @Override
+    public void exitName(NexusFileParser.NameContext ctx) {
 
     }
 
@@ -988,7 +1008,8 @@ public class NexusFilePopulator implements NexusFileListener {
     public void exitVlabels_network_label(NexusFileParser.Vlabels_network_labelContext ctx) {
 
         int id = Integer.parseInt(ctx.integer().getText());
-        String name = StringUtils.stripQuotes(ctx.identifier().getText());
+
+        String name = StringUtils.stripQuotes(ctx.name().getText());
 
         this.networkBuilder.getCurrentLabel().setName(name);
         this.networkBuilder.getCurrentLabel().setVertexId(id);
@@ -2278,8 +2299,12 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitTranslate_network_entry(NexusFileParser.Translate_network_entryContext ctx) {
-        String net = StringUtils.stripQuotes(ctx.identifier().getText());
-        this.networkBuilder.getTranslate().put(Integer.parseInt(ctx.integer().getText()), net);
+        List<String> names = new ArrayList<>();
+        for (NexusFileParser.NameContext n : ctx.name()) {
+            names.add(StringUtils.stripQuotes(n.getText()));
+        }
+        String name = org.apache.commons.lang3.StringUtils.join(names, ',');
+        this.networkBuilder.getTranslate().put(Integer.parseInt(ctx.integer().getText()), name);
     }
 
     @Override

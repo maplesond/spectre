@@ -332,7 +332,7 @@ public class FlatNJ extends RunnableTool {
             writer.open(outFile.getAbsolutePath());
             writer.write(taxa);
             writer.write(ss);
-            writer.write(net, ps.getnTaxa(), ps.getCompressed(), taxa);
+            writer.write(net, ps.getnTaxa(), ps.getCompressed(), taxa); // Do we need to do this here?
             writer.close();
 
             log.info("Saving complete nexus file to: " + outFile.getAbsolutePath());

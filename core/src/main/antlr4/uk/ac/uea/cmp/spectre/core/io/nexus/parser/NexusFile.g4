@@ -489,7 +489,7 @@ translate_network_data :
     | translate_network_entry ',' translate_network_data
     ;
 
-translate_network_entry : integer identifier;
+translate_network_entry : integer name+;
 
 vertices_network :
       // Empty
@@ -541,7 +541,7 @@ vlabels_network_data :
 
 vlabels_network_entry : vlabels_network_label vlabels_options;
 
-vlabels_network_label : integer identifier;
+vlabels_network_label : integer name;
 
 vlabels_options :
       // Empty
@@ -695,8 +695,15 @@ identifier_list :
     |  identifier identifier_list
     ;
 
+name_list :
+    // Empty
+    |  name name_list
+    ;
+
 identifier : SQSTRING | DQSTRING | id;
 id : ID | DIGIT | CHAR;
+
+name : SQSTRING | DQSTRING;
 
 // Might be that this is not expressive enough... original description:
 // Any character except any of the following: \n\s()[]{}<>/\,;:=*^'"

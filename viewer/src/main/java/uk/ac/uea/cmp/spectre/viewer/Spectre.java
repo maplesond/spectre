@@ -1115,9 +1115,17 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         this.taxa = nexus.getTaxa();
 
         // If no network was defined but there is a split system then convert the split system to a network
-        this.network = nexus.getNetwork() == null && nexus.getSplitSystem() != null ?
-                new FlatNetwork(new PermutationSequenceDraw(nexus.getSplitSystem()).drawSplitSystem(-1.0)) :
-                nexus.getNetwork();
+        this.network = null;
+        if (nexus.getNetwork() == null && nexus.getSplitSystem() != null) {
+            this.network = new FlatNetwork(new PermutationSequenceDraw(nexus.getSplitSystem()).drawSplitSystem(-1.0));
+            for(Vertex v : network.getLabeledVertices()) {
+                v.setSize(3);
+                v.setShape(null);
+            }
+        }
+        else {
+            this.network = nexus.getNetwork();
+        }
 
         // Assign taxa to network
         this.network.setTaxa(this.taxa);
