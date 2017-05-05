@@ -35,7 +35,6 @@ import uk.ac.uea.cmp.spectre.core.io.nexus.Nexus;
 import uk.ac.uea.cmp.spectre.core.ui.gui.RunnableTool;
 import uk.ac.uea.cmp.spectre.core.ui.gui.StatusTrackerWithView;
 import uk.ac.uea.cmp.spectre.flatnj.tools.NexusReader;
-import uk.ac.uea.cmp.spectre.flatnj.tools.NexusReaderQuadruples;
 import uk.ac.uea.cmp.spectre.flatnj.tools.NexusReaderSplits;
 import uk.ac.uea.cmp.spectre.flatnj.tools.Writer;
 
@@ -138,8 +137,8 @@ public class FlatNJ extends RunnableTool {
                     log.info("Nexus file provided as input but no nexus block specified by user.  Will use first suitable block found in nexus file");
 
                     // First check for existing quadruple system
-                    qs = readQuadruples(inFile.getAbsolutePath());
-                    if (qs != null) {
+                    if (nexus.getQuadruples() != null) {
+                        qs = nexus.getQuadruples();
                         log.info("Detected and loaded Quadruples Block containing " + qs.getnQuadruples() + " quadruples");
                     } else {
 
@@ -181,7 +180,7 @@ public class FlatNJ extends RunnableTool {
                         ss = readSplitSystem(inFile);
                         loaded = true;
                     } else if (blockLowerCase.contentEquals("quadruples")) {
-                        qs = readQuadruples(inFile.getAbsolutePath());
+                        qs = nexus.getQuadruples();
                         loaded = true;
                     }
 
@@ -308,18 +307,6 @@ public class FlatNJ extends RunnableTool {
         } finally {
             this.notifyListener();
         }
-    }
-
-    /**
-     * Reads QUADRUPLES block and prints progress messages
-     *
-     * @param inFile input file
-     */
-    protected QuadrupleSystem readQuadruples(String inFile) throws IOException {
-        log.debug("Reading quadruples");
-        NexusReader reader = new NexusReaderQuadruples();
-        QuadrupleSystem qs = (QuadrupleSystem) reader.readBlock(inFile);
-        return qs;
     }
 
     /**

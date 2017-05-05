@@ -28,6 +28,9 @@ import uk.ac.uea.cmp.spectre.core.ds.network.NetworkLabel;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
 import uk.ac.uea.cmp.spectre.core.ds.network.draw.Leader;
 import uk.ac.uea.cmp.spectre.core.ds.network.draw.ViewerConfig;
+import uk.ac.uea.cmp.spectre.core.ds.quad.Quad;
+import uk.ac.uea.cmp.spectre.core.ds.quad.SpectreQuad;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.Quadruple;
 import uk.ac.uea.cmp.spectre.core.ds.split.SpectreSplitBlock;
 import uk.ac.uea.cmp.spectre.core.io.nexus.Nexus;
 import uk.ac.uea.cmp.spectre.core.ui.gui.geom.IndexedPoint;
@@ -57,6 +60,7 @@ public class NexusFilePopulator implements NexusFileListener {
     private NexusQuartetSystemBuilder quartetSystemBuilder;
     private NexusNetworkBuilder networkBuilder;
     private NexusLocationBuilder locationBuilder;
+    private NexusQuadruplesBuilder quadBuilder;
     private ViewerConfig viewerConfig;
     private NexusCharacterBuilder charBuilder;
 
@@ -69,6 +73,7 @@ public class NexusFilePopulator implements NexusFileListener {
         this.quartetSystemBuilder = new NexusQuartetSystemBuilder();
         this.networkBuilder = new NexusNetworkBuilder();
         this.locationBuilder = new NexusLocationBuilder();
+        this.quadBuilder = new NexusQuadruplesBuilder();
         this.viewerConfig = new ViewerConfig();
         this.charBuilder = new NexusCharacterBuilder();
     }
@@ -1985,6 +1990,116 @@ public class NexusFilePopulator implements NexusFileListener {
         //ctx.
         //Quartet quartet = new Quartet();
 
+    }
+
+    @Override
+    public void enterBlock_quadruples(NexusFileParser.Block_quadruplesContext ctx) {
+
+    }
+
+    @Override
+    public void exitBlock_quadruples(NexusFileParser.Block_quadruplesContext ctx) {
+        this.nexus.setQuadruples(this.quadBuilder.createQuadrupleSystem());
+    }
+
+    @Override
+    public void enterQuadruples_block_header(NexusFileParser.Quadruples_block_headerContext ctx) {
+
+    }
+
+    @Override
+    public void exitQuadruples_block_header(NexusFileParser.Quadruples_block_headerContext ctx) {
+
+    }
+
+    @Override
+    public void enterDimensions_quadruples(NexusFileParser.Dimensions_quadruplesContext ctx) {
+
+    }
+
+    @Override
+    public void exitDimensions_quadruples(NexusFileParser.Dimensions_quadruplesContext ctx) {
+        if (ctx.ntax() != null) {
+            if (ctx.ntax().integer() != null) {
+                this.quadBuilder.setExpectedNbTaxa(Integer.parseInt(ctx.ntax().integer().getText()));
+            }
+        }
+
+        if (ctx.nquadruples() != null) {
+            if (ctx.nquadruples().integer() != null) {
+                this.quadBuilder.setExpectedNbQuadruples(Integer.parseInt(ctx.nquadruples().integer().getText()));
+            }
+        }
+    }
+
+    @Override
+    public void enterNquadruples(NexusFileParser.NquadruplesContext ctx) {
+
+    }
+
+    @Override
+    public void exitNquadruples(NexusFileParser.NquadruplesContext ctx) {
+
+    }
+
+    @Override
+    public void enterNquadruples_header(NexusFileParser.Nquadruples_headerContext ctx) {
+
+    }
+
+    @Override
+    public void exitNquadruples_header(NexusFileParser.Nquadruples_headerContext ctx) {
+
+    }
+
+    @Override
+    public void enterFormat_quadruples(NexusFileParser.Format_quadruplesContext ctx) {
+
+    }
+
+    @Override
+    public void exitFormat_quadruples(NexusFileParser.Format_quadruplesContext ctx) {
+
+    }
+
+    @Override
+    public void enterMatrix_quadruples_data(NexusFileParser.Matrix_quadruples_dataContext ctx) {
+
+    }
+
+    @Override
+    public void exitMatrix_quadruples_data(NexusFileParser.Matrix_quadruples_dataContext ctx) {
+
+    }
+
+    @Override
+    public void enterMatrix_quadruple(NexusFileParser.Matrix_quadrupleContext ctx) {
+
+    }
+
+    @Override
+    public void exitMatrix_quadruple(NexusFileParser.Matrix_quadrupleContext ctx) {
+
+        Quad taxa = null;
+        if (ctx.integer() != null && ctx.integer().size() == 4) {
+            int a = Integer.parseInt(ctx.integer(0).getText());
+            int b = Integer.parseInt(ctx.integer(1).getText());
+            int c = Integer.parseInt(ctx.integer(2).getText());
+            int d = Integer.parseInt(ctx.integer(3).getText());
+            taxa = new SpectreQuad(a, b, c, d);
+        }
+
+        double[] weights = null;
+        if (ctx.floatingp() != null && ctx.floatingp().size() == 7) {
+            weights = new double[7];
+            for (int i = 0; i < 7; i++) {
+                weights[i] = Double.parseDouble(ctx.floatingp(i).getText());
+            }
+        }
+
+        if (taxa != null && weights != null) {
+            this.quadBuilder.addQuad(new Quadruple(taxa, weights));
+        }
     }
 
     @Override

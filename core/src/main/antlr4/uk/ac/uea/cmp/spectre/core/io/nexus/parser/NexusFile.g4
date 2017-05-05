@@ -16,7 +16,7 @@ FLOAT : ('-')? DIGIT* '.' DIGIT+ ('E' ('-')? DIGIT+)?;
 INT : ('-')? (DIGIT)+;
 SQSTRING : SQUOTE ( ~('\''|'\\') | ('\\' .) )* SQUOTE;
 DQSTRING : DQUOTE ( ~('\''|'\\') | ('\\' .) )* DQUOTE;
-ID : (DIGIT | '_' | '.' | '?' | '-' | CHAR)+;
+ID : (DIGIT | '_' | '.' | '?' | '-' | '/' | CHAR)+;
 DIGIT : [0-9];     // match single digit
 CHAR : [a-zA-Z];
 SQUOTE : '\'';
@@ -66,6 +66,7 @@ block_declaration :
     | block_distances
     | block_splits
     | block_quartets
+    | block_quadruples
   //| block_data
   //| block_codons
   //| block_sets
@@ -339,10 +340,48 @@ quartets_block_header : 'quartets' | 'Quartets' | 'QUARTETS' | 'st_quartets';
 
 matrix_quartets_data :
     // Empty
-    | matrix_quartet ',' matrix_splits_data
+    | matrix_quartet ',' matrix_quartets_data
     ;
 
 matrix_quartet : identifier integer integer integer identifier integer identifier integer;
+
+// ----------------------------------------------------------------------
+// QUADRUPLES
+// ----------------------------------------------------------------------
+
+block_quadruples :
+    quadruples_block_header ';'
+    dimensions_quadruples ';'
+    format_quadruples ';'
+    matrix_header matrix_quadruples_data ';';
+
+quadruples_block_header : 'quadruples' | 'Quadruples' | 'QUADRUPLES';
+
+dimensions_quadruples:
+    // Empty
+    | dimensions ntax nquadruples
+    ;
+
+nquadruples:
+    // Empty
+    | nquadruples_header EQUALS integer
+    ;
+
+nquadruples_header: 'nquadruples' | 'NQUADRUPLES';
+
+format_quadruples:
+    // Empty
+    | format labels
+    ;
+
+
+matrix_quadruples_data :
+    // Empty
+    | matrix_quadruple ',' matrix_quadruples_data
+    ;
+
+matrix_quadruple : identifier ':' integer integer integer integer ':' floatingp floatingp floatingp floatingp floatingp floatingp floatingp;
+
 
 
 // ----------------------------------------------------------------------------

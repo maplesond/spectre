@@ -21,6 +21,7 @@ import uk.ac.uea.cmp.spectre.core.ds.Sequences;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.network.Network;
 import uk.ac.uea.cmp.spectre.core.ds.network.draw.ViewerConfig;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 
 import java.util.ArrayList;
@@ -41,6 +42,7 @@ public class Nexus {
     private List<Integer> cycle;
     private Network network;
     private Locations locations;
+    private QuadrupleSystem quadruples;
     private ViewerConfig viewerConfig;
     private Sequences alignments;
 
@@ -51,6 +53,7 @@ public class Nexus {
         this.splitSystem = null;
         this.network = null;
         this.locations = null;
+        this.quadruples = null;
         this.viewerConfig = null;
         this.alignments = null;
     }
@@ -130,6 +133,14 @@ public class Nexus {
 
     public void setLocations(Locations locations) {
         this.locations = locations;
+    }
+
+    public QuadrupleSystem getQuadruples() {
+        return quadruples;
+    }
+
+    public void setQuadruples(QuadrupleSystem quadruples) {
+        this.quadruples = quadruples;
     }
 
     /*public Nexus filter(double threshold) {
