@@ -576,35 +576,28 @@ public class PermutationSequenceDraw {
      * @return Left-most edges in the split network
      */
     private Edge[] leftmostEdges(TreeSet<Edge>[] splitedges) {
-        int i = 0;
         int j = 0;
-        double dx = 0.0;
-        double dy = 0.0;
         double xcoord = 0.0;
         double ycoord = 0.0;
 
-        Vertex u = null;
-        Vertex v = null;
-        Edge e = null;
-
         Edge[] chain = new Edge[this.getnActive()];
 
-        u = new Vertex(xcoord, ycoord);
+        Vertex u = new Vertex(xcoord, ycoord);
 
-        for (i = 0; i < this.getNswaps(); i++) {
+        for (int i = 0; i < this.getNswaps(); i++) {
             //create new set for edges associated to this split
             splitedges[i] = new TreeSet<>();
 
             if (this.getActive()[i]) {
-                dx = -Math.cos(((j + 1) * Math.PI) / (this.getnActive() + 1));
-                dy = -Math.sin(((j + 1) * Math.PI) / (this.getnActive() + 1));
+                double dx = -Math.cos(((j + 1) * Math.PI) / (this.getnActive() + 1));
+                double dy = -Math.sin(((j + 1) * Math.PI) / (this.getnActive() + 1));
 
                 xcoord = xcoord + (this.getWeights()[i] * dx);
                 ycoord = ycoord + (this.getWeights()[i] * dy);
 
-                v = u;
+                Vertex v = u;
                 u = new Vertex(xcoord, ycoord);
-                e = new Edge(v, u, i, 1);
+                Edge e = new Edge(v, u, i, 1);
                 splitedges[i].add(e);
                 chain[j] = e;
                 v.add_edge_before_first(e);
@@ -626,46 +619,35 @@ public class PermutationSequenceDraw {
     private Vertex completeNetwork(Edge[] chain, TreeSet[] splitedges) {
         SplitSystemDraw ssyst = new SplitSystemDraw(this);
 
-        int i = 0;
-        int j = 0;
-
-        boolean inverted = true;
-        double dx = 0.0;
-        double dy = 0.0;
-
         Vertex v = null;
-        Edge e1 = null;
-        Edge e2 = null;
-
-        for (i = 0; i < this.getNtaxa(); i++) {
-            inverted = true;
-            //System.out.println("Taxon " + pseq.initSequ[i]);
+        for (int i = 0; i < this.getNtaxa(); i++) {
+            boolean inverted = true;
 
             final int initSequI = this.getInitSequ()[i];
 
             while (inverted) {
                 inverted = false;
 
-                for (j = 1; j < chain.length; j++) {
+                for (int j = 1; j < chain.length; j++) {
                     //test if the splits associated to edges
                     //chain[j-1] and chain[j] must be inverted
 
                     if (ssyst.splits[chain[j - 1].getIdxsplit()][initSequI] == 0
                             && ssyst.splits[chain[j].getIdxsplit()][initSequI] == 1) {
-                        dx = (chain[j].getBottom()).getX() - (chain[j].getTop()).getX();
-                        dy = (chain[j].getBottom()).getY() - (chain[j].getTop()).getY();
+                        double dx = (chain[j].getBottom()).getX() - (chain[j].getTop()).getX();
+                        double dy = (chain[j].getBottom()).getY() - (chain[j].getTop()).getY();
 
                         v = new Vertex((chain[j - 1].getTop()).getX() + dx, (chain[j - 1].getTop()).getY() + dy);
-                        e1 = new Edge(chain[j - 1].getTop(), v, chain[j].getIdxsplit(), chain[j].getTimestp() + 1);
+                        Edge e1 = new Edge(chain[j - 1].getTop(), v, chain[j].getIdxsplit(), chain[j].getTimestp() + 1);
                         splitedges[e1.getIdxsplit()].add(e1);
-                        e2 = new Edge(v, chain[j].getBottom(), chain[j - 1].getIdxsplit(), chain[j - 1].getTimestp() + 1);
+                        Edge e2 = new Edge(v, chain[j].getBottom(), chain[j - 1].getIdxsplit(), chain[j - 1].getTimestp() + 1);
                         splitedges[e2.getIdxsplit()].add(e2);
                         chain[j - 1] = e1;
                         chain[j] = e2;
                         v.add_edge_before_first(e2);
                         v.add_edge_after_last(e1);
-                        (e1.getTop()).add_edge_before_first(e1);
-                        (e2.getBottom()).add_edge_after_last(e2);
+                        e1.getTop().add_edge_before_first(e1);
+                        e2.getBottom().add_edge_after_last(e2);
                         inverted = true;
                     }
                 }
@@ -686,7 +668,7 @@ public class PermutationSequenceDraw {
                 this.setNClasses(1);
             } else {
                 v = chain[0].getTop();
-                for (j = 0; j < chain.length; j++) {
+                for (int j = 0; j < chain.length; j++) {
                     if (ssyst.splits[chain[j].getIdxsplit()][initSequI] == 0) {
                         (chain[j].getTop()).getTaxa().add(new Identifier(taxaname[initSequI], initSequI));
                         if (chain[j].getTop().getTaxa().size() > 1) {
@@ -725,15 +707,8 @@ public class PermutationSequenceDraw {
         //get the split system from the permutation sequence
         SplitSystemDraw ssyst = new SplitSystemDraw(this);
 
-        //loop variables
-        int i = 0;
-        int j = 0;
-
         //count incompatible pairs
         int count = 0;
-
-        //number of rounds
-        int rounds = 0;
 
         //vertex in the split network
         Vertex u = v;
@@ -742,10 +717,10 @@ public class PermutationSequenceDraw {
         SplitSystemDraw.Compatible pattern = null;
 
         //check all pairs of active splits
-        for (i = 0; i < (this.getNswaps() - 1); i++) {
+        for (int i = 0; i < (this.getNswaps() - 1); i++) {
             if (this.getActive()[i]) {
 
-                for (j = i + 1; j < this.getNswaps(); j++) {
+                for (int j = i + 1; j < this.getNswaps(); j++) {
                     if (this.getActive()[j]) {
                         pattern = ssyst.isCompatible(i, j);
                         if (pattern.isCompatible()) {
@@ -769,7 +744,7 @@ public class PermutationSequenceDraw {
         //First compute the number edges in the network
         int nedges = 0;
 
-        for (i = 0; i < splitedges.length; i++) {
+        for (int i = 0; i < splitedges.length; i++) {
             nedges = nedges + splitedges[i].size();
         }
 
@@ -979,24 +954,14 @@ public class PermutationSequenceDraw {
      * @return Edges that cross both lists
      */
     private EdgeList findCrossBoth(EdgeList crosslista, EdgeList crosslistb, int b) {
-        ListIterator itera = crosslista.listIterator();
-        ListIterator iterb = null;
-
-        Edge e = null;
-        Edge f = null;
 
         EdgeList crossboth = new EdgeList();
 
-        while (itera.hasNext()) {
-            e = (Edge) itera.next();
-
+        for (Edge e : crosslista) {
             if (e.getIdxsplit() == b) {
                 crossboth.addLast(e);
             } else {
-                iterb = crosslistb.listIterator();
-
-                while (iterb.hasNext()) {
-                    f = (Edge) iterb.next();
+                for (Edge f : crosslistb) {
                     if (e.getIdxsplit() == f.getIdxsplit()) {
                         crossboth.addLast(e);
                         break;
@@ -1765,18 +1730,15 @@ public class PermutationSequenceDraw {
 
         Vertex u = null;
 
-        Edge e = (Edge) elista.getFirst();
+        Edge e = elista.getFirst();
         Edge g = null;
-        Edge h = null;
         Edge g1 = null;
         Edge g2 = null;
 
         //first eliminate the edges that correspond to splits that cross a
         if (dira == Direction.LEFT) {
-            SortedSet head = splitedges[e.getIdxsplit()].headSet(e);
-            Iterator headiter = head.iterator();
-            while (headiter.hasNext()) {
-                h = (Edge) headiter.next();
+            SortedSet<Edge> head = splitedges[e.getIdxsplit()].headSet(e);
+            for (Edge h : head) {
                 g1 = h.getTop().getEdgeList().get((h.getTop().getEdgeList().indexOf(h) + (h.getTop().getEdgeList().size() - 1)) % h.getTop().getEdgeList().size());
                 g2 = h.getBottom().getEdgeList().get((h.getBottom().getEdgeList().indexOf(h) + 1) % h.getBottom().getEdgeList().size());
 
@@ -1819,12 +1781,11 @@ public class PermutationSequenceDraw {
                 }
             }
         } else {
-            SortedSet tail = splitedges[e.getIdxsplit()].tailSet(e);
-            Iterator tailiter = tail.iterator();
-            //tail contains e!!!
-            h = (Edge) tailiter.next();
-            while (tailiter.hasNext()) {
-                h = (Edge) tailiter.next();
+            SortedSet<Edge> tail = splitedges[e.getIdxsplit()].tailSet(e);
+            for (Edge h : tail) {
+                if (h == tail.first()) {
+                    continue;
+                }
                 g1 = h.getTop().getEdgeList().get((h.getTop().getEdgeList().indexOf(h) + 1) % h.getTop().getEdgeList().size());
                 g2 = h.getBottom().getEdgeList().get((h.getBottom().getEdgeList().indexOf(h) + (h.getBottom().getEdgeList().size() - 1)) % h.getBottom().getEdgeList().size());
 
@@ -1872,10 +1833,8 @@ public class PermutationSequenceDraw {
 
         //next eliminate edges that correspond to splits thath cross b
         if (dirb == Direction.LEFT) {
-            SortedSet head = splitedges[f.getIdxsplit()].headSet(f);
-            Iterator headiter = head.iterator();
-            while (headiter.hasNext()) {
-                h = (Edge) headiter.next();
+            SortedSet<Edge> head = splitedges[f.getIdxsplit()].headSet(f);
+            for (Edge h : head) {
                 g1 = h.getTop().getEdgeList().get((h.getTop().getEdgeList().indexOf(h) + (h.getTop().getEdgeList().size() - 1)) % h.getTop().getEdgeList().size());
                 g2 = h.getBottom().getEdgeList().get((h.getBottom().getEdgeList().indexOf(h) + 1) % h.getBottom().getEdgeList().size());
 
@@ -1918,12 +1877,11 @@ public class PermutationSequenceDraw {
                 }
             }
         } else {
-            SortedSet tail = splitedges[f.getIdxsplit()].tailSet(f);
-            Iterator tailiter = tail.iterator();
-            //tail contains f!!!
-            h = (Edge) tailiter.next();
-            while (tailiter.hasNext()) {
-                h = (Edge) tailiter.next();
+            SortedSet<Edge> tail = splitedges[f.getIdxsplit()].tailSet(f);
+            for (Edge h : tail) {
+                if (h == tail.first()) {
+                    continue;
+                }
                 g1 = h.getTop().getEdgeList().get((h.getTop().getEdgeList().indexOf(h) + 1) % h.getTop().getEdgeList().size());
                 g2 = h.getBottom().getEdgeList().get((h.getBottom().getEdgeList().indexOf(h) + (h.getBottom().getEdgeList().size() - 1)) % h.getBottom().getEdgeList().size());
 

@@ -117,7 +117,6 @@ public class NeighbourSeparatorMax implements NeighbourSeparator {
                     taxonRepresentingAgglomeratedPair,
                     taxonA,
                     taxonB,
-                    neighbours,
                     i, agglomeratedPermutationSequence,
                     tmpScoredPermutationSequence);
 
@@ -159,7 +158,6 @@ public class NeighbourSeparatorMax implements NeighbourSeparator {
      *                                               initial sequence.
      * @param b                                      the taxon in the agglomerated pair that comes second in the
      *                                               initial sequence.
-     * @param neighbours                             a pair of neighbors.
      * @param swapAfterWhichNeighboursShouldBeSwaped index of the swap
      * @param agglomeratedPermutationSequence        permutation sequence before
      *                                               neighbor separation.
@@ -170,7 +168,6 @@ public class NeighbourSeparatorMax implements NeighbourSeparator {
     protected PermutationSequence generatePermutationSequence(
             int taxonRepresentingAgglomeratedPair,
             int a, int b,
-            Neighbours neighbours,
             int swapAfterWhichNeighboursShouldBeSwaped,
             PermutationSequence agglomeratedPermutationSequence,
             ScoredPermutationSequence tmpScoredPermutationSequence) {
