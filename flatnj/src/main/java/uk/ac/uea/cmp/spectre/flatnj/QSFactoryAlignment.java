@@ -16,7 +16,6 @@
 package uk.ac.uea.cmp.spectre.flatnj;
 
 import org.apache.commons.math3.util.CombinatoricsUtils;
-import org.apache.commons.math3.util.MathUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.spectre.core.ds.Sequences;

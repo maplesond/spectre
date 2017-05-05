@@ -15,8 +15,6 @@
 
 package uk.ac.uea.cmp.spectre.core.ds.distance;
 
-import uk.ac.uea.cmp.spectre.core.ds.Sequences;
-
 /**
  * Created with IntelliJ IDEA.
  * User: Dan

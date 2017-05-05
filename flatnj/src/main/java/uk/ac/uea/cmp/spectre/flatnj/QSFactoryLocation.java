@@ -18,9 +18,9 @@ package uk.ac.uea.cmp.spectre.flatnj;
 import org.apache.commons.math3.util.CombinatoricsUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.ac.uea.cmp.spectre.core.ds.Locations;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.Quadruple;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleSystem;
-import uk.ac.uea.cmp.spectre.core.ui.gui.geom.IndexedPoint;
 
 /**
  * Quadruple system factory from geographic locations.
@@ -35,7 +35,7 @@ public class QSFactoryLocation implements QSFactory {
      * {@linkplain Locations} to be used for the estimation of
      * {@link QuadrupleSystem}.
      */
-    private Locations l;
+    private Locations locations;
 
     /**
      * Constructs {@linkplain QSFactoryLocation} object that will use
@@ -45,7 +45,7 @@ public class QSFactoryLocation implements QSFactory {
      *          {@link QuadrupleSystem}.
      */
     public QSFactoryLocation(Locations l) {
-        this.l = l;
+        this.locations = l;
     }
 
     @Override
@@ -55,18 +55,22 @@ public class QSFactoryLocation implements QSFactory {
 
     @Override
     public QuadrupleSystem computeQS(boolean notify) {
-        IndexedPoint[] locations = l.getLocations();
-
+        final int N = locations.size();
         if (notify) {
-            log.info("Expecting " + CombinatoricsUtils.binomialCoefficient(locations.length, 4) + " quadruples.");
+            log.info("Expecting " + CombinatoricsUtils.binomialCoefficient(N, 4) + " quadruples.");
         }
 
-        QuadrupleSystem qs = new QuadrupleSystem(locations.length);
-        double[][] matrix = new double[locations.length][locations.length];
-        for (int i = 0; i < locations.length; i++) {
+
+        QuadrupleSystem qs = new QuadrupleSystem(N);
+        double[][] matrix = new double[N][N];
+        for (int i = 0; i < N; i++) {
             matrix[i][i] = 0;
-            for (int j = i + 1; j < locations.length; j++) {
-                double dist = Math.sqrt((locations[i].getX() - locations[j].getX()) * (locations[i].getX() - locations[j].getX()) + (locations[i].getY() - locations[j].getY()) * (locations[i].getY() - locations[j].getY()));
+            for (int j = i + 1; j < N; j++) {
+                double ix = locations.get(i).getX();
+                double jx = locations.get(j).getX();
+                double iy = locations.get(i).getY();
+                double jy = locations.get(j).getY();
+                double dist = Math.sqrt((ix - jx) * (ix - jx) + (iy - jy) * (iy - jy));
                 matrix[i][j] = dist;
                 matrix[j][i] = dist;
             }
@@ -75,13 +79,13 @@ public class QSFactoryLocation implements QSFactory {
         int[] inLocations = new int[4];
         double[] weights;
         int count = 0;
-        for (int i1 = 0; i1 < locations.length; i1++) {
+        for (int i1 = 0; i1 < N; i1++) {
             inLocations[0] = i1;
-            for (int i2 = i1 + 1; i2 < locations.length; i2++) {
+            for (int i2 = i1 + 1; i2 < N; i2++) {
                 inLocations[1] = i2;
-                for (int i3 = i2 + 1; i3 < locations.length; i3++) {
+                for (int i3 = i2 + 1; i3 < N; i3++) {
                     inLocations[2] = i3;
-                    for (int i4 = i3 + 1; i4 < locations.length; i4++) {
+                    for (int i4 = i3 + 1; i4 < N; i4++) {
                         inLocations[3] = i4;
                         double[][] d = makeD(inLocations, matrix);
                         int min = -1;

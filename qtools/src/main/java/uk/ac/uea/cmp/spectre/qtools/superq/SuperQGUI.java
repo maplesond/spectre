@@ -22,7 +22,10 @@ import uk.ac.earlham.metaopt.Optimiser;
 import uk.ac.earlham.metaopt.OptimiserException;
 import uk.ac.earlham.metaopt.OptimiserFactory;
 import uk.ac.uea.cmp.spectre.core.io.nexus.NexusFileFilter;
-import uk.ac.uea.cmp.spectre.core.ui.gui.*;
+import uk.ac.uea.cmp.spectre.core.ui.gui.JobController;
+import uk.ac.uea.cmp.spectre.core.ui.gui.JobControllerWithView;
+import uk.ac.uea.cmp.spectre.core.ui.gui.StatusTrackerWithView;
+import uk.ac.uea.cmp.spectre.core.ui.gui.ToolHost;
 import uk.ac.uea.cmp.spectre.core.util.LogConfig;
 import uk.ac.uea.cmp.spectre.qtools.superq.problems.SecondaryProblemFactory;
 

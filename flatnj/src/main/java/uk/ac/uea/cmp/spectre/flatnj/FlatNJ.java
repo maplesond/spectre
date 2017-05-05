@@ -19,14 +19,11 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.uea.cmp.spectre.core.ds.Sequences;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
+import uk.ac.uea.cmp.spectre.core.ds.Locations;
+import uk.ac.uea.cmp.spectre.core.ds.Sequences;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
-import uk.ac.uea.cmp.spectre.core.ds.network.SpectreNetwork;
 import uk.ac.uea.cmp.spectre.core.ds.network.Network;
-import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
-import uk.ac.uea.cmp.spectre.core.ds.network.draw.AngleCalculatorMaximalArea;
-import uk.ac.uea.cmp.spectre.core.ds.network.draw.CompatibleCorrector;
 import uk.ac.uea.cmp.spectre.core.ds.network.draw.PermutationSequenceDraw;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.flat.FlatSplitSystem;
@@ -34,11 +31,13 @@ import uk.ac.uea.cmp.spectre.core.ds.split.flat.FlatSplitSystemFinal;
 import uk.ac.uea.cmp.spectre.core.ds.split.flat.PermutationSequence;
 import uk.ac.uea.cmp.spectre.core.ds.split.flat.PermutationSequenceFactory;
 import uk.ac.uea.cmp.spectre.core.io.fasta.FastaReader;
-import uk.ac.uea.cmp.spectre.core.io.nexus.*;
+import uk.ac.uea.cmp.spectre.core.io.nexus.Nexus;
 import uk.ac.uea.cmp.spectre.core.ui.gui.RunnableTool;
 import uk.ac.uea.cmp.spectre.core.ui.gui.StatusTrackerWithView;
-import uk.ac.uea.cmp.spectre.flatnj.tools.*;
 import uk.ac.uea.cmp.spectre.flatnj.tools.NexusReader;
+import uk.ac.uea.cmp.spectre.flatnj.tools.NexusReaderQuadruples;
+import uk.ac.uea.cmp.spectre.flatnj.tools.NexusReaderSplits;
+import uk.ac.uea.cmp.spectre.flatnj.tools.Writer;
 
 import java.io.File;
 import java.io.IOException;
@@ -120,7 +119,7 @@ public class FlatNJ extends RunnableTool {
             QuadrupleSystem qs = null;
 
             if (extension.equalsIgnoreCase("fa") || extension.equalsIgnoreCase("faa") || extension.equalsIgnoreCase("fas") || extension.equalsIgnoreCase("fasta")) {
-                sequences = readAlignment(inFile);
+                sequences = new FastaReader().readAlignment(inFile);
                 taxa = new IdentifierList(sequences.getTaxaLabels());
                 log.info("Extracted " + taxa.size() + " sequences");
             } else if (extension.equalsIgnoreCase("nex") || extension.equalsIgnoreCase("nexus") || extension.equalsIgnoreCase("4s")) {
@@ -137,26 +136,30 @@ public class FlatNJ extends RunnableTool {
 
                 if (options.getBlock() == null) {
                     log.info("Nexus file provided as input but no nexus block specified by user.  Will use first suitable block found in nexus file");
+
                     // First check for existing quadruple system
                     qs = readQuadruples(inFile.getAbsolutePath());
                     if (qs != null) {
-                        log.info("Detected and loaded Quadruples Block");
+                        log.info("Detected and loaded Quadruples Block containing " + qs.getnQuadruples() + " quadruples");
                     } else {
+
                         // Next check for location data
-                        locations = readLocations(inFile);
-                        if (locations != null) {
-                            log.info("Detected and loaded Locations Block");
-                        } else {
+                        if (nexus.getLocations() != null) {
+                            locations = nexus.getLocations();
+                            log.info("Detected and loaded Locations Block containing " + locations.size() + " locations");
+                        }
+                        else {
                             // Next check for split system
                             ss = readSplitSystem(inFile);
                             if (ss != null) {
                                 log.info("Detected and loaded Split System Block containing " + ss.getnSplits() + " splits over " + ss.getnTaxa() + " taxa");
                             } else {
                                 // Next look for MSA
-                                sequences = nexus.getAlignments();
-                                if (sequences != null) {
+                                if (nexus.getAlignments() != null) {
+                                    sequences = nexus.getAlignments();
                                     log.info("Detected and loaded Sequences Block.  Found " + sequences.size() + " sequences");
-                                } else {
+                                }
+                                else {
                                     throw new IOException("Couldn't find a valid block in nexus file.");
                                 }
                             }
@@ -172,7 +175,7 @@ public class FlatNJ extends RunnableTool {
                         sequences = nexus.getAlignments();
                         loaded = true;
                     } else if (blockLowerCase.contentEquals("locations")) {
-                        locations = readLocations(inFile);
+                        locations = nexus.getLocations();
                         loaded = true;
                     } else if (blockLowerCase.contentEquals("splits")) {
                         ss = readSplitSystem(inFile);
@@ -305,61 +308,6 @@ public class FlatNJ extends RunnableTool {
         } finally {
             this.notifyListener();
         }
-    }
-
-
-    /**
-     * Reads alignment from fasta file and initializes {@linkplain Sequences}
-     * and {@linkplain uk.ac.uea.cmp.spectre.core.ds.IdentifierList} objects.
-     *
-     * @param fastaFile fasta file path.
-     */
-    protected Sequences readAlignment(File fastaFile) throws IOException {
-        log.debug("Reading sequences");
-        Sequences a = new FastaReader().readAlignment(fastaFile);
-        if (a.getSequences().length == 0) {
-            throw new IOException("Could not read sequence alignment from '" + fastaFile + "'");
-        }
-        return a;
-    }
-
-    /**
-     * Reads MSAs from a nexus file character block {@linkplain Sequences}
-     * and {@linkplain uk.ac.uea.cmp.spectre.core.ds.IdentifierList} objects.
-     *
-     * @param msaNexusFile nexus file containing character block.
-     */
-    protected Sequences readNexusAlignment(File msaNexusFile) throws IOException {
-        log.debug("Reading sequences");
-        Sequences a = new uk.ac.uea.cmp.spectre.core.io.nexus.NexusReader().readAlignment(msaNexusFile);
-        if (a.getSequences().length == 0) {
-            throw new IOException("Could not read sequence alignments from '" + msaNexusFile.getAbsolutePath() + "'");
-        }
-        return a;
-    }
-
-    /**
-     * Reads character distance matrix from DISTANCES block in nexus distance
-     * matrix file and initializes {@linkplain uk.ac.uea.cmp.spectre.core.ds.distance.FlexibleDistanceMatrix} object.
-     *
-     * @param distanceMatrixFile nexus file path.
-     */
-    protected DistanceMatrix readDistanceMatrix(File distanceMatrixFile) throws IOException {
-        log.debug("Reading distance matrix");
-        return new uk.ac.uea.cmp.spectre.core.io.nexus.NexusReader().readDistanceMatrix(distanceMatrixFile);
-    }
-
-    /**
-     * Reads locations from LOCATIONS block in nexus input file and initializes
-     * {@linkplain Locations} object.
-     *
-     * @param inFile nexus file path.
-     * @return a {@linkplain String} array containing taxa names.
-     */
-    protected Locations readLocations(File inFile) {
-        log.debug("Reading locations");
-        Locations loc = (Locations) new NexusReaderLocations().readBlock(inFile.getAbsolutePath());
-        return loc;
     }
 
     /**

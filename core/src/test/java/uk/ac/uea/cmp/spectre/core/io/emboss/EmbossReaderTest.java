@@ -3,13 +3,11 @@ package uk.ac.uea.cmp.spectre.core.io.emboss;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
-import uk.ac.uea.cmp.spectre.core.io.phylip.PhylipReader;
-import uk.ac.uea.cmp.spectre.core.io.phylip.PhylipReaderTest;
 
 import java.io.File;
 import java.io.IOException;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by maplesod on 11/04/17.

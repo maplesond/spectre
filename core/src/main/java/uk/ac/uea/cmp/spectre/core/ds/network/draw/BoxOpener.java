@@ -17,7 +17,6 @@ package uk.ac.uea.cmp.spectre.core.ds.network.draw;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import uk.ac.uea.cmp.spectre.core.ds.network.Edge;
 import uk.ac.uea.cmp.spectre.core.ds.network.EdgeList;
 import uk.ac.uea.cmp.spectre.core.ds.network.Network;

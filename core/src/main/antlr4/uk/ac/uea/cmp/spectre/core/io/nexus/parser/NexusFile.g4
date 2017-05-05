@@ -69,6 +69,7 @@ block_declaration :
   //| block_data
   //| block_codons
   //| block_sets
+    | block_locations
     | block_assumptions
     | block_trees
     | block_network
@@ -342,6 +343,31 @@ matrix_quartets_data :
     ;
 
 matrix_quartet : identifier integer integer integer identifier integer identifier integer;
+
+
+// ----------------------------------------------------------------------------
+// Locations
+// ----------------------------------------------------------------------------
+
+block_locations:
+    locations_block_header ';'
+    dimensions_locations ';'
+    matrix_header matrix_locations_data ';';
+
+locations_block_header : 'locations' | 'Locations' | 'LOCATIONS';
+
+dimensions_locations:
+    // Empty
+    | dimensions ntax
+    ;
+
+matrix_locations_data:
+    // Empty
+    | location_entry ',' matrix_locations_data
+    ;
+
+location_entry : identifier floatingp floatingp;
+
 
 
 // ----------------------------------------------------------------------------

@@ -15,8 +15,6 @@
 
 package uk.ac.uea.cmp.spectre.viewer;
 
-import uk.ac.uea.cmp.spectre.core.ui.gui.LookAndFeel;
-
 /**
  * @author balvociute
  */

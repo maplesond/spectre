@@ -21,7 +21,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import uk.ac.earlham.metaopt.OptimiserException;
-import uk.ac.earlham.metaopt.external.JOptimizer;
 import uk.ac.uea.cmp.spectre.core.util.LogConfig;
 
 import java.io.File;

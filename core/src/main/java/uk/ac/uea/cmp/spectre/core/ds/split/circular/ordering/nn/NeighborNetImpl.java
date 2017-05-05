@@ -27,7 +27,10 @@ import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.CVMatrices;
 import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.CircularOrderingCreator;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Stack;
 
 /**
  * Created by dan on 27/02/14.

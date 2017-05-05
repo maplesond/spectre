@@ -16,11 +16,9 @@
 
 package uk.ac.uea.cmp.spectre.viewer;
 
-import uk.ac.uea.cmp.spectre.core.ds.network.NetworkLabel;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
 
 import java.awt.*;
-import java.util.Collection;
 import java.util.Set;
 
 /**

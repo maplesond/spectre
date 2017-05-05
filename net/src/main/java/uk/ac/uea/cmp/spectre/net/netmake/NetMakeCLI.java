@@ -18,6 +18,7 @@ package uk.ac.uea.cmp.spectre.net.netmake;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -112,6 +113,12 @@ public class NetMakeCLI {
                     outputDir = op.getParentFile();
                 }
                 prefix = op.getName();
+            }
+
+            // Ensure output directory exists
+            if (!outputDir.exists()) {
+                log.info("Creating output directory: " + outputDir.getAbsolutePath());
+                FileUtils.forceMkdir(outputDir);
             }
 
             File input = new File(commandLine.getArgs()[0]);

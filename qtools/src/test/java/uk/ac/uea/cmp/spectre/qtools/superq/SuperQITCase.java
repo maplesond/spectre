@@ -29,7 +29,7 @@ import uk.ac.earlham.metaopt.external.JOptimizer;
 
 import java.io.File;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
 
 public class SuperQITCase {
 

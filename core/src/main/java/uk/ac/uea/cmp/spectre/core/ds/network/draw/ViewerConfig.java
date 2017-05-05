@@ -19,7 +19,6 @@ import uk.ac.uea.cmp.spectre.core.ds.network.VertexList;
 
 import java.awt.*;
 import java.util.HashSet;
-import java.util.Scanner;
 import java.util.Set;
 
 /**

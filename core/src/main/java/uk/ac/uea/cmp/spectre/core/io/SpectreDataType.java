@@ -30,5 +30,6 @@ public enum SpectreDataType {
     CIRCULAR_ORDERING,
     SPLITS,
     QUARTETS,
-    NETWORK;
+    NETWORK,
+    LOCATIONS;
 }

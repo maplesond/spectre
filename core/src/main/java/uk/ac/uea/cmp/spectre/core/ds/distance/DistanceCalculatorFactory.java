@@ -2,7 +2,6 @@ package uk.ac.uea.cmp.spectre.core.ds.distance;
 
 import org.apache.commons.lang3.StringUtils;
 import uk.ac.uea.cmp.spectre.core.ds.Sequences;
-import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.CircularOrderingAlgorithms;
 
 import java.util.ArrayList;
 import java.util.List;

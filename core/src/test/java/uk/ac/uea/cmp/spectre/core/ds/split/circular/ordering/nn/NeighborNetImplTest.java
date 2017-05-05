@@ -15,7 +15,6 @@
 
 package uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.nn;
 
-import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
 import org.junit.Test;

@@ -30,6 +30,7 @@ import uk.ac.uea.cmp.spectre.core.ds.network.draw.Leader;
 import uk.ac.uea.cmp.spectre.core.ds.network.draw.ViewerConfig;
 import uk.ac.uea.cmp.spectre.core.ds.split.SpectreSplitBlock;
 import uk.ac.uea.cmp.spectre.core.io.nexus.Nexus;
+import uk.ac.uea.cmp.spectre.core.ui.gui.geom.IndexedPoint;
 import uk.ac.uea.cmp.spectre.core.util.StringUtils;
 
 import java.awt.*;
@@ -55,6 +56,7 @@ public class NexusFilePopulator implements NexusFileListener {
     private NexusSplitSystemBuilder splitSystemBuilder;
     private NexusQuartetSystemBuilder quartetSystemBuilder;
     private NexusNetworkBuilder networkBuilder;
+    private NexusLocationBuilder locationBuilder;
     private ViewerConfig viewerConfig;
     private NexusCharacterBuilder charBuilder;
 
@@ -66,6 +68,7 @@ public class NexusFilePopulator implements NexusFileListener {
         this.splitSystemBuilder = new NexusSplitSystemBuilder();
         this.quartetSystemBuilder = new NexusQuartetSystemBuilder();
         this.networkBuilder = new NexusNetworkBuilder();
+        this.locationBuilder = new NexusLocationBuilder();
         this.viewerConfig = new ViewerConfig();
         this.charBuilder = new NexusCharacterBuilder();
     }
@@ -1982,6 +1985,62 @@ public class NexusFilePopulator implements NexusFileListener {
         //ctx.
         //Quartet quartet = new Quartet();
 
+    }
+
+    @Override
+    public void enterBlock_locations(NexusFileParser.Block_locationsContext ctx) {
+
+    }
+
+    @Override
+    public void exitBlock_locations(NexusFileParser.Block_locationsContext ctx) {
+        this.nexus.setLocations(this.locationBuilder.getLocations());
+    }
+
+    @Override
+    public void enterLocations_block_header(NexusFileParser.Locations_block_headerContext ctx) {
+
+    }
+
+    @Override
+    public void exitLocations_block_header(NexusFileParser.Locations_block_headerContext ctx) {
+
+    }
+
+    @Override
+    public void enterDimensions_locations(NexusFileParser.Dimensions_locationsContext ctx) {
+
+    }
+
+    @Override
+    public void exitDimensions_locations(NexusFileParser.Dimensions_locationsContext ctx) {
+        this.locationBuilder.setNbExpectedTaxa(Integer.parseInt(ctx.ntax().integer().getText()));
+    }
+
+    @Override
+    public void enterMatrix_locations_data(NexusFileParser.Matrix_locations_dataContext ctx) {
+
+    }
+
+    @Override
+    public void exitMatrix_locations_data(NexusFileParser.Matrix_locations_dataContext ctx) {
+
+    }
+
+    @Override
+    public void enterLocation_entry(NexusFileParser.Location_entryContext ctx) {
+
+    }
+
+    @Override
+    public void exitLocation_entry(NexusFileParser.Location_entryContext ctx) {
+
+        double x = Double.parseDouble(ctx.floatingp().get(0).getText());
+        double y = Double.parseDouble(ctx.floatingp().get(1).getText());
+
+        IndexedPoint ip = new IndexedPoint(-1, x, y, ctx.identifier().getText());
+
+        this.locationBuilder.addLocation(ip);
     }
 
     @Override

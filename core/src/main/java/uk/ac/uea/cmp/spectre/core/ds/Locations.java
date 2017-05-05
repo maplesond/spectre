@@ -13,53 +13,37 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.flatnj;
+package uk.ac.uea.cmp.spectre.core.ds;
 
-import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.distance.FlexibleDistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ui.gui.geom.IndexedPoint;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author balvociute
  */
-public class Locations {
+public class Locations extends ArrayList<IndexedPoint> {
 
-    private IndexedPoint[] locations;
-
-    public Locations(IndexedPoint[] locations) {
-        this.locations = locations;
+    public Locations() {
+        super();
     }
 
     public Locations(List<IndexedPoint> locationsList) {
-        locations = new IndexedPoint[locationsList.size()];
-        for (int i = 0; i < locations.length; i++) {
-            locations[i] = locationsList.get(i);
+        for (int i = 0; i < locationsList.size(); i++) {
+            IndexedPoint ip = locationsList.get(i);
+            this.add(new IndexedPoint(ip.getId(), ip.getX(), ip.getY(), ip.getLabel()));
         }
-    }
-
-    public IndexedPoint[] getLocations() {
-        return locations;
-    }
-
-    public void print() {
-        for (int i = 0; i < locations.length; i++) {
-            System.out.println(locations[i].toString());
-        }
-    }
-
-    public Integer size() {
-        return locations.length;
     }
 
     public String[] getTaxa() {
         String[] labels = null;
-        if (locations[0].getLabel() != null) {
-            labels = new String[locations.length];
-            for (int i = 0; i < locations.length; i++) {
-                labels[i] = locations[i].getLabel();
+        if (this.get(0).getLabel() != null) {
+            labels = new String[this.size()];
+            for (int i = 0; i < this.size(); i++) {
+                labels[i] = this.get(i).getLabel();
             }
         }
         return labels;
@@ -68,10 +52,10 @@ public class Locations {
     public DistanceMatrix toDistanceMatrix() {
         double[][] matrix = new double[size()][size()];
         IdentifierList taxa = new IdentifierList(size());
-        for (int i = 0; i < locations.length; i++) {
+        for (int i = 0; i < this.size(); i++) {
             matrix[i][i] = 0.0;
-            for (int j = i + 1; j < locations.length; j++) {
-                double d = locations[i].distanceSq(locations[j]);
+            for (int j = i + 1; j < this.size(); j++) {
+                double d = this.get(i).distanceSq(this.get(j));
                 matrix[i][j] = d;
                 matrix[j][i] = d;
             }
