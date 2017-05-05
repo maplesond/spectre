@@ -13,7 +13,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.flatnj;
+package uk.ac.uea.cmp.spectre.core.ds.quad.quadruple;
 
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 

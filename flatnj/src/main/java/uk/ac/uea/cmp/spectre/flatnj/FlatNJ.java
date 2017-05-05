@@ -25,7 +25,7 @@ import uk.ac.uea.cmp.spectre.core.ds.Sequences;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.network.Network;
 import uk.ac.uea.cmp.spectre.core.ds.network.draw.PermutationSequenceDraw;
-import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleSystem;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.*;
 import uk.ac.uea.cmp.spectre.core.ds.split.flat.FlatSplitSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.flat.FlatSplitSystemFinal;
 import uk.ac.uea.cmp.spectre.core.ds.split.flat.PermutationSequence;

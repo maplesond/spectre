@@ -13,7 +13,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.flatnj;
+package uk.ac.uea.cmp.spectre.core.ds.quad.quadruple;
 
 /**
  * Multiple sequence alignment filter for illegal characters.

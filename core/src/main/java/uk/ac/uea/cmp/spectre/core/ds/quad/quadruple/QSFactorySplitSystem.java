@@ -13,13 +13,11 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-package uk.ac.uea.cmp.spectre.flatnj;
+package uk.ac.uea.cmp.spectre.core.ds.quad.quadruple;
 
 import org.apache.commons.math3.util.CombinatoricsUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.Quadruple;
-import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.flat.FlatSplitSystem;
 
 /**
