@@ -118,15 +118,17 @@ public interface Split extends Comparable<Split> {
      */
     void mergeASides(Split split);
 
-
-
-
-
     /**
      * Returns true if one side of this split contains only a single taxon.
      * @return True if one side of this split contains only a single taxon, otherwise false.
      */
     boolean isTrivial();
+
+    /**
+     * Returns the index of the trivial split if this is a trivial split, otherwise returns null.
+     * @return Null if this is not a trivial split, otherwise the index of the taxon that's on the side with 1 element.
+     */
+    Integer getTrivial();
 
     /**
      * Check to see if this split is compatible with another split.  This returns true (compatible) if one of the four
@@ -135,6 +137,8 @@ public interface Split extends Comparable<Split> {
      * @return True if compatible, false if incompatible
      */
     boolean isCompatible(Split other);
+
+    Compatible getCompatible(Split other);
 
     /**
      * Check to see if this split is consistent with the given ordering, hence is circular.
@@ -146,4 +150,42 @@ public interface Split extends Comparable<Split> {
      * @return True, if this split is circular, false if not.
      */
     boolean isCircular(IdentifierList ordering);
+
+    /**
+     * Possible patterns of compatibility between splits
+     */
+    enum Compatible {
+        NO {
+            @Override
+            public boolean isCompatible() {
+                return false;
+            }
+        },
+        YES_11 {
+            @Override
+            public boolean isCompatible() {
+                return true;
+            }
+        },
+        YES_10 {
+            @Override
+            public boolean isCompatible() {
+                return true;
+            }
+        },
+        YES_01 {
+            @Override
+            public boolean isCompatible() {
+                return true;
+            }
+        },
+        YES_00 {
+            @Override
+            public boolean isCompatible() {
+                return true;
+            }
+        };
+
+        public abstract boolean isCompatible();
+    }
 }

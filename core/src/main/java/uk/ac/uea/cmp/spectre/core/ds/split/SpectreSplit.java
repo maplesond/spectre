@@ -19,6 +19,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
+import uk.ac.uea.cmp.spectre.core.ds.network.draw.SplitSystemDraw;
 
 
 /**
@@ -36,13 +37,21 @@ public class SpectreSplit implements Split {
     private double weight;
 
     public SpectreSplit(SplitBlock aSide, int nbTaxa) {
-        this(aSide, nbTaxa, 1.0);
+        this(aSide, nbTaxa, 1.0, false);
+    }
+
+    public SpectreSplit(SplitBlock aSide, int nbTaxa, boolean zerobased) {
+        this(aSide, nbTaxa, 1.0, zerobased);
     }
 
     public SpectreSplit(SplitBlock aSide, int nbTaxa, double weight) {
+        this(aSide, nbTaxa, weight, false);
+    }
+
+    public SpectreSplit(SplitBlock aSide, int nbTaxa, double weight, boolean zerobased) {
         this.aSide = aSide;
         this.nbTaxa = nbTaxa;
-        this.bSide = aSide.makeComplement(nbTaxa);
+        this.bSide = aSide.makeComplement(nbTaxa, zerobased);
         this.weight = weight;
     }
 
@@ -247,6 +256,19 @@ public class SpectreSplit implements Split {
     }
 
     @Override
+    public Integer getTrivial() {
+        if (this.aSide.size() == 1) {
+            return new Integer(this.aSide.getFirst());
+        }
+        else if (this.bSide.size() == 1) {
+            return new Integer(this.bSide.getFirst());
+        }
+        else {
+            return null;
+        }
+    }
+
+    @Override
     public String toString() {
         return "{" + this.aSide.toString() + " | " + this.bSide.toString() + "} : " + this.weight;
     }
@@ -257,6 +279,7 @@ public class SpectreSplit implements Split {
      * @param other The other split to test
      * @return True if compatible, false if incompatible
      */
+    @Override
     public boolean isCompatible(Split other) {
 
         if (!(other instanceof SpectreSplit)) {
@@ -280,6 +303,38 @@ public class SpectreSplit implements Split {
                 !thisBSide.containsAny(otherASide) || !thisBSide.containsAny(otherBSide);
     }
 
+    public Compatible getCompatible(Split other) {
+
+        if (!(other instanceof SpectreSplit)) {
+            throw new IllegalArgumentException("Can't check compatibility of splits of different types.");
+        }
+
+        SpectreSplit o = (SpectreSplit)other;
+
+        if (this.getNbTaxa() != o.getNbTaxa()) {
+            throw new IllegalArgumentException("Comparing splits that have different numbers of taxa!");
+        }
+
+        SplitBlock thisASide = this.getASide();
+        SplitBlock thisBSide = this.getBSide();
+        SplitBlock otherASide = o.getASide();
+        SplitBlock otherBSide = o.getBSide();
+
+        if (!thisASide.containsAny(otherASide)) {
+            return Compatible.YES_11;
+        } else if (!thisASide.containsAny(otherBSide)) {
+            return Compatible.YES_10;
+        } else if (!thisBSide.containsAny(otherASide)) {
+            return Compatible.YES_01;
+        } else if (!thisBSide.containsAny(otherBSide)) {
+            return Compatible.YES_00;
+        } else {
+            return Compatible.NO;
+        }
+
+    }
+
+
     /**
      * Check to see if this split is consistent with the given ordering, hence is circular.
      *
@@ -289,6 +344,7 @@ public class SpectreSplit implements Split {
      * @param ordering The ordering of taxa to test this split against
      * @return True, if this split is circular, false if not.
      */
+    @Override
     public boolean isCircular(IdentifierList ordering) {
 
         if (ordering.size() != this.getNbTaxa()) {

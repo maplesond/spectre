@@ -19,10 +19,7 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import uk.ac.uea.cmp.spectre.core.ds.Identifier;
 import uk.ac.uea.cmp.spectre.core.ds.network.*;
-import uk.ac.uea.cmp.spectre.core.ds.split.SpectreSplitBlock;
-import uk.ac.uea.cmp.spectre.core.ds.split.Split;
-import uk.ac.uea.cmp.spectre.core.ds.split.SplitBlock;
-import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
+import uk.ac.uea.cmp.spectre.core.ds.split.*;
 import uk.ac.uea.cmp.spectre.core.util.CollectionUtils;
 
 import java.util.*;
@@ -391,11 +388,11 @@ public class PermutationSequenceDraw {
         Vertex net = drawSplitSystem(-1.0);
         SpectreNetwork network = new SpectreNetwork(net);
         net = net.optimiseLayout(this, network);
-        /*CompatibleCorrector compatibleCorrectorPrecise = new CompatibleCorrector(new AngleCalculatorMaximalArea());
+        CompatibleCorrector compatibleCorrectorPrecise = new CompatibleCorrector(new AngleCalculatorMaximalArea());
         compatibleCorrectorPrecise.addInnerTrivial(net, this, network);
         if (!network.veryLongTrivial()) {
             compatibleCorrectorPrecise.moveTrivial(net, 5, network);
-        }*/
+        }
         for(Vertex v : network.getLabeledVertices()) {
             v.setSize(3);
             v.setShape(null);
@@ -457,57 +454,25 @@ public class PermutationSequenceDraw {
 
 
     public void restoreTrivialWeightsForExternalVertices() {
-        SplitSystemDraw ss = new SplitSystemDraw(this);
-        double min = -1;
-        for (int i = 0; i < trivial.length; i++) {
-            if (trivial[i] != 0 && (min == -1 || min > trivial[i])) {
-                min = trivial[i];
-            }
-        }
-        for (int i = 0; i < nswaps; i++) {
-            Integer taxaNr = isTrivial(ss.splits[i]);
-            if (taxaNr != null && trivial[taxaNr] > 0) {
-                if (!active[i]) {
-                    active[i] = true;
-                    nActive++;
-                }
-                weights[i] = trivial[taxaNr];
-                trivial[taxaNr] = 0;
-            }
-        }
-    }
-
-    private Integer isTrivial(int[] i) {
-        int ones = 0;
-        int zeros = 0;
-        for (int j = 0; j < i.length; j++) {
-            if (i[j] == 0) {
-                zeros++;
-            } else if (i[j] == 1) {
-                ones++;
-            } else {
-                return null;
-            }
-        }
-        Integer indicator = null;
-        if (ones == 1) {
-            indicator = 1;
-        } else if (zeros == 1) {
-            indicator = 0;
-        }
-        if (indicator != null) {
-            for (int j = 0; j < i.length; j++) {
-                if (i[j] == indicator) {
-                    return j;
+        SplitSystem ss = new SpectreSplitSystem(this);
+        for (int i = 0; i < ss.getNbSplits(); i++) {
+            if (ss.get(i).isTrivial()) {
+                int taxaNr = ss.get(i).getTrivial();
+                if (trivial[taxaNr] > 0) {
+                    if (!active[i]) {
+                        active[i] = true;
+                        nActive++;
+                    }
+                    weights[i] = trivial[taxaNr];
+                    trivial[taxaNr] = 0;
                 }
             }
         }
-        return null;
     }
 
     public void removeSplitsSmallerOrEqualThan(double thr) {
         for (int i = 0; i < weights.length; i++) {
-            if (weights[i] <= 0) {
+            if (weights[i] <= thr) {
                 active[i] = false;
             }
         }
@@ -705,7 +670,8 @@ public class PermutationSequenceDraw {
     public Vertex removeCompatibleBoxes(Vertex v, boolean check, TreeSet<Edge>[] splitedges) {
 
         //get the split system from the permutation sequence
-        SplitSystemDraw ssyst = new SplitSystemDraw(this);
+        //SplitSystemDraw ssyst = new SplitSystemDraw(this);
+        SplitSystem ssyst = new SpectreSplitSystem(this);
 
         //count incompatible pairs
         int count = 0;
@@ -713,23 +679,16 @@ public class PermutationSequenceDraw {
         //vertex in the split network
         Vertex u = v;
 
-        //code for compatibility pattern
-        SplitSystemDraw.Compatible pattern = null;
-
         //check all pairs of active splits
         for (int i = 0; i < (this.getNswaps() - 1); i++) {
             if (this.getActive()[i]) {
 
                 for (int j = i + 1; j < this.getNswaps(); j++) {
                     if (this.getActive()[j]) {
-                        pattern = ssyst.isCompatible(i, j);
+                        Split.Compatible pattern = ssyst.getCompatible(i, j);
                         if (pattern.isCompatible()) {
-                            //rounds++;
                             u = this.removeBox(u, i, j, pattern, splitedges);
-                            if (u != null) {
-                                //s = filename + rounds + ".nex";
-                                //write_splits_graph_to_file(u,s,psequ.ntaxa,psequ.taxaname,psequ);
-                            } else {
+                            if (u == null) {
                                 throw new NullPointerException("Vertex u is null - stop here");
                             }
                         } else {
@@ -767,7 +726,7 @@ public class PermutationSequenceDraw {
      * @param splitedges Edges in the split network
      * @return Network with box removed if found, otherwise the same network that was passed in.
      */
-    private Vertex removeBox(Vertex net, int a, int b, SplitSystemDraw.Compatible pattern, TreeSet<Edge>[] splitedges) {
+    private Vertex removeBox(Vertex net, int a, int b, Split.Compatible pattern, TreeSet<Edge>[] splitedges) {
 
         //check if a and b form a box in the network
         NetworkBox netbox = NetworkBox.formBox(a, b, splitedges);
@@ -797,7 +756,7 @@ public class PermutationSequenceDraw {
      * @param splitedges Eplit edges
      * @return Network with box removed
      */
-    private Vertex removeBoxByFlipping(int a, int b, SplitSystemDraw.Compatible pattern, NetworkBox netbox, TreeSet[] splitedges) {
+    private Vertex removeBoxByFlipping(int a, int b, Split.Compatible pattern, NetworkBox netbox, TreeSet[] splitedges) {
         Vertex u = null;
 
 
@@ -810,44 +769,44 @@ public class PermutationSequenceDraw {
 
         //determine direction in which we collect edges
         if (netbox.getF1().getTimestp() < netbox.getF2().getTimestp()) {
-            if (pattern == SplitSystemDraw.Compatible.YES_11) {
+            if (pattern == Split.Compatible.YES_11) {
                 dira = Direction.LEFT;
                 dirb = Direction.RIGHT;
                 parta = 1;
                 partb = 1;
-            } else if (pattern == SplitSystemDraw.Compatible.YES_10) {
+            } else if (pattern == Split.Compatible.YES_10) {
                 dira = Direction.RIGHT;
                 dirb = Direction.RIGHT;
                 parta = 1;
                 partb = 0;
-            } else if (pattern == SplitSystemDraw.Compatible.YES_01) {
+            } else if (pattern == Split.Compatible.YES_01) {
                 dira = Direction.LEFT;
                 dirb = Direction.LEFT;
                 parta = 0;
                 partb = 1;
-            } else if (pattern == SplitSystemDraw.Compatible.YES_00) {
+            } else if (pattern == Split.Compatible.YES_00) {
                 dira = Direction.RIGHT;
                 dirb = Direction.LEFT;
                 parta = 0;
                 partb = 0;
             }
         } else {
-            if (pattern == SplitSystemDraw.Compatible.YES_11) {
+            if (pattern == Split.Compatible.YES_11) {
                 dira = Direction.RIGHT;
                 dirb = Direction.LEFT;
                 parta = 1;
                 partb = 1;
-            } else if (pattern == SplitSystemDraw.Compatible.YES_10) {
+            } else if (pattern == Split.Compatible.YES_10) {
                 dira = Direction.LEFT;
                 dirb = Direction.LEFT;
                 parta = 1;
                 partb = 0;
-            } else if (pattern == SplitSystemDraw.Compatible.YES_01) {
+            } else if (pattern == Split.Compatible.YES_01) {
                 dira = Direction.RIGHT;
                 dirb = Direction.RIGHT;
                 parta = 0;
                 partb = 1;
-            } else if (pattern == SplitSystemDraw.Compatible.YES_00) {
+            } else if (pattern == Split.Compatible.YES_00) {
                 dira = Direction.LEFT;
                 dirb = Direction.RIGHT;
                 parta = 0;

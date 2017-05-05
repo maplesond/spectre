@@ -170,8 +170,13 @@ public class SpectreSplitBlock extends ArrayList<Integer> implements SplitBlock 
 
     @Override
     public SplitBlock makeComplement(int nbTaxa) {
+        return this.makeComplement(nbTaxa, false);
+    }
+
+    @Override
+    public SplitBlock makeComplement(int nbTaxa, boolean zerobased) {
         ArrayList<Integer> complement = new ArrayList<>();
-        for (int i = 1; i <= nbTaxa; i++) {
+        for (int i = zerobased ? 0 : 1; i < (zerobased ? nbTaxa : nbTaxa + 1); i++) {
             if (this.contains(i) == false) {
                 complement.add(i);
             }

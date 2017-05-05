@@ -228,32 +228,6 @@ public class CompatibleCorrector {
         return new Vertex(x, y);
     }
 
-    private Set<Vertex> getVerticesFromEdges(LinkedList<Edge> edges) {
-        Set<Vertex> vertices = new HashSet<>();
-        for (int i = 0; i < edges.size(); i++) {
-            vertices.add(edges.get(i).getBottom());
-            vertices.add(edges.get(i).getTop());
-        }
-        return vertices;
-    }
-
-    public void correctAllCompatible(TreeSet[] splitedges, LinkedList<Vertex> vertices) {
-        for (int i = 0; i < splitedges.length; i++) {
-            if (splitedges[i].size() == 1) {
-                Edge e = (Edge) splitedges[i].first();
-                EdgeList edges = new EdgeList();
-                edges.add(e);
-                double moved = 0.0;
-                if (e.getTop().getEdgeList().size() == 1 || e.getBottom().getEdgeList().size() == 1) {
-                    moved = correctAnglesForTrivial(edges, vertices);
-                }
-                if (moved == 0) {
-                    correctAngles(edges, vertices);
-                }
-            }
-        }
-    }
-
     public boolean pointInsideNetwork(Vertex c, List<Edge> external) {
         return castRay(c, external) % 2 != 0;
     }
@@ -279,9 +253,6 @@ public class CompatibleCorrector {
         VertexList vertices = new VertexList();
 
         Vertex centerPoint = computeCenterPoint(V);
-
-        Set<double[]> po = new HashSet<>();
-        Set<double[]> li = new HashSet<>();
 
         List<Edge> trivial = network.getTrivialEdges();
 
@@ -661,23 +632,6 @@ public class CompatibleCorrector {
                         moved = moved2;
                     }
                 }
-//                if(!moved)
-//                {
-//                    bestAngle = 0.2;
-//                    moved = tryAngle(v, w, e, tmp, topEdges, bottomEdges, bestAngle, DrawFlat.collect_vertices(V));
-//                    if (moved && (corrected == null || corrected < bestAngle))
-//                    {
-//                        corrected = bestAngle;
-//                    }
-//                    bestAngle = Math.PI * 2 - 0.2;
-//                    boolean moved2 = tryAngle(w, v, e, tmp, bottomEdges, topEdges, bestAngle, DrawFlat.collect_vertices(V));
-//                    if (moved2 && (corrected == null || corrected < bestAngle))
-//                    {
-//                        corrected = bestAngle;
-//                        moved = moved2;
-//                    }
-//                }
-
             }
 
         }

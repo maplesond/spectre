@@ -15,8 +15,10 @@
 
 package uk.ac.uea.cmp.spectre.core.ds.split;
 
+import org.apache.commons.lang3.ArrayUtils;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
+import uk.ac.uea.cmp.spectre.core.ds.network.draw.PermutationSequenceDraw;
 import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.CircularNNLS;
 
 import java.util.ArrayList;
@@ -135,6 +137,29 @@ public class SpectreSplitSystem extends ArrayList<Split> implements SplitSystem 
 
         // Reweight the split system using the provided tree weights
         this.reweight(treeWeights);
+    }
+
+    public SpectreSplitSystem(PermutationSequenceDraw p_sequ) {
+        int ntaxa = p_sequ.getNtaxa();
+        int nsplits = p_sequ.getNswaps();
+        int[] cur_sequ = ArrayUtils.clone(p_sequ.getInitSequ());
+
+        //Write splits into 0/1-array.
+        int[] swaps = p_sequ.getSwaps();
+        for (int i = 0; i < nsplits; i++) {
+            //compute current permutation
+            int h = cur_sequ[swaps[i]];
+            cur_sequ[swaps[i]] = cur_sequ[swaps[i] + 1];
+            cur_sequ[swaps[i] + 1] = h;
+            //turn it into a 0/1 sequence
+            List<Integer> aside = new ArrayList<>();
+            for (int j = 0; j < ntaxa; j++) {
+                if (j <= swaps[i]) {
+                    aside.add(cur_sequ[j]);
+                }
+            }
+            this.add(new SpectreSplit(new SpectreSplitBlock(aside), ntaxa, true));
+        }
     }
 
     @Override
@@ -310,7 +335,7 @@ public class SpectreSplitSystem extends ArrayList<Split> implements SplitSystem 
         double mw = SplitUtils.meanOfWeights(filteredSplits);
 
         for (int i = 0; i < N; i++) {
-            filteredSplits.add(new SpectreSplit(new SpectreSplitBlock(new int[]{i + 1}), this.getNbTaxa(), mw));
+            filteredSplits.add(new SpectreSplit(new SpectreSplitBlock(new int[]{i + 1}), this.getNbTaxa(), mw, false));
         }
 
         // Overwrites the current set of splits with the filtered splits
@@ -354,6 +379,20 @@ public class SpectreSplitSystem extends ArrayList<Split> implements SplitSystem 
         }
 
         return true;
+    }
+
+    /**
+     * Whether or not the two specified splits in the system are compatible     *
+     * @return True if these are compatible splits, false otherwise
+     */
+    @Override
+    public boolean isCompatible(final int i, final int j) {
+        return this.get(i).isCompatible(this.get(j));
+    }
+
+    @Override
+    public Split.Compatible getCompatible(int i, int j) {
+        return this.get(i).getCompatible(this.get(j));
     }
 
     @Override
@@ -400,7 +439,7 @@ public class SpectreSplitSystem extends ArrayList<Split> implements SplitSystem 
                         sb.add(this.getOrderedTaxa().get(k).getId());
                     }
 
-                    this.add(new SpectreSplit(new SpectreSplitBlock(sb), n, treeWeights.getAt(j, i)));
+                    this.add(new SpectreSplit(new SpectreSplitBlock(sb), n, treeWeights.getAt(j, i), false));
                 }
             }
         }

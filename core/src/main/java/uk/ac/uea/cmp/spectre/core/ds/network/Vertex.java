@@ -18,6 +18,8 @@ package uk.ac.uea.cmp.spectre.core.ds.network;
 
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.network.draw.*;
+import uk.ac.uea.cmp.spectre.core.ds.split.SpectreSplitSystem;
+import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 
 import java.awt.*;
 import java.util.LinkedList;
@@ -425,12 +427,12 @@ public class Vertex {
      */
     public static double getClockwiseAngle(Vertex v1, Vertex a, Vertex v2) {
 
-        double v1X = v1.getX();
-        double v1Y = v1.getY();
-        double v2X = v2.getX();
-        double v2Y = v2.getY();
-        double aX = a.getX();
-        double aY = a.getY();
+        final double v1X = v1.getX();
+        final double v1Y = v1.getY();
+        final double v2X = v2.getX();
+        final double v2Y = v2.getY();
+        final double aX = a.getX();
+        final double aY = a.getY();
 
         double angle;
         if (v1X == v2X && v1Y == v2Y) {
@@ -451,7 +453,7 @@ public class Vertex {
     public Vertex optimiseLayout(PermutationSequenceDraw ps, Network network) {
 
         // Compute split system
-        SplitSystemDraw ss = new SplitSystemDraw(ps);
+        SplitSystem ss = new SpectreSplitSystem(ps);
 
         // Collect all vertices in the network
         LinkedList<Vertex> vertices = this.collectVertices();
@@ -461,17 +463,17 @@ public class Vertex {
         //Initialize array to keep edges involved in each split
         TreeSet[] splitedges = ps.collectEdgesForTheSplits(this);
 
-        AngleCalculator angleCalculatorSimple = new AngleCalculatorSimple();
+        //AngleCalculator angleCalculatorSimple = new AngleCalculatorSimple();
         AngleCalculator angleCalculatorPrecise = new AngleCalculatorMaximalArea();
 
         //Two types of box openers are used. Simple one tries to open boxes by
         //no more than certain constant angle, whereas precise one uses angle
         //which maximises certain function.
-        BoxOpener boxOpenerSimple = new BoxOpener(angleCalculatorSimple, ss);
+        //BoxOpener boxOpenerSimple = new BoxOpener(angleCalculatorSimple, ss);
         BoxOpener boxOpenerPrecise = new BoxOpener(angleCalculatorPrecise, ss);
 
         //CompatibleCorrectors are used to change angles for compatible splits.
-        CompatibleCorrector compatibleCorrectorSimple = new CompatibleCorrector(angleCalculatorSimple);
+        //CompatibleCorrector compatibleCorrectorSimple = new CompatibleCorrector(angleCalculatorSimple);
         CompatibleCorrector compatibleCorrectorPrecise = new CompatibleCorrector(angleCalculatorPrecise);
 
         //First step of the layout optimisation consists of a few iterations of

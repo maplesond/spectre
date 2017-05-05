@@ -117,19 +117,34 @@ public interface SplitSystem extends List<Split> {
     // **** Interrogation methods that try to detect split system properties ****
 
     /**
-     * Whether or not this split system is a circular split system
-     *
+     * Whether or not this split system is a circular split system     *
      * @return True if this is a circular split system, false otherwise.
      */
     boolean isCircular();
 
 
     /**
-     * Whether or not this split system is a compatible split system
-     *
+     * Whether or not this split system is a compatible split system.
+     * If this is true, then this split system can be represented as a tree.     *
      * @return True if this is a compatible split system, false otherwise
      */
     boolean isCompatible();
+
+    /**
+     * Whether or not the two specified splits in the system are compatible     *
+     * @param i Split i
+     * @param j Split j
+     * @return True if these are compatible splits, false otherwise
+     */
+    boolean isCompatible(final int i, final int j);
+
+    /**
+     * Returns the compatibility pattern of split i and split j
+     * @param i Split i
+     * @param j Split j
+     * @return The compatibility pattern
+     */
+    Split.Compatible getCompatible(final int i, final int j);
 
     boolean[][] getAs2DBooleanArray();
     double[] getWeightsAsArray();

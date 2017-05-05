@@ -21,6 +21,7 @@ import uk.ac.uea.cmp.spectre.core.ds.network.Edge;
 import uk.ac.uea.cmp.spectre.core.ds.network.EdgeList;
 import uk.ac.uea.cmp.spectre.core.ds.network.Network;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
+import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -35,13 +36,13 @@ public class BoxOpener {
     private static Logger log = LoggerFactory.getLogger(BoxOpener.class);
 
     private AngleCalculator angleCalculator;
-    private SplitSystemDraw splitSystemDraw;
+    private SplitSystem splitSystem;
     private int nr = 0;
 
-    public BoxOpener(AngleCalculator ac, SplitSystemDraw ssd) {
+    public BoxOpener(AngleCalculator ac, SplitSystem ss) {
         this.nr = 0;
         this.angleCalculator = ac;
-        this.splitSystemDraw = ssd;
+        this.splitSystem = ss;
     }
 
     public double openIncompatible(int[] activeSplits,
@@ -221,7 +222,7 @@ public class BoxOpener {
         for (int i2 = 0; i2 < activeSplits.length; i2++) {
             int Si = activeSplits[i2];
 
-            if (splitSystemDraw.isCompatible(S, Si) == SplitSystemDraw.Compatible.NO) {
+            if (!splitSystem.isCompatible(S, Si)) {
                 NetworkBox bi = NetworkBox.formBox(S, Si, splitedges);
                 if (bi != null) {
                     boxes.add(bi);
