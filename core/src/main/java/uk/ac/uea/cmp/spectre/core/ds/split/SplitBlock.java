@@ -24,7 +24,7 @@ import java.util.List;
  */
 public interface SplitBlock extends List<Integer>, Comparable<SplitBlock> {
 
-    public enum EdgeType {
+    enum EdgeType {
         EXTERNAL,
         INTERNAL
     }

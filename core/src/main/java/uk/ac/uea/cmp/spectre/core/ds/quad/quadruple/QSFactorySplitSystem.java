@@ -18,6 +18,7 @@ package uk.ac.uea.cmp.spectre.core.ds.quad.quadruple;
 import org.apache.commons.math3.util.CombinatoricsUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.flat.FlatSplitSystem;
 
 /**
@@ -33,7 +34,7 @@ public class QSFactorySplitSystem implements QSFactory {
      * {@linkplain uk.ac.uea.cmp.spectre.core.ds.split.flat.FlatSplitSystem} to be used for the estimation of
      * {@link QuadrupleSystem}.
      */
-    private FlatSplitSystem ss;
+    private SplitSystem ss;
 
     /**
      * {@linkplain boolean} splits matrix that indicates which taxa are
@@ -50,10 +51,10 @@ public class QSFactorySplitSystem implements QSFactory {
      * Constructs {@linkplain QSFactoryLocation} object that will use
      * {@linkplain  uk.ac.uea.cmp.spectre.core.ds.split.flat.FlatSplitSystem} to compute new {@link QuadrupleSystem}.
      *
-     * @param ss a {@linkplain uk.ac.uea.cmp.spectre.core.ds.split.flat.FlatSplitSystem} object to be used for the estimation of
+     * @param ss a {@linkplain uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem} object to be used for the estimation of
      *           {@link QuadrupleSystem}.
      */
-    public QSFactorySplitSystem(FlatSplitSystem ss) {
+    public QSFactorySplitSystem(SplitSystem ss) {
         this.ss = ss;
     }
 
@@ -64,9 +65,9 @@ public class QSFactorySplitSystem implements QSFactory {
 
         @Override
     public QuadrupleSystem computeQS(boolean notify) {
-        int nTaxa = ss.getnTaxa();
-        splits = ss.getSplits();
-        weights = ss.getWeights();
+        int nTaxa = ss.getNbTaxa();
+        splits = ss.getAs2DBooleanArray();
+        weights = ss.getWeightsAsArray();
 
         if (notify) {
             log.info("Expecting " + CombinatoricsUtils.binomialCoefficient(nTaxa, 4) + " quadruples.");

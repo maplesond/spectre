@@ -26,6 +26,7 @@ import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.network.Network;
 import uk.ac.uea.cmp.spectre.core.ds.network.draw.PermutationSequenceDraw;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.*;
+import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.flat.FlatSplitSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.flat.FlatSplitSystemFinal;
 import uk.ac.uea.cmp.spectre.core.ds.split.flat.PermutationSequence;
@@ -34,8 +35,6 @@ import uk.ac.uea.cmp.spectre.core.io.fasta.FastaReader;
 import uk.ac.uea.cmp.spectre.core.io.nexus.Nexus;
 import uk.ac.uea.cmp.spectre.core.ui.gui.RunnableTool;
 import uk.ac.uea.cmp.spectre.core.ui.gui.StatusTrackerWithView;
-import uk.ac.uea.cmp.spectre.flatnj.tools.NexusReader;
-import uk.ac.uea.cmp.spectre.flatnj.tools.NexusReaderSplits;
 import uk.ac.uea.cmp.spectre.flatnj.tools.Writer;
 
 import java.io.File;
@@ -114,7 +113,7 @@ public class FlatNJ extends RunnableTool {
             Sequences sequences = null;
             DistanceMatrix distanceMatrix = null;
             Locations locations = null;
-            FlatSplitSystem ss = null;
+            SplitSystem ss = null;
             QuadrupleSystem qs = null;
 
             if (extension.equalsIgnoreCase("fa") || extension.equalsIgnoreCase("faa") || extension.equalsIgnoreCase("fas") || extension.equalsIgnoreCase("fasta")) {
@@ -149,9 +148,9 @@ public class FlatNJ extends RunnableTool {
                         }
                         else {
                             // Next check for split system
-                            ss = readSplitSystem(inFile);
+                            ss = nexus.getSplitSystem();
                             if (ss != null) {
-                                log.info("Detected and loaded Split System Block containing " + ss.getnSplits() + " splits over " + ss.getnTaxa() + " taxa");
+                                log.info("Detected and loaded Split System Block containing " + ss.getNbSplits() + " splits over " + ss.getNbTaxa() + " taxa");
                             } else {
                                 // Next look for MSA
                                 if (nexus.getAlignments() != null) {
@@ -177,7 +176,7 @@ public class FlatNJ extends RunnableTool {
                         locations = nexus.getLocations();
                         loaded = true;
                     } else if (blockLowerCase.contentEquals("splits")) {
-                        ss = readSplitSystem(inFile);
+                        ss = nexus.getSplitSystem();
                         loaded = true;
                     } else if (blockLowerCase.contentEquals("quadruples")) {
                         qs = nexus.getQuadruples();
@@ -262,8 +261,8 @@ public class FlatNJ extends RunnableTool {
 
             notifyUser("Finalising splits system");
             ps.setTaxaNames(taxa.getNames());
-            ss = new FlatSplitSystemFinal(ps);
-            log.info("Split system contains " + ss.getnSplits() + " splits");
+            FlatSplitSystem fss = new FlatSplitSystemFinal(ps);
+            log.info("Split system contains " + fss.getnSplits() + " splits");
             //ss.setActive(ps.getActive());  // Do we want to reset this from active (extra trivial splits would have been added in the constructor)
 
             if (options.isSaveStages()) {
@@ -272,7 +271,7 @@ public class FlatNJ extends RunnableTool {
                 Writer writer = new Writer();
                 writer.open(ssFile.getAbsolutePath());
                 writer.write(taxa);
-                writer.write(ss);
+                writer.write(fss);
                 writer.close();
             }
 
@@ -289,7 +288,7 @@ public class FlatNJ extends RunnableTool {
             Writer writer = new Writer();
             writer.open(outFile.getAbsolutePath());
             writer.write(taxa);
-            writer.write(ss);
+            writer.write(fss);
             writer.write(network, taxa); // Do we need to do this here?
             writer.close();
 
@@ -307,17 +306,6 @@ public class FlatNJ extends RunnableTool {
         } finally {
             this.notifyListener();
         }
-    }
-
-    /**
-     * Reads SPLITS block and prints progress messages
-     *
-     * @param inFile input file
-     */
-    protected FlatSplitSystem readSplitSystem(File inFile) {
-        log.debug("Reading splits");
-        NexusReader reader = new NexusReaderSplits();
-        return (FlatSplitSystem) reader.readBlock(inFile.getAbsolutePath());
     }
 
 }

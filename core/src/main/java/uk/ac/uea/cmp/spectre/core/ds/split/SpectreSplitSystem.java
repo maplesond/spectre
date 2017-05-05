@@ -356,6 +356,28 @@ public class SpectreSplitSystem extends ArrayList<Split> implements SplitSystem 
         return true;
     }
 
+    @Override
+    public boolean[][] getAs2DBooleanArray() {
+        boolean[][] splits = new boolean[this.size()][this.getNbTaxa()];
+        for (int i = 0; i < this.size(); i++) {
+            for (int j = 0; j < this.getNbTaxa(); j++) {
+                int id = this.orderedTaxa.get(j).getId();
+                splits[i][j] = this.get(i).getASide().contains(id);
+            }
+        }
+        return splits;
+    }
+
+    @Override
+    public double[] getWeightsAsArray() {
+
+        double[] weights = new double[this.size()];
+        for(int i = 0; i < this.size(); i++) {
+            weights[i] = this.get(i).getWeight();
+        }
+        return weights;
+    }
+
 
     /**
      * Deletes all splits and recalculates them.  All splits must have a positive length

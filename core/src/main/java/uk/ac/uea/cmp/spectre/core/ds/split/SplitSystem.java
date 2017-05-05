@@ -130,4 +130,7 @@ public interface SplitSystem extends List<Split> {
      * @return True if this is a compatible split system, false otherwise
      */
     boolean isCompatible();
+
+    boolean[][] getAs2DBooleanArray();
+    double[] getWeightsAsArray();
 }
