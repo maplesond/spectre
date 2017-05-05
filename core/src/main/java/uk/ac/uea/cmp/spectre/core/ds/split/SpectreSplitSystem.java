@@ -137,6 +137,26 @@ public class SpectreSplitSystem extends ArrayList<Split> implements SplitSystem 
         this.reweight(treeWeights);
     }
 
+    @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof SplitSystem)) {
+            return false;
+        }
+
+        SplitSystem that = (SplitSystem) other;
+
+        if (this == that) {
+            return true;
+        }
+
+        for (Split s : this) {
+            if (!that.contains(s)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 
     @Override
     public int getNbTaxa() {
@@ -146,6 +166,22 @@ public class SpectreSplitSystem extends ArrayList<Split> implements SplitSystem 
     @Override
     public int getNbSplits() {
         return this.size();
+    }
+
+    @Override
+    public int getNbTrivialSplits() {
+        int count = 0;
+        for(Split s : this) {
+            if (s.isTrivial()) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    @Override
+    public int getNbNonTrivialSplits() {
+        return this.getNbSplits() - this.getNbTrivialSplits();
     }
 
     public void setCircularOrdering(IdentifierList orderedTaxa) {
@@ -183,20 +219,6 @@ public class SpectreSplitSystem extends ArrayList<Split> implements SplitSystem 
         return false;
     }
 
-
-    /*@Override
-    public boolean contains(SplitBlock sb) {
-
-        SplitBlock ssb = sb.makeSortedCopy();
-
-        for(Split s : this.getSplits()) {
-            if (s.equals(ssb) || s.getBSide().makeSortedCopy().equals(ssb)) {
-                return true;
-            }
-        }
-
-        return false;
-    }     */
 
     /**
      * Appends a split at a specified position in this split system

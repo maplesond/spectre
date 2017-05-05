@@ -126,7 +126,7 @@ public interface Split extends Comparable<Split> {
      * Returns true if one side of this split contains only a single taxon.
      * @return True if one side of this split contains only a single taxon, otherwise false.
      */
-    boolean onExternalEdge();
+    boolean isTrivial();
 
     /**
      * Check to see if this split is compatible with another split.  This returns true (compatible) if one of the four

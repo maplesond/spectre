@@ -58,7 +58,6 @@ public class FlatSplitSystemFinal extends FlatSplitSystem {
         System.arraycopy(minTrivial, 0, trivialTmp, 0, nTaxa);
 
         this.weights = new double[weights.length];
-        trivialWeights = new double[nTaxa];
         for (int i = 0; i < weights.length; i++) {
             if (isTrivial(splits[i]) && minTrivial != null) {
                 this.weights[i] = minTrivial[trivialTaxa(splits[i])];

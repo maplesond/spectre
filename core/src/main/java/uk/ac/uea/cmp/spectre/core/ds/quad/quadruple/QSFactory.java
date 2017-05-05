@@ -15,8 +15,6 @@
 
 package uk.ac.uea.cmp.spectre.core.ds.quad.quadruple;
 
-import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleSystem;
-
 /**
  * Interface for {@link QuadrupleSystem} factory.
  *

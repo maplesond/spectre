@@ -44,6 +44,9 @@ public interface SplitSystem extends List<Split> {
      */
     int getNbSplits();
 
+    int getNbTrivialSplits();
+    int getNbNonTrivialSplits();
+
     /**
      * Gets the actual taxa object stored in this split system
      *

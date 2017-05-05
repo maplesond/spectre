@@ -242,7 +242,7 @@ public class SpectreSplit implements Split {
         return p;
     }
 
-    public boolean onExternalEdge() {
+    public boolean isTrivial() {
         return this.aSide.size() == 1 || this.bSide.size() == 1;
     }
 

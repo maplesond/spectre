@@ -420,7 +420,7 @@ public class GreedyMEWeighting extends Weighting {
 
             EdgeHandling.AdjacentEdges aEdgeAdjacents = new EdgeHandling().retrieveAdjacents(split, splits, splitDistanceMap);
 
-            double weight = calculateEdges(splitDistanceMap.get(split), aEdgeAdjacents, split.onExternalEdge());
+            double weight = calculateEdges(splitDistanceMap.get(split), aEdgeAdjacents, split.isTrivial());
 
             edgeWeights.add(weight);
         }
