@@ -122,6 +122,7 @@ public class Sequences {
 
         public boolean labels;
         public boolean interleaved;
+        public boolean transposed;
         public String triangle;
         public boolean diagonal;
         public boolean activeFlags;
@@ -134,6 +135,7 @@ public class Sequences {
         public Format() {
             labels = true;
             interleaved = true;
+            transposed = false;
             triangle = "both";
             diagonal = false;
             activeFlags = true;

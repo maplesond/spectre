@@ -1481,7 +1481,7 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitBlock_characters(NexusFileParser.Block_charactersContext ctx) {
-        this.nexus.setAlignments(this.charBuilder.createAlignments(this.nexus.getTaxa()));
+        this.nexus.setAlignments(this.charBuilder.createAlignments());
     }
 
     @Override
@@ -1501,7 +1501,33 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitChar_dimensions(NexusFileParser.Char_dimensionsContext ctx) {
-        this.charBuilder.setExpectedNbChars(Integer.parseInt(ctx.cd_nchar().integer().getText()));
+
+
+    }
+
+    @Override
+    public void enterChar_dim_options(NexusFileParser.Char_dim_optionsContext ctx) {
+
+    }
+
+    @Override
+    public void exitChar_dim_options(NexusFileParser.Char_dim_optionsContext ctx) {
+
+    }
+
+    @Override
+    public void enterChar_dim_option(NexusFileParser.Char_dim_optionContext ctx) {
+
+    }
+
+    @Override
+    public void exitChar_dim_option(NexusFileParser.Char_dim_optionContext ctx) {
+        if (ctx.ntax() != null) {
+            this.charBuilder.setExpectedNbSeqs(Integer.parseInt(ctx.ntax().integer().getText()));
+        }
+        if (ctx.cd_nchar() != null) {
+            this.charBuilder.setExpectedNbChars(Integer.parseInt(ctx.cd_nchar().integer().getText()));
+        }
     }
 
     @Override
@@ -1604,7 +1630,8 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitCf_labels(NexusFileParser.Cf_labelsContext ctx) {
-        this.charBuilder.getFormat().labels = Boolean.getBoolean(ctx.boolean_option().getText());
+        boolean labels = ctx.boolean_option() != null ? Boolean.getBoolean(ctx.boolean_option().getText()) : true;
+        this.charBuilder.getFormat().labels = labels;
     }
 
     @Override
@@ -1614,7 +1641,8 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitCf_transpose(NexusFileParser.Cf_transposeContext ctx) {
-        //this.charBuilder.getFormat().
+        boolean transpose = ctx.boolean_option() != null ? Boolean.getBoolean(ctx.boolean_option().getText()) : true;
+        this.charBuilder.getFormat().transposed = transpose;
     }
 
     @Override
@@ -1624,7 +1652,8 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitCf_interleave(NexusFileParser.Cf_interleaveContext ctx) {
-        this.charBuilder.getFormat().interleaved = Boolean.getBoolean(ctx.boolean_option().getText());
+        boolean interleave = ctx.boolean_option() != null ? Boolean.getBoolean(ctx.boolean_option().getText()) : true;
+        this.charBuilder.getFormat().interleaved = interleave;
     }
 
     @Override

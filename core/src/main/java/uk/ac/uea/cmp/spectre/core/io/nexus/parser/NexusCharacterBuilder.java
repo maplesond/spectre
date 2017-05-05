@@ -20,10 +20,7 @@ import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.Sequences;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -37,60 +34,74 @@ public class NexusCharacterBuilder {
     private static Logger log = LoggerFactory.getLogger(NexusCharacterBuilder.class);
 
     private int expectedNbChars;
+    private int expectedNbSeqs;
     private Sequences.Format format;
     private List<String> seqs;
 
-
     public NexusCharacterBuilder() {
         this.expectedNbChars = 0;
-        this.seqs = new ArrayList<>();
+        this.expectedNbSeqs = 0;
+        this.seqs = new ArrayList<String>();
         this.format = new Sequences.Format();
     }
 
 
-    public Sequences createAlignments(IdentifierList taxa) {
+    public Sequences createAlignments() {
 
-        final int nbseqs = format.labels ? this.seqs.size() / 2 : this.seqs.size();
-        if (taxa.size() != nbseqs) {
-            throw new IllegalStateException("Nexus file contains " + taxa.size() + " taxa however we found " + this.seqs.size() + " sequences in the Character block.");
-        }
-
-        Map<String,String> alns = new HashMap<>();
+        Map<String,String> alns = new TreeMap<>();
         if (!format.labels) {
             for (int i = 0; i < this.seqs.size(); i++) {
-                if (seqs.get(i).length() != this.expectedNbChars) {
-                    log.warn("Sequence " + i + " has an unexpected size.  Sequence contains " + seqs.get(i).length() + " characters but Nexus Characters block specified " + this.expectedNbChars + " characters per sequence.");
-                }
-                // Check that sequence is valid according to spec provided
-                boolean valid = true;
-                for (int j = 0; j < seqs.get(i).length(); j++) {
-                    char c = seqs.get(i).charAt(j);
-                    if (this.format.symbols.indexOf(c) == -1) {
-                        if (c != this.format.missing && c != this.format.gap) {
-                            valid = false;
-                            break;
-                        }
-                    }
-                }
-                if (!valid) {
-                    log.warn("Sequence " + i + " has unexpected content.  Defined symbols are: " + this.format.symbols +
-                            "; Defined missing character is: " + this.format.missing + "; Defined gap character is: " + this.format.gap +
-                            "; Sequence is: " + this.seqs.get(i));
-                }
-                alns.put(taxa.get(i).getName(), seqs.get(i));
+                alns.put(Integer.toString(i+1), seqs.get(i));
             }
         }
         else {
             for (int i = 0; i < this.seqs.size(); i+=2) {
-                if (seqs.get(i+1).length() != this.expectedNbChars) {
-                    log.warn("Sequence " + i + " has an unexpected size.  Sequence contains " + seqs.get(i+1).length() + " characters but Nexus Characters block specified " + this.expectedNbChars + " characters per sequence.");
+                String id = seqs.get(i);
+                String seq = seqs.get(i+1);
+
+                if (alns.containsKey(id)) {
+                    alns.put(id, alns.get(id) + seq);
                 }
-                alns.put(seqs.get(i), seqs.get(i+1));
+                else {
+                    alns.put(id, seq);
+                }
             }
         }
 
         Sequences s = new Sequences(alns);
         s.setFormat(this.format);
+
+        // Validation
+        if (this.expectedNbSeqs > 0 && this.expectedNbSeqs != s.size()) {
+            throw new IllegalStateException("Nexus file contains " + s.size() + " sequences however we expected to find " + this.expectedNbSeqs + " sequences in the Character/Data block.");
+        }
+
+        int i = 0;
+        for (String seq : s.getSequences()) {
+            String label = s.getTaxaLabels()[i];
+            if (this.expectedNbChars > 0 && seq.length() != this.expectedNbChars) {
+                log.warn("Sequence " + i + "(" + label + ") has an unexpected size.  Sequence contains " + seq.length() + " characters but Nexus Characters block specified " + this.expectedNbChars + " characters per sequence.");
+            }
+
+            // Check that sequence is valid according to spec provided
+            boolean valid = true;
+            for (int j = 0; j < seq.length(); j++) {
+                char c = seq.charAt(j);
+                if (this.format.symbols.indexOf(c) == -1) {
+                    if (c != this.format.missing && c != this.format.gap) {
+                        valid = false;
+                        break;
+                    }
+                }
+            }
+            if (!valid) {
+                log.warn("Sequence " + i + "(" + label + ") has unexpected content.  Defined symbols are: " + this.format.symbols +
+                        "; Defined missing character is: " + this.format.missing + "; Defined gap character is: " + this.format.gap +
+                        "; Sequence is: " + seq);
+            }
+
+            i++;
+        }
 
         return s;
     }
@@ -105,6 +116,14 @@ public class NexusCharacterBuilder {
 
     public void setExpectedNbChars(int expectedNbChars) {
         this.expectedNbChars = expectedNbChars;
+    }
+
+    public int getExpectedNbSeqs() {
+        return expectedNbSeqs;
+    }
+
+    public void setExpectedNbSeqs(int expectedNbSeqs) {
+        this.expectedNbSeqs = expectedNbSeqs;
     }
 
     public Sequences.Format getFormat() {

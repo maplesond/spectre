@@ -122,9 +122,16 @@ block_characters :
     char_matrix
     ;
 
-characters_header : 'chracters' | 'Characters' | 'CHARACTERS';
+characters_header : 'chracters' | 'Characters' | 'CHARACTERS' | 'data' | 'Data' | 'DATA';
 
-char_dimensions : dimensions cd_nchar ';';
+char_dimensions : dimensions char_dim_options ';';
+
+char_dim_options:
+    // Empty
+    | char_dim_option char_dim_options
+    ;
+
+char_dim_option: ntax | cd_nchar;
 
 cd_nchar : ('nchar'|'NCHAR') EQUALS integer;
 
@@ -143,9 +150,9 @@ cf_datatype : ('datatype'|'DATATYPE') EQUALS identifier;
 cf_missing : ('missing'|'MISSING') EQUALS missing_option;
 cf_gap : ('gap'|'GAP') EQUALS gap_option;
 cf_symbols : ('symbols'|'SYMBOLS') EQUALS identifier;
-cf_labels : ('labels'|'LABELS') EQUALS boolean_option;
-cf_transpose : ('transpose'|'TRANSPOSE') EQUALS boolean_option;
-cf_interleave : ('interleave'|'INTERLEAVE') EQUALS boolean_option;
+cf_labels : ('labels'|'LABELS') (EQUALS boolean_option)?;
+cf_transpose : ('transpose'|'TRANSPOSE') (EQUALS boolean_option)?;
+cf_interleave : ('interleave'|'INTERLEAVE') (EQUALS boolean_option)?;
 
 missing_option : '?';
 
