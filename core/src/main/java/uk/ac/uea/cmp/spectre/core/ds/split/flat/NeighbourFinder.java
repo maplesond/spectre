@@ -30,5 +30,5 @@ public interface NeighbourFinder {
      * @param scores precomputed scores between pairs of taxa.
      * @return
      */
-    public Neighbours findNeighbours(QuadrupleSystem qs, double[][][] scores);
+    Neighbours findNeighbours(QuadrupleSystem qs, double[][][] scores);
 }

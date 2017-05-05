@@ -35,7 +35,7 @@ public interface NeighbourSeparator {
      * @param n          number of taxa
      * @return full flat split system as a permutation sequence
      */
-    public PermutationSequence popOutNeighbours(Neighbours[] neighbours,
+    PermutationSequence popOutNeighbours(Neighbours[] neighbours,
                                                 PermutationSequence ps,
                                                 QuadrupleSystem qs,
                                                 int j,

@@ -88,49 +88,6 @@ public class PermutationSequence {
         computeSplits();
     }
 
-    public PermutationSequence(int[] inInitSequ, int[] inSwaps, boolean[] inActive, double[] inWeights, double[] inTrivial) {
-        initSequ = new int[inInitSequ.length];
-        swaps = new int[inSwaps.length];
-        active = new boolean[inActive.length];
-        weights = new double[inWeights.length];
-        trivial = new double[inTrivial.length];
-
-        System.arraycopy(inInitSequ, 0, initSequ, 0, initSequ.length);
-        System.arraycopy(inSwaps, 0, swaps, 0, swaps.length);
-        System.arraycopy(inActive, 0, active, 0, active.length);
-        System.arraycopy(inWeights, 0, weights, 0, weights.length);
-
-        nSwaps = swaps.length;
-        nTaxa = inInitSequ.length;
-
-        ss = new FlatSplitSystem(this);
-
-        setTrivial(inTrivial, weights);
-
-
-        computeSplits();
-    }
-
-
-    //Constructor of this class from a given initial sequence,
-    //a sequence of swaps and a sequence of associated taxa.
-    public PermutationSequence(int[] inInitSequ, int[] inSwaps, int[] inAssocTaxa, double[] minTrivialWeights) {
-        initSequ = new int[inInitSequ.length];
-        swaps = new int[inSwaps.length];
-        assocTaxa = new int[inSwaps.length];
-        trivial = new double[minTrivialWeights.length];
-
-        System.arraycopy(inInitSequ, 0, initSequ, 0, initSequ.length);
-        System.arraycopy(inSwaps, 0, swaps, 0, swaps.length);
-        System.arraycopy(inAssocTaxa, 0, assocTaxa, 0, swaps.length);
-        setTrivial(minTrivialWeights);
-
-        nTaxa = initSequ.length;
-        nSwaps = swaps.length;
-
-        computeSplits();
-    }
-
     public int getnTaxa() {
         return nTaxa;
     }

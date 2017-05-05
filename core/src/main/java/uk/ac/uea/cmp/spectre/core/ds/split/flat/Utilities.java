@@ -24,31 +24,6 @@ import java.io.Writer;
  */
 public class Utilities {
 
-    public static void printTaxaBlock(Writer outputFile, String[] taxa) throws IOException {
-        outputFile.write("#NEXUS\n");
-        outputFile.write("BEGIN TAXA;\n");
-        outputFile.write("DIMENSIONS NTAX=" + taxa.length + ";\n");
-        outputFile.write("TAXLABELS\n");
-        for (int i = 0; i < taxa.length; i++) {
-            outputFile.write("[" + (i + 1) + "]  '" + taxa[i] + "'\n");
-        }
-        outputFile.write(";\nEND;\n\n");
-    }
-
-    public static void printFictitiousTaxaBlock(Writer outputFile, int nTaxa) throws IOException {
-        outputFile.write("#NEXUS\n");
-        outputFile.write("BEGIN TAXA;\n");
-        outputFile.write("DIMENSIONS NTAX=" + nTaxa + ";\n");
-        outputFile.write("TAXLABELS\n");
-        for (int i = 0; i < nTaxa; i++) {
-            outputFile.write("[" + (i + 1) + "]  'Taxon" + i + "'\n");
-        }
-        outputFile.write(";\nEND;\n\n");
-    }
-
-    public static int combination(int i) {
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
 
     public static int combinations(int above, int below) {
         int c = 0;
@@ -66,11 +41,6 @@ public class Utilities {
         return c;
     }
 
-
-    public static Color getColor(int[] c) {
-        return new Color(c[0], c[1], c[2]);
-    }
-
     public static int[] colorToInt(Color c) {
         int[] rgb = new int[3];
 
@@ -81,17 +51,4 @@ public class Utilities {
         return rgb;
     }
 
-    public static boolean differentSide(int x1, int y1, int x2, int y2,
-                                        int X1, int Y1, int X2, int Y2) {
-        return different(x1, y1, x1, y2, X1, Y1, X2, Y2)
-                &&
-                different(X1, Y1, X2, Y2, x1, y1, x1, y2);
-    }
-
-    private static boolean different(int x1, int y1, int x2, int y2,
-                                     int X1, int Y1, int X2, int Y2) {
-        return (Math.signum((x1 - X1) * (y2 - Y1) - (y1 - Y1) * (x2 - X1))
-                !=
-                Math.signum((x1 - X2) * (y2 - Y2) - (y1 - Y2) * (x2 - X2)));
-    }
 }

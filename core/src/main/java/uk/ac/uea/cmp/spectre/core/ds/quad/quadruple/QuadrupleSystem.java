@@ -34,14 +34,13 @@ public class QuadrupleSystem implements Cloneable {
     // Complete list of named taxa
     private IdentifierList taxa;
 
-    private int nbActiveTaxa;
-
     // The taxa that are active
     private boolean[] active;
 
-    //The active are 0,1,...,nTaxa-1.
+    // Number of active taxa
+    private int nbActiveTaxa;
 
-    //number of quadruples
+    // Number of active quadruples
     private int nQuadruples = 0;
 
     //array containing the quadruples in the system
@@ -64,7 +63,7 @@ public class QuadrupleSystem implements Cloneable {
     public QuadrupleSystem(IdentifierList originalTaxa, final int nbActiveTaxa, final boolean[] active) {
         this.nbActiveTaxa = nbActiveTaxa;
         this.taxa = originalTaxa;
-        nQuadruples = (nbActiveTaxa * (nbActiveTaxa - 1) * (nbActiveTaxa - 2) * (nbActiveTaxa - 3)) / (2 * 3 * 4);
+        nQuadruples = calculateNbQuadruples(nbActiveTaxa);
         quadruples = new Quadruple[nQuadruples];
         lastAdded = 0;
         this.active = ArrayUtils.clone(active);
@@ -81,45 +80,38 @@ public class QuadrupleSystem implements Cloneable {
         return taxa;
     }
 
+    public static int calculateNbQuadruples(int nbActiveTaxa) {
+        return (nbActiveTaxa * (nbActiveTaxa - 1) * (nbActiveTaxa - 2) * (nbActiveTaxa - 3)) / (2 * 3 * 4);
+    }
+
     public void add(Quadruple quadruple) {
         quadruples[lastAdded] = quadruple;
         quadruple.setIndex(lastAdded);
         lastAdded++;
-//        if(lastAdded == quadruples.length)
-//        {
-//            subtractMin();
-//        }
     }
 
-    //This method computes the total length of the quadruples in the system.
-    public double computeTotalWeight() {
-        double total = 0.0;
-
-        for (int i = 0; i < nQuadruples; i++) {
-            double[] weights = quadruples[i].getWeights();
-            for (int j = 0; j < 7; j++) {
-                total = total + weights[j];
-            }
-        }
-        return total;
-    }
-
-    //This method checks whether or not for given active are
-    //distinct. The assumption is that a <= b <= c <= d holds.
+    /**
+     * This method checks whether or not for given active are distinct. The assumption is that a <= b <= c <= d holds.
+     * @param a taxon id a
+     * @param b taxon id b
+     * @param c taxon id c
+     * @param d taxon id d
+     * @return True if all ids are distinct, otherwise false
+     */
     public boolean areDistinct(int a, int b, int c, int d) {
-        if (((a == b) || (b == c)) || (c == d)) {
-            return false;
-        } else {
-            return true;
-        }
+        return !(((a == b) || (b == c)) || (c == d));
     }
 
-    //This method computes the index of the quartet
-    //defined by {a,b,c,d} in the quadruples array and
-    //returns the corresponding Quartet object.
-    //The computation of this index is based on the
-    //assumption that the quartet set is 0,1,...,nTaxa-1
-    //and quadruples are stored in lexicographic order.
+    /**
+     * This method computes the index of the quartet defined by {a,b,c,d} in the quadruples array and returns the
+     * corresponding Quartet object. The computation of this index is based on the assumption that the quartet set is
+     * 0,1,...,nTaxa-1 and quadruples are stored in lexicographic order.
+     * @param a taxon id a
+     * @param b taxon id b
+     * @param c taxon id c
+     * @param d taxon id d
+     * @return Quadruple defined by taxa ids
+     */
     public Quadruple getQuadruple(int a, int b, int c, int d) {
         int i = 0;
         int nTaxa = active.length;
@@ -181,13 +173,6 @@ public class QuadrupleSystem implements Cloneable {
         return 0;
     }
 
-    //This method returns the length array of the quartet formed
-    //by the four active.
-    public double[] getWeightArray(int a, int b, int c, int d) {
-        Quadruple q = getQuadrupleUnsorted(a, b, c, d);
-        return q.getWeights();
-    }
-
     public Quadruple getQuadruple(int[] array) {
         return getQuadruple(array[0], array[1], array[2], array[3]);
     }
@@ -210,19 +195,6 @@ public class QuadrupleSystem implements Cloneable {
         return q;
     }
 
-    //makes all quadruple split length that are bigger than certain treshol
-    //equal to 1 and all that are not bigger -- 0.
-    public void unifyAll() {
-        double treshold = 0.0;
-        for (int i = 0; i < quadruples.length; i++) {
-            double[] weights = quadruples[i].getWeights();
-            for (int j = 0; j < 7; j++) {
-                weights[j] = (weights[j] > treshold) ? 1 : 0;
-            }
-            quadruples[i].setWeights(weights);
-        }
-    }
-
     public boolean[] getActive() {
         return active;
     }
@@ -233,15 +205,6 @@ public class QuadrupleSystem implements Cloneable {
 
     public int getnQuadruples() {
         return nQuadruples;
-    }
-
-    //returns i-th quadruple if all active in it are curently active
-    public Quadruple getQuadruple(int i) {
-        int[] taxaQ = quadruples[i].getTaxa().toIntArray();
-        if (active[taxaQ[0]] && active[taxaQ[1]] && active[taxaQ[2]] && active[taxaQ[3]]) {
-            return quadruples[i];
-        }
-        return null;
     }
 
     //return number of active active
@@ -275,61 +238,6 @@ public class QuadrupleSystem implements Cloneable {
         return qs;
     }
 
-    //Prints quatet information of the current qs to the file. Used to crate 
-    //input for qnet.
-    public void printQuartets(String filePath, String[] names) throws IOException {
-        Writer writer = new FileWriter(new File(filePath));
-
-        writer.write("taxanumber:  " + nbActiveTaxa + ";\n");
-        writer.write("description: generated by FNet;\n");
-        writer.write("sense: max;\n");
-
-        if (names == null) {
-            for (int i = 0; i < active.length; i++) {
-                if (active[i]) {
-                    String taxNr = getTaxaWith0(i);
-                    writer.write("taxon:   " + taxNr + "   name: taxa" + i + ";\n");
-                }
-            }
-        } else {
-            for (int i = 0; i < active.length; i++) {
-                if (active[i]) {
-                    String taxNr = getTaxaWith0(i);
-                    writer.write("taxon:   " + taxNr + "   name: " + names[i] + ";\n");
-                }
-            }
-        }
-
-        for (int i = 0; i < nQuadruples; i++) {
-            int[] t = quadruples[i].getTaxa().toIntArray();
-            if (active[t[0]] && active[t[1]] && active[t[2]] && active[t[3]]) {
-                writer.write("quartet: ");
-                for (int j = 0; j < t.length; j++) {
-                    writer.write(getTaxaWith0(t[j]) + " ");
-                }
-                writer.write("weights:");
-                double[] weights = quadruples[i].getWeights();
-                for (int j = 4; j < 7; j++) {
-                    writer.write(" " + weights[j]);
-                }
-                writer.write(";\n");
-            }
-        }
-        writer.close();
-    }
-
-    //forms active number with 0s in front ot it. Used for printing quartets.
-    private String getTaxaWith0(int i) {
-        String taxNr = Integer.toString(i + 1);
-        if (i < 9) {
-            taxNr = "00" + Integer.toString(i + 1);
-        } else if (i < 99) {
-            taxNr = "0" + Integer.toString(i + 1);
-        }
-        return taxNr;
-    }
-
-
     //subtracts minimal weights for each taxon from all quadruples
     public void subtractMin() {
         minimalTrivialWeights = getMinimalTrivialForAllTaxa();
@@ -351,10 +259,13 @@ public class QuadrupleSystem implements Cloneable {
         }
     }
 
-    //computes minimal weights that should be subtracted from quadruple split
-    //weights for each active. These weights may be bigger than 0 only for active
-    //that are included at least in one quadruple with all quadruple split
-    //weights positive (bigger than zero).
+    /**
+     * Computes minimal weights that should be subtracted from quadruple split
+     * weights for each active. These weights may be bigger than 0 only for active
+     * that are included at least in one quadruple with all quadruple split
+     * weights positive (bigger than zero).
+     * @return
+     */
     private double[] getMinimalTrivialForAllTaxa() {
         double[] min = new double[nbActiveTaxa];
         for (int i = 0; i < min.length; i++) {
@@ -377,25 +288,11 @@ public class QuadrupleSystem implements Cloneable {
                             taxaToPreprocess[i[1]] = true;
                             taxaToPreprocess[i[2]] = true;
                             taxaToPreprocess[i[3]] = true;
-//                            int minTaxa = i[0];
-//                            double minScore = w[0];
-//                            for (int j = 1; j < 4; j++)
-//                            {
-//                                if(minScore > w[j])
-//                                {
-//                                    minScore = w[j];
-//                                    minTaxa = i[j];
-//                                }
-//                            }
-//                            taxaToPreprocess[minTaxa] = true;
                         }
                     }
                 }
             }
         }
-
-        //System.err.println("Taxa to preprocess:");
-        //System.err.println(Arrays.toString(taxaToPreprocess));
 
         qn = 0;
         for (i[0] = 0; i[0] < nbActiveTaxa; i[0]++) {
@@ -420,29 +317,6 @@ public class QuadrupleSystem implements Cloneable {
             }
         }
         return min;
-    }
-
-    //adds back minimal weights that were subtracted from the qs
-    public void addMin() {
-        int qn = 0;
-        int[] i = new int[4];
-        for (i[0] = 0; i[0] < nbActiveTaxa; i[0]++) {
-            for (i[1] = i[0] + 1; i[1] < nbActiveTaxa; i[1]++) {
-                for (i[2] = i[1] + 1; i[2] < nbActiveTaxa; i[2]++) {
-                    for (i[3] = i[2] + 1; i[3] < nbActiveTaxa; i[3]++) {
-                        double[] w = quadruples[qn].getWeights();
-                        for (int j = 0; j < 4; j++) {
-                            w[j] += minimalTrivialWeights[i[j]];
-                        }
-                        quadruples[qn].setWeights(w);
-                        qn++;
-                    }
-                }
-            }
-        }
-        for (int j = 0; j < minimalTrivialWeights.length; j++) {
-            minimalTrivialWeights[j] = 0;
-        }
     }
 
     public double[] getTrivial() {
@@ -471,47 +345,8 @@ public class QuadrupleSystem implements Cloneable {
         return wwT;
     }
 
-    public void normalizeWeights() {
-        double max = 0.0;
-        double avg = 0.0;
-        for (int i = 0; i < quadruples.length; i++) {
-            Quadruple q = quadruples[i];
-            double[] w = q.getWeights();
-            double all = 0.0;
-            for (int j = 0; j < w.length; j++) {
-                max = (max < w[j]) ? w[j] : max;
-                all += w[j];
-            }
-            all /= 7;
-            avg += all;
-        }
-        avg /= quadruples.length;
-        for (int i = 0; i < quadruples.length; i++) {
-            Quadruple q = quadruples[i];
-            double[] w = q.getWeights();
-            for (int j = 0; j < w.length; j++) {
-                //w[j] /= max;
-                w[j] /= avg;
-            }
-            q.setWeights(w);
-        }
-    }
-
-    public double quadraticWeight() {
-        double qw = 0.0;
-        for (int i = 0; i < quadruples.length; i++) {
-            Quadruple q = quadruples[i];
-            double[] w = q.getWeights();
-            for (int j = 0; j < w.length; j++) {
-                qw += (w[j] * w[j]);
-            }
-        }
-        return qw;
-    }
-
     public Quadruple[] getQuadruples() {
         return quadruples;
     }
-
 
 }

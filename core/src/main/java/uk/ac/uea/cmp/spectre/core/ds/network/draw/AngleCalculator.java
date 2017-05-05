@@ -33,9 +33,9 @@ import java.util.Set;
  */
 public interface AngleCalculator {
 
-    public double computeOptimalAngle(List<NetworkBox> boxesSorted, EdgeList edges, boolean bottom);
+    double computeOptimalAngle(List<NetworkBox> boxesSorted, EdgeList edges, boolean bottom);
 
-    public double computeForCompatible(EdgeList edges);
+    double computeForCompatible(EdgeList edges);
 
     /**
      * Calculates the angle at Vertex 'a' from Vertex 'v1' to 'v2'
@@ -45,17 +45,17 @@ public interface AngleCalculator {
      * @param v2 Vertex 2
      * @return Angle from vertex 1 to vertex 2 at centre point 'a'
      */
-    public double getAngle(Vertex v1, Vertex a, Vertex v2);
+    double getAngle(Vertex v1, Vertex a, Vertex v2);
 
-    public double getSafeAngleBot(double deltaAlpha, Edge leftmost, Edge rightmost, Set<Vertex> bottomVertices, Set<Vertex> topVertices);
+    double getSafeAngleBot(double deltaAlpha, Edge leftmost, Edge rightmost, Set<Vertex> bottomVertices, Set<Vertex> topVertices);
 
-    public double getSafeAngleTop(double deltaAlpha, Edge leftmost, Edge rightmost, Set<Vertex> bottomVertices, Set<Vertex> topVertices);
+    double getSafeAngleTop(double deltaAlpha, Edge leftmost, Edge rightmost, Set<Vertex> bottomVertices, Set<Vertex> topVertices);
 
-    public double computeMiddleAngleForTrivial(Edge split, Vertex bot, Vertex top);
+    double computeMiddleAngleForTrivial(Edge split, Vertex bot, Vertex top);
 
-    public double[] computeLeftAndRightAngles(Edge e, Vertex v, Vertex w);
+    double[] computeLeftAndRightAngles(Edge e, Vertex v, Vertex w);
 
-    public double optimizedAngleForCompatible(Vertex v, Vertex w, Edge e, List<Edge> botEdges, List<Edge> topEdges);
+    double optimizedAngleForCompatible(Vertex v, Vertex w, Edge e, List<Edge> botEdges, List<Edge> topEdges);
 
-    public double[] optimizedAngleForCompatible2(Vertex v, Vertex w, Edge e, List<Edge> edges, CompatibleCorrector cc, Network network, boolean outside);
+    double[] optimizedAngleForCompatible2(Vertex v, Vertex w, Edge e, List<Edge> edges, CompatibleCorrector cc, Network network, boolean outside);
 }

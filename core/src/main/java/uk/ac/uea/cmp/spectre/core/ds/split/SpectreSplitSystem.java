@@ -361,7 +361,7 @@ public class SpectreSplitSystem extends ArrayList<Split> implements SplitSystem 
         boolean[][] splits = new boolean[this.size()][this.getNbTaxa()];
         for (int i = 0; i < this.size(); i++) {
             for (int j = 0; j < this.getNbTaxa(); j++) {
-                int id = this.orderedTaxa.get(j).getId();
+                int id = this.orderedTaxa.getById(j).getId();
                 splits[i][j] = this.get(i).getASide().contains(id);
             }
         }

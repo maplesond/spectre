@@ -39,21 +39,9 @@ public class PermutationSequenceFactory {
      * {@linkplain QuadrupleAgglomerator} and {@linkplain NeighbourSeparator}.
      */
     public PermutationSequenceFactory() {
-        this(new NeighbourFinderCombined(), new QuadrupleAgglomeratorAverage(), new NeighbourSeparatorMax());
-    }
-
-    /**
-     * Constructor with specific {@linkplain NeighbourFinder},
-     * {@linkplain QuadrupleAgglomerator} and {@linkplain NeighbourSeparator}.
-     *
-     * @param neighbourFinder       {@linkplain NeighbourFinder}.
-     * @param quadrupleAgglomerator {@linkplain QuadrupleAgglomerator}.
-     * @param neighbourSeparator    {@linkplain NeighbourSeparator}.
-     */
-    public PermutationSequenceFactory(NeighbourFinder neighbourFinder, QuadrupleAgglomerator quadrupleAgglomerator, NeighbourSeparator neighbourSeparator) {
-        this.neighbourFinder = neighbourFinder;
-        this.neighbourSeparator = neighbourSeparator;
-        this.quadrupleAgglomerator = quadrupleAgglomerator;
+        this.neighbourFinder = new NeighbourFinderCombined();
+        this.quadrupleAgglomerator = new QuadrupleAgglomeratorAverage();
+        this.neighbourSeparator = new NeighbourSeparatorMax();
         this.scorer = new Scorer();
     }
 
@@ -201,36 +189,5 @@ public class PermutationSequenceFactory {
 
         }
         return i;
-    }
-
-    /**
-     * Convert min or max scores from scores table into readable string representation.
-     *
-     * @param scores scores table.
-     * @param taxa   taxa indexes.
-     * @param i      score index. 0 - min, 1 - max.(probably)
-     */
-    public String scoresToString(double[][][] scores, int[] taxa, int i) {
-
-        StringBuilder sb = new StringBuilder();
-
-        StringJoiner t = new StringJoiner("\t");
-
-        for (int j1 = 0; j1 < taxa.length; j1++) {
-            t.add(Integer.toString(taxa[j1]));
-        }
-        sb.append("\t").append(t.toString()).append("\n");
-
-        for (int j1 = 0; j1 < taxa.length; j1++) {
-            sb.append(taxa[j1]);
-            StringJoiner t2 = new StringJoiner("\t");
-            for (int j2 = 0; j2 < taxa.length; j2++) {
-                t2.add(Double.toString(scores[taxa[j1]][taxa[j2]][i]));
-            }
-            sb.append("\t").append(t2.toString()).append("\n");
-        }
-        sb.append("\n");
-
-        return sb.toString();
     }
 }

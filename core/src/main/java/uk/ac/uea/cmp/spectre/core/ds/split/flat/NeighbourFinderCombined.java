@@ -33,8 +33,6 @@ public class NeighbourFinderCombined implements NeighbourFinder {
         Double maxSoFar = null;
         Double minSoFar = null;
 
-        int atAll = 0;
-
         int[] taxa = CollectionUtils.getTrueElements(qs.getActive());
         int nTaxa = taxa.length;
 
@@ -44,7 +42,6 @@ public class NeighbourFinderCombined implements NeighbourFinder {
                     throw new IllegalStateException("Score was less than 0.  Taxa Length: " + taxa.length + "; Score: " + scores[taxa[i1]][taxa[i2]][0]);
                 }
                 minSoFar = (minSoFar == null || minSoFar > scores[taxa[i1]][taxa[i2]][0]) ? scores[taxa[i1]][taxa[i2]][0] : minSoFar;
-                atAll++;
             }
         }
 
