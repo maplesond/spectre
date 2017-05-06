@@ -362,7 +362,7 @@ public class SpectreSplit implements Split {
             throw new IllegalArgumentException("This split represents a different number of taxa (" + this.getNbTaxa() + ") to the circular ordering provided (" + ordering.size() + ")");
         }
 
-        // Just check the A side for now... get's confusing if we need to start looking at the B side too.
+        // Just check the A side.  Id A-side is contiguous then so is B side.
         return this.aSide.isContiguousWithOrdering(ordering);
     }
 }

@@ -20,10 +20,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import uk.ac.uea.cmp.spectre.core.ds.Identifier;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by maplesod on 14/05/14.
@@ -271,16 +268,36 @@ public class SpectreSplitBlock extends ArrayList<Integer> implements SplitBlock 
             throw new IllegalStateException("Could not find first index in split block (" + this.getFirst() + "), in the circular ordering: " + ordering.toString());
         }
 
+        // In order to make sure this works all the time we make sure that we can handle the situation where this block
+        // is also stored in sorted form (not just in cycle ordering).  So we create a set of this split block, then search
+        // either way from the location of that id in the ordering until we find all the ids (in which case we are contiguous),
+        // or we don't in which case we are not.
+        Set<Integer> ids = new HashSet<>(this);
+
         int index = ordering.indexOf(first);
 
-        for(int i = index, j = 0; j < this.size(); i++, j++) {
+        if (this.size() == 1 && index != -1) {
+            return true;
+        }
 
-            // Got to the end of the ordered taxa so go back to the start
-            if (i >= ordering.size()) {
-                i = 0;
+        int upidx = index - 1;
+        int downidx = index + 1;
+        for(int i = 0; i < this.size() - 1; i++) {
+            if (upidx < 0) {
+                upidx = ordering.size() - 1;
+            }
+            if (downidx >= ordering.size()) {
+                downidx = 0;
             }
 
-            if (this.get(j) != ordering.get(i).getId()) {
+            if (ids.contains(ordering.get(upidx).getId())) {
+                upidx--;
+            }
+            else if (ids.contains(ordering.get(downidx).getId())) {
+                downidx++;
+            }
+            else {
+                // Couldn't find id in split block
                 return false;
             }
         }
