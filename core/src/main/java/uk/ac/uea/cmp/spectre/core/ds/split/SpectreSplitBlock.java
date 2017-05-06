@@ -142,15 +142,20 @@ public class SpectreSplitBlock extends ArrayList<Integer> implements SplitBlock 
 
         if (this.size() == 0 && o.size() == 0)
             return 0;
-        else if (this.size() == 0 && o.size() > 0)
+        else if (this.size() < o.size())
             return -1;
-        else if (this.size() > 0 && o.size() == 0)
+        else if (this.size() > o.size())
             return 1;
         else {
-            int diff = this.getFirst() - o.getFirst();
-
-            return diff == 0 ? this.size() - o.size() : diff;
+            for(int i = 0; i < this.size(); i++) {
+                int diff = this.get(i) - o.get(i);
+                if (diff != 0) {
+                    return diff;
+                }
+            }
+            return 0;
         }
+
     }
 
     @Override

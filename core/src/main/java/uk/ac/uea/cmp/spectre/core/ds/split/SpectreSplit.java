@@ -173,10 +173,11 @@ public class SpectreSplit implements Split {
     public Split makeCanonical() {
 
         SpectreSplit copy = this.makeSortedCopy();
-        if (copy.aSide.size() > copy.bSide.size() || copy.aSide.getFirst() > copy.bSide.getFirst()) {
+        if (copy.aSide.size() > copy.bSide.size() ||
+                (copy.aSide.size() == copy.bSide.size() && copy.aSide.getFirst() > copy.bSide.getFirst())) {
             SplitBlock temp = copy.aSide.copy();
-            copy.bSide = copy.aSide;
-            copy.aSide = temp;
+            copy.aSide = copy.bSide;
+            copy.bSide = temp;
         }
         return copy;
     }
