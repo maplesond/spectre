@@ -302,7 +302,7 @@ properties_splits_list :
     | properties_splits_item properties_splits_list
     ;
 
-properties_splits_item : properties_splits_name (EQUALS number)?;
+properties_splits_item : properties_splits_name (EQUALS (number|boolean_option))?;
 
 properties_splits_name :
       'fit'
