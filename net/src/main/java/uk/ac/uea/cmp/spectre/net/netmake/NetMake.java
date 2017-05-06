@@ -87,7 +87,8 @@ public class NetMake extends RunnableTool {
 
         log.info("Creating splits network");
 
-        SplitSystem networkSS = new SpectreSplitSystem(distanceMatrix, permutation, SpectreSplitSystem.LeastSquaresCalculator.CIRCULAR);
+        SplitSystem networkSS = new SpectreSplitSystem(distanceMatrix, permutation, SpectreSplitSystem.LeastSquaresCalculator.CIRCULAR).makeCanonical();
+
 
         log.info("Creating network");
         Network network = new PermutationSequenceDraw(networkSS).createOptimisedNetwork();

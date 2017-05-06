@@ -25,7 +25,7 @@ public interface Split extends Comparable<Split> {
     /**
      * A helpful enum for getting elements from a given side of the split
      */
-    public enum SplitSide {
+    enum SplitSide {
 
         A_SIDE {
             public int getSplitElement(Split split, int index) {
@@ -117,6 +117,13 @@ public interface Split extends Comparable<Split> {
      * @param split The split to merge with this split
      */
     void mergeASides(Split split);
+
+    /**
+     * Returns a canonical version of this split.  This means that the a-side is always smaller than or equal to the size
+     * of the b-side, and taxa are sorted in both sides.
+     * @return
+     */
+    Split makeCanonical();
 
     /**
      * Returns true if one side of this split contains only a single taxon.

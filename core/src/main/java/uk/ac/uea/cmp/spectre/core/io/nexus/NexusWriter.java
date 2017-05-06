@@ -230,7 +230,7 @@ public class NexusWriter extends AbstractSpectreWriter implements Appendable {
         this.appendLine("BEGIN Splits;");
         this.appendLine(" DIMENSIONS ntax=" + ss.getNbTaxa() + " nsplits=" + ss.size() + ";");
         this.appendLine(" FORMAT labels=no weights=" + (ss.isWeighted() ? "yes" : "no") + " confidences=no intervals=no;");
-        this.appendLine(" PROPERTIES fit=-1.0" + (ss.isCompatible() ? " weakly_compatible" : "") + (ss.isCircular() ? " cyclic" : "") + ";");
+        this.appendLine(" PROPERTIES fit=-1.0" + (ss.isCompatible() ? " weakly_compatible=yes" : "") + (ss.isCircular() ? " cyclic=yes" : "") + ";");
         if (ss.isCircular()) {
             this.appendLine(" CYCLE " + ss.getOrderedTaxa().toString(IdentifierList.IdentifierFormat.NEXUS_CIRCULAR_ORDERING) + ";");
         }

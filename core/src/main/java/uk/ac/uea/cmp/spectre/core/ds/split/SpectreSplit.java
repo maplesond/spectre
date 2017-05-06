@@ -57,7 +57,7 @@ public class SpectreSplit implements Split {
 
 
     public SpectreSplit(Split split) {
-        this(split.getASide().copy(), split.getNbTaxa());
+        this(split.getASide().copy(), split.getNbTaxa(), split.getWeight());
     }
 
     /**
@@ -170,8 +170,20 @@ public class SpectreSplit implements Split {
     }
 
     @Override
+    public Split makeCanonical() {
+
+        SpectreSplit copy = this.makeSortedCopy();
+        if (copy.aSide.size() > copy.bSide.size() || copy.aSide.getFirst() > copy.bSide.getFirst()) {
+            SplitBlock temp = copy.aSide.copy();
+            copy.bSide = copy.aSide;
+            copy.aSide = temp;
+        }
+        return copy;
+    }
+
+    @Override
     public Split copy() {
-        return new SpectreSplit(this.getASide().copy(), this.nbTaxa);
+        return new SpectreSplit(this.getASide().copy(), this.nbTaxa, this.weight);
     }
 
     public SpectreSplit makeSortedCopy() {
@@ -194,19 +206,18 @@ public class SpectreSplit implements Split {
 
         if (difNbTaxa == 0) {
 
-            double diffWeight = this.weight - o.getWeight();
+            int difASide = this.aSide.compareTo(o.getASide());
 
-            if (diffWeight == 0.0) {
+            if (difASide == 0) {
+                double diffWeight = this.weight - o.getWeight();
 
-                int difASide = this.aSide.compareTo(o.getASide());
-
-                if (difASide == 0) {
-                    return this.bSide.compareTo(o.getBSide());
+                if (diffWeight == 0.0) {
+                    return 0;
                 } else {
-                    return difASide;
+                    return diffWeight < 0.0 ? -1 : 1;
                 }
             } else {
-                return diffWeight < 0.0 ? -1 : 1;
+                return difASide;
             }
         } else {
             return difNbTaxa;

@@ -112,6 +112,11 @@ public interface SplitSystem extends List<Split> {
      */
     SplitSystem filterByWeight(double threshold);
 
+    /**
+     * Creates a copy of this split system with all splits in canonical form, and sorted by the taxa of the A-side.
+     * @return
+     */
+    SplitSystem makeCanonical();
 
 
     // **** Interrogation methods that try to detect split system properties ****

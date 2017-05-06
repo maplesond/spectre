@@ -60,6 +60,10 @@
                             <mainClass>uk.ac.uea.cmp.spectre.tools.dmg.DistanceMatrixGeneratorTool</mainClass>
                             <id>distmatgen</id>
                         </program>
+                        <program>
+                            <mainClass>uk.ac.uea.cmp.spectre.tools.ssc.SplitSystemComparisonTool</mainClass>
+                            <id>splitcompare</id>
+                        </program>
                     </programs>
                 </configuration>
             </plugin>
@@ -81,6 +85,7 @@
                                 <!--<chmod file="${build-dir}/bin/distmxconv" perm="755"/>-->
                                 <!--<chmod file="${build-dir}/bin/phycor" perm="755"/>-->
                                 <chmod file="${build-dir}/bin/distmatgen" perm="755"/>
+                                <chmod file="${build-dir}/bin/splitcompare" perm="755"/>
                             </target>
                         </configuration>
                     </execution>

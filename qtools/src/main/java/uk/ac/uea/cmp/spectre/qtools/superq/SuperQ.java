@@ -139,7 +139,7 @@ public class SuperQ extends RunnableTool {
                 }
             }
 
-            SplitSystem ss = qnetResult.createSplitSystem(null, QNetResult.SplitLimiter.STANDARD);
+            SplitSystem ss = qnetResult.createSplitSystem(null, QNetResult.SplitLimiter.STANDARD).makeCanonical();
 
             rt.gc();
             log.debug("FREE MEM - after computing weights: " + rt.freeMemory());

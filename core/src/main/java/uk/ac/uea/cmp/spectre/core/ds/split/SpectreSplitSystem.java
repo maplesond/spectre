@@ -22,6 +22,7 @@ import uk.ac.uea.cmp.spectre.core.ds.network.draw.PermutationSequenceDraw;
 import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.CircularNNLS;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class SpectreSplitSystem extends ArrayList<Split> implements SplitSystem {
@@ -172,6 +173,10 @@ public class SpectreSplitSystem extends ArrayList<Split> implements SplitSystem 
 
         if (this == that) {
             return true;
+        }
+
+        if (this.getNbSplits() != that.getNbSplits() || this.getNbTaxa() != that.getNbTaxa()) {
+            return false;
         }
 
         for (Split s : this) {
@@ -345,6 +350,19 @@ public class SpectreSplitSystem extends ArrayList<Split> implements SplitSystem 
         }
 
         return this;
+    }
+
+    @Override
+    public SplitSystem makeCanonical() {
+        List<Split> splits = new ArrayList<>();
+
+        for(Split s : this) {
+            splits.add(s.makeCanonical());
+        }
+
+        Collections.sort(splits);
+
+        return new SpectreSplitSystem(this.orderedTaxa, splits);
     }
 
     @Override
