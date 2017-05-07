@@ -57,17 +57,21 @@ public class SplitSystemComparisonTool extends SpectreTool {
         String filename;
         int nbTaxa;
         int nbSplits;
+        boolean circular;
+        boolean compatible;
         boolean match;
 
         public Entry() {
             this.filename = "";
             this.nbTaxa = 0;
             this.nbSplits = 0;
+            this.circular = false;
+            this.compatible = false;
             this.match = false;
         }
 
         public static String header() {
-            return StringUtils.join(new String[]{"filename","nb_taxa","nb_splits","match"}, "\t");
+            return StringUtils.join(new String[]{"filename","nb_taxa","nb_splits","circular","compatible","match"}, "\t");
         }
 
         @Override
@@ -76,6 +80,8 @@ public class SplitSystemComparisonTool extends SpectreTool {
                     this.filename,
                     Integer.toString(this.nbTaxa),
                     Integer.toString(this.nbSplits),
+                    Boolean.toString(this.circular),
+                    Boolean.toString(this.compatible),
                     Boolean.toString(this.match)
             }, "\t");
         }
@@ -87,27 +93,29 @@ public class SplitSystemComparisonTool extends SpectreTool {
 
         final int nb_files = commandLine.getArgs().length;
 
-        if (nb_files < 2) {
-            throw new IOException("Did not specify at least two nexus files containing split systems to compare.");
+        if (nb_files < 1) {
+            throw new IOException("Did not specify at least one nexus files containing split systems to analyse / compare.");
         }
 
-        List<SplitSystem> sss = new ArrayList();
         List<Entry> results = new ArrayList<>();
 
-        File reffile = new File(commandLine.getArgs()[0]);
-        SplitSystem ref = new NexusReader().readSplitSystem(reffile).makeCanonical();
-
-        System.out.println("Reference " + reffile.getName() + " contains " + ref.getNbTaxa() + " taxa and " + ref.getNbSplits() + " splits.");
-
-        for(int i = 1; i < nb_files; i++) {
+        SplitSystem ref = null;
+        for(int i = 0; i < nb_files; i++) {
             File file = new File(commandLine.getArgs()[i]);
             SplitSystem ss = new NexusReader().readSplitSystem(file).makeCanonical();
-            sss.add(ss);
 
             Entry e = new Entry();
             e.filename = file.getName();
+
+            if (i == 0) {
+                ref = ss;
+                e.filename += " (ref)";
+            }
+
             e.nbTaxa = ss.getNbTaxa();
             e.nbSplits = ss.getNbSplits();
+            e.circular = ss.isCircular();
+            e.compatible = ss.isCompatible();
             e.match = ref.equals(ss);
             results.add(e);
         }

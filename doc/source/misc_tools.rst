@@ -39,3 +39,22 @@ specified calculator.  By default this is Jukes Cantor.  Example usage::
     distmatgen -t phylip -o bees bees.fa
 
 This command line would generate a distance matrix output to a phylip file called "bees.phy" from an MSA stored in fasta format.
+
+
+Split Comparison Tool
+---------------------
+
+This tools can take in one or more nexus files containing split systems.  The first file provided is considered the reference
+and additional files are compared against the reference.  This tool produces tab delimited output displaying the fields:
+
+ - filename - The file name of the nexus file containing a split system.  This will have a (ref) suffix if it is the first file and therefore treated as the reference.
+ - nb_taxa - The number of taxa used in the split system
+ - nb_splits - The number of splits in the split system
+ - circular	- Whether or not the split system is circular
+ - compatible - Whether or not the split system is compatible (tree-like)
+ - match - Whether or not this split system matches the reference
+
+A command line for comparing 4 different nexus files is as follows::
+
+    splitcompare ref.nex alt_method.nex nn.nex other.nex
+
