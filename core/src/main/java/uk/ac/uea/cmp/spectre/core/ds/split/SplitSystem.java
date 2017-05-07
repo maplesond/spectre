@@ -151,6 +151,25 @@ public interface SplitSystem extends List<Split> {
      */
     Split.Compatible getCompatible(final int i, final int j);
 
+    /**
+     * This method checks whether the quadruple split number nr is in the restriction of the split system to {a,b,c,d}.
+     * It is assumed that a, b, c and d are pairwise distinct. The possible values for nr are:
+     * 0 --> a|bcd
+     * 1 --> b|acd
+     * 2 --> c|abd
+     * 3 --> d|abc
+     * 4 --> ab|cd
+     * 5 --> ac|bd
+     * 6 --> ad|bc
+     * @param a Taxon a
+     * @param b Taxon b
+     * @param c Taxon c
+     * @param d Taxon d
+     * @param nr
+     * @return True if restriction exists, false otherwise
+     */
+    boolean restrictionExists(final int a, final int b, final int c, final int d, final int nr);
+
     boolean[][] getAs2DBooleanArray();
     double[] getWeightsAsArray();
 }

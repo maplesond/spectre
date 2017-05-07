@@ -17,6 +17,7 @@ package uk.ac.uea.cmp.spectre.core.ds.quad.quadruple;
 
 import org.apache.commons.lang3.ArrayUtils;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
+import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.flat.FlatSplitSystem;
 import uk.ac.uea.cmp.spectre.core.util.CollectionUtils;
 
@@ -131,7 +132,7 @@ public class QuadrupleSystem implements Cloneable {
 
     //This method computes the total length of those quartet splits
     //that are also in the restriction of the given split system.
-    public double getFitRestriction(int a, int b, int c, int d, FlatSplitSystem ss) {
+    public double getFitRestriction(int a, int b, int c, int d, SplitSystem ss) {
         double fit = 0.0;
 
         Quadruple q = getQuadrupleUnsorted(a, b, c, d);

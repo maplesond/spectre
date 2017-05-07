@@ -26,6 +26,8 @@ import uk.ac.uea.cmp.spectre.core.ds.network.Network;
 import uk.ac.uea.cmp.spectre.core.ds.network.NetworkLabel;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
 import uk.ac.uea.cmp.spectre.core.ds.network.draw.ViewerConfig;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.Quadruple;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.Split;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.spectre.core.io.AbstractSpectreWriter;
@@ -224,6 +226,33 @@ public class NexusWriter extends AbstractSpectreWriter implements Appendable {
         return this;
     }
 
+    public NexusWriter append(QuadrupleSystem qs) {
+        this.appendLine("BEGIN Quadruples;");
+        this.appendLine(" DIMENSIONS ntax=" + qs.getNbActiveTaxa() + " nquadruples=" + qs.getnQuadruples() + ";");
+        this.appendLine(" FORMAT labels=LEFT;");
+        this.appendLine(" MATRIX");
+
+        Quadruple[] quadruples = qs.getQuadruples();
+
+        for (int i = 0; i < quadruples.length; i++) {
+            String line = ("  quadruple" + i + " :");
+            int[] taxa = quadruples[i].getTaxa().toIntArray();
+            double[] weights = quadruples[i].getWeights();
+            for (int j = 0; j < 4; j++) {
+                line = line.concat(" " + taxa[j]);
+            }
+            line = line.concat(" :");
+            for (int j = 0; j < 7; j++) {
+                line = line.concat(" " + weights[j]);
+            }
+            line = line.concat(",");
+            this.appendLine(line);
+        }
+
+        this.appendLine(" ;");
+        this.appendLine("END; [Quadruples]");
+        return this;
+    }
 
     public NexusWriter append(SplitSystem ss) {
 

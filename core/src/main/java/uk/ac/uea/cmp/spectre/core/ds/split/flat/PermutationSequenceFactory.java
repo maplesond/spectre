@@ -52,14 +52,14 @@ public class PermutationSequenceFactory {
      * @return
      */
     public PermutationSequence computePermutationSequence(QuadrupleSystem qs) {
-        int n = qs.getNbActiveTaxa();
-        Neighbours[] neighbours = new Neighbours[n - 4];
+
+        Neighbours[] neighbours = new Neighbours[qs.getNbActiveTaxa() - 4];
 
         int i = agglomerate(neighbours, qs);
 
         PermutationSequence ps = findBestOnFour(qs);
 
-        ps = neighbourSeparator.popOutNeighbours(neighbours, ps, qs, i, n);
+        ps = neighbourSeparator.popOutNeighbours(neighbours, ps, qs, i, qs.getNbActiveTaxa());
 
         return ps;
     }

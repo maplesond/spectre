@@ -219,18 +219,6 @@ public class SuperQ extends RunnableTool {
         return solution;
     }
 
-    protected void filterNexus(File inFile, File outFile, double threshold) throws IOException {
-
-        // Load
-        Nexus raw = new NexusReader().readNexusData(inFile);
-
-        // Filter
-        raw.getSplitSystem().filterByWeight(threshold);
-
-        // Save
-        new NexusWriter().writeNexusData(outFile, raw);
-    }
-
     private void notifyUser(String message) {
         log.info(message);
         this.trackerInitUnknownRuntime(message);

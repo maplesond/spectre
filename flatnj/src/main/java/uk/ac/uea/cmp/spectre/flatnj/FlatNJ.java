@@ -26,16 +26,15 @@ import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.network.Network;
 import uk.ac.uea.cmp.spectre.core.ds.network.draw.PermutationSequenceDraw;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.*;
+import uk.ac.uea.cmp.spectre.core.ds.split.SpectreSplitSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
-import uk.ac.uea.cmp.spectre.core.ds.split.flat.FlatSplitSystem;
-import uk.ac.uea.cmp.spectre.core.ds.split.flat.FlatSplitSystemFinal;
 import uk.ac.uea.cmp.spectre.core.ds.split.flat.PermutationSequence;
 import uk.ac.uea.cmp.spectre.core.ds.split.flat.PermutationSequenceFactory;
 import uk.ac.uea.cmp.spectre.core.io.fasta.FastaReader;
 import uk.ac.uea.cmp.spectre.core.io.nexus.Nexus;
+import uk.ac.uea.cmp.spectre.core.io.nexus.NexusWriter;
 import uk.ac.uea.cmp.spectre.core.ui.gui.RunnableTool;
 import uk.ac.uea.cmp.spectre.core.ui.gui.StatusTrackerWithView;
-import uk.ac.uea.cmp.spectre.flatnj.tools.Writer;
 
 import java.io.File;
 import java.io.IOException;
@@ -221,11 +220,10 @@ public class FlatNJ extends RunnableTool {
 
                     File quadFile = new File(outFile.getParentFile(), outFile.getName() + ".quads.nex");
                     log.info("Saving quadruples to: " + quadFile.getAbsolutePath());
-                    Writer writer = new Writer();
-                    writer.open(quadFile.getAbsolutePath());
-                    writer.write(taxa);
-                    writer.write(qs);
-                    writer.close();
+                    NexusWriter writer = new NexusWriter();
+                    writer.append(taxa);
+                    writer.append(qs);
+                    writer.write(quadFile);
                 }
             }
 
@@ -261,18 +259,14 @@ public class FlatNJ extends RunnableTool {
 
             notifyUser("Finalising splits system");
             ps.setTaxaNames(taxa.getNames());
-            FlatSplitSystem fss = new FlatSplitSystemFinal(ps);
-            log.info("Split system contains " + fss.getnSplits() + " splits");
+            SplitSystem fss = new SpectreSplitSystem(ps).makeCanonical();
+            log.info("Split system contains " + fss.getNbSplits() + " splits");
             //ss.setActive(ps.getActive());  // Do we want to reset this from active (extra trivial splits would have been added in the constructor)
 
             if (options.isSaveStages()) {
                 File ssFile = new File(outFile.getParentFile(), outFile.getName() + ".splits.nex");
                 log.info("Saving splits to: " + ssFile.getAbsolutePath());
-                Writer writer = new Writer();
-                writer.open(ssFile.getAbsolutePath());
-                writer.write(taxa);
-                writer.write(fss);
-                writer.close();
+                new NexusWriter().writeSplitSystem(ssFile, fss);
             }
 
             this.continueRun();
@@ -285,12 +279,11 @@ public class FlatNJ extends RunnableTool {
                     ps.getTrivial());
             Network network = psDraw.createOptimisedNetwork();
 
-            Writer writer = new Writer();
-            writer.open(outFile.getAbsolutePath());
-            writer.write(taxa);
-            writer.write(fss);
-            writer.write(network, taxa); // Do we need to do this here?
-            writer.close();
+            NexusWriter writer = new NexusWriter();
+            writer.append(taxa);
+            writer.append(fss);
+            writer.append(network);
+            writer.write(outFile);
 
             log.info("Saving complete nexus file to: " + outFile.getAbsolutePath());
             this.trackerFinished(true);

@@ -54,6 +54,18 @@ public interface Split extends Comparable<Split> {
      */
     double getWeight();
 
+    /**
+     * Returns True if this split is active, False otherwise.
+     * @return True if this split is active, False otherwise.
+     */
+    boolean isActive();
+
+    /**
+     * Used to toggle whether or not this split is active
+     * @param active
+     */
+    void setActive(boolean active);
+
 
     /**
      * Get the number of taxa in this split.  This should be the sum of the number of taxa on both the A side and B side
@@ -138,16 +150,6 @@ public interface Split extends Comparable<Split> {
     Integer getTrivial();
 
     /**
-     * Check to see if this split is compatible with another split.  This returns true (compatible) if one of the four
-     * intersections A1 n A2, A1 n B2, A2 n B1 or A2 n B2 is empty.  Otherwise this returns false (incompatible).
-     * @param other The other split to test
-     * @return True if compatible, false if incompatible
-     */
-    boolean isCompatible(Split other);
-
-    Compatible getCompatible(Split other);
-
-    /**
      * Check to see if this split is consistent with the given ordering, hence is circular.
      *
      * Note, that this only checks if this split is consistent with the given circular ordering.  It is still possible
@@ -157,6 +159,16 @@ public interface Split extends Comparable<Split> {
      * @return True, if this split is circular, false if not.
      */
     boolean isCircular(IdentifierList ordering);
+
+    /**
+     * Check to see if this split is compatible with another split.  This returns true (compatible) if one of the four
+     * intersections A1 n A2, A1 n B2, A2 n B1 or A2 n B2 is empty.  Otherwise this returns false (incompatible).
+     * @param other The other split to test
+     * @return True if compatible, false if incompatible
+     */
+    boolean isCompatible(Split other);
+
+    Compatible getCompatible(Split other);
 
     /**
      * Possible patterns of compatibility between splits
@@ -195,4 +207,23 @@ public interface Split extends Comparable<Split> {
 
         public abstract boolean isCompatible();
     }
+
+    /**
+     * This method checks whether the quadruple split number nr is in the restriction of this split to {a,b,c,d}.
+     * It is assumed that a, b, c and d are pairwise distinct. The possible values for nr are:
+     * 0 --> a|bcd
+     * 1 --> b|acd
+     * 2 --> c|abd
+     * 3 --> d|abc
+     * 4 --> ab|cd
+     * 5 --> ac|bd
+     * 6 --> ad|bc
+     * @param a Taxon a
+     * @param b Taxon b
+     * @param c Taxon c
+     * @param d Taxon d
+     * @param nr
+     * @return True if restriction exists, false otherwise
+     */
+    boolean restrictionExists(int a, int b, int c, int d, int nr);
 }

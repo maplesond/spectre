@@ -33,8 +33,8 @@ public class SpectreSplit implements Split {
 
     private SplitBlock aSide;
     private SplitBlock bSide;
-    private int nbTaxa;
     private double weight;
+    private boolean active;
 
     public SpectreSplit(SplitBlock aSide, int nbTaxa) {
         this(aSide, nbTaxa, 1.0, false);
@@ -49,15 +49,25 @@ public class SpectreSplit implements Split {
     }
 
     public SpectreSplit(SplitBlock aSide, int nbTaxa, double weight, boolean zerobased) {
+        this(aSide, aSide.makeComplement(nbTaxa, zerobased), weight);
+    }
+
+    public SpectreSplit(SplitBlock aSide, SplitBlock bSide) {
+        this(aSide, bSide, 1.0);
+    }
+    public SpectreSplit(SplitBlock aSide, SplitBlock bSide, double weight) {
+        this(aSide, bSide, weight, true);
+    }
+    public SpectreSplit(SplitBlock aSide, SplitBlock bSide, double weight, boolean active) {
         this.aSide = aSide;
-        this.nbTaxa = nbTaxa;
-        this.bSide = aSide.makeComplement(nbTaxa, zerobased);
+        this.bSide = bSide;
         this.weight = weight;
+        this.active = active;
     }
 
 
     public SpectreSplit(Split split) {
-        this(split.getASide().copy(), split.getNbTaxa(), split.getWeight());
+        this(split.getASide().copy(), split.getBSide().copy(), split.getWeight(), split.isActive());
     }
 
     /**
@@ -77,8 +87,8 @@ public class SpectreSplit implements Split {
         return new HashCodeBuilder()
                 .append(aSide)
                 .append(bSide)
-                .append(nbTaxa)
                 .append(weight)
+                .append(active)
                 .toHashCode();
     }
 
@@ -97,7 +107,6 @@ public class SpectreSplit implements Split {
         return new EqualsBuilder()
                 .append(aSide, other.aSide)
                 .append(bSide, other.bSide)
-                .append(nbTaxa, other.nbTaxa)
                 .append(weight, other.weight)
                 .isEquals();
     }
@@ -112,11 +121,16 @@ public class SpectreSplit implements Split {
     }
 
     public int getNbTaxa() {
-        return nbTaxa;
+        return this.aSide.size() + this.bSide.size();
     }
 
     public double getWeight() {
         return weight;
+    }
+
+    @Override
+    public boolean isActive() {
+        return active;
     }
 
     @Override
@@ -153,6 +167,10 @@ public class SpectreSplit implements Split {
         this.weight = weight;
     }
 
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
     public void sort() {
 
         this.aSide.sort();
@@ -166,7 +184,7 @@ public class SpectreSplit implements Split {
     @Override
     public void mergeASides(Split split) {
         this.aSide.merge(split.getASide());
-        this.bSide = aSide.makeComplement(this.nbTaxa);
+        this.bSide = aSide.makeComplement(this.getNbTaxa());
     }
 
     @Override
@@ -184,7 +202,7 @@ public class SpectreSplit implements Split {
 
     @Override
     public Split copy() {
-        return new SpectreSplit(this.getASide().copy(), this.nbTaxa, this.weight);
+        return new SpectreSplit(this.getASide().copy(), this.getBSide().copy(), this.weight);
     }
 
     public SpectreSplit makeSortedCopy() {
@@ -235,14 +253,14 @@ public class SpectreSplit implements Split {
      */
     public double calculateP(DistanceMatrix distanceMatrix) {
 
-        boolean splited[] = new boolean[this.nbTaxa];
+        boolean splited[] = new boolean[this.getNbTaxa()];
         for (int h = 0; h < splited.length; h++) {
             splited[h] = false;
         }
 
         // Array stores the info which elements are on one side each element of the split
         for (int j = 0; j < this.aSide.size(); j++) {
-            for (int k = 0; k < this.nbTaxa; k++) {
+            for (int k = 0; k < this.getNbTaxa(); k++) {
                 if (this.aSide.get(j) == k) {
                     splited[k] = true;
                 }
@@ -253,7 +271,7 @@ public class SpectreSplit implements Split {
         double p = 0.0;
 
         for (int j = 0; j < this.aSide.size(); j++) {
-            for (int k = 0; k < this.nbTaxa; k++) {
+            for (int k = 0; k < this.getNbTaxa(); k++) {
                 if (splited[k] == false) {
                     p += distanceMatrix.getDistance(this.aSide.get(j), k);
                 }
@@ -282,7 +300,7 @@ public class SpectreSplit implements Split {
 
     @Override
     public String toString() {
-        return "{" + this.aSide.toString() + " | " + this.bSide.toString() + "} : " + this.weight;
+        return (this.active ? "ON " : "OFF") + " : {" + this.aSide.toString() + " | " + this.bSide.toString() + "} : " + this.weight;
     }
 
     /**
@@ -344,6 +362,66 @@ public class SpectreSplit implements Split {
             return Compatible.NO;
         }
 
+    }
+
+    @Override
+    public boolean restrictionExists(int a, int b, int c, int d, int nr) {
+        boolean aa = this.aSide.contains(a);
+        boolean ab = this.aSide.contains(b);
+        boolean ac = this.aSide.contains(c);
+        boolean ad = this.aSide.contains(d);
+
+        // Just check user provided taxa that exist in this split otherwise error
+        if (!aa && !this.bSide.contains(a)) {
+            throw new IllegalArgumentException("Index A (" + a + ") does not exist in split.");
+        }
+        if (!ab && !this.bSide.contains(b)) {
+            throw new IllegalArgumentException("Index B (" + b + ") does not exist in split.");
+        }
+        if (!ac && !this.bSide.contains(c)) {
+            throw new IllegalArgumentException("Index C (" + c + ") does not exist in split.");
+        }
+        if (!ad && !this.bSide.contains(d)) {
+            throw new IllegalArgumentException("Index D (" + d + ") does not exist in split.");
+        }
+
+        if (nr == 0) {
+            if (((ab == ac) && (ac == ad)) && (aa != ab)) {
+                return true;
+            }
+        }
+        else if (nr == 1) {
+            if (((aa == ac) && (ac == ad)) && (aa != ab)) {
+                return true;
+            }
+        }
+        else if (nr == 2) {
+            if (((aa == ab) && (ab == ad)) && (aa != ac)) {
+                return true;
+            }
+        }
+        else if (nr == 3) {
+            if (((aa == ab) && (ab == ac)) && (aa != ad)) {
+                return true;
+            }
+        }
+        else if (nr == 4) {
+            if (((aa == ab) && (ac == ad)) && (aa != ac)) {
+                return true;
+            }
+        }
+        else if (nr == 5) {
+            if (((aa == ac) && (ab == ad)) && (aa != ab)) {
+                return true;
+            }
+        }
+        else if (nr == 6) {
+            if (((aa == ad) && (ab == ac)) && (aa != ab)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 

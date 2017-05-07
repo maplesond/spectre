@@ -16,10 +16,12 @@
 package uk.ac.uea.cmp.spectre.core.ds.split;
 
 import org.apache.commons.lang3.ArrayUtils;
+import uk.ac.uea.cmp.spectre.core.ds.Identifier;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.network.draw.PermutationSequenceDraw;
 import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.CircularNNLS;
+import uk.ac.uea.cmp.spectre.core.ds.split.flat.PermutationSequence;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -145,6 +147,11 @@ public class SpectreSplitSystem extends ArrayList<Split> implements SplitSystem 
         int nsplits = p_sequ.getNswaps();
         int[] cur_sequ = ArrayUtils.clone(p_sequ.getInitSequ());
 
+        this.orderedTaxa = new IdentifierList();
+        for(int i = 0; i < ntaxa; i++) {
+            this.orderedTaxa.add(new Identifier(Integer.toString(cur_sequ[i]), cur_sequ[i]));
+        }
+
         //Write splits into 0/1-array.
         int[] swaps = p_sequ.getSwaps();
         for (int i = 0; i < nsplits; i++) {
@@ -154,12 +161,56 @@ public class SpectreSplitSystem extends ArrayList<Split> implements SplitSystem 
             cur_sequ[swaps[i] + 1] = h;
             //turn it into a 0/1 sequence
             List<Integer> aside = new ArrayList<>();
+            List<Integer> bside = new ArrayList<>();
             for (int j = 0; j < ntaxa; j++) {
                 if (j <= swaps[i]) {
                     aside.add(cur_sequ[j]);
                 }
+                else {
+                    bside.add(cur_sequ[j]);
+                }
             }
-            this.add(new SpectreSplit(new SpectreSplitBlock(aside), ntaxa, true));
+            Split s = new SpectreSplit(new SpectreSplitBlock(aside), new SpectreSplitBlock(bside), p_sequ.getWeights() != null ? p_sequ.getWeights()[i] : 1.0);
+            if (p_sequ.getActive() != null) {
+                s.setActive(p_sequ.getActive()[i]);
+            }
+            this.add(s);
+        }
+    }
+
+    public SpectreSplitSystem(PermutationSequence p_sequ) {
+        int ntaxa = p_sequ.getnTaxa();
+        int nsplits = p_sequ.getnSwaps();
+        int[] cur_sequ = ArrayUtils.clone(p_sequ.getSequence());
+
+        this.orderedTaxa = new IdentifierList();
+        for(int i = 0; i < ntaxa; i++) {
+            this.orderedTaxa.add(new Identifier(Integer.toString(cur_sequ[i]), cur_sequ[i]));
+        }
+
+        //Write splits into 0/1-array.
+        int[] swaps = p_sequ.getSwaps();
+        for (int i = 0; i < nsplits; i++) {
+            //compute current permutation
+            int h = cur_sequ[swaps[i]];
+            cur_sequ[swaps[i]] = cur_sequ[swaps[i] + 1];
+            cur_sequ[swaps[i] + 1] = h;
+            //turn it into a 0/1 sequence
+            List<Integer> aside = new ArrayList<>();
+            List<Integer> bside = new ArrayList<>();
+            for (int j = 0; j < ntaxa; j++) {
+                if (j <= swaps[i]) {
+                    aside.add(cur_sequ[j]);
+                }
+                else {
+                    bside.add(cur_sequ[j]);
+                }
+            }
+            Split s = new SpectreSplit(new SpectreSplitBlock(aside), new SpectreSplitBlock(bside), p_sequ.getWeights() != null ? p_sequ.getWeights()[i] : 1.0);
+            if (p_sequ.getActive() != null) {
+                s.setActive(p_sequ.getActive()[i]);
+            }
+            this.add(s);
         }
     }
 
@@ -411,6 +462,17 @@ public class SpectreSplitSystem extends ArrayList<Split> implements SplitSystem 
     @Override
     public Split.Compatible getCompatible(int i, int j) {
         return this.get(i).getCompatible(this.get(j));
+    }
+
+    @Override
+    public boolean restrictionExists(int a, int b, int c, int d, int nr) {
+
+        for(Split s : this) {
+            if (s.restrictionExists(a, b, c, d, nr)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

@@ -17,6 +17,8 @@ package uk.ac.uea.cmp.spectre.core.ds.split.flat;
 
 import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.Quadruple;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleSystem;
+import uk.ac.uea.cmp.spectre.core.ds.split.SpectreSplitSystem;
+import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.spectre.core.math.stats.Statistics;
 import uk.ac.uea.cmp.spectre.core.util.CollectionUtils;
 
@@ -66,8 +68,6 @@ public class PermutationSequence {
     private double fit;
 
     private int[] compressed;
-
-    FlatSplitSystem ss;
 
     //Constructor of this class from a given initial sequence and a sequence of swaps.
     public PermutationSequence(int[] inInitSequ, int[] inSwaps) {
@@ -921,7 +921,7 @@ public class PermutationSequence {
 
         //int[] increasing = Utilities.orderWeights(active, weights);
 
-        FlatSplitSystem ss = new FlatSplitSystem(this);
+        SplitSystem ss = new SpectreSplitSystem(this);
 
         for (int i = weights.length - 1; i >= 0; i--) {
             for (int j = 0; j < weights.length; j++) {
@@ -963,35 +963,7 @@ public class PermutationSequence {
         System.arraycopy(b, 0, this.active, 0, b.length);
     }
 
-    private boolean isCompatible(int a, int b) {
-        //variables for counting the number of occurences of patterns
-        int count11 = 0;
-        int count10 = 0;
-        int count01 = 0;
-        int count00 = 0;
-
-        for (int i = 0; i < nTaxa; i++) {
-            if (splits[a][1][i] && splits[b][1][i]) {
-                count11++;
-            }
-            if (splits[a][1][i] && splits[b][0][i]) {
-                count10++;
-            }
-            if (splits[a][0][i] && splits[b][1][i]) {
-                count01++;
-            }
-            if (splits[a][0][i] && splits[b][0][i]) {
-                count00++;
-            }
-        }
-
-        if (count11 == 0 || count10 == 0 || count01 == 0 || count00 == 0) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
+/*
     private void setTrivial(double[] inTrivial, double[] weights) {
         boolean[][] splits = ss.getSplits();
         Map<Integer, Integer> tr = new HashMap<>();
@@ -1015,5 +987,5 @@ public class PermutationSequence {
                 }
             }
         }
-    }
+    }*/
 }

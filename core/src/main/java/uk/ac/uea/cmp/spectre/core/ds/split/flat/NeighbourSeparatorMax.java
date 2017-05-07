@@ -17,6 +17,8 @@ package uk.ac.uea.cmp.spectre.core.ds.split.flat;
 
 import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.Quadruple;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleSystem;
+import uk.ac.uea.cmp.spectre.core.ds.split.SpectreSplitSystem;
+import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.spectre.core.util.CollectionUtils;
 
 /**
@@ -299,7 +301,7 @@ public class NeighbourSeparatorMax implements NeighbourSeparator {
                 for (int i2 = i1 + 1; i2 < nTaxa; i2++) {
                     if (a != sequence[i1] && a != sequence[i2]
                             && b != sequence[i1] && b != sequence[i2]) {
-                        FlatSplitSystem ssSmall = new FlatSplitSystem(
+                        SplitSystem ssSmall = new SpectreSplitSystem(
                                 ps.getSplitSystemFor4Taxa(a, b,
                                         sequence[i1],
                                         sequence[i2],
@@ -316,10 +318,10 @@ public class NeighbourSeparatorMax implements NeighbourSeparator {
                 if (a != sequence[i]
                         && b != sequence[i]
                         && crossedTaxa != sequence[i]) {
-                    FlatSplitSystem ssSmallOld = new FlatSplitSystem(lastPS.getSplitSystemFor4Taxa(a, b, crossedTaxa, sequence[i], lastCrossings));
+                    SplitSystem ssSmallOld = new SpectreSplitSystem(lastPS.getSplitSystemFor4Taxa(a, b, crossedTaxa, sequence[i], lastCrossings));
                     score -= qs.getFitRestriction(a, b, crossedTaxa, sequence[i], ssSmallOld);
 
-                    FlatSplitSystem ssSmallNew = new FlatSplitSystem(ps.getSplitSystemFor4Taxa(a, b, crossedTaxa, sequence[i], crossings));
+                    SplitSystem ssSmallNew = new SpectreSplitSystem(ps.getSplitSystemFor4Taxa(a, b, crossedTaxa, sequence[i], crossings));
                     score += qs.getFitRestriction(a, b, crossedTaxa, sequence[i], ssSmallNew);
                 }
             }
