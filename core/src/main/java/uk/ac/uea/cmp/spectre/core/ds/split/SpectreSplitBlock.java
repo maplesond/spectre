@@ -328,4 +328,10 @@ public class SpectreSplitBlock extends ArrayList<Integer> implements SplitBlock 
 
         return sb.toString();
     }
+
+    public void incTaxId() {
+        for(int i = 0; i < this.size(); i++) {
+            this.set(i, this.get(i) + 1);
+        }
+    }
 }

@@ -424,6 +424,12 @@ public class SpectreSplit implements Split {
         return false;
     }
 
+    @Override
+    public void incTaxId() {
+        this.aSide.incTaxId();
+        this.bSide.incTaxId();
+    }
+
 
     /**
      * Check to see if this split is consistent with the given ordering, hence is circular.

@@ -110,9 +110,5 @@ public interface SplitBlock extends List<Integer>, Comparable<SplitBlock> {
      */
     SplitBlock makeComplement(int nbTaxa, boolean zerobased);
 
-    /**
-     * A string representation of this split block
-     * @return A string representation of this split block
-     */
-    String toString();
+    void incTaxId();
 }

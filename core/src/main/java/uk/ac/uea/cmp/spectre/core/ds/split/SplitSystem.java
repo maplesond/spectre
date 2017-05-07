@@ -172,4 +172,10 @@ public interface SplitSystem extends List<Split> {
 
     boolean[][] getAs2DBooleanArray();
     double[] getWeightsAsArray();
+
+    /**
+     * This is a hack to increase all taxa id by one.  Currently required to make compatible with FlatNJ.  Will remove
+     * later so please don't use this method.
+     */
+    void incTaxId();
 }

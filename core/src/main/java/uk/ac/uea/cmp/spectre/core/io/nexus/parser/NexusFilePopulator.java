@@ -15,9 +15,11 @@
 
 package uk.ac.uea.cmp.spectre.core.io.nexus.parser;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.spectre.core.ds.Identifier;
@@ -421,11 +423,18 @@ public class NexusFilePopulator implements NexusFileListener {
 
         if (ctx.properties_splits_name() != null) {
 
-            String valStr = ctx.number() != null ? ctx.number().getText() : null;
 
             if (ctx.properties_splits_name().getText().equalsIgnoreCase("cyclic")) {
-                this.splitSystemBuilder.setCyclic(true);
-            } else if (ctx.properties_splits_name().getText().equalsIgnoreCase("fit")) {
+                String valStr = ctx.boolean_option() != null ? ctx.boolean_option().getText() : null;
+                boolean val = valStr != null ? BooleanUtils.toBoolean(valStr) : true;
+                this.splitSystemBuilder.setCyclic(val);
+            } /*else if (ctx.properties_splits_name().getText().equalsIgnoreCase("weakly_compatible") ||
+                    ctx.properties_splits_name().getText().equalsIgnoreCase("compatible")) {
+                String valStr = ctx.boolean_option() != null ? ctx.boolean_option().getText() : null;
+                boolean val = valStr != null ? BooleanUtils.toBoolean(valStr) : true;
+                this.splitSystemBuilder.setCompatible(val);
+            } */else if (ctx.properties_splits_name().getText().equalsIgnoreCase("fit")) {
+                String valStr = ctx.number() != null ? ctx.number().getText() : null;
                 this.splitSystemBuilder.setFit(Double.parseDouble(valStr));
             }
         }

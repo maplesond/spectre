@@ -226,4 +226,6 @@ public interface Split extends Comparable<Split> {
      * @return True if restriction exists, false otherwise
      */
     boolean restrictionExists(int a, int b, int c, int d, int nr);
+
+    void incTaxId();
 }

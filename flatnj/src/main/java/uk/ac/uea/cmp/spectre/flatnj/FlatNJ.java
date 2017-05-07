@@ -221,7 +221,10 @@ public class FlatNJ extends RunnableTool {
                     File quadFile = new File(outFile.getParentFile(), outFile.getName() + ".quads.nex");
                     log.info("Saving quadruples to: " + quadFile.getAbsolutePath());
                     NexusWriter writer = new NexusWriter();
+                    writer.appendHeader();
+                    writer.appendLine();
                     writer.append(taxa);
+                    writer.appendLine();
                     writer.append(qs);
                     writer.write(quadFile);
                 }
@@ -262,6 +265,7 @@ public class FlatNJ extends RunnableTool {
             SplitSystem fss = new SpectreSplitSystem(ps).makeCanonical();
             log.info("Split system contains " + fss.getNbSplits() + " splits");
             //ss.setActive(ps.getActive());  // Do we want to reset this from active (extra trivial splits would have been added in the constructor)
+            fss.incTaxId();
 
             if (options.isSaveStages()) {
                 File ssFile = new File(outFile.getParentFile(), outFile.getName() + ".splits.nex");
@@ -280,8 +284,12 @@ public class FlatNJ extends RunnableTool {
             Network network = psDraw.createOptimisedNetwork();
 
             NexusWriter writer = new NexusWriter();
+            writer.appendHeader();
+            writer.appendLine();
             writer.append(taxa);
+            writer.appendLine();
             writer.append(fss);
+            writer.appendLine();
             writer.append(network);
             writer.write(outFile);
 

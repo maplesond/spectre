@@ -497,6 +497,19 @@ public class SpectreSplitSystem extends ArrayList<Split> implements SplitSystem 
         return weights;
     }
 
+    @Override
+    public void incTaxId() {
+        IdentifierList newTaxa = new IdentifierList();
+        for(Identifier i : this.orderedTaxa) {
+            newTaxa.add(new Identifier(Integer.toString(i.getId() + 1), i.getId() + 1));
+        }
+        this.orderedTaxa = newTaxa;
+
+        for(Split s : this) {
+            s.incTaxId();
+        }
+    }
+
 
     /**
      * Deletes all splits and recalculates them.  All splits must have a positive length

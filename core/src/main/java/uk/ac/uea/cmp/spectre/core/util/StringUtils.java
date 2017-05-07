@@ -34,4 +34,6 @@ public class StringUtils {
         String newstring = string.replaceAll("^\"|\"$", "");
         return newstring.replaceAll("^\'|\'$", "");
     }
+
+
 }
