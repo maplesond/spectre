@@ -276,11 +276,7 @@ public class FlatNJ extends RunnableTool {
             this.continueRun();
 
             notifyUser("Computing network");
-            PermutationSequenceDraw psDraw = new PermutationSequenceDraw(ps.getSequence(),
-                    ps.getSwaps(),
-                    ps.getWeights(),
-                    ps.getActive(),
-                    ps.getTrivial());
+            PermutationSequenceDraw psDraw = new PermutationSequenceDraw(fss);
             Network network = psDraw.createOptimisedNetwork();
 
             NexusWriter writer = new NexusWriter();

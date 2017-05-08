@@ -15,6 +15,7 @@
 
 package uk.ac.uea.cmp.spectre.core.ds.split;
 
+import uk.ac.uea.cmp.spectre.core.ds.Identifier;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 
 import java.util.List;
@@ -111,7 +112,13 @@ public interface SplitSystem extends List<Split> {
      * @param threshold The threshold to filter by
      * @return The filtered split system
      */
-    SplitSystem filterByWeight(double threshold);
+    SplitSystem filterByWeight(final double threshold);
+
+    /**
+     * Activates splits with weight greater than threshold, and deactivates those below.
+     * @param threshold Cutoff value for activation
+     */
+    void activateByWeight(final double threshold);
 
     /**
      * Creates a copy of this split system with all splits in canonical form, and sorted by the taxa of the A-side.
@@ -157,6 +164,15 @@ public interface SplitSystem extends List<Split> {
      * @return True if split system has the maximum complement of splits, false otherwise.
      */
     boolean isFull();
+
+    /**
+     * Tests to see if taxon from is on the same side in both splits
+     * @param i Split i
+     * @param j Split j
+     * @param taxon Taxon
+     * @return True if taxon is on the same side for both splits, false otherwise
+     */
+    boolean isTaxonOnSameSide(final int i, final int j, int taxon);
 
     /**
      * This method checks whether the quadruple split number nr is in the restriction of the split system to {a,b,c,d}.

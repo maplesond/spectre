@@ -19,7 +19,9 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
-import uk.ac.uea.cmp.spectre.core.ds.network.draw.SplitSystemDraw;
+
+import java.util.HashSet;
+import java.util.Set;
 
 
 /**
@@ -33,6 +35,8 @@ public class SpectreSplit implements Split {
 
     private SplitBlock aSide;
     private SplitBlock bSide;
+    private Set<Integer> aSideSet;
+    private Set<Integer> bSideSet;
     private double weight;
     private boolean active;
 
@@ -63,6 +67,8 @@ public class SpectreSplit implements Split {
         this.bSide = bSide;
         this.weight = weight;
         this.active = active;
+        this.aSideSet = new HashSet<>(this.aSide);
+        this.bSideSet = new HashSet<>(this.bSide);
     }
 
 
@@ -120,6 +126,21 @@ public class SpectreSplit implements Split {
         return bSide;
     }
 
+    @Override
+    public SplitSide getSide(int taxonId) {
+        // Assumes side sets are uptodate!
+        if (this.aSideSet.contains(taxonId)) {
+            return SplitSide.A_SIDE;
+        }
+        else if (this.bSideSet.contains(taxonId)) {
+            return SplitSide.B_SIDE;
+        }
+        else {
+            throw new IllegalArgumentException("Couldn't find taxon (" + taxonId + ") on either side of split.");
+        }
+
+    }
+
     public int getNbTaxa() {
         return this.aSide.size() + this.bSide.size();
     }
@@ -172,9 +193,13 @@ public class SpectreSplit implements Split {
     }
 
     public void sort() {
-
         this.aSide.sort();
         this.bSide.sort();
+    }
+
+    public void regenSets() {
+        this.aSideSet = new HashSet<>(this.aSide);
+        this.bSideSet = new HashSet<>(this.bSide);
     }
 
     public int getSplitElement(SplitSide side, int index) {
@@ -350,18 +375,35 @@ public class SpectreSplit implements Split {
         SplitBlock otherASide = o.getASide();
         SplitBlock otherBSide = o.getBSide();
 
-        if (!thisASide.containsAny(otherASide)) {
+        if (!this.aSideContainsAny(otherASide)) {
             return Compatible.YES_11;
-        } else if (!thisASide.containsAny(otherBSide)) {
+        } else if (!this.aSideContainsAny(otherBSide)) {
             return Compatible.YES_10;
-        } else if (!thisBSide.containsAny(otherASide)) {
+        } else if (!this.bSideContainsAny(otherASide)) {
             return Compatible.YES_01;
-        } else if (!thisBSide.containsAny(otherBSide)) {
+        } else if (!this.bSideContainsAny(otherBSide)) {
             return Compatible.YES_00;
         } else {
             return Compatible.NO;
         }
+    }
 
+    public boolean aSideContainsAny(SplitBlock other) {
+        for(Integer a : other) {
+            if (this.aSideSet.contains(a)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean bSideContainsAny(SplitBlock other) {
+        for(Integer b : other) {
+            if (this.bSideSet.contains(b)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

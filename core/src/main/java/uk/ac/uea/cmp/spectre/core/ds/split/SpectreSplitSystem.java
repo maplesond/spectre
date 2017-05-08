@@ -143,50 +143,15 @@ public class SpectreSplitSystem extends ArrayList<Split> implements SplitSystem 
         this.reweight(treeWeights);
     }
 
-    public SpectreSplitSystem(PermutationSequenceDraw p_sequ) {
-        int ntaxa = p_sequ.getNtaxa();
-        int nsplits = p_sequ.getNswaps();
-        int[] cur_sequ = ArrayUtils.clone(p_sequ.getInitSequ());
-
-        this.orderedTaxa = new IdentifierList();
-        for(int i = 0; i < ntaxa; i++) {
-            this.orderedTaxa.add(new Identifier(Integer.toString(cur_sequ[i]), cur_sequ[i]));
-        }
-
-        //Write splits into 0/1-array.
-        int[] swaps = p_sequ.getSwaps();
-        for (int i = 0; i < nsplits; i++) {
-            //compute current permutation
-            int h = cur_sequ[swaps[i]];
-            cur_sequ[swaps[i]] = cur_sequ[swaps[i] + 1];
-            cur_sequ[swaps[i] + 1] = h;
-            //turn it into a 0/1 sequence
-            List<Integer> aside = new ArrayList<>();
-            List<Integer> bside = new ArrayList<>();
-            for (int j = 0; j < ntaxa; j++) {
-                if (j <= swaps[i]) {
-                    aside.add(cur_sequ[j]);
-                }
-                else {
-                    bside.add(cur_sequ[j]);
-                }
-            }
-            Split s = new SpectreSplit(new SpectreSplitBlock(aside), new SpectreSplitBlock(bside), p_sequ.getWeights() != null ? p_sequ.getWeights()[i] : 1.0);
-            if (p_sequ.getActive() != null) {
-                s.setActive(p_sequ.getActive()[i]);
-            }
-            this.add(s);
-        }
-    }
-
     public SpectreSplitSystem(PermutationSequence p_sequ) {
         int ntaxa = p_sequ.getnTaxa();
         int nsplits = p_sequ.getnSwaps();
         int[] cur_sequ = ArrayUtils.clone(p_sequ.getSequence());
+        String[] tax = p_sequ.getTaxaNames();
 
         this.orderedTaxa = new IdentifierList();
         for(int i = 0; i < ntaxa; i++) {
-            this.orderedTaxa.add(new Identifier(Integer.toString(cur_sequ[i]), cur_sequ[i]));
+            this.orderedTaxa.add(new Identifier(tax == null ? Integer.toString(cur_sequ[i]) : tax[cur_sequ[i]], cur_sequ[i]));
         }
 
         //Write splits into 0/1-array.
@@ -422,6 +387,13 @@ public class SpectreSplitSystem extends ArrayList<Split> implements SplitSystem 
     }
 
     @Override
+    public void activateByWeight(double threshold) {
+        for (Split s : this) {
+            s.setActive(s.getWeight() < threshold);
+        }
+    }
+
+    @Override
     public SplitSystem makeCanonical() {
         List<Split> splits = new ArrayList<>();
 
@@ -492,6 +464,13 @@ public class SpectreSplitSystem extends ArrayList<Split> implements SplitSystem 
         }
 
         return this.getNbSplits() == maxSplits;
+    }
+
+    @Override
+    public boolean isTaxonOnSameSide(int i, int j, int taxon) {
+        Split.SplitSide iSide = this.get(i).getSide(taxon);
+        Split.SplitSide jSide = this.get(j).getSide(taxon);
+        return iSide == jSide;
     }
 
     @Override

@@ -18,8 +18,6 @@ package uk.ac.uea.cmp.spectre.core.ds.network;
 
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.network.draw.*;
-import uk.ac.uea.cmp.spectre.core.ds.split.SpectreSplitSystem;
-import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 
 import java.awt.*;
 import java.util.LinkedList;
@@ -452,9 +450,6 @@ public class Vertex {
 
     public Vertex optimiseLayout(PermutationSequenceDraw ps, Network network) {
 
-        // Compute split system
-        SplitSystem ss = new SpectreSplitSystem(ps);
-
         // Collect all vertices in the network
         LinkedList<Vertex> vertices = this.collectVertices();
 
@@ -470,7 +465,7 @@ public class Vertex {
         //no more than certain constant angle, whereas precise one uses angle
         //which maximises certain function.
         //BoxOpener boxOpenerSimple = new BoxOpener(angleCalculatorSimple, ss);
-        BoxOpener boxOpenerPrecise = new BoxOpener(angleCalculatorPrecise, ss);
+        BoxOpener boxOpenerPrecise = new BoxOpener(angleCalculatorPrecise, ps.getSplitSystem());
 
         //CompatibleCorrectors are used to change angles for compatible splits.
         //CompatibleCorrector compatibleCorrectorSimple = new CompatibleCorrector(angleCalculatorSimple);
@@ -483,8 +478,8 @@ public class Vertex {
         //alone.
 
         int trivial = 2 + network.getTrivialEdges().size() / 10;
-        int precise = 2 + ps.getNtaxa() / 20;
-        int iterations = 2 + ps.getNtaxa() / 50;
+        int precise = 2 + ps.getNbTaxa() / 20;
+        int iterations = 2 + ps.getNbTaxa() / 50;
         int finish = precise + 5;
         int compatible = 1;// + ps.ntaxa / 40;
 

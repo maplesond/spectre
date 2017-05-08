@@ -91,6 +91,23 @@ public class Edge implements Comparable<Edge> {
         return color;
     }
 
+    public double getDeltaX() {
+        return this.bottom.getX() - this.top.getX();
+    }
+
+    public double getDeltaY() {
+        return this.bottom.getY() - this.top.getY();
+    }
+
+    public double getCentreX() {
+        return this.top.getX() + this.getDeltaX();
+    }
+
+    public double getCentreY() {
+        return this.top.getY() + this.getDeltaY();
+    }
+
+
     public int getIdxsplit() {
         return idxsplit;
     }

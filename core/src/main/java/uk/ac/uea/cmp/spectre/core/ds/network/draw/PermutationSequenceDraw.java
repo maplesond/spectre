@@ -15,6 +15,7 @@
 
 package uk.ac.uea.cmp.spectre.core.ds.network.draw;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import uk.ac.uea.cmp.spectre.core.ds.Identifier;
@@ -33,59 +34,14 @@ public class PermutationSequenceDraw {
     //Variables used in this class
     //*************************************************************
 
-    //number of taxa
-    int ntaxa = 0;
-    //number of swaps
-    //note that each swap corresponds to a split
-    int nswaps = 0;
-    //flag for weights on the swaps/splits
-    boolean hasWeights = false;
-    //flag for flags on active splits
-    boolean hasActiveFlags = false;
-    //number of active swaps/splits
-    //Only the active splits are included in the network.
-    int nActive = 0;
-    //number of classes of taxa
-    //If not all splits are active, there might exist
-    //taxa that are not separated by an active split.
-    //Then these taxa belong to the same class and
-    //label the same vertex in the split network.
-    int nclasses = 0;
-    //initial permutation of the taxa.
-    //the set of taxa is always {0,1,...,ntaxa-1}
-    int[] initSequ = null;
-    //names of the taxa
-    String[] taxaname = null;
-    //sequence of swaps. A swap is specified by the index
-    //of the element in the array that is swapped with the 
-    //successor in the array. Each swap corresponds to
-    //a split, namely the elements up to the element
-    //that is indexed in the swap vs the rest
-    int[] swaps = null;
-    //We record which swaps correspond to an active split.
-    //Used when filtering out splits with small length etc.
-    boolean[] active = null;
-    //This array keeps track of those classes of taxa that
-    //are not distinguished by the active splits.
-    //One representative is randomly selected and all
-    //other taxa in the class point to this taxon.
-    int[] representedby = null;
     //This array keeps track of the representative of
     //the classes of taxa. Those are active. All other
     //taxa are inactive.
-    boolean[] activeTaxa = null;
-    //weights associated to the swaps, that is, splits
-    double[] weights = null;
-
-    //maps the indices of the active splits to new indices
-    //so that they are numbered without gaps. This is done
-    //to facilitate the visualization of the split network
-    //by SplitsTree. There edges are labeled by the index
-    //of the corresponding split and the range of possible
-    //indices is limited, it seems.
-    int[] compressed = null;
+    Map<Integer, Boolean> activeTaxa;
     //weights of all trivial splits
-    double[] trivial = null;
+    Map<Integer, Double> trivial;
+    // The split system to draw
+    SplitSystem ss;
 
 
 
@@ -95,147 +51,26 @@ public class PermutationSequenceDraw {
 
 
     /**
-     * Constructor of this class from a given initial sequence, a sequence of swaps, weights and array of active flags.
-     * For the transition from PS in FNet.
-     * @param in_init_sequ Initial sequence
-     * @param in_swaps Sequence of swaps
-     * @param in_weights Weights
-     * @param in_active Active flags
-     * @param trivialWeights Trivial weights
-     */
-    public PermutationSequenceDraw(int[] in_init_sequ, int[] in_swaps, double[] in_weights, boolean[] in_active, double[] trivialWeights) {
-        int i = 0;
-
-        ntaxa = in_init_sequ.length;
-        nclasses = ntaxa;
-        nswaps = in_swaps.length;
-        nActive = nswaps;
-
-        hasWeights = true;
-        hasActiveFlags = true;
-
-        initSequ = new int[ntaxa];
-        representedby = new int[ntaxa];
-        activeTaxa = new boolean[ntaxa];
-        taxaname = new String[ntaxa];
-        trivial = new double[ntaxa];
-
-        swaps = new int[nswaps];
-        active = new boolean[nswaps];
-        compressed = new int[nswaps];
-        weights = new double[nswaps];
-
-        for (i = 0; i < ntaxa; i++) {
-            initSequ[i] = in_init_sequ[i];
-            representedby[i] = i;
-            activeTaxa[i] = true;
-            taxaname[i] = "taxon" + i;
-            trivial[i] = trivialWeights[i];
-        }
-
-        for (i = 0; i < nswaps; i++) {
-            swaps[i] = in_swaps[i];
-            compressed[i] = i;
-            active[i] = in_active[i];
-            weights[i] = in_weights[i];
-            if (weights[i] == 0) {
-                active[i] = false;
-            }
-        }
-
-        nActive = CollectionUtils.nbTrueElements(active);
-    }
-
-
-    /**
      * Constructor for this class from a SplitSystem-object. This is just used as a quick and dirty way to feed circular
      * split systems into the drawing algorithm and then display them with the viewer.
      * @param ss Circular split system
      */
-    public PermutationSequenceDraw(SplitSystem ss){
+    public PermutationSequenceDraw(SplitSystem ss) {
 
-        //first get the number of taxa and number of splits
-        //in a full circular split system on that number of taxa
-        ntaxa = ss.getNbTaxa();
-        nclasses = ntaxa;
-        nswaps = ntaxa * (ntaxa - 1) / 2;
-        nActive = nswaps;
+        this.ss = ss;
 
-        //assume for now that all splits have weights and
-        //and all splits are active, that is, the split system is full
-        hasWeights = true;
-        hasActiveFlags = true;
+        final int ntaxa = ss.getNbTaxa();
 
-        //set up the arrays used to store all the information about the split system
-        initSequ = new int[ntaxa];
-        representedby = new int[ntaxa];
-        activeTaxa = new boolean[ntaxa];
-        taxaname = new String[ntaxa];
-        trivial = new double[ntaxa];
-
-        swaps = new int[nswaps];
-        active = new boolean[nswaps];
-        compressed = new int[nswaps];
-        weights = new double[nswaps];
+        activeTaxa = new HashMap<>(ntaxa);
+        trivial = new HashMap<>(ntaxa);
 
         //store information about the taxa in arrays
-        for (int i = 0; i < ntaxa; i++) {
+        for (Identifier i : this.ss.getOrderedTaxa()) {
             //Initial permutation must equal circular ordering underlying the circular split system.
             //Assumes that Ids used are 1,2,3,...,ntaxa.
-            initSequ[i] = ss.getOrderedTaxa().get(i).getId()-1;
-            representedby[i] = i;
-            activeTaxa[i] = true;
-            taxaname[ss.getOrderedTaxa().get(i).getId()-1] = ss.getOrderedTaxa().get(i).getName();
-            trivial[i] = 0.0; //no extra length added to pendant edge;
+            activeTaxa.put(i.getId(), true);
+            trivial.put(i.getId(), 0.0); //no extra length added to pendant edge;
         }
-
-        //array used to store the current permutation from which
-        //we extract the current split
-        int[] cursequ = new int[ntaxa];
-        for (int i = 0; i < ntaxa; i++) {
-            cursequ[i] = initSequ[i];
-        }
-
-        int h = 0;
-        int k = 0;
-        int a = 0;
-
-        //the generic structure of a circular split system
-        for (int i = 0; i < ntaxa; i++) {
-            for (int j = 0; j < ntaxa - i - 1; j++) {
-                swaps[k] = j;
-                compressed[k] = k;
-                weights[k] = 0;
-                active[k] = false;
-
-                //update current permutation
-                h = cursequ[j];
-                cursequ[j] = cursequ[j + 1];
-                cursequ[j + 1] = h;
-
-                //get the split represented by this swap
-                int[] sideA = new int[j+1]; //get one side of the split as an int-array, the elements must be the ids according to the identifier list
-                for(a=0;a<=j;a++) {sideA[a]=cursequ[a]+1;}
-                SplitBlock ssb = new SpectreSplitBlock(sideA);
-                ssb.sort();
-
-                //next check whether the input split system contains a split with one SplitBlock equal to the one we just created
-                for (Split s : ss) {
-                    SplitBlock ssba = s.getASide();
-                    ssba.sort();
-                    SplitBlock ssbb = s.getBSide();
-                    ssbb.sort();
-                    if(ssba.equals(ssb) || ssbb.equals(ssb)){
-                        weights[k] = s.getWeight();
-                        if(weights[k] > 0) {active[k] = true;}
-                    }
-                }
-                k++;
-            }
-        }
-
-        //update number of active splits
-        nActive = CollectionUtils.nbTrueElements(active);
     }
 
 
@@ -243,146 +78,39 @@ public class PermutationSequenceDraw {
     // Getters
     //***********************************
 
+    public int getNbTaxa() {return this.ss.getNbTaxa();}
 
-    public int getNtaxa() {
-        return ntaxa;
-    }
-
-    public int getNswaps() {
-        return nswaps;
-    }
-
-    public boolean hasWeights() {
-        return hasWeights;
-    }
-
-    public boolean hasActiveFlags() {
-        return hasActiveFlags;
-    }
-
-    public int getnActive() {
-        return nActive;
-    }
-
-    public int getNclasses() {
-        return nclasses;
-    }
-
-    public void setNClasses(final int value) {
-        nclasses = value;
-    }
-
-    public void decrementNClasses() {
-        nclasses--;
-    }
-
-    public int[] getInitSequ() {
-        return initSequ;
-    }
-
-    public String[] getTaxaname() {
-        return taxaname;
-    }
-
-    public int[] getSwaps() {
-        return swaps;
+    public SplitSystem getSplitSystem() {
+        return this.ss;
     }
 
     public boolean[] getActive() {
+        boolean[] active = new boolean[this.ss.getNbSplits()];
+        for(int i = 0; i < this.ss.getNbSplits(); i++) {
+            active[i] = this.ss.get(i).isActive();
+        }
         return active;
     }
 
     public boolean getActive(int index) {
-        return active[index];
-    }
-
-    public int[] getRepresentedby() {
-        return representedby;
-    }
-
-    public void setRepresentedByAt(final int index, final int value) {
-        representedby[index] = value;
-    }
-
-    public boolean[] getActiveTaxa() {
-        return activeTaxa;
-    }
-
-    public boolean getActiveTaxaAt(final int index) {
-        return activeTaxa[index];
+        return this.ss.get(index).isActive();
     }
 
     public void setActiveTaxaAt(final int index, boolean value) {
-        activeTaxa[index] = value;
+        activeTaxa.put(index, value);
     }
 
-    public int[] getCompressed() {
-        return compressed;
-    }
-
-    public double[] getTrivial() {
-        return trivial;
+    public double getTrivial(int taxonId) {
+        return trivial.get(taxonId);
     }
 
     public double[] getWeights() {
-        return weights;
-    }
-
-    public void setWeightAt(final int index, double value) {
-        weights[index] = value;
+        return this.ss.getWeightsAsArray();
     }
 
     //*********************************************************************
     //Other public methods of this class
     //*********************************************************************
-
-    /**
-     * Returns a string representation of this sequence
-     */
-    @Override
-    public String toString() {
-
-        StringBuilder sb = new StringBuilder();
-
-        sb.append("Number of taxa: ").append(ntaxa)
-          .append("List of taxa:");
-
-        for (int i = 0; i < ntaxa; i++) {
-            sb.append(taxaname[i]);
-        }
-
-        sb.append("Initial permutation: ");
-        for (int i = 0; i < ntaxa; i++) {
-            sb.append(initSequ[i] + " ");
-        }
-
-        sb.append("\nSequence of swaps: ");
-        for (int i = 0; i < nswaps; i++) {
-            sb.append(swaps[i] + " ");
-        }
-
-        sb.append("\n");
-
-        if (hasWeights) {
-            sb.append("Weights: ");
-            for (int i = 0; i < nswaps; i++) {
-                sb.append(weights[i] + " ");
-            }
-            sb.append("\n");
-        }
-
-        sb.append("Active swaps: ");
-        for (int i = 0; i < nswaps; i++) {
-            if (active[i]) {
-                sb.append("1 ");
-            } else {
-                sb.append("0 ");
-            }
-        }
-        sb.append("\n");
-
-        return sb.toString();
-    }
 
     public Network createUnoptimisedNetwork() {
         Vertex net = drawSplitSystem(-1.0);
@@ -413,47 +141,17 @@ public class PermutationSequenceDraw {
 
 
     /**
-     * This method filters the splits by labeling those with a length below the given threshold inactive.
-     * @param thold Threshold value
-     */
-    public void setActive(double thold) {
-        if (active == null) {
-            active = new boolean[nswaps];
-        }
-
-        int i = 0;
-        nActive = 0;
-
-        if (weights == null) {
-            for (i = 0; i < nswaps; i++) {
-                active[i] = true;
-            }
-            nActive = nswaps;
-        } else {
-            for (i = 0; i < nswaps; i++) {
-                if (weights[i] < thold) {
-                    active[i] = false;
-                } else {
-                    active[i] = true;
-                    nActive++;
-                }
-            }
-        }
-    }
-
-    /**
-     * This method is the main public method that should be called for computing a plane split network for a flat split
-     * system given as a permutation sequence.
+     * This method is the main public method that should be called for computing a plane split network for a split
+     * system.
      * @param thr Threshold, below which splits are ignored
      * @return Split graph represented by a single vertex.  The network can be traversed from this vertex.
      */
     public Vertex drawSplitSystem(double thr) {
         this.restoreTrivialWeightsForExternalVertices();
-
         this.removeSplitsSmallerOrEqualThan(thr);
 
         //Array of sets of edges, one for each split
-        TreeSet<Edge>[] splitedges = new TreeSet[this.getNswaps()];
+        TreeSet<Edge>[] splitedges = new TreeSet[this.ss.getNbSplits()];
 
         Vertex v = this.computeSplitGraph(splitedges);
 
@@ -464,32 +162,30 @@ public class PermutationSequenceDraw {
 
 
     public void restoreTrivialWeightsForExternalVertices() {
-        SplitSystem ss = new SpectreSplitSystem(this);
-        for (int i = 0; i < ss.getNbSplits(); i++) {
-            if (ss.get(i).isTrivial()) {
-                int taxaNr = ss.get(i).getTrivial();
-                if (trivial[taxaNr] > 0) {
-                    if (!active[i]) {
-                        active[i] = true;
-                        nActive++;
+        for (Split s : this.ss) {
+            if (s.isTrivial()) {
+                int taxaNr = s.getTrivial();
+                if (trivial.get(taxaNr) > 0.0) {
+                    if (!s.isActive()) {
+                        s.setActive(true);
                     }
-                    weights[i] = trivial[taxaNr];
-                    trivial[taxaNr] = 0;
+                    s.setWeight(trivial.get(taxaNr));
+                    trivial.put(taxaNr, 0.0);
                 }
             }
         }
     }
 
     public void removeSplitsSmallerOrEqualThan(double thr) {
-        for (int i = 0; i < weights.length; i++) {
-            if (weights[i] <= thr) {
-                active[i] = false;
+        for (int i = 0; i < this.ss.getNbSplits(); i++) {
+            if (this.ss.get(i).getWeight() <= thr) {
+                this.ss.get(i).setActive(false);
             }
         }
     }
 
     public int[] collectIndicesOfActiveSplits() {
-        int[] activeSplits = new int[this.getnActive()];
+        int[] activeSplits = new int[this.ss.getNbActiveWeightedSplits()];
 
         //Index used to fill in array of active splits
         int j = 0;
@@ -503,7 +199,7 @@ public class PermutationSequenceDraw {
     }
 
     public TreeSet<Edge>[] collectEdgesForTheSplits(final Vertex v) {
-        TreeSet<Edge>[] splitedges = new TreeSet[this.getNswaps()];
+        TreeSet<Edge>[] splitedges = new TreeSet[this.ss.getNbSplits()];
 
         for (int i = 0; i < this.getActive().length; i++) {
             LinkedList<Edge> edges = v.collectEdgesForSplit(i);
@@ -555,17 +251,19 @@ public class PermutationSequenceDraw {
         double xcoord = 0.0;
         double ycoord = 0.0;
 
-        Edge[] chain = new Edge[this.getnActive()];
+        final int nactive = this.ss.getNbActiveWeightedSplits();
+
+        Edge[] chain = new Edge[nactive];
 
         Vertex u = new Vertex(xcoord, ycoord);
 
-        for (int i = 0; i < this.getNswaps(); i++) {
+        for (int i = 0; i < this.ss.getNbSplits(); i++) {
             //create new set for edges associated to this split
             splitedges[i] = new TreeSet<>();
 
             if (this.getActive()[i]) {
-                double dx = -Math.cos(((j + 1) * Math.PI) / (this.getnActive() + 1));
-                double dy = -Math.sin(((j + 1) * Math.PI) / (this.getnActive() + 1));
+                double dx = -Math.cos(((j + 1) * Math.PI) / (nactive + 1));
+                double dy = -Math.sin(((j + 1) * Math.PI) / (nactive + 1));
 
                 xcoord = xcoord + (this.getWeights()[i] * dx);
                 ycoord = ycoord + (this.getWeights()[i] * dy);
@@ -592,13 +290,10 @@ public class PermutationSequenceDraw {
      * @return Completed network
      */
     private Vertex completeNetwork(Edge[] chain, TreeSet[] splitedges) {
-        SplitSystemDraw ssyst = new SplitSystemDraw(this);
 
         Vertex v = null;
-        for (int i = 0; i < this.getNtaxa(); i++) {
+        for (Identifier i : this.ss.getOrderedTaxa()) {
             boolean inverted = true;
-
-            final int initSequI = this.getInitSequ()[i];
 
             while (inverted) {
                 inverted = false;
@@ -607,12 +302,9 @@ public class PermutationSequenceDraw {
                     //test if the splits associated to edges
                     //chain[j-1] and chain[j] must be inverted
 
-                    if (ssyst.splits[chain[j - 1].getIdxsplit()][initSequI] == 0
-                            && ssyst.splits[chain[j].getIdxsplit()][initSequI] == 1) {
-                        double dx = (chain[j].getBottom()).getX() - (chain[j].getTop()).getX();
-                        double dy = (chain[j].getBottom()).getY() - (chain[j].getTop()).getY();
-
-                        v = new Vertex((chain[j - 1].getTop()).getX() + dx, (chain[j - 1].getTop()).getY() + dy);
+                    if (this.ss.get(chain[j - 1].getIdxsplit()).getSide(i.getId()) == Split.SplitSide.A_SIDE &&
+                            this.ss.get(chain[j].getIdxsplit()).getSide(i.getId()) == Split.SplitSide.B_SIDE) {
+                        v = new Vertex(chain[j - 1].getCentreX(), chain[j - 1].getCentreY());
                         Edge e1 = new Edge(chain[j - 1].getTop(), v, chain[j].getIdxsplit(), chain[j].getTimestp() + 1);
                         splitedges[e1.getIdxsplit()].add(e1);
                         Edge e2 = new Edge(v, chain[j].getBottom(), chain[j - 1].getIdxsplit(), chain[j - 1].getTimestp() + 1);
@@ -635,30 +327,24 @@ public class PermutationSequenceDraw {
                 if (v == null) {
                     v = new Vertex(0.0, 0.0);
                 }
-                v.getTaxa().add(new Identifier(taxaname[initSequI], initSequI));
-                this.setRepresentedByAt(initSequI, 0);
-                if (initSequI != 0) {
-                    this.setActiveTaxaAt(initSequI, false);
+                v.getTaxa().add(i);
+                if (i.getId() != 0) {
+                    this.setActiveTaxaAt(i.getId(), false);
                 }
-                this.setNClasses(1);
             } else {
                 v = chain[0].getTop();
                 for (int j = 0; j < chain.length; j++) {
-                    if (ssyst.splits[chain[j].getIdxsplit()][initSequI] == 0) {
-                        (chain[j].getTop()).getTaxa().add(new Identifier(taxaname[initSequI], initSequI));
+                    if (this.ss.get(chain[j].getIdxsplit()).getSide(i.getId()) == Split.SplitSide.A_SIDE) {
+                        (chain[j].getTop()).getTaxa().add(i);
                         if (chain[j].getTop().getTaxa().size() > 1) {
-                            this.setRepresentedByAt(initSequI, chain[j].getTop().getTaxa().getFirst().getId());
-                            this.setActiveTaxaAt(initSequI, false);
-                            this.decrementNClasses();
+                            this.setActiveTaxaAt(i.getId(), false);
                         }
                         break;
                     } else {
                         if (j == (chain.length - 1)) {
-                            (chain[j].getBottom()).getTaxa().add(new Identifier(taxaname[initSequI], initSequI));
+                            (chain[j].getBottom()).getTaxa().add(i);
                             if (chain[j].getBottom().getTaxa().size() > 1) {
-                                this.setRepresentedByAt(initSequI, chain[j].getBottom().getTaxa().getFirst().getId());
-                                this.setActiveTaxaAt(initSequI, false);
-                                this.decrementNClasses();
+                                this.setActiveTaxaAt(i.getId(), false);
                             }
                         }
                     }
@@ -679,10 +365,6 @@ public class PermutationSequenceDraw {
      */
     public Vertex removeCompatibleBoxes(Vertex v, boolean check, TreeSet<Edge>[] splitedges) {
 
-        //get the split system from the permutation sequence
-        //SplitSystemDraw ssyst = new SplitSystemDraw(this);
-        SplitSystem ssyst = new SpectreSplitSystem(this);
-
         //count incompatible pairs
         int count = 0;
 
@@ -690,12 +372,13 @@ public class PermutationSequenceDraw {
         Vertex u = v;
 
         //check all pairs of active splits
-        for (int i = 0; i < (this.getNswaps() - 1); i++) {
-            if (this.getActive()[i]) {
-
-                for (int j = i + 1; j < this.getNswaps(); j++) {
-                    if (this.getActive()[j]) {
-                        Split.Compatible pattern = ssyst.getCompatible(i, j);
+        for (int i = 0; i < this.ss.getNbSplits() - 1; i++) {
+            Split si = this.ss.get(i);
+            if (si.isActive()) {
+                for (int j = i + 1; j < this.ss.getNbSplits(); j++) {
+                    Split sj = this.ss.get(j);
+                    if (sj.isActive()) {
+                        Split.Compatible pattern = this.ss.getCompatible(i, j);
                         if (pattern.isCompatible()) {
                             u = this.removeBox(u, i, j, pattern, splitedges);
                             if (u == null) {
@@ -712,14 +395,11 @@ public class PermutationSequenceDraw {
         //Check if the numbers of boxes and edges in the output makes sense
         //First compute the number edges in the network
         int nedges = 0;
-
         for (int i = 0; i < splitedges.length; i++) {
-            nedges = nedges + splitedges[i].size();
+            nedges += splitedges[i].size();
         }
 
-        final int nbActive = this.getnActive();
-
-        if ((check) && ((nedges - nbActive) / 2) != count) {
+        if (check && ((nedges - this.ss.getNbActiveWeightedSplits()) / 2) != count) {
             throw new IllegalStateException("Numbers do not match!!!!!");
         }
 
@@ -766,7 +446,7 @@ public class PermutationSequenceDraw {
      * @param splitedges Eplit edges
      * @return Network with box removed
      */
-    private Vertex removeBoxByFlipping(int a, int b, Split.Compatible pattern, NetworkBox netbox, TreeSet[] splitedges) {
+    private Vertex removeBoxByFlipping(int a, int b, Split.Compatible pattern, NetworkBox netbox, TreeSet<Edge>[] splitedges) {
         Vertex u = null;
 
 
@@ -861,13 +541,10 @@ public class PermutationSequenceDraw {
      * @return A pair of edge lists.  The first represents a list of relevant edges and the second represents those that cross
      */
     private Pair<EdgeList, EdgeList> collectEdgesFromBox(Edge h1, Edge h2, int s, Direction dirs,
-                                               TreeSet[] splitedges, int parts) {
-        Iterator iter = splitedges[s].iterator();
+                                               TreeSet<Edge>[] splitedges, int parts) {
         EdgeList crossLists = new EdgeList();
         EdgeList eLists = new EdgeList();
         int stopstp = 0;
-
-        Edge g = null;
 
         if (h1.getTimestp() < h2.getTimestp()) {
             if (dirs == Direction.LEFT) {
@@ -884,8 +561,7 @@ public class PermutationSequenceDraw {
         }
 
         if (dirs == Direction.LEFT) {
-            while (iter.hasNext()) {
-                g = (Edge) iter.next();
+            for (Edge g : splitedges[s]) {
                 if (g.getTimestp() < stopstp) {
                     eLists.addFirst(g);
                     if (parts == 1) {
@@ -898,8 +574,7 @@ public class PermutationSequenceDraw {
                 }
             }
         } else {
-            while (iter.hasNext()) {
-                g = (Edge) iter.next();
+            for (Edge g : splitedges[s]) {
                 if (g.getTimestp() > stopstp) {
                     eLists.addLast(g);
                     if (parts == 1) {
@@ -996,7 +671,7 @@ public class PermutationSequenceDraw {
     }
 
     /**
-     * This method walks through the network to the first scrossing with a split in crossindices
+     * This method walks through the network to the first crossing with a split in crossindices
      * @param e
      * @param a
      * @param crossindices

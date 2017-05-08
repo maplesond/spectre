@@ -114,7 +114,7 @@ public class CompatibleCorrector {
 
                 for (int t = taxa.size() - 1; t >= 0; t--) {
                     Identifier taxon = taxa.get(t);
-                    double length = ps.getTrivial()[taxon.getId()];
+                    double length = ps.getTrivial(taxon.getId());
 
                     double x;
                     double y;
@@ -533,10 +533,8 @@ public class CompatibleCorrector {
     }
 
     private double sumUpDistancesForVertex(Vertex v, double x, double y, List<Vertex> vertices) {
-        Iterator<Vertex> iterator = vertices.iterator();
-        Double score = null;
-        while (iterator.hasNext()) {
-            Vertex w = iterator.next();
+        Double score = 0.0;
+        for(Vertex w : vertices) {
             if (w != v) {
                 double dist = new Vertex(x, y).calcDistanceTo(w);
                 if (score == null || score > dist) {

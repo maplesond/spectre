@@ -55,6 +55,12 @@ public interface Split extends Comparable<Split> {
     double getWeight();
 
     /**
+     * Sets the weight of this split.
+     * @param weight Weight
+     */
+    void setWeight(double weight);
+
+    /**
      * Returns True if this split is active, False otherwise.
      * @return True if this split is active, False otherwise.
      */
@@ -109,6 +115,8 @@ public interface Split extends Comparable<Split> {
      * @return The B side of the split
      */
     SplitBlock getBSide();
+
+    SplitSide getSide(int taxonId);
 
     /**
      * Gets an array of integers representing the taxa indicies on the split's A side.
