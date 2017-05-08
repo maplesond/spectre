@@ -20,7 +20,6 @@ import org.apache.commons.math3.util.CombinatoricsUtils;
 import uk.ac.uea.cmp.spectre.core.ds.Identifier;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
-import uk.ac.uea.cmp.spectre.core.ds.network.draw.PermutationSequenceDraw;
 import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.CircularNNLS;
 import uk.ac.uea.cmp.spectre.core.ds.split.flat.PermutationSequence;
 

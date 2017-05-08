@@ -47,23 +47,23 @@ public class Vertex {
     private double y;
 
     //number of vertex in nexus file
-    private int nxnum = 0;
+    private int nxnum;
 
     //flags used in various methods when traversing the
     //splitsgraph and so on
     private boolean visited;
 
-    private int width = 0;
-    private int height = 0;
+    private int width;
+    private int height;
 
-    private Color bgColor = Color.BLACK;
-    private Color fgColor = Color.BLACK;
+    private Color bgColor;
+    private Color fgColor;
 
-    private String shape = null;
+    private String shape;
 
     private NetworkLabel label;
 
-    private EdgeList externalEdges = null;
+    private EdgeList externalEdges;
 
 
     public Vertex() {
@@ -71,19 +71,43 @@ public class Vertex {
     }
 
     public Vertex(double xcoord, double ycoord) {
-        x = xcoord;
-        y = ycoord;
-        edgeList = new EdgeList();
-        taxa = new IdentifierList();
-        visited = false;
+        this.x = xcoord;
+        this.y = ycoord;
+        this.edgeList = new EdgeList();
+        this.taxa = new IdentifierList();
+        this.visited = false;
+        this.nxnum = 0;
+        this.width = 0;
+        this.height = 0;
+        this.bgColor = Color.BLACK;
+        this.fgColor = Color.BLACK;
+        this.shape = null;
+        this.label = null;
+        this.externalEdges = null;
+    }
+
+    public Vertex(Vertex v) {
+        this.x = v.x;
+        this.y = v.y;
+        this.edgeList = v.edgeList.copy();
+        this.taxa = new IdentifierList(v.taxa);
+        this.visited = v.visited;
+        this.nxnum = v.nxnum;
+        this.width = v.width;
+        this.height = v.height;
+        this.bgColor = new Color(v.bgColor.getRGB());
+        this.fgColor = new Color(v.fgColor.getRGB());
+        this.shape = new String(v.shape);
+        this.label = new NetworkLabel(v.label);
+        this.externalEdges = v.edgeList.copy();
     }
 
     //Methods to add an edge to the list of incident edges.
-    public void add_edge_before_first(Edge e) {
+    public void prependEdge(Edge e) {
         edgeList.addFirst(e);
     }
 
-    public void add_edge_after_last(Edge e) {
+    public void appendEdge(Edge e) {
         edgeList.addLast(e);
     }
 
@@ -448,7 +472,7 @@ public class Vertex {
         return angle;
     }
 
-    public Vertex optimiseLayout(PermutationSequenceDraw ps, Network network) {
+    public Vertex optimiseLayout(DrawSplitSystem ps, Network network) {
 
         // Collect all vertices in the network
         LinkedList<Vertex> vertices = this.collectVertices();

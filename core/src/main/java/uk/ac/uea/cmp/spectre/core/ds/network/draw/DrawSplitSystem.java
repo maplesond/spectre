@@ -15,20 +15,18 @@
 
 package uk.ac.uea.cmp.spectre.core.ds.network.draw;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import uk.ac.uea.cmp.spectre.core.ds.Identifier;
 import uk.ac.uea.cmp.spectre.core.ds.network.*;
 import uk.ac.uea.cmp.spectre.core.ds.split.*;
-import uk.ac.uea.cmp.spectre.core.util.CollectionUtils;
 
 import java.util.*;
 
 /**
  * This class is used to store the permutation sequence representing a flat split system
  **/
-public class PermutationSequenceDraw {
+public class DrawSplitSystem {
 
     //*************************************************************
     //Variables used in this class
@@ -55,7 +53,7 @@ public class PermutationSequenceDraw {
      * split systems into the drawing algorithm and then display them with the viewer.
      * @param ss Circular split system
      */
-    public PermutationSequenceDraw(SplitSystem ss) {
+    public DrawSplitSystem(SplitSystem ss) {
 
         this.ss = ss;
 
@@ -139,6 +137,32 @@ public class PermutationSequenceDraw {
         return network;
     }
 
+    private static class NetworkDrawing {
+        Vertex v;
+        TreeSet<Edge>[] splitedges;
+
+        public NetworkDrawing(Vertex v, TreeSet<Edge>[] splitEdges) {
+            this.v = v;
+            this.splitedges = splitEdges;
+        }
+
+        public NetworkDrawing(NetworkDrawing copy) {
+            this.v = new Vertex(copy.v);
+            this.splitedges = new TreeSet[copy.splitedges.length];
+            for(int i = 0; i < copy.splitedges.length; i++) {
+                this.splitedges[i] = new TreeSet<>(copy.splitedges[i]); // Only does a shallow copy... need to do a deep copy.
+            }
+        }
+
+        public int getNumberEdges() {
+            int nbEdges = 0;
+            for (int i = 0; i < this.splitedges.length; i++) {
+                nbEdges += this.splitedges[i].size();
+            }
+
+            return nbEdges;
+        }
+    }
 
     /**
      * This method is the main public method that should be called for computing a plane split network for a split
@@ -147,17 +171,16 @@ public class PermutationSequenceDraw {
      * @return Split graph represented by a single vertex.  The network can be traversed from this vertex.
      */
     public Vertex drawSplitSystem(double thr) {
-        this.restoreTrivialWeightsForExternalVertices();
+        this.restoreTrivialWeightsForExternalVertices();    // These shouldn't be here!
         this.removeSplitsSmallerOrEqualThan(thr);
 
-        //Array of sets of edges, one for each split
-        TreeSet<Edge>[] splitedges = new TreeSet[this.ss.getNbSplits()];
+        // Creates a regular unminimised network from the stored split system
+        NetworkDrawing regularNetwork = this.computeRegularNetwork();
 
-        Vertex v = this.computeSplitGraph(splitedges);
+        // Creates a minimal network from the regular network
+        NetworkDrawing minmisedNetwork = this.makeNetworkMinimal(regularNetwork, true);
 
-        v = this.removeCompatibleBoxes(v, false, splitedges);
-
-        return v;
+        return minmisedNetwork.v;
     }
 
 
@@ -217,24 +240,46 @@ public class PermutationSequenceDraw {
      * unlabeled vertices of degree two and trivial splits may be represented by more than one edge in the network. This
      * is the first step of the computation of the final network.  It is provided as a public method for testing
      * purposes.
-     * @param splitedges Array of treesets representing split edges
-     * @return Split graph represented by a single vertex.  The network can be traversed from this vertex.
+     * @return Split graph represented by a single vertex and edges.  The network can be traversed from this vertex.
      */
-    public Vertex computeSplitGraph(TreeSet[] splitedges) {
-        //Compute the leftmost edges in the network.
-        //This also initializes the sets of edges
-        //associated to each split.
-        Edge[] chain = this.leftmostEdges(splitedges);
+    public NetworkDrawing computeRegularNetwork() {
 
-        //Complete the network and return it
-        return this.completeNetwork(chain, splitedges);
+        // Compute the initial path which consists of the leftmost edges in the network.
+        // This also initializes the sets of edges associated to each split.
+        Path path = this.createInitialPath();
+
+        // Now extend the initial chain
+        Edge[] chain = path.chain;
+        TreeSet<Edge>[] splitedges = path.splitEdges;
+
+        Vertex v = null;
+        for (Identifier i : this.ss.getOrderedTaxa()) {
+
+            // Add all boxes to path required by this taxon
+            v = addBoxes(i.getId(), path, v);
+
+            // Now to find the vertex that should be labeled by taxon i
+            v = findVertexToLabel(i, path.chain, v);
+        }
+
+        return new NetworkDrawing(v, splitedges);
     }
+
 
     public enum Direction {
         LEFT,
         RIGHT
     }
 
+    private static class Path {
+        TreeSet<Edge>[] splitEdges;
+        Edge[] chain;
+
+        public Path(TreeSet<Edge>[] splitEdges, Edge[] chain) {
+            this.splitEdges = splitEdges;
+            this.chain = chain;
+        }
+    }
 
     // ***********************
     // *** Private methods ***
@@ -243,133 +288,147 @@ public class PermutationSequenceDraw {
     /**
      * This method computes the chain of edges that form the left boundary of the resulting split network before trimming
      * away unlabeled degree two vertices and pushing out trivial splits.
-     * @param splitedges Set of splits
      * @return Left-most edges in the split network
      */
-    private Edge[] leftmostEdges(TreeSet<Edge>[] splitedges) {
+    private Path createInitialPath() {
+
         int j = 0;
-        double xcoord = 0.0;
-        double ycoord = 0.0;
 
         final int nactive = this.ss.getNbActiveWeightedSplits();
 
         Edge[] chain = new Edge[nactive];
+        TreeSet<Edge>[] splitedges = new TreeSet[this.ss.getNbSplits()];
 
-        Vertex u = new Vertex(xcoord, ycoord);
+        Vertex cur = new Vertex(0.0, 0.0);
 
         for (int i = 0; i < this.ss.getNbSplits(); i++) {
             //create new set for edges associated to this split
             splitedges[i] = new TreeSet<>();
 
-            if (this.getActive()[i]) {
-                double dx = -Math.cos(((j + 1) * Math.PI) / (nactive + 1));
-                double dy = -Math.sin(((j + 1) * Math.PI) / (nactive + 1));
+            if (this.ss.get(i).isActive()) {
 
-                xcoord = xcoord + (this.getWeights()[i] * dx);
-                ycoord = ycoord + (this.getWeights()[i] * dy);
+                // Current vertex is now previous
+                Vertex prev = cur;
 
-                Vertex v = u;
-                u = new Vertex(xcoord, ycoord);
-                Edge e = new Edge(v, u, i, 1);
+                // Calc angle for this split.  Just assume a gradually increasing angle for now.
+                double angle = ((double)(j + 1) * Math.PI) / ((double)nactive + 1.0);
+                double weight = this.ss.get(i).getWeight();
+
+                // Update coords for current vertex based on previous coords and this split's angle and weight
+                double xCoord = prev.getX() - (weight * Math.cos(angle));
+                double yCoord = prev.getY() - (weight * Math.sin(angle));
+                cur = new Vertex(xCoord, yCoord);
+
+                // Create new edge from previous and current vertices and include the split index
+                Edge e = new Edge(prev, cur, i, 1);
                 splitedges[i].add(e);
                 chain[j] = e;
-                v.add_edge_before_first(e);
-                u.add_edge_after_last(e);
+
+                // Ensure previous and current vertices are aware of this edge
+                prev.prependEdge(e);
+                cur.appendEdge(e);
+
                 j++;
             }
         }
 
-        return chain;
+        return new Path(splitedges, chain);
     }
 
     /**
-     * This method extends the initial chain computed by the method leftmost_edges() to a split network for the split
-     * system.
-     * @param chain Left-most edges in the split network
-     * @param splitedges The split network
-     * @return Completed network
+     * This modifies the provided path so that all required boxes are added for this taxon
+     * @param i The taxon id
+     * @param p The path (will get modified by this method)
+     * @param v The vertex representing head of the expanding path
+     * @return A modified version of v
      */
-    private Vertex completeNetwork(Edge[] chain, TreeSet[] splitedges) {
+    private Vertex addBoxes(int i, Path p, Vertex v) {
 
-        Vertex v = null;
-        for (Identifier i : this.ss.getOrderedTaxa()) {
-            boolean inverted = true;
+        Edge[] chain = p.chain;
+        TreeSet<Edge>[] splitedges = p.splitEdges;
 
-            while (inverted) {
-                inverted = false;
+        boolean inverted = true;
 
-                for (int j = 1; j < chain.length; j++) {
-                    //test if the splits associated to edges
-                    //chain[j-1] and chain[j] must be inverted
+        while (inverted) {
+            inverted = false;
 
-                    if (this.ss.get(chain[j - 1].getIdxsplit()).getSide(i.getId()) == Split.SplitSide.A_SIDE &&
-                            this.ss.get(chain[j].getIdxsplit()).getSide(i.getId()) == Split.SplitSide.B_SIDE) {
-                        v = new Vertex(chain[j - 1].getCentreX(), chain[j - 1].getCentreY());
-                        Edge e1 = new Edge(chain[j - 1].getTop(), v, chain[j].getIdxsplit(), chain[j].getTimestp() + 1);
-                        splitedges[e1.getIdxsplit()].add(e1);
-                        Edge e2 = new Edge(v, chain[j].getBottom(), chain[j - 1].getIdxsplit(), chain[j - 1].getTimestp() + 1);
-                        splitedges[e2.getIdxsplit()].add(e2);
-                        chain[j - 1] = e1;
-                        chain[j] = e2;
-                        v.add_edge_before_first(e2);
-                        v.add_edge_after_last(e1);
-                        e1.getTop().add_edge_before_first(e1);
-                        e2.getBottom().add_edge_after_last(e2);
-                        inverted = true;
-                    }
+            for (int j = 1; j < chain.length; j++) {
+                //test if the splits associated to edges
+                //chain[j-1] and chain[j] must be inverted
+
+                if (this.ss.get(chain[j - 1].getIdxsplit()).getSide(i) == Split.SplitSide.A_SIDE &&
+                        this.ss.get(chain[j].getIdxsplit()).getSide(i) == Split.SplitSide.B_SIDE) {
+
+                    v = new Vertex(chain[j - 1].getCentreX(), chain[j - 1].getCentreY());
+
+                    Edge e1 = new Edge(chain[j - 1].getTop(), v, chain[j].getIdxsplit(), chain[j].getTimestp() + 1);
+                    Edge e2 = new Edge(v, chain[j].getBottom(), chain[j - 1].getIdxsplit(), chain[j - 1].getTimestp() + 1);
+
+                    splitedges[e1.getIdxsplit()].add(e1);
+                    splitedges[e2.getIdxsplit()].add(e2);
+                    chain[j - 1] = e1;
+                    chain[j] = e2;
+                    v.prependEdge(e2);
+                    v.appendEdge(e1);
+                    e1.getTop().prependEdge(e1);
+                    e2.getBottom().appendEdge(e2);
+                    inverted = true;
                 }
             }
+        }
 
-            //Now it remains to find the vertex that should be
-            //labeled by taxon i
+        return v;
+    }
 
-            if (chain.length == 0) {
-                if (v == null) {
-                    v = new Vertex(0.0, 0.0);
-                }
-                v.getTaxa().add(i);
-                if (i.getId() != 0) {
-                    this.setActiveTaxaAt(i.getId(), false);
-                }
-            } else {
-                v = chain[0].getTop();
-                for (int j = 0; j < chain.length; j++) {
-                    if (this.ss.get(chain[j].getIdxsplit()).getSide(i.getId()) == Split.SplitSide.A_SIDE) {
-                        (chain[j].getTop()).getTaxa().add(i);
-                        if (chain[j].getTop().getTaxa().size() > 1) {
+    private Vertex findVertexToLabel(Identifier i, Edge[] chain, Vertex v) {
+        if (chain.length == 0) {
+            if (v == null) {
+                v = new Vertex(0.0, 0.0);
+            }
+            v.getTaxa().add(i);
+            if (i.getId() != 0) {
+                this.setActiveTaxaAt(i.getId(), false);
+            }
+        } else {
+            v = chain[0].getTop();
+            for (int j = 0; j < chain.length; j++) {
+                Edge ej = chain[j];
+                if (this.ss.get(ej.getIdxsplit()).getSide(i.getId()) == Split.SplitSide.A_SIDE) {
+                    (ej.getTop()).getTaxa().add(i);
+                    if (ej.getTop().getTaxa().size() > 1) {
+                        this.setActiveTaxaAt(i.getId(), false);
+                    }
+                    break;
+                } else {
+                    if (j == (chain.length - 1)) {
+                        (ej.getBottom()).getTaxa().add(i);
+                        if (ej.getBottom().getTaxa().size() > 1) {
                             this.setActiveTaxaAt(i.getId(), false);
-                        }
-                        break;
-                    } else {
-                        if (j == (chain.length - 1)) {
-                            (chain[j].getBottom()).getTaxa().add(i);
-                            if (chain[j].getBottom().getTaxa().size() > 1) {
-                                this.setActiveTaxaAt(i.getId(), false);
-                            }
                         }
                     }
                 }
             }
         }
+
         return v;
     }
+
 
     /**
      * This method checks for every pair of distinct splits in the split system whether they are compatible.  If they
      * are it is checked whether these two splits form a box in the network. If they do we remove it. This ensures that
      * the resulting split network is minimal.
-     * @param v Starting vertex of the network
+     * @param regularNetwork The regular network to be minimised, includes the starting vertex of the network and the splitedges.
      * @param check Do checking for valid result
-     * @param splitedges Split edges
      * @return Network with compatible boxes removed
      */
-    public Vertex removeCompatibleBoxes(Vertex v, boolean check, TreeSet<Edge>[] splitedges) {
+    public NetworkDrawing makeNetworkMinimal(NetworkDrawing regularNetwork, boolean check) {
 
         //count incompatible pairs
         int count = 0;
 
         //vertex in the split network
-        Vertex u = v;
+        NetworkDrawing minmisedNetwork = new NetworkDrawing(regularNetwork);
 
         //check all pairs of active splits
         for (int i = 0; i < this.ss.getNbSplits() - 1; i++) {
@@ -380,8 +439,8 @@ public class PermutationSequenceDraw {
                     if (sj.isActive()) {
                         Split.Compatible pattern = this.ss.getCompatible(i, j);
                         if (pattern.isCompatible()) {
-                            u = this.removeBox(u, i, j, pattern, splitedges);
-                            if (u == null) {
+                            minmisedNetwork.v = this.removeBox(minmisedNetwork.v, i, j, pattern, minmisedNetwork.splitedges);
+                            if (minmisedNetwork.v == null) {
                                 throw new NullPointerException("Vertex u is null - stop here");
                             }
                         } else {
@@ -394,16 +453,15 @@ public class PermutationSequenceDraw {
 
         //Check if the numbers of boxes and edges in the output makes sense
         //First compute the number edges in the network
-        int nedges = 0;
-        for (int i = 0; i < splitedges.length; i++) {
-            nedges += splitedges[i].size();
+        if (check) {
+            int nedges = minmisedNetwork.getNumberEdges();
+
+            if (((nedges - this.ss.getNbActiveWeightedSplits()) / 2) != count) {
+                throw new IllegalStateException("Numbers do not match!!!!!");
+            }
         }
 
-        if (check && ((nedges - this.ss.getNbActiveWeightedSplits()) / 2) != count) {
-            throw new IllegalStateException("Numbers do not match!!!!!");
-        }
-
-        return u;
+        return minmisedNetwork;
     }
 
     /**

@@ -54,6 +54,23 @@ public class Edge implements Comparable<Edge> {
         width = 1;
         color = Color.black;
         compatible = false;
+        nxnum = 0;
+    }
+
+    public Edge copy() {
+        Edge copy = new Edge();
+
+        copy.top = new Vertex(this.top);
+        copy.bottom = new Vertex(this.bottom);
+        copy.idxsplit = this.idxsplit;
+        copy.nxnum = this.nxnum;
+        copy.timestp = this.timestp;
+        copy.visited = this.visited;
+        copy.width = this.width;
+        copy.color = new Color(this.color.getRGB());
+        copy.compatible = this.compatible;
+
+        return copy;
     }
 
     public void setNxnum(int nxnum) {

@@ -44,6 +44,20 @@ public class EdgeList extends LinkedList<Edge> {
     }
 
     /**
+     * Creates a deep copy of this edge list
+     * @return A proper copy
+     */
+    public EdgeList copy() {
+        EdgeList copy = new EdgeList();
+
+        for(Edge e : this) {
+            copy.add(e.copy());
+        }
+
+        return copy;
+    }
+
+    /**
      * This method collects the indices of the splits corresponding to the edges in crossboth
      * @return Indicies of splits that cross edges
      */

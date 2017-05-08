@@ -80,7 +80,7 @@ public class CompatibleCorrector {
         return 0.0;
     }
 
-    public void addInnerTrivial(Vertex V, PermutationSequenceDraw ps, Network network) {
+    public void addInnerTrivial(Vertex V, DrawSplitSystem ps, Network network) {
         //LinkedList<LinkedList<Edge>> balloons = Collector.collectBallons(BALLOON_ANGLE, V);
 
         //LinkedList<Vertex>[] verticesInBalloons = Collector.assignVerticesToBalloons(balloons, V);

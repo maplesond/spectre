@@ -24,7 +24,7 @@ import uk.ac.uea.cmp.spectre.core.ds.Locations;
 import uk.ac.uea.cmp.spectre.core.ds.Sequences;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.network.Network;
-import uk.ac.uea.cmp.spectre.core.ds.network.draw.PermutationSequenceDraw;
+import uk.ac.uea.cmp.spectre.core.ds.network.draw.DrawSplitSystem;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.*;
 import uk.ac.uea.cmp.spectre.core.ds.split.SpectreSplitSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
@@ -276,7 +276,7 @@ public class FlatNJ extends RunnableTool {
             this.continueRun();
 
             notifyUser("Computing network");
-            PermutationSequenceDraw psDraw = new PermutationSequenceDraw(fss);
+            DrawSplitSystem psDraw = new DrawSplitSystem(fss);
             Network network = psDraw.createOptimisedNetwork();
 
             NexusWriter writer = new NexusWriter();
