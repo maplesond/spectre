@@ -120,8 +120,7 @@ public class NexusFilePopulator implements NexusFileListener {
         this.splitSystemBuilder.setHasConfidences(
                 ctx.boolean_option() == null ?
                         true :
-                        ctx.boolean_option().getText().equalsIgnoreCase("true") ||
-                                ctx.boolean_option().getText().equalsIgnoreCase("yes")
+                        BooleanUtils.toBoolean(ctx.boolean_option().getText())
         );
     }
 
@@ -354,8 +353,7 @@ public class NexusFilePopulator implements NexusFileListener {
         this.splitSystemBuilder.setWeighted(
                 ctx.boolean_option() == null ?
                         true :
-                        ctx.boolean_option().getText().equalsIgnoreCase("true") ||
-                                ctx.boolean_option().getText().equalsIgnoreCase("yes")
+                        BooleanUtils.toBoolean(ctx.boolean_option().getText())
         );
     }
 
@@ -1133,8 +1131,7 @@ public class NexusFilePopulator implements NexusFileListener {
         this.splitSystemBuilder.setHasIntervals(
                 ctx.boolean_option() == null ?
                         true :
-                        ctx.boolean_option().getText().equalsIgnoreCase("true") ||
-                                ctx.boolean_option().getText().equalsIgnoreCase("yes")
+                        BooleanUtils.toBoolean(ctx.boolean_option().getText())
         );
     }
 
@@ -1639,7 +1636,7 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitCf_labels(NexusFileParser.Cf_labelsContext ctx) {
-        boolean labels = ctx.boolean_option() != null ? Boolean.getBoolean(ctx.boolean_option().getText()) : true;
+        boolean labels = ctx.boolean_option() != null ? BooleanUtils.toBoolean(ctx.boolean_option().getText()) : true;
         this.charBuilder.getFormat().labels = labels;
     }
 
@@ -1650,7 +1647,7 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitCf_transpose(NexusFileParser.Cf_transposeContext ctx) {
-        boolean transpose = ctx.boolean_option() != null ? Boolean.getBoolean(ctx.boolean_option().getText()) : true;
+        boolean transpose = ctx.boolean_option() != null ? BooleanUtils.toBoolean(ctx.boolean_option().getText()) : true;
         this.charBuilder.getFormat().transposed = transpose;
     }
 
@@ -2402,7 +2399,7 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitVm_showtrivial(NexusFileParser.Vm_showtrivialContext ctx) {
-        boolean st = Boolean.parseBoolean(ctx.boolean_option().getText());
+        boolean st = BooleanUtils.toBoolean(ctx.boolean_option().getText());
         this.viewerConfig.setShowTrivial(st);
     }
 
@@ -2413,7 +2410,7 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitVm_showrange(NexusFileParser.Vm_showrangeContext ctx) {
-        boolean st = Boolean.parseBoolean(ctx.boolean_option().getText());
+        boolean st = BooleanUtils.toBoolean(ctx.boolean_option().getText());
         this.viewerConfig.setShowRange(st);
     }
 
@@ -2424,7 +2421,7 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitVm_showlabels(NexusFileParser.Vm_showlabelsContext ctx) {
-        boolean sl = Boolean.parseBoolean(ctx.boolean_option().getText());
+        boolean sl = BooleanUtils.toBoolean(ctx.boolean_option().getText());
         this.viewerConfig.setShowLabels(sl);
     }
 
@@ -2435,7 +2432,7 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitVm_colorlabels(NexusFileParser.Vm_colorlabelsContext ctx) {
-        boolean cl = Boolean.parseBoolean(ctx.boolean_option().getText());
+        boolean cl = BooleanUtils.toBoolean(ctx.boolean_option().getText());
         this.viewerConfig.setColorLabels(cl);
     }
 
