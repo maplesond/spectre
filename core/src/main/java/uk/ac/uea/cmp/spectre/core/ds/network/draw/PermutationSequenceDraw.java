@@ -384,6 +384,16 @@ public class PermutationSequenceDraw {
         return sb.toString();
     }
 
+    public Network createUnoptimisedNetwork() {
+        Vertex net = drawSplitSystem(-1.0);
+        SpectreNetwork network = new SpectreNetwork(net);
+        for(Vertex v : network.getLabeledVertices()) {
+            v.setSize(3);
+            v.setShape(null);
+        }
+        return network;
+    }
+
     public Network createOptimisedNetwork() {
         Vertex net = drawSplitSystem(-1.0);
         SpectreNetwork network = new SpectreNetwork(net);
