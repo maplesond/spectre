@@ -59,6 +59,7 @@ public class SplitSystemComparisonTool extends SpectreTool {
         int nbSplits;
         boolean circular;
         boolean compatible;
+        boolean full;
         boolean match;
 
         public Entry() {
@@ -67,11 +68,12 @@ public class SplitSystemComparisonTool extends SpectreTool {
             this.nbSplits = 0;
             this.circular = false;
             this.compatible = false;
+            this.full = false;
             this.match = false;
         }
 
         public static String header() {
-            return StringUtils.join(new String[]{"filename","nb_taxa","nb_splits","circular","compatible","match"}, "\t");
+            return StringUtils.join(new String[]{"filename","nb_taxa","nb_splits","circular","compatible","full","match"}, "\t");
         }
 
         @Override
@@ -82,6 +84,7 @@ public class SplitSystemComparisonTool extends SpectreTool {
                     Integer.toString(this.nbSplits),
                     Boolean.toString(this.circular),
                     Boolean.toString(this.compatible),
+                    Boolean.toString(this.full),
                     Boolean.toString(this.match)
             }, "\t");
         }
@@ -116,6 +119,7 @@ public class SplitSystemComparisonTool extends SpectreTool {
             e.nbSplits = ss.getNbSplits();
             e.circular = ss.isCircular();
             e.compatible = ss.isCompatible();
+            e.full = ss.isFull();
             e.match = ref.equals(ss);
             results.add(e);
         }

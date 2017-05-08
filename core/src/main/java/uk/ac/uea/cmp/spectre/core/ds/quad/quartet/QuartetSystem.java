@@ -23,7 +23,7 @@ import uk.ac.uea.cmp.spectre.core.ds.tree.newick.NewickTree;
  */
 public class QuartetSystem {
 
-    public static enum Sense {
+    public enum Sense {
         MIN,
         MAX;
 

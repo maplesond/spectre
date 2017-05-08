@@ -152,6 +152,12 @@ public interface SplitSystem extends List<Split> {
     Split.Compatible getCompatible(final int i, final int j);
 
     /**
+     * Returns true if this split system contains all possible splits for the given number of taxa
+     * @return True if split system has the maximum complement of splits, false otherwise.
+     */
+    boolean isFull();
+
+    /**
      * This method checks whether the quadruple split number nr is in the restriction of the split system to {a,b,c,d}.
      * It is assumed that a, b, c and d are pairwise distinct. The possible values for nr are:
      * 0 --> a|bcd

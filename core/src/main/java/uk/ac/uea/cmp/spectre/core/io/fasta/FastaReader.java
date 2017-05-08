@@ -73,7 +73,7 @@ public class FastaReader extends AbstractSpectreReader {
 
     @Override
     public String[] commonFileExtensions() {
-        return new String[]{"fa", "fasta"};
+        return new String[]{"fa", "fasta", "faa", "fna", "fas"};
     }
 
     @Override

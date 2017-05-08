@@ -260,9 +260,9 @@ public class NexusWriter extends AbstractSpectreWriter implements Appendable {
         this.appendLine(" DIMENSIONS ntax=" + ss.getNbTaxa() + " nsplits=" + ss.size() + ";");
         this.appendLine(" FORMAT labels=no weights=" + (ss.isWeighted() ? "yes" : "no") + " confidences=no intervals=no;");
         this.appendLine(" PROPERTIES fit=-1.0 weakly_compatible=" + (ss.isCompatible() ? "yes" : "no") + " cyclic=" + (ss.isCircular() ? "yes" : "no") + ";");
-        if (ss.isCircular()) {
-            this.appendLine(" CYCLE " + ss.getOrderedTaxa().toString(IdentifierList.IdentifierFormat.NEXUS_CIRCULAR_ORDERING) + ";");
-        }
+
+        // Always output cycle, even if this split system is not circular.
+        this.appendLine(" CYCLE " + ss.getOrderedTaxa().toString(IdentifierList.IdentifierFormat.NEXUS_CIRCULAR_ORDERING) + ";");
 
         this.appendLine(" MATRIX");
         int currentSplitIndex = 1;

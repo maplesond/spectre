@@ -48,11 +48,6 @@ public class PermutationSequence {
 
     private String[] taxaNames = null;
 
-    //If the permutation sequence is for a set of splits then a taxon is
-    //associated with certain swaps. This information is used in the
-    //construction of the splitnetwork
-    private int[] assocTaxa = null;
-
     private boolean[][][] splits;
     private boolean[][][] splitsInFront;
 
@@ -62,12 +57,8 @@ public class PermutationSequence {
 
     private double[] trivial;
 
-    private Map<String, Integer> taxaMap;
-
     //value of the fit function from gurobi solver
     private double fit;
-
-    private int[] compressed;
 
     //Constructor of this class from a given initial sequence and a sequence of swaps.
     public PermutationSequence(int[] inInitSequ, int[] inSwaps) {
@@ -115,11 +106,6 @@ public class PermutationSequence {
     public int[][] getAb() {
         return ab;
     }
-
-    public Map<String, Integer> getTaxaMap() {
-        return taxaMap;
-    }
-
 
     public int[][] computeBMatrix() {
         int[][] B = new int[nSwaps][nSwaps];
@@ -630,101 +616,6 @@ public class PermutationSequence {
         sizes[s2][to]++;
     }
 
-    public double getFitRestrictionFor1(int a, int b, int x1, int x2, Quadruple q, FlatSplitSystem ss) {
-        if (ss.restrictionExists(a, b, x1, x2, q.getTaxa(a, 0))) {
-            return q.getSplitWeightFor1Vs3(a);
-        }
-        return 0;
-    }
-
-    public double getFitRestrictionFor2(int a, int b, int x1, int x2, Quadruple q, FlatSplitSystem ss) {
-        int min = (a < b) ? a : b;
-        int max = (a > b) ? a : b;
-        int iMin = q.getTaxa(min, 0);
-        int iMax = q.getTaxa(max, iMin + 1);
-        int i = (iMin == 0) ? 3 + iMax : 9 - (iMin + iMax);
-        if (ss.restrictionExists(a, b, x1, x2, i)) {
-            return q.getSplitWeightFor2Vs2(min, max);
-        }
-        return 0;
-    }
-
-    double getFitRestriction(int a, int b, int c, int d, QuadrupleSystem qs) {
-        Quadruple q = qs.getQuadrupleUnsorted(a, b, c, d);
-
-        double s = 0;
-
-        int found = 0;
-
-        if (q != null) {
-            boolean[] included = new boolean[7];
-            for (int i = 0; i < splits.length; i++) {
-                for (int d1 = 0; d1 < 2; d1++) {
-                    int d2 = (d1 == 0) ? 1 : 0;
-                    if (included[0] == false && splits[i][d1][a] == true && splits[i][d2][b] == true && splits[i][d2][c] == true && splits[i][d2][d] == true) {
-                        s += q.getSplitWeightFor1Vs3(a);
-                        found++;
-                        included[0] = true;
-                        break;
-
-                    }
-                    if (included[1] == false && splits[i][d1][b] == true && splits[i][d2][a] == true && splits[i][d2][c] == true && splits[i][d2][d] == true) {
-                        s += q.getSplitWeightFor1Vs3(b);
-                        found++;
-                        included[1] = true;
-                        break;
-                    }
-                    if (included[2] == false && splits[i][d1][c] == true && splits[i][d2][a] == true && splits[i][d2][b] == true && splits[i][d2][d] == true) {
-                        s += q.getSplitWeightFor1Vs3(c);
-                        found++;
-                        included[2] = true;
-                        break;
-                    }
-                    if (included[3] == false && splits[i][d1][d] == true && splits[i][d2][a] == true && splits[i][d2][b] == true && splits[i][d2][c] == true) {
-                        s += q.getSplitWeightFor1Vs3(d);
-                        found++;
-                        included[3] = true;
-                        break;
-                    }
-                    if (included[4] == false && splits[i][d1][a] == true && splits[i][d1][b] == true && splits[i][d2][c] == true && splits[i][d2][d] == true) {
-                        s += q.getSplitWeightFor2Vs2(a, b);
-                        found++;
-                        included[4] = true;
-                        break;
-                    }
-                    if (included[5] == false && splits[i][d1][a] == true && splits[i][d1][c] == true && splits[i][d2][b] == true && splits[i][d2][d] == true) {
-                        s += q.getSplitWeightFor2Vs2(a, c);
-                        found++;
-                        included[5] = true;
-                        break;
-                    }
-                    if (included[6] == false && splits[i][d1][a] == true && splits[i][d1][d] == true && splits[i][d2][b] == true && splits[i][d2][c] == true) {
-                        s += q.getSplitWeightFor2Vs2(a, d);
-                        found++;
-                        included[6] = true;
-                        break;
-                    }
-                }
-                if (found == 6) {
-                    break;
-                }
-            }
-        }
-        return s;
-    }
-
-    private void printSplit(boolean[][] b) {
-        int[] below = CollectionUtils.getTrueElements(b[0]);
-        int[] above = CollectionUtils.getTrueElements(b[1]);
-        for (int i = 0; i < below.length; i++) {
-            System.out.print(below[i] + " ");
-        }
-        System.out.print("|");
-        for (int i = 0; i < above.length; i++) {
-            System.out.print(" " + above[i]);
-        }
-        System.out.println();
-    }
 
     public int[][] computeCrossingsMatrix() {
         int maxTaxa = 0;
@@ -751,10 +642,6 @@ public class PermutationSequence {
 
     public boolean[][][] getSplits() {
         return splits;
-    }
-
-    public boolean[][][] getSplitsInFront() {
-        return splitsInFront;
     }
 
     public PermutationSequence getSplitSystemFor4Taxa(int a, int b, int x1, int x2, int[][] crossings) {
@@ -838,27 +725,6 @@ public class PermutationSequence {
         return new PermutationSequence(taxa, swaps);
     }
 
-    double[] getRescaledWeights() {
-        double[] w = new double[nSwaps];
-        int[] c = new int[nSwaps];
-        int[] index = new int[nTaxa - 1];
-        for (int i = 0; i < nTaxa - 1; i++) {
-            index[i] = -1;
-        }
-        for (int j = 0; j < nSwaps; j++) {
-            index[swaps[j]] = j;
-            for (int i = 0; i < index.length; i++) {
-                if (index[i] != -1) {
-                    c[index[i]]++;
-                }
-            }
-        }
-        for (int i = 0; i < w.length; i++) {
-            w[i] = weights[i] * c[i];
-        }
-        return w;
-    }
-
     @Override
     public String toString() {
 
@@ -936,26 +802,8 @@ public class PermutationSequence {
         }
     }
 
-    public int[] getCompressed() {
-        compressed = new int[active.length];
-        int i = 0;
-        for (int j = 0; j < active.length; j++) {
-            if (active[j]) {
-                compressed[j] = i++;
-            }
-        }
-        return compressed;
-    }
-
     public double getFit() {
         return fit;
-    }
-
-    public void inactivateSplits(Set<Integer> uniq) {
-        Iterator<Integer> it = uniq.iterator();
-        while (it.hasNext()) {
-            active[it.next()] = false;
-        }
     }
 
     public void setActive(boolean[] b) {
@@ -963,29 +811,4 @@ public class PermutationSequence {
         System.arraycopy(b, 0, this.active, 0, b.length);
     }
 
-/*
-    private void setTrivial(double[] inTrivial, double[] weights) {
-        boolean[][] splits = ss.getSplits();
-        Map<Integer, Integer> tr = new HashMap<>();
-
-        trivial = new double[inTrivial.length];
-        System.arraycopy(inTrivial, 0, trivial, 0, nTaxa);
-        for (int i = 0; i < weights.length; i++) {
-            if (ss.isTrivial(splits[i])) {
-                int taxaNo = ss.trivialTaxa(splits[i]);
-                trivial[taxaNo] += weights[i];
-                weights[i] = 0;
-                tr.put(taxaNo, i);
-            }
-        }
-        double avg = Statistics.mean(trivial);
-        for (int i = 0; i < trivial.length; i++) {
-            if (trivial[i] < avg * 0.3) {
-                trivial[i] = 0.0;
-                if (tr.containsKey(i)) {
-                    active[tr.get(i)] = false;
-                }
-            }
-        }
-    }*/
 }

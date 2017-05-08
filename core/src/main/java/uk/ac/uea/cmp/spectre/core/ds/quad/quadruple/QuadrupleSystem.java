@@ -18,13 +18,8 @@ package uk.ac.uea.cmp.spectre.core.ds.quad.quadruple;
 import org.apache.commons.lang3.ArrayUtils;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
-import uk.ac.uea.cmp.spectre.core.ds.split.flat.FlatSplitSystem;
 import uk.ac.uea.cmp.spectre.core.util.CollectionUtils;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
 import java.util.Arrays;
 
 /**

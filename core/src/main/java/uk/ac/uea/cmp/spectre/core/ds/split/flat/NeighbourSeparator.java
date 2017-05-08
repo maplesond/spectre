@@ -23,7 +23,7 @@ import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleSystem;
  *
  * @author balvociute
  */
-public interface NeighbourSeparator {
+interface NeighbourSeparator {
     /**
      * Separates all pairs of taxa that were identified as neighbors in the
      * agglomeration phase.

@@ -29,6 +29,11 @@ import uk.ac.uea.cmp.spectre.core.io.SpectreReader;
 import uk.ac.uea.cmp.spectre.core.io.SpectreReaderFactory;
 import uk.ac.uea.cmp.spectre.core.io.SpectreWriter;
 import uk.ac.uea.cmp.spectre.core.io.SpectreWriterFactory;
+import uk.ac.uea.cmp.spectre.core.io.emboss.EmbossReader;
+import uk.ac.uea.cmp.spectre.core.io.fasta.FastaReader;
+import uk.ac.uea.cmp.spectre.core.io.nexus.Nexus;
+import uk.ac.uea.cmp.spectre.core.io.nexus.NexusReader;
+import uk.ac.uea.cmp.spectre.core.io.phylip.PhylipReader;
 import uk.ac.uea.cmp.spectre.core.util.Time;
 import uk.ac.uea.cmp.spectre.tools.SpectreTool;
 
@@ -43,6 +48,11 @@ public class DistanceMatrixGeneratorTool extends SpectreTool {
     private static final String OPT_SAMPLES = "samples";
     private static final String OPT_DIST_CALC = "dist_calc";
 
+    private enum Mode {
+        RANDOM,
+        MSA,
+        CONVERT
+    }
 
     @Override
     protected Options createInternalOptions() {
@@ -88,15 +98,37 @@ public class DistanceMatrixGeneratorTool extends SpectreTool {
         }
 
         // Get the arguments
-        boolean msamode = true;
-        File msafile = null;
+        Mode mode = Mode.RANDOM;
+        File inputfile = null;
         int n = 0;
         try {
             n = Integer.parseInt(commandLine.getArgs()[0]);
-            msamode = false;
         }
         catch (NumberFormatException e) {
-            msafile = new File(commandLine.getArgs()[0]);
+            inputfile = new File(commandLine.getArgs()[0]);
+            if (!inputfile.exists()) {
+                throw new IOException("Input file does not exist: " + inputfile.getAbsolutePath());
+            }
+            SpectreReader sr = SpectreReaderFactory.getInstance().create(FilenameUtils.getExtension(inputfile.getName()));
+            if (sr instanceof FastaReader) {
+                mode = Mode.MSA;
+            }
+            else if (sr instanceof EmbossReader || sr instanceof PhylipReader) {
+                mode = Mode.CONVERT;
+            }
+            else if (sr instanceof NexusReader) {
+                Nexus nexus = ((NexusReader) sr).parse(inputfile);
+                if (nexus.getAlignments() != null) {
+                    mode = Mode.MSA;
+                }
+                else if (nexus.getDistanceMatrix() != null) {
+                    mode = Mode.CONVERT;
+                }
+                else {
+                    throw new IOException("Input nexus file does not contain either an MSA or a distance matrix.");
+                }
+            }
+
         }
 
         int s = commandLine.hasOption(OPT_SAMPLES) ?
@@ -109,7 +141,7 @@ public class DistanceMatrixGeneratorTool extends SpectreTool {
 
         SpectreWriterFactory spectreWriterFactory = commandLine.hasOption(OPT_OUTPUT_TYPE) ?
                 SpectreWriterFactory.valueOf(commandLine.getOptionValue(OPT_OUTPUT_TYPE).toUpperCase().trim()) :
-                SpectreWriterFactory.PHYLIP;
+                SpectreWriterFactory.NEXUS;
 
         SpectreWriter spectreWriter = spectreWriterFactory.create();
 
@@ -117,11 +149,11 @@ public class DistanceMatrixGeneratorTool extends SpectreTool {
         outputDir.mkdirs();
 
 
-        if (msamode) {
+        if (mode == Mode.MSA) {
 
             // Load sequences
-            SpectreReader sr = SpectreReaderFactory.getInstance().create(FilenameUtils.getExtension(msafile.getName()));
-            Sequences seqs = sr.readAlignment(msafile);
+            SpectreReader sr = SpectreReaderFactory.getInstance().create(FilenameUtils.getExtension(inputfile.getName()));
+            Sequences seqs = sr.readAlignment(inputfile);
 
             // Create the distance matrix
             DistanceMatrix distanceMatrix = dcf.createDistanceMatrix(seqs);
@@ -133,7 +165,7 @@ public class DistanceMatrixGeneratorTool extends SpectreTool {
             spectreWriter.writeDistanceMatrix(outFile, distanceMatrix);
 
         }
-        else {
+        else if (mode == Mode.RANDOM) {
             // For each sample
             for (int i = 1; i <= s; i++) {
 
@@ -148,6 +180,18 @@ public class DistanceMatrixGeneratorTool extends SpectreTool {
                 spectreWriter.writeDistanceMatrix(outFile, distanceMatrix);
             }
         }
+        else if (mode == Mode.CONVERT) {
+            // Load dist mat
+            SpectreReader sr = SpectreReaderFactory.getInstance().create(FilenameUtils.getExtension(inputfile.getName()));
+            DistanceMatrix distanceMatrix = sr.readDistanceMatrix(inputfile);
+
+            // Create a filename for this sample
+            File outFile = new File(outputDir, prefix + "." + spectreWriterFactory.getPrimaryExtension());
+            spectreWriter.writeDistanceMatrix(outFile, distanceMatrix);
+        }
+        else {
+            throw new IllegalStateException("Unknown mode");
+        }
 
     }
 
@@ -158,7 +202,7 @@ public class DistanceMatrixGeneratorTool extends SpectreTool {
 
     @Override
     public String getPosArgs() {
-        return "(<nb_taxa>|<msa_file>)";
+        return "(<nb_taxa>|<msa_file>|<distmat_file>)";
     }
 
 
@@ -166,7 +210,11 @@ public class DistanceMatrixGeneratorTool extends SpectreTool {
     public String getDescription() {
         return "Generates a distance matrix that takes a single argument as input.  If argument is an integer then this " +
                 "tool a random distance matrix given that number of taxa.  If argument is a file containing a MSA, then we " +
-                "generate the distance matrix using the specified distance calculator (JUKES_CANTOR by default).";
+                "generate the distance matrix using the specified distance calculator (JUKES_CANTOR by default).  If the " +
+                "argument is a file and contains an existing distance matrix then we convert to the specified format.\n " +
+                "Note: If input file is a nexus file containing both an MSA and distance matrix then we assume we want to generate " +
+                "a distance matrix from the MSA.\n" +
+                "Supported input file formats are: emboss (distmat), phylip, nexus, fasta.";
     }
 
     public static void main(String[] args) {

@@ -16,6 +16,7 @@
 package uk.ac.uea.cmp.spectre.core.ds.split;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.math3.util.CombinatoricsUtils;
 import uk.ac.uea.cmp.spectre.core.ds.Identifier;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
@@ -323,6 +324,12 @@ public class SpectreSplitSystem extends ArrayList<Split> implements SplitSystem 
 
     @Override
     public boolean isWeighted() {
+
+        for (Split s : this) {
+            if (s.getWeight() <= 0.0) {
+                return false;
+            }
+        }
         return true;
     }
 
@@ -465,6 +472,18 @@ public class SpectreSplitSystem extends ArrayList<Split> implements SplitSystem 
     }
 
     @Override
+    public boolean isFull() {
+
+        final long maxSplits = CombinatoricsUtils.binomialCoefficient(this.getNbTaxa(), 2);
+
+        if (this.getNbSplits() > maxSplits) {
+            throw new IllegalStateException("This split system contains " + this.getNbTaxa() + " and therefore should not contain more than " + maxSplits + ".  This split system contains " + this.getNbSplits() + " splits.");
+        }
+
+        return this.getNbSplits() == maxSplits;
+    }
+
+    @Override
     public boolean restrictionExists(int a, int b, int c, int d, int nr) {
 
         for(Split s : this) {
@@ -538,13 +557,17 @@ public class SpectreSplitSystem extends ArrayList<Split> implements SplitSystem 
         }
     }
 
+    @Override
+    public String toString() {
+        return "Taxa: " + this.orderedTaxa.toString() + " : " + super.toString();
+    }
 
     public enum LeastSquaresCalculator {
 
         CIRCULAR {
             @Override
             public SplitWeights calculate(DistanceMatrix distanceMatrix, IdentifierList circularOrdering, List<Split> splits) {
-                return  new CircularNNLS().circularLeastSquares(distanceMatrix, circularOrdering);
+                return new CircularNNLS().circularLeastSquares(distanceMatrix, circularOrdering);
             }
         },
         TREE_IN_CYCLE {

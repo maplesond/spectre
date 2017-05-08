@@ -16,11 +16,8 @@
 package uk.ac.uea.cmp.spectre.core.ds.split.flat;
 
 import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.Quadruple;
-import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleAgglomerator;
-import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleAgglomeratorAverage;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleSystem;
 import uk.ac.uea.cmp.spectre.core.util.CollectionUtils;
-import uk.ac.uea.cmp.spectre.core.util.StringJoiner;
 
 /**
  * Class for computing {@linkplain PermutationSequence} from {@linkplain QuadrupleSystem}.
@@ -29,18 +26,13 @@ import uk.ac.uea.cmp.spectre.core.util.StringJoiner;
  */
 public class PermutationSequenceFactory {
 
-    private NeighbourFinder neighbourFinder;
-    private QuadrupleAgglomerator quadrupleAgglomerator;
     private NeighbourSeparator neighbourSeparator;
     private Scorer scorer;
 
     /**
-     * Constructor that sets default {@linkplain NeighbourFinder},
-     * {@linkplain QuadrupleAgglomerator} and {@linkplain NeighbourSeparator}.
+     * Constructor that sets default {@linkplain NeighbourSeparator}.
      */
     public PermutationSequenceFactory() {
-        this.neighbourFinder = new NeighbourFinderCombined();
-        this.quadrupleAgglomerator = new QuadrupleAgglomeratorAverage();
         this.neighbourSeparator = new NeighbourSeparatorMax();
         this.scorer = new Scorer();
     }
@@ -165,7 +157,7 @@ public class PermutationSequenceFactory {
      * @param qs         {@linkplain QuadrupleSystem}
      * @return number of neighbors.
      */
-    private int agglomerate(Neighbours[] neighbours, QuadrupleSystem qs) {
+    protected int agglomerate(Neighbours[] neighbours, QuadrupleSystem qs) {
         int i = -1;
         int n = qs.getNbActiveTaxa();
 
@@ -179,15 +171,128 @@ public class PermutationSequenceFactory {
                 rt.gc();
             }
 
-            neighbours[i] = neighbourFinder.findNeighbours(qs, scores);
+            neighbours[i] = findNeighbours(qs, scores);
 
             scorer.updateScoresBeforeWeightChange(scores, neighbours[i], qs);
 
-            quadrupleAgglomerator.agglomerate(qs, neighbours[i]);
+            quadrupleAgglomerate(qs, neighbours[i]);
 
             scorer.updateScoresAfterWeightChange(scores, neighbours[i], qs);
 
         }
         return i;
+    }
+
+    protected Neighbours findNeighbours(QuadrupleSystem qs, double[][][] scores) {
+        Neighbours neighbours = new Neighbours();
+        Double maxSoFar = null;
+        Double minSoFar = null;
+
+        int[] taxa = CollectionUtils.getTrueElements(qs.getActive());
+        int nTaxa = taxa.length;
+
+        for (int i1 = 0; i1 < nTaxa - 1; i1++) {
+            for (int i2 = i1 + 1; i2 < nTaxa; i2++) {
+                if (scores[taxa[i1]][taxa[i2]][0] < 0) {
+                    throw new IllegalStateException("Score was less than 0.  Taxa Length: " + taxa.length + "; Score: " + scores[taxa[i1]][taxa[i2]][0]);
+                }
+                minSoFar = (minSoFar == null || minSoFar > scores[taxa[i1]][taxa[i2]][0]) ? scores[taxa[i1]][taxa[i2]][0] : minSoFar;
+            }
+        }
+
+        double treshold = 0.001 * minSoFar;
+
+        for (int i1 = 0; i1 < nTaxa - 1; i1++) {
+            for (int i2 = i1 + 1; i2 < nTaxa; i2++) {
+                if (scores[taxa[i1]][taxa[i2]][0] - minSoFar <= treshold) {
+                    if (maxSoFar == null || scores[taxa[i1]][taxa[i2]][1] > maxSoFar) {
+                        neighbours.setAB(taxa[i1], taxa[i2]);
+                        maxSoFar = scores[taxa[i1]][taxa[i2]][1];
+                    }
+                }
+            }
+        }
+        return neighbours;
+    }
+
+    protected void quadrupleAgglomerate(QuadrupleSystem qs, Neighbours neighbours) {
+        int[] taxa = CollectionUtils.getTrueElements(qs.getActive());
+
+        int a = neighbours.getA();
+        int b = neighbours.getB();
+
+        int[] i = new int[3];
+
+        for (int i1 = 0; i1 < taxa.length; i1++) {
+            i[0] = taxa[i1];
+            if (i[0] != a && i[0] != b) {
+                for (int i2 = i1 + 1; i2 < taxa.length; i2++) {
+                    i[1] = taxa[i2];
+                    if (i[1] != a && i[1] != b) {
+                        for (int i3 = i2 + 1; i3 < taxa.length; i3++) {
+                            i[2] = taxa[i3];
+                            if (i[2] != a && i[2] != b) {
+                                Quadruple qA = qs.getQuadrupleUnsorted(a, i[0], i[1], i[2]);
+                                Quadruple qB = qs.getQuadrupleUnsorted(b, i[0], i[1], i[2]);
+                                averageWeights(a, b, qA, qB);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        qs.setInactive(b);
+    }
+
+    /**
+     * Averages weights of quadruple splits given {@linkplain Quadruple}s and sets
+     * those weights to quadruple qA.
+     *
+     * @param a  index of the first taxa from {@linkplain Neighbours}.
+     * @param b  index of the second taxa from {@linkplain Neighbours}.
+     * @param qA {@linkplain Quadruple} containing taxa a.
+     * @param qB {@linkplain Quadruple} containing taxa b.
+     */
+    protected void averageWeights(int a, int b, Quadruple qA, Quadruple qB) {
+        int aIndex = qA.getTaxa(a, 0);
+
+        double[] weights = new double[7];
+
+        int bIndex = qB.getTaxa(b, 0);
+
+        double[] weights1 = new double[7];
+        System.arraycopy(qA.getWeights(), 0, weights1, 0, 7);
+        double[] weights2 = new double[7];
+        System.arraycopy(qB.getWeights(), 0, weights2, 0, 7);
+
+        if (bIndex - aIndex == 1) {
+            CollectionUtils.swapTwoInAnArray(weights2, aIndex, bIndex);
+            int index2 = (aIndex == 1) ? 4 : 6;
+            CollectionUtils.swapTwoInAnArray(weights2, 5, index2);
+        }
+        if (bIndex - aIndex == 2) {
+            CollectionUtils.swapTwoInAnArray(weights2, bIndex, bIndex - 1);
+            CollectionUtils.swapTwoInAnArray(weights2, aIndex, bIndex - 1);
+            if (aIndex == 0) {
+                CollectionUtils.swapTwoInAnArray(weights2, 4, 5);
+                CollectionUtils.swapTwoInAnArray(weights2, 5, 6);
+            }
+            if (aIndex == 1) {
+                CollectionUtils.swapTwoInAnArray(weights2, 5, 6);
+                CollectionUtils.swapTwoInAnArray(weights2, 4, 5);
+            }
+        }
+        if (bIndex - aIndex == 3) {
+            CollectionUtils.swapTwoInAnArray(weights2, 2, 3);
+            CollectionUtils.swapTwoInAnArray(weights2, 1, 2);
+            CollectionUtils.swapTwoInAnArray(weights2, 0, 1);
+            CollectionUtils.swapTwoInAnArray(weights2, 4, 6);
+        }
+
+        for (int i = 0; i < weights.length; i++) {
+            weights[i] = (weights1[i] + weights2[i]) / 2.0;
+        }
+        qA.setWeights(weights);
     }
 }
