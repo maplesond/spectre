@@ -257,7 +257,7 @@ public class NexusWriter extends AbstractSpectreWriter implements Appendable {
     public NexusWriter append(SplitSystem ss) {
 
         this.appendLine("BEGIN Splits;");
-        this.appendLine(" DIMENSIONS ntax=" + ss.getNbTaxa() + " nsplits=" + ss.size() + ";");
+        this.appendLine(" DIMENSIONS ntax=" + ss.getNbTaxa() + " nsplits=" + ss.getNbActiveWeightedSplits() + ";");
         this.appendLine(" FORMAT labels=no weights=" + (ss.isWeighted() ? "yes" : "no") + " confidences=no intervals=no;");
         this.appendLine(" PROPERTIES fit=-1.0 weakly_compatible=" + (ss.isCompatible() ? "yes" : "no") + " cyclic=" + (ss.isCircular() ? "yes" : "no") + ";");
 
@@ -268,7 +268,7 @@ public class NexusWriter extends AbstractSpectreWriter implements Appendable {
         int currentSplitIndex = 1;
 
         for (Split s : ss) {
-            if (!ss.isWeighted() || s.getWeight() != 0.0) {
+            if ((!ss.isWeighted() || s.getWeight() != 0.0) && s.isActive()) {
                 this.appendLine("  [" + currentSplitIndex++ + ", size=" + s.getASideSize() + "]\t" + s.getWeight() + "\t" + s.getASide().toString() + ",");
             }
         }

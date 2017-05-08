@@ -979,9 +979,9 @@ public class PermutationSequenceDraw {
             listf.clear();
 
             //System.out.println("Find first crossing for e");
-            indexe = go_to_first_crossing(e, a, crossindices, liste, splitedges);
+            indexe = goToFirstCrossing(e, a, crossindices, liste, splitedges);
             //System.out.println("Find first crossing for f");
-            indexf = go_to_first_crossing(f, a, crossindices, listf, splitedges);
+            indexf = goToFirstCrossing(f, a, crossindices, listf, splitedges);
 
             //triangle found?
             if ((indexe == f.getIdxsplit()) && (indexf == e.getIdxsplit())) {
@@ -1004,7 +1004,7 @@ public class PermutationSequenceDraw {
      * @param splitedges
      * @return
      */
-    private static int go_to_first_crossing(Edge e, int a, TreeSet crossindices, LinkedList<Edge> liste, TreeSet[] splitedges) {
+    private static int goToFirstCrossing(Edge e, int a, TreeSet crossindices, LinkedList<Edge> liste, TreeSet[] splitedges) {
         int dire = 0;
         int sidx = 0;
 
@@ -1695,7 +1695,6 @@ public class PermutationSequenceDraw {
     //This method cuts off the unecessary part of the network
     private static Vertex cutOffUnnecessaryPart(int a, int b, LinkedList<Edge> elista, LinkedList<Edge> elistb,
                                                    Direction dira, Direction dirb, int parta, int partb, TreeSet[] splitedges) {
-        //System.out.println("cut off unnecessary part");
 
         Vertex u = null;
 

@@ -266,6 +266,17 @@ public class SpectreSplitSystem extends ArrayList<Split> implements SplitSystem 
         return this.getNbSplits() - this.getNbTrivialSplits();
     }
 
+    @Override
+    public int getNbActiveWeightedSplits() {
+        int count = 0;
+        for(Split s : this) {
+            if (s.isActive() && (!this.isWeighted() || s.getWeight() > 0.0)) {
+                count++;
+            }
+        }
+        return count;
+    }
+
     public void setCircularOrdering(IdentifierList orderedTaxa) {
         this.orderedTaxa = orderedTaxa;
     }
