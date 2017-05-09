@@ -258,6 +258,9 @@ public class FlatNJ extends RunnableTool {
             log.info("Filtering splits below threshold: " + options.getThreshold());
             ps.filterSplits(options.getThreshold());
 
+            log.info("Restoring weights for trivial splits");
+            ps.restoreTrivialWeightsForExternalVertices();
+
             this.continueRun();
 
             notifyUser("Finalising splits system");

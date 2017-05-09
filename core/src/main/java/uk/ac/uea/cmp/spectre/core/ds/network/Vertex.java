@@ -86,22 +86,6 @@ public class Vertex {
         this.externalEdges = null;
     }
 
-    public Vertex(Vertex v) {
-        this.x = v.x;
-        this.y = v.y;
-        this.edgeList = v.edgeList.copy();
-        this.taxa = new IdentifierList(v.taxa);
-        this.visited = v.visited;
-        this.nxnum = v.nxnum;
-        this.width = v.width;
-        this.height = v.height;
-        this.bgColor = new Color(v.bgColor.getRGB());
-        this.fgColor = new Color(v.fgColor.getRGB());
-        this.shape = new String(v.shape);
-        this.label = new NetworkLabel(v.label);
-        this.externalEdges = v.edgeList.copy();
-    }
-
     //Methods to add an edge to the list of incident edges.
     public void prependEdge(Edge e) {
         edgeList.addFirst(e);
@@ -307,7 +291,7 @@ public class Vertex {
         EdgeList elist = new EdgeList();
 
         for (Edge e : this.edgeList.getFirst().collectEdges()) {
-            if (e.getIdxsplit() == splitIndex) {
+            if (e.getSplitIndex() == splitIndex) {
                 elist.add(e);
             }
         }

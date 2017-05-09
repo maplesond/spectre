@@ -210,6 +210,7 @@ public class SpectreSplit implements Split {
     public void mergeASides(Split split) {
         this.aSide.merge(split.getASide());
         this.bSide = aSide.makeComplement(this.getNbTaxa());
+        this.regenSets();
     }
 
     @Override
@@ -222,6 +223,8 @@ public class SpectreSplit implements Split {
             copy.aSide = copy.bSide;
             copy.bSide = temp;
         }
+
+        copy.regenSets();
         return copy;
     }
 
@@ -370,18 +373,13 @@ public class SpectreSplit implements Split {
             throw new IllegalArgumentException("Comparing splits that have different numbers of taxa!");
         }
 
-        SplitBlock thisASide = this.getASide();
-        SplitBlock thisBSide = this.getBSide();
-        SplitBlock otherASide = o.getASide();
-        SplitBlock otherBSide = o.getBSide();
-
-        if (!this.aSideContainsAny(otherASide)) {
+        if (!this.aSideContainsAny(o.getASide())) {
             return Compatible.YES_11;
-        } else if (!this.aSideContainsAny(otherBSide)) {
+        } else if (!this.aSideContainsAny(o.getBSide())) {
             return Compatible.YES_10;
-        } else if (!this.bSideContainsAny(otherASide)) {
+        } else if (!this.bSideContainsAny(o.getASide())) {
             return Compatible.YES_01;
-        } else if (!this.bSideContainsAny(otherBSide)) {
+        } else if (!this.bSideContainsAny(o.getBSide())) {
             return Compatible.YES_00;
         } else {
             return Compatible.NO;
@@ -470,6 +468,8 @@ public class SpectreSplit implements Split {
     public void incTaxId() {
         this.aSide.incTaxId();
         this.bSide.incTaxId();
+
+        this.regenSets();
     }
 
 

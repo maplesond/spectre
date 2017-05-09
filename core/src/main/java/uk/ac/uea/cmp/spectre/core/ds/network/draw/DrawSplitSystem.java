@@ -111,17 +111,13 @@ public class DrawSplitSystem {
     //*********************************************************************
 
     public Network createUnoptimisedNetwork() {
-        Vertex net = drawSplitSystem(-1.0);
+        Vertex net = drawSplitSystem();
         SpectreNetwork network = new SpectreNetwork(net);
-        for(Vertex v : network.getLabeledVertices()) {
-            v.setSize(3);
-            v.setShape(null);
-        }
         return network;
     }
 
     public Network createOptimisedNetwork() {
-        Vertex net = drawSplitSystem(-1.0);
+        Vertex net = drawSplitSystem();
         SpectreNetwork network = new SpectreNetwork(net);
         net = net.optimiseLayout(this, network);
         CompatibleCorrector compatibleCorrectorPrecise = new CompatibleCorrector(new AngleCalculatorMaximalArea());
@@ -129,11 +125,6 @@ public class DrawSplitSystem {
         if (!network.veryLongTrivial()) {
             compatibleCorrectorPrecise.moveTrivial(net, 5, network);
         }
-        for(Vertex v : network.getLabeledVertices()) {
-            v.setSize(3);
-            v.setShape(null);
-        }
-
         return network;
     }
 
@@ -144,14 +135,6 @@ public class DrawSplitSystem {
         public NetworkDrawing(Vertex v, TreeSet<Edge>[] splitEdges) {
             this.v = v;
             this.splitedges = splitEdges;
-        }
-
-        public NetworkDrawing(NetworkDrawing copy) {
-            this.v = new Vertex(copy.v);
-            this.splitedges = new TreeSet[copy.splitedges.length];
-            for(int i = 0; i < copy.splitedges.length; i++) {
-                this.splitedges[i] = new TreeSet<>(copy.splitedges[i]); // Only does a shallow copy... need to do a deep copy.
-            }
         }
 
         public int getNumberEdges() {
@@ -167,44 +150,18 @@ public class DrawSplitSystem {
     /**
      * This method is the main public method that should be called for computing a plane split network for a split
      * system.
-     * @param thr Threshold, below which splits are ignored
      * @return Split graph represented by a single vertex.  The network can be traversed from this vertex.
      */
-    public Vertex drawSplitSystem(double thr) {
-        this.restoreTrivialWeightsForExternalVertices();    // These shouldn't be here!
-        this.removeSplitsSmallerOrEqualThan(thr);
+    public Vertex drawSplitSystem() {
 
-        // Creates a regular unminimised network from the stored split system
-        NetworkDrawing regularNetwork = this.computeRegularNetwork();
+        // Creates a regular network from the stored split system
+        NetworkDrawing network = this.computeRegularNetwork();
 
-        // Creates a minimal network from the regular network
-        NetworkDrawing minmisedNetwork = this.makeNetworkMinimal(regularNetwork, true);
+        // The regular network is not necessarily minimal.  Some splits might be compatible and can therefore be minimised.
+        // So we apply another algorithm to the regular network to minimise it
+        network = this.makeNetworkMinimal(network, true);
 
-        return minmisedNetwork.v;
-    }
-
-
-    public void restoreTrivialWeightsForExternalVertices() {
-        for (Split s : this.ss) {
-            if (s.isTrivial()) {
-                int taxaNr = s.getTrivial();
-                if (trivial.get(taxaNr) > 0.0) {
-                    if (!s.isActive()) {
-                        s.setActive(true);
-                    }
-                    s.setWeight(trivial.get(taxaNr));
-                    trivial.put(taxaNr, 0.0);
-                }
-            }
-        }
-    }
-
-    public void removeSplitsSmallerOrEqualThan(double thr) {
-        for (int i = 0; i < this.ss.getNbSplits(); i++) {
-            if (this.ss.get(i).getWeight() <= thr) {
-                this.ss.get(i).setActive(false);
-            }
-        }
+        return network.v;
     }
 
     public int[] collectIndicesOfActiveSplits() {
@@ -249,10 +206,8 @@ public class DrawSplitSystem {
         Path path = this.createInitialPath();
 
         // Now extend the initial chain
-        Edge[] chain = path.chain;
-        TreeSet<Edge>[] splitedges = path.splitEdges;
-
         Vertex v = null;
+        // In the original, this was done via the initial ordering... not sure if this is a problem or not.
         for (Identifier i : this.ss.getOrderedTaxa()) {
 
             // Add all boxes to path required by this taxon
@@ -262,14 +217,9 @@ public class DrawSplitSystem {
             v = findVertexToLabel(i, path.chain, v);
         }
 
-        return new NetworkDrawing(v, splitedges);
+        return new NetworkDrawing(v, path.splitEdges);
     }
 
-
-    public enum Direction {
-        LEFT,
-        RIGHT
-    }
 
     private static class Path {
         TreeSet<Edge>[] splitEdges;
@@ -293,6 +243,8 @@ public class DrawSplitSystem {
     private Path createInitialPath() {
 
         int j = 0;
+        double xCoord = 0.0;
+        double yCoord = 0.0;
 
         final int nactive = this.ss.getNbActiveWeightedSplits();
 
@@ -302,6 +254,7 @@ public class DrawSplitSystem {
         Vertex cur = new Vertex(0.0, 0.0);
 
         for (int i = 0; i < this.ss.getNbSplits(); i++) {
+
             //create new set for edges associated to this split
             splitedges[i] = new TreeSet<>();
 
@@ -311,12 +264,13 @@ public class DrawSplitSystem {
                 Vertex prev = cur;
 
                 // Calc angle for this split.  Just assume a gradually increasing angle for now.
-                double angle = ((double)(j + 1) * Math.PI) / ((double)nactive + 1.0);
-                double weight = this.ss.get(i).getWeight();
+                final double angle = ((double)(j + 1) * Math.PI) / ((double)nactive + 1.0);
+                final double weight = this.ss.get(i).getWeight();
 
                 // Update coords for current vertex based on previous coords and this split's angle and weight
-                double xCoord = prev.getX() - (weight * Math.cos(angle));
-                double yCoord = prev.getY() - (weight * Math.sin(angle));
+                xCoord -= weight * Math.cos(angle);
+                yCoord -= weight * Math.sin(angle);
+
                 cur = new Vertex(xCoord, yCoord);
 
                 // Create new edge from previous and current vertices and include the split index
@@ -356,16 +310,19 @@ public class DrawSplitSystem {
                 //test if the splits associated to edges
                 //chain[j-1] and chain[j] must be inverted
 
-                if (this.ss.get(chain[j - 1].getIdxsplit()).getSide(i) == Split.SplitSide.A_SIDE &&
-                        this.ss.get(chain[j].getIdxsplit()).getSide(i) == Split.SplitSide.B_SIDE) {
+                if (this.ss.get(chain[j - 1].getSplitIndex()).getSide(i) == Split.SplitSide.A_SIDE &&
+                        this.ss.get(chain[j].getSplitIndex()).getSide(i) == Split.SplitSide.B_SIDE) {
 
-                    v = new Vertex(chain[j - 1].getCentreX(), chain[j - 1].getCentreY());
+                    double newX = chain[j - 1].getTop().getX() + chain[j].getDeltaX();
+                    double newY = chain[j - 1].getTop().getY() + chain[j].getDeltaY();
 
-                    Edge e1 = new Edge(chain[j - 1].getTop(), v, chain[j].getIdxsplit(), chain[j].getTimestp() + 1);
-                    Edge e2 = new Edge(v, chain[j].getBottom(), chain[j - 1].getIdxsplit(), chain[j - 1].getTimestp() + 1);
+                    v = new Vertex(newX, newY);
 
-                    splitedges[e1.getIdxsplit()].add(e1);
-                    splitedges[e2.getIdxsplit()].add(e2);
+                    Edge e1 = new Edge(chain[j - 1].getTop(), v, chain[j].getSplitIndex(), chain[j].getTimestp() + 1);
+                    Edge e2 = new Edge(v, chain[j].getBottom(), chain[j - 1].getSplitIndex(), chain[j - 1].getTimestp() + 1);
+
+                    splitedges[e1.getSplitIndex()].add(e1);
+                    splitedges[e2.getSplitIndex()].add(e2);
                     chain[j - 1] = e1;
                     chain[j] = e2;
                     v.prependEdge(e2);
@@ -393,7 +350,7 @@ public class DrawSplitSystem {
             v = chain[0].getTop();
             for (int j = 0; j < chain.length; j++) {
                 Edge ej = chain[j];
-                if (this.ss.get(ej.getIdxsplit()).getSide(i.getId()) == Split.SplitSide.A_SIDE) {
+                if (this.ss.get(ej.getSplitIndex()).getSide(i.getId()) == Split.SplitSide.A_SIDE) {
                     (ej.getTop()).getTaxa().add(i);
                     if (ej.getTop().getTaxa().size() > 1) {
                         this.setActiveTaxaAt(i.getId(), false);
@@ -418,17 +375,15 @@ public class DrawSplitSystem {
      * This method checks for every pair of distinct splits in the split system whether they are compatible.  If they
      * are it is checked whether these two splits form a box in the network. If they do we remove it. This ensures that
      * the resulting split network is minimal.
-     * @param regularNetwork The regular network to be minimised, includes the starting vertex of the network and the splitedges.
-     * @param check Do checking for valid result
+     * @param network The regular network to be minimised, includes the starting vertex of the network and the splitedges.
+     *                Warning: Will be modified by this function!
+     * @param check Validate the result
      * @return Network with compatible boxes removed
      */
-    public NetworkDrawing makeNetworkMinimal(NetworkDrawing regularNetwork, boolean check) {
+    public NetworkDrawing makeNetworkMinimal(NetworkDrawing network, boolean check) {
 
         //count incompatible pairs
         int count = 0;
-
-        //vertex in the split network
-        NetworkDrawing minmisedNetwork = new NetworkDrawing(regularNetwork);
 
         //check all pairs of active splits
         for (int i = 0; i < this.ss.getNbSplits() - 1; i++) {
@@ -437,10 +392,9 @@ public class DrawSplitSystem {
                 for (int j = i + 1; j < this.ss.getNbSplits(); j++) {
                     Split sj = this.ss.get(j);
                     if (sj.isActive()) {
-                        Split.Compatible pattern = this.ss.getCompatible(i, j);
-                        if (pattern.isCompatible()) {
-                            minmisedNetwork.v = this.removeBox(minmisedNetwork.v, i, j, pattern, minmisedNetwork.splitedges);
-                            if (minmisedNetwork.v == null) {
+                        if (this.ss.isCompatible(i, j)) {
+                            network.v = this.removeBox(network.v, i, j, network.splitedges);
+                            if (network.v == null) {
                                 throw new NullPointerException("Vertex u is null - stop here");
                             }
                         } else {
@@ -454,34 +408,33 @@ public class DrawSplitSystem {
         //Check if the numbers of boxes and edges in the output makes sense
         //First compute the number edges in the network
         if (check) {
-            int nedges = minmisedNetwork.getNumberEdges();
+            int nedges = network.getNumberEdges();
 
             if (((nedges - this.ss.getNbActiveWeightedSplits()) / 2) != count) {
                 throw new IllegalStateException("Numbers do not match!!!!!");
             }
         }
 
-        return minmisedNetwork;
+        return network;
     }
 
     /**
      * This method checks whether a pair of distinct compatible splits form a box in the network. If they do the box is
      * removed.
      * @param net Network
-     * @param a Split A
-     * @param b Split B
-     * @param pattern Compatibility pattern
+     * @param a Compatible split A
+     * @param b Compatible split B
      * @param splitedges Edges in the split network
      * @return Network with box removed if found, otherwise the same network that was passed in.
      */
-    private Vertex removeBox(Vertex net, int a, int b, Split.Compatible pattern, TreeSet<Edge>[] splitedges) {
+    private Vertex removeBox(Vertex net, int a, int b, TreeSet<Edge>[] splitedges) {
 
         //check if a and b form a box in the network
         NetworkBox netbox = NetworkBox.formBox(a, b, splitedges);
         if (netbox != null) {
 
             // Regenerate the network without the box
-            Vertex v = this.removeBoxByFlipping(a, b, pattern, netbox, splitedges);
+            Vertex v = this.removeBoxByFlipping(a, b, netbox, splitedges);
 
             if (v == null) {
                 throw new NullPointerException("Got a null vertex back");
@@ -490,7 +443,7 @@ public class DrawSplitSystem {
             return v;
         }
 
-        // Otherwise just return the same network that was passed in
+        // Otherwise it was not possible to form a box, so just return the same network that was passed in.
         return net;
     }
 
@@ -499,90 +452,52 @@ public class DrawSplitSystem {
      * network
      * @param a Split A
      * @param b Split B
-     * @param pattern Compatibility pattern
      * @param netbox Network box
      * @param splitedges Eplit edges
      * @return Network with box removed
      */
-    private Vertex removeBoxByFlipping(int a, int b, Split.Compatible pattern, NetworkBox netbox, TreeSet<Edge>[] splitedges) {
+    private Vertex removeBoxByFlipping(int a, int b, NetworkBox netbox, TreeSet<Edge>[] splitedges) {
+
         Vertex u = null;
 
+        // Direction for splits a and b
+        Split.Direction dira;
+        Split.Direction dirb;
+        Split.Compatible pattern = this.ss.getCompatible(a, b);
 
-        //direction for splits a and b
-        //-1:left,1:right
-        Direction dira = null;
-        Direction dirb = null;
-        int parta = 0;
-        int partb = 0;
+        boolean parta = pattern.partAOn();
+        boolean partb = pattern.partBOn();
 
         //determine direction in which we collect edges
         if (netbox.getF1().getTimestp() < netbox.getF2().getTimestp()) {
-            if (pattern == Split.Compatible.YES_11) {
-                dira = Direction.LEFT;
-                dirb = Direction.RIGHT;
-                parta = 1;
-                partb = 1;
-            } else if (pattern == Split.Compatible.YES_10) {
-                dira = Direction.RIGHT;
-                dirb = Direction.RIGHT;
-                parta = 1;
-                partb = 0;
-            } else if (pattern == Split.Compatible.YES_01) {
-                dira = Direction.LEFT;
-                dirb = Direction.LEFT;
-                parta = 0;
-                partb = 1;
-            } else if (pattern == Split.Compatible.YES_00) {
-                dira = Direction.RIGHT;
-                dirb = Direction.LEFT;
-                parta = 0;
-                partb = 0;
-            }
+            dira = pattern.getDirA(false);
+            dirb = pattern.getDirB(false);
         } else {
-            if (pattern == Split.Compatible.YES_11) {
-                dira = Direction.RIGHT;
-                dirb = Direction.LEFT;
-                parta = 1;
-                partb = 1;
-            } else if (pattern == Split.Compatible.YES_10) {
-                dira = Direction.LEFT;
-                dirb = Direction.LEFT;
-                parta = 1;
-                partb = 0;
-            } else if (pattern == Split.Compatible.YES_01) {
-                dira = Direction.RIGHT;
-                dirb = Direction.RIGHT;
-                parta = 0;
-                partb = 1;
-            } else if (pattern == Split.Compatible.YES_00) {
-                dira = Direction.LEFT;
-                dirb = Direction.RIGHT;
-                parta = 0;
-                partb = 0;
-            }
+            dira = pattern.getDirA(true);
+            dirb = pattern.getDirB(true);
         }
 
-        //now collect edges
+        // Now collect edges associated with the network box
         Pair<EdgeList, EdgeList> aLists = this.collectEdgesFromBox(netbox.getE1(), netbox.getE2(), a, dira, splitedges, parta);
         Pair<EdgeList, EdgeList> bLists = this.collectEdgesFromBox(netbox.getF1(), netbox.getF2(), b, dirb, splitedges, partb);
 
-        //find splits that cross a and b
+        // Find splits that cross a and b
         EdgeList crossboth = this.findCrossBoth(aLists.getRight(), bLists.getRight(), b);
 
-        //Temporary list used when clearing a triangle
-        EdgeList cleanlist = new EdgeList();
-
         while (crossboth.size() > 1) {
-            //Need to get rid of the splits that cross a and b
-            //First find a triangle
-            int s = this.findTriangle(a, crossboth, cleanlist, splitedges);
-            this.getRidOfTriangle(a, b, s, dira, parta, crossboth, cleanlist, aLists.getLeft(), bLists.getLeft(), splitedges);
+
+            // Need to get rid of the splits that cross a and b. First find a triangle.
+            Triangle triangle = this.findTriangle(a, crossboth, splitedges);
+
+            if (triangle == null) {
+                throw new IllegalStateException("Should this be allowed?");
+            }
+            this.removeTriangle(a, b, triangle, dira, parta, crossboth, aLists.getLeft(), bLists.getLeft(), splitedges);
         }
 
-        //now simply cut off the unnecessary part of the network
+        // Now cut off the unnecessary part of the network
         if (crossboth.size() <= 1) {
-            //System.out.println("Cut off quadrant");
-            u = cutOffUnnecessaryPart(a, b, aLists.getLeft(), bLists.getLeft(), dira, dirb, parta, partb, splitedges);
+            u = clearSector(a, b, aLists.getLeft(), bLists.getLeft(), dira, dirb, parta, partb, splitedges);
         }
 
         return u;
@@ -594,35 +509,27 @@ public class DrawSplitSystem {
      * @param h2 Edge 2
      * @param s Split index
      * @param dirs Direction (Left or Right)
-     * @param splitedges Split system
-     * @param parts Unknown ?
+     * @param splitedges Edges associated with each split
+     * @param parts Part of compatiblility pattern
      * @return A pair of edge lists.  The first represents a list of relevant edges and the second represents those that cross
      */
-    private Pair<EdgeList, EdgeList> collectEdgesFromBox(Edge h1, Edge h2, int s, Direction dirs,
-                                               TreeSet<Edge>[] splitedges, int parts) {
+    private Pair<EdgeList, EdgeList> collectEdgesFromBox(Edge h1, Edge h2, int s, Split.Direction dirs,
+                                               TreeSet<Edge>[] splitedges, boolean parts) {
         EdgeList crossLists = new EdgeList();
         EdgeList eLists = new EdgeList();
-        int stopstp = 0;
+        int stopstp;
 
         if (h1.getTimestp() < h2.getTimestp()) {
-            if (dirs == Direction.LEFT) {
-                stopstp = h2.getTimestp();
-            } else {
-                stopstp = h1.getTimestp();
-            }
+            stopstp = dirs == Split.Direction.LEFT ? h2.getTimestp() : h1.getTimestp();
         } else {
-            if (dirs == Direction.LEFT) {
-                stopstp = h1.getTimestp();
-            } else {
-                stopstp = h2.getTimestp();
-            }
+            stopstp = dirs == Split.Direction.LEFT ? h1.getTimestp() : h2.getTimestp();
         }
 
-        if (dirs == Direction.LEFT) {
+        if (dirs == Split.Direction.LEFT) {
             for (Edge g : splitedges[s]) {
                 if (g.getTimestp() < stopstp) {
                     eLists.addFirst(g);
-                    if (parts == 1) {
+                    if (parts) {
                         crossLists.addFirst(g.getTop().getEdgeList().get((g.getTop().getEdgeList().indexOf(g) + g.getTop().getEdgeList().size() - 1) % g.getTop().getEdgeList().size()));
                     } else {
                         crossLists.addFirst(g.getBottom().getEdgeList().get((g.getBottom().getEdgeList().indexOf(g) + 1) % g.getBottom().getEdgeList().size()));
@@ -635,7 +542,7 @@ public class DrawSplitSystem {
             for (Edge g : splitedges[s]) {
                 if (g.getTimestp() > stopstp) {
                     eLists.addLast(g);
-                    if (parts == 1) {
+                    if (parts) {
                         crossLists.addLast(g.getTop().getEdgeList().get((g.getTop().getEdgeList().indexOf(g) + 1) % g.getTop().getEdgeList().size()));
                     } else {
                         crossLists.addLast(g.getBottom().getEdgeList().get((g.getBottom().getEdgeList().indexOf(g) + g.getBottom().getEdgeList().size() - 1) % g.getBottom().getEdgeList().size()));
@@ -660,11 +567,11 @@ public class DrawSplitSystem {
         EdgeList crossboth = new EdgeList();
 
         for (Edge e : crosslista) {
-            if (e.getIdxsplit() == b) {
+            if (e.getSplitIndex() == b) {
                 crossboth.addLast(e);
             } else {
                 for (Edge f : crosslistb) {
-                    if (e.getIdxsplit() == f.getIdxsplit()) {
+                    if (e.getSplitIndex() == f.getSplitIndex()) {
                         crossboth.addLast(e);
                         break;
                     }
@@ -676,56 +583,65 @@ public class DrawSplitSystem {
     }
 
 
+    private static class Triangle {
+        int splitidx;
+        EdgeList edges;
+
+        public Triangle(int splitidx, EdgeList edges) {
+            this.splitidx = splitidx;
+            this.edges = edges;
+        }
+    }
+
     /**
      * This method locates a triangle and also collects the the cleanlist containing those edges that can be used to
      * clear the triangle if necessary
-     * @param a
+     * @param splitidx
      * @param crossboth
-     * @param cleanlist
      * @param splitedges
      * @return
      */
-    private int findTriangle(int a, EdgeList crossboth, EdgeList cleanlist, TreeSet[] splitedges) {
-        cleanlist.clear();
+    private Triangle findTriangle(int splitidx, EdgeList crossboth, TreeSet[] splitedges) {
+        EdgeList edges = new EdgeList();
 
-        TreeSet<Integer> crossindices = crossboth.getCrossIndices();
-
-        Edge e = null;
-        Edge f = null;
-
-        int indexe = -1;
-        int indexf = -1;
-
-        LinkedList<Edge> liste = new LinkedList<>();
-        LinkedList<Edge> listf = new LinkedList<>();
-
-        ListIterator crossiter = crossboth.listIterator();
-
-        if (crossiter.hasNext()) {
-            e = (Edge) crossiter.next();
+        if (crossboth.size() < 2) {
+            throw new IllegalArgumentException("Expected crossboth to contain at least two edges.");
         }
 
-        while (crossiter.hasNext()) {
-            f = (Edge) crossiter.next();
+        int s = -1;
 
-            liste.clear();
-            listf.clear();
+        for(int i = 1; i < crossboth.size(); i++) {
+            Edge e = crossboth.get(i-1);
+            Edge f = crossboth.get(i);
 
-            //System.out.println("Find first crossing for e");
-            indexe = goToFirstCrossing(e, a, crossindices, liste, splitedges);
-            //System.out.println("Find first crossing for f");
-            indexf = goToFirstCrossing(f, a, crossindices, listf, splitedges);
+            Crossing crossingE = goToFirstCrossing(e, splitidx, crossboth.getSplitIndexSet(), splitedges);
+            Crossing crossingF = goToFirstCrossing(f, splitidx, crossboth.getSplitIndexSet(), splitedges);
 
-            //triangle found?
-            if ((indexe == f.getIdxsplit()) && (indexf == e.getIdxsplit())) {
-                cleanlist.addAll(listf);
+            // Triangle found?
+            if ((crossingE.splitidx == f.getSplitIndex()) && (crossingF.splitidx == e.getSplitIndex())) {
+                edges.addAll(crossingF.edges);
+                s = e.getSplitIndex();
                 break;
-            } else {
-                e = f;
             }
         }
 
-        return e.getIdxsplit();
+        if (s == -1 || edges.isEmpty()) {
+            return null;
+        }
+        else {
+            return new Triangle(s, edges);
+        }
+    }
+
+    private static class Crossing {
+        private int splitidx;
+        private LinkedList<Edge> edges;
+
+        public Crossing(int splitidx, LinkedList<Edge> edges) {
+            this.splitidx = splitidx;
+            this.edges = edges;
+        }
+
     }
 
     /**
@@ -733,58 +649,38 @@ public class DrawSplitSystem {
      * @param e
      * @param a
      * @param crossindices
-     * @param liste
      * @param splitedges
      * @return
      */
-    private static int goToFirstCrossing(Edge e, int a, TreeSet crossindices, LinkedList<Edge> liste, TreeSet[] splitedges) {
-        int dire = 0;
-        int sidx = 0;
+    private static Crossing goToFirstCrossing(Edge e, int a, Set crossindices, TreeSet[] splitedges) {
 
-        //first check in which direction we need to go
-        SortedSet testtail = splitedges[e.getIdxsplit()].tailSet(e);
+        Edge f;
+        LinkedList<Edge> liste = new LinkedList<>();
 
-        Edge f = null;
+        // First check which direction we need to go
+        Split.Direction dir = a == e.getBottom().getEdgeList().getNextEdge(e).getSplitIndex() ?
+            Split.Direction.RIGHT : Split.Direction.LEFT;
 
-        if (testtail.size() == 1) {
-            dire = -1;
-        } else if (a == (e.getBottom().getEdgeList().get((e.getBottom().getEdgeList().indexOf(e) + 1) % e.getBottom().getEdgeList().size())).getIdxsplit()) {
-            dire = 1;
-        } else {
-            dire = -1;
-        }
-
-        if (dire == 1) {
-            SortedSet tail = splitedges[e.getIdxsplit()].tailSet(e);
-            Iterator tailiter = tail.iterator();
-            f = (Edge) tailiter.next();
-            while (tailiter.hasNext()) {
-                f = (Edge) tailiter.next();
-                sidx = (f.getTop().getEdgeList().get((f.getTop().getEdgeList().indexOf(f) + 1) % f.getTop().getEdgeList().size())).getIdxsplit();
-                if (crossindices.contains(new Integer(sidx))) {
-                    return sidx;
+        if (dir == Split.Direction.RIGHT) {
+            Iterator<Edge> tail = splitedges[e.getSplitIndex()].tailSet(e).iterator();
+            tail.next();  // Skip the first entry as that will be the current edge
+            while (tail.hasNext()) {
+                f = tail.next();
+                int sidx = f.getTop().getEdgeList().getNextEdge(f).getSplitIndex();
+                if (crossindices.contains(sidx)) {
+                    return new Crossing(sidx, liste);
                 } else {
                     liste.addLast(f);
                 }
             }
         } else {
-            SortedSet head = splitedges[e.getIdxsplit()].headSet(e);
-            Iterator headiter = head.iterator();
-            LinkedList reverse = new LinkedList();
-
-            //Get edges in head in reverse order
+            // Get edges in head in reverse order
+            Iterator<Edge> headiter = new LinkedList<>(splitedges[e.getSplitIndex()].headSet(e)).descendingIterator();
             while (headiter.hasNext()) {
-                f = (Edge) headiter.next();
-                reverse.addFirst(f);
-            }
-
-            Iterator reviter = reverse.iterator();
-
-            while (reviter.hasNext()) {
-                f = (Edge) reviter.next();
-                sidx = ((Edge) f.getBottom().getEdgeList().get((f.getBottom().getEdgeList().indexOf(f) + 1) % f.getBottom().getEdgeList().size())).getIdxsplit();
-                if (crossindices.contains(new Integer(sidx))) {
-                    return sidx;
+                f = headiter.next();
+                int sidx = f.getBottom().getEdgeList().getNextEdge(f).getSplitIndex();
+                if (crossindices.contains(sidx)) {
+                    return new Crossing(sidx, liste);
                 } else {
                     liste.addLast(f);
                 }
@@ -792,50 +688,36 @@ public class DrawSplitSystem {
         }
 
         // Something's wrong! :(
-        throw new IllegalStateException("Did not find a first crossing");
+        throw new IllegalStateException("Did not find a crossing");
     }
-
-
-
 
 
     /**
      * This method removes one triangle from the empty quadrant of two compatible splits
      * @param a
      * @param b
-     * @param s
+     * @param triangle
      * @param dira
      * @param parta
      * @param crossboth
-     * @param cleanlist
      * @param elista
      * @param elistb
      * @param splitedges
      */
-    private void getRidOfTriangle(int a, int b, int s, Direction dira, int parta,
-                                            EdgeList crossboth, EdgeList cleanlist, EdgeList elista,
-                                            EdgeList elistb, TreeSet[] splitedges) {
-        Edge e = cleanlist.getFirst();
+    private void removeTriangle(int a, int b, Triangle triangle, Split.Direction dira, boolean parta,
+                                EdgeList crossboth, EdgeList elista,
+                                EdgeList elistb, TreeSet[] splitedges) {
+        Edge e = triangle.edges.getFirst();
 
-        Direction dire = null;
-
-        //first check in which direction we need to go
-        SortedSet testtail = splitedges[e.getIdxsplit()].tailSet(e);
-
-        Edge f = null;
-
-        if (testtail.size() == 1) {
-            dire = Direction.RIGHT;
-        } else if (a == (e.getBottom().getEdgeList().get((e.getBottom().getEdgeList().indexOf(e) + 1) % e.getBottom().getEdgeList().size())).getIdxsplit()) {
-            dire = Direction.LEFT;
-        } else {
-            dire = Direction.RIGHT;
-        }
+        // First check which direction we need to go
+        Split.Direction dire = splitedges[e.getSplitIndex()].tailSet(e).size() != 1 &&
+                a == e.getBottom().getEdgeList().getNextEdge(e).getSplitIndex() ?
+                Split.Direction.RIGHT : Split.Direction.LEFT;
 
         Flip flipDir = flipDirection(parta, dira, dire);
 
-        while (!cleanlist.isEmpty()) {
-            this.findFlippableCubeInTriangle(cleanlist, crossboth, flipDir, a, b, s, parta, dira, elista, elistb, splitedges);
+        while (!triangle.edges.isEmpty()) {
+            this.findFlippableCubeInTriangle(triangle, crossboth, flipDir, a, b, parta, dira, elista, elistb, splitedges);
         }
     }
 
@@ -844,18 +726,18 @@ public class DrawSplitSystem {
         DOWN
     }
 
-    private static Flip flipDirection(int partA, Direction d, Direction e) {
-        if (partA == 1) {
-            if (d == Direction.LEFT) {
-                return e == Direction.LEFT ? Flip.DOWN : Flip.UP;
+    private static Flip flipDirection(boolean partA, Split.Direction d, Split.Direction e) {
+        if (partA) {
+            if (d == Split.Direction.LEFT) {
+                return e == Split.Direction.LEFT ? Flip.DOWN : Flip.UP;
             } else {
-                return e == Direction.RIGHT ? Flip.DOWN : Flip.UP;
+                return e == Split.Direction.RIGHT ? Flip.DOWN : Flip.UP;
             }
         } else {
-            if (d == Direction.LEFT) {
-                return e == Direction.RIGHT ? Flip.DOWN : Flip.UP;
+            if (d == Split.Direction.LEFT) {
+                return e == Split.Direction.RIGHT ? Flip.DOWN : Flip.UP;
             } else {
-                return e == Direction.LEFT ? Flip.DOWN : Flip.UP;
+                return e == Split.Direction.LEFT ? Flip.DOWN : Flip.UP;
             }
         }
     }
@@ -863,23 +745,22 @@ public class DrawSplitSystem {
 
     /**
      * This method locates and flips a cube during the removal of a triangle
-     * @param elist
+     * @param triangle
      * @param crossboth
      * @param flipdir
      * @param a
      * @param b
-     * @param s
      * @param parta
      * @param dira
      * @param elista
      * @param elistb
      * @param splitedges
      */
-    private static void findFlippableCubeInTriangle(EdgeList elist, EdgeList crossboth,
-                                                        Flip flipdir, int a, int b, int s, int parta, Direction dira,
+    private static void findFlippableCubeInTriangle(Triangle triangle, EdgeList crossboth,
+                                                        Flip flipdir, int a, int b, boolean parta, Split.Direction dira,
                                                         EdgeList elista, EdgeList elistb,
                                                         TreeSet[] splitedges) {
-        if (elist.isEmpty()) {
+        if (triangle.edges.isEmpty()) {
             throw new IllegalArgumentException("List of flip edges is empty");
         }
 
@@ -909,10 +790,12 @@ public class DrawSplitSystem {
 
         ListIterator iter = null;
 
+        final int s = triangle.splitidx;
+
         if (flipdir == Flip.UP) {
             //flip cubes upwards
 
-            iter = elist.listIterator();
+            iter = triangle.edges.listIterator();
 
             //find a flippable cube
             while (iter.hasNext()) {
@@ -971,12 +854,12 @@ public class DrawSplitSystem {
                     if ((v2 == v4)
                             && (v6 == v7)
                             && (v8 == v9)
-                            && (e.getIdxsplit() == e5.getIdxsplit())
-                            && (e.getIdxsplit() == e8.getIdxsplit())
-                            && (e2.getIdxsplit() == e3.getIdxsplit())
-                            && (e2.getIdxsplit() == e6.getIdxsplit())
-                            && (e1.getIdxsplit() == e4.getIdxsplit())
-                            && (e1.getIdxsplit() == e7.getIdxsplit())) {
+                            && (e.getSplitIndex() == e5.getSplitIndex())
+                            && (e.getSplitIndex() == e8.getSplitIndex())
+                            && (e2.getSplitIndex() == e3.getSplitIndex())
+                            && (e2.getSplitIndex() == e6.getSplitIndex())
+                            && (e1.getSplitIndex() == e4.getSplitIndex())
+                            && (e1.getSplitIndex() == e7.getSplitIndex())) {
                         break;
                     }
                 }
@@ -990,54 +873,55 @@ public class DrawSplitSystem {
             v.setX(v2.getX() + (v5.getX() - v.getX()));
             v.setY(v2.getY() + (v5.getY() - v.getY()));
             if (v8 == e6.getTop()) {
-                h1 = new Edge(v, v6, e6.getIdxsplit(), e2.getTimestp());
+                h1 = new Edge(v, v6, e6.getSplitIndex(), e2.getTimestp());
             } else {
-                h1 = new Edge(v6, v, e6.getIdxsplit(), e2.getTimestp());
+                h1 = new Edge(v6, v, e6.getSplitIndex(), e2.getTimestp());
             }
             v6.getEdgeList().add(v6.getEdgeList().indexOf(e7) + 1, h1);
             v.getEdgeList().addLast(h1);
             if (v6 == e7.getTop()) {
-                h2 = new Edge(v, v8, e7.getIdxsplit(), e1.getTimestp());
+                h2 = new Edge(v, v8, e7.getSplitIndex(), e1.getTimestp());
             } else {
-                h2 = new Edge(v8, v, e7.getIdxsplit(), e1.getTimestp());
+                h2 = new Edge(v8, v, e7.getSplitIndex(), e1.getTimestp());
             }
             v8.getEdgeList().add(v8.getEdgeList().indexOf(e5) + 1, h2);
             v.getEdgeList().addLast(h2);
-            h3 = new Edge(v2, v, e.getIdxsplit(), e.getTimestp());
+            h3 = new Edge(v2, v, e.getSplitIndex(), e.getTimestp());
             v2.getEdgeList().add(v2.getEdgeList().indexOf(e3) + 1, h3);
             v.getEdgeList().addLast(h3);
 
             //System.out.println("Size of elist before update: " + elist.size());
 
             //update lists of edges accordingly
-            splitedges[e.getIdxsplit()].remove(e);
-            splitedges[e.getIdxsplit()].add(h3);
-            splitedges[e2.getIdxsplit()].remove(e2);
-            splitedges[e2.getIdxsplit()].add(h1);
-            splitedges[e1.getIdxsplit()].remove(e1);
-            splitedges[e1.getIdxsplit()].add(h2);
+            splitedges[e.getSplitIndex()].remove(e);
+            splitedges[e.getSplitIndex()].add(h3);
+            splitedges[e2.getSplitIndex()].remove(e2);
+            splitedges[e2.getSplitIndex()].add(h1);
+            splitedges[e1.getSplitIndex()].remove(e1);
+            splitedges[e1.getSplitIndex()].add(h2);
 
-            if (parta == 1) {
-                if (dira == Direction.LEFT) {
-                    elist.add(elist.indexOf(e) + 1, h3);
-                    elist.remove(e);
-                    if ((e6.getIdxsplit() == a) && (e7.getIdxsplit() != s)) {
-                        elist.removeFirst();
+
+            if (parta) {
+                if (dira == Split.Direction.LEFT) {
+                    triangle.edges.add(triangle.edges.indexOf(e) + 1, h3);
+                    triangle.edges.remove(e);
+                    if ((e6.getSplitIndex() == a) && (e7.getSplitIndex() != s)) {
+                        triangle.edges.removeFirst();
                         crossboth.add(crossboth.indexOf(e5) + 1, h3);
                         crossboth.remove(e5);
                         elista.add(elista.indexOf(e2) + 1, h1);
                         elista.remove(e2);
                     }
-                    if ((e6.getIdxsplit() == a) && (e7.getIdxsplit() == s) && (s == b)) {
-                        elist.removeFirst();
+                    if ((e6.getSplitIndex() == a) && (e7.getSplitIndex() == s) && (s == b)) {
+                        triangle.edges.removeFirst();
                         crossboth.remove(e5);
                         crossboth.add(crossboth.indexOf(e4) + 1, h2);
                         crossboth.remove(e4);
                         elista.remove(e2);
                         elistb.remove(e1);
                     }
-                    if ((e6.getIdxsplit() == a) && (e7.getIdxsplit() == s) && (s != b)) {
-                        elist.removeFirst();
+                    if ((e6.getSplitIndex() == a) && (e7.getSplitIndex() == s) && (s != b)) {
+                        triangle.edges.removeFirst();
                         crossboth.add(crossboth.indexOf(e4) + 1, h3);
                         crossboth.remove(e4);
                         crossboth.add(crossboth.indexOf(e5) + 1, h2);
@@ -1045,35 +929,35 @@ public class DrawSplitSystem {
                         elista.add(elista.indexOf(e2) + 1, h1);
                         elista.remove(e2);
                     }
-                    if ((e6.getIdxsplit() != a) && (e7.getIdxsplit() == s) && (s == b)) {
-                        elist.removeLast();
+                    if ((e6.getSplitIndex() != a) && (e7.getSplitIndex() == s) && (s == b)) {
+                        triangle.edges.removeLast();
                         elistb.add(elistb.indexOf(e1) + 1, h2);
                         elistb.remove(e1);
                     }
-                    if ((e6.getIdxsplit() != a) && (e7.getIdxsplit() == s) && (s != b)) {
-                        elist.removeLast();
+                    if ((e6.getSplitIndex() != a) && (e7.getSplitIndex() == s) && (s != b)) {
+                        triangle.edges.removeLast();
                     }
                 } else {
-                    elist.add(elist.indexOf(e) + 1, h3);
-                    elist.remove(e);
+                    triangle.edges.add(triangle.edges.indexOf(e) + 1, h3);
+                    triangle.edges.remove(e);
 
-                    if ((e7.getIdxsplit() == a) && (e6.getIdxsplit() != s)) {
-                        elist.removeFirst();
+                    if ((e7.getSplitIndex() == a) && (e6.getSplitIndex() != s)) {
+                        triangle.edges.removeFirst();
                         crossboth.add(crossboth.indexOf(e8) + 1, h3);
                         crossboth.remove(e8);
                         elista.add(elista.indexOf(e1) + 1, h2);
                         elista.remove(e1);
                     }
-                    if ((e7.getIdxsplit() == a) && (e6.getIdxsplit() == s) && (s == b)) {
-                        elist.removeFirst();
+                    if ((e7.getSplitIndex() == a) && (e6.getSplitIndex() == s) && (s == b)) {
+                        triangle.edges.removeFirst();
                         crossboth.remove(e8);
                         crossboth.add(crossboth.indexOf(e3) + 1, h1);
                         crossboth.remove(e3);
                         elista.remove(e1);
                         elistb.remove(e2);
                     }
-                    if ((e7.getIdxsplit() == a) && (e6.getIdxsplit() == s) && (s != b)) {
-                        elist.removeFirst();
+                    if ((e7.getSplitIndex() == a) && (e6.getSplitIndex() == s) && (s != b)) {
+                        triangle.edges.removeFirst();
                         crossboth.add(crossboth.indexOf(e3) + 1, h3);
                         crossboth.remove(e3);
                         crossboth.add(crossboth.indexOf(e8) + 1, h1);
@@ -1081,37 +965,37 @@ public class DrawSplitSystem {
                         elista.add(elista.indexOf(e1) + 1, h2);
                         elista.remove(e1);
                     }
-                    if ((e7.getIdxsplit() != a) && (e6.getIdxsplit() == s) && (s == b)) {
-                        elist.removeLast();
+                    if ((e7.getSplitIndex() != a) && (e6.getSplitIndex() == s) && (s == b)) {
+                        triangle.edges.removeLast();
                         elistb.add(elistb.indexOf(e2) + 1, h1);
                         elistb.remove(e2);
                     }
-                    if ((e7.getIdxsplit() != a) && (e6.getIdxsplit() == s) && (s != b)) {
-                        elist.removeLast();
+                    if ((e7.getSplitIndex() != a) && (e6.getSplitIndex() == s) && (s != b)) {
+                        triangle.edges.removeLast();
                     }
                 }
             } else {
-                if (dira == Direction.LEFT) {
-                    elist.add(elist.indexOf(e) + 1, h3);
-                    elist.remove(e);
+                if (dira == Split.Direction.LEFT) {
+                    triangle.edges.add(triangle.edges.indexOf(e) + 1, h3);
+                    triangle.edges.remove(e);
 
-                    if ((e7.getIdxsplit() == a) && (e6.getIdxsplit() != s)) {
-                        elist.removeFirst();
+                    if ((e7.getSplitIndex() == a) && (e6.getSplitIndex() != s)) {
+                        triangle.edges.removeFirst();
                         crossboth.add(crossboth.indexOf(e8) + 1, h3);
                         crossboth.remove(e8);
                         elista.add(elista.indexOf(e1) + 1, h2);
                         elista.remove(e1);
                     }
-                    if ((e7.getIdxsplit() == a) && (e6.getIdxsplit() == s) && (s == b)) {
-                        elist.removeFirst();
+                    if ((e7.getSplitIndex() == a) && (e6.getSplitIndex() == s) && (s == b)) {
+                        triangle.edges.removeFirst();
                         crossboth.remove(e8);
                         crossboth.add(crossboth.indexOf(e3) + 1, h1);
                         crossboth.remove(e3);
                         elista.remove(e1);
                         elistb.remove(e2);
                     }
-                    if ((e7.getIdxsplit() == a) && (e6.getIdxsplit() == s) && (s != b)) {
-                        elist.removeFirst();
+                    if ((e7.getSplitIndex() == a) && (e6.getSplitIndex() == s) && (s != b)) {
+                        triangle.edges.removeFirst();
                         crossboth.add(crossboth.indexOf(e3) + 1, h3);
                         crossboth.remove(e3);
                         crossboth.add(crossboth.indexOf(e8) + 1, h1);
@@ -1119,34 +1003,34 @@ public class DrawSplitSystem {
                         elista.add(elista.indexOf(e1) + 1, h2);
                         elista.remove(e1);
                     }
-                    if ((e7.getIdxsplit() != a) && (e6.getIdxsplit() == s) && (s == b)) {
-                        elist.removeLast();
+                    if ((e7.getSplitIndex() != a) && (e6.getSplitIndex() == s) && (s == b)) {
+                        triangle.edges.removeLast();
                         elistb.add(elistb.indexOf(e2) + 1, h1);
                         elistb.remove(e2);
                     }
-                    if ((e7.getIdxsplit() != a) && (e6.getIdxsplit() == s) && (s != b)) {
-                        elist.removeLast();
+                    if ((e7.getSplitIndex() != a) && (e6.getSplitIndex() == s) && (s != b)) {
+                        triangle.edges.removeLast();
                     }
                 } else {
-                    elist.add(elist.indexOf(e) + 1, h3);
-                    elist.remove(e);
-                    if ((e6.getIdxsplit() == a) && (e7.getIdxsplit() != s)) {
-                        elist.removeFirst();
+                    triangle.edges.add(triangle.edges.indexOf(e) + 1, h3);
+                    triangle.edges.remove(e);
+                    if ((e6.getSplitIndex() == a) && (e7.getSplitIndex() != s)) {
+                        triangle.edges.removeFirst();
                         crossboth.add(crossboth.indexOf(e5) + 1, h3);
                         crossboth.remove(e5);
                         elista.add(elista.indexOf(e2) + 1, h1);
                         elista.remove(e2);
                     }
-                    if ((e6.getIdxsplit() == a) && (e7.getIdxsplit() == s) && (s == b)) {
-                        elist.removeFirst();
+                    if ((e6.getSplitIndex() == a) && (e7.getSplitIndex() == s) && (s == b)) {
+                        triangle.edges.removeFirst();
                         crossboth.remove(e5);
                         crossboth.add(crossboth.indexOf(e4) + 1, h2);
                         crossboth.remove(e4);
                         elista.remove(e2);
                         elistb.remove(e1);
                     }
-                    if ((e6.getIdxsplit() == a) && (e7.getIdxsplit() == s) && (s != b)) {
-                        elist.removeFirst();
+                    if ((e6.getSplitIndex() == a) && (e7.getSplitIndex() == s) && (s != b)) {
+                        triangle.edges.removeFirst();
                         crossboth.add(crossboth.indexOf(e4) + 1, h3);
                         crossboth.remove(e4);
                         crossboth.add(crossboth.indexOf(e5) + 1, h2);
@@ -1154,20 +1038,20 @@ public class DrawSplitSystem {
                         elista.add(elista.indexOf(e2) + 1, h1);
                         elista.remove(e2);
                     }
-                    if ((e6.getIdxsplit() != a) && (e7.getIdxsplit() == s) && (s == b)) {
-                        elist.removeLast();
+                    if ((e6.getSplitIndex() != a) && (e7.getSplitIndex() == s) && (s == b)) {
+                        triangle.edges.removeLast();
                         elistb.add(elistb.indexOf(e1) + 1, h2);
                         elistb.remove(e1);
                     }
-                    if ((e6.getIdxsplit() != a) && (e7.getIdxsplit() == s) && (s != b)) {
-                        elist.removeLast();
+                    if ((e6.getSplitIndex() != a) && (e7.getSplitIndex() == s) && (s != b)) {
+                        triangle.edges.removeLast();
                     }
                 }
             }
         } else {
             //flip cubes downwards
 
-            iter = elist.listIterator();
+            iter = triangle.edges.listIterator();
 
             //find flippable cube
             while (iter.hasNext()) {
@@ -1226,12 +1110,12 @@ public class DrawSplitSystem {
                     if ((v2 == v4)
                             && (v6 == v7)
                             && (v8 == v9)
-                            && (e.getIdxsplit() == e5.getIdxsplit())
-                            && (e.getIdxsplit() == e8.getIdxsplit())
-                            && (e2.getIdxsplit() == e3.getIdxsplit())
-                            && (e2.getIdxsplit() == e6.getIdxsplit())
-                            && (e1.getIdxsplit() == e4.getIdxsplit())
-                            && (e1.getIdxsplit() == e7.getIdxsplit())) {
+                            && (e.getSplitIndex() == e5.getSplitIndex())
+                            && (e.getSplitIndex() == e8.getSplitIndex())
+                            && (e2.getSplitIndex() == e3.getSplitIndex())
+                            && (e2.getSplitIndex() == e6.getSplitIndex())
+                            && (e1.getSplitIndex() == e4.getSplitIndex())
+                            && (e1.getSplitIndex() == e7.getSplitIndex())) {
                         break;
                     }
                 }
@@ -1245,56 +1129,56 @@ public class DrawSplitSystem {
             v.setX(v2.getX() + (v5.getX() - v.getX()));
             v.setY(v2.getY() + (v5.getY() - v.getY()));
             if (v8 == e6.getTop()) {
-                h1 = new Edge(v, v6, e6.getIdxsplit(), e2.getTimestp());
+                h1 = new Edge(v, v6, e6.getSplitIndex(), e2.getTimestp());
             } else {
-                h1 = new Edge(v6, v, e6.getIdxsplit(), e2.getTimestp());
+                h1 = new Edge(v6, v, e6.getSplitIndex(), e2.getTimestp());
             }
             v6.getEdgeList().add(v6.getEdgeList().indexOf(e7) + 1, h1);
             v.getEdgeList().addLast(h1);
             if (v6 == e7.getTop()) {
-                h2 = new Edge(v, v8, e7.getIdxsplit(), e1.getTimestp());
+                h2 = new Edge(v, v8, e7.getSplitIndex(), e1.getTimestp());
             } else {
-                h2 = new Edge(v8, v, e7.getIdxsplit(), e1.getTimestp());
+                h2 = new Edge(v8, v, e7.getSplitIndex(), e1.getTimestp());
             }
             v8.getEdgeList().add(v8.getEdgeList().indexOf(e5) + 1, h2);
             v.getEdgeList().addLast(h2);
-            h3 = new Edge(v, v2, e.getIdxsplit(), e.getTimestp());
+            h3 = new Edge(v, v2, e.getSplitIndex(), e.getTimestp());
             v2.getEdgeList().add(v2.getEdgeList().indexOf(e3) + 1, h3);
             v.getEdgeList().addLast(h3);
 
             //System.out.println("Size of elist before update: " + elist.size());
 
             //update lists of edges accordingly
-            splitedges[e.getIdxsplit()].remove(e);
-            splitedges[e.getIdxsplit()].add(h3);
-            splitedges[e2.getIdxsplit()].remove(e2);
-            splitedges[e2.getIdxsplit()].add(h1);
-            splitedges[e1.getIdxsplit()].remove(e1);
-            splitedges[e1.getIdxsplit()].add(h2);
+            splitedges[e.getSplitIndex()].remove(e);
+            splitedges[e.getSplitIndex()].add(h3);
+            splitedges[e2.getSplitIndex()].remove(e2);
+            splitedges[e2.getSplitIndex()].add(h1);
+            splitedges[e1.getSplitIndex()].remove(e1);
+            splitedges[e1.getSplitIndex()].add(h2);
 
-            if (parta == 1) {
-                if (dira == Direction.LEFT) {
-                    elist.add(elist.indexOf(e) + 1, h3);
-                    elist.remove(e);
+            if (parta) {
+                if (dira == Split.Direction.LEFT) {
+                    triangle.edges.add(triangle.edges.indexOf(e) + 1, h3);
+                    triangle.edges.remove(e);
                     //System.out.println("Size of elist after first update: " + elist.size());
 
-                    if ((e6.getIdxsplit() == a) && (e7.getIdxsplit() != s)) {
-                        elist.removeFirst();
+                    if ((e6.getSplitIndex() == a) && (e7.getSplitIndex() != s)) {
+                        triangle.edges.removeFirst();
                         crossboth.add(crossboth.indexOf(e5) + 1, h3);
                         crossboth.remove(e5);
                         elista.add(elista.indexOf(e2) + 1, h1);
                         elista.remove(e2);
                     }
-                    if ((e6.getIdxsplit() == a) && (e7.getIdxsplit() == s) && (s == b)) {
-                        elist.removeFirst();
+                    if ((e6.getSplitIndex() == a) && (e7.getSplitIndex() == s) && (s == b)) {
+                        triangle.edges.removeFirst();
                         crossboth.remove(e5);
                         crossboth.add(crossboth.indexOf(e4) + 1, h2);
                         crossboth.remove(e4);
                         elista.remove(e2);
                         elistb.remove(e1);
                     }
-                    if ((e6.getIdxsplit() == a) && (e7.getIdxsplit() == s) && (s != b)) {
-                        elist.removeFirst();
+                    if ((e6.getSplitIndex() == a) && (e7.getSplitIndex() == s) && (s != b)) {
+                        triangle.edges.removeFirst();
                         crossboth.add(crossboth.indexOf(e4) + 1, h3);
                         crossboth.remove(e4);
                         crossboth.add(crossboth.indexOf(e5) + 1, h2);
@@ -1302,35 +1186,35 @@ public class DrawSplitSystem {
                         elista.add(elista.indexOf(e2) + 1, h1);
                         elista.remove(e2);
                     }
-                    if ((e6.getIdxsplit() != a) && (e7.getIdxsplit() == s) && (s == b)) {
-                        elist.removeLast();
+                    if ((e6.getSplitIndex() != a) && (e7.getSplitIndex() == s) && (s == b)) {
+                        triangle.edges.removeLast();
                         elistb.add(elistb.indexOf(e1) + 1, h2);
                         elistb.remove(e1);
                     }
-                    if ((e6.getIdxsplit() != a) && (e7.getIdxsplit() == s) && (s != b)) {
-                        elist.removeLast();
+                    if ((e6.getSplitIndex() != a) && (e7.getSplitIndex() == s) && (s != b)) {
+                        triangle.edges.removeLast();
                     }
                 } else {
-                    elist.add(elist.indexOf(e) + 1, h3);
-                    elist.remove(e);
+                    triangle.edges.add(triangle.edges.indexOf(e) + 1, h3);
+                    triangle.edges.remove(e);
 
-                    if ((e7.getIdxsplit() == a) && (e6.getIdxsplit() != s)) {
-                        elist.removeFirst();
+                    if ((e7.getSplitIndex() == a) && (e6.getSplitIndex() != s)) {
+                        triangle.edges.removeFirst();
                         crossboth.add(crossboth.indexOf(e8) + 1, h3);
                         crossboth.remove(e8);
                         elista.add(elista.indexOf(e1) + 1, h2);
                         elista.remove(e1);
                     }
-                    if ((e7.getIdxsplit() == a) && (e6.getIdxsplit() == s) && (s == b)) {
-                        elist.removeFirst();
+                    if ((e7.getSplitIndex() == a) && (e6.getSplitIndex() == s) && (s == b)) {
+                        triangle.edges.removeFirst();
                         crossboth.remove(e8);
                         crossboth.add(crossboth.indexOf(e3) + 1, h1);
                         crossboth.remove(e3);
                         elista.remove(e1);
                         elistb.remove(e2);
                     }
-                    if ((e7.getIdxsplit() == a) && (e6.getIdxsplit() == s) && (s != b)) {
-                        elist.removeFirst();
+                    if ((e7.getSplitIndex() == a) && (e6.getSplitIndex() == s) && (s != b)) {
+                        triangle.edges.removeFirst();
                         crossboth.add(crossboth.indexOf(e3) + 1, h3);
                         crossboth.remove(e3);
                         crossboth.add(crossboth.indexOf(e8) + 1, h1);
@@ -1338,37 +1222,37 @@ public class DrawSplitSystem {
                         elista.add(elista.indexOf(e1) + 1, h2);
                         elista.remove(e1);
                     }
-                    if ((e7.getIdxsplit() != a) && (e6.getIdxsplit() == s) && (s == b)) {
-                        elist.removeLast();
+                    if ((e7.getSplitIndex() != a) && (e6.getSplitIndex() == s) && (s == b)) {
+                        triangle.edges.removeLast();
                         elistb.add(elistb.indexOf(e2) + 1, h1);
                         elistb.remove(e2);
                     }
-                    if ((e7.getIdxsplit() != a) && (e6.getIdxsplit() == s) && (s != b)) {
-                        elist.removeLast();
+                    if ((e7.getSplitIndex() != a) && (e6.getSplitIndex() == s) && (s != b)) {
+                        triangle.edges.removeLast();
                     }
                 }
             } else {
-                if (dira == Direction.LEFT) {
-                    elist.add(elist.indexOf(e) + 1, h3);
-                    elist.remove(e);
+                if (dira == Split.Direction.LEFT) {
+                    triangle.edges.add(triangle.edges.indexOf(e) + 1, h3);
+                    triangle.edges.remove(e);
 
-                    if ((e7.getIdxsplit() == a) && (e6.getIdxsplit() != s)) {
-                        elist.removeFirst();
+                    if ((e7.getSplitIndex() == a) && (e6.getSplitIndex() != s)) {
+                        triangle.edges.removeFirst();
                         crossboth.add(crossboth.indexOf(e8) + 1, h3);
                         crossboth.remove(e8);
                         elista.add(elista.indexOf(e1) + 1, h2);
                         elista.remove(e1);
                     }
-                    if ((e7.getIdxsplit() == a) && (e6.getIdxsplit() == s) && (s == b)) {
-                        elist.removeFirst();
+                    if ((e7.getSplitIndex() == a) && (e6.getSplitIndex() == s) && (s == b)) {
+                        triangle.edges.removeFirst();
                         crossboth.remove(e8);
                         crossboth.add(crossboth.indexOf(e3) + 1, h1);
                         crossboth.remove(e3);
                         elista.remove(e1);
                         elistb.remove(e2);
                     }
-                    if ((e7.getIdxsplit() == a) && (e6.getIdxsplit() == s) && (s != b)) {
-                        elist.removeFirst();
+                    if ((e7.getSplitIndex() == a) && (e6.getSplitIndex() == s) && (s != b)) {
+                        triangle.edges.removeFirst();
                         crossboth.add(crossboth.indexOf(e3) + 1, h3);
                         crossboth.remove(e3);
                         crossboth.add(crossboth.indexOf(e8) + 1, h1);
@@ -1376,34 +1260,34 @@ public class DrawSplitSystem {
                         elista.add(elista.indexOf(e1) + 1, h2);
                         elista.remove(e1);
                     }
-                    if ((e7.getIdxsplit() != a) && (e6.getIdxsplit() == s) && (s == b)) {
-                        elist.removeLast();
+                    if ((e7.getSplitIndex() != a) && (e6.getSplitIndex() == s) && (s == b)) {
+                        triangle.edges.removeLast();
                         elistb.add(elistb.indexOf(e2) + 1, h1);
                         elistb.remove(e2);
                     }
-                    if ((e7.getIdxsplit() != a) && (e6.getIdxsplit() == s) && (s != b)) {
-                        elist.removeLast();
+                    if ((e7.getSplitIndex() != a) && (e6.getSplitIndex() == s) && (s != b)) {
+                        triangle.edges.removeLast();
                     }
                 } else {
-                    elist.add(elist.indexOf(e) + 1, h3);
-                    elist.remove(e);
-                    if ((e6.getIdxsplit() == a) && (e7.getIdxsplit() != s)) {
-                        elist.removeFirst();
+                    triangle.edges.add(triangle.edges.indexOf(e) + 1, h3);
+                    triangle.edges.remove(e);
+                    if ((e6.getSplitIndex() == a) && (e7.getSplitIndex() != s)) {
+                        triangle.edges.removeFirst();
                         crossboth.add(crossboth.indexOf(e5) + 1, h3);
                         crossboth.remove(e5);
                         elista.add(elista.indexOf(e2) + 1, h1);
                         elista.remove(e2);
                     }
-                    if ((e6.getIdxsplit() == a) && (e7.getIdxsplit() == s) && (s == b)) {
-                        elist.removeFirst();
+                    if ((e6.getSplitIndex() == a) && (e7.getSplitIndex() == s) && (s == b)) {
+                        triangle.edges.removeFirst();
                         crossboth.remove(e5);
                         crossboth.add(crossboth.indexOf(e4) + 1, h2);
                         crossboth.remove(e4);
                         elista.remove(e2);
                         elistb.remove(e1);
                     }
-                    if ((e6.getIdxsplit() == a) && (e7.getIdxsplit() == s) && (s != b)) {
-                        elist.removeFirst();
+                    if ((e6.getSplitIndex() == a) && (e7.getSplitIndex() == s) && (s != b)) {
+                        triangle.edges.removeFirst();
                         crossboth.add(crossboth.indexOf(e4) + 1, h3);
                         crossboth.remove(e4);
                         crossboth.add(crossboth.indexOf(e5) + 1, h2);
@@ -1411,13 +1295,13 @@ public class DrawSplitSystem {
                         elista.add(elista.indexOf(e2) + 1, h1);
                         elista.remove(e2);
                     }
-                    if ((e6.getIdxsplit() != a) && (e7.getIdxsplit() == s) && (s == b)) {
-                        elist.removeLast();
+                    if ((e6.getSplitIndex() != a) && (e7.getSplitIndex() == s) && (s == b)) {
+                        triangle.edges.removeLast();
                         elistb.add(elistb.indexOf(e1) + 1, h2);
                         elistb.remove(e1);
                     }
-                    if ((e6.getIdxsplit() != a) && (e7.getIdxsplit() == s) && (s != b)) {
-                        elist.removeLast();
+                    if ((e6.getSplitIndex() != a) && (e7.getSplitIndex() == s) && (s != b)) {
+                        triangle.edges.removeLast();
                     }
                 }
             }
@@ -1425,9 +1309,9 @@ public class DrawSplitSystem {
     }
 
 
-    //This method cuts off the unecessary part of the network
-    private static Vertex cutOffUnnecessaryPart(int a, int b, LinkedList<Edge> elista, LinkedList<Edge> elistb,
-                                                   Direction dira, Direction dirb, int parta, int partb, TreeSet[] splitedges) {
+    //This method cuts off the unnecessary part of the network
+    private static Vertex clearSector(int a, int b, LinkedList<Edge> elista, LinkedList<Edge> elistb,
+                                      Split.Direction dira, Split.Direction dirb, boolean parta, boolean partb, TreeSet[] splitedges) {
 
         Vertex u = null;
 
@@ -1437,44 +1321,44 @@ public class DrawSplitSystem {
         Edge g2 = null;
 
         //first eliminate the edges that correspond to splits that cross a
-        if (dira == Direction.LEFT) {
-            SortedSet<Edge> head = splitedges[e.getIdxsplit()].headSet(e);
+        if (dira == Split.Direction.LEFT) {
+            SortedSet<Edge> head = splitedges[e.getSplitIndex()].headSet(e);
             for (Edge h : head) {
                 g1 = h.getTop().getEdgeList().get((h.getTop().getEdgeList().indexOf(h) + (h.getTop().getEdgeList().size() - 1)) % h.getTop().getEdgeList().size());
                 g2 = h.getBottom().getEdgeList().get((h.getBottom().getEdgeList().indexOf(h) + 1) % h.getBottom().getEdgeList().size());
 
-                if ((parta == 1) && (g1.getTimestp() < g2.getTimestp())) {
+                if (parta && (g1.getTimestp() < g2.getTimestp())) {
                     while (true) {
-                        g = (Edge) splitedges[g1.getIdxsplit()].last();
+                        g = (Edge) splitedges[g1.getSplitIndex()].last();
                         if (g.getTimestp() > g1.getTimestp()) {
-                            splitedges[g1.getIdxsplit()].remove(g);
+                            splitedges[g1.getSplitIndex()].remove(g);
                         } else {
                             break;
                         }
                     }
-                } else if ((parta == 1) && (g1.getTimestp() > g2.getTimestp())) {
+                } else if (parta && (g1.getTimestp() > g2.getTimestp())) {
                     while (true) {
-                        g = (Edge) splitedges[g1.getIdxsplit()].first();
+                        g = (Edge) splitedges[g1.getSplitIndex()].first();
                         if (g.getTimestp() < g1.getTimestp()) {
-                            splitedges[g1.getIdxsplit()].remove(g);
+                            splitedges[g1.getSplitIndex()].remove(g);
                         } else {
                             break;
                         }
                     }
-                } else if ((parta == 0) && (g1.getTimestp() < g2.getTimestp())) {
+                } else if (!parta && (g1.getTimestp() < g2.getTimestp())) {
                     while (true) {
-                        g = (Edge) splitedges[g2.getIdxsplit()].first();
+                        g = (Edge) splitedges[g2.getSplitIndex()].first();
                         if (g.getTimestp() < g2.getTimestp()) {
-                            splitedges[g2.getIdxsplit()].remove(g);
+                            splitedges[g2.getSplitIndex()].remove(g);
                         } else {
                             break;
                         }
                     }
-                } else if ((parta == 0) && (g1.getTimestp() > g2.getTimestp())) {
+                } else if (!parta && (g1.getTimestp() > g2.getTimestp())) {
                     while (true) {
-                        g = (Edge) splitedges[g2.getIdxsplit()].last();
+                        g = (Edge) splitedges[g2.getSplitIndex()].last();
                         if (g.getTimestp() > g2.getTimestp()) {
-                            splitedges[g2.getIdxsplit()].remove(g);
+                            splitedges[g2.getSplitIndex()].remove(g);
                         } else {
                             break;
                         }
@@ -1482,7 +1366,7 @@ public class DrawSplitSystem {
                 }
             }
         } else {
-            SortedSet<Edge> tail = splitedges[e.getIdxsplit()].tailSet(e);
+            SortedSet<Edge> tail = splitedges[e.getSplitIndex()].tailSet(e);
             for (Edge h : tail) {
                 if (h == tail.first()) {
                     continue;
@@ -1490,38 +1374,38 @@ public class DrawSplitSystem {
                 g1 = h.getTop().getEdgeList().get((h.getTop().getEdgeList().indexOf(h) + 1) % h.getTop().getEdgeList().size());
                 g2 = h.getBottom().getEdgeList().get((h.getBottom().getEdgeList().indexOf(h) + (h.getBottom().getEdgeList().size() - 1)) % h.getBottom().getEdgeList().size());
 
-                if ((parta == 1) && (g1.getTimestp() < g2.getTimestp())) {
+                if (parta && (g1.getTimestp() < g2.getTimestp())) {
                     while (true) {
-                        g = (Edge) splitedges[g1.getIdxsplit()].last();
+                        g = (Edge) splitedges[g1.getSplitIndex()].last();
                         if (g.getTimestp() > g1.getTimestp()) {
-                            splitedges[g1.getIdxsplit()].remove(g);
+                            splitedges[g1.getSplitIndex()].remove(g);
                         } else {
                             break;
                         }
                     }
-                } else if ((parta == 1) && (g1.getTimestp() > g2.getTimestp())) {
+                } else if (parta && (g1.getTimestp() > g2.getTimestp())) {
                     while (true) {
-                        g = (Edge) splitedges[g1.getIdxsplit()].first();
+                        g = (Edge) splitedges[g1.getSplitIndex()].first();
                         if (g.getTimestp() < g1.getTimestp()) {
-                            splitedges[g1.getIdxsplit()].remove(g);
+                            splitedges[g1.getSplitIndex()].remove(g);
                         } else {
                             break;
                         }
                     }
-                } else if ((parta == 0) && (g1.getTimestp() < g2.getTimestp())) {
+                } else if (!parta && (g1.getTimestp() < g2.getTimestp())) {
                     while (true) {
-                        g = (Edge) splitedges[g2.getIdxsplit()].first();
+                        g = (Edge) splitedges[g2.getSplitIndex()].first();
                         if (g.getTimestp() < g2.getTimestp()) {
-                            splitedges[g2.getIdxsplit()].remove(g);
+                            splitedges[g2.getSplitIndex()].remove(g);
                         } else {
                             break;
                         }
                     }
-                } else if ((parta == 0) && (g1.getTimestp() > g2.getTimestp())) {
+                } else if (!parta && (g1.getTimestp() > g2.getTimestp())) {
                     while (true) {
-                        g = (Edge) splitedges[g2.getIdxsplit()].last();
+                        g = (Edge) splitedges[g2.getSplitIndex()].last();
                         if (g.getTimestp() > g2.getTimestp()) {
-                            splitedges[g2.getIdxsplit()].remove(g);
+                            splitedges[g2.getSplitIndex()].remove(g);
                         } else {
                             break;
                         }
@@ -1533,44 +1417,45 @@ public class DrawSplitSystem {
         Edge f = elistb.getFirst();
 
         //next eliminate edges that correspond to splits thath cross b
-        if (dirb == Direction.LEFT) {
-            SortedSet<Edge> head = splitedges[f.getIdxsplit()].headSet(f);
+        if (dirb == Split.Direction.LEFT) {
+            SortedSet<Edge> head = splitedges[f.getSplitIndex()].headSet(f);
             for (Edge h : head) {
-                g1 = h.getTop().getEdgeList().get((h.getTop().getEdgeList().indexOf(h) + (h.getTop().getEdgeList().size() - 1)) % h.getTop().getEdgeList().size());
+                EdgeList htop = h.getTop().getEdgeList();
+                g1 = htop.get((htop.indexOf(h) + (htop.size() - 1)) % htop.size());
                 g2 = h.getBottom().getEdgeList().get((h.getBottom().getEdgeList().indexOf(h) + 1) % h.getBottom().getEdgeList().size());
 
-                if ((partb == 1) && (g1.getTimestp() < g2.getTimestp())) {
+                if (partb && (g1.getTimestp() < g2.getTimestp())) {
                     while (true) {
-                        g = (Edge) splitedges[g1.getIdxsplit()].last();
+                        g = (Edge) splitedges[g1.getSplitIndex()].last();
                         if (g.getTimestp() > g1.getTimestp()) {
-                            splitedges[g1.getIdxsplit()].remove(g);
+                            splitedges[g1.getSplitIndex()].remove(g);
                         } else {
                             break;
                         }
                     }
-                } else if ((partb == 1) && (g1.getTimestp() > g2.getTimestp())) {
+                } else if (partb && (g1.getTimestp() > g2.getTimestp())) {
                     while (true) {
-                        g = (Edge) splitedges[g1.getIdxsplit()].first();
+                        g = (Edge) splitedges[g1.getSplitIndex()].first();
                         if (g.getTimestp() < g1.getTimestp()) {
-                            splitedges[g1.getIdxsplit()].remove(g);
+                            splitedges[g1.getSplitIndex()].remove(g);
                         } else {
                             break;
                         }
                     }
-                } else if ((partb == 0) && (g1.getTimestp() < g2.getTimestp())) {
+                } else if (!partb && (g1.getTimestp() < g2.getTimestp())) {
                     while (true) {
-                        g = (Edge) splitedges[g2.getIdxsplit()].first();
+                        g = (Edge) splitedges[g2.getSplitIndex()].first();
                         if (g.getTimestp() < g2.getTimestp()) {
-                            splitedges[g2.getIdxsplit()].remove(g);
+                            splitedges[g2.getSplitIndex()].remove(g);
                         } else {
                             break;
                         }
                     }
-                } else if ((partb == 0) && (g1.getTimestp() > g2.getTimestp())) {
+                } else if (!partb && (g1.getTimestp() > g2.getTimestp())) {
                     while (true) {
-                        g = (Edge) splitedges[g2.getIdxsplit()].last();
+                        g = (Edge) splitedges[g2.getSplitIndex()].last();
                         if (g.getTimestp() > g2.getTimestp()) {
-                            splitedges[g2.getIdxsplit()].remove(g);
+                            splitedges[g2.getSplitIndex()].remove(g);
                         } else {
                             break;
                         }
@@ -1578,46 +1463,48 @@ public class DrawSplitSystem {
                 }
             }
         } else {
-            SortedSet<Edge> tail = splitedges[f.getIdxsplit()].tailSet(f);
+            SortedSet<Edge> tail = splitedges[f.getSplitIndex()].tailSet(f);
             for (Edge h : tail) {
                 if (h == tail.first()) {
                     continue;
                 }
-                g1 = h.getTop().getEdgeList().get((h.getTop().getEdgeList().indexOf(h) + 1) % h.getTop().getEdgeList().size());
-                g2 = h.getBottom().getEdgeList().get((h.getBottom().getEdgeList().indexOf(h) + (h.getBottom().getEdgeList().size() - 1)) % h.getBottom().getEdgeList().size());
+                EdgeList htop = h.getTop().getEdgeList();
+                EdgeList hbot = h.getBottom().getEdgeList();
+                g1 = htop.get((htop.indexOf(h) + 1) % htop.size());
+                g2 = hbot.get((hbot.indexOf(h) + (hbot.size() - 1)) % hbot.size());
 
-                if ((partb == 1) && (g1.getTimestp() < g2.getTimestp())) {
+                if (partb && (g1.getTimestp() < g2.getTimestp())) {
                     while (true) {
-                        g = (Edge) splitedges[g1.getIdxsplit()].last();
+                        g = (Edge) splitedges[g1.getSplitIndex()].last();
                         if (g.getTimestp() > g1.getTimestp()) {
-                            splitedges[g1.getIdxsplit()].remove(g);
+                            splitedges[g1.getSplitIndex()].remove(g);
                         } else {
                             break;
                         }
                     }
-                } else if ((partb == 1) && (g1.getTimestp() > g2.getTimestp())) {
+                } else if (partb && (g1.getTimestp() > g2.getTimestp())) {
                     while (true) {
-                        g = (Edge) splitedges[g1.getIdxsplit()].first();
+                        g = (Edge) splitedges[g1.getSplitIndex()].first();
                         if (g.getTimestp() < g1.getTimestp()) {
-                            splitedges[g1.getIdxsplit()].remove(g);
+                            splitedges[g1.getSplitIndex()].remove(g);
                         } else {
                             break;
                         }
                     }
-                } else if ((partb == 0) && (g1.getTimestp() < g2.getTimestp())) {
+                } else if (!partb && (g1.getTimestp() < g2.getTimestp())) {
                     while (true) {
-                        g = (Edge) splitedges[g2.getIdxsplit()].first();
+                        g = (Edge) splitedges[g2.getSplitIndex()].first();
                         if (g.getTimestp() < g2.getTimestp()) {
-                            splitedges[g2.getIdxsplit()].remove(g);
+                            splitedges[g2.getSplitIndex()].remove(g);
                         } else {
                             break;
                         }
                     }
-                } else if ((partb == 0) && (g1.getTimestp() > g2.getTimestp())) {
+                } else if (!partb && (g1.getTimestp() > g2.getTimestp())) {
                     while (true) {
-                        g = (Edge) splitedges[g2.getIdxsplit()].last();
+                        g = (Edge) splitedges[g2.getSplitIndex()].last();
                         if (g.getTimestp() > g2.getTimestp()) {
-                            splitedges[g2.getIdxsplit()].remove(g);
+                            splitedges[g2.getSplitIndex()].remove(g);
                         } else {
                             break;
                         }
@@ -1627,12 +1514,12 @@ public class DrawSplitSystem {
         }
 
         //now it remains to update the lists of edges for splits a and b
-        if (dira == Direction.LEFT) {
+        if (dira == Split.Direction.LEFT) {
             while (true) {
                 g = (Edge) splitedges[a].first();
                 if (g.getTimestp() <= e.getTimestp()) {
                     splitedges[a].remove(g);
-                    if (parta == 1) {
+                    if (parta) {
                         g.getTop().getEdgeList().remove(g);
                         u = g.getTop();
                     } else {
@@ -1648,7 +1535,7 @@ public class DrawSplitSystem {
                 g = (Edge) splitedges[a].last();
                 if (g.getTimestp() >= e.getTimestp()) {
                     splitedges[a].remove(g);
-                    if (parta == 1) {
+                    if (parta) {
                         g.getTop().getEdgeList().remove(g);
                         u = g.getTop();
                     } else {
@@ -1661,12 +1548,12 @@ public class DrawSplitSystem {
             }
         }
 
-        if (dirb == Direction.LEFT) {
+        if (dirb == Split.Direction.LEFT) {
             while (true) {
                 g = (Edge) splitedges[b].first();
                 if (g.getTimestp() <= f.getTimestp()) {
                     splitedges[b].remove(g);
-                    if (partb == 1) {
+                    if (partb) {
                         g.getTop().getEdgeList().remove(g);
                     } else {
                         g.getBottom().getEdgeList().remove(g);
@@ -1679,7 +1566,7 @@ public class DrawSplitSystem {
             while (true) {
                 g = (Edge) splitedges[b].last();
                 if (g.getTimestp() >= f.getTimestp()) {
-                    if (partb == 1) {
+                    if (partb) {
                         g.getTop().getEdgeList().remove(g);
                     } else {
                         g.getBottom().getEdgeList().remove(g);

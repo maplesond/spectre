@@ -57,22 +57,6 @@ public class Edge implements Comparable<Edge> {
         nxnum = 0;
     }
 
-    public Edge copy() {
-        Edge copy = new Edge();
-
-        copy.top = new Vertex(this.top);
-        copy.bottom = new Vertex(this.bottom);
-        copy.idxsplit = this.idxsplit;
-        copy.nxnum = this.nxnum;
-        copy.timestp = this.timestp;
-        copy.visited = this.visited;
-        copy.width = this.width;
-        copy.color = new Color(this.color.getRGB());
-        copy.compatible = this.compatible;
-
-        return copy;
-    }
-
     public void setNxnum(int nxnum) {
         this.nxnum = nxnum;
     }
@@ -84,7 +68,7 @@ public class Edge implements Comparable<Edge> {
 
     @Override
     public String toString() {
-        return "Nr. " + nxnum + "\nSplit: " + idxsplit + "\nBot: " + bottom.toSimpleString() + "\nTop: " + top.toSimpleString() + "\n";
+        return "Nr. " + nxnum + "; Split: " + idxsplit + "; Bot: " + bottom.toSimpleString() + "; Top: " + top.toSimpleString();
     }
 
 
@@ -125,7 +109,7 @@ public class Edge implements Comparable<Edge> {
     }
 
 
-    public int getIdxsplit() {
+    public int getSplitIndex() {
         return idxsplit;
     }
 

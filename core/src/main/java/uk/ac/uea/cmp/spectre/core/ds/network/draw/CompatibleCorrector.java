@@ -210,7 +210,7 @@ public class CompatibleCorrector {
         int max = -1;
         for (int i = 0; i < edges.size(); i++) {
             Edge current = edges.get(i);
-            max = (max < current.getIdxsplit()) ? current.getIdxsplit() : max;
+            max = (max < current.getSplitIndex()) ? current.getSplitIndex() : max;
         }
         return max;
     }

@@ -16,6 +16,7 @@
 package uk.ac.uea.cmp.spectre.core.ds.split;
 
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
+import uk.ac.uea.cmp.spectre.core.ds.network.draw.DrawSplitSystem;
 
 /**
  * Created by maplesod on 14/05/14.
@@ -178,6 +179,11 @@ public interface Split extends Comparable<Split> {
 
     Compatible getCompatible(Split other);
 
+    enum Direction {
+        LEFT,
+        RIGHT
+    }
+
     /**
      * Possible patterns of compatibility between splits
      */
@@ -187,10 +193,50 @@ public interface Split extends Comparable<Split> {
             public boolean isCompatible() {
                 return false;
             }
+
+            @Override
+            public Direction getDirA(boolean flip) {
+                return null;
+            }
+
+            @Override
+            public Direction getDirB(boolean flip) {
+                return null;
+            }
+
+            @Override
+            public boolean partAOn() {
+                return false;
+            }
+
+            @Override
+            public boolean partBOn() {
+                return false;
+            }
         },
         YES_11 {
             @Override
             public boolean isCompatible() {
+                return true;
+            }
+
+            @Override
+            public Direction getDirA(boolean flip) {
+                return !flip ? Direction.LEFT : Direction.RIGHT;
+            }
+
+            @Override
+            public Direction getDirB(boolean flip) {
+                return !flip ? Direction.RIGHT : Direction.LEFT;
+            }
+
+            @Override
+            public boolean partAOn() {
+                return true;
+            }
+
+            @Override
+            public boolean partBOn() {
                 return true;
             }
         },
@@ -199,10 +245,50 @@ public interface Split extends Comparable<Split> {
             public boolean isCompatible() {
                 return true;
             }
+
+            @Override
+            public Direction getDirA(boolean flip) {
+                return !flip ? Direction.RIGHT : Direction.LEFT;
+            }
+
+            @Override
+            public Direction getDirB(boolean flip) {
+                return !flip ? Direction.RIGHT : Direction.LEFT;
+            }
+
+            @Override
+            public boolean partAOn() {
+                return true;
+            }
+
+            @Override
+            public boolean partBOn() {
+                return false;
+            }
         },
         YES_01 {
             @Override
             public boolean isCompatible() {
+                return true;
+            }
+
+            @Override
+            public Direction getDirA(boolean flip) {
+                return !flip ? Direction.LEFT : Direction.RIGHT;
+            }
+
+            @Override
+            public Direction getDirB(boolean flip) {
+                return !flip ? Direction.LEFT : Direction.RIGHT;
+            }
+
+            @Override
+            public boolean partAOn() {
+                return false;
+            }
+
+            @Override
+            public boolean partBOn() {
                 return true;
             }
         },
@@ -211,10 +297,38 @@ public interface Split extends Comparable<Split> {
             public boolean isCompatible() {
                 return true;
             }
+
+            @Override
+            public Direction getDirA(boolean flip) {
+                return !flip ? Direction.RIGHT : Direction.LEFT;
+            }
+
+            @Override
+            public Direction getDirB(boolean flip) {
+                return !flip ? Direction.LEFT : Direction.RIGHT;
+            }
+
+            @Override
+            public boolean partAOn() {
+                return false;
+            }
+
+            @Override
+            public boolean partBOn() {
+                return false;
+            }
         };
 
         public abstract boolean isCompatible();
-    }
+
+        public abstract Direction getDirA(boolean flip);
+
+        public abstract Direction getDirB(boolean flip);
+
+        public abstract boolean partAOn();
+
+        public abstract boolean partBOn();
+    };
 
     /**
      * This method checks whether the quadruple split number nr is in the restriction of this split to {a,b,c,d}.

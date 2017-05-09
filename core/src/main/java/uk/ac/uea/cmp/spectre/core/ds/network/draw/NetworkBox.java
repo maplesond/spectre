@@ -77,7 +77,7 @@ public class NetworkBox {
                 Edge f1 = e1TopEdges.get((e1TopEdges.indexOf(e1) + e1TopEdges.size() - 1) % e1TopEdges.size());
                 Edge f2 = e1BottomEdges.get((e1BottomEdges.indexOf(e1) + 1) % e1BottomEdges.size());
 
-                if (f1.getIdxsplit() == b) {
+                if (f1.getSplitIndex() == b) {
                     netbox = new NetworkBox(e1, iter.next(), f1, f2);
                     break;
                 }

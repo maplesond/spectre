@@ -49,6 +49,11 @@ public class SpectreNetwork implements Network {
         this(new VertexList(), new EdgeList());
     }
 
+    /**
+     * Used when loading a network from file
+     * @param vertices
+     * @param edges
+     */
     public SpectreNetwork(VertexList vertices, EdgeList edges) {
 
         this.vertices = vertices;
@@ -71,9 +76,13 @@ public class SpectreNetwork implements Network {
         this.classifyEdges();
     }
 
+    /**
+     * Used when creating network from split system draw
+     * @param v
+     */
     public SpectreNetwork(Vertex v) {
         this(v.collectVertices(), v.getFirstEdge().collectEdges());
-        this.setupLabels();
+        this.setupLabels();     // TODO this should probably be done when creating the vertex
     }
 
     @Override
@@ -220,7 +229,7 @@ public class SpectreNetwork implements Network {
         // Set compatible property on those edges that are compatible
         for (int i = 0; i < externalEdges.size(); i++) {
             Edge e = externalEdges.get(i);
-            EdgeList split = collectEdgesForSplit(e.getIdxsplit(), this.edges);
+            EdgeList split = collectEdgesForSplit(e.getSplitIndex(), this.edges);
             if (split.size() == 1 && e.getBottom().getEdgeList().size() > 1 && e.getTop().getEdgeList().size() > 1) {
                 e.setCompatible(true);
             }
@@ -234,13 +243,10 @@ public class SpectreNetwork implements Network {
      * @return Edges that represent the specified split in the network
      */
     protected static EdgeList collectEdgesForSplit(int s, EdgeList elistall) {
-        ListIterator iter = elistall.listIterator();
         EdgeList elist = new EdgeList();
-        Edge e = null;
-        while (iter.hasNext()) {
-            e = (Edge) iter.next();
+        for (Edge e : elistall) {
             if (e != null) {
-                if (e.getIdxsplit() == s) {
+                if (e.getSplitIndex() == s) {
                     elist.add(e);
                 }
             }
@@ -258,68 +264,68 @@ public class SpectreNetwork implements Network {
 
         Edge first = null;
 
-        EdgeList ext = new EdgeList();
         Vertex w = null;
 
         if (v.getEdgeList().size() == 1) {
-            w = (v.getEdgeList().getFirst().getBottom() == v) ? v.getEdgeList().getFirst().getTop() : v.getEdgeList().getFirst().getBottom();
-            first = v.getEdgeList().getFirst();
+            first = v.getFirstEdge();
+            // The vertex only contains a single edge, so make w the vertex which isn't v.
+            w = first.getBottom() == v ? first.getTop() : first.getBottom();
 
             Vertex t = w;
             w = v;
             v = t;
         } else {
-            EdgeList elist = v.getEdgeList();
-
-            for (int i = 0; i < elist.size(); i++) {
+            for(Edge e : v.getEdgeList()) {
                 Vertex ww = null;
-                Vertex w0 = (elist.get(i).getBottom() == v) ? elist.get(i).getTop() : elist.get(i).getBottom();
-                double angle = 0;
-                for (int j = 0; j < elist.size(); j++) {
-                    if (i != j) {
-                        Vertex w1 = (elist.get(j).getBottom() == v) ? elist.get(j).getTop() : elist.get(j).getBottom();
+                Vertex w0 = e.getBottom() == v ? e.getTop() : e.getBottom();
+                double minAngle = 0;
+                for (Edge f : v.getEdgeList()) {
+                    if (e != f) {
+                        Vertex w1 = f.getBottom() == v ? f.getTop() : f.getBottom();
                         double currentAngle = Vertex.getClockwiseAngle(w0, v, w1);
-                        if (ww == null || currentAngle < angle) {
+                        if (ww == null || currentAngle < minAngle) {
                             ww = w0;
-                            angle = currentAngle;
-                            first = elist.get(i);
+                            minAngle = currentAngle;
+                            first = e;
                         }
                     }
                 }
-                if (angle > Math.PI) {
+                if (minAngle > Math.PI) {
                     w = ww;
                     break;
                 }
             }
         }
 
-        Edge currentE = first;
+        if (w == null) {
+            return new EdgeList();
+        }
 
+        Edge current = first;
+        EdgeList external = new EdgeList();
         boolean roundMade = false;
 
-        while (currentE != first || !roundMade) {
+        while (current != first || !roundMade) {
             roundMade = true;
-            LinkedList<Edge> vIn = v.getEdgeList();
             double minAngle = 2 * Math.PI;
             Edge nextE = null;
             Vertex W2 = null;
-            for (int i = 0; i < vIn.size(); i++) {
-                Edge e = vIn.get(i);
+            for (Edge e : v.getEdgeList()) {
                 Vertex w2 = (e.getBottom() == v) ? e.getTop() : e.getBottom();
-                double angle = (currentE == e) ? 2 * Math.PI : Vertex.getClockwiseAngle(w, v, w2);
+                double angle = (current == e) ? 2 * Math.PI : Vertex.getClockwiseAngle(w, v, w2);
                 if (nextE == null || minAngle > angle) {
                     nextE = e;
                     minAngle = angle;
                     W2 = w2;
                 }
             }
-            ext.add(nextE);
-            currentE = nextE;
+            external.add(nextE);
+            current = nextE;
             w = v;
             v = W2;
         }
 
-        return ext;
+        return external;
     }
 
     @Override
@@ -361,6 +367,7 @@ public class SpectreNetwork implements Network {
     }
 
     public void setupLabels() {
+        // Add labels to all required vertices
         for (Vertex v : this.getAllVertices()) {
             if (v.getTaxa().size() > 0) {
                 String label = new String();
@@ -371,5 +378,12 @@ public class SpectreNetwork implements Network {
                 v.setLabel(new NetworkLabel(label));
             }
         }
+
+        // Ensure all labelled verticies are marked with larger round nodes by default
+        for(Vertex v : this.getLabeledVertices()) {
+            v.setSize(3);
+            v.setShape(null);
+        }
     }
+
 }

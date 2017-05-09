@@ -91,7 +91,7 @@ public class NetMake extends RunnableTool {
 
 
         log.info("Creating network");
-        Network network = new DrawSplitSystem(networkSS).createOptimisedNetwork();
+        Network network = new DrawSplitSystem(networkSS).createUnoptimisedNetwork();
 
         SplitSystem treeSS = null;
         Network tree = null;
@@ -108,7 +108,7 @@ public class NetMake extends RunnableTool {
             treeSS = new SpectreSplitSystem(distanceMatrix, permutation, SpectreSplitSystem.LeastSquaresCalculator.TREE_IN_CYCLE, treeSplits);
 
             log.info("Creating tree");
-            tree = new DrawSplitSystem(networkSS).createOptimisedNetwork();
+            tree = new DrawSplitSystem(networkSS).createUnoptimisedNetwork();
         }
 
 

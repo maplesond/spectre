@@ -811,4 +811,20 @@ public class PermutationSequence {
         System.arraycopy(b, 0, this.active, 0, b.length);
     }
 
+    public void restoreTrivialWeightsForExternalVertices() {
+        SplitSystem ss = new SpectreSplitSystem(this);
+        for (int i = 0; i < ss.getNbSplits(); i++) {
+            if (ss.get(i).isTrivial()) {
+                int taxaNr = ss.get(i).getTrivial();
+                if (trivial[taxaNr] > 0) {
+                    if (!active[i]) {
+                        active[i] = true;
+                    }
+                    weights[i] = trivial[taxaNr];
+                    trivial[taxaNr] = 0;
+                }
+            }
+        }
+    }
+
 }

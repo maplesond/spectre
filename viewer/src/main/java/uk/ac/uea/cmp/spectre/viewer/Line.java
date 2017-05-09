@@ -40,7 +40,7 @@ public class Line {
     Line(Edge e) {
         width = e.getWidth();
         fg = e.getColor();
-        split = e.getIdxsplit();
+        split = e.getSplitIndex();
         this.e = e;
     }
 
