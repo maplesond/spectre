@@ -61,4 +61,14 @@ public class EdgeList extends LinkedList<Edge> {
     public Edge getNextEdge(Edge e) {
         return this.get((this.indexOf(e) + 1) % this.size());
     }
+
+    /**
+     * Gets Edge found before the provided one in this edge list.
+     * Automatically wraps to beginning of list if index is pushed off the end.
+     * @param e The current edge.  We want to return the Edge following this one.
+     * @return The edge following the one provided
+     */
+    public Edge getPreviousEdge(Edge e) {
+        return this.get((this.indexOf(e) + this.size() - 1) % this.size());
+    }
 }
