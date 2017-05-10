@@ -97,7 +97,7 @@ public class Vertex {
 
     @Override
     public String toString() {
-        return nxnum + " [" + x + ", " + y + "] : " + edgeList.size();
+        return "Index: " + nxnum + " [" + x + ", " + y + "]; Edges: " + edgeList.size();
     }
 
     public String toSimpleString() {

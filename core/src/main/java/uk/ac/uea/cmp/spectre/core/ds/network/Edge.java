@@ -15,6 +15,8 @@
 
 package uk.ac.uea.cmp.spectre.core.ds.network;
 
+import uk.ac.uea.cmp.spectre.core.ds.network.draw.DrawSplitSystem;
+
 import java.awt.*;
 import java.util.Iterator;
 
@@ -68,7 +70,7 @@ public class Edge implements Comparable<Edge> {
 
     @Override
     public String toString() {
-        return "Nr. " + nxnum + "; Split: " + idxsplit + "; Bot: " + bottom.toSimpleString() + "; Top: " + top.toSimpleString();
+        return "Nr. " + nxnum + "; Split: " + idxsplit + "; Bot: " + bottom.toSimpleString() + "; Top: " + top.toSimpleString() + "; Timestp: " + timestp;
     }
 
 
@@ -234,4 +236,5 @@ public class Edge implements Comparable<Edge> {
     public boolean bottomEquals(Edge e) {
         return this.getBottom().equals(e.getBottom());
     }
+
 }
