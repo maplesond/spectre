@@ -208,7 +208,7 @@ public class DrawSplitSystem {
         // This is only used if there are no splits in the split system and hence all taxa fit on this vertex
         Vertex v = new Vertex(0.0, 0.0);
 
-        // In the original, this was done via the initial ordering... not sure if this is a problem or not.
+        // Loop through each taxa and expand out the network
         for (Identifier i : this.ss.getOrderedTaxa()) {
 
             // First check to see if we have a chain at all first.
@@ -309,28 +309,30 @@ public class DrawSplitSystem {
         Edge[] chain = p.chain;
         TreeSet<Edge>[] splitedges = p.splitEdges;
 
-        boolean inverted = true;
 
-        while (inverted) {
-            inverted = false;
+        // Keep repeatedly running through the chain until we have completed a pass without adding any boxes
+        boolean done = false;
+        while (!done) {
+
+            // Assume we will finish adding boxes in this pass unless this variable is modified
+            done = true;
 
             for (int j = 1; j < chain.length; j++) {
-                //test if the splits associated to edges
-                //chain[j-1] and chain[j] must be inverted
+
                 Edge ce1 = chain[j - 1];
                 Edge ce2 = chain[j];
 
+                // Test if the splits associated with these edges require a box to be added.
                 if (this.ss.get(ce1.getSplitIndex()).getSide(i) == Split.SplitSide.B_SIDE &&
                         this.ss.get(ce2.getSplitIndex()).getSide(i) == Split.SplitSide.A_SIDE) {
 
-                    double newX = ce1.getTop().getX() + ce2.getDeltaX();
-                    double newY = ce1.getTop().getY() + ce2.getDeltaY();
-
-                    Vertex v = new Vertex(newX, newY);
-
+                    // Create a new vertex and two new edges to pop out from the two currently selected edges.  This creates
+                    // a new box.
+                    Vertex v = new Vertex(ce1.getTop().getX() + ce2.getDeltaX(), ce1.getTop().getY() + ce2.getDeltaY());
                     Edge e1 = new Edge(ce1.getTop(), v, ce2.getSplitIndex(), ce2.getTimestp() + 1);
                     Edge e2 = new Edge(v, ce2.getBottom(), ce1.getSplitIndex(), ce1.getTimestp() + 1);
 
+                    // Update the data structures
                     splitedges[e1.getSplitIndex()].add(e1);
                     splitedges[e2.getSplitIndex()].add(e2);
                     chain[j - 1] = e1;
@@ -339,7 +341,9 @@ public class DrawSplitSystem {
                     v.appendEdge(e1);
                     e1.getTop().prependEdge(e1);
                     e2.getBottom().appendEdge(e2);
-                    inverted = true;
+
+                    // We added a box so we have to go through at least one more full cycle after this one is finished.
+                    done = false;
                 }
             }
         }
