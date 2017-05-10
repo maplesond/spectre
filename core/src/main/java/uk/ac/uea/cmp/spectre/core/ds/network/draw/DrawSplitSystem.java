@@ -49,8 +49,8 @@ public class DrawSplitSystem {
 
 
     /**
-     * Constructor for this class from a SplitSystem-object. This is just used as a quick and dirty way to feed circular
-     * split systems into the drawing algorithm and then display them with the viewer.
+     * Constructor for this class from a SplitSystem-object. In input might not necessarily be a "full" split system, so
+     * we need to recreate the split system as a full one.
      * @param ss Circular split system
      */
     public DrawSplitSystem(SplitSystem ss) {
