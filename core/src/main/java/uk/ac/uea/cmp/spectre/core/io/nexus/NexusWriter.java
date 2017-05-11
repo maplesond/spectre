@@ -30,6 +30,7 @@ import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.Quadruple;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.Split;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
+import uk.ac.uea.cmp.spectre.core.ds.split.flat.Utilities;
 import uk.ac.uea.cmp.spectre.core.io.AbstractSpectreWriter;
 
 import java.awt.*;
@@ -37,6 +38,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -277,6 +279,128 @@ public class NexusWriter extends AbstractSpectreWriter implements Appendable {
         return this;
     }
 
+    public NexusWriter append(Vertex net, int nTaxa, IdentifierList taxa) {
+        Iterator<Vertex> vIter;
+        Iterator<Edge> eIter;
+        Iterator<Identifier> taxiter;
+        Vertex v;
+        Edge e;
+
+        List<Vertex> vertices = net.collectVertices();
+        List<Edge> edges = net.getFirstEdge().collectEdges();
+
+        appendLine();
+        appendLine("BEGIN Network;");
+        appendLine("DIMENSIONS ntax=" + nTaxa + " nvertices=" + vertices.size() + " nedges=" + edges.size() + ";");
+        appendLine("DRAW to_scale;");
+        appendLine("TRANSLATE");
+        //write translate section
+        vIter = vertices.listIterator();
+        while (vIter.hasNext()) {
+            v = vIter.next();
+            if (v.getTaxa().size() > 0) {
+                taxiter = v.getTaxa().listIterator();
+                String line = String.valueOf(v.getNxnum());
+
+                while (taxiter.hasNext()) {
+                    int index = taxiter.next().getId();
+                    line = line.concat(" '" + taxa.getNames()[index] + "'");
+                }
+                line = line.concat(",");
+                appendLine(line);
+            }
+        }
+        appendLine(";");
+        //write vertices section
+        appendLine("VERTICES");
+        vIter = vertices.listIterator();
+        while (vIter.hasNext()) {
+            v = vIter.next();
+            int[] color = Utilities.colorToInt(v.getBackgroundColor());
+            String line = v.getNxnum() + " " + v.getX() + " " + v.getY() + " w=" + v.getWidth() + " h=" + v.getHeight() + (v.getShape() != null ? " s=" + v.getShape() : "");
+            if (color[0] + color[1] + color[2] > 0) {
+                line = line.concat(" fg=" + color[0] + " " + color[1] + " " + color[2] + " bg=" + color[0] + " " + color[1] + " " + color[2]);
+            }
+            appendLine(line + ",");
+        }
+        appendLine(";");
+        //write vertex labels section
+        appendLine("VLABELS");
+        vIter = vertices.listIterator();
+        while (vIter.hasNext()) {
+            v = vIter.next();
+            if (v.getTaxa().size() > 0) {
+                String label = new String();
+                taxiter = v.getTaxa().listIterator();
+                while (taxiter.hasNext()) {
+                    label = (taxa.getNames()[taxiter.next().getId()] + ", ").concat(label);
+                    //--------------------- just for testing, so that labels are nor visible --------
+                    //label = "";
+                }
+                label = label.substring(0, label.length() - 2);
+                appendLine(v.getNxnum() + " '" + label + "' x=2 y=2 f='Dialog-PLAIN-10',");
+            } else if (v.getLabel() != null) {
+                NetworkLabel l = v.getLabel();
+                String label = v.getNxnum() + " '" + l.getName() + "' x=" + ((int) l.getOffsetX()) + " y=" + ((int) l.getOffsetY()) + " f='" + l.getFontFamily() + "-" + l.getFontStyle() + "-" + l.getFontSize() + "'";
+                if (l.getFontColor() != null) {
+                    int[] c = Utilities.colorToInt(l.getFontColor());
+                    label = label.concat(" lc=" + c[0] + " " + c[1] + " " + c[2]);
+                }
+                if (l.getBackgroundColor() != null) {
+                    int[] c = Utilities.colorToInt(l.getBackgroundColor());
+                    label = label.concat(" lk=" + c[0] + " " + c[1] + " " + c[2]);
+                }
+                label = label.concat(",");
+                appendLine(label);
+            }
+        }
+        appendLine(";");
+        //Write the edges.
+        appendLine("EDGES");
+        eIter = edges.iterator();
+
+        /*int maxCompressed = 0;
+        for (int i = 0; i < compressed.length; i++) {
+            if (compressed[i] > maxCompressed) {
+                maxCompressed = compressed[i];
+            }
+        }
+        maxCompressed++;*/
+
+        while (eIter.hasNext()) {
+            e = (Edge) eIter.next();
+            int[] color = Utilities.colorToInt(e.getColor());
+
+            int comp = e.getSplitIndex() + 1;
+
+//            if(compressed != null && e.getIdxsplit() < compressed.length)
+//            {
+//                comp = compressed[e.getIdxsplit()] + 1;
+//                System.out.println("1: " + comp);
+//            }
+//            else if(compressed == null)
+//            {
+//                comp = e.getIdxsplit() + 1;
+//                System.out.println("2: " + comp);
+//            }
+//            else
+//            {
+//                comp = ++maxCompressed;
+//                System.out.println("3: " + comp);
+//            }
+
+            appendLine(e.getNxnum() + " " +
+                    (e.getTop()).getNxnum() + " " +
+                    (e.getBottom()).getNxnum() +
+                    " s=" + comp +
+                    " l=" + e.getWidth() +
+                    " fg=" + color[0] + " " + color[1] + " " + color[2] + ",");
+        }
+        appendLine(";");
+        appendLine("END;");
+
+        return this;
+    }
 
     public NexusWriter append(Network network) {
 

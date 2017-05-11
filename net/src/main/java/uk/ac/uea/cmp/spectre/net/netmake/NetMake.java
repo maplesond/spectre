@@ -25,6 +25,7 @@ import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceCalculatorFactory;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.network.Network;
 import uk.ac.uea.cmp.spectre.core.ds.network.draw.DrawSplitSystem;
+import uk.ac.uea.cmp.spectre.core.ds.network.draw.PermutationSequenceDraw;
 import uk.ac.uea.cmp.spectre.core.ds.split.SpectreSplitSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitBlock;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
@@ -91,7 +92,7 @@ public class NetMake extends RunnableTool {
 
 
         log.info("Creating network");
-        Network network = new DrawSplitSystem(networkSS).createUnoptimisedNetwork();
+        Network network = new PermutationSequenceDraw(networkSS).createOptimisedNetwork();
 
         SplitSystem treeSS = null;
         Network tree = null;
@@ -108,7 +109,7 @@ public class NetMake extends RunnableTool {
             treeSS = new SpectreSplitSystem(distanceMatrix, permutation, SpectreSplitSystem.LeastSquaresCalculator.TREE_IN_CYCLE, treeSplits);
 
             log.info("Creating tree");
-            tree = new DrawSplitSystem(networkSS).createUnoptimisedNetwork();
+            tree = new PermutationSequenceDraw(networkSS).createOptimisedNetwork();
         }
 
 

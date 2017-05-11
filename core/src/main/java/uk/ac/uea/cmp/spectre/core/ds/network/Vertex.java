@@ -456,7 +456,11 @@ public class Vertex {
         return angle;
     }
 
-    public Vertex optimiseLayout(DrawSplitSystem ps, Network network) {
+    //public Vertex optimiseLayout(DrawSplitSystem ps, Network network) {
+    public Vertex optimiseLayout(PermutationSequenceDraw ps, Network network) {
+
+        // Compute split system
+        SplitSystemDraw ss = new SplitSystemDraw(ps);
 
         // Collect all vertices in the network
         LinkedList<Vertex> vertices = this.collectVertices();
@@ -473,7 +477,7 @@ public class Vertex {
         //no more than certain constant angle, whereas precise one uses angle
         //which maximises certain function.
         //BoxOpener boxOpenerSimple = new BoxOpener(angleCalculatorSimple, ss);
-        BoxOpener boxOpenerPrecise = new BoxOpener(angleCalculatorPrecise, ps.getSplitSystem());
+        BoxOpener boxOpenerPrecise = new BoxOpener(angleCalculatorPrecise, ss);
 
         //CompatibleCorrectors are used to change angles for compatible splits.
         //CompatibleCorrector compatibleCorrectorSimple = new CompatibleCorrector(angleCalculatorSimple);

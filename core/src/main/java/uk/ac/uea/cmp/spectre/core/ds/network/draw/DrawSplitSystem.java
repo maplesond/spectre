@@ -122,12 +122,12 @@ public class DrawSplitSystem {
     public Network createOptimisedNetwork() {
         Vertex net = drawSplitSystem();
         SpectreNetwork network = new SpectreNetwork(net);
-        net = net.optimiseLayout(this, network);
+        /*net = net.optimiseLayout(this, network);
         CompatibleCorrector compatibleCorrectorPrecise = new CompatibleCorrector(new AngleCalculatorMaximalArea());
         compatibleCorrectorPrecise.addInnerTrivial(net, this, network);
         if (!network.veryLongTrivial()) {
             compatibleCorrectorPrecise.moveTrivial(net, 5, network);
-        }
+        }*/
         return network;
     }
 

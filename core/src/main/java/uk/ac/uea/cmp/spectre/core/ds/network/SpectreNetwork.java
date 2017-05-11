@@ -44,6 +44,8 @@ public class SpectreNetwork implements Network {
     private Map<Integer, String> translate;
     private List<NetworkLabel> vLabels;
 
+    private Vertex v;
+
 
     public SpectreNetwork() {
         this(new VertexList(), new EdgeList());
@@ -55,6 +57,8 @@ public class SpectreNetwork implements Network {
      * @param edges
      */
     public SpectreNetwork(VertexList vertices, EdgeList edges) {
+
+        this.v = vertices.getLeftmostVertex();
 
         this.vertices = vertices;
         this.edges = edges;
@@ -83,11 +87,17 @@ public class SpectreNetwork implements Network {
     public SpectreNetwork(Vertex v) {
         this(v.collectVertices(), v.getFirstEdge().collectEdges());
         this.setupLabels();     // TODO this should probably be done when creating the vertex
+        this.v = v;
     }
 
     @Override
     public void setTaxa(IdentifierList taxa) {
         this.taxa = taxa;
+    }
+
+    @Override
+    public Vertex getPrimaryVertex() {
+        return this.v;
     }
 
     @Override

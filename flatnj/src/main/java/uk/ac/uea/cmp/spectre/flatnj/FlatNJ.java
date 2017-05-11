@@ -25,6 +25,7 @@ import uk.ac.uea.cmp.spectre.core.ds.Sequences;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.network.Network;
 import uk.ac.uea.cmp.spectre.core.ds.network.draw.DrawSplitSystem;
+import uk.ac.uea.cmp.spectre.core.ds.network.draw.PermutationSequenceDraw;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.*;
 import uk.ac.uea.cmp.spectre.core.ds.split.SpectreSplitSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
@@ -279,7 +280,11 @@ public class FlatNJ extends RunnableTool {
             this.continueRun();
 
             notifyUser("Computing network");
-            DrawSplitSystem psDraw = new DrawSplitSystem(fss);
+            PermutationSequenceDraw psDraw = new PermutationSequenceDraw(ps.getSequence(),
+                    ps.getSwaps(),
+                    ps.getWeights(),
+                    ps.getActive(),
+                    ps.getTrivial());
             Network network = psDraw.createOptimisedNetwork();
 
             NexusWriter writer = new NexusWriter();
@@ -289,7 +294,7 @@ public class FlatNJ extends RunnableTool {
             writer.appendLine();
             writer.append(fss);
             writer.appendLine();
-            writer.append(network);
+            writer.append(network.getPrimaryVertex(), ps.getnTaxa(), taxa);
             writer.write(outFile);
 
             log.info("Saving complete nexus file to: " + outFile.getAbsolutePath());

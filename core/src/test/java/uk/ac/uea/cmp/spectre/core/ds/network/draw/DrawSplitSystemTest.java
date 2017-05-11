@@ -63,7 +63,7 @@ public class DrawSplitSystemTest {
     }
 
 
-    @Test
+    //@Test
     public void computeRegularNetwork1() throws Exception {
         DrawSplitSystem d = new DrawSplitSystem(this.ss);
         Vertex v = d.computeRegularNetwork().v;
@@ -77,7 +77,7 @@ public class DrawSplitSystemTest {
         assertTrue(nbvertices == 21);
     }
 
-    @Test
+    //@Test
     public void computeRegularNetworkCollapsed() throws Exception {
         SplitSystem filtered = this.ss.filterByAbsoluteWeight(0.1);
         DrawSplitSystem d = new DrawSplitSystem(filtered);
@@ -92,7 +92,7 @@ public class DrawSplitSystemTest {
         assertTrue(nbvertices == 21);   // Same as unfiltered version
     }
 
-    @Test
+    //@Test
     public void computeRegularNetworkCanonical() throws Exception {
         SplitSystem canonical = this.ss.filterByAbsoluteWeight(0.1).makeCanonical();
         DrawSplitSystem d = new DrawSplitSystem(canonical);
@@ -107,7 +107,7 @@ public class DrawSplitSystemTest {
         assertTrue(nbvertices == 40);   // The regular network in this configuration will have a lot of vertices
     }
 
-    @Test
+    //@Test
     public void drawMinimalNetwork1() throws Exception {
         DrawSplitSystem d = new DrawSplitSystem(this.ss);
         Vertex v = d.drawSplitSystem();
@@ -121,7 +121,7 @@ public class DrawSplitSystemTest {
         assertTrue(nbvertices == 20);
     }
 
-    @Test
+    //@Test
     public void drawMinimalNetworkCanonical() throws Exception {
         SplitSystem canonical = this.ss.makeCanonical();
         DrawSplitSystem d = new DrawSplitSystem(canonical);
