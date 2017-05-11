@@ -26,7 +26,7 @@ import uk.ac.uea.cmp.spectre.core.util.LogConfig;
 import java.io.File;
 import java.io.IOException;
 
-public class FlatNJITCase {
+public class FlatNJTest {
 
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
@@ -42,11 +42,11 @@ public class FlatNJITCase {
     }
 
 
-    @Test
+    //@Test
     public void testFourPoints() throws OptimiserException, IOException {
         
         FlatNJOptions options = new FlatNJOptions();
-        options.setInFile(FileUtils.toFile(FlatNJITCase.class.getResource("/tw_fourpoint.faa")));
+        options.setInFile(FileUtils.toFile(FlatNJTest.class.getResource("/tw_fourpoint.faa")));
         options.setOutputFile(new File(simpleOutput, "test.nex"));
 
         FlatNJ flatnj = new FlatNJ(options);
@@ -54,6 +54,20 @@ public class FlatNJITCase {
         flatnj.run();
         
         
+    }
+
+    //@Test
+    public void testCooper() throws OptimiserException, IOException {
+
+        FlatNJOptions options = new FlatNJOptions();
+        options.setInFile(FileUtils.toFile(FlatNJTest.class.getResource("/Cooper.nex")));
+        options.setOutputFile(new File(simpleOutput, "test.nex"));
+
+        FlatNJ flatnj = new FlatNJ(options);
+
+        flatnj.run();
+
+
     }
 
 }

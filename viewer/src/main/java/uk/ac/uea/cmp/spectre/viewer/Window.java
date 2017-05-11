@@ -334,6 +334,7 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
 
         Graphics2D g = (Graphics2D)graphics;
 
+        // Draw lines
         if (lines != null) {
             for (Line l : lines.values()) {
                 g.setStroke(new BasicStroke(l.getWidth()));
@@ -342,6 +343,7 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
             }
         }
 
+        // Draw leaders
         if (labels != null && labels.size() > 0 && config.showLabels() && config.leadersVisible()) {
             g.setStroke(config.getLeaderStroke().getStroke());
 
@@ -369,7 +371,6 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
         // Draw all viewer points
         if (points != null && points.size() > 0) {
             for (ViewerPoint p : points.values()) {
-                // vertices.get(p.getId()).getBackgroundColor(), vertices.get(p.getId()).getLineColor()
                 p.draw(g, selectionColor);
             }
         }
@@ -381,8 +382,11 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
             }
         }
 
+        g.setStroke(new BasicStroke());
+
         // Draw the range indicator in the top left
         if (config.showRange()) {
+            g.setColor(Color.BLACK);
 
             int delta = (int)(config.getRatio());
             double size = 1.0;
@@ -772,8 +776,8 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
         if (selectedPoint != null) {
             Vertex v = vertices.get(selectedPoint.id);
             if (v.getEdgeList().size() == 1) {
-                State state = this.history.startState();
-                state.vertexPositions.put(v, new double[]{v.getX(), v.getY()});
+                //State state = this.history.startState();
+                //state.vertexPositions.put(v, new double[]{v.getX(), v.getY()});
 
                 Edge e = v.getFirstEdge();
                 Vertex c = e.getOther(v);
@@ -791,7 +795,7 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
                 v.setCoordinates(xt * Math.cos(angle) - yt * Math.sin(angle) + c.getX(),
                         xt * Math.sin(angle) + yt * Math.cos(angle) + c.getY());
 
-                history.currentState.vertexPositions.put(v, new double[]{v.getX(), v.getY()});
+                //history.currentState.vertexPositions.put(v, new double[]{v.getX(), v.getY()});
                 repaintOnResize();
             }
         }

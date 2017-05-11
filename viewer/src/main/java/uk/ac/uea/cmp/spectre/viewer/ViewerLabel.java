@@ -476,7 +476,7 @@ public class ViewerLabel extends Element {
             g.setColor(selectionColor);
             g.drawRect(lx, ly - label.getHeight() + 1, label.getWidth(), label.getHeight());
         }
-        Color textColor = label.getFontColor();
+        Color textColor = Color.BLACK; //label.getFontColor();
         if (p.v.getBackgroundColor() != null && colorLabels) {
             textColor = getTextColor(p.v.getBackgroundColor());
         }

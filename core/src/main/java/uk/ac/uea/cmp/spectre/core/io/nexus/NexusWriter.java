@@ -339,7 +339,7 @@ public class NexusWriter extends AbstractSpectreWriter implements Appendable {
                 }
                 label = label.substring(0, label.length() - 2);
                 appendLine(v.getNxnum() + " '" + label + "' x=2 y=2 f='Dialog-PLAIN-10',");
-            } else if (v.getLabel() != null) {
+            } /*else if (v.getLabel() != null) {
                 NetworkLabel l = v.getLabel();
                 String label = v.getNxnum() + " '" + l.getName() + "' x=" + ((int) l.getOffsetX()) + " y=" + ((int) l.getOffsetY()) + " f='" + l.getFontFamily() + "-" + l.getFontStyle() + "-" + l.getFontSize() + "'";
                 if (l.getFontColor() != null) {
@@ -352,7 +352,7 @@ public class NexusWriter extends AbstractSpectreWriter implements Appendable {
                 }
                 label = label.concat(",");
                 appendLine(label);
-            }
+            }*/
         }
         appendLine(";");
         //Write the edges.
