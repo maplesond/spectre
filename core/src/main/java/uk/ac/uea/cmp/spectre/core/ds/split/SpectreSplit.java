@@ -56,6 +56,10 @@ public class SpectreSplit implements Split {
         this(aSide, aSide.makeComplement(nbTaxa, zerobased), weight);
     }
 
+    public SpectreSplit(SplitBlock aSide, int nbTaxa, double weight, boolean zerobased, boolean active) {
+        this(aSide, aSide.makeComplement(nbTaxa, zerobased), weight, active);
+    }
+
     public SpectreSplit(SplitBlock aSide, SplitBlock bSide) {
         this(aSide, bSide, 1.0);
     }

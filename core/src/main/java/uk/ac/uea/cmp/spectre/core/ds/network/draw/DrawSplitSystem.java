@@ -35,11 +35,11 @@ public class DrawSplitSystem {
     //This array keeps track of the representative of
     //the classes of taxa. Those are active. All other
     //taxa are inactive.
-    Map<Integer, Boolean> activeTaxa;
+    private Map<Integer, Boolean> activeTaxa;
     //weights of all trivial splits
-    Map<Integer, Double> trivial;
+    private Map<Integer, Double> trivial;
     // The split system to draw
-    SplitSystem ss;
+    private SplitSystem ss;
 
 
 
@@ -112,8 +112,7 @@ public class DrawSplitSystem {
 
     public Network createUnoptimisedNetwork() {
         Vertex net = drawSplitSystem();
-        SpectreNetwork network = new SpectreNetwork(net);
-        return network;
+        return new SpectreNetwork(net);
     }
 
     public Network createOptimisedNetwork() {
@@ -128,7 +127,7 @@ public class DrawSplitSystem {
         return network;
     }
 
-    private static class NetworkDrawing {
+    public static class NetworkDrawing {
         Vertex v;
         TreeSet<Edge>[] splitedges;
 
@@ -139,8 +138,8 @@ public class DrawSplitSystem {
 
         public int getNumberEdges() {
             int nbEdges = 0;
-            for (int i = 0; i < this.splitedges.length; i++) {
-                nbEdges += this.splitedges[i].size();
+            for (TreeSet<Edge> tse : this.splitedges) {
+                nbEdges += tse.size();
             }
 
             return nbEdges;
@@ -707,7 +706,7 @@ public class DrawSplitSystem {
     public enum Flip {
         UP,
         DOWN
-    };
+    }
 
     private Flip flipDirection(boolean partA, Split.Direction d, Split.Direction e) {
         if (partA) {
@@ -782,9 +781,9 @@ public class DrawSplitSystem {
         Vertex u = null;
 
         Edge e = elista.getFirst();
-        Edge g = null;
-        Edge g1 = null;
-        Edge g2 = null;
+        Edge g;
+        Edge g1;
+        Edge g2;
 
         //first eliminate the edges that correspond to splits that cross a
         if (dira == Split.Direction.LEFT) {
