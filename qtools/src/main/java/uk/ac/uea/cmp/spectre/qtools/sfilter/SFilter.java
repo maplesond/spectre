@@ -89,7 +89,7 @@ public class SFilter extends SpectreTool {
         Nexus raw = new NexusReader().readNexusData(inputFile);
 
         // Filter
-        raw.getSplitSystem().filterByWeight(minThreshold);
+        raw.getSplitSystem().filterByRelativeWeight(minThreshold);
 
         // Save
         new NexusWriter().writeNexusData(outputFile, raw);

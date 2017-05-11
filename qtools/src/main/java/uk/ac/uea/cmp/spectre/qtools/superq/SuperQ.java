@@ -23,8 +23,6 @@ import uk.ac.earlham.metaopt.OptimiserException;
 import uk.ac.earlham.metaopt.Problem;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.GroupedQuartetSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
-import uk.ac.uea.cmp.spectre.core.io.nexus.Nexus;
-import uk.ac.uea.cmp.spectre.core.io.nexus.NexusReader;
 import uk.ac.uea.cmp.spectre.core.io.nexus.NexusWriter;
 import uk.ac.uea.cmp.spectre.core.ui.gui.RunnableTool;
 import uk.ac.uea.cmp.spectre.core.ui.gui.StatusTrackerWithView;
@@ -148,7 +146,7 @@ public class SuperQ extends RunnableTool {
             if (this.options.getFilter() != null) {
 
                 notifyUser("Filtering out bottom " + this.options.getFilter() * 100.0 + " % of splits");
-                ss.filterByWeight(this.options.getFilter());
+                ss.filterByRelativeWeight(this.options.getFilter());
             }
 
             // Save split system

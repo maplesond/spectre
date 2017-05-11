@@ -50,7 +50,8 @@ public interface SplitSystem extends List<Split> {
     int getNbActiveWeightedSplits();
 
     /**
-     * Gets the actual taxa object stored in this split system
+     * Gets the actual taxa object stored in this split system.
+     * If this split system is circular then this will represent the taxa in their cyclic ordering.
      *
      * @return The taxa
      */
@@ -109,10 +110,19 @@ public interface SplitSystem extends List<Split> {
      * Filters this split system based on the given threshold.  Splits with weighting less than the threshold will be
      * discarded.
      *
-     * @param threshold The threshold to filter by
+     * @param percentThreshold The threshold to filter by
      * @return The filtered split system
      */
-    SplitSystem filterByWeight(final double threshold);
+    SplitSystem filterByRelativeWeight(final double percentThreshold);
+
+    /**
+     * This filters the split system based on the weight threshold.  Splits with weights lower than this are discarded.
+     * Note that unlike filterByRelativeWeight, this method creates and returns a filtered copy of the split system rather than modifying
+     * this split system.
+     * @param minWeight
+     * @return A new filtered copy of this split system
+     */
+    SplitSystem filterByAbsoluteWeight(final double minWeight);
 
     /**
      * Activates splits with weight greater than threshold, and deactivates those below.
@@ -121,10 +131,18 @@ public interface SplitSystem extends List<Split> {
     void activateByWeight(final double threshold);
 
     /**
-     * Creates a copy of this split system with all splits in canonical form, and sorted by the taxa of the A-side.
+     * Creates a copy of this split system with all splits in canonical form.  This means each split is arranged so the
+     * a-side is smaller than the b-side.  Then the splits are sorted by a-side length, then by id.  This results in
+     * trivial splits being first in the list.
      * @return
      */
     SplitSystem makeCanonical();
+
+    /**
+     * Creates a copy of this split system with all splits organised by the ordering of taxa.
+     * @return
+     */
+    SplitSystem makeInducedOrdering();
 
 
     // **** Interrogation methods that try to detect split system properties ****

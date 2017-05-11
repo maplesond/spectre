@@ -263,7 +263,7 @@ public class FlatNJ extends RunnableTool {
 
             this.continueRun();
 
-            notifyUser("Finalising splits system");
+            notifyUser("Finalising split system");
             ps.setTaxaNames(taxa.getNames());
             SplitSystem fss = new SpectreSplitSystem(ps).makeCanonical();
             log.info("Split system contains " + fss.getNbSplits() + " splits");

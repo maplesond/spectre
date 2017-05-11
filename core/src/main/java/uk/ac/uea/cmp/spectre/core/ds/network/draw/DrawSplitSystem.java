@@ -49,25 +49,29 @@ public class DrawSplitSystem {
 
 
     /**
-     * Constructor for this class from a SplitSystem-object. In input might not necessarily be a "full" split system, so
-     * we need to recreate the split system as a full one.
-     * @param ss Circular split system
+     * Constructor for this class from a Flat SplitSystem-object.  Makes a copy of that split system as we might modify it
+     * to make it suitable for drawing.
+     * Important Note: that if the split system is not flat then drawing will likely fail.  Also
+     * note that circular split systems are always flat, and it is not simple to determine if an arbitrary split system
+     * is flat.  So providing the split system was generated from a tool in Spectre there shouldn't be any problems.
+     * @param ss A flat split system.
      */
     public DrawSplitSystem(SplitSystem ss) {
 
-        this.ss = ss;
+        // Makes a copy of the split system and sorts it is as induced by the ordering
+        this.ss = ss.makeInducedOrdering();
 
-        final int ntaxa = ss.getNbTaxa();
+        // Deactivate any splits with weight of 0.  These are effectively ignored by the drawing algorithm.
+        for(Split s : this.ss) {
+            s.setActive(s.getWeight() > 0);
+        }
 
-        activeTaxa = new HashMap<>(ntaxa);
-        trivial = new HashMap<>(ntaxa);
-
-        //store information about the taxa in arrays
+        // Some extra datastructures to help keep track of taxa groupings and weights to trivial splits.
+        this.activeTaxa = new HashMap<>(ss.getNbTaxa());
+        this.trivial = new HashMap<>(ss.getNbTaxa());
         for (Identifier i : this.ss.getOrderedTaxa()) {
-            //Initial permutation must equal circular ordering underlying the circular split system.
-            //Assumes that Ids used are 1,2,3,...,ntaxa.
             activeTaxa.put(i.getId(), true);
-            trivial.put(i.getId(), 0.0); //no extra length added to pendant edge;
+            trivial.put(i.getId(), 0.0); // Initially do not add extra length added to pendant edge;
         }
     }
 
@@ -324,8 +328,8 @@ public class DrawSplitSystem {
                 Split s2 = this.ss.get(ce2.getSplitIndex());
 
                 // Test if the splits associated with these edges require a box to be added.
-                if (s1.getSide(i) == Split.SplitSide.B_SIDE &&
-                        s2.getSide(i) == Split.SplitSide.A_SIDE) {
+                if (s1.getSide(i) == Split.SplitSide.A_SIDE &&
+                        s2.getSide(i) == Split.SplitSide.B_SIDE) {
 
                     // Create a new vertex and two new edges to pop out from the two currently selected edges.  This creates
                     // a new box.
@@ -353,14 +357,14 @@ public class DrawSplitSystem {
     private void labelVertex(Identifier i, Edge[] chain) {
         for(Edge ej : chain) {
             Split.SplitSide side = this.ss.get(ej.getSplitIndex()).getSide(i.getId());
-            if (side == Split.SplitSide.B_SIDE) {
+            if (side == Split.SplitSide.A_SIDE) {
                 ej.getTop().getTaxa().add(i);
                 if (ej.getTop().getTaxa().size() > 1) {
                     this.setActiveTaxaAt(i.getId(), false);
                 }
                 break;
             }
-            else if (side == Split.SplitSide.A_SIDE) {
+            else if (side == Split.SplitSide.B_SIDE) {
                 // This is just a special case to make sure we aren't missing the identifier at the bottom of the last edge
                 if (ej == chain[chain.length - 1]) {
                     ej.getBottom().getTaxa().add(i);

@@ -315,7 +315,7 @@ public class SpectreSplitSystem extends ArrayList<Split> implements SplitSystem 
 
 
     @Override
-    public SplitSystem filterByWeight(double threshold) {
+    public SplitSystem filterByRelativeWeight(double percentThreshold) {
 
         int N = this.getNbTaxa();
 
@@ -351,7 +351,7 @@ public class SpectreSplitSystem extends ArrayList<Split> implements SplitSystem 
 
                 double w = this.getWeightAt(i);
 
-                if (w > maxWeight * threshold) {
+                if (w > maxWeight * percentThreshold) {
                     splitExists[i] = true;
                     existingSplits++;
                 } else {
@@ -386,6 +386,20 @@ public class SpectreSplitSystem extends ArrayList<Split> implements SplitSystem 
     }
 
     @Override
+    public SplitSystem filterByAbsoluteWeight(double minWeight) {
+
+        List<Split> filtered = new ArrayList<>();
+
+        for(Split s : this) {
+            if (s.getWeight() >= minWeight) {
+                filtered.add(new SpectreSplit(s));
+            }
+        }
+
+        return new SpectreSplitSystem(new IdentifierList(this.orderedTaxa), filtered);
+    }
+
+    @Override
     public void activateByWeight(double threshold) {
         for (Split s : this) {
             s.setActive(s.getWeight() < threshold);
@@ -394,6 +408,19 @@ public class SpectreSplitSystem extends ArrayList<Split> implements SplitSystem 
 
     @Override
     public SplitSystem makeCanonical() {
+        List<Split> splits = new ArrayList<>();
+
+        for(Split s : this) {
+            splits.add(s.makeCanonical());
+        }
+
+        Collections.sort(splits);
+
+        return new SpectreSplitSystem(this.orderedTaxa, splits);
+    }
+
+    @Override
+    public SplitSystem makeInducedOrdering() {
         List<Split> splits = new ArrayList<>();
 
         for(Split s : this) {
