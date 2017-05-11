@@ -320,10 +320,12 @@ public class DrawSplitSystem {
 
                 Edge ce1 = chain[j - 1];
                 Edge ce2 = chain[j];
+                Split s1 = this.ss.get(ce1.getSplitIndex());
+                Split s2 = this.ss.get(ce2.getSplitIndex());
 
                 // Test if the splits associated with these edges require a box to be added.
-                if (this.ss.get(ce1.getSplitIndex()).getSide(i) == Split.SplitSide.B_SIDE &&
-                        this.ss.get(ce2.getSplitIndex()).getSide(i) == Split.SplitSide.A_SIDE) {
+                if (s1.getSide(i) == Split.SplitSide.B_SIDE &&
+                        s2.getSide(i) == Split.SplitSide.A_SIDE) {
 
                     // Create a new vertex and two new edges to pop out from the two currently selected edges.  This creates
                     // a new box.
