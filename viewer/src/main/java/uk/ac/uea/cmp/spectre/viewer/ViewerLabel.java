@@ -460,6 +460,7 @@ public class ViewerLabel extends Element {
     }
 
     public void draw(Graphics g, Color selectionColor, boolean colorLabels) {
+
         if (label.getFontFamily() == null) {
             label.setFontFamily("Helvetica");
         }

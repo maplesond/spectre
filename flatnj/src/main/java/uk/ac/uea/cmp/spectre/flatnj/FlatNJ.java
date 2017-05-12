@@ -284,7 +284,8 @@ public class FlatNJ extends RunnableTool {
                     ps.getSwaps(),
                     ps.getWeights(),
                     ps.getActive(),
-                    ps.getTrivial());
+                    ps.getTrivial(),
+                    ps.getTaxaNames());
             Network network = psDraw.createOptimisedNetwork();
 
             NexusWriter writer = new NexusWriter();

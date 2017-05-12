@@ -839,16 +839,39 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
     void showTrivial(boolean show) {
         if (show != config.showTrivial()) {
             config.setShowTrivial(show);
-            Iterator<ViewerLabel> labelIt = labels.values().iterator();
-            while (labelIt.hasNext()) {
-                ViewerLabel l = labelIt.next();
+            for(ViewerLabel l : labels.values()) {
                 if (show) {
-                    l.p.setSuppressed(false);
+                    Vertex v = vertices.get(l.p.id);
+                    if (v.getEdgeList().size() == 1) {
+                        l.p.setSuppressed(false);
+                        ViewerPoint p2 = points.get(v.getFirstEdge().getOther(v).getNxnum());
+                        l.p.setSize(p2.getSize());
+                        l.p.setShape(p2.getShape());
+                        l.p.setFg(p2.getFg());
+                        l.p.setBg(p2.getBg());
+                        p2.setSize(0);
+
+                    }
+                    else {
+
+                    }
                 } else {
                     Vertex v = vertices.get(l.p.id);
+                    int size = l.p.getSize();
+                    Color fg = l.p.getFg();
+                    Color bg = l.p.getBg();
+                    String shape = l.p.getShape();
+
                     if (v.getEdgeList().size() == 1) {
                         ViewerPoint p2 = points.get(v.getFirstEdge().getOther(v).getNxnum());
                         l.p.suppress(p2);
+                        p2.setSize(size);
+                        p2.setFg(fg);
+                        p2.setBg(bg);
+                        p2.setShape(shape);
+                    }
+                    else {
+                        //l.p.setSuppressed(false);
                     }
                 }
             }

@@ -198,11 +198,6 @@ public class CompatibleCorrector {
 
         network.removeVertices(oldVertices);
         network.addTrivialEdges(newVertices);
-
-        for(Vertex v : network.getLabeledVertices()) {
-            v.setSize(3);
-            v.setShape(null);
-        }
     }
 
     private int getHighestNexusId(Edge e) {

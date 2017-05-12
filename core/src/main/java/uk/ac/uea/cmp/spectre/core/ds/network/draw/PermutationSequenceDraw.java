@@ -107,7 +107,7 @@ public class PermutationSequenceDraw {
      * @param in_active Active flags
      * @param trivialWeights Trivial weights
      */
-    public PermutationSequenceDraw(int[] in_init_sequ, int[] in_swaps, double[] in_weights, boolean[] in_active, double[] trivialWeights) {
+    public PermutationSequenceDraw(int[] in_init_sequ, int[] in_swaps, double[] in_weights, boolean[] in_active, double[] trivialWeights, String[] taxanames) {
         int i = 0;
 
         ntaxa = in_init_sequ.length;
@@ -133,7 +133,7 @@ public class PermutationSequenceDraw {
             initSequ[i] = in_init_sequ[i];
             representedby[i] = i;
             activeTaxa[i] = true;
-            taxaname[i] = "taxon" + i;
+            taxaname[i] = taxanames[i];
             trivial[i] = trivialWeights[i];
         }
 
@@ -394,14 +394,10 @@ public class PermutationSequenceDraw {
         SpectreNetwork network = new SpectreNetwork(net);
         net = net.optimiseLayout(this, network);
         CompatibleCorrector compatibleCorrectorPrecise = new CompatibleCorrector(new AngleCalculatorMaximalArea());
-        compatibleCorrectorPrecise.addInnerTrivial(net, this.trivial, network);
+        /*compatibleCorrectorPrecise.addInnerTrivial(net, this.trivial, network);
         if (!network.veryLongTrivial()) {
             compatibleCorrectorPrecise.moveTrivial(net, 5, network);
-        }
-        for(Vertex v : network.getLabeledVertices()) {
-            v.setSize(3);
-            v.setShape(null);
-        }
+        }*/
 
         return network;
     }

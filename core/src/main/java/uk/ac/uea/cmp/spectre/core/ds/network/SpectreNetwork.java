@@ -15,6 +15,9 @@
 
 package uk.ac.uea.cmp.spectre.core.ds.network;
 
+import javafx.util.StringConverter;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import uk.ac.uea.cmp.spectre.core.ds.Identifier;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 
@@ -380,19 +383,11 @@ public class SpectreNetwork implements Network {
         // Add labels to all required vertices
         for (Vertex v : this.getAllVertices()) {
             if (v.getTaxa().size() > 0) {
-                String label = new String();
-                for (Identifier i : v.getTaxa()) {
-                    label = (i.getName() + ", ").concat(label);
-                }
-                label = label.substring(0, label.length() - 2);
+                String label = StringUtils.join(v.getTaxa().getNames(), ',');
                 v.setLabel(new NetworkLabel(label));
+                v.setSize(5);
+                v.setShape(null);
             }
-        }
-
-        // Ensure all labelled verticies are marked with larger round nodes by default
-        for(Vertex v : this.getLabeledVertices()) {
-            v.setSize(3);
-            v.setShape(null);
         }
     }
 

@@ -43,6 +43,7 @@ public class ViewerPoint extends Element implements Selectable {
     int height;
 
     private boolean selected;
+    private String shape;
 
     public ViewerPoint(Vertex v) {
         this.v = v;
@@ -180,35 +181,39 @@ public class ViewerPoint extends Element implements Selectable {
 
     public void draw(Graphics g, Color selectionColor) {
 
-        g.setColor(v.getBackgroundColor());
+        if (!this.isSuppressed()) {
+            g.setColor(v.getBackgroundColor());
 
-        int x = this.getCentreX();
-        int y = this.getCentreY();
+            int x = this.getCentreX();
+            int y = this.getCentreY();
 
-        if (round) {
-            g.fillOval(x, y, this.width, this.height);
-        } else {
-            g.fillRect(x, y, this.width, this.height);
-        }
-
-        g.setColor(v.getLineColor());
-        if (round && width > 0 && height > 0) {
-            g.drawOval(x, y, width, height);
-            if (selected) {
-                g.setColor(selectionColor);
-                g.drawOval(x - 1, y - 1, width + 2, height + 2);
+            if (round) {
+                g.fillOval(x, y, this.width, this.height);
+            } else {
+                g.fillRect(x, y, this.width, this.height);
             }
-        } else {
-            g.drawRect(x, y, width, height);
-            if (selected) {
-                g.setColor(selectionColor);
-                g.drawRect(x - 1, y - 1, width + 2, height + 2);
+
+            g.setColor(v.getLineColor());
+            if (round && width > 0 && height > 0) {
+                g.drawOval(x, y, width, height);
+                if (selected) {
+                    g.setColor(selectionColor);
+                    g.drawOval(x - 1, y - 1, width + 2, height + 2);
+                }
+            } else {
+                g.drawRect(x, y, width, height);
+                if (selected) {
+                    g.setColor(selectionColor);
+                    g.drawRect(x - 1, y - 1, width + 2, height + 2);
+                }
             }
         }
     }
 
     public void setShape(String shape) {
-        switch (shape) {
+        String s = shape == null ? "circle" : shape;
+
+        switch (s) {
             case "square":
                 round = false;
                 v.setShape("r");
@@ -229,5 +234,9 @@ public class ViewerPoint extends Element implements Selectable {
         } else if (getX() >= midX && getY() >= midY) {
             quarterNo = 3;
         }
+    }
+
+    public String getShape() {
+        return shape;
     }
 }
