@@ -134,13 +134,16 @@ public interface SplitSystem extends List<Split> {
      * Creates a copy of this split system with all splits in canonical form.  This means each split is arranged so the
      * a-side is smaller than the b-side.  Then the splits are sorted by a-side length, then by id.  This results in
      * trivial splits being first in the list.
-     * @return
+     * @return Copy of this split system in an easily interpretable format.
      */
     SplitSystem makeCanonical();
 
     /**
-     * Creates a copy of this split system with all splits organised by the ordering of taxa.
-     * @return
+     * Creates a copy of this split system with all splits organised by defined permutations based on the ordering of the
+     * original taxa.  This ensures this split system, providing it is either circular or flat, can be drawn correctly
+     * by our drawing algorithm.  This method will throw an IllegalStateException if this split system can#t be converted
+     * into induced ordering.  Typically this will be because the split system is not flat.
+     * @return Copy of this split system in an order suitable for drawing.
      */
     SplitSystem makeInducedOrdering();
 

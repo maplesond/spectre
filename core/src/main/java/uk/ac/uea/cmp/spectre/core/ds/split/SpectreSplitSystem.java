@@ -24,13 +24,13 @@ import uk.ac.uea.cmp.spectre.core.ds.network.draw.PermutationSequenceDraw;
 import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.CircularNNLS;
 import uk.ac.uea.cmp.spectre.core.ds.split.flat.PermutationSequence;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class SpectreSplitSystem extends ArrayList<Split> implements SplitSystem {
 
     private IdentifierList orderedTaxa;
+
+    private HashMap<Split, Integer> mapOfSplits;
 
     /**
      * Creates split system with the specified number of taxa and the specified list of splits.
@@ -56,6 +56,7 @@ public class SpectreSplitSystem extends ArrayList<Split> implements SplitSystem 
      */
     public SpectreSplitSystem(IdentifierList orderedTaxa, List<Split> splits) {
         this.orderedTaxa = orderedTaxa;
+        this.mapOfSplits = new HashMap<>();
 
         for(Split s : splits) {
             this.add(s);
@@ -149,6 +150,7 @@ public class SpectreSplitSystem extends ArrayList<Split> implements SplitSystem 
         int[] cur_sequ = ArrayUtils.clone(p_sequ.getSequence());
         String[] tax = p_sequ.getTaxaNames();
 
+        this.mapOfSplits = new HashMap<>();
         this.orderedTaxa = new IdentifierList();
         for(int i = 0; i < ntaxa; i++) {
             this.orderedTaxa.add(new Identifier(tax == null ? Integer.toString(cur_sequ[i]) : tax[cur_sequ[i]], cur_sequ[i]));
@@ -184,6 +186,13 @@ public class SpectreSplitSystem extends ArrayList<Split> implements SplitSystem 
         int ntaxa = p_sequ.getNbTaxa();
         int nsplits = p_sequ.getNswaps();
         int[] cur_sequ = ArrayUtils.clone(p_sequ.getInitSequ());
+        String[] tax = p_sequ.getTaxaname();
+
+        this.mapOfSplits = new HashMap<>();
+        this.orderedTaxa = new IdentifierList();
+        for(int i = 0; i < ntaxa; i++) {
+            this.orderedTaxa.add(new Identifier(tax == null ? Integer.toString(cur_sequ[i]) : tax[cur_sequ[i]], cur_sequ[i]));
+        }
 
         //Write splits into 0/1-array.
         int[] swaps = p_sequ.getSwaps();
@@ -201,6 +210,44 @@ public class SpectreSplitSystem extends ArrayList<Split> implements SplitSystem 
             }
             this.add(new SpectreSplit(new SpectreSplitBlock(aside), ntaxa, true));
         }
+    }
+
+    public Split get(Split s) {
+        return this.get(this.mapOfSplits.get(s.makeCanonical()));
+    }
+
+    public Split set(int index, Split element) {
+        Split s = this.get(index);
+        this.mapOfSplits.remove(s.makeCanonical());
+        this.mapOfSplits.put(element.makeCanonical(), index);
+        return super.set(index, element);
+    }
+
+    @Override
+    public boolean add(Split s) {
+        boolean res = super.add(s);
+        this.mapOfSplits.put(s.makeCanonical(), this.size() - 1);
+        return res;
+    }
+
+    @Override
+    public void add(int index, Split s) {
+        super.add(index, s);
+        this.mapOfSplits.put(s.makeCanonical(), index);
+    }
+
+    @Override
+    public Split remove(int index) {
+        Split s = this.get(index);
+        super.remove(index);
+        this.mapOfSplits.remove(s.makeCanonical());
+        return s;
+    }
+
+    @Override
+    public boolean remove(Object o) {
+        this.mapOfSplits.remove(((Split)o).makeCanonical());
+        return super.remove(o);
     }
 
 
@@ -291,14 +338,7 @@ public class SpectreSplitSystem extends ArrayList<Split> implements SplitSystem 
 
     @Override
     public boolean contains(Split split) {
-
-        for(Split s : this) {
-            if (s.equals(split)) {
-                return true;
-            }
-        }
-
-        return false;
+        return this.mapOfSplits.get(split) != null;
     }
 
 
@@ -448,13 +488,43 @@ public class SpectreSplitSystem extends ArrayList<Split> implements SplitSystem 
     public SplitSystem makeInducedOrdering() {
         List<Split> splits = new ArrayList<>();
 
-        for(Split s : this) {
-            splits.add(s.makeCanonical());
+        IdentifierList currentPerm = new IdentifierList(this.orderedTaxa);
+
+        int found = 0;  // For sanity checking.
+
+        for(int i = 0; i < this.getNbTaxa(); i++){
+            for(int j = 0; j < this.getNbTaxa() - i - 1; j++){
+                int[] sideA = new int[j+1];
+                for(int a = 0; a <= j; a++) { sideA[a] = currentPerm.get(a).getId(); }
+                SplitBlock newSideA = new SpectreSplitBlock(sideA);
+                newSideA.sort();
+                int[] sideB = new int[this.getNbTaxa() - j - 1];
+                for(int b = 0; b < this.getNbTaxa() - j - 1; b++) { sideB[b] = currentPerm.get(b + j + 1).getId(); }
+                SplitBlock newSideB = new SpectreSplitBlock(sideB);
+                newSideB.sort();
+                Split newSplit = new SpectreSplit(newSideA, newSideB);
+
+                //next check whether the input split system contains a split with one SplitBlock equal to the one we just created
+                if (this.contains(newSplit)) {
+                    Split s = this.get(newSplit);
+                    newSplit.setWeight(s.getWeight());
+                    newSplit.setActive(s.isActive());
+                    found++;
+                    splits.add(newSplit);
+                }
+
+                // Flip position j and j+1 in current permutation
+                Identifier temp = currentPerm.get(j);
+                currentPerm.set(j, currentPerm.get(j+1));
+                currentPerm.set(j+1, temp);
+            }
         }
 
-        Collections.sort(splits);
+        if (found != this.getNbSplits()) {
+            throw new IllegalStateException("Could not create induced ordering.  This could be because you have duplicate splits in the system, or because the split system is either not flat and/or circular.");
+        }
 
-        return new SpectreSplitSystem(this.orderedTaxa, splits);
+        return new SpectreSplitSystem(new IdentifierList(this.orderedTaxa), splits);
     }
 
     @Override

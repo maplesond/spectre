@@ -100,4 +100,27 @@ public class SpectreSplitSystemTest {
             assertTrue(s.getASide().size() <= 2);
         }
     }
+
+    @Test
+    public void testMakeInduced() {
+
+        List<Split> splits = new ArrayList<>();
+
+        final int nbTaxa = 5;
+
+        splits.add(new SpectreSplit(new SpectreSplitBlock(new int[]{1}), nbTaxa));
+        splits.add(new SpectreSplit(new SpectreSplitBlock(new int[]{2}), nbTaxa));
+        splits.add(new SpectreSplit(new SpectreSplitBlock(new int[]{3}), nbTaxa));
+        splits.add(new SpectreSplit(new SpectreSplitBlock(new int[]{4}), nbTaxa));
+        splits.add(new SpectreSplit(new SpectreSplitBlock(new int[]{5}), nbTaxa));
+        splits.add(new SpectreSplit(new SpectreSplitBlock(new int[]{2,3,4}), nbTaxa));
+        //splits.add(new SpectreSplit(new SpectreSplitBlock(new int[]{1,3,5}), nbTaxa));
+        splits.add(new SpectreSplit(new SpectreSplitBlock(new int[]{1,2}), nbTaxa, 0.4));
+        //splits.add(new SpectreSplit(new SpectreSplitBlock(new int[]{4,5,2}), nbTaxa, 1.2));
+
+        SplitSystem orig = new SpectreSplitSystem(nbTaxa, splits);
+        SplitSystem ordered = orig.makeInducedOrdering();
+
+        assertNotNull(ordered);
+    }
 }

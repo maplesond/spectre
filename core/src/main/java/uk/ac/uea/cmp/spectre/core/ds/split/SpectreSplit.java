@@ -94,11 +94,13 @@ public class SpectreSplit implements Split {
     @Override
     public int hashCode() {
 
+        Split s = this.makeCanonical();
+
         return new HashCodeBuilder()
-                .append(aSide)
-                .append(bSide)
-                .append(weight)
-                .append(active)
+                .append(s.getASide())
+                .append(s.getBSide())
+                //.append(s.getWeight())
+                //.append(active)
                 .toHashCode();
     }
 
@@ -112,12 +114,14 @@ public class SpectreSplit implements Split {
         if (this == o)
             return true;
 
-        SpectreSplit other = (SpectreSplit) o;
+        Split other = ((SpectreSplit) o).makeCanonical();
+        Split s = this.makeCanonical();
 
         return new EqualsBuilder()
-                .append(aSide, other.aSide)
-                .append(bSide, other.bSide)
-                .append(weight, other.weight)
+                .append(s.getASide(), other.getASide())
+                .append(s.getBSide(), other.getBSide())
+                //.append(s.getWeight(), other.getWeight())
+                //.append(s.isActive(), other.isActive())
                 .isEquals();
     }
 
