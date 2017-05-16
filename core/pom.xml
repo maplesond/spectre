@@ -210,9 +210,6 @@
                 <groupId>org.antlr</groupId>
                 <artifactId>antlr4-maven-plugin</artifactId>
                 <version>${antlr-version}</version>
-                <configuration>
-                    <outputDirectory>${basedir}/src/main/java</outputDirectory>
-                </configuration>
                 <executions>
                     <execution>
                         <goals>
