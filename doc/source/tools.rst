@@ -8,7 +8,7 @@ networks and launch most of the main tools within the toolkit.
 
 The main tools and their workflows are listed here.
 
-:ref:`netmake` - Creates a circular split system from a distance matrix producing an outer-planar network.
+:ref:`netmake` - Creates a circular split system from a multiple sequence alignment (fasta or Nexus) or a distance matrix (Nexus, Phylip or Emboss format) producing an outer-planar network.
 Allows the user to select either NeighborNet or NetMake's own method for constructing the circular ordering of taxa.
 The distance matrix can be presented in any of the following formats:
 
@@ -17,7 +17,7 @@ The distance matrix can be presented in any of the following formats:
 
 :ref:`flatnj` - Creates a flat planar split network where labels are not forced to the edges of the network.  FlatNJ can
 therefore produce richer and less distorted networks that Neighbornet if supported by the data.  FlatNJ however cannot be
-driven from a distance matrix alone, requiring quartet data instead.  Fortunately, FlatNJ can automatically generate
+driven from a distance matrix alone, requiring quartet data instead. FlatNJ can automatically generate
 quartets from the following input types:
 
 1. Multiple sequence alignment in Fasta or Nexus format.  If Nexus format is used and contains a "distances" block, this information can help guide split weight estimation.
@@ -26,7 +26,7 @@ quartets from the following input types:
 
 :ref:`superq` - Creates a Supernetwork from a collection of partial input trees.  Input trees can be derived from several different input formats:
 
-1. Qweights files, see syntax below - simple, monopurpose internal format used by QNet and QMaker.
+1. Qweights files - simple, monopurpose format used by QNet and QMaker.
 2. Nexus files with "st quartets" (old format) or Quartets blocks
 3. Nexus files with "st splits" (old format) or Splits blocks
 4. Nexus files with distance blocks
