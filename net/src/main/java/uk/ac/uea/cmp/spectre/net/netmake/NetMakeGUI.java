@@ -55,6 +55,7 @@ public class NetMakeGUI extends JFrame implements ToolHost {
     private JComboBox<CircularOrderingAlgorithms> cboCoAlgorithm;
     private JLabel lblDmAlgorithm;
     private JComboBox<DistanceCalculatorFactory> cboDmAlgorithm;
+
     private JPanel pnlWeightings;
     private JLabel lblWeighting1;
     private JComboBox<Weightings> cboWeighting1;

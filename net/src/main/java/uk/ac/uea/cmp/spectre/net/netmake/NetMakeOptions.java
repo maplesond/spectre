@@ -41,6 +41,8 @@ public class NetMakeOptions {
 
     public static final String DESC_CO_ALG = "The circular ordering algorithm to use: " + CircularOrderingAlgorithms.toListString() + ". Default: NEIGHBORNET";
 
+    public static final String DESC_MAKE_NETWORK = "If selected, netmake will not create a network after split system is generated.  i.e. output is just a circular split system.";
+
     public static final String DESC_DIST_CALC = "If running from MSAs, the distance matrix calculator to use: " + DistanceCalculatorFactory.toListString() + ". Default: " + DistanceCalculatorFactory.JUKES_CANTOR.name();
 
     public static final String DESC_WEIGHTINGS_1 = "For NETMAKE circular ordering algorithm, select 1st weighting type: " + Weightings.toListString() + ".  Required if circular algorithm is NETMAKE.  Default: TSP";
@@ -56,13 +58,14 @@ public class NetMakeOptions {
     private double treeParam;
     private String coAlg;
     private String dc;
+    private boolean noNetwork;
 
 
     public NetMakeOptions() {
-        this(null, null, null, null, null, DEFAULT_TREE_WEIGHT, "NEIGHBORNET", DistanceCalculatorFactory.JUKES_CANTOR.name());
+        this(null, null, null, null, null, DEFAULT_TREE_WEIGHT, "NEIGHBORNET", DistanceCalculatorFactory.JUKES_CANTOR.name(), false);
     }
 
-    public NetMakeOptions(File input, File outputNetwork, File outputTree, String weighting1, String weighting2, double treeParam, String coAlg, String dc) {
+    public NetMakeOptions(File input, File outputNetwork, File outputTree, String weighting1, String weighting2, double treeParam, String coAlg, String dc, boolean noNetwork) {
 
         // Validates that we have sensible input for the weightings
         if (weighting1 != null && !weighting1.isEmpty())
@@ -79,6 +82,7 @@ public class NetMakeOptions {
         this.treeParam = treeParam;
         this.coAlg = coAlg;
         this.dc = dc;
+        this.noNetwork = noNetwork;
     }
 
     public File getInput() {
@@ -143,5 +147,13 @@ public class NetMakeOptions {
 
     public void setDc(String dc) {
         this.dc = dc;
+    }
+
+    public boolean isNoNetwork() {
+        return noNetwork;
+    }
+
+    public void setNoNetwork(boolean noNetwork) {
+        this.noNetwork = noNetwork;
     }
 }

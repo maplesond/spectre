@@ -46,6 +46,7 @@ public class NetMakeCLI {
     public static final String OPT_WEIGHTINGS_2 = "weightings_2";
     public static final String OPT_CO_ALG = "alt_mode";
     public static final String OPT_DIST_CALC = "dist_calc";
+    public static final String OPT_MAKE_NETWORK = "no_network";
     public static final String OPT_HELP = "help";
 
 
@@ -67,6 +68,8 @@ public class NetMakeCLI {
                 .withDescription(NetMakeOptions.DESC_WEIGHTINGS_2).create("x"));
 
         options.addOption(OptionBuilder.withLongOpt(OPT_CO_ALG).withDescription(NetMakeOptions.DESC_CO_ALG).create("alt"));
+
+        options.addOption(OptionBuilder.withLongOpt(OPT_MAKE_NETWORK).withDescription(NetMakeOptions.DESC_MAKE_NETWORK).create("n"));
 
         options.addOption(OptionBuilder.withArgName("dist_calc").withLongOpt(OPT_DIST_CALC).hasArg()
                 .withDescription(NetMakeOptions.DESC_DIST_CALC).create("dc"));
