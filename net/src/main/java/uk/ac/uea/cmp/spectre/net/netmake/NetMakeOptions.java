@@ -41,7 +41,7 @@ public class NetMakeOptions {
 
     public static final String DESC_CO_ALG = "The circular ordering algorithm to use: " + CircularOrderingAlgorithms.toListString() + ". Default: NEIGHBORNET";
 
-    public static final String DESC_MAKE_NETWORK = "If selected, netmake will not create a network after split system is generated.  i.e. output is just a circular split system.";
+    public static final String DESC_MAKE_NETWORK = "If selected, netmake will not create a network after split system is generated.  i.e. output is just a circular split system.  This option might be useful if the number of taxa in the input is high: > 100.";
 
     public static final String DESC_DIST_CALC = "If running from MSAs, the distance matrix calculator to use: " + DistanceCalculatorFactory.toListString() + ". Default: " + DistanceCalculatorFactory.JUKES_CANTOR.name();
 
