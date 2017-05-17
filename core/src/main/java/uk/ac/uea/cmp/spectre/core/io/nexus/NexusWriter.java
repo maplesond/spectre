@@ -173,7 +173,7 @@ public class NexusWriter extends AbstractSpectreWriter implements Appendable {
         this.appendLine(" TAXLABELS");
 
         for (int i = 0; i < taxa.size(); i++) {
-            this.appendLine("  [" + (i + 1) + "]\t" + taxa.get(i).getName());
+            this.appendLine("  [" + (i + 1) + "]\t'" + taxa.get(i).getName() + "'");
         }
 
         this.appendLine(" ;");
