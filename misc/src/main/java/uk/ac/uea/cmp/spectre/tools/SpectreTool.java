@@ -25,6 +25,7 @@ import java.io.IOException;
 public abstract class SpectreTool implements Service {
 
     public static final String OPT_HELP = "help";
+    public static final String OPT_VERSION = "version";
 
     protected abstract Options createInternalOptions();
 
@@ -37,6 +38,7 @@ public abstract class SpectreTool implements Service {
     public Options createOptions() {
         Options options = this.createInternalOptions();
         options.addOption(new Option("?", OPT_HELP, false, "Print this message."));
+        options.addOption(new Option("V", OPT_VERSION, false, "Print the current version."));
         return options;
     }
 
@@ -63,7 +65,11 @@ public abstract class SpectreTool implements Service {
 
             if (commandLine.hasOption(OPT_HELP) || commandLine.getArgs().length == 0) {
                 printUsage();
-            } else {
+            }
+            else if (commandLine.hasOption(OPT_VERSION)) {
+                System.out.println("spectre " + CommandLineHelper.class.getPackage().getImplementationVersion());
+            }
+            else {
                 this.execute(commandLine);
             }
         } catch (ParseException p) {

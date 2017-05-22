@@ -1373,7 +1373,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
             LookAndFeel.setLookAndFeel(LookAndFeel.NIMBUS);
 
             // Parse command line args
-            final CommandLine commandLine = CommandLineHelper.startApp(createOptions(), "netview [options] <input>",
+            final CommandLine commandLine = new CommandLineHelper().startApp(createOptions(), "spectre [options] <input>",
                     "Visualises a network in nexus format.  The nexus file can contain a pre-drawn network in " +
                             "a network block, or a split system to be drawn.\n" +
                             "The viewer can be passed the nexus file as a command line argument at startup, selected by " +

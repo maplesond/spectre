@@ -50,7 +50,7 @@ public class SuperQCLI {
     public static void main(String args[]) {
 
         // Parse command line args
-        CommandLine commandLine = CommandLineHelper.startApp(createOptions(), BIN_NAME + " [options] (<input>)+",
+        CommandLine commandLine = new CommandLineHelper().startApp(createOptions(), BIN_NAME + " [options] (<input>)+",
                 "Generates a circular split network from a set of trees.\n" +
                         "Input can take the form of one or more, nexus, phylip and newick tree files.\n" +
                         "Also superQ can automatically generate trees from distance matrices.", args);

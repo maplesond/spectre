@@ -57,7 +57,7 @@ public class NetMECLI {
 
     public static void main(String[] args) {
 
-        CommandLine commandLine = CommandLineHelper.startApp(createOptions(), "netme [options] <distance_matrix_file> <circular_ordering_file>",
+        CommandLine commandLine = new CommandLineHelper().startApp(createOptions(), "netme [options] <distance_matrix_file> <circular_ordering_file>",
                 "Finds minimum evolution tree within a circular split system.\n\n" +
                         "Takes in a nexus or phylip file containing a distance matrix and a nexus file containing a circular " +
                         "ordering (this file can be obtained by, for example, running Neighbor-Net via netmake.  NetME outputs three files:\n" +

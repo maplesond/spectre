@@ -66,7 +66,7 @@ public class QNetCLI {
     public static void main(String[] args) {
 
         // Parse command line args
-        CommandLine commandLine = CommandLineHelper.startApp(createOptions(), "qnet [options] <nexus_file>",
+        CommandLine commandLine = new CommandLineHelper().startApp(createOptions(), "qnet [options] <nexus_file>",
                 "Creates a Circular Weighted Split Network from a set of Taxa and a quartet system.",
                 args);
 

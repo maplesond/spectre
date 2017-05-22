@@ -82,7 +82,7 @@ public class NetMakeCLI {
 
     public static void main(String[] args) {
 
-        CommandLine commandLine = CommandLineHelper.startApp(createOptions(), "netmake [options] <distance_matrix_file>",
+        CommandLine commandLine = new CommandLineHelper().startApp(createOptions(), "netmake [options] <distance_matrix_file>",
                 "Creates a compatible split system with circular ordering from a distance matrix.\n" +
                         "By default this is achieved by running the NeighborNet algorithm.  However, netmake can run an" +
                         "alternative algorithm that can be run in various modes determined be and either a " +
