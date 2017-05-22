@@ -208,6 +208,12 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
             }
 
             public void mouseDragged(java.awt.event.MouseEvent evt) {
+
+                // First just to ensure there are no bugs later
+                if (startPoint == null) {
+                    startPoint = evt.getPoint();
+                }
+
                 if (SwingUtilities.isRightMouseButton(evt)) {
                     rotate(startPoint, evt.getPoint());
                 }
