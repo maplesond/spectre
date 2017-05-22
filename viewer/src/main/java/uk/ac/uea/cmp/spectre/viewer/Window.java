@@ -1191,7 +1191,7 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
 
         double newRatio = Math.min(width / dimensions.vertices.width(), height / dimensions.vertices.height());
 
-        change = (lastRatio * newRatio == 0) ? 1 : newRatio / lastRatio;
+        change = lastRatio == newRatio ? 0.0 : newRatio / lastRatio;
         config.setRatio(newRatio);
     }
 
@@ -1214,6 +1214,7 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
         }
 
         repaintOnResize();
+        recomputeRatio();
     }
 
     void fixLabels(boolean fix) {
