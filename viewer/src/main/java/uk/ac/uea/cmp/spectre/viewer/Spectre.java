@@ -60,9 +60,7 @@ import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.DecimalFormat;
@@ -1129,6 +1127,82 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
     }
 
     private void saveNetwork(File file) throws IOException {
+
+        if (file.exists()) {
+
+            // Expensive way of testing if this is a nexus file!
+
+            boolean isNexus = true;
+            boolean overwrite = false;
+            try {
+                Nexus nexus = new NexusReader().parse(file);
+
+                if (nexus.getTaxa() != null && nexus.getTaxa().size() != this.network.getNbTaxa()) {
+                    int dialogResult = JOptionPane.showConfirmDialog(this, "The nexus file you are trying to overwrite does not appear to be consistent with the current network.  Saving will overwrite all data in this file.  Do you wish to continue?", "Warning", JOptionPane.YES_NO_OPTION);
+                    if (dialogResult == JOptionPane.YES_OPTION) {
+                        isNexus = false;
+                    } else {
+                        return;
+                    }
+                }
+
+            } catch (IOException e) {
+                int dialogResult = JOptionPane.showConfirmDialog(this, "The file you are trying to overwrite is not a nexus file.  Are you sure you wish to overwrite it?", "Warning", JOptionPane.YES_NO_OPTION);
+                if (dialogResult == JOptionPane.YES_OPTION) {
+                    isNexus = false;
+                } else {
+                    return;
+                }
+            }
+
+            if (isNexus) {
+                NexusWriter writer = new NexusWriter();
+
+                // If file already exists we need to be extra careful not to overwrite anything that
+                // isn't a network or drawing config block
+                try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+                    boolean inBlock = false;
+                    for (String line; (line = br.readLine()) != null; ) {
+                        if (inBlock) {
+                            String[] parts = line.toLowerCase().split("\\s+");
+                            for (String s : parts) {
+                                if (s.equals("end") || s.equals("end;")) {
+                                    inBlock = false;
+                                }
+                            }
+                        } else {
+                            String[] parts = line.toLowerCase().split("\\s+");
+                            boolean beginFound = false;
+                            for (String s : parts) {
+                                if (s.equals("begin")) {
+                                    beginFound = true;
+                                } else if (beginFound && (s.startsWith("network") || s.startsWith("viewer"))) {
+                                    inBlock = true;
+                                    break;
+                                }
+                            }
+
+                            // If still not inblock after processing the line then just write to output
+                            if (!inBlock) {
+                                writer.appendLine(line);
+                            }
+                        }
+                    }
+                }
+
+                // Put network at the end
+                writer.appendLine();
+                writer.append(network);
+                writer.appendLine();
+                writer.append(drawing.config);
+                writer.write(file);
+
+                return;
+            }
+        }
+
+
+        // If we are here then we are either writing into a new file or overwriting a non-nexus file.
         NexusWriter writer = new NexusWriter();
         writer.appendHeader();
         writer.appendLine();
