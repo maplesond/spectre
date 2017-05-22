@@ -756,7 +756,7 @@ vm_leadercolor : 'leadercolor' EQUALS integer integer integer;
 // MISC RULES
 // ----------------------------------------------------------------------
 
-boolean_option : 'no' | 'yes' | 'false' | 'true';
+boolean_option : 'no' | 'yes' | 'false' | 'true' | 'NO' | 'YES' | 'FALSE' | 'TRUE';
 
 dimensions  : 'dimensions' | 'DIMENSIONS' | 'Dimensions';
 
