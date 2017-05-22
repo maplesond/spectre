@@ -35,7 +35,7 @@ public class NetMEGUI extends JFrame implements ToolHost {
 
     private static Logger log = LoggerFactory.getLogger(NetMEGUI.class);
 
-    private static final String TITLE = "NetMake";
+    private static final String TITLE = "NetME";
 
     // ***** GUI components *****
 
