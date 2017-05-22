@@ -352,7 +352,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         mnuFile.setMnemonic('F');
 
         mnuFileOpen = new javax.swing.JMenuItem();
-        mnuFileOpen.setText("Open network...");
+        mnuFileOpen.setText("Open...");
         mnuFileOpen.setMnemonic('O');
         mnuFileOpen.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O,
                 java.awt.Event.CTRL_MASK));
