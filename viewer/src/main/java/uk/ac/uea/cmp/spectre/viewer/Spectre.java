@@ -171,7 +171,9 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
     private javax.swing.JMenuItem mnuToolsNetme;
     private javax.swing.JMenuItem mnuToolsFlatnj;
     private javax.swing.JMenuItem mnuToolsSuperq;
-
+    private javax.swing.JMenu mnuHelp;
+    private javax.swing.JMenuItem mnuHelpHelp;
+    private javax.swing.JMenuItem mnuHelpAbout;
 
 
     /**
@@ -937,6 +939,49 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         mnuTools.add(mnuToolsSuperq);
 
         menuBar.add(mnuTools);
+
+
+        mnuHelp = new javax.swing.JMenu();
+        mnuHelp.setText("Help");
+        mnuHelp.setMnemonic('H');
+
+        mnuHelpHelp = new javax.swing.JMenuItem();
+        mnuHelpHelp.setText("Help");
+        mnuHelpHelp.setMnemonic('H');
+        mnuHelpHelp.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+                if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
+                    try {
+                        File here = new File(Spectre.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+                        File docdir = new File(here, "../../../../../../../../../doc/html");
+                        if (here.getName().equalsIgnoreCase("classes")) {
+                            docdir = new File(here, "../../../doc/build/html");
+                        }
+
+                        desktop.browse(new URI("file://" + docdir.getCanonicalPath() + "/index.html"));
+                    }
+                    catch(IOException | URISyntaxException e) {
+                        errorMessage("Couldn't open help page", e);
+                    }
+                }
+            }
+        });
+        mnuHelp.add(mnuHelpHelp);
+
+
+        mnuHelpAbout = new javax.swing.JMenuItem();
+        mnuHelpAbout.setText("About");
+        mnuHelpAbout.setMnemonic('A');
+        mnuHelpAbout.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                JOptionPane.showMessageDialog(null, "SPECTRE: A Suite of PhylogEnetiC Tools for Reticulate Evolution.  Version: " + this.getClass().getPackage().getImplementationVersion());
+            }
+        });
+        mnuHelp.add(mnuHelpAbout);
+
+
+        menuBar.add(mnuHelp);
 
         setJMenuBar(menuBar);
     }
