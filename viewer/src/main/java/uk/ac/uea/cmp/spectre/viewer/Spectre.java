@@ -1024,6 +1024,8 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
             File image_out = fileChooser.getSelectedFile();
             String ext = FilenameUtils.getExtension(image_out.getName());
 
+            log.info("Saving image of drawing to " + image_out.getAbsolutePath());
+
             if (ext.equalsIgnoreCase("pdf")) {
                 directory = image_out.getPath();
                 try {
@@ -1040,6 +1042,8 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
             } else {
                 errorMessage("No recognised extension specified in filename.  Please type an appropriate extension for image.");
             }
+
+            log.info("Image saved");
         }
     }
 
@@ -1142,11 +1146,9 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
 
         if (file.exists()) {
 
-            // Expensive way of testing if this is a nexus file!
-
             boolean isNexus = true;
-            boolean overwrite = false;
             try {
+                // Expensive way of testing if this is a nexus file!
                 Nexus nexus = new NexusReader().parse(file);
 
                 if (nexus.getTaxa() != null && nexus.getTaxa().size() != this.network.getNbTaxa()) {
@@ -1168,6 +1170,8 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
             }
 
             if (isNexus) {
+
+                log.info("Updating drawing (network and config blocks) in " + file.getCanonicalPath());
                 NexusWriter writer = new NexusWriter();
 
                 // If file already exists we need to be extra careful not to overwrite anything that
@@ -1209,10 +1213,13 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
                 writer.append(drawing.config);
                 writer.write(file);
 
+                log.info("Nexus file updated");
+
                 return;
             }
         }
 
+        log.info("Saving drawing to " + file.getCanonicalPath());
 
         // If we are here then we are either writing into a new file or overwriting a non-nexus file.
         NexusWriter writer = new NexusWriter();
@@ -1224,6 +1231,8 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         writer.appendLine();
         writer.append(drawing.config);
         writer.write(file);
+
+        log.info("Drawing saved");
     }
 
 
@@ -1245,9 +1254,16 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         this.taxa = nexus.getTaxa();
 
         // If no network was defined but there is a split system then convert the split system to a network
-        this.network = nexus.getNetwork() == null && nexus.getSplitSystem() != null ?
-                new PermutationSequenceDraw(nexus.getSplitSystem().makeInducedOrdering()).createOptimisedNetwork() :
-                nexus.getNetwork();
+        this.network = null;
+
+        if (nexus.getNetwork() == null && nexus.getSplitSystem() != null) {
+            log.info("Drawing split system found in " + inFile.getAbsolutePath());
+            this.network = new PermutationSequenceDraw(nexus.getSplitSystem().makeInducedOrdering()).createOptimisedNetwork();
+        }
+        else {
+            log.info("Loading pre-drawn split system in " + inFile.getAbsolutePath());
+            this.network = nexus.getNetwork();
+        }
 
         // Assign taxa to network
         this.network.setTaxa(this.taxa);
@@ -1271,6 +1287,8 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
 
         // Now draw the network into the drawing canvas
         drawing.drawNetwork(config, this.network, optimiseLayout);
+
+        log.info("File successfully opened: " + inFile.getAbsolutePath());
     }
 
     public Window getDrawing() {
