@@ -34,6 +34,7 @@ import uk.ac.uea.cmp.spectre.core.ds.network.Network;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
 import uk.ac.uea.cmp.spectre.core.ds.network.draw.Leader;
 import uk.ac.uea.cmp.spectre.core.ds.network.draw.DrawSplitSystem;
+import uk.ac.uea.cmp.spectre.core.ds.network.draw.PermutationSequenceDraw;
 import uk.ac.uea.cmp.spectre.core.ds.network.draw.ViewerConfig;
 import uk.ac.uea.cmp.spectre.core.io.nexus.Nexus;
 import uk.ac.uea.cmp.spectre.core.io.nexus.NexusReader;
@@ -1234,7 +1235,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
 
         // If no network was defined but there is a split system then convert the split system to a network
         this.network = nexus.getNetwork() == null && nexus.getSplitSystem() != null ?
-                new DrawSplitSystem(nexus.getSplitSystem()).createOptimisedNetwork() :
+                new PermutationSequenceDraw(nexus.getSplitSystem().makeInducedOrdering()).createOptimisedNetwork() :
                 nexus.getNetwork();
 
         // Assign taxa to network
