@@ -141,7 +141,7 @@ public class Sequences {
             activeFlags = true;
             weights = true;
             confidences = false;
-            symbols = "atgcATGC";
+            symbols = "atgcATGC01";
             missing = '?';
             gap = '-';
         }
