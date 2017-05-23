@@ -16,6 +16,7 @@
 package uk.ac.uea.cmp.spectre.core.ui.cli;
 
 import org.apache.commons.cli.*;
+import uk.ac.uea.cmp.spectre.core.util.ProjectProperties;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -59,14 +60,7 @@ public class CommandLineHelper {
                 options);
     }
 
-    public static String getVersion() throws IOException {
-        Properties prop = new Properties();
-        InputStream in = CommandLineHelper.class.getResourceAsStream("/general.properties");
-        prop.load(in);
-        in.close();
 
-        return prop.get("project.version").toString();
-    }
 
     public static Options createHelpOptions() {
 
@@ -90,7 +84,7 @@ public class CommandLineHelper {
             CommandLine helpCl = new PosixParser().parse(createHelpOptions(), args, true);
 
             if (helpCl.hasOption(OPT_VERSION)) {
-                System.out.println("spectre " + getVersion());
+                System.out.println("spectre " + ProjectProperties.getVersion());
                 return null;
             }
             else if (helpCl.hasOption(OPT_HELP) || (helpOnNoArgs && helpCl.getArgList().isEmpty())) {

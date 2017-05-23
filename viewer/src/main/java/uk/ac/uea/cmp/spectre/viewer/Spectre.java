@@ -42,6 +42,7 @@ import uk.ac.uea.cmp.spectre.core.io.nexus.NexusWriter;
 import uk.ac.uea.cmp.spectre.core.ui.cli.CommandLineHelper;
 import uk.ac.uea.cmp.spectre.core.ui.gui.LookAndFeel;
 import uk.ac.uea.cmp.spectre.core.util.LogConfig;
+import uk.ac.uea.cmp.spectre.core.util.ProjectProperties;
 import uk.ac.uea.cmp.spectre.flatnj.FlatNJGUI;
 import uk.ac.uea.cmp.spectre.net.netmake.NetMakeGUI;
 import uk.ac.uea.cmp.spectre.net.netme.NetMEGUI;
@@ -974,7 +975,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         mnuHelpAbout.setMnemonic('A');
         mnuHelpAbout.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                JOptionPane.showMessageDialog(null, "SPECTRE: A Suite of PhylogEnetiC Tools for Reticulate Evolution.  Version: " + this.getClass().getPackage().getImplementationVersion());
+                cmdAboutBox();
             }
         });
         mnuHelp.add(mnuHelpAbout);
@@ -985,6 +986,16 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         setJMenuBar(menuBar);
     }
 
+    private void cmdAboutBox() {
+        String version = "undetermined";
+        try {
+            version = ProjectProperties.getVersion();
+        }
+        catch (IOException e) {
+            // continue
+        }
+        JOptionPane.showMessageDialog(this, "SPECTRE: A Suite of PhylogEnetiC Tools for Reticulate Evolution.  Version: " + version);
+    }
 
     private void cmdLeaderColorSelectActionPerformed(ActionEvent evt) {
         Color newLeaderColor = JColorChooser.showDialog(this, "Font color", drawing.config.getLeaderColor());
