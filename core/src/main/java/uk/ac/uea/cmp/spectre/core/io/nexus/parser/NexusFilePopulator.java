@@ -1709,7 +1709,7 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitChar_seq_entry(NexusFileParser.Char_seq_entryContext ctx) {
-        this.charBuilder.addSeq(ctx.identifier().getText());
+        this.charBuilder.addSeq(ctx.getText());
     }
 
     @Override

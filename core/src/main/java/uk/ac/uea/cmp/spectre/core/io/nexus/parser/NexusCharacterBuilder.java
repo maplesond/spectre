@@ -57,6 +57,9 @@ public class NexusCharacterBuilder {
             }
         }
         else {
+            if (this.seqs.size() % 2 != 0) {
+                throw new IllegalStateException("Expected that a character matrix with labels would have an even number of entries.  Found " + this.seqs.size() + " entries, including labels.");
+            }
             for (int i = 0; i < this.seqs.size(); i+=2) {
                 String id = seqs.get(i);
                 String seq = seqs.get(i+1);
