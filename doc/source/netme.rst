@@ -12,9 +12,10 @@ information on the algorithm please see and please cite (S. Bastkowski et al, 20
 NetME takes in a nexus or phylip file containing a distance matrix and a nexus file containing a circular ordering (such
 as that created by running Neighbor-Net via netmake) and outputs three files:
 
-* The weighted split system, in nexus format, corresponding to a restricted minimum evolution tree, where the weights are derived from the Ordinary Least Squares (OLS) method used for constructing the tree.
 * The weighted split system, in nexus format, corresponding to a restricted minimum evolution tree, where the weights are recalculated by using a Non-Negative Least Squares (NNLS) method.
 * A file containing the tree length of tree weighted with OLS.
+
+In addition the user can request to output, using the '-l' option, the weighted split system, in nexus format, corresponding to a restricted minimum evolution tree, where the weights are derived from the Ordinary Least Squares (OLS) method used for constructing the tree.
 
 NetME can be run from the command line like this::
 

@@ -49,12 +49,14 @@ public class NetMEResult {
         return originalMETree;
     }
 
-    public void save(File minEvoFile, File origMinEvoFile, File statFile) throws IOException {
+    public void save(File minEvoFile, File origMinEvoFile, File statFile, boolean saveOLS) throws IOException {
 
         NexusWriter nexusWriter = new NexusWriter();
 
         nexusWriter.writeSplitSystem(minEvoFile, this.getMeTree());
-        nexusWriter.writeSplitSystem(origMinEvoFile, this.getOriginalMETree());
+        if (saveOLS) {
+            nexusWriter.writeSplitSystem(origMinEvoFile, this.getOriginalMETree());
+        }
 
         FileUtils.writeStringToFile(statFile, stats, "UTF-8");
     }

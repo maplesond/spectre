@@ -42,14 +42,10 @@ public class NetMEGUI extends JFrame implements ToolHost {
     private JPanel pnlOptions;
 
     private JPanel pnlInput;
-    private JPanel pnlSelectDistances;
-    private JLabel lblInputDistances;
-    private JTextField txtInputDistances;
-    private JButton cmdInputDistances;
-    private JPanel pnlSelectOrdering;
-    private JLabel lblInputOrdering;
-    private JTextField txtInputOrdering;
-    private JButton cmdInputOrdering;
+    private JPanel pnlSelectInput;
+    private JLabel lblInput;
+    private JTextField txtInput;
+    private JButton cmdInput;
 
     private JPanel pnlOutput;
     private JPanel pnlSelectOutputDir;
@@ -96,61 +92,33 @@ public class NetMEGUI extends JFrame implements ToolHost {
      */
     private void initInputComponents() {
 
-        lblInputDistances = new JLabel();
-        txtInputDistances = new JTextField();
-        cmdInputDistances = new JButton();
+        lblInput = new JLabel();
+        txtInput = new JTextField();
+        cmdInput = new JButton();
 
-        cmdInputDistances.setText("...");
-        cmdInputDistances.setToolTipText(NetMEOptions.DESC_DISTANCES);
-        cmdInputDistances.addActionListener(new java.awt.event.ActionListener() {
+        cmdInput.setText("...");
+        cmdInput.setToolTipText(NetMEOptions.DESC_INPUT);
+        cmdInput.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cmdInputDistancesActionPerformed(evt);
             }
         });
 
-        txtInputDistances.setPreferredSize(new Dimension(200, 25));
-        txtInputDistances.setToolTipText(NetMEOptions.DESC_DISTANCES);
+        txtInput.setPreferredSize(new Dimension(200, 25));
+        txtInput.setToolTipText(NetMEOptions.DESC_INPUT);
 
-        lblInputDistances.setText("Input distance matrix file:");
-        lblInputDistances.setToolTipText(NetMEOptions.DESC_DISTANCES);
+        lblInput.setText("Input distance matrix file:");
+        lblInput.setToolTipText(NetMEOptions.DESC_INPUT);
 
-        pnlSelectDistances = new JPanel();
-        pnlSelectDistances.setLayout(new BoxLayout(pnlSelectDistances, BoxLayout.LINE_AXIS));
-        pnlSelectDistances.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        pnlSelectDistances.add(Box.createHorizontalGlue());
-        pnlSelectDistances.add(lblInputDistances);
-        pnlSelectDistances.add(Box.createRigidArea(new Dimension(10, 0)));
-        pnlSelectDistances.add(txtInputDistances);
-        pnlSelectDistances.add(Box.createRigidArea(new Dimension(10, 0)));
-        pnlSelectDistances.add(cmdInputDistances);
-
-        lblInputOrdering = new JLabel();
-        txtInputOrdering = new JTextField();
-        cmdInputOrdering = new JButton();
-
-        cmdInputOrdering.setText("...");
-        cmdInputOrdering.setToolTipText(NetMEOptions.DESC_CIRCULAR_ORDERING);
-        cmdInputOrdering.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cmdInputOrderingActionPerformed(evt);
-            }
-        });
-
-        txtInputOrdering.setPreferredSize(new Dimension(200, 25));
-        txtInputOrdering.setToolTipText(NetMEOptions.DESC_CIRCULAR_ORDERING);
-
-        lblInputOrdering.setText("Input circular ordering file:");
-        lblInputOrdering.setToolTipText(NetMEOptions.DESC_CIRCULAR_ORDERING);
-
-        pnlSelectOrdering = new JPanel();
-        pnlSelectOrdering.setLayout(new BoxLayout(pnlSelectOrdering, BoxLayout.LINE_AXIS));
-        pnlSelectOrdering.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
-        pnlSelectOrdering.add(Box.createHorizontalGlue());
-        pnlSelectOrdering.add(lblInputOrdering);
-        pnlSelectOrdering.add(Box.createRigidArea(new Dimension(10, 0)));
-        pnlSelectOrdering.add(txtInputOrdering);
-        pnlSelectOrdering.add(Box.createRigidArea(new Dimension(10, 0)));
-        pnlSelectOrdering.add(cmdInputOrdering);
+        pnlSelectInput = new JPanel();
+        pnlSelectInput.setLayout(new BoxLayout(pnlSelectInput, BoxLayout.LINE_AXIS));
+        pnlSelectInput.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        pnlSelectInput.add(Box.createHorizontalGlue());
+        pnlSelectInput.add(lblInput);
+        pnlSelectInput.add(Box.createRigidArea(new Dimension(10, 0)));
+        pnlSelectInput.add(txtInput);
+        pnlSelectInput.add(Box.createRigidArea(new Dimension(10, 0)));
+        pnlSelectInput.add(cmdInput);
 
         pack();
 
@@ -158,8 +126,7 @@ public class NetMEGUI extends JFrame implements ToolHost {
         pnlInput.setLayout(new BoxLayout(pnlInput, BoxLayout.PAGE_AXIS));
         pnlInput.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), "Input:"));
         pnlInput.add(Box.createVerticalGlue());
-        pnlInput.add(pnlSelectDistances);
-        pnlInput.add(pnlSelectOrdering);
+        pnlInput.add(pnlSelectInput);
 
         pack();
     }
@@ -335,39 +302,19 @@ public class NetMEGUI extends JFrame implements ToolHost {
     private void cmdInputDistancesActionPerformed(java.awt.event.ActionEvent evt) {
 
         final JFileChooser fc = new JFileChooser();
-        if (evt.getSource() == cmdInputDistances) {
+        if (evt.getSource() == cmdInput) {
             int returnVal = fc.showOpenDialog(NetMEGUI.this);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 File file = fc.getSelectedFile();
                 String z = "";
                 z = file.getAbsolutePath();
-                txtInputDistances.setText(z);
+                txtInput.setText(z);
             } else {
                 log.debug("Open distance matrix command cancelled by user.");
             }
         }
     }
 
-    /**
-     * Choose a file for input
-     *
-     * @param evt
-     */
-    private void cmdInputOrderingActionPerformed(java.awt.event.ActionEvent evt) {
-
-        final JFileChooser fc = new JFileChooser();
-        if (evt.getSource() == cmdInputOrdering) {
-            int returnVal = fc.showOpenDialog(NetMEGUI.this);
-            if (returnVal == JFileChooser.APPROVE_OPTION) {
-                File file = fc.getSelectedFile();
-                String z = "";
-                z = file.getAbsolutePath();
-                txtInputOrdering.setText(z);
-            } else {
-                log.debug("Open circular ordering command cancelled by user.");
-            }
-        }
-    }
 
     /**
      * Start
@@ -392,8 +339,7 @@ public class NetMEGUI extends JFrame implements ToolHost {
 
         NetMEOptions options = new NetMEOptions();
 
-        options.setDistancesFile(new File(this.txtInputDistances.getText().replaceAll("(^\")|(\"$)", "")));
-        options.setCircularOrderingFile(new File(this.txtInputOrdering.getText().replaceAll("(^\")|(\"$)", "")));
+        options.setInputFile(new File(this.txtInput.getText().replaceAll("(^\")|(\"$)", "")));
         options.setOutputDir(new File(this.txtOutputDir.getText().replaceAll("(^\")|(\"$)", "")));
         options.setPrefix(this.txtOutputPrefix.getText());
 

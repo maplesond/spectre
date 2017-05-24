@@ -39,7 +39,7 @@ public class NetMECLI {
 
     private static Logger log = LoggerFactory.getLogger(NetMECLI.class);
 
-    public static final String OPT_CIRCULAR_ORDERING_FILE = "circular_ordering";
+    public static final String OPT_OUTPUT_OLS = "ols";
     public static final String OPT_OUTPUT_PREFIX = "prefix";
 
     public static Options createOptions() {
@@ -48,6 +48,8 @@ public class NetMECLI {
 
         options.addOption(OptionBuilder.withArgName("string").withLongOpt(OPT_OUTPUT_PREFIX).hasArg()
                 .withDescription(NetMEOptions.DESC_OUTPUT_PREFIX).create("o"));
+        options.addOption(OptionBuilder.withArgName("string").withLongOpt(OPT_OUTPUT_OLS)
+                .withDescription(NetMEOptions.DESC_OUTPUT_OLS).create("l"));
 
         options.addOption(CommandLineHelper.HELP_OPTION);
 
@@ -57,14 +59,11 @@ public class NetMECLI {
 
     public static void main(String[] args) {
 
-        CommandLine commandLine = new CommandLineHelper().startApp(createOptions(), "netme [options] <distance_matrix_file> <circular_ordering_file>",
-                "Finds minimum evolution tree within a circular split system.\n\n" +
-                        "Takes in a nexus or phylip file containing a distance matrix and a nexus file containing a circular " +
-                        "ordering (this file can be obtained by, for example, running Neighbor-Net via netmake.  NetME outputs three files:\n" +
-                        " - the weighted split system, in nexus format, corresponding to a restricted minimum evolution tree, where the weights " +
-                        "are derived from the Ordinary Least Squares (OLS) method used for constructing the tree.\n" +
-                        " - the weighted split system, in nexus format, corresponding to a restricted minimum evolution tree, where the weights " +
-                        "are recalculated by using a Non-Negative Least Squares (NNLS) method.\n" +
+        CommandLine commandLine = new CommandLineHelper().startApp(createOptions(), "netme [options] <nexus_file>",
+                "Finds minimum evolution tree from a distance matrix and circular ordering from a circular split system.\n\n" +
+                        "Takes in a nexus file containing a distance matrix and a circular " +
+                        "ordering (this file can be obtained by, for example, running Neighbor-Net via netmake).  NetME outputs two files:\n" +
+                        " - the weighted split system, in nexus format, corresponding to a restricted minimum evolution tree.\n" +
                         " - a file containing the tree length of tree weighted with OLS.\n", args);
 
         // If we didn't return a command line object then just return.  Probably the user requested help or
@@ -82,16 +81,13 @@ public class NetMECLI {
             if (commandLine.getArgs().length == 0) {
                 throw new IOException("No input files specified.");
             }
-            else if (commandLine.getArgs().length == 1) {
-                throw new IOException("Expected two input files.  The first should be the distance matrix file, the second should be a circular ordering file.");
-            }
-            else if (commandLine.getArgs().length > 2) {
-                throw new IOException("Expected no more than two input files, the first should be the distance matrix file, the second should be a circular ordering file.");
+            else if (commandLine.getArgs().length > 1) {
+                throw new IOException("Expected no more than a single input file as input.");
             }
 
             // Requires input file containing distance matrices
-            options.setDistancesFile(new File(commandLine.getArgs()[0]));
-            options.setCircularOrderingFile(new File(commandLine.getArgs()[1]));
+            options.setInputFile(new File(commandLine.getArgs()[0]));
+            options.setOls(commandLine.hasOption(OPT_OUTPUT_OLS));
 
             if (commandLine.hasOption(OPT_OUTPUT_PREFIX)) {
                 File op = new File(commandLine.getOptionValue(OPT_OUTPUT_PREFIX));
