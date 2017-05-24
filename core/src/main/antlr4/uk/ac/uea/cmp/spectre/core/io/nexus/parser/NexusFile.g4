@@ -23,6 +23,13 @@ SQUOTE : '\'';
 DQUOTE : '\"';
 EQUALS : '=';
 
+FLOAT : ('-')? DIGIT* '.' DIGIT+ ('E' ('-')? DIGIT+)?;
+INT : ('-')? (DIGIT)+;
+ID : (DIGIT | '_' | '.' | '?' | '-' | '/' | CHAR)+;
+SQSTRING : SQUOTE ( ~('\''|'\\') | ('\\' .) )* SQUOTE;
+DQSTRING : DQUOTE ( ~('\''|'\\') | ('\\' .) )* DQUOTE;
+
+
 
 // A String must consist of either lower or uppercase A-z characters, nothing fancy.  So we don't allow numbers or whitespace.
 //WORD : LETTER+

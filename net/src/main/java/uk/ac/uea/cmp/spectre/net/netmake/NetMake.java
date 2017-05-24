@@ -37,6 +37,8 @@ import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.nm.weighting.Weight
 import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.nn.NeighborNetImpl;
 import uk.ac.uea.cmp.spectre.core.io.SpectreReader;
 import uk.ac.uea.cmp.spectre.core.io.SpectreReaderFactory;
+import uk.ac.uea.cmp.spectre.core.io.nexus.Nexus;
+import uk.ac.uea.cmp.spectre.core.io.nexus.NexusReader;
 import uk.ac.uea.cmp.spectre.core.ui.gui.RunnableTool;
 import uk.ac.uea.cmp.spectre.core.ui.gui.StatusTracker;
 
@@ -170,12 +172,14 @@ public class NetMake extends RunnableTool {
             }
             else if (spectreReader.getIdentifier() == "NEXUS") {
 
-                // First try to use distance matrix
-                distanceMatrix = spectreReader.readDistanceMatrix(this.options.getInput());
+                Nexus nexus = new NexusReader().parse(this.options.getInput());
 
-                // If not present then look for alignments
-                if (distanceMatrix == null) {
-                    seqs = spectreReader.readAlignment(this.options.getInput());
+                // If distance matrix is not present then look for alignments
+                if (nexus.getDistanceMatrix() == null) {
+                    seqs = nexus.getAlignments();
+                }
+                else {
+                    distanceMatrix = nexus.getDistanceMatrix();
                 }
             }
             else {
