@@ -19,12 +19,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.spectre.core.ui.gui.JobController;
 import uk.ac.uea.cmp.spectre.core.ui.gui.StatusTracker;
+import uk.ac.uea.cmp.spectre.core.ui.gui.StatusTrackerWithView;
 import uk.ac.uea.cmp.spectre.core.ui.gui.ToolHost;
 import uk.ac.uea.cmp.spectre.core.util.LogConfig;
 import uk.ac.uea.cmp.spectre.net.netmake.NetMakeOptions;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.io.File;
 import java.net.URISyntaxException;
 
@@ -48,18 +50,16 @@ public class NetMEGUI extends JFrame implements ToolHost {
     private JButton cmdInput;
 
     private JPanel pnlOutput;
-    private JPanel pnlSelectOutputDir;
-    private JPanel pnlOutputPrefix;
-    private JLabel lblOutputDir;
-    private JTextField txtOutputDir;
-    private JButton cmdOutputDir;
+    private JPanel pnlSelectOutput;
     private JLabel lblOutputPrefix;
     private JTextField txtOutputPrefix;
+    private JButton cmdOutputPrefix;
 
     private JPanel pnlStatus;
     private JPanel pnlControlButtons;
     private JButton cmdCancel;
     private JButton cmdRun;
+    private JButton cmdViewOutput;
     private JLabel lblStatus;
     private JProgressBar progStatus;
 
@@ -68,6 +68,10 @@ public class NetMEGUI extends JFrame implements ToolHost {
     private JFrame gui = new JFrame(TITLE);
     private JobController go_control;
     private NetMERunner netMERunner;
+
+    private File lastOutput;
+    private File cwd;
+
 
     public NetMEGUI() {
         initComponents();
@@ -80,6 +84,9 @@ public class NetMEGUI extends JFrame implements ToolHost {
         }
 
         cmdRun.setEnabled(true);
+
+        this.lastOutput = null;
+        this.cwd = null;
 
         this.netMERunner = new NetMERunner(this);
 
@@ -107,7 +114,7 @@ public class NetMEGUI extends JFrame implements ToolHost {
         txtInput.setPreferredSize(new Dimension(200, 25));
         txtInput.setToolTipText(NetMEOptions.DESC_INPUT);
 
-        lblInput.setText("Input distance matrix file:");
+        lblInput.setText("Input nexus file:");
         lblInput.setToolTipText(NetMEOptions.DESC_INPUT);
 
         pnlSelectInput = new JPanel();
@@ -139,57 +146,42 @@ public class NetMEGUI extends JFrame implements ToolHost {
 
         pnlOutput = new JPanel(new BorderLayout());
 
-        lblOutputDir = new JLabel();
-        txtOutputDir = new JTextField();
-        cmdOutputDir = new JButton();
+        lblOutputPrefix = new JLabel();
+        txtOutputPrefix = new JTextField();
+        cmdOutputPrefix = new JButton();
 
         lblOutputPrefix = new JLabel();
         txtOutputPrefix = new JTextField();
 
-        txtOutputDir.setPreferredSize(new Dimension(200, 25));
-        txtOutputDir.setToolTipText(NetMakeOptions.DESC_OUTPUT_NETWORK);
+        txtOutputPrefix.setPreferredSize(new Dimension(200, 25));
+        txtOutputPrefix.setToolTipText(NetMEOptions.DESC_OUTPUT_PREFIX);
 
-        lblOutputDir.setText("Save to file:");
-        lblOutputDir.setToolTipText(NetMakeOptions.DESC_OUTPUT_NETWORK);
+        lblOutputPrefix.setText("Output prefix:");
+        lblOutputPrefix.setToolTipText(NetMEOptions.DESC_OUTPUT_PREFIX);
 
-        cmdOutputDir.setText("...");
-        cmdOutputDir.setToolTipText(NetMakeOptions.DESC_OUTPUT_NETWORK);
-        cmdOutputDir.addActionListener(new java.awt.event.ActionListener() {
+        cmdOutputPrefix.setText("...");
+        cmdOutputPrefix.setToolTipText(NetMEOptions.DESC_OUTPUT_PREFIX);
+        cmdOutputPrefix.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cmdOutputDirActionPerformed(evt);
             }
         });
 
-        lblOutputPrefix.setText("Output prefix:");
-        lblOutputPrefix.setToolTipText(NetMEOptions.DESC_OUTPUT_PREFIX);
-
-        txtOutputPrefix.setPreferredSize(new Dimension(200, 25));
-        txtOutputPrefix.setToolTipText(NetMEOptions.DESC_OUTPUT_PREFIX);
-
-        pnlSelectOutputDir = new JPanel();
-        pnlSelectOutputDir.setLayout(new BoxLayout(pnlSelectOutputDir, BoxLayout.LINE_AXIS));
-        pnlSelectOutputDir.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        pnlSelectOutputDir.add(Box.createHorizontalGlue());
-        pnlSelectOutputDir.add(lblOutputDir);
-        pnlSelectOutputDir.add(Box.createRigidArea(new Dimension(10, 0)));
-        pnlSelectOutputDir.add(txtOutputDir);
-        pnlSelectOutputDir.add(Box.createRigidArea(new Dimension(10, 0)));
-        pnlSelectOutputDir.add(cmdOutputDir);
-
-        pnlOutputPrefix = new JPanel();
-        pnlOutputPrefix.setLayout(new BoxLayout(pnlOutputPrefix, BoxLayout.LINE_AXIS));
-        pnlOutputPrefix.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
-        pnlOutputPrefix.add(Box.createHorizontalGlue());
-        pnlOutputPrefix.add(lblOutputPrefix);
-        pnlOutputPrefix.add(Box.createRigidArea(new Dimension(10, 0)));
-        pnlOutputPrefix.add(txtOutputPrefix);
+        pnlSelectOutput = new JPanel();
+        pnlSelectOutput.setLayout(new BoxLayout(pnlSelectOutput, BoxLayout.LINE_AXIS));
+        pnlSelectOutput.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        pnlSelectOutput.add(Box.createHorizontalGlue());
+        pnlSelectOutput.add(lblOutputPrefix);
+        pnlSelectOutput.add(Box.createRigidArea(new Dimension(10, 0)));
+        pnlSelectOutput.add(txtOutputPrefix);
+        pnlSelectOutput.add(Box.createRigidArea(new Dimension(10, 0)));
+        pnlSelectOutput.add(cmdOutputPrefix);
 
         pnlOutput = new JPanel();
         pnlOutput.setLayout(new BoxLayout(pnlOutput, BoxLayout.PAGE_AXIS));
         pnlOutput.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), "Output:"));
         pnlOutput.add(Box.createVerticalGlue());
-        pnlOutput.add(pnlSelectOutputDir);
-        pnlOutput.add(pnlOutputPrefix);
+        pnlOutput.add(pnlSelectOutput);
 
         pack();
     }
@@ -220,8 +212,8 @@ public class NetMEGUI extends JFrame implements ToolHost {
         // ***** Run control and feedback *****
 
         cmdRun = new JButton();
-        cmdRun.setText("Run NetMake");
-        cmdRun.setToolTipText("Run NetMake");
+        cmdRun.setText("Run NetME");
+        cmdRun.setToolTipText("Run NetME");
         cmdRun.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cmdRunActionPerformed(evt);
@@ -231,10 +223,22 @@ public class NetMEGUI extends JFrame implements ToolHost {
         cmdCancel = new JButton();
         cmdCancel.setText("Cancel");
 
+        cmdViewOutput = new JButton();
+        cmdViewOutput.setText("View Tree");
+        cmdViewOutput.setToolTipText("Visualise the produced ME tree in Spectre");
+        cmdViewOutput.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmdViewActionPerformed(evt);
+            }
+        });
+        cmdViewOutput.setEnabled(false);
+
         pnlControlButtons = new JPanel();
         pnlControlButtons.setLayout(new BoxLayout(pnlControlButtons, BoxLayout.LINE_AXIS));
         pnlControlButtons.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
         pnlControlButtons.add(Box.createHorizontalGlue());
+        pnlControlButtons.add(cmdViewOutput);
+        pnlControlButtons.add(Box.createRigidArea(new Dimension(10, 0)));
         pnlControlButtons.add(cmdRun);
         pnlControlButtons.add(Box.createRigidArea(new Dimension(10, 0)));
         pnlControlButtons.add(cmdCancel);
@@ -272,6 +276,10 @@ public class NetMEGUI extends JFrame implements ToolHost {
         pack();
     }
 
+    private void cmdViewActionPerformed(ActionEvent evt) {
+        this.firePropertyChange("done", null, this.lastOutput);
+    }
+
     /**
      * Choose file for output
      *
@@ -279,15 +287,16 @@ public class NetMEGUI extends JFrame implements ToolHost {
      */
     private void cmdOutputDirActionPerformed(java.awt.event.ActionEvent evt) {
 
-        final JFileChooser fc = new JFileChooser();
-        if (evt.getSource() == cmdOutputDir) {
+        final JFileChooser fc = cwd == null ? new JFileChooser() : new JFileChooser(cwd);
+        if (evt.getSource() == cmdOutputPrefix) {
             fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             int returnVal = fc.showSaveDialog(NetMEGUI.this);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
 
                 File file = fc.getSelectedFile();
                 String z = file.getAbsolutePath();
-                txtOutputDir.setText(z);
+                txtOutputPrefix.setText(z);
+                this.cwd = file.getParentFile();
             } else {
                 log.debug("Open output directory command cancelled by user.");
             }
@@ -301,7 +310,7 @@ public class NetMEGUI extends JFrame implements ToolHost {
      */
     private void cmdInputDistancesActionPerformed(java.awt.event.ActionEvent evt) {
 
-        final JFileChooser fc = new JFileChooser();
+        final JFileChooser fc = cwd == null ? new JFileChooser() : new JFileChooser(cwd);
         if (evt.getSource() == cmdInput) {
             int returnVal = fc.showOpenDialog(NetMEGUI.this);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -309,6 +318,7 @@ public class NetMEGUI extends JFrame implements ToolHost {
                 String z = "";
                 z = file.getAbsolutePath();
                 txtInput.setText(z);
+                this.cwd = file.getParentFile();
             } else {
                 log.debug("Open distance matrix command cancelled by user.");
             }
@@ -326,7 +336,8 @@ public class NetMEGUI extends JFrame implements ToolHost {
         NetMEOptions options = buildNetMEOptions();
 
         if (options != null)
-            this.netMERunner.runNetME(options, new StatusTracker(this.progStatus, this.lblStatus));
+            this.lastOutput = options.getMETreeOutput();
+            this.netMERunner.runNetME(options, new StatusTrackerWithView(this.progStatus, this.lblStatus, this.cmdViewOutput));
 
     }
 
@@ -339,9 +350,12 @@ public class NetMEGUI extends JFrame implements ToolHost {
 
         NetMEOptions options = new NetMEOptions();
 
+        File outputFilePrefix = new File(this.txtOutputPrefix.getText().replaceAll("(^\")|(\"$)", ""));
+
         options.setInputFile(new File(this.txtInput.getText().replaceAll("(^\")|(\"$)", "")));
-        options.setOutputDir(new File(this.txtOutputDir.getText().replaceAll("(^\")|(\"$)", "")));
-        options.setPrefix(this.txtOutputPrefix.getText());
+        options.setOutputDir(outputFilePrefix.getParentFile());
+        options.setPrefix(outputFilePrefix.getName());
+        options.setDraw(true);
 
         return options;
     }

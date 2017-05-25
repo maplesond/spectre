@@ -520,8 +520,8 @@ public class SpectreSplitSystem extends ArrayList<Split> implements SplitSystem 
             }
         }
 
-        if (found != this.getNbSplits()) {
-            throw new IllegalStateException("Could not create induced ordering.  This could be because you have duplicate splits in the system, or because the split system is either not flat and/or circular.");
+        if (found < this.getNbSplits()) {
+            throw new IllegalStateException("Could not create induced ordering.  This could be because you have duplicate splits in the system, or because the split system is either not flat nor circular nor compatible.");
         }
 
         return new SpectreSplitSystem(new IdentifierList(this.orderedTaxa), splits);

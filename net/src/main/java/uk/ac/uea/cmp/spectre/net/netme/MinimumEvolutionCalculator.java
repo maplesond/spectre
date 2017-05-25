@@ -59,7 +59,7 @@ public class MinimumEvolutionCalculator {
 
         log.info("Tree length derived from OLS: " + treeLength);
 
-        return new NetMEResult(originalMETree, meTree, stats);
+        return new NetMEResult(distanceMatrix, originalMETree, meTree, stats);
     }
 
 

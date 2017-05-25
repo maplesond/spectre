@@ -21,6 +21,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
+import uk.ac.uea.cmp.spectre.core.ds.network.Network;
+import uk.ac.uea.cmp.spectre.core.ds.network.draw.PermutationSequenceDraw;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.spectre.core.io.SpectreReader;
 import uk.ac.uea.cmp.spectre.core.io.SpectreReaderFactory;
@@ -114,17 +116,24 @@ public class NetME extends RunnableTool {
 
             log.info("Circular Ordering Loaded from file: " + this.options.getInputFile().getAbsolutePath());
 
-            this.notifyUser("Processing data...");
+            this.notifyUser("Creating minimum evolution tree");
 
             NetMEResult netMeResult = this.execute(distanceMatrix, circularOrdering);
+
+            Network tree = null;
+            if (this.options.isDraw()) {
+
+                log.info("Drawing network");
+                netMeResult.setDrawing(new PermutationSequenceDraw(netMeResult.getMeTree().makeInducedOrdering()).createOptimisedNetwork());
+            }
 
             this.notifyUser("Saving results to: " + this.options.getOutputDir().getAbsolutePath());
 
             // Save result to disk
             netMeResult.save(
-                    new File(this.options.getOutputDir(), this.options.getPrefix() + ".min-evo.nex"),
-                    new File(this.options.getOutputDir(), this.options.getPrefix() + ".original-min-evo.nex"),
-                    new File(this.options.getOutputDir(), this.options.getPrefix() + ".treelength"),
+                    this.options.getMETreeOutput(),
+                    this.options.getOLSMETreeOutput(),
+                    this.options.getTreeLengthOutput(),
                     this.options.isOls()
             );
 

@@ -28,15 +28,17 @@ public class NetMEOptions {
     private File inputFile;
     private File outputDir;
     private boolean ols;
+    private boolean draw;
     private String prefix;
 
     public NetMEOptions() {
-        this(null, false, new File(""), "netme-" + Time.createTimestamp());
+        this(null, false, false, new File(""), "netme-" + Time.createTimestamp());
     }
 
-    public NetMEOptions(File inputFile, boolean ols, File outputDir, String prefix) {
+    public NetMEOptions(File inputFile, boolean ols, boolean draw, File outputDir, String prefix) {
         this.inputFile = inputFile;
         this.ols = ols;
+        this.draw = draw;
         this.outputDir = outputDir;
         this.prefix = prefix;
     }
@@ -57,6 +59,14 @@ public class NetMEOptions {
         this.ols = ols;
     }
 
+    public boolean isDraw() {
+        return draw;
+    }
+
+    public void setDraw(boolean draw) {
+        this.draw = draw;
+    }
+
     public File getOutputDir() {
         return outputDir;
     }
@@ -71,5 +81,17 @@ public class NetMEOptions {
 
     public void setPrefix(String prefix) {
         this.prefix = prefix;
+    }
+
+    public File getMETreeOutput() {
+        return new File(this.outputDir, this.prefix + ".min-evo.nex");
+    }
+
+    public File getOLSMETreeOutput() {
+        return new File(this.outputDir, this.prefix + ".original-min-evo.nex");
+    }
+
+    public File getTreeLengthOutput() {
+        return new File(this.outputDir, this.prefix + ".treelength");
     }
 }

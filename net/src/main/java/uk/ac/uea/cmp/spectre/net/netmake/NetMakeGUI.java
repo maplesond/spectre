@@ -633,6 +633,9 @@ public class NetMakeGUI extends JFrame implements ToolHost {
         options.setWeighting1(this.cboWeighting1.getSelectedItem().toString());
         options.setWeighting2(this.cboWeighting2.getSelectedItem().toString());
 
+        // Always draw
+        options.setDraw(true);
+
         return options;
     }
 

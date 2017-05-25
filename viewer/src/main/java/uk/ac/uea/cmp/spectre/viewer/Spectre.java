@@ -829,7 +829,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
                         public void run() {
 
                             NetMEGUI nm = new NetMEGUI();
-                            /*nm.addPropertyChangeListener("done", new PropertyChangeListener() {
+                            nm.addPropertyChangeListener("done", new PropertyChangeListener() {
                                 @Override
                                 public void propertyChange(PropertyChangeEvent evt) {
                                     if (evt.getNewValue() != null) {
@@ -844,7 +844,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
                                         }
                                     }
                                 }
-                            });*/
+                            });
                             nm.setVisible(true);
                         }
                     });

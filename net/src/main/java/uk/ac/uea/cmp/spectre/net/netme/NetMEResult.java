@@ -16,7 +16,10 @@
 package uk.ac.uea.cmp.spectre.net.netme;
 
 import org.apache.commons.io.FileUtils;
+import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
+import uk.ac.uea.cmp.spectre.core.ds.network.Network;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
+import uk.ac.uea.cmp.spectre.core.io.nexus.Nexus;
 import uk.ac.uea.cmp.spectre.core.io.nexus.NexusWriter;
 
 import java.io.File;
@@ -31,14 +34,34 @@ import java.io.IOException;
  */
 public class NetMEResult {
 
+    private DistanceMatrix dm;
     private SplitSystem originalMETree;
     private SplitSystem meTree;
     private String stats;
+    private Network drawing;
 
-    public NetMEResult(SplitSystem originalMETree, SplitSystem meTree, String stats) {
+    public NetMEResult(DistanceMatrix dm, SplitSystem originalMETree, SplitSystem meTree, String stats) {
+        this.dm = dm;
         this.originalMETree = originalMETree;
         this.meTree = meTree;
         this.stats = stats;
+        this.drawing = null;
+    }
+
+    public DistanceMatrix getDm() {
+        return dm;
+    }
+
+    public String getStats() {
+        return stats;
+    }
+
+    public Network getDrawing() {
+        return drawing;
+    }
+
+    public void setDrawing(Network drawing) {
+        this.drawing = drawing;
     }
 
     public SplitSystem getMeTree() {
@@ -51,13 +74,23 @@ public class NetMEResult {
 
     public void save(File minEvoFile, File origMinEvoFile, File statFile, boolean saveOLS) throws IOException {
 
-        NexusWriter nexusWriter = new NexusWriter();
+        Nexus nexus = new Nexus();
+        nexus.setTaxa(this.dm.getTaxa());
+        nexus.setDistanceMatrix(this.dm);
+        nexus.setSplitSystem(this.meTree);
+        nexus.setNetwork(this.drawing);
+        new NexusWriter().writeNexusData(minEvoFile, nexus);
 
-        nexusWriter.writeSplitSystem(minEvoFile, this.getMeTree());
         if (saveOLS) {
-            nexusWriter.writeSplitSystem(origMinEvoFile, this.getOriginalMETree());
+            Nexus nexus2 = new Nexus();
+            nexus2.setTaxa(this.dm.getTaxa());
+            nexus2.setDistanceMatrix(this.dm);
+            nexus2.setSplitSystem(this.originalMETree);
+            new NexusWriter().writeNexusData(origMinEvoFile, nexus2);
         }
 
         FileUtils.writeStringToFile(statFile, stats, "UTF-8");
     }
+
+
 }

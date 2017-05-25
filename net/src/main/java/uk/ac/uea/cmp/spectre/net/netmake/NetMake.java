@@ -95,7 +95,7 @@ public class NetMake extends RunnableTool {
         if (this.options.isDraw()) {
 
             log.info("Drawing network");
-            network = new PermutationSequenceDraw(networkSS).createOptimisedNetwork();
+            network = new PermutationSequenceDraw(networkSS.makeInducedOrdering()).createOptimisedNetwork();
         }
 
         SplitSystem treeSS = null;
@@ -110,11 +110,11 @@ public class NetMake extends RunnableTool {
             organiseSplits(treeSplits, permutation);
 
             // Create tree and network split systems
-            treeSS = new SpectreSplitSystem(distanceMatrix, permutation, SpectreSplitSystem.LeastSquaresCalculator.TREE_IN_CYCLE, treeSplits);
+            treeSS = new SpectreSplitSystem(distanceMatrix, permutation, SpectreSplitSystem.LeastSquaresCalculator.TREE_IN_CYCLE, treeSplits).makeCanonical();
 
             log.info("Drawing tree");
             if (this.options.isDraw()) {
-                tree = new PermutationSequenceDraw(networkSS).createOptimisedNetwork();
+                tree = new PermutationSequenceDraw(treeSS.makeInducedOrdering()).createOptimisedNetwork();
             }
         }
 
