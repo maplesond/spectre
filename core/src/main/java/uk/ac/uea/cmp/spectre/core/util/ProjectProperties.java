@@ -1,7 +1,5 @@
 package uk.ac.uea.cmp.spectre.core.util;
 
-import uk.ac.uea.cmp.spectre.core.ui.cli.CommandLineHelper;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
