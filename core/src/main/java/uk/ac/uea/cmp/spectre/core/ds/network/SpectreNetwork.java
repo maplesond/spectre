@@ -15,10 +15,7 @@
 
 package uk.ac.uea.cmp.spectre.core.ds.network;
 
-import javafx.util.StringConverter;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import uk.ac.uea.cmp.spectre.core.ds.Identifier;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 
 import java.util.*;

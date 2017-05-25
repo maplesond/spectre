@@ -16,7 +16,6 @@
 package uk.ac.uea.cmp.spectre.core.ds.split;
 
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
-import uk.ac.uea.cmp.spectre.core.ds.network.draw.DrawSplitSystem;
 
 /**
  * Created by maplesod on 14/05/14.

@@ -15,7 +15,6 @@
 
 package uk.ac.uea.cmp.spectre.core.ds.split;
 
-import uk.ac.uea.cmp.spectre.core.ds.Identifier;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 
 import java.util.List;

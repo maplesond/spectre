@@ -17,25 +17,13 @@
 package uk.ac.uea.cmp.spectre.tools.ssc;
 
 import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.MetaInfServices;
-import uk.ac.uea.cmp.spectre.core.ds.Sequences;
-import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceCalculatorFactory;
-import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
-import uk.ac.uea.cmp.spectre.core.ds.distance.RandomDistanceGenerator;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
-import uk.ac.uea.cmp.spectre.core.io.SpectreReader;
-import uk.ac.uea.cmp.spectre.core.io.SpectreReaderFactory;
-import uk.ac.uea.cmp.spectre.core.io.SpectreWriter;
-import uk.ac.uea.cmp.spectre.core.io.SpectreWriterFactory;
 import uk.ac.uea.cmp.spectre.core.io.nexus.NexusReader;
-import uk.ac.uea.cmp.spectre.core.util.Time;
 import uk.ac.uea.cmp.spectre.tools.SpectreTool;
 
-import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;

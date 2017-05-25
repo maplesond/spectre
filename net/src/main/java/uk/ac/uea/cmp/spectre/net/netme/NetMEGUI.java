@@ -18,11 +18,9 @@ package uk.ac.uea.cmp.spectre.net.netme;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.spectre.core.ui.gui.JobController;
-import uk.ac.uea.cmp.spectre.core.ui.gui.StatusTracker;
 import uk.ac.uea.cmp.spectre.core.ui.gui.StatusTrackerWithView;
 import uk.ac.uea.cmp.spectre.core.ui.gui.ToolHost;
 import uk.ac.uea.cmp.spectre.core.util.LogConfig;
-import uk.ac.uea.cmp.spectre.net.netmake.NetMakeOptions;
 
 import javax.swing.*;
 import java.awt.*;

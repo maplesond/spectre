@@ -26,11 +26,9 @@ import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.Locations;
 import uk.ac.uea.cmp.spectre.core.ds.Sequences;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceCalculatorFactory;
-import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.distance.FlexibleDistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.network.Network;
-import uk.ac.uea.cmp.spectre.core.ds.network.draw.DrawSplitSystem;
 import uk.ac.uea.cmp.spectre.core.ds.network.draw.PermutationSequenceDraw;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.*;
 import uk.ac.uea.cmp.spectre.core.ds.split.SpectreSplitSystem;
@@ -45,7 +43,10 @@ import uk.ac.uea.cmp.spectre.core.ui.gui.StatusTrackerWithView;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * FlatNJ (FlatNetJoining) is a program for computing split networks that allow

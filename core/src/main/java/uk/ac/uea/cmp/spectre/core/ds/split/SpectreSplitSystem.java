@@ -24,7 +24,10 @@ import uk.ac.uea.cmp.spectre.core.ds.network.draw.PermutationSequenceDraw;
 import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.CircularNNLS;
 import uk.ac.uea.cmp.spectre.core.ds.split.flat.PermutationSequence;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 
 public class SpectreSplitSystem extends ArrayList<Split> implements SplitSystem {
 

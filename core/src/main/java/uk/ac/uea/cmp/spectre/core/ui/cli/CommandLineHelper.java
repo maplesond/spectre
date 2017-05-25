@@ -19,9 +19,7 @@ import org.apache.commons.cli.*;
 import uk.ac.uea.cmp.spectre.core.util.ProjectProperties;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
-import java.util.Properties;
 
 /**
  * Created with IntelliJ IDEA. User: Dan Date: 14/05/13 Time: 22:36 To change this template use File | Settings | File
