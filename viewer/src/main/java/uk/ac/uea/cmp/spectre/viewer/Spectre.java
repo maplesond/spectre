@@ -84,12 +84,12 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
     private static Logger log = LoggerFactory.getLogger(Spectre.class);
 
     // Constants
-    private static final String BIN_NAME = "netview";
+    private static final String BIN_NAME = "spectre";
     private static final String OPT_VERBOSE = "verbose";
     private static final String OPT_DISPOSE = "dispose_on_close";
     private static final String TITLE = "SPECTRE";
 
-    private static DecimalFormat df2 = new DecimalFormat("#.##");
+    private static DecimalFormat df2 = new DecimalFormat("#.###");
 
     // The data
     private Network network;
