@@ -17,14 +17,18 @@ package uk.ac.uea.cmp.spectre.flatnj;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.time.StopWatch;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.ac.uea.cmp.spectre.core.ds.Identifier;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.Locations;
 import uk.ac.uea.cmp.spectre.core.ds.Sequences;
+import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceCalculatorFactory;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
+import uk.ac.uea.cmp.spectre.core.ds.distance.FlexibleDistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.network.Network;
-import uk.ac.uea.cmp.spectre.core.ds.network.draw.DrawSplitSystem;
 import uk.ac.uea.cmp.spectre.core.ds.network.draw.PermutationSequenceDraw;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.*;
 import uk.ac.uea.cmp.spectre.core.ds.split.SpectreSplitSystem;
@@ -39,6 +43,10 @@ import uk.ac.uea.cmp.spectre.core.ui.gui.StatusTrackerWithView;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * FlatNJ (FlatNetJoining) is a program for computing split networks that allow
@@ -197,12 +205,21 @@ public class FlatNJ extends RunnableTool {
             // Compute the Quadruple system from alternate information if we didn't just load it from disk
             if (qs == null) {
 
-                notifyUser("Computing system of 4-splits (quadruples)");
 
                 QSFactory qsFactory = null;
 
                 if (sequences != null) {
-                    qsFactory = new QSFactoryAlignment(sequences, distanceMatrix);
+
+                    // First check to see that there aren't any duplicate entries (i.e. hamming distance of 0)
+                    DistanceMatrix dm = distanceMatrix == null ? DistanceCalculatorFactory.UNCORRECTED.createDistanceMatrix(sequences) : distanceMatrix;
+
+                    notifyUser("Ensuring all sequences are distinct");
+                    Pair<Sequences,DistanceMatrix> distinct = makeSequencesDistinct(dm, sequences);
+
+                    // Ensure taxa is reset with distinct set
+                    taxa = distinct.getRight().getTaxa();
+
+                    qsFactory = new QSFactoryAlignment(distinct.getLeft(), distanceMatrix == null ? null : distinct.getRight());
                 } else if (locations != null) {
                     qsFactory = new QSFactoryLocation(locations);
                 } else if (ss != null) {
@@ -215,6 +232,7 @@ public class FlatNJ extends RunnableTool {
                     throw new IOException("Error creating quadruple system factory");
                 }
 
+                notifyUser("Computing system of 4-splits (quadruples)");
                 qs = qsFactory.computeQS(true);
 
                 if (options.isSaveStages()) {
@@ -312,6 +330,45 @@ public class FlatNJ extends RunnableTool {
         } finally {
             this.notifyListener();
         }
+    }
+
+    private Pair<Sequences, DistanceMatrix> makeSequencesDistinct(DistanceMatrix dm, Sequences seqs) throws IOException {
+
+        if (seqs.size() != dm.size()) {
+            throw new IOException("Distance matrix and MSA have differing numbers of taxa.");
+        }
+
+        Map<String,String> distinctSeqs = new TreeMap<>();
+        Set<Integer> skipSet = new HashSet<>();
+        DistanceMatrix distinctDm = new FlexibleDistanceMatrix(dm);
+        for(int i = 0; i < dm.size(); i++) {
+
+            Identifier ii = dm.getTaxa().getByName(seqs.getTaxaLabels()[i]);
+            if (ii == null) {
+                throw new IOException("Taxon in MSA not found in distance matrix: " + seqs.getTaxaLabels()[i]);
+            }
+
+            if (skipSet.contains(ii.getId())) {
+                continue;
+            }
+
+            String curSeqName = ii.getName();
+            for(int j = i+1; j < dm.size(); j++) {
+                Identifier ij = dm.getTaxa().getByName(seqs.getTaxaLabels()[j]);
+                if (!skipSet.contains(ij.getId()) && dm.getDistance(ii, ij) == 0) {
+                    curSeqName += "," + ij.getName();
+                    skipSet.add(ij.getId());
+                    distinctDm.removeTaxon(ij.getId());
+                    distinctDm.getTaxa().getById(ii.getId()).setName(curSeqName);
+                    notifyUser("Taxon (" + ij.getName() + ") and taxon (" + ii.getName() + ") are duplicates.  Merging taxa.");
+                }
+            }
+            distinctSeqs.put(curSeqName, seqs.getSeq(i));
+        }
+
+        notifyUser("There are " + distinctSeqs.size() + " distinct taxa for downstream processing.");
+
+        return new ImmutablePair<>(new Sequences(distinctSeqs), distinctDm);
     }
 
 }

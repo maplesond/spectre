@@ -18,13 +18,13 @@ package uk.ac.uea.cmp.spectre.net.netme;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.spectre.core.ui.gui.JobController;
-import uk.ac.uea.cmp.spectre.core.ui.gui.StatusTracker;
+import uk.ac.uea.cmp.spectre.core.ui.gui.StatusTrackerWithView;
 import uk.ac.uea.cmp.spectre.core.ui.gui.ToolHost;
 import uk.ac.uea.cmp.spectre.core.util.LogConfig;
-import uk.ac.uea.cmp.spectre.net.netmake.NetMakeOptions;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.io.File;
 import java.net.URISyntaxException;
 
@@ -35,35 +35,29 @@ public class NetMEGUI extends JFrame implements ToolHost {
 
     private static Logger log = LoggerFactory.getLogger(NetMEGUI.class);
 
-    private static final String TITLE = "NetMake";
+    private static final String TITLE = "NetME";
 
     // ***** GUI components *****
 
     private JPanel pnlOptions;
 
     private JPanel pnlInput;
-    private JPanel pnlSelectDistances;
-    private JLabel lblInputDistances;
-    private JTextField txtInputDistances;
-    private JButton cmdInputDistances;
-    private JPanel pnlSelectOrdering;
-    private JLabel lblInputOrdering;
-    private JTextField txtInputOrdering;
-    private JButton cmdInputOrdering;
+    private JPanel pnlSelectInput;
+    private JLabel lblInput;
+    private JTextField txtInput;
+    private JButton cmdInput;
 
     private JPanel pnlOutput;
-    private JPanel pnlSelectOutputDir;
-    private JPanel pnlOutputPrefix;
-    private JLabel lblOutputDir;
-    private JTextField txtOutputDir;
-    private JButton cmdOutputDir;
+    private JPanel pnlSelectOutput;
     private JLabel lblOutputPrefix;
     private JTextField txtOutputPrefix;
+    private JButton cmdOutputPrefix;
 
     private JPanel pnlStatus;
     private JPanel pnlControlButtons;
     private JButton cmdCancel;
     private JButton cmdRun;
+    private JButton cmdViewOutput;
     private JLabel lblStatus;
     private JProgressBar progStatus;
 
@@ -72,6 +66,10 @@ public class NetMEGUI extends JFrame implements ToolHost {
     private JFrame gui = new JFrame(TITLE);
     private JobController go_control;
     private NetMERunner netMERunner;
+
+    private File lastOutput;
+    private File cwd;
+
 
     public NetMEGUI() {
         initComponents();
@@ -85,6 +83,9 @@ public class NetMEGUI extends JFrame implements ToolHost {
 
         cmdRun.setEnabled(true);
 
+        this.lastOutput = null;
+        this.cwd = null;
+
         this.netMERunner = new NetMERunner(this);
 
         this.go_control = new JobController(this.cmdRun, this.cmdCancel);
@@ -96,61 +97,33 @@ public class NetMEGUI extends JFrame implements ToolHost {
      */
     private void initInputComponents() {
 
-        lblInputDistances = new JLabel();
-        txtInputDistances = new JTextField();
-        cmdInputDistances = new JButton();
+        lblInput = new JLabel();
+        txtInput = new JTextField();
+        cmdInput = new JButton();
 
-        cmdInputDistances.setText("...");
-        cmdInputDistances.setToolTipText(NetMEOptions.DESC_DISTANCES);
-        cmdInputDistances.addActionListener(new java.awt.event.ActionListener() {
+        cmdInput.setText("...");
+        cmdInput.setToolTipText(NetMEOptions.DESC_INPUT);
+        cmdInput.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cmdInputDistancesActionPerformed(evt);
             }
         });
 
-        txtInputDistances.setPreferredSize(new Dimension(200, 25));
-        txtInputDistances.setToolTipText(NetMEOptions.DESC_DISTANCES);
+        txtInput.setPreferredSize(new Dimension(200, 25));
+        txtInput.setToolTipText(NetMEOptions.DESC_INPUT);
 
-        lblInputDistances.setText("Input distance matrix file:");
-        lblInputDistances.setToolTipText(NetMEOptions.DESC_DISTANCES);
+        lblInput.setText("Input nexus file:");
+        lblInput.setToolTipText(NetMEOptions.DESC_INPUT);
 
-        pnlSelectDistances = new JPanel();
-        pnlSelectDistances.setLayout(new BoxLayout(pnlSelectDistances, BoxLayout.LINE_AXIS));
-        pnlSelectDistances.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        pnlSelectDistances.add(Box.createHorizontalGlue());
-        pnlSelectDistances.add(lblInputDistances);
-        pnlSelectDistances.add(Box.createRigidArea(new Dimension(10, 0)));
-        pnlSelectDistances.add(txtInputDistances);
-        pnlSelectDistances.add(Box.createRigidArea(new Dimension(10, 0)));
-        pnlSelectDistances.add(cmdInputDistances);
-
-        lblInputOrdering = new JLabel();
-        txtInputOrdering = new JTextField();
-        cmdInputOrdering = new JButton();
-
-        cmdInputOrdering.setText("...");
-        cmdInputOrdering.setToolTipText(NetMEOptions.DESC_CIRCULAR_ORDERING);
-        cmdInputOrdering.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cmdInputOrderingActionPerformed(evt);
-            }
-        });
-
-        txtInputOrdering.setPreferredSize(new Dimension(200, 25));
-        txtInputOrdering.setToolTipText(NetMEOptions.DESC_CIRCULAR_ORDERING);
-
-        lblInputOrdering.setText("Input circular ordering file:");
-        lblInputOrdering.setToolTipText(NetMEOptions.DESC_CIRCULAR_ORDERING);
-
-        pnlSelectOrdering = new JPanel();
-        pnlSelectOrdering.setLayout(new BoxLayout(pnlSelectOrdering, BoxLayout.LINE_AXIS));
-        pnlSelectOrdering.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
-        pnlSelectOrdering.add(Box.createHorizontalGlue());
-        pnlSelectOrdering.add(lblInputOrdering);
-        pnlSelectOrdering.add(Box.createRigidArea(new Dimension(10, 0)));
-        pnlSelectOrdering.add(txtInputOrdering);
-        pnlSelectOrdering.add(Box.createRigidArea(new Dimension(10, 0)));
-        pnlSelectOrdering.add(cmdInputOrdering);
+        pnlSelectInput = new JPanel();
+        pnlSelectInput.setLayout(new BoxLayout(pnlSelectInput, BoxLayout.LINE_AXIS));
+        pnlSelectInput.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        pnlSelectInput.add(Box.createHorizontalGlue());
+        pnlSelectInput.add(lblInput);
+        pnlSelectInput.add(Box.createRigidArea(new Dimension(10, 0)));
+        pnlSelectInput.add(txtInput);
+        pnlSelectInput.add(Box.createRigidArea(new Dimension(10, 0)));
+        pnlSelectInput.add(cmdInput);
 
         pack();
 
@@ -158,8 +131,7 @@ public class NetMEGUI extends JFrame implements ToolHost {
         pnlInput.setLayout(new BoxLayout(pnlInput, BoxLayout.PAGE_AXIS));
         pnlInput.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), "Input:"));
         pnlInput.add(Box.createVerticalGlue());
-        pnlInput.add(pnlSelectDistances);
-        pnlInput.add(pnlSelectOrdering);
+        pnlInput.add(pnlSelectInput);
 
         pack();
     }
@@ -172,57 +144,42 @@ public class NetMEGUI extends JFrame implements ToolHost {
 
         pnlOutput = new JPanel(new BorderLayout());
 
-        lblOutputDir = new JLabel();
-        txtOutputDir = new JTextField();
-        cmdOutputDir = new JButton();
+        lblOutputPrefix = new JLabel();
+        txtOutputPrefix = new JTextField();
+        cmdOutputPrefix = new JButton();
 
         lblOutputPrefix = new JLabel();
         txtOutputPrefix = new JTextField();
 
-        txtOutputDir.setPreferredSize(new Dimension(200, 25));
-        txtOutputDir.setToolTipText(NetMakeOptions.DESC_OUTPUT_NETWORK);
+        txtOutputPrefix.setPreferredSize(new Dimension(200, 25));
+        txtOutputPrefix.setToolTipText(NetMEOptions.DESC_OUTPUT_PREFIX);
 
-        lblOutputDir.setText("Save to file:");
-        lblOutputDir.setToolTipText(NetMakeOptions.DESC_OUTPUT_NETWORK);
+        lblOutputPrefix.setText("Output prefix:");
+        lblOutputPrefix.setToolTipText(NetMEOptions.DESC_OUTPUT_PREFIX);
 
-        cmdOutputDir.setText("...");
-        cmdOutputDir.setToolTipText(NetMakeOptions.DESC_OUTPUT_NETWORK);
-        cmdOutputDir.addActionListener(new java.awt.event.ActionListener() {
+        cmdOutputPrefix.setText("...");
+        cmdOutputPrefix.setToolTipText(NetMEOptions.DESC_OUTPUT_PREFIX);
+        cmdOutputPrefix.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cmdOutputDirActionPerformed(evt);
             }
         });
 
-        lblOutputPrefix.setText("Output prefix:");
-        lblOutputPrefix.setToolTipText(NetMEOptions.DESC_OUTPUT_PREFIX);
-
-        txtOutputPrefix.setPreferredSize(new Dimension(200, 25));
-        txtOutputPrefix.setToolTipText(NetMEOptions.DESC_OUTPUT_PREFIX);
-
-        pnlSelectOutputDir = new JPanel();
-        pnlSelectOutputDir.setLayout(new BoxLayout(pnlSelectOutputDir, BoxLayout.LINE_AXIS));
-        pnlSelectOutputDir.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        pnlSelectOutputDir.add(Box.createHorizontalGlue());
-        pnlSelectOutputDir.add(lblOutputDir);
-        pnlSelectOutputDir.add(Box.createRigidArea(new Dimension(10, 0)));
-        pnlSelectOutputDir.add(txtOutputDir);
-        pnlSelectOutputDir.add(Box.createRigidArea(new Dimension(10, 0)));
-        pnlSelectOutputDir.add(cmdOutputDir);
-
-        pnlOutputPrefix = new JPanel();
-        pnlOutputPrefix.setLayout(new BoxLayout(pnlOutputPrefix, BoxLayout.LINE_AXIS));
-        pnlOutputPrefix.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
-        pnlOutputPrefix.add(Box.createHorizontalGlue());
-        pnlOutputPrefix.add(lblOutputPrefix);
-        pnlOutputPrefix.add(Box.createRigidArea(new Dimension(10, 0)));
-        pnlOutputPrefix.add(txtOutputPrefix);
+        pnlSelectOutput = new JPanel();
+        pnlSelectOutput.setLayout(new BoxLayout(pnlSelectOutput, BoxLayout.LINE_AXIS));
+        pnlSelectOutput.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        pnlSelectOutput.add(Box.createHorizontalGlue());
+        pnlSelectOutput.add(lblOutputPrefix);
+        pnlSelectOutput.add(Box.createRigidArea(new Dimension(10, 0)));
+        pnlSelectOutput.add(txtOutputPrefix);
+        pnlSelectOutput.add(Box.createRigidArea(new Dimension(10, 0)));
+        pnlSelectOutput.add(cmdOutputPrefix);
 
         pnlOutput = new JPanel();
         pnlOutput.setLayout(new BoxLayout(pnlOutput, BoxLayout.PAGE_AXIS));
         pnlOutput.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), "Output:"));
         pnlOutput.add(Box.createVerticalGlue());
-        pnlOutput.add(pnlSelectOutputDir);
-        pnlOutput.add(pnlOutputPrefix);
+        pnlOutput.add(pnlSelectOutput);
 
         pack();
     }
@@ -253,8 +210,8 @@ public class NetMEGUI extends JFrame implements ToolHost {
         // ***** Run control and feedback *****
 
         cmdRun = new JButton();
-        cmdRun.setText("Run NetMake");
-        cmdRun.setToolTipText("Run NetMake");
+        cmdRun.setText("Run NetME");
+        cmdRun.setToolTipText("Run NetME");
         cmdRun.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cmdRunActionPerformed(evt);
@@ -264,10 +221,22 @@ public class NetMEGUI extends JFrame implements ToolHost {
         cmdCancel = new JButton();
         cmdCancel.setText("Cancel");
 
+        cmdViewOutput = new JButton();
+        cmdViewOutput.setText("View Tree");
+        cmdViewOutput.setToolTipText("Visualise the produced ME tree in Spectre");
+        cmdViewOutput.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmdViewActionPerformed(evt);
+            }
+        });
+        cmdViewOutput.setEnabled(false);
+
         pnlControlButtons = new JPanel();
         pnlControlButtons.setLayout(new BoxLayout(pnlControlButtons, BoxLayout.LINE_AXIS));
         pnlControlButtons.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
         pnlControlButtons.add(Box.createHorizontalGlue());
+        pnlControlButtons.add(cmdViewOutput);
+        pnlControlButtons.add(Box.createRigidArea(new Dimension(10, 0)));
         pnlControlButtons.add(cmdRun);
         pnlControlButtons.add(Box.createRigidArea(new Dimension(10, 0)));
         pnlControlButtons.add(cmdCancel);
@@ -305,6 +274,10 @@ public class NetMEGUI extends JFrame implements ToolHost {
         pack();
     }
 
+    private void cmdViewActionPerformed(ActionEvent evt) {
+        this.firePropertyChange("done", null, this.lastOutput);
+    }
+
     /**
      * Choose file for output
      *
@@ -312,15 +285,16 @@ public class NetMEGUI extends JFrame implements ToolHost {
      */
     private void cmdOutputDirActionPerformed(java.awt.event.ActionEvent evt) {
 
-        final JFileChooser fc = new JFileChooser();
-        if (evt.getSource() == cmdOutputDir) {
+        final JFileChooser fc = cwd == null ? new JFileChooser() : new JFileChooser(cwd);
+        if (evt.getSource() == cmdOutputPrefix) {
             fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             int returnVal = fc.showSaveDialog(NetMEGUI.this);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
 
                 File file = fc.getSelectedFile();
                 String z = file.getAbsolutePath();
-                txtOutputDir.setText(z);
+                txtOutputPrefix.setText(z);
+                this.cwd = file.getParentFile();
             } else {
                 log.debug("Open output directory command cancelled by user.");
             }
@@ -334,40 +308,21 @@ public class NetMEGUI extends JFrame implements ToolHost {
      */
     private void cmdInputDistancesActionPerformed(java.awt.event.ActionEvent evt) {
 
-        final JFileChooser fc = new JFileChooser();
-        if (evt.getSource() == cmdInputDistances) {
+        final JFileChooser fc = cwd == null ? new JFileChooser() : new JFileChooser(cwd);
+        if (evt.getSource() == cmdInput) {
             int returnVal = fc.showOpenDialog(NetMEGUI.this);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 File file = fc.getSelectedFile();
                 String z = "";
                 z = file.getAbsolutePath();
-                txtInputDistances.setText(z);
+                txtInput.setText(z);
+                this.cwd = file.getParentFile();
             } else {
                 log.debug("Open distance matrix command cancelled by user.");
             }
         }
     }
 
-    /**
-     * Choose a file for input
-     *
-     * @param evt
-     */
-    private void cmdInputOrderingActionPerformed(java.awt.event.ActionEvent evt) {
-
-        final JFileChooser fc = new JFileChooser();
-        if (evt.getSource() == cmdInputOrdering) {
-            int returnVal = fc.showOpenDialog(NetMEGUI.this);
-            if (returnVal == JFileChooser.APPROVE_OPTION) {
-                File file = fc.getSelectedFile();
-                String z = "";
-                z = file.getAbsolutePath();
-                txtInputOrdering.setText(z);
-            } else {
-                log.debug("Open circular ordering command cancelled by user.");
-            }
-        }
-    }
 
     /**
      * Start
@@ -379,7 +334,8 @@ public class NetMEGUI extends JFrame implements ToolHost {
         NetMEOptions options = buildNetMEOptions();
 
         if (options != null)
-            this.netMERunner.runNetME(options, new StatusTracker(this.progStatus, this.lblStatus));
+            this.lastOutput = options.getMETreeOutput();
+            this.netMERunner.runNetME(options, new StatusTrackerWithView(this.progStatus, this.lblStatus, this.cmdViewOutput));
 
     }
 
@@ -392,10 +348,12 @@ public class NetMEGUI extends JFrame implements ToolHost {
 
         NetMEOptions options = new NetMEOptions();
 
-        options.setDistancesFile(new File(this.txtInputDistances.getText().replaceAll("(^\")|(\"$)", "")));
-        options.setCircularOrderingFile(new File(this.txtInputOrdering.getText().replaceAll("(^\")|(\"$)", "")));
-        options.setOutputDir(new File(this.txtOutputDir.getText().replaceAll("(^\")|(\"$)", "")));
-        options.setPrefix(this.txtOutputPrefix.getText());
+        File outputFilePrefix = new File(this.txtOutputPrefix.getText().replaceAll("(^\")|(\"$)", ""));
+
+        options.setInputFile(new File(this.txtInput.getText().replaceAll("(^\")|(\"$)", "")));
+        options.setOutputDir(outputFilePrefix.getParentFile());
+        options.setPrefix(outputFilePrefix.getName());
+        options.setDraw(true);
 
         return options;
     }

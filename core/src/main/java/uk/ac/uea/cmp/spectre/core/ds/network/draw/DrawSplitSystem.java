@@ -19,7 +19,8 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import uk.ac.uea.cmp.spectre.core.ds.Identifier;
 import uk.ac.uea.cmp.spectre.core.ds.network.*;
-import uk.ac.uea.cmp.spectre.core.ds.split.*;
+import uk.ac.uea.cmp.spectre.core.ds.split.Split;
+import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 
 import java.util.*;
 

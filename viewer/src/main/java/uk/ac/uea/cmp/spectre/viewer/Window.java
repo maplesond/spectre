@@ -207,7 +207,13 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
                 }
             }
 
-            public void mouseDragged(java.awt.event.MouseEvent evt) {
+            /*public void mouseDragged(java.awt.event.MouseEvent evt) {
+
+                // First just to ensure there are no bugs later
+                if (startPoint == null) {
+                    startPoint = evt.getPoint();
+                }
+
                 if (SwingUtilities.isRightMouseButton(evt)) {
                     rotate(startPoint, evt.getPoint());
                 }
@@ -217,17 +223,17 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
                                 evt.getPoint(),
                                 true);
                     }
-                    else if (isOnLabel(evt.getPoint())) {
+                    else if (viewMode == ViewMode.LABEL) {
                         moveLabels(evt.getPoint());
                     }
-                    else if (isOnPoint()) {
+                    else if (viewMode == ViewMode.POINT) {
                         moveTheVertex(evt.getPoint());
                     }
                     else {
                         pan(evt.getPoint());
                     }
                 }
-            }
+            }*/
 
             public void mousePressed(java.awt.event.MouseEvent evt) {
 
@@ -240,8 +246,10 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
                         if (evt.isShiftDown() || evt.isControlDown()) {
                             viewMode = ViewMode.SELECT;
                         } else if (isOnLabel(evt.getPoint())) {
+                            viewMode = ViewMode.LABEL;
                             markLabel(startPoint);
                         } else if (isOnPoint()) {
+                            viewMode = ViewMode.POINT;
                             markPoint(startPoint);
                         } else {
                             // Do panning
@@ -261,6 +269,9 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
                     else if (viewMode == ViewMode.SELECT) {
                         removeSelectionRectangle();
                     }
+                    else if (viewMode == ViewMode.LABEL) {
+                        pointsToHighlight.clear();
+                    }
                     viewMode = ViewMode.NORMAL;
                     setCursor(Cursor.getDefaultCursor());
                     startPoint = null;
@@ -272,18 +283,27 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
         this.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
             public void mouseDragged(java.awt.event.MouseEvent evt) {
                 if (network != null) {
+                    // First just to ensure there are no bugs later
+                    if (startPoint == null) {
+                        startPoint = evt.getPoint();
+                    }
+
                     if (SwingUtilities.isRightMouseButton(evt)) {
                         rotate(startPoint, evt.getPoint());
-                    } else if (SwingUtilities.isLeftMouseButton(evt)) {
+                    }
+                    else if (SwingUtilities.isLeftMouseButton(evt)) {
                         if (evt.isShiftDown() || evt.isControlDown()) {
                             setSelection(startPoint,
                                     evt.getPoint(),
                                     true);
-                        } else if (isOnLabel(evt.getPoint())) {
+                        }
+                        else if (viewMode == ViewMode.LABEL) {
                             moveLabels(evt.getPoint());
-                        } else if (isOnPoint()) {
+                        }
+                        else if (viewMode == ViewMode.POINT) {
                             moveTheVertex(evt.getPoint());
-                        } else {
+                        }
+                        else {
                             pan(evt.getPoint());
                         }
                     }
@@ -920,7 +940,6 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
         double newY = adjNewPoint.getY() - adjPreviousPoint.getY();
 
         this.startPoint.setLocation((int)endPoint.getX(), (int)endPoint.getY());
-
         this.offset.setLocation(this.offset.getX() + newX, this.offset.getY() + newY);
 
         repaintOnResize();
@@ -1145,7 +1164,7 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
             p.setX(dst.getX());
             p.setY(dst.getY());
             if (change != 0 && p.l != null && !p.isSelected()) {
-                if (change != 1) {
+                //if (change != 1) {
                     double offX = p.l.label.getOffsetX() * change;
                     if (offX == 0) {
                         offX = p.l.label.getOffsetX();
@@ -1158,7 +1177,7 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
 
                     p.l.label.setOffsetX(offX);
                     p.l.label.setOffsetY(offY);
-                }
+                //}
             }
         }
     }
@@ -1172,7 +1191,7 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
 
         double newRatio = Math.min(width / dimensions.vertices.width(), height / dimensions.vertices.height());
 
-        change = (lastRatio * newRatio == 0) ? 1 : newRatio / lastRatio;
+        change = lastRatio == newRatio ? 0.0 : newRatio / lastRatio;
         config.setRatio(newRatio);
     }
 
@@ -1195,6 +1214,7 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
         }
 
         repaintOnResize();
+        recomputeRatio();
     }
 
     void fixLabels(boolean fix) {
@@ -1466,6 +1486,8 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
         NORMAL,
         ROTATE,
         SELECT,
+        LABEL,
+        POINT,
         PAN
     }
 

@@ -41,7 +41,7 @@ public class NetMakeOptions {
 
     public static final String DESC_CO_ALG = "The circular ordering algorithm to use: " + CircularOrderingAlgorithms.toListString() + ". Default: NEIGHBORNET";
 
-    public static final String DESC_MAKE_NETWORK = "If selected, netmake will not create a network after split system is generated.  i.e. output is just a circular split system.  This option might be useful if the number of taxa in the input is high: > 100.";
+    public static final String DESC_DRAW = "If selected, netmake will draw the circular split system, to create a network.  If the number of taxa is high (>50) this can take a significant amount of time relative to generating the circular split system.";
 
     public static final String DESC_DIST_CALC = "If running from MSAs, the distance matrix calculator to use: " + DistanceCalculatorFactory.toListString() + ". Default: " + DistanceCalculatorFactory.JUKES_CANTOR.name();
 
@@ -58,14 +58,14 @@ public class NetMakeOptions {
     private double treeParam;
     private String coAlg;
     private String dc;
-    private boolean noNetwork;
+    private boolean draw;
 
 
     public NetMakeOptions() {
         this(null, null, null, null, null, DEFAULT_TREE_WEIGHT, "NEIGHBORNET", DistanceCalculatorFactory.JUKES_CANTOR.name(), false);
     }
 
-    public NetMakeOptions(File input, File outputNetwork, File outputTree, String weighting1, String weighting2, double treeParam, String coAlg, String dc, boolean noNetwork) {
+    public NetMakeOptions(File input, File outputNetwork, File outputTree, String weighting1, String weighting2, double treeParam, String coAlg, String dc, boolean draw) {
 
         // Validates that we have sensible input for the weightings
         if (weighting1 != null && !weighting1.isEmpty())
@@ -82,7 +82,7 @@ public class NetMakeOptions {
         this.treeParam = treeParam;
         this.coAlg = coAlg;
         this.dc = dc;
-        this.noNetwork = noNetwork;
+        this.draw = draw;
     }
 
     public File getInput() {
@@ -149,11 +149,11 @@ public class NetMakeOptions {
         this.dc = dc;
     }
 
-    public boolean isNoNetwork() {
-        return noNetwork;
+    public boolean isDraw() {
+        return draw;
     }
 
-    public void setNoNetwork(boolean noNetwork) {
-        this.noNetwork = noNetwork;
+    public void setDraw(boolean draw) {
+        this.draw = draw;
     }
 }

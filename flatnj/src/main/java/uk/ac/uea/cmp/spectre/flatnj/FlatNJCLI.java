@@ -56,7 +56,7 @@ public class FlatNJCLI {
      */
     public static void main(String[] args) {
         // Setup the command line options
-        CommandLine commandLine = CommandLineHelper.startApp(createOptions(), "flatnj [options] <input>",
+        CommandLine commandLine = new CommandLineHelper().startApp(createOptions(), "flatnj [options] <input>",
                 "An implementation of the Flat Net Joining (FlatNJ) algorithm to produce planar networks where labels can appear inside the network.\n" +
                         "Required input is quartet-like (4-split) data, although flatnj can automatically generate this from multiple sequence alignments, location data (X,Y coordinates) or other compatible split networks.\n" +
                         "Input can either be nexus format containing: taxa, character, data, distances, locations, splits or quadruples blocks, or a fasta-style format file containing the multiple sequence alignments.",

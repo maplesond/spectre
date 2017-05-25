@@ -33,7 +33,7 @@ import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.network.Network;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
 import uk.ac.uea.cmp.spectre.core.ds.network.draw.Leader;
-import uk.ac.uea.cmp.spectre.core.ds.network.draw.DrawSplitSystem;
+import uk.ac.uea.cmp.spectre.core.ds.network.draw.PermutationSequenceDraw;
 import uk.ac.uea.cmp.spectre.core.ds.network.draw.ViewerConfig;
 import uk.ac.uea.cmp.spectre.core.io.nexus.Nexus;
 import uk.ac.uea.cmp.spectre.core.io.nexus.NexusReader;
@@ -41,6 +41,7 @@ import uk.ac.uea.cmp.spectre.core.io.nexus.NexusWriter;
 import uk.ac.uea.cmp.spectre.core.ui.cli.CommandLineHelper;
 import uk.ac.uea.cmp.spectre.core.ui.gui.LookAndFeel;
 import uk.ac.uea.cmp.spectre.core.util.LogConfig;
+import uk.ac.uea.cmp.spectre.core.util.ProjectProperties;
 import uk.ac.uea.cmp.spectre.flatnj.FlatNJGUI;
 import uk.ac.uea.cmp.spectre.net.netmake.NetMakeGUI;
 import uk.ac.uea.cmp.spectre.net.netme.NetMEGUI;
@@ -60,9 +61,7 @@ import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.DecimalFormat;
@@ -85,12 +84,12 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
     private static Logger log = LoggerFactory.getLogger(Spectre.class);
 
     // Constants
-    private static final String BIN_NAME = "netview";
+    private static final String BIN_NAME = "spectre";
     private static final String OPT_VERBOSE = "verbose";
     private static final String OPT_DISPOSE = "dispose_on_close";
     private static final String TITLE = "SPECTRE";
 
-    private static DecimalFormat df2 = new DecimalFormat("#.##");
+    private static DecimalFormat df2 = new DecimalFormat("#.###");
 
     // The data
     private Network network;
@@ -171,7 +170,9 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
     private javax.swing.JMenuItem mnuToolsNetme;
     private javax.swing.JMenuItem mnuToolsFlatnj;
     private javax.swing.JMenuItem mnuToolsSuperq;
-
+    private javax.swing.JMenu mnuHelp;
+    private javax.swing.JMenuItem mnuHelpHelp;
+    private javax.swing.JMenuItem mnuHelpAbout;
 
 
     /**
@@ -352,7 +353,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         mnuFile.setMnemonic('F');
 
         mnuFileOpen = new javax.swing.JMenuItem();
-        mnuFileOpen.setText("Open network...");
+        mnuFileOpen.setText("Open...");
         mnuFileOpen.setMnemonic('O');
         mnuFileOpen.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O,
                 java.awt.Event.CTRL_MASK));
@@ -827,7 +828,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
                         public void run() {
 
                             NetMEGUI nm = new NetMEGUI();
-                            /*nm.addPropertyChangeListener("done", new PropertyChangeListener() {
+                            nm.addPropertyChangeListener("done", new PropertyChangeListener() {
                                 @Override
                                 public void propertyChange(PropertyChangeEvent evt) {
                                     if (evt.getNewValue() != null) {
@@ -842,7 +843,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
                                         }
                                     }
                                 }
-                            });*/
+                            });
                             nm.setVisible(true);
                         }
                     });
@@ -938,9 +939,62 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
 
         menuBar.add(mnuTools);
 
+
+        mnuHelp = new javax.swing.JMenu();
+        mnuHelp.setText("Help");
+        mnuHelp.setMnemonic('H');
+
+        mnuHelpHelp = new javax.swing.JMenuItem();
+        mnuHelpHelp.setText("Help");
+        mnuHelpHelp.setMnemonic('H');
+        mnuHelpHelp.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+                if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
+                    try {
+                        File here = new File(Spectre.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+                        File docdir = new File(here, "../../../../../../../../../doc/html");
+                        if (here.getName().equalsIgnoreCase("classes")) {
+                            docdir = new File(here, "../../../doc/build/html");
+                        }
+
+                        desktop.browse(new URI("file://" + docdir.getCanonicalPath() + "/index.html"));
+                    }
+                    catch(IOException | URISyntaxException e) {
+                        errorMessage("Couldn't open help page", e);
+                    }
+                }
+            }
+        });
+        mnuHelp.add(mnuHelpHelp);
+
+
+        mnuHelpAbout = new javax.swing.JMenuItem();
+        mnuHelpAbout.setText("About");
+        mnuHelpAbout.setMnemonic('A');
+        mnuHelpAbout.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmdAboutBox();
+            }
+        });
+        mnuHelp.add(mnuHelpAbout);
+
+
+        menuBar.add(mnuHelp);
+
         setJMenuBar(menuBar);
     }
 
+    private void cmdAboutBox() {
+        String version = "undetermined";
+        try {
+            version = ProjectProperties.getVersion();
+        }
+        catch (IOException e) {
+            // continue
+        }
+        JOptionPane.showMessageDialog(this, "SPECTRE: A Suite of PhylogEnetiC Tools for Reticulate Evolution.  Version: " + version);
+    }
 
     private void cmdLeaderColorSelectActionPerformed(ActionEvent evt) {
         Color newLeaderColor = JColorChooser.showDialog(this, "Font color", drawing.config.getLeaderColor());
@@ -969,6 +1023,8 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
             File image_out = fileChooser.getSelectedFile();
             String ext = FilenameUtils.getExtension(image_out.getName());
 
+            log.info("Saving image of drawing to " + image_out.getAbsolutePath());
+
             if (ext.equalsIgnoreCase("pdf")) {
                 directory = image_out.getPath();
                 try {
@@ -985,6 +1041,8 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
             } else {
                 errorMessage("No recognised extension specified in filename.  Please type an appropriate extension for image.");
             }
+
+            log.info("Image saved");
         }
     }
 
@@ -1084,6 +1142,85 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
     }
 
     private void saveNetwork(File file) throws IOException {
+
+        if (file.exists()) {
+
+            boolean isNexus = true;
+            try {
+                // Expensive way of testing if this is a nexus file!
+                Nexus nexus = new NexusReader().parse(file);
+
+                if (nexus.getTaxa() != null && nexus.getTaxa().size() != this.network.getNbTaxa()) {
+                    int dialogResult = JOptionPane.showConfirmDialog(this, "The nexus file you are trying to overwrite does not appear to be consistent with the current network.  Saving will overwrite all data in this file.  Do you wish to continue?", "Warning", JOptionPane.YES_NO_OPTION);
+                    if (dialogResult == JOptionPane.YES_OPTION) {
+                        isNexus = false;
+                    } else {
+                        return;
+                    }
+                }
+
+            } catch (IOException e) {
+                int dialogResult = JOptionPane.showConfirmDialog(this, "The file you are trying to overwrite is not a nexus file.  Are you sure you wish to overwrite it?", "Warning", JOptionPane.YES_NO_OPTION);
+                if (dialogResult == JOptionPane.YES_OPTION) {
+                    isNexus = false;
+                } else {
+                    return;
+                }
+            }
+
+            if (isNexus) {
+
+                log.info("Updating drawing (network and config blocks) in " + file.getCanonicalPath());
+                NexusWriter writer = new NexusWriter();
+
+                // If file already exists we need to be extra careful not to overwrite anything that
+                // isn't a network or drawing config block
+                try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+                    boolean inBlock = false;
+                    for (String line; (line = br.readLine()) != null; ) {
+                        if (inBlock) {
+                            String[] parts = line.toLowerCase().split("\\s+");
+                            for (String s : parts) {
+                                if (s.equals("end") || s.equals("end;")) {
+                                    inBlock = false;
+                                }
+                            }
+                        } else {
+                            String[] parts = line.toLowerCase().split("\\s+");
+                            boolean beginFound = false;
+                            for (String s : parts) {
+                                if (s.equals("begin")) {
+                                    beginFound = true;
+                                } else if (beginFound && (s.startsWith("network") || s.startsWith("viewer"))) {
+                                    inBlock = true;
+                                    break;
+                                }
+                            }
+
+                            // If still not inblock after processing the line then just write to output
+                            if (!inBlock) {
+                                writer.appendLine(line);
+                            }
+                        }
+                    }
+                }
+
+                // Put network at the end
+                writer.appendLine();
+                writer.append(network);
+                writer.appendLine();
+                writer.append(drawing.config);
+                writer.write(file);
+
+                log.info("Nexus file updated");
+
+                return;
+            }
+        }
+
+        log.info("Saving drawing to " + file.getCanonicalPath());
+
+        // If we are here then we are either writing into a new file or overwriting a non-nexus file.
         NexusWriter writer = new NexusWriter();
         writer.appendHeader();
         writer.appendLine();
@@ -1093,6 +1230,8 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         writer.appendLine();
         writer.append(drawing.config);
         writer.write(file);
+
+        log.info("Drawing saved");
     }
 
 
@@ -1114,9 +1253,16 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         this.taxa = nexus.getTaxa();
 
         // If no network was defined but there is a split system then convert the split system to a network
-        this.network = nexus.getNetwork() == null && nexus.getSplitSystem() != null ?
-                new DrawSplitSystem(nexus.getSplitSystem()).createOptimisedNetwork() :
-                nexus.getNetwork();
+        this.network = null;
+
+        if (nexus.getNetwork() == null && nexus.getSplitSystem() != null) {
+            log.info("Drawing split system found in " + inFile.getAbsolutePath());
+            this.network = new PermutationSequenceDraw(nexus.getSplitSystem().makeInducedOrdering()).createOptimisedNetwork();
+        }
+        else {
+            log.info("Loading pre-drawn split system in " + inFile.getAbsolutePath());
+            this.network = nexus.getNetwork();
+        }
 
         // Assign taxa to network
         this.network.setTaxa(this.taxa);
@@ -1140,6 +1286,8 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
 
         // Now draw the network into the drawing canvas
         drawing.drawNetwork(config, this.network, optimiseLayout);
+
+        log.info("File successfully opened: " + inFile.getAbsolutePath());
     }
 
     public Window getDrawing() {
@@ -1328,7 +1476,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
             LookAndFeel.setLookAndFeel(LookAndFeel.NIMBUS);
 
             // Parse command line args
-            final CommandLine commandLine = CommandLineHelper.startApp(createOptions(), "netview [options] <input>",
+            final CommandLine commandLine = new CommandLineHelper().startApp(createOptions(), "spectre [options] <input>",
                     "Visualises a network in nexus format.  The nexus file can contain a pre-drawn network in " +
                             "a network block, or a split system to be drawn.\n" +
                             "The viewer can be passed the nexus file as a command line argument at startup, selected by " +

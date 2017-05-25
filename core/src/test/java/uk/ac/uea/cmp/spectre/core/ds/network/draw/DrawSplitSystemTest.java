@@ -1,7 +1,6 @@
 package uk.ac.uea.cmp.spectre.core.ds.network.draw;
 
 import org.junit.Before;
-import org.junit.Test;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
 import uk.ac.uea.cmp.spectre.core.ds.split.*;
@@ -9,7 +8,7 @@ import uk.ac.uea.cmp.spectre.core.ds.split.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by maplesod on 11/05/17.

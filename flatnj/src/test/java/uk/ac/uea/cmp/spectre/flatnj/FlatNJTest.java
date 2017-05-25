@@ -18,7 +18,6 @@ package uk.ac.uea.cmp.spectre.flatnj;
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Rule;
-import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import uk.ac.earlham.metaopt.OptimiserException;
 import uk.ac.uea.cmp.spectre.core.util.LogConfig;

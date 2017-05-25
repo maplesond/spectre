@@ -46,7 +46,7 @@ public class NetMakeCLI {
     public static final String OPT_WEIGHTINGS_2 = "weightings_2";
     public static final String OPT_CO_ALG = "alt_mode";
     public static final String OPT_DIST_CALC = "dist_calc";
-    public static final String OPT_MAKE_NETWORK = "no_network";
+    public static final String OPT_DRAW_NETWORK = "draw";
     public static final String OPT_HELP = "help";
 
 
@@ -69,7 +69,7 @@ public class NetMakeCLI {
 
         options.addOption(OptionBuilder.withLongOpt(OPT_CO_ALG).withDescription(NetMakeOptions.DESC_CO_ALG).create("alt"));
 
-        options.addOption(OptionBuilder.withLongOpt(OPT_MAKE_NETWORK).withDescription(NetMakeOptions.DESC_MAKE_NETWORK).create("n"));
+        options.addOption(OptionBuilder.withLongOpt(OPT_DRAW_NETWORK).withDescription(NetMakeOptions.DESC_DRAW).create("d"));
 
         options.addOption(OptionBuilder.withArgName("dist_calc").withLongOpt(OPT_DIST_CALC).hasArg()
                 .withDescription(NetMakeOptions.DESC_DIST_CALC).create("dc"));
@@ -82,7 +82,7 @@ public class NetMakeCLI {
 
     public static void main(String[] args) {
 
-        CommandLine commandLine = CommandLineHelper.startApp(createOptions(), "netmake [options] <distance_matrix_file>",
+        CommandLine commandLine = new CommandLineHelper().startApp(createOptions(), "netmake [options] <distance_matrix_file>",
                 "Creates a compatible split system with circular ordering from a distance matrix.\n" +
                         "By default this is achieved by running the NeighborNet algorithm.  However, netmake can run an" +
                         "alternative algorithm that can be run in various modes determined be and either a " +
@@ -132,6 +132,7 @@ public class NetMakeCLI {
             String weightings2 = commandLine.hasOption(OPT_WEIGHTINGS_2) ? commandLine.getOptionValue(OPT_WEIGHTINGS_2) : null;
             String coAlg = commandLine.hasOption(OPT_CO_ALG) ? CircularOrderingAlgorithms.NETMAKE.toString() : CircularOrderingAlgorithms.NEIGHBORNET.toString();
             String dc = commandLine.hasOption(OPT_DIST_CALC) ? commandLine.getOptionValue(OPT_DIST_CALC) : DistanceCalculatorFactory.JUKES_CANTOR.name();
+            boolean draw = commandLine.hasOption(OPT_DRAW_NETWORK);
 
             // Create the configured NetMake object to process
             NetMakeOptions netMakeOptions = new NetMakeOptions();
@@ -143,6 +144,7 @@ public class NetMakeCLI {
             netMakeOptions.setWeighting2(weightings2);
             netMakeOptions.setCoAlg(coAlg);
             netMakeOptions.setDc(dc);
+            netMakeOptions.setDraw(draw);
 
             // Run NetMake
             new NetMake(netMakeOptions).run();

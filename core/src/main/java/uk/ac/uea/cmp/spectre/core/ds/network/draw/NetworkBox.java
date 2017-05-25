@@ -16,7 +16,6 @@
 package uk.ac.uea.cmp.spectre.core.ds.network.draw;
 
 import uk.ac.uea.cmp.spectre.core.ds.network.Edge;
-import uk.ac.uea.cmp.spectre.core.ds.network.EdgeList;
 
 import java.util.Iterator;
 import java.util.TreeSet;

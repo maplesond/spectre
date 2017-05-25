@@ -99,7 +99,6 @@ public class ViewerLabel extends Element {
      */
     public void setCoordinates(double x, double y) {
         setOffX(x - p.getX());
-
         setOffY(y - p.getY());
     }
 
@@ -344,7 +343,6 @@ public class ViewerLabel extends Element {
 
     void computeOffsets(double x1, double y1, Collection<ViewerLabel> labels) {
         setOffX(x1 - p.getX());
-
         setOffY(y1 - p.getY());
         checkForLeader(labels);
     }

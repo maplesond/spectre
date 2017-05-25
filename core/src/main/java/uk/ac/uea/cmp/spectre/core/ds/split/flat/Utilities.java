@@ -16,8 +16,6 @@
 package uk.ac.uea.cmp.spectre.core.ds.split.flat;
 
 import java.awt.*;
-import java.io.IOException;
-import java.io.Writer;
 
 /**
  * @author balvociutes

@@ -15,7 +15,6 @@
 
 package uk.ac.uea.cmp.spectre.core.io.nexus.parser;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -1709,7 +1708,7 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitChar_seq_entry(NexusFileParser.Char_seq_entryContext ctx) {
-        this.charBuilder.addSeq(ctx.identifier().getText());
+        this.charBuilder.addSeq(ctx.getText());
     }
 
     @Override

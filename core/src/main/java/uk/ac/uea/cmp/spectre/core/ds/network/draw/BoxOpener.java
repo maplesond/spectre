@@ -79,9 +79,9 @@ public class BoxOpener {
             count++;
         }
 
-        if (count >= 10000) {
+        /*if (count >= 10000) {
             log.warn("Cancelling network layout optimisation.  Couldn't find a split in dataset for over 10000 iterations.  Probably your input is too small to process.");
-        }
+        }*/
     }
 
 

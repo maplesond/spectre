@@ -11,17 +11,18 @@ options
 // TOKENS
 // ----------------------------------------------------------------------
 
-
-FLOAT : ('-')? DIGIT* '.' DIGIT+ ('E' ('-')? DIGIT+)?;
-INT : ('-')? (DIGIT)+;
-SQSTRING : SQUOTE ( ~('\''|'\\') | ('\\' .) )* SQUOTE;
-DQSTRING : DQUOTE ( ~('\''|'\\') | ('\\' .) )* DQUOTE;
-ID : (DIGIT | '_' | '.' | '?' | '-' | '/' | CHAR)+;
 DIGIT : [0-9];     // match single digit
 CHAR : [a-zA-Z];
 SQUOTE : '\'';
 DQUOTE : '\"';
 EQUALS : '=';
+
+FLOAT : ('-')? DIGIT* '.' DIGIT+ ('E' ('-')? DIGIT+)?;
+INT : ('-')? (DIGIT)+;
+ID : (DIGIT | '_' | '.' | '?' | '-' | '/' | CHAR)+;
+SQSTRING : SQUOTE ( ~('\''|'\\') | ('\\' .) )* SQUOTE;
+DQSTRING : DQUOTE ( ~('\''|'\\') | ('\\' .) )* DQUOTE;
+
 
 
 // A String must consist of either lower or uppercase A-z characters, nothing fancy.  So we don't allow numbers or whitespace.
@@ -35,7 +36,6 @@ NL : [\r\n] -> skip;
 
 // Ignore anything between and including the square brackets
 COMMENT : '[' .*? ']' -> skip;
-
 
 
 // ----------------------------------------------------------------------
@@ -165,7 +165,7 @@ char_sequences :
     | char_seq_entry char_sequences
     ;
 
-char_seq_entry : identifier;
+char_seq_entry : ID | INT;
 
 
 
@@ -756,7 +756,7 @@ vm_leadercolor : 'leadercolor' EQUALS integer integer integer;
 // MISC RULES
 // ----------------------------------------------------------------------
 
-boolean_option : 'no' | 'yes' | 'false' | 'true';
+boolean_option : 'no' | 'yes' | 'false' | 'true' | 'NO' | 'YES' | 'FALSE' | 'TRUE';
 
 dimensions  : 'dimensions' | 'DIMENSIONS' | 'Dimensions';
 

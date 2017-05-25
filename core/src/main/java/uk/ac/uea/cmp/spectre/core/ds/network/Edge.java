@@ -15,8 +15,6 @@
 
 package uk.ac.uea.cmp.spectre.core.ds.network;
 
-import uk.ac.uea.cmp.spectre.core.ds.network.draw.DrawSplitSystem;
-
 import java.awt.*;
 import java.util.Iterator;
 

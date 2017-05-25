@@ -15,14 +15,13 @@
 
 package uk.ac.uea.cmp.spectre.core.ds.split.flat;
 
-import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.Quadruple;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.SpectreSplitSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
-import uk.ac.uea.cmp.spectre.core.math.stats.Statistics;
 import uk.ac.uea.cmp.spectre.core.util.CollectionUtils;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.StringJoiner;
 
 /*This class is used to store the permutation sequence representing
   a flat split system*/
