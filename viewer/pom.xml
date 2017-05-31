@@ -154,6 +154,14 @@
             <version>1.7</version>
         </dependency>
 
+        <!-- EPS output -->
+        <dependency>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>xmlgraphics-commons</artifactId>
+            <version>1.4</version>
+        </dependency>
+
+
 
 
     </dependencies>

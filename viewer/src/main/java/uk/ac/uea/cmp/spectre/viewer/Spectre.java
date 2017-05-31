@@ -29,6 +29,7 @@ import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.xmlgraphics.java2d.ps.EPSDocumentGraphics2D;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.DOMImplementation;
@@ -1022,6 +1023,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         JFileChooser fileChooser = new JFileChooser(directory);
         fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Portable Document Format (.pdf)", "pdf"));
         fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Scalable Vector Graphics (.svg)", "svg"));
+        fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Encapsulated PostScript (.eps)", "eps"));
         fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Image File(.png, .jpg, .gif)", "png", "jpg", "gif"));
         if (fileChooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
             File image_out = fileChooser.getSelectedFile();
@@ -1036,11 +1038,17 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
                 } catch (DocumentException ex) {
                     errorMessage("Error saving PDF", ex);
                 }
-            }  else if (ext.equalsIgnoreCase("svg")) {
+            } else if (ext.equalsIgnoreCase("svg")) {
                 try {
                     saveSVG(image_out);
                 } catch (IOException ex) {
                     errorMessage("Error saving SVG", ex);
+                }
+            } else if (ext.equalsIgnoreCase("eps")) {
+                try {
+                    saveEPS(image_out);
+                } catch (IOException ex) {
+                    errorMessage("Error saving EPS", ex);
                 }
             } else if (ext.equalsIgnoreCase("png") || ext.equalsIgnoreCase("jpg") || ext.equalsIgnoreCase("gif")) {
                 try {
@@ -1157,6 +1165,20 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         }
     }
 
+    private void saveEPS(File image_out) throws IOException {
+        try {
+            // Finally, stream out SVG to the standard output using
+            // UTF-8 encoding.
+            OutputStream out = new FileOutputStream(image_out);
+            EPSDocumentGraphics2D epsDocument = new EPSDocumentGraphics2D(false);
+            epsDocument.setGraphicContext(new org.apache.xmlgraphics.java2d.GraphicContext());
+            epsDocument.setupDocument(out, drawing.getWidth(), drawing.getHeight()); //400pt x 200pt
+            drawing.paint(epsDocument);
+        }
+        catch (IOException ex) {
+            errorMessage("Error writing EPS to file.", ex);
+        }
+    }
 
     private void saveImage(File image_file) throws IOException {
 
