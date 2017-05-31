@@ -22,6 +22,8 @@ import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfWriter;
+import org.apache.batik.dom.GenericDOMImplementation;
+import org.apache.batik.svggen.SVGGraphics2D;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
@@ -29,6 +31,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.DOMImplementation;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.network.Network;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
@@ -1018,6 +1021,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
     private void saveImageActionPerformed(java.awt.event.ActionEvent evt) {
         JFileChooser fileChooser = new JFileChooser(directory);
         fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Portable Document Format (.pdf)", "pdf"));
+        fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Scalable Vector Graphics (.svg)", "svg"));
         fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Image File(.png, .jpg, .gif)", "png", "jpg", "gif"));
         if (fileChooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
             File image_out = fileChooser.getSelectedFile();
@@ -1032,6 +1036,12 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
                 } catch (DocumentException ex) {
                     errorMessage("Error saving PDF", ex);
                 }
+            }  else if (ext.equalsIgnoreCase("svg")) {
+                try {
+                    saveSVG(image_out);
+                } catch (IOException ex) {
+                    errorMessage("Error saving SVG", ex);
+                }
             } else if (ext.equalsIgnoreCase("png") || ext.equalsIgnoreCase("jpg") || ext.equalsIgnoreCase("gif")) {
                 try {
                     saveImage(image_out);
@@ -1045,6 +1055,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
             log.info("Image saved");
         }
     }
+
 
     private void saveNetworkAsActionPerformed(java.awt.event.ActionEvent evt) {
         JFileChooser fileChooser = new JFileChooser(directory);
@@ -1119,6 +1130,33 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
             errorMessage("Document Error");
         }
     }
+
+    private void saveSVG(File image_out) throws IOException {
+        try {
+            // Get a DOMImplementation.
+            DOMImplementation domImpl =
+                    GenericDOMImplementation.getDOMImplementation();
+
+            // Create an instance of org.w3c.dom.Document.
+            String svgNS = "http://www.w3.org/2000/svg";
+            org.w3c.dom.Document document = domImpl.createDocument(svgNS, "svg", null);
+
+            // Create an instance of the SVG Generator.
+            SVGGraphics2D svgGenerator = new SVGGraphics2D(document);
+
+            // Ask the test to render into the SVG Graphics2D implementation.
+            drawing.paint(svgGenerator);
+
+            // Finally, stream out SVG to the standard output using
+            // UTF-8 encoding.
+            Writer out = new OutputStreamWriter(new FileOutputStream(image_out), "UTF-8");
+            svgGenerator.stream(out, true);
+        }
+        catch (IOException ex) {
+            errorMessage("Error writing SVG to file.", ex);
+        }
+    }
+
 
     private void saveImage(File image_file) throws IOException {
 
