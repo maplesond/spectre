@@ -43,5 +43,5 @@ References
 ----------
 
 * D. Bryant and V. Moulton. Neighbor-net: an agglomerative method for the construction of phylogenetic networks. Mol. Biol. Evol., 21:255–265, 2004.
-* D. Levy and L. Pachter. The Neighbor-Net Algorithm. ArXiv. 2008.
+* D. Levy and L. Pachter. The Neighbor-Net Algorithm. Advances in Applied Mathemathics, 47(2):240–258, 2011.
 * S. Bastkowski. From Trees to Networks and Back.  :download:`PhD Thesis <assets/spectre_bastkowskis_thesis.pdf>`. 2013

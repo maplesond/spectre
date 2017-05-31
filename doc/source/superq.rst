@@ -61,6 +61,13 @@ The following is an example QWeights file::
   quartet: 002 004 005 006 weights: 200 0 200;
   quartet: 003 004 005 006 weights: 200 0 200;
 
+References
+----------
+
+* S. Grünewald, A. Spillner, S. Bastkowski, A. Boegershausen, V. Moulton. SuperQ: Computing Supernetworks from Quartets. IEEE/ACM Transactions on Computational Biology and Bioinformatics, 10(1): 151–160, 2013.
+
+* S. Grünewald, K. Forslund, A. Dress, V. Moulton. QNet: An Agglomerative Method for the Construction of Phylogenetic Networks from Weighted Quartets, Molecular Biology and Evolution, 24(2): 532–538, 2006. 
+
 
 Credits
 -------
