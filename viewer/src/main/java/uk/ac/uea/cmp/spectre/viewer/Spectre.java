@@ -962,7 +962,11 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
                             docdir = new File(here, "../../../doc/build/html");
                         }
 
-                        desktop.browse(new URI("file://" + docdir.getCanonicalPath() + "/index.html"));
+                        
+			File indexFile = new File(docdir, "index.html");
+			String indexPath = indexFile.getCanonicalPath().replace("\\", "/");
+			indexPath = indexPath.charAt(0) == '/' ? indexPath.substring(1) : indexPath;
+			desktop.browse(new URI("file:///" + indexPath));
                     }
                     catch(IOException | URISyntaxException e) {
                         errorMessage("Couldn't open help page", e);
