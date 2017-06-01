@@ -20,12 +20,12 @@
     <parent>
         <artifactId>spectre</artifactId>
         <groupId>uk.ac.uea.cmp.spectre</groupId>
-        <version>0.6.0</version>
+        <version>1.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>net</artifactId>
-    <version>0.6.0</version>
+    <version>1.0.0</version>
 
     <name>Spectre: Network Tools</name>
 

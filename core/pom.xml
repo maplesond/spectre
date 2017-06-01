@@ -21,7 +21,7 @@
 
     <groupId>uk.ac.uea.cmp.spectre</groupId>
     <artifactId>core</artifactId>
-    <version>0.6.0</version>
+    <version>1.0.0</version>
     <packaging>jar</packaging>
 
     <name>Spectre: Core functionality</name>
@@ -253,7 +253,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.11</version>
+            <version>4.12</version>
             <scope>test</scope>
         </dependency>
 
@@ -316,7 +316,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-math3</artifactId>
-            <version>3.5</version>
+            <version>3.6.1</version>
         </dependency>
 
         <dependency>
