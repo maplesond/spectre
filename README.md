@@ -107,42 +107,15 @@ developers can design there own tools whilst leveraging the functionality in thi
 Tools
 =====
 
+SPECTRE contains the following tools, which are accessible to the user via graphical and command line interfaces.
 
-FlatNJ:
--------
+ - FlatNJ - Constructs a flat split network from a multiple sequence alignment, weighted quartet data or location data.
+ - Netmake - An implementation of NeighborNet and other variants, for rapidly constructing a circular split network from a distance matrix or a sequence alignment.
+ - NetME - Constructs a minimum evolution tree compatible with an existing circular split network, such as created by NeighborNet.
+ - SuperQ - Constructs a circular split network from a set of (partial) input trees.
 
-Constructs a flat split system from quardruples.
-
-
-
-Net:
-----
-
-A set of tools that create or use phylogenetic networks.  These tools include:
-
-* NetMake - Creates a compatible split system and a circular ordering from a distance matrix and either a single weighting or a hybrid weighting configuration.
-* NetME - Constructs a minimum evolution tree from the specified network with its implied circular order.
-
-
-Misc:
------
-
-Miscellaneous tools that might be useful for the user, and might be used directly by other modules.  These include:
-
-* Convertor - Converts phylip to nexus format and vice versa (note this can be a lossy conversion)
-* PhylipCorrector - Modifies phylip files.... ???
-* Random Distance Generator Tool - Creates phylip or nexus files with a randomly generated distance matrix
-
-
-Qtools:
--------
-
-Contains a number of tools related to creating and manipulating quartets.  These include:
-
-* QMaker - Create quartet systems from a set of trees
-* QNet - A tool for creating a circular weighted split network from a quartet system
-* SuperQ - Generates a circular split network from a set of trees.  SuperQ is a pipeline that incorporates QMaker and QNet.
-
+The graphical interface is invoked via the `spectre` script and can visualize the 
+planar split networks output from the tools.
 
 
 Quick Start:
