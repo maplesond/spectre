@@ -15,10 +15,13 @@
 
 package uk.ac.uea.cmp.spectre.core.ui.gui;
 
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
+import java.io.File;
+import java.net.URISyntaxException;
 
 /**
  * Created by dan on 09/03/14.
@@ -40,5 +43,14 @@ public class LookAndFeel {
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
             log.error("Error setting look and feel for GUI", ex);
         }
+    }
+
+    public static String getLogoFilePath() throws URISyntaxException {
+
+        File logo = new File(new File(LookAndFeel.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).getParentFile(), "etc/logo.png");
+        if (!logo.exists()) {
+            logo = FileUtils.toFile(LookAndFeel.class.getResource("/logo.png"));
+        }
+        return logo.getAbsolutePath();
     }
 }

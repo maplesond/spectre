@@ -24,7 +24,7 @@ import java.util.List;
  */
 public interface SplitBlock extends List<Integer>, Comparable<SplitBlock> {
 
-    public enum EdgeType {
+    enum EdgeType {
         EXTERNAL,
         INTERNAL
     }
@@ -103,8 +103,12 @@ public interface SplitBlock extends List<Integer>, Comparable<SplitBlock> {
     SplitBlock makeComplement(int nbTaxa);
 
     /**
-     * A string representation of this split block
-     * @return A string representation of this split block
+     * Generates the complement of this split block assuming the taxa set has the given number of taxa
+     * @param nbTaxa The number of taxa in the complete taxa set
+     * @param zerobased Assumes the taxa ids start at 0 if true, otherwise 1
+     * @return The complement of this split block
      */
-    String toString();
+    SplitBlock makeComplement(int nbTaxa, boolean zerobased);
+
+    void incTaxId();
 }

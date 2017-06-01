@@ -22,8 +22,8 @@ import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.split.SpectreSplitSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.nm.weighting.Weightings;
-import uk.ac.uea.cmp.spectre.core.io.SpectreReaderFactory;
 import uk.ac.uea.cmp.spectre.core.io.SpectreReader;
+import uk.ac.uea.cmp.spectre.core.io.SpectreReaderFactory;
 import uk.ac.uea.cmp.spectre.core.io.nexus.NexusWriter;
 
 import java.io.File;
@@ -148,7 +148,7 @@ public class RandomNeighbourNetFits {
 
             NetMake netMake = new NetMake(inputData, weighting.create(inputData.size()));
             netMake.process();
-            CircularSplitSystem network = netMake.getNetwork();
+            CircularSplitSystem network = netMake.getNetworkSS();
             network.calculateTreeWeighting();
             DistanceMatrix calculatedDistances = network.generateDistanceMatrix();
 

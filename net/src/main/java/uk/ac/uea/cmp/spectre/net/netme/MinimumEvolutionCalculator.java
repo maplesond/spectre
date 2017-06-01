@@ -15,6 +15,8 @@
 
 package uk.ac.uea.cmp.spectre.net.netme;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.split.SpectreSplitSystem;
@@ -25,6 +27,9 @@ import uk.ac.uea.cmp.spectre.core.math.stats.Statistics;
 import java.util.ArrayList;
 
 public class MinimumEvolutionCalculator {
+
+    private static Logger log = LoggerFactory.getLogger(MinimumEvolutionCalculator.class);
+
 
     public NetMEResult calcMinEvoTree(DistanceMatrix distanceMatrix, IdentifierList circularOrdering) {
 
@@ -37,18 +42,24 @@ public class MinimumEvolutionCalculator {
         if (circularOrdering.size() != distanceMatrix.size())
             throw new IllegalArgumentException("CircularOrdering and distanceMatrix have differing sizes");
 
+        log.info("Calculating Minimum Evolution Tree");
         TreeAndWeights treeAndWeights = this.calculateME(distanceMatrix, circularOrdering);
+
+        log.info("Creating Split System");
 
         //the ME tree + weights from OLS (\in R^+)
         SplitSystem meTree = treeAndWeights.getTree().convertToSplitSystem(distanceMatrix, circularOrdering);
+
         //The ME tree + original weights (\in R)
         SplitSystem originalMETree = new SpectreSplitSystem(meTree, treeAndWeights.getTreeWeights());
 
         // Compile stats
         double treeLength = treeAndWeights.getTreeWeights().calcTreeLength();
-        String stats = "Tree length: " + treeLength;
+        String stats = "Tree length of the restricted minimum evolution tree, where the weights are derived from the Ordinary Least Squares (OLS) method used for constructing the tree\nTree length: " + treeLength;
 
-        return new NetMEResult(originalMETree, meTree, stats);
+        log.info("Tree length derived from OLS: " + treeLength);
+
+        return new NetMEResult(distanceMatrix, originalMETree, meTree, stats);
     }
 
 

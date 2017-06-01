@@ -48,6 +48,9 @@ public class FlexibleDistanceMatrix extends AbstractDistanceMatrix {
 
         this.matrix = new HashMap<>();
         this.taxa = taxa;
+        for (Identifier id : this.taxa) {
+            this.addIdentifier(id);
+        }
     }
 
     public FlexibleDistanceMatrix(DistanceMatrix copy) {
@@ -83,17 +86,8 @@ public class FlexibleDistanceMatrix extends AbstractDistanceMatrix {
     }
 
 
-    protected Pair<Identifier, Identifier> getSortedPair(Identifier taxon1, Identifier taxon2) {
-
-        Identifier a = taxon1;
-        Identifier b = taxon2;
-
-        if (a.getId() > b.getId()) {
-            a = taxon2;
-            b = taxon1;
-        }
-
-        return new ImmutablePair<>(a, b);
+    protected Pair<Identifier, Identifier> getSortedPair(final Identifier taxon1, final Identifier taxon2) {
+        return taxon1.getId() < taxon2.getId() ? new ImmutablePair<>(taxon1, taxon2) : new ImmutablePair<>(taxon2, taxon1);
     }
 
 

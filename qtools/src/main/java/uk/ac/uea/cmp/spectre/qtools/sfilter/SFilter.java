@@ -19,8 +19,6 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.spectre.core.io.nexus.Nexus;
 import uk.ac.uea.cmp.spectre.core.io.nexus.NexusReader;
 import uk.ac.uea.cmp.spectre.core.io.nexus.NexusWriter;
@@ -91,7 +89,7 @@ public class SFilter extends SpectreTool {
         Nexus raw = new NexusReader().readNexusData(inputFile);
 
         // Filter
-        raw.getSplitSystem().filterByWeight(minThreshold);
+        raw.getSplitSystem().filterByRelativeWeight(minThreshold);
 
         // Save
         new NexusWriter().writeNexusData(outputFile, raw);

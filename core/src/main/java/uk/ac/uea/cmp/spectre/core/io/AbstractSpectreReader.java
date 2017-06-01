@@ -15,6 +15,7 @@
 
 package uk.ac.uea.cmp.spectre.core.io;
 
+import uk.ac.uea.cmp.spectre.core.ds.Locations;
 import uk.ac.uea.cmp.spectre.core.ds.Sequences;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.QuartetSystem;
@@ -63,6 +64,11 @@ public abstract class AbstractSpectreReader implements SpectreReader {
     @Override
     public QuartetSystem readQuartets(File file) throws IOException {
         throw new UnsupportedOperationException(this.getClass().getCanonicalName() + " does not support reading of quartets.");
+    }
+
+    @Override
+    public Locations readLocations(File file) throws IOException {
+        throw new UnsupportedOperationException(this.getClass().getCanonicalName() + " does not support reading of locations.");
     }
 
     @Override

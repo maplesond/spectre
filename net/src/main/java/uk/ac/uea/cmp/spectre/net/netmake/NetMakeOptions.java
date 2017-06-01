@@ -15,6 +15,7 @@
 
 package uk.ac.uea.cmp.spectre.net.netmake;
 
+import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceCalculatorFactory;
 import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.CircularOrderingAlgorithms;
 import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.nm.weighting.Weightings;
 
@@ -38,7 +39,11 @@ public class NetMakeOptions {
     public static final String DESC_TREE_PARAM = "The weighting parameter passed to the chosen weighting algorithm. " +
             " Value must be between 0.0 and 1.0.  Default: " + DEFAULT_TREE_WEIGHT;
 
-    public static final String DESC_CO_ALG = "The circular ordering algorithm to use: " + CircularOrderingAlgorithms.toListString() + ". Default: NETMAKE";
+    public static final String DESC_CO_ALG = "The circular ordering algorithm to use: " + CircularOrderingAlgorithms.toListString() + ". Default: NEIGHBORNET";
+
+    public static final String DESC_DRAW = "If selected, netmake will draw the circular split system, to create a network.  If the number of taxa is high (>50) this can take a significant amount of time relative to generating the circular split system.";
+
+    public static final String DESC_DIST_CALC = "If running from MSAs, the distance matrix calculator to use: " + DistanceCalculatorFactory.toListString() + ". Default: " + DistanceCalculatorFactory.JUKES_CANTOR.name();
 
     public static final String DESC_WEIGHTINGS_1 = "For NETMAKE circular ordering algorithm, select 1st weighting type: " + Weightings.toListString() + ".  Required if circular algorithm is NETMAKE.  Default: TSP";
 
@@ -52,13 +57,15 @@ public class NetMakeOptions {
     private String weighting2;
     private double treeParam;
     private String coAlg;
+    private String dc;
+    private boolean draw;
 
 
     public NetMakeOptions() {
-        this(null, null, null, null, null, DEFAULT_TREE_WEIGHT, "NETMAKE");
+        this(null, null, null, null, null, DEFAULT_TREE_WEIGHT, "NEIGHBORNET", DistanceCalculatorFactory.JUKES_CANTOR.name(), false);
     }
 
-    public NetMakeOptions(File input, File outputNetwork, File outputTree, String weighting1, String weighting2, double treeParam, String coAlg) {
+    public NetMakeOptions(File input, File outputNetwork, File outputTree, String weighting1, String weighting2, double treeParam, String coAlg, String dc, boolean draw) {
 
         // Validates that we have sensible input for the weightings
         if (weighting1 != null && !weighting1.isEmpty())
@@ -74,6 +81,8 @@ public class NetMakeOptions {
         this.weighting2 = weighting2;
         this.treeParam = treeParam;
         this.coAlg = coAlg;
+        this.dc = dc;
+        this.draw = draw;
     }
 
     public File getInput() {
@@ -130,5 +139,21 @@ public class NetMakeOptions {
 
     public void setCoAlg(String coAlg) {
         this.coAlg = coAlg;
+    }
+
+    public String getDc() {
+        return dc;
+    }
+
+    public void setDc(String dc) {
+        this.dc = dc;
+    }
+
+    public boolean isDraw() {
+        return draw;
+    }
+
+    public void setDraw(boolean draw) {
+        this.draw = draw;
     }
 }

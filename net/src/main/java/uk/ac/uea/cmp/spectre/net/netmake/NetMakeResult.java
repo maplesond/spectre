@@ -15,9 +15,11 @@
 
 package uk.ac.uea.cmp.spectre.net.netmake;
 
+import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
+import uk.ac.uea.cmp.spectre.core.ds.network.Network;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
-import uk.ac.uea.cmp.spectre.core.io.SpectreWriter;
-import uk.ac.uea.cmp.spectre.core.io.SpectreWriterFactory;
+import uk.ac.uea.cmp.spectre.core.io.nexus.Nexus;
+import uk.ac.uea.cmp.spectre.core.io.nexus.NexusWriter;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,30 +27,52 @@ import java.io.IOException;
 
 public class NetMakeResult {
 
-    private SplitSystem tree;
-    private SplitSystem network;
+    private SplitSystem treeSS;
+    private SplitSystem networkSS;
+    private DistanceMatrix dm;
+    private Network network;
+    private Network tree;
 
-    public NetMakeResult(SplitSystem tree, SplitSystem network) {
-        this.tree = tree;
+    public NetMakeResult(DistanceMatrix dm, SplitSystem treeSS, Network tree, SplitSystem networkSS, Network network) {
+        this.dm = dm;
+        this.treeSS = treeSS;
+        this.networkSS = networkSS;
         this.network = network;
+        this.tree = tree;
     }
 
-    public SplitSystem getTree() {
-        return tree;
+    public SplitSystem getTreeSS() {
+        return treeSS;
     }
 
-    public SplitSystem getNetwork() {
+    public SplitSystem getNetworkSS() {
+        return networkSS;
+    }
+
+    public Network getNetwork() {
         return network;
+    }
+
+    public Network getTree() {
+        return tree;
     }
 
     public void save(File outputNetwork, File outputTree) throws IOException {
 
-        SpectreWriter spectreWriter = SpectreWriterFactory.NEXUS.create();
+        Nexus nexus = new Nexus();
+        nexus.setTaxa(this.dm.getTaxa());
+        nexus.setDistanceMatrix(this.dm);
+        nexus.setSplitSystem(this.networkSS);
+        nexus.setNetwork(this.network);
+        new NexusWriter().writeNexusData(outputNetwork, nexus);
 
-        spectreWriter.writeSplitSystem(outputNetwork, this.getNetwork());
-
-        if (this.tree != null && outputTree != null) {
-            spectreWriter.writeSplitSystem(outputTree, this.getTree());
+        if (this.treeSS != null && outputTree != null) {
+            Nexus nextree = new Nexus();
+            nexus.setTaxa(this.dm.getTaxa());
+            nexus.setDistanceMatrix(this.dm);
+            nexus.setSplitSystem(this.treeSS);
+            nexus.setNetwork(this.tree);
+            new NexusWriter().writeNexusData(outputTree, nextree);
         }
     }
 }

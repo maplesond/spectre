@@ -29,4 +29,11 @@ public class StringUtils {
         }
         return letters.toString();
     }
+
+    public static String stripQuotes(final String string) {
+        String newstring = string.replaceAll("^\"|\"$", "");
+        return newstring.replaceAll("^\'|\'$", "");
+    }
+
+
 }

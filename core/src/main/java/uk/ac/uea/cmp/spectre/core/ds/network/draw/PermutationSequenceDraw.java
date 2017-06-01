@@ -18,9 +18,7 @@ package uk.ac.uea.cmp.spectre.core.ds.network.draw;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import uk.ac.uea.cmp.spectre.core.ds.Identifier;
-import uk.ac.uea.cmp.spectre.core.ds.network.Edge;
-import uk.ac.uea.cmp.spectre.core.ds.network.EdgeList;
-import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
+import uk.ac.uea.cmp.spectre.core.ds.network.*;
 import uk.ac.uea.cmp.spectre.core.ds.split.SpectreSplitBlock;
 import uk.ac.uea.cmp.spectre.core.ds.split.Split;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitBlock;
@@ -62,7 +60,7 @@ public class PermutationSequenceDraw {
     //names of the taxa
     String[] taxaname = null;
     //sequence of swaps. A swap is specified by the index
-    //of the element in the array that is swapped with the 
+    //of the element in the array that is swapped with the
     //successor in the array. Each swap corresponds to
     //a split, namely the elements up to the element
     //that is indexed in the swap vs the rest
@@ -93,6 +91,10 @@ public class PermutationSequenceDraw {
     double[] trivial = null;
 
 
+    SplitSystem ss = null;
+    Map<Integer, Integer> mapBack;
+
+
 
     //**********************************************************
     //Constructors for this class
@@ -108,7 +110,7 @@ public class PermutationSequenceDraw {
      * @param in_active Active flags
      * @param trivialWeights Trivial weights
      */
-    public PermutationSequenceDraw(int[] in_init_sequ, int[] in_swaps, double[] in_weights, boolean[] in_active, double[] trivialWeights) {
+    public PermutationSequenceDraw(int[] in_init_sequ, int[] in_swaps, double[] in_weights, boolean[] in_active, double[] trivialWeights, String[] taxanames) {
         int i = 0;
 
         ntaxa = in_init_sequ.length;
@@ -134,7 +136,7 @@ public class PermutationSequenceDraw {
             initSequ[i] = in_init_sequ[i];
             representedby[i] = i;
             activeTaxa[i] = true;
-            taxaname[i] = "taxon" + i;
+            taxaname[i] = taxanames[i];
             trivial[i] = trivialWeights[i];
         }
 
@@ -249,7 +251,7 @@ public class PermutationSequenceDraw {
     //***********************************
 
 
-    public int getNtaxa() {
+    public int getNbTaxa() {
         return ntaxa;
     }
 
@@ -337,6 +339,7 @@ public class PermutationSequenceDraw {
         weights[index] = value;
     }
 
+
     //*********************************************************************
     //Other public methods of this class
     //*********************************************************************
@@ -350,7 +353,7 @@ public class PermutationSequenceDraw {
         StringBuilder sb = new StringBuilder();
 
         sb.append("Number of taxa: ").append(ntaxa)
-          .append("List of taxa:");
+                .append("List of taxa:");
 
         for (int i = 0; i < ntaxa; i++) {
             sb.append(taxaname[i]);
@@ -388,6 +391,20 @@ public class PermutationSequenceDraw {
 
         return sb.toString();
     }
+
+    public Network createOptimisedNetwork() {
+        Vertex net = drawSplitSystem(-1.0);
+        SpectreNetwork network = new SpectreNetwork(net);
+        net = net.optimiseLayout(this, network);
+        CompatibleCorrector compatibleCorrectorPrecise = new CompatibleCorrector(new AngleCalculatorMaximalArea());
+        /*compatibleCorrectorPrecise.addInnerTrivial(net, this.trivial, network);
+        if (!network.veryLongTrivial()) {
+            compatibleCorrectorPrecise.moveTrivial(net, 5, network);
+        }*/
+
+        return network;
+    }
+
 
     /**
      * This method filters the splits by labeling those with a length below the given threshold inactive.
@@ -439,285 +456,6 @@ public class PermutationSequenceDraw {
         return v;
     }
 
-    /**
-     * This method randomly sets some splits inactive.  For testing purposes. The parameter is a real number between 0 and
-     * 1. This number equals the probability with which a split is set to be active.
-     * @param thold Threshold value
-     */
-    public void knock_out(double thold) {
-        int i = 0;
-        Random rgen = new Random();
-        nActive = 0;
-        if (active == null) {
-            active = new boolean[nswaps];
-        }
-
-        for (i = 0; i < nswaps; i++) {
-            if (rgen.nextDouble() < thold) {
-                active[i] = true;
-                nActive++;
-            } else {
-                active[i] = false;
-            }
-        }
-    }
-
-    //This method is used to reset the various flags used
-    //when computing a split graph for the active splits.
-    public void reset() {
-        int i = 0;
-        for (i = 0; i < ntaxa; i++) {
-            representedby[i] = i;
-            activeTaxa[i] = true;
-        }
-        for (i = 0; i < nswaps; i++) {
-            active[i] = true;
-        }
-        nclasses = ntaxa;
-        nActive = nswaps;
-    }
-
-    /**
-     * Checks whether the permutation sequence is valid, that is, whether all arrays have been initialized properly and
-     * whether every pair of distinct taxe swaps precisely once.  The latter test, in particular, was included to detect
-     * potential numerical problems when constructing a permutation sequence from a set of points in the plane whose
-     * coordinates are given by floating point numbers.
-     * @return True if consistent, false otherwise
-     */
-    public boolean checkConsistency() {
-        int i = 0;
-        int j = 0;
-        int k = 0;
-        int h = 0;
-
-        if (initSequ == null) {
-            throw new IllegalStateException("Array init_sequ is null");
-        }
-
-        if (taxaname == null) {
-            throw new IllegalStateException("Array taxaname is null");
-        }
-
-        if (swaps == null) {
-            throw new IllegalStateException("Array swaps is null");
-        }
-
-        if (active == null) {
-            throw new IllegalStateException("Array active is null");
-        }
-
-        if (representedby == null) {
-            throw new IllegalStateException("Array representedby is null");
-        }
-
-        if (activeTaxa == null) {
-            throw new IllegalStateException("Array activetaxa is null");
-        }
-
-        if (weights == null) {
-            throw new IllegalStateException("Array weights is null");
-        }
-
-        if (initSequ.length != ntaxa) {
-            throw new IllegalStateException("Length of array init_sequ not okay");
-        }
-
-        if (taxaname.length != ntaxa) {
-            throw new IllegalStateException("Length of array taxaname not okay");
-        }
-
-        if (swaps.length != nswaps) {
-            throw new IllegalStateException("Length of array swaps not okay");
-        }
-
-        if (active.length != nswaps) {
-            throw new IllegalStateException("Length of array active not okay");
-        }
-
-        if (representedby.length != ntaxa) {
-            throw new IllegalStateException("Length of array representedby not okay");
-        }
-
-        if (activeTaxa.length != ntaxa) {
-            throw new IllegalStateException("Length of array activetaxa not okay");
-        }
-
-        if (weights.length != nswaps) {
-            throw new IllegalStateException("Length of array weights not okay");
-        }
-
-        for (i = 0; i < (ntaxa - 1); i++) {
-            for (j = i + 1; j < ntaxa; j++) {
-                if (initSequ[i] == initSequ[j]) {
-                    throw new IllegalStateException("Entries of init_sequ are not pairwise distinct");
-                }
-            }
-        }
-
-        for (i = 0; i < ntaxa; i++) {
-            if ((initSequ[i] < 0) || (initSequ[i] >= ntaxa)) {
-                throw new IllegalStateException("Entries of init_sequ are not in range 0,1,...,(ntaxa-1)");
-            }
-        }
-
-        for (i = 0; i < nswaps; i++) {
-            if (weights[i] < 0.0) {
-                throw new IllegalStateException("Some split weights are negative");
-            }
-        }
-
-        for (i = 0; i < ntaxa; i++) {
-            if (taxaname[i] == null) {
-                throw new IllegalStateException("Some names of taxa are null");
-            }
-        }
-
-        h = 0;
-        for (i = 0; i < nswaps; i++) {
-            if (active[i]) {
-                h++;
-            }
-        }
-        if (h != nActive) {
-            throw new IllegalStateException("Number of active splits not okay");
-        }
-
-        boolean[][] swapped = new boolean[ntaxa][ntaxa];
-
-        for (i = 0; i < ntaxa; i++) {
-            for (j = 0; j < ntaxa; j++) {
-                swapped[i][j] = false;
-            }
-        }
-
-        int[] cursequ = new int[ntaxa];
-        for (i = 0; i < ntaxa; i++) {
-            cursequ[i] = initSequ[i];
-        }
-
-        for (k = 0; k < nswaps; k++) {
-            if (swapped[cursequ[swaps[k]]][cursequ[swaps[k] + 1]] == false) {
-                swapped[cursequ[swaps[k]]][cursequ[swaps[k] + 1]] = true;
-                swapped[cursequ[swaps[k] + 1]][cursequ[swaps[k]]] = true;
-                h = cursequ[swaps[k]];
-                cursequ[swaps[k]] = cursequ[swaps[k] + 1];
-                cursequ[swaps[k] + 1] = h;
-            } else {
-                throw new IllegalStateException("Sequence of swaps not valid");
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * We need to number the active splits consecutively since SplitsTree seems only able to handle indices up to 10000
-     */
-    public void compressSplitIndices() {
-        int i = 0;
-
-        if (compressed == null) {
-            compressed = new int[nswaps];
-        }
-
-        //mark active splits by 1
-        for (i = 0; i < nswaps; i++) {
-            if (active[i]) {
-                compressed[i] = 1;
-            } else {
-                compressed[i] = 0;
-            }
-        }
-        compressed[0] = compressed[0] - 1;
-        //compute prefix sum
-        for (i = 1; i < nswaps; i++) {
-            compressed[i] = compressed[i] + compressed[i - 1];
-        }
-    }
-
-    //This method computes the distance matrix
-    //induced by the active splits in the flat split
-    //system. This method still exists mainly for testing
-    //purposes. It should not be called to compute
-    //the induced distance on larger flat split systems
-    //as it is very slow. A faster method for computing
-    //the induced distance is available in the 
-    //class FitWeight
-    public double[][] get_induced_distance() {
-        double[][] dist = new double[ntaxa][ntaxa];
-        SplitSystemDraw ssyst = new SplitSystemDraw(this);
-
-        int i = 0;
-        int j = 0;
-        int k = 0;
-
-        for (i = 0; i < ntaxa; i++) {
-            dist[i][i] = 0.0;
-        }
-
-        for (i = 0; i < (ntaxa - 1); i++) {
-            for (j = i + 1; j < ntaxa; j++) {
-                dist[i][j] = 0.0;
-                for (k = 0; k < nswaps; k++) {
-                    if (active[k]) {
-                        if (ssyst.splits[k][i] != ssyst.splits[k][j]) {
-                            dist[i][j] = dist[i][j] + weights[k];
-                        }
-                    }
-                }
-                dist[j][i] = dist[i][j];
-            }
-        }
-        return dist;
-    }
-
-
-
-    /**
-     * This method is used to set the flags so that the local search is performed on full flat split systems
-     */
-    public void init_local_search() {
-        hasWeights = true;
-        hasActiveFlags = true;
-
-        int i = 0;
-
-        for (i = 0; i < nswaps; i++) {
-            active[i] = true;
-        }
-        compressSplitIndices();
-    }
-
-    //********************************************************************
-//Private methods of this class
-//********************************************************************
-    //Used in the constructor that computes a permutation
-    //sequence from a set of points in the plane. The
-    //elements in the initial permutation are sorted according
-    //to decreasing x-coordinates as these coordinates
-    //correspond to the slope of the dual straight line
-    //associated to a point. This is just a simple insertion-
-    //sort and, hence, very slow. If this turns out to
-    //be a bottleneck at some point, it should be replaced
-    //by a faster algorithm.
-    private void sortinitsequence(double[] xcoord, double[] ycoord) {
-        int i = 0;
-        int j = 0;
-        int h = 0;
-
-        for (i = 1; i < ntaxa; i++) {
-            for (j = i; j > 0; j--) {
-                if ((xcoord[initSequ[j]] > xcoord[initSequ[j - 1]])
-                        || ((xcoord[initSequ[j]] == xcoord[initSequ[j - 1]]) && (ycoord[initSequ[j]] > ycoord[initSequ[j - 1]]))) {
-                    h = initSequ[j - 1];
-                    initSequ[j - 1] = initSequ[j];
-                    initSequ[j] = h;
-                } else {
-                    break;
-                }
-            }
-        }
-    }
 
     public void restoreTrivialWeightsForExternalVertices() {
         SplitSystemDraw ss = new SplitSystemDraw(this);
@@ -768,47 +506,9 @@ public class PermutationSequenceDraw {
         return null;
     }
 
-    void filter(double threshold) {
-        for (int i = 0; i < active.length; i++) {
-            active[i] = true;
-        }
-
-        SplitSystemDraw ss = new SplitSystemDraw(this);
-
-        boolean current;
-        for (int i = 0; i < ss.nsplits; i++) {
-            if (active[i]) {
-                for (int j = 0; j < ss.nsplits; j++) {
-                    if (ss.isCompatible(i, j) == SplitSystemDraw.Compatible.NO) {
-                        if (weights[i] < weights[j] * threshold) {
-                            active[i] = false;
-                        } else if (weights[j] < weights[i] * threshold) {
-                            active[j] = false;
-                        }
-                    }
-                }
-            }
-        }
-
-        nActive = 0;
-        for (int i = 0; i < active.length; i++) {
-            if (active[i]) {
-                nActive++;
-            }
-        }
-    }
-
-
-
-
-    public void setTaxaNames(String[] taxaNames) {
-        taxaname = new String[taxaNames.length];
-        System.arraycopy(taxaNames, 0, taxaname, 0, taxaNames.length);
-    }
-
     public void removeSplitsSmallerOrEqualThan(double thr) {
         for (int i = 0; i < weights.length; i++) {
-            if (weights[i] <= 0) {
+            if (weights[i] <= thr) {
                 active[i] = false;
             }
         }
@@ -860,19 +560,7 @@ public class PermutationSequenceDraw {
         return this.completeNetwork(chain, splitedges);
     }
 
-    /**
-     * For checking if the resulting network has a minimal number of boxes
-     */
-    public void checkdrawsplitsystem() {
-        //Array of sets of edges, one for each split
-        TreeSet[] splitedges = new TreeSet[this.getNswaps()];
-
-        Vertex v = computeSplitGraph(splitedges);
-        v = this.removeCompatibleBoxes(v, true, splitedges);
-    }
-
-
-    public static enum Direction {
+    public enum Direction {
         LEFT,
         RIGHT
     }
@@ -889,39 +577,32 @@ public class PermutationSequenceDraw {
      * @return Left-most edges in the split network
      */
     private Edge[] leftmostEdges(TreeSet<Edge>[] splitedges) {
-        int i = 0;
         int j = 0;
-        double dx = 0.0;
-        double dy = 0.0;
         double xcoord = 0.0;
         double ycoord = 0.0;
 
-        Vertex u = null;
-        Vertex v = null;
-        Edge e = null;
-
         Edge[] chain = new Edge[this.getnActive()];
 
-        u = new Vertex(xcoord, ycoord);
+        Vertex u = new Vertex(xcoord, ycoord);
 
-        for (i = 0; i < this.getNswaps(); i++) {
+        for (int i = 0; i < this.getNswaps(); i++) {
             //create new set for edges associated to this split
             splitedges[i] = new TreeSet<>();
 
             if (this.getActive()[i]) {
-                dx = -Math.cos(((j + 1) * Math.PI) / (this.getnActive() + 1));
-                dy = -Math.sin(((j + 1) * Math.PI) / (this.getnActive() + 1));
+                double dx = -Math.cos(((j + 1) * Math.PI) / (this.getnActive() + 1));
+                double dy = -Math.sin(((j + 1) * Math.PI) / (this.getnActive() + 1));
 
                 xcoord = xcoord + (this.getWeights()[i] * dx);
                 ycoord = ycoord + (this.getWeights()[i] * dy);
 
-                v = u;
+                Vertex v = u;
                 u = new Vertex(xcoord, ycoord);
-                e = new Edge(v, u, i, 1);
+                Edge e = new Edge(v, u, i, 1);
                 splitedges[i].add(e);
                 chain[j] = e;
-                v.add_edge_before_first(e);
-                u.add_edge_after_last(e);
+                v.prependEdge(e);
+                u.appendEdge(e);
                 j++;
             }
         }
@@ -939,46 +620,35 @@ public class PermutationSequenceDraw {
     private Vertex completeNetwork(Edge[] chain, TreeSet[] splitedges) {
         SplitSystemDraw ssyst = new SplitSystemDraw(this);
 
-        int i = 0;
-        int j = 0;
-
-        boolean inverted = true;
-        double dx = 0.0;
-        double dy = 0.0;
-
         Vertex v = null;
-        Edge e1 = null;
-        Edge e2 = null;
-
-        for (i = 0; i < this.getNtaxa(); i++) {
-            inverted = true;
-            //System.out.println("Taxon " + pseq.initSequ[i]);
+        for (int i = 0; i < this.getNbTaxa(); i++) {
+            boolean inverted = true;
 
             final int initSequI = this.getInitSequ()[i];
 
             while (inverted) {
                 inverted = false;
 
-                for (j = 1; j < chain.length; j++) {
+                for (int j = 1; j < chain.length; j++) {
                     //test if the splits associated to edges
                     //chain[j-1] and chain[j] must be inverted
 
-                    if (ssyst.splits[chain[j - 1].getIdxsplit()][initSequI] == 0
-                            && ssyst.splits[chain[j].getIdxsplit()][initSequI] == 1) {
-                        dx = (chain[j].getBottom()).getX() - (chain[j].getTop()).getX();
-                        dy = (chain[j].getBottom()).getY() - (chain[j].getTop()).getY();
+                    if (ssyst.splits[chain[j - 1].getSplitIndex()][initSequI] == 0
+                            && ssyst.splits[chain[j].getSplitIndex()][initSequI] == 1) {
+                        double dx = (chain[j].getBottom()).getX() - (chain[j].getTop()).getX();
+                        double dy = (chain[j].getBottom()).getY() - (chain[j].getTop()).getY();
 
                         v = new Vertex((chain[j - 1].getTop()).getX() + dx, (chain[j - 1].getTop()).getY() + dy);
-                        e1 = new Edge(chain[j - 1].getTop(), v, chain[j].getIdxsplit(), chain[j].getTimestp() + 1);
-                        splitedges[e1.getIdxsplit()].add(e1);
-                        e2 = new Edge(v, chain[j].getBottom(), chain[j - 1].getIdxsplit(), chain[j - 1].getTimestp() + 1);
-                        splitedges[e2.getIdxsplit()].add(e2);
+                        Edge e1 = new Edge(chain[j - 1].getTop(), v, chain[j].getSplitIndex(), chain[j].getTimestp() + 1);
+                        splitedges[e1.getSplitIndex()].add(e1);
+                        Edge e2 = new Edge(v, chain[j].getBottom(), chain[j - 1].getSplitIndex(), chain[j - 1].getTimestp() + 1);
+                        splitedges[e2.getSplitIndex()].add(e2);
                         chain[j - 1] = e1;
                         chain[j] = e2;
-                        v.add_edge_before_first(e2);
-                        v.add_edge_after_last(e1);
-                        (e1.getTop()).add_edge_before_first(e1);
-                        (e2.getBottom()).add_edge_after_last(e2);
+                        v.prependEdge(e2);
+                        v.appendEdge(e1);
+                        e1.getTop().prependEdge(e1);
+                        e2.getBottom().appendEdge(e2);
                         inverted = true;
                     }
                 }
@@ -999,8 +669,8 @@ public class PermutationSequenceDraw {
                 this.setNClasses(1);
             } else {
                 v = chain[0].getTop();
-                for (j = 0; j < chain.length; j++) {
-                    if (ssyst.splits[chain[j].getIdxsplit()][initSequI] == 0) {
+                for (int j = 0; j < chain.length; j++) {
+                    if (ssyst.splits[chain[j].getSplitIndex()][initSequI] == 0) {
                         (chain[j].getTop()).getTaxa().add(new Identifier(taxaname[initSequI], initSequI));
                         if (chain[j].getTop().getTaxa().size() > 1) {
                             this.setRepresentedByAt(initSequI, chain[j].getTop().getTaxa().getFirst().getId());
@@ -1025,26 +695,6 @@ public class PermutationSequenceDraw {
     }
 
     /**
-     * This method checks whether or not a split in the given split system is trivial.  The split is given by its index
-     * in the 2-dimensional 0-1-array representing the split system.
-     * @param s Split to check
-     * @param ssyst Split system
-     * @return Whether the given split is trivial or not
-     */
-    private boolean isTrivial(int s, SplitSystemDraw ssyst) {
-        int i = 0;
-        int c = 0;
-
-        for (i = 0; i < ssyst.ntaxa; i++) {
-            if (this.getActiveTaxa()[i] == true) {
-                c = c + ssyst.splits[s][i];
-            }
-        }
-
-        return (c == 1) || (c == (this.getNclasses() - 1));
-    }
-
-    /**
      * This method checks for every pair of distinct splits in the split system whether they are compatible.  If they
      * are it is checked whether these two splits form a box in the network. If they do we remove it. This ensures that
      * the resulting split network is minimal.
@@ -1058,15 +708,8 @@ public class PermutationSequenceDraw {
         //get the split system from the permutation sequence
         SplitSystemDraw ssyst = new SplitSystemDraw(this);
 
-        //loop variables
-        int i = 0;
-        int j = 0;
-
         //count incompatible pairs
         int count = 0;
-
-        //number of rounds
-        int rounds = 0;
 
         //vertex in the split network
         Vertex u = v;
@@ -1075,10 +718,10 @@ public class PermutationSequenceDraw {
         SplitSystemDraw.Compatible pattern = null;
 
         //check all pairs of active splits
-        for (i = 0; i < (this.getNswaps() - 1); i++) {
+        for (int i = 0; i < (this.getNswaps() - 1); i++) {
             if (this.getActive()[i]) {
 
-                for (j = i + 1; j < this.getNswaps(); j++) {
+                for (int j = i + 1; j < this.getNswaps(); j++) {
                     if (this.getActive()[j]) {
                         pattern = ssyst.isCompatible(i, j);
                         if (pattern.isCompatible()) {
@@ -1102,7 +745,7 @@ public class PermutationSequenceDraw {
         //First compute the number edges in the network
         int nedges = 0;
 
-        for (i = 0; i < splitedges.length; i++) {
+        for (int i = 0; i < splitedges.length; i++) {
             nedges = nedges + splitedges[i].size();
         }
 
@@ -1250,7 +893,7 @@ public class PermutationSequenceDraw {
      * @return A pair of edge lists.  The first represents a list of relevant edges and the second represents those that cross
      */
     private Pair<EdgeList, EdgeList> collectEdgesFromBox(Edge h1, Edge h2, int s, Direction dirs,
-                                               TreeSet[] splitedges, int parts) {
+                                                         TreeSet[] splitedges, int parts) {
         Iterator iter = splitedges[s].iterator();
         EdgeList crossLists = new EdgeList();
         EdgeList eLists = new EdgeList();
@@ -1312,25 +955,15 @@ public class PermutationSequenceDraw {
      * @return Edges that cross both lists
      */
     private EdgeList findCrossBoth(EdgeList crosslista, EdgeList crosslistb, int b) {
-        ListIterator itera = crosslista.listIterator();
-        ListIterator iterb = null;
-
-        Edge e = null;
-        Edge f = null;
 
         EdgeList crossboth = new EdgeList();
 
-        while (itera.hasNext()) {
-            e = (Edge) itera.next();
-
-            if (e.getIdxsplit() == b) {
+        for (Edge e : crosslista) {
+            if (e.getSplitIndex() == b) {
                 crossboth.addLast(e);
             } else {
-                iterb = crosslistb.listIterator();
-
-                while (iterb.hasNext()) {
-                    f = (Edge) iterb.next();
-                    if (e.getIdxsplit() == f.getIdxsplit()) {
+                for (Edge f : crosslistb) {
+                    if (e.getSplitIndex() == f.getSplitIndex()) {
                         crossboth.addLast(e);
                         break;
                     }
@@ -1354,7 +987,7 @@ public class PermutationSequenceDraw {
     private int findTriangle(int a, EdgeList crossboth, EdgeList cleanlist, TreeSet[] splitedges) {
         cleanlist.clear();
 
-        TreeSet<Integer> crossindices = crossboth.getCrossIndices();
+        Set<Integer> crossindices = crossboth.getSplitIndexSet();
 
         Edge e = null;
         Edge f = null;
@@ -1383,7 +1016,7 @@ public class PermutationSequenceDraw {
             indexf = go_to_first_crossing(f, a, crossindices, listf, splitedges);
 
             //triangle found?
-            if ((indexe == f.getIdxsplit()) && (indexf == e.getIdxsplit())) {
+            if ((indexe == f.getSplitIndex()) && (indexf == e.getSplitIndex())) {
                 cleanlist.addAll(listf);
                 break;
             } else {
@@ -1391,7 +1024,7 @@ public class PermutationSequenceDraw {
             }
         }
 
-        return e.getIdxsplit();
+        return e.getSplitIndex();
     }
 
     /**
@@ -1403,30 +1036,30 @@ public class PermutationSequenceDraw {
      * @param splitedges
      * @return
      */
-    private static int go_to_first_crossing(Edge e, int a, TreeSet crossindices, LinkedList<Edge> liste, TreeSet[] splitedges) {
+    private static int go_to_first_crossing(Edge e, int a, Set crossindices, LinkedList<Edge> liste, TreeSet[] splitedges) {
         int dire = 0;
         int sidx = 0;
 
         //first check in which direction we need to go
-        SortedSet testtail = splitedges[e.getIdxsplit()].tailSet(e);
+        SortedSet testtail = splitedges[e.getSplitIndex()].tailSet(e);
 
         Edge f = null;
 
         if (testtail.size() == 1) {
             dire = -1;
-        } else if (a == (e.getBottom().getEdgeList().get((e.getBottom().getEdgeList().indexOf(e) + 1) % e.getBottom().getEdgeList().size())).getIdxsplit()) {
+        } else if (a == (e.getBottom().getEdgeList().get((e.getBottom().getEdgeList().indexOf(e) + 1) % e.getBottom().getEdgeList().size())).getSplitIndex()) {
             dire = 1;
         } else {
             dire = -1;
         }
 
         if (dire == 1) {
-            SortedSet tail = splitedges[e.getIdxsplit()].tailSet(e);
+            SortedSet tail = splitedges[e.getSplitIndex()].tailSet(e);
             Iterator tailiter = tail.iterator();
             f = (Edge) tailiter.next();
             while (tailiter.hasNext()) {
                 f = (Edge) tailiter.next();
-                sidx = (f.getTop().getEdgeList().get((f.getTop().getEdgeList().indexOf(f) + 1) % f.getTop().getEdgeList().size())).getIdxsplit();
+                sidx = (f.getTop().getEdgeList().get((f.getTop().getEdgeList().indexOf(f) + 1) % f.getTop().getEdgeList().size())).getSplitIndex();
                 if (crossindices.contains(new Integer(sidx))) {
                     return sidx;
                 } else {
@@ -1434,7 +1067,7 @@ public class PermutationSequenceDraw {
                 }
             }
         } else {
-            SortedSet head = splitedges[e.getIdxsplit()].headSet(e);
+            SortedSet head = splitedges[e.getSplitIndex()].headSet(e);
             Iterator headiter = head.iterator();
             LinkedList reverse = new LinkedList();
 
@@ -1448,7 +1081,7 @@ public class PermutationSequenceDraw {
 
             while (reviter.hasNext()) {
                 f = (Edge) reviter.next();
-                sidx = ((Edge) f.getBottom().getEdgeList().get((f.getBottom().getEdgeList().indexOf(f) + 1) % f.getBottom().getEdgeList().size())).getIdxsplit();
+                sidx = ((Edge) f.getBottom().getEdgeList().get((f.getBottom().getEdgeList().indexOf(f) + 1) % f.getBottom().getEdgeList().size())).getSplitIndex();
                 if (crossindices.contains(new Integer(sidx))) {
                     return sidx;
                 } else {
@@ -1479,20 +1112,20 @@ public class PermutationSequenceDraw {
      * @param splitedges
      */
     private void getRidOfTriangle(int a, int b, int s, Direction dira, int parta,
-                                            EdgeList crossboth, EdgeList cleanlist, EdgeList elista,
-                                            EdgeList elistb, TreeSet[] splitedges) {
+                                  EdgeList crossboth, EdgeList cleanlist, EdgeList elista,
+                                  EdgeList elistb, TreeSet[] splitedges) {
         Edge e = cleanlist.getFirst();
 
         Direction dire = null;
 
         //first check in which direction we need to go
-        SortedSet testtail = splitedges[e.getIdxsplit()].tailSet(e);
+        SortedSet testtail = splitedges[e.getSplitIndex()].tailSet(e);
 
         Edge f = null;
 
         if (testtail.size() == 1) {
             dire = Direction.RIGHT;
-        } else if (a == (e.getBottom().getEdgeList().get((e.getBottom().getEdgeList().indexOf(e) + 1) % e.getBottom().getEdgeList().size())).getIdxsplit()) {
+        } else if (a == (e.getBottom().getEdgeList().get((e.getBottom().getEdgeList().indexOf(e) + 1) % e.getBottom().getEdgeList().size())).getSplitIndex()) {
             dire = Direction.LEFT;
         } else {
             dire = Direction.RIGHT;
@@ -1505,7 +1138,7 @@ public class PermutationSequenceDraw {
         }
     }
 
-    public static enum Flip {
+    public enum Flip {
         UP,
         DOWN
     }
@@ -1542,9 +1175,9 @@ public class PermutationSequenceDraw {
      * @param splitedges
      */
     private static void findFlippableCubeInTriangle(EdgeList elist, EdgeList crossboth,
-                                                        Flip flipdir, int a, int b, int s, int parta, Direction dira,
-                                                        EdgeList elista, EdgeList elistb,
-                                                        TreeSet[] splitedges) {
+                                                    Flip flipdir, int a, int b, int s, int parta, Direction dira,
+                                                    EdgeList elista, EdgeList elistb,
+                                                    TreeSet[] splitedges) {
         if (elist.isEmpty()) {
             throw new IllegalArgumentException("List of flip edges is empty");
         }
@@ -1637,12 +1270,12 @@ public class PermutationSequenceDraw {
                     if ((v2 == v4)
                             && (v6 == v7)
                             && (v8 == v9)
-                            && (e.getIdxsplit() == e5.getIdxsplit())
-                            && (e.getIdxsplit() == e8.getIdxsplit())
-                            && (e2.getIdxsplit() == e3.getIdxsplit())
-                            && (e2.getIdxsplit() == e6.getIdxsplit())
-                            && (e1.getIdxsplit() == e4.getIdxsplit())
-                            && (e1.getIdxsplit() == e7.getIdxsplit())) {
+                            && (e.getSplitIndex() == e5.getSplitIndex())
+                            && (e.getSplitIndex() == e8.getSplitIndex())
+                            && (e2.getSplitIndex() == e3.getSplitIndex())
+                            && (e2.getSplitIndex() == e6.getSplitIndex())
+                            && (e1.getSplitIndex() == e4.getSplitIndex())
+                            && (e1.getSplitIndex() == e7.getSplitIndex())) {
                         break;
                     }
                 }
@@ -1656,45 +1289,45 @@ public class PermutationSequenceDraw {
             v.setX(v2.getX() + (v5.getX() - v.getX()));
             v.setY(v2.getY() + (v5.getY() - v.getY()));
             if (v8 == e6.getTop()) {
-                h1 = new Edge(v, v6, e6.getIdxsplit(), e2.getTimestp());
+                h1 = new Edge(v, v6, e6.getSplitIndex(), e2.getTimestp());
             } else {
-                h1 = new Edge(v6, v, e6.getIdxsplit(), e2.getTimestp());
+                h1 = new Edge(v6, v, e6.getSplitIndex(), e2.getTimestp());
             }
             v6.getEdgeList().add(v6.getEdgeList().indexOf(e7) + 1, h1);
             v.getEdgeList().addLast(h1);
             if (v6 == e7.getTop()) {
-                h2 = new Edge(v, v8, e7.getIdxsplit(), e1.getTimestp());
+                h2 = new Edge(v, v8, e7.getSplitIndex(), e1.getTimestp());
             } else {
-                h2 = new Edge(v8, v, e7.getIdxsplit(), e1.getTimestp());
+                h2 = new Edge(v8, v, e7.getSplitIndex(), e1.getTimestp());
             }
             v8.getEdgeList().add(v8.getEdgeList().indexOf(e5) + 1, h2);
             v.getEdgeList().addLast(h2);
-            h3 = new Edge(v2, v, e.getIdxsplit(), e.getTimestp());
+            h3 = new Edge(v2, v, e.getSplitIndex(), e.getTimestp());
             v2.getEdgeList().add(v2.getEdgeList().indexOf(e3) + 1, h3);
             v.getEdgeList().addLast(h3);
 
             //System.out.println("Size of elist before update: " + elist.size());
 
             //update lists of edges accordingly
-            splitedges[e.getIdxsplit()].remove(e);
-            splitedges[e.getIdxsplit()].add(h3);
-            splitedges[e2.getIdxsplit()].remove(e2);
-            splitedges[e2.getIdxsplit()].add(h1);
-            splitedges[e1.getIdxsplit()].remove(e1);
-            splitedges[e1.getIdxsplit()].add(h2);
+            splitedges[e.getSplitIndex()].remove(e);
+            splitedges[e.getSplitIndex()].add(h3);
+            splitedges[e2.getSplitIndex()].remove(e2);
+            splitedges[e2.getSplitIndex()].add(h1);
+            splitedges[e1.getSplitIndex()].remove(e1);
+            splitedges[e1.getSplitIndex()].add(h2);
 
             if (parta == 1) {
                 if (dira == Direction.LEFT) {
                     elist.add(elist.indexOf(e) + 1, h3);
                     elist.remove(e);
-                    if ((e6.getIdxsplit() == a) && (e7.getIdxsplit() != s)) {
+                    if ((e6.getSplitIndex() == a) && (e7.getSplitIndex() != s)) {
                         elist.removeFirst();
                         crossboth.add(crossboth.indexOf(e5) + 1, h3);
                         crossboth.remove(e5);
                         elista.add(elista.indexOf(e2) + 1, h1);
                         elista.remove(e2);
                     }
-                    if ((e6.getIdxsplit() == a) && (e7.getIdxsplit() == s) && (s == b)) {
+                    if ((e6.getSplitIndex() == a) && (e7.getSplitIndex() == s) && (s == b)) {
                         elist.removeFirst();
                         crossboth.remove(e5);
                         crossboth.add(crossboth.indexOf(e4) + 1, h2);
@@ -1702,7 +1335,7 @@ public class PermutationSequenceDraw {
                         elista.remove(e2);
                         elistb.remove(e1);
                     }
-                    if ((e6.getIdxsplit() == a) && (e7.getIdxsplit() == s) && (s != b)) {
+                    if ((e6.getSplitIndex() == a) && (e7.getSplitIndex() == s) && (s != b)) {
                         elist.removeFirst();
                         crossboth.add(crossboth.indexOf(e4) + 1, h3);
                         crossboth.remove(e4);
@@ -1711,26 +1344,26 @@ public class PermutationSequenceDraw {
                         elista.add(elista.indexOf(e2) + 1, h1);
                         elista.remove(e2);
                     }
-                    if ((e6.getIdxsplit() != a) && (e7.getIdxsplit() == s) && (s == b)) {
+                    if ((e6.getSplitIndex() != a) && (e7.getSplitIndex() == s) && (s == b)) {
                         elist.removeLast();
                         elistb.add(elistb.indexOf(e1) + 1, h2);
                         elistb.remove(e1);
                     }
-                    if ((e6.getIdxsplit() != a) && (e7.getIdxsplit() == s) && (s != b)) {
+                    if ((e6.getSplitIndex() != a) && (e7.getSplitIndex() == s) && (s != b)) {
                         elist.removeLast();
                     }
                 } else {
                     elist.add(elist.indexOf(e) + 1, h3);
                     elist.remove(e);
 
-                    if ((e7.getIdxsplit() == a) && (e6.getIdxsplit() != s)) {
+                    if ((e7.getSplitIndex() == a) && (e6.getSplitIndex() != s)) {
                         elist.removeFirst();
                         crossboth.add(crossboth.indexOf(e8) + 1, h3);
                         crossboth.remove(e8);
                         elista.add(elista.indexOf(e1) + 1, h2);
                         elista.remove(e1);
                     }
-                    if ((e7.getIdxsplit() == a) && (e6.getIdxsplit() == s) && (s == b)) {
+                    if ((e7.getSplitIndex() == a) && (e6.getSplitIndex() == s) && (s == b)) {
                         elist.removeFirst();
                         crossboth.remove(e8);
                         crossboth.add(crossboth.indexOf(e3) + 1, h1);
@@ -1738,7 +1371,7 @@ public class PermutationSequenceDraw {
                         elista.remove(e1);
                         elistb.remove(e2);
                     }
-                    if ((e7.getIdxsplit() == a) && (e6.getIdxsplit() == s) && (s != b)) {
+                    if ((e7.getSplitIndex() == a) && (e6.getSplitIndex() == s) && (s != b)) {
                         elist.removeFirst();
                         crossboth.add(crossboth.indexOf(e3) + 1, h3);
                         crossboth.remove(e3);
@@ -1747,12 +1380,12 @@ public class PermutationSequenceDraw {
                         elista.add(elista.indexOf(e1) + 1, h2);
                         elista.remove(e1);
                     }
-                    if ((e7.getIdxsplit() != a) && (e6.getIdxsplit() == s) && (s == b)) {
+                    if ((e7.getSplitIndex() != a) && (e6.getSplitIndex() == s) && (s == b)) {
                         elist.removeLast();
                         elistb.add(elistb.indexOf(e2) + 1, h1);
                         elistb.remove(e2);
                     }
-                    if ((e7.getIdxsplit() != a) && (e6.getIdxsplit() == s) && (s != b)) {
+                    if ((e7.getSplitIndex() != a) && (e6.getSplitIndex() == s) && (s != b)) {
                         elist.removeLast();
                     }
                 }
@@ -1761,14 +1394,14 @@ public class PermutationSequenceDraw {
                     elist.add(elist.indexOf(e) + 1, h3);
                     elist.remove(e);
 
-                    if ((e7.getIdxsplit() == a) && (e6.getIdxsplit() != s)) {
+                    if ((e7.getSplitIndex() == a) && (e6.getSplitIndex() != s)) {
                         elist.removeFirst();
                         crossboth.add(crossboth.indexOf(e8) + 1, h3);
                         crossboth.remove(e8);
                         elista.add(elista.indexOf(e1) + 1, h2);
                         elista.remove(e1);
                     }
-                    if ((e7.getIdxsplit() == a) && (e6.getIdxsplit() == s) && (s == b)) {
+                    if ((e7.getSplitIndex() == a) && (e6.getSplitIndex() == s) && (s == b)) {
                         elist.removeFirst();
                         crossboth.remove(e8);
                         crossboth.add(crossboth.indexOf(e3) + 1, h1);
@@ -1776,7 +1409,7 @@ public class PermutationSequenceDraw {
                         elista.remove(e1);
                         elistb.remove(e2);
                     }
-                    if ((e7.getIdxsplit() == a) && (e6.getIdxsplit() == s) && (s != b)) {
+                    if ((e7.getSplitIndex() == a) && (e6.getSplitIndex() == s) && (s != b)) {
                         elist.removeFirst();
                         crossboth.add(crossboth.indexOf(e3) + 1, h3);
                         crossboth.remove(e3);
@@ -1785,25 +1418,25 @@ public class PermutationSequenceDraw {
                         elista.add(elista.indexOf(e1) + 1, h2);
                         elista.remove(e1);
                     }
-                    if ((e7.getIdxsplit() != a) && (e6.getIdxsplit() == s) && (s == b)) {
+                    if ((e7.getSplitIndex() != a) && (e6.getSplitIndex() == s) && (s == b)) {
                         elist.removeLast();
                         elistb.add(elistb.indexOf(e2) + 1, h1);
                         elistb.remove(e2);
                     }
-                    if ((e7.getIdxsplit() != a) && (e6.getIdxsplit() == s) && (s != b)) {
+                    if ((e7.getSplitIndex() != a) && (e6.getSplitIndex() == s) && (s != b)) {
                         elist.removeLast();
                     }
                 } else {
                     elist.add(elist.indexOf(e) + 1, h3);
                     elist.remove(e);
-                    if ((e6.getIdxsplit() == a) && (e7.getIdxsplit() != s)) {
+                    if ((e6.getSplitIndex() == a) && (e7.getSplitIndex() != s)) {
                         elist.removeFirst();
                         crossboth.add(crossboth.indexOf(e5) + 1, h3);
                         crossboth.remove(e5);
                         elista.add(elista.indexOf(e2) + 1, h1);
                         elista.remove(e2);
                     }
-                    if ((e6.getIdxsplit() == a) && (e7.getIdxsplit() == s) && (s == b)) {
+                    if ((e6.getSplitIndex() == a) && (e7.getSplitIndex() == s) && (s == b)) {
                         elist.removeFirst();
                         crossboth.remove(e5);
                         crossboth.add(crossboth.indexOf(e4) + 1, h2);
@@ -1811,7 +1444,7 @@ public class PermutationSequenceDraw {
                         elista.remove(e2);
                         elistb.remove(e1);
                     }
-                    if ((e6.getIdxsplit() == a) && (e7.getIdxsplit() == s) && (s != b)) {
+                    if ((e6.getSplitIndex() == a) && (e7.getSplitIndex() == s) && (s != b)) {
                         elist.removeFirst();
                         crossboth.add(crossboth.indexOf(e4) + 1, h3);
                         crossboth.remove(e4);
@@ -1820,12 +1453,12 @@ public class PermutationSequenceDraw {
                         elista.add(elista.indexOf(e2) + 1, h1);
                         elista.remove(e2);
                     }
-                    if ((e6.getIdxsplit() != a) && (e7.getIdxsplit() == s) && (s == b)) {
+                    if ((e6.getSplitIndex() != a) && (e7.getSplitIndex() == s) && (s == b)) {
                         elist.removeLast();
                         elistb.add(elistb.indexOf(e1) + 1, h2);
                         elistb.remove(e1);
                     }
-                    if ((e6.getIdxsplit() != a) && (e7.getIdxsplit() == s) && (s != b)) {
+                    if ((e6.getSplitIndex() != a) && (e7.getSplitIndex() == s) && (s != b)) {
                         elist.removeLast();
                     }
                 }
@@ -1892,12 +1525,12 @@ public class PermutationSequenceDraw {
                     if ((v2 == v4)
                             && (v6 == v7)
                             && (v8 == v9)
-                            && (e.getIdxsplit() == e5.getIdxsplit())
-                            && (e.getIdxsplit() == e8.getIdxsplit())
-                            && (e2.getIdxsplit() == e3.getIdxsplit())
-                            && (e2.getIdxsplit() == e6.getIdxsplit())
-                            && (e1.getIdxsplit() == e4.getIdxsplit())
-                            && (e1.getIdxsplit() == e7.getIdxsplit())) {
+                            && (e.getSplitIndex() == e5.getSplitIndex())
+                            && (e.getSplitIndex() == e8.getSplitIndex())
+                            && (e2.getSplitIndex() == e3.getSplitIndex())
+                            && (e2.getSplitIndex() == e6.getSplitIndex())
+                            && (e1.getSplitIndex() == e4.getSplitIndex())
+                            && (e1.getSplitIndex() == e7.getSplitIndex())) {
                         break;
                     }
                 }
@@ -1911,32 +1544,32 @@ public class PermutationSequenceDraw {
             v.setX(v2.getX() + (v5.getX() - v.getX()));
             v.setY(v2.getY() + (v5.getY() - v.getY()));
             if (v8 == e6.getTop()) {
-                h1 = new Edge(v, v6, e6.getIdxsplit(), e2.getTimestp());
+                h1 = new Edge(v, v6, e6.getSplitIndex(), e2.getTimestp());
             } else {
-                h1 = new Edge(v6, v, e6.getIdxsplit(), e2.getTimestp());
+                h1 = new Edge(v6, v, e6.getSplitIndex(), e2.getTimestp());
             }
             v6.getEdgeList().add(v6.getEdgeList().indexOf(e7) + 1, h1);
             v.getEdgeList().addLast(h1);
             if (v6 == e7.getTop()) {
-                h2 = new Edge(v, v8, e7.getIdxsplit(), e1.getTimestp());
+                h2 = new Edge(v, v8, e7.getSplitIndex(), e1.getTimestp());
             } else {
-                h2 = new Edge(v8, v, e7.getIdxsplit(), e1.getTimestp());
+                h2 = new Edge(v8, v, e7.getSplitIndex(), e1.getTimestp());
             }
             v8.getEdgeList().add(v8.getEdgeList().indexOf(e5) + 1, h2);
             v.getEdgeList().addLast(h2);
-            h3 = new Edge(v, v2, e.getIdxsplit(), e.getTimestp());
+            h3 = new Edge(v, v2, e.getSplitIndex(), e.getTimestp());
             v2.getEdgeList().add(v2.getEdgeList().indexOf(e3) + 1, h3);
             v.getEdgeList().addLast(h3);
 
             //System.out.println("Size of elist before update: " + elist.size());
 
             //update lists of edges accordingly
-            splitedges[e.getIdxsplit()].remove(e);
-            splitedges[e.getIdxsplit()].add(h3);
-            splitedges[e2.getIdxsplit()].remove(e2);
-            splitedges[e2.getIdxsplit()].add(h1);
-            splitedges[e1.getIdxsplit()].remove(e1);
-            splitedges[e1.getIdxsplit()].add(h2);
+            splitedges[e.getSplitIndex()].remove(e);
+            splitedges[e.getSplitIndex()].add(h3);
+            splitedges[e2.getSplitIndex()].remove(e2);
+            splitedges[e2.getSplitIndex()].add(h1);
+            splitedges[e1.getSplitIndex()].remove(e1);
+            splitedges[e1.getSplitIndex()].add(h2);
 
             if (parta == 1) {
                 if (dira == Direction.LEFT) {
@@ -1944,14 +1577,14 @@ public class PermutationSequenceDraw {
                     elist.remove(e);
                     //System.out.println("Size of elist after first update: " + elist.size());
 
-                    if ((e6.getIdxsplit() == a) && (e7.getIdxsplit() != s)) {
+                    if ((e6.getSplitIndex() == a) && (e7.getSplitIndex() != s)) {
                         elist.removeFirst();
                         crossboth.add(crossboth.indexOf(e5) + 1, h3);
                         crossboth.remove(e5);
                         elista.add(elista.indexOf(e2) + 1, h1);
                         elista.remove(e2);
                     }
-                    if ((e6.getIdxsplit() == a) && (e7.getIdxsplit() == s) && (s == b)) {
+                    if ((e6.getSplitIndex() == a) && (e7.getSplitIndex() == s) && (s == b)) {
                         elist.removeFirst();
                         crossboth.remove(e5);
                         crossboth.add(crossboth.indexOf(e4) + 1, h2);
@@ -1959,7 +1592,7 @@ public class PermutationSequenceDraw {
                         elista.remove(e2);
                         elistb.remove(e1);
                     }
-                    if ((e6.getIdxsplit() == a) && (e7.getIdxsplit() == s) && (s != b)) {
+                    if ((e6.getSplitIndex() == a) && (e7.getSplitIndex() == s) && (s != b)) {
                         elist.removeFirst();
                         crossboth.add(crossboth.indexOf(e4) + 1, h3);
                         crossboth.remove(e4);
@@ -1968,26 +1601,26 @@ public class PermutationSequenceDraw {
                         elista.add(elista.indexOf(e2) + 1, h1);
                         elista.remove(e2);
                     }
-                    if ((e6.getIdxsplit() != a) && (e7.getIdxsplit() == s) && (s == b)) {
+                    if ((e6.getSplitIndex() != a) && (e7.getSplitIndex() == s) && (s == b)) {
                         elist.removeLast();
                         elistb.add(elistb.indexOf(e1) + 1, h2);
                         elistb.remove(e1);
                     }
-                    if ((e6.getIdxsplit() != a) && (e7.getIdxsplit() == s) && (s != b)) {
+                    if ((e6.getSplitIndex() != a) && (e7.getSplitIndex() == s) && (s != b)) {
                         elist.removeLast();
                     }
                 } else {
                     elist.add(elist.indexOf(e) + 1, h3);
                     elist.remove(e);
 
-                    if ((e7.getIdxsplit() == a) && (e6.getIdxsplit() != s)) {
+                    if ((e7.getSplitIndex() == a) && (e6.getSplitIndex() != s)) {
                         elist.removeFirst();
                         crossboth.add(crossboth.indexOf(e8) + 1, h3);
                         crossboth.remove(e8);
                         elista.add(elista.indexOf(e1) + 1, h2);
                         elista.remove(e1);
                     }
-                    if ((e7.getIdxsplit() == a) && (e6.getIdxsplit() == s) && (s == b)) {
+                    if ((e7.getSplitIndex() == a) && (e6.getSplitIndex() == s) && (s == b)) {
                         elist.removeFirst();
                         crossboth.remove(e8);
                         crossboth.add(crossboth.indexOf(e3) + 1, h1);
@@ -1995,7 +1628,7 @@ public class PermutationSequenceDraw {
                         elista.remove(e1);
                         elistb.remove(e2);
                     }
-                    if ((e7.getIdxsplit() == a) && (e6.getIdxsplit() == s) && (s != b)) {
+                    if ((e7.getSplitIndex() == a) && (e6.getSplitIndex() == s) && (s != b)) {
                         elist.removeFirst();
                         crossboth.add(crossboth.indexOf(e3) + 1, h3);
                         crossboth.remove(e3);
@@ -2004,12 +1637,12 @@ public class PermutationSequenceDraw {
                         elista.add(elista.indexOf(e1) + 1, h2);
                         elista.remove(e1);
                     }
-                    if ((e7.getIdxsplit() != a) && (e6.getIdxsplit() == s) && (s == b)) {
+                    if ((e7.getSplitIndex() != a) && (e6.getSplitIndex() == s) && (s == b)) {
                         elist.removeLast();
                         elistb.add(elistb.indexOf(e2) + 1, h1);
                         elistb.remove(e2);
                     }
-                    if ((e7.getIdxsplit() != a) && (e6.getIdxsplit() == s) && (s != b)) {
+                    if ((e7.getSplitIndex() != a) && (e6.getSplitIndex() == s) && (s != b)) {
                         elist.removeLast();
                     }
                 }
@@ -2018,14 +1651,14 @@ public class PermutationSequenceDraw {
                     elist.add(elist.indexOf(e) + 1, h3);
                     elist.remove(e);
 
-                    if ((e7.getIdxsplit() == a) && (e6.getIdxsplit() != s)) {
+                    if ((e7.getSplitIndex() == a) && (e6.getSplitIndex() != s)) {
                         elist.removeFirst();
                         crossboth.add(crossboth.indexOf(e8) + 1, h3);
                         crossboth.remove(e8);
                         elista.add(elista.indexOf(e1) + 1, h2);
                         elista.remove(e1);
                     }
-                    if ((e7.getIdxsplit() == a) && (e6.getIdxsplit() == s) && (s == b)) {
+                    if ((e7.getSplitIndex() == a) && (e6.getSplitIndex() == s) && (s == b)) {
                         elist.removeFirst();
                         crossboth.remove(e8);
                         crossboth.add(crossboth.indexOf(e3) + 1, h1);
@@ -2033,7 +1666,7 @@ public class PermutationSequenceDraw {
                         elista.remove(e1);
                         elistb.remove(e2);
                     }
-                    if ((e7.getIdxsplit() == a) && (e6.getIdxsplit() == s) && (s != b)) {
+                    if ((e7.getSplitIndex() == a) && (e6.getSplitIndex() == s) && (s != b)) {
                         elist.removeFirst();
                         crossboth.add(crossboth.indexOf(e3) + 1, h3);
                         crossboth.remove(e3);
@@ -2042,25 +1675,25 @@ public class PermutationSequenceDraw {
                         elista.add(elista.indexOf(e1) + 1, h2);
                         elista.remove(e1);
                     }
-                    if ((e7.getIdxsplit() != a) && (e6.getIdxsplit() == s) && (s == b)) {
+                    if ((e7.getSplitIndex() != a) && (e6.getSplitIndex() == s) && (s == b)) {
                         elist.removeLast();
                         elistb.add(elistb.indexOf(e2) + 1, h1);
                         elistb.remove(e2);
                     }
-                    if ((e7.getIdxsplit() != a) && (e6.getIdxsplit() == s) && (s != b)) {
+                    if ((e7.getSplitIndex() != a) && (e6.getSplitIndex() == s) && (s != b)) {
                         elist.removeLast();
                     }
                 } else {
                     elist.add(elist.indexOf(e) + 1, h3);
                     elist.remove(e);
-                    if ((e6.getIdxsplit() == a) && (e7.getIdxsplit() != s)) {
+                    if ((e6.getSplitIndex() == a) && (e7.getSplitIndex() != s)) {
                         elist.removeFirst();
                         crossboth.add(crossboth.indexOf(e5) + 1, h3);
                         crossboth.remove(e5);
                         elista.add(elista.indexOf(e2) + 1, h1);
                         elista.remove(e2);
                     }
-                    if ((e6.getIdxsplit() == a) && (e7.getIdxsplit() == s) && (s == b)) {
+                    if ((e6.getSplitIndex() == a) && (e7.getSplitIndex() == s) && (s == b)) {
                         elist.removeFirst();
                         crossboth.remove(e5);
                         crossboth.add(crossboth.indexOf(e4) + 1, h2);
@@ -2068,7 +1701,7 @@ public class PermutationSequenceDraw {
                         elista.remove(e2);
                         elistb.remove(e1);
                     }
-                    if ((e6.getIdxsplit() == a) && (e7.getIdxsplit() == s) && (s != b)) {
+                    if ((e6.getSplitIndex() == a) && (e7.getSplitIndex() == s) && (s != b)) {
                         elist.removeFirst();
                         crossboth.add(crossboth.indexOf(e4) + 1, h3);
                         crossboth.remove(e4);
@@ -2077,12 +1710,12 @@ public class PermutationSequenceDraw {
                         elista.add(elista.indexOf(e2) + 1, h1);
                         elista.remove(e2);
                     }
-                    if ((e6.getIdxsplit() != a) && (e7.getIdxsplit() == s) && (s == b)) {
+                    if ((e6.getSplitIndex() != a) && (e7.getSplitIndex() == s) && (s == b)) {
                         elist.removeLast();
                         elistb.add(elistb.indexOf(e1) + 1, h2);
                         elistb.remove(e1);
                     }
-                    if ((e6.getIdxsplit() != a) && (e7.getIdxsplit() == s) && (s != b)) {
+                    if ((e6.getSplitIndex() != a) && (e7.getSplitIndex() == s) && (s != b)) {
                         elist.removeLast();
                     }
                 }
@@ -2093,58 +1726,55 @@ public class PermutationSequenceDraw {
 
     //This method cuts off the unecessary part of the network
     private static Vertex cutOffUnnecessaryPart(int a, int b, LinkedList<Edge> elista, LinkedList<Edge> elistb,
-                                                   Direction dira, Direction dirb, int parta, int partb, TreeSet[] splitedges) {
+                                                Direction dira, Direction dirb, int parta, int partb, TreeSet[] splitedges) {
         //System.out.println("cut off unnecessary part");
 
         Vertex u = null;
 
-        Edge e = (Edge) elista.getFirst();
+        Edge e = elista.getFirst();
         Edge g = null;
-        Edge h = null;
         Edge g1 = null;
         Edge g2 = null;
 
         //first eliminate the edges that correspond to splits that cross a
         if (dira == Direction.LEFT) {
-            SortedSet head = splitedges[e.getIdxsplit()].headSet(e);
-            Iterator headiter = head.iterator();
-            while (headiter.hasNext()) {
-                h = (Edge) headiter.next();
+            SortedSet<Edge> head = splitedges[e.getSplitIndex()].headSet(e);
+            for (Edge h : head) {
                 g1 = h.getTop().getEdgeList().get((h.getTop().getEdgeList().indexOf(h) + (h.getTop().getEdgeList().size() - 1)) % h.getTop().getEdgeList().size());
                 g2 = h.getBottom().getEdgeList().get((h.getBottom().getEdgeList().indexOf(h) + 1) % h.getBottom().getEdgeList().size());
 
                 if ((parta == 1) && (g1.getTimestp() < g2.getTimestp())) {
                     while (true) {
-                        g = (Edge) splitedges[g1.getIdxsplit()].last();
+                        g = (Edge) splitedges[g1.getSplitIndex()].last();
                         if (g.getTimestp() > g1.getTimestp()) {
-                            splitedges[g1.getIdxsplit()].remove(g);
+                            splitedges[g1.getSplitIndex()].remove(g);
                         } else {
                             break;
                         }
                     }
                 } else if ((parta == 1) && (g1.getTimestp() > g2.getTimestp())) {
                     while (true) {
-                        g = (Edge) splitedges[g1.getIdxsplit()].first();
+                        g = (Edge) splitedges[g1.getSplitIndex()].first();
                         if (g.getTimestp() < g1.getTimestp()) {
-                            splitedges[g1.getIdxsplit()].remove(g);
+                            splitedges[g1.getSplitIndex()].remove(g);
                         } else {
                             break;
                         }
                     }
                 } else if ((parta == 0) && (g1.getTimestp() < g2.getTimestp())) {
                     while (true) {
-                        g = (Edge) splitedges[g2.getIdxsplit()].first();
+                        g = (Edge) splitedges[g2.getSplitIndex()].first();
                         if (g.getTimestp() < g2.getTimestp()) {
-                            splitedges[g2.getIdxsplit()].remove(g);
+                            splitedges[g2.getSplitIndex()].remove(g);
                         } else {
                             break;
                         }
                     }
                 } else if ((parta == 0) && (g1.getTimestp() > g2.getTimestp())) {
                     while (true) {
-                        g = (Edge) splitedges[g2.getIdxsplit()].last();
+                        g = (Edge) splitedges[g2.getSplitIndex()].last();
                         if (g.getTimestp() > g2.getTimestp()) {
-                            splitedges[g2.getIdxsplit()].remove(g);
+                            splitedges[g2.getSplitIndex()].remove(g);
                         } else {
                             break;
                         }
@@ -2152,47 +1782,46 @@ public class PermutationSequenceDraw {
                 }
             }
         } else {
-            SortedSet tail = splitedges[e.getIdxsplit()].tailSet(e);
-            Iterator tailiter = tail.iterator();
-            //tail contains e!!!
-            h = (Edge) tailiter.next();
-            while (tailiter.hasNext()) {
-                h = (Edge) tailiter.next();
+            SortedSet<Edge> tail = splitedges[e.getSplitIndex()].tailSet(e);
+            for (Edge h : tail) {
+                if (h == tail.first()) {
+                    continue;
+                }
                 g1 = h.getTop().getEdgeList().get((h.getTop().getEdgeList().indexOf(h) + 1) % h.getTop().getEdgeList().size());
                 g2 = h.getBottom().getEdgeList().get((h.getBottom().getEdgeList().indexOf(h) + (h.getBottom().getEdgeList().size() - 1)) % h.getBottom().getEdgeList().size());
 
                 if ((parta == 1) && (g1.getTimestp() < g2.getTimestp())) {
                     while (true) {
-                        g = (Edge) splitedges[g1.getIdxsplit()].last();
+                        g = (Edge) splitedges[g1.getSplitIndex()].last();
                         if (g.getTimestp() > g1.getTimestp()) {
-                            splitedges[g1.getIdxsplit()].remove(g);
+                            splitedges[g1.getSplitIndex()].remove(g);
                         } else {
                             break;
                         }
                     }
                 } else if ((parta == 1) && (g1.getTimestp() > g2.getTimestp())) {
                     while (true) {
-                        g = (Edge) splitedges[g1.getIdxsplit()].first();
+                        g = (Edge) splitedges[g1.getSplitIndex()].first();
                         if (g.getTimestp() < g1.getTimestp()) {
-                            splitedges[g1.getIdxsplit()].remove(g);
+                            splitedges[g1.getSplitIndex()].remove(g);
                         } else {
                             break;
                         }
                     }
                 } else if ((parta == 0) && (g1.getTimestp() < g2.getTimestp())) {
                     while (true) {
-                        g = (Edge) splitedges[g2.getIdxsplit()].first();
+                        g = (Edge) splitedges[g2.getSplitIndex()].first();
                         if (g.getTimestp() < g2.getTimestp()) {
-                            splitedges[g2.getIdxsplit()].remove(g);
+                            splitedges[g2.getSplitIndex()].remove(g);
                         } else {
                             break;
                         }
                     }
                 } else if ((parta == 0) && (g1.getTimestp() > g2.getTimestp())) {
                     while (true) {
-                        g = (Edge) splitedges[g2.getIdxsplit()].last();
+                        g = (Edge) splitedges[g2.getSplitIndex()].last();
                         if (g.getTimestp() > g2.getTimestp()) {
-                            splitedges[g2.getIdxsplit()].remove(g);
+                            splitedges[g2.getSplitIndex()].remove(g);
                         } else {
                             break;
                         }
@@ -2205,45 +1834,43 @@ public class PermutationSequenceDraw {
 
         //next eliminate edges that correspond to splits thath cross b
         if (dirb == Direction.LEFT) {
-            SortedSet head = splitedges[f.getIdxsplit()].headSet(f);
-            Iterator headiter = head.iterator();
-            while (headiter.hasNext()) {
-                h = (Edge) headiter.next();
+            SortedSet<Edge> head = splitedges[f.getSplitIndex()].headSet(f);
+            for (Edge h : head) {
                 g1 = h.getTop().getEdgeList().get((h.getTop().getEdgeList().indexOf(h) + (h.getTop().getEdgeList().size() - 1)) % h.getTop().getEdgeList().size());
                 g2 = h.getBottom().getEdgeList().get((h.getBottom().getEdgeList().indexOf(h) + 1) % h.getBottom().getEdgeList().size());
 
                 if ((partb == 1) && (g1.getTimestp() < g2.getTimestp())) {
                     while (true) {
-                        g = (Edge) splitedges[g1.getIdxsplit()].last();
+                        g = (Edge) splitedges[g1.getSplitIndex()].last();
                         if (g.getTimestp() > g1.getTimestp()) {
-                            splitedges[g1.getIdxsplit()].remove(g);
+                            splitedges[g1.getSplitIndex()].remove(g);
                         } else {
                             break;
                         }
                     }
                 } else if ((partb == 1) && (g1.getTimestp() > g2.getTimestp())) {
                     while (true) {
-                        g = (Edge) splitedges[g1.getIdxsplit()].first();
+                        g = (Edge) splitedges[g1.getSplitIndex()].first();
                         if (g.getTimestp() < g1.getTimestp()) {
-                            splitedges[g1.getIdxsplit()].remove(g);
+                            splitedges[g1.getSplitIndex()].remove(g);
                         } else {
                             break;
                         }
                     }
                 } else if ((partb == 0) && (g1.getTimestp() < g2.getTimestp())) {
                     while (true) {
-                        g = (Edge) splitedges[g2.getIdxsplit()].first();
+                        g = (Edge) splitedges[g2.getSplitIndex()].first();
                         if (g.getTimestp() < g2.getTimestp()) {
-                            splitedges[g2.getIdxsplit()].remove(g);
+                            splitedges[g2.getSplitIndex()].remove(g);
                         } else {
                             break;
                         }
                     }
                 } else if ((partb == 0) && (g1.getTimestp() > g2.getTimestp())) {
                     while (true) {
-                        g = (Edge) splitedges[g2.getIdxsplit()].last();
+                        g = (Edge) splitedges[g2.getSplitIndex()].last();
                         if (g.getTimestp() > g2.getTimestp()) {
-                            splitedges[g2.getIdxsplit()].remove(g);
+                            splitedges[g2.getSplitIndex()].remove(g);
                         } else {
                             break;
                         }
@@ -2251,47 +1878,46 @@ public class PermutationSequenceDraw {
                 }
             }
         } else {
-            SortedSet tail = splitedges[f.getIdxsplit()].tailSet(f);
-            Iterator tailiter = tail.iterator();
-            //tail contains f!!!
-            h = (Edge) tailiter.next();
-            while (tailiter.hasNext()) {
-                h = (Edge) tailiter.next();
+            SortedSet<Edge> tail = splitedges[f.getSplitIndex()].tailSet(f);
+            for (Edge h : tail) {
+                if (h == tail.first()) {
+                    continue;
+                }
                 g1 = h.getTop().getEdgeList().get((h.getTop().getEdgeList().indexOf(h) + 1) % h.getTop().getEdgeList().size());
                 g2 = h.getBottom().getEdgeList().get((h.getBottom().getEdgeList().indexOf(h) + (h.getBottom().getEdgeList().size() - 1)) % h.getBottom().getEdgeList().size());
 
                 if ((partb == 1) && (g1.getTimestp() < g2.getTimestp())) {
                     while (true) {
-                        g = (Edge) splitedges[g1.getIdxsplit()].last();
+                        g = (Edge) splitedges[g1.getSplitIndex()].last();
                         if (g.getTimestp() > g1.getTimestp()) {
-                            splitedges[g1.getIdxsplit()].remove(g);
+                            splitedges[g1.getSplitIndex()].remove(g);
                         } else {
                             break;
                         }
                     }
                 } else if ((partb == 1) && (g1.getTimestp() > g2.getTimestp())) {
                     while (true) {
-                        g = (Edge) splitedges[g1.getIdxsplit()].first();
+                        g = (Edge) splitedges[g1.getSplitIndex()].first();
                         if (g.getTimestp() < g1.getTimestp()) {
-                            splitedges[g1.getIdxsplit()].remove(g);
+                            splitedges[g1.getSplitIndex()].remove(g);
                         } else {
                             break;
                         }
                     }
                 } else if ((partb == 0) && (g1.getTimestp() < g2.getTimestp())) {
                     while (true) {
-                        g = (Edge) splitedges[g2.getIdxsplit()].first();
+                        g = (Edge) splitedges[g2.getSplitIndex()].first();
                         if (g.getTimestp() < g2.getTimestp()) {
-                            splitedges[g2.getIdxsplit()].remove(g);
+                            splitedges[g2.getSplitIndex()].remove(g);
                         } else {
                             break;
                         }
                     }
                 } else if ((partb == 0) && (g1.getTimestp() > g2.getTimestp())) {
                     while (true) {
-                        g = (Edge) splitedges[g2.getIdxsplit()].last();
+                        g = (Edge) splitedges[g2.getSplitIndex()].last();
                         if (g.getTimestp() > g2.getTimestp()) {
-                            splitedges[g2.getIdxsplit()].remove(g);
+                            splitedges[g2.getSplitIndex()].remove(g);
                         } else {
                             break;
                         }

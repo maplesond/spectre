@@ -30,7 +30,7 @@ import java.util.Comparator;
  */
 public class Identifier implements Comparable<Identifier> {
 
-    public static final int DEFAULT_ID = 0;
+    public static final int DEFAULT_ID = -1;
 
     private String name;
     private int id;

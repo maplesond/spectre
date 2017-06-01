@@ -88,6 +88,10 @@ public class NexusSplitSystemBuilder {
             }
 
             ss = new SpectreSplitSystem(cycledTaxa, splits);
+
+            if (!ss.isCircular()) {
+                log.warn("Loaded split system was declared as cyclic, although actual splits do not support a circular split system.");
+            }
         } else {
             ss = taxa != null ?
                     new SpectreSplitSystem(taxa, splits) :

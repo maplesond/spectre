@@ -10,17 +10,18 @@ that you should be aware of such as where to find the tools, how to change the m
 Wrapping scripts and platform support
 -------------------------------------
 
-We have tried to make all tools in spectre as platform independent and as simple to use as possible.  We have made
-wrapping scripts for each tool in spectre to save the use typing ``java -jar <path to executable jar`` everytime they
-wish to run a tool.  On unix, mac and cygwin platforms these scripts have been generated without any extension, to make user
+We have tried to make all tools in spectre as platform independent and as simple to use as possible.  For example, instead
+of typing ``java -jar <path to executable jar``, which is a typical line used to start a java program, we created
+wrapper scripts for each tool. On unix, mac and cygwin platforms these scripts have been generated without any extension, to make user
 experience of running the tools as close to that of running a native binary as possible.  However, on windows the scripts
 have a ``.bat`` extension.  Please keep this in mind when reading the tool specific documentation.  All examples in this
 documentation are assumed to be running on a unix or mac system, so if you are running on windows please add a ``.bat`` suffix
 to the script name.
 
 All these executable scripts can be found in the `bin` subdirectory of the spectre installation.  If compiling spectre
-from source code the scripts can be found in `<project_dir>/build/spectre-<version>/bin`.  In order to run spectre tools
-without specifying the full path add the bin directory onto your PATH environment variable.
+from source code the scripts can be found in `<project_dir>/build/spectre-<version>/bin`.
+
+To run spectre tools without specifying the full path add the bin directory onto your PATH environment variable.
 
 
 Changing the JVM memory limits
@@ -29,11 +30,11 @@ Changing the JVM memory limits
 Normally 64-bit java processes are capped to 2GB of Heap Space, although you can find out the actual limit on your system
 by typing on a linux, mac or cygwin machine::
 
-  ``java -XX:+PrintFlagsFinal -version | grep MaxHeapSize``.
+  java -XX:+PrintFlagsFinal -version | grep MaxHeapSize.
 
 On windows just type::
 
-  ``java -XX:+PrintFlagsFinal -version``
+  java -XX:+PrintFlagsFinal -version
 
 And then manually find the line containing MaxHeapSize.  Sometimes some of the
 tools may need more memory than this when processing large datasets.  If you encounter an OutOfMemory error while running
@@ -47,14 +48,14 @@ something like this on a bash shell::
 
   export JAVA_OPTS='-Xmx4g'
 
-Should you only wish to set the memory for a particular instance of a spectre program (in this case ``superq-gui``) your
+Should you only wish to set the memory for a particular instance of a spectre program (in this case the main SPECTRE GUI ``spectre``) your
 command would like this on a bash shell::
 
-  JAVA_OPTS='-Xmx4g'; ./superq-gui
+  JAVA_OPTS='-Xmx4g'; ./spectre
 
-Any java VM option can be set using the JAVA_OPTS environment variable.
+The above line assumes the bin directory is the current working directory and has not been setup on the PATH.
 
-NOTE: you will require a slightly different syntax on windows if not using cygwin.
+Note:  Any other java VM option can be set using the JAVA_OPTS environment variable.
 
 
 
@@ -76,8 +77,6 @@ Currently the following optimizers are supported by metaopt, each of which has i
 | Optimiser       | Quadratic? | Configuration | Free | Description                                                 |
 +=================+============+===============+======+=============================================================+
 | Apache Math 3   | No         | Built in      | Yes  | Part of Apache Math 3, available through maven central      |
-+-----------------+------------+---------------+------+-------------------------------------------------------------+
-| GLPK            | No         | External      | Yes  | GNU Linear Programming Toolkit                              |
 +-----------------+------------+---------------+------+-------------------------------------------------------------+
 | JOptimizer      | Yes        | Bundled       | Yes  | Pure java implementation but some dependencies not in maven |
 +-----------------+------------+---------------+------+-------------------------------------------------------------+

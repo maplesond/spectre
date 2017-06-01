@@ -19,5 +19,5 @@ package uk.ac.uea.cmp.spectre.viewer;
  * @author Monika
  */
 public interface Selectable {
-    public void setSelected(boolean selected);
+    void setSelected(boolean selected);
 }

@@ -15,9 +15,9 @@
 
 package uk.ac.uea.cmp.spectre.core.io.nexus;
 
-import uk.ac.uea.cmp.spectre.core.ds.Sequences;
 import uk.ac.uea.cmp.spectre.core.ds.Identifier;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
+import uk.ac.uea.cmp.spectre.core.ds.Sequences;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrixBuilder;
@@ -25,8 +25,12 @@ import uk.ac.uea.cmp.spectre.core.ds.network.Edge;
 import uk.ac.uea.cmp.spectre.core.ds.network.Network;
 import uk.ac.uea.cmp.spectre.core.ds.network.NetworkLabel;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
+import uk.ac.uea.cmp.spectre.core.ds.network.draw.ViewerConfig;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.Quadruple;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.Split;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
+import uk.ac.uea.cmp.spectre.core.ds.split.flat.Utilities;
 import uk.ac.uea.cmp.spectre.core.io.AbstractSpectreWriter;
 
 import java.awt.*;
@@ -34,6 +38,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -131,54 +136,13 @@ public class NexusWriter extends AbstractSpectreWriter implements Appendable {
             this.append(nexusData.getSplitSystem());
         }
 
+        if (nexusData.getNetwork() != null) {
+            this.appendLine();
+            this.append(nexusData.getNetwork());
+        }
+
         // Save to disk
         this.write(file);
-
-        /*
-        SplitSystem ss = nexusData.getSplitSystem();
-
-
-        StringBuilder nexusString = new StringBuilder();
-
-        final int N = nexusData.getNbTaxa();
-
-        nexusString.append("#NEXUS\nBEGIN taxa;\nDIMENSIONS ntax=").append(N).append(";\nTAXLABELS\n");
-
-        for (Taxon taxon : nexusData.getActive()) {
-            nexusString.append(taxon.getName()).append("\n");
-        }
-
-        nexusString.append(";\nEND;\n\nBEGIN st_splits;\nDIMENSIONS ntax=" + N + " nsplits=").append(ss.getNbSplits()).append(";\n");
-        nexusString.append("FORMAT\nlabels\nweights\n;\nPROPERTIES\nFIT=100\nweakly compatible\ncyclic\n;\nCYCLE");
-
-        for (int n = 0; n < N; n++) {
-            nexusString.append(" ").append(nexusData.getCycleAt(n));
-        }
-
-        nexusString.append(";\nMATRIX\n");
-
-
-        for (int n = 0; n < ss.getNbSplits(); n++) {
-
-            // Add one for splitstree...
-            nexusString.append(n + 1).append("   ").append(ss.getWeightAt(n)).append("  ");
-
-            SplitBlock aSplit = ss.getSplitAt(n).getASide();
-
-            for (int p = 0; p < aSplit.size(); p++) {
-
-                // Add one for splitstree...
-                nexusString.append(" ").append(aSplit.get(p));
-            }
-
-            nexusString.append(",\n");
-        }
-
-        nexusString.append(";\nEND;");
-
-
-        // Save
-        FileUtils.writeStringToFile(outFile, nexusString.toString());*/
     }
 
 
@@ -209,7 +173,7 @@ public class NexusWriter extends AbstractSpectreWriter implements Appendable {
         this.appendLine(" TAXLABELS");
 
         for (int i = 0; i < taxa.size(); i++) {
-            this.appendLine("  [" + (i + 1) + "]\t" + taxa.get(i).getName());
+            this.appendLine("  [" + (i + 1) + "]\t'" + taxa.get(i).getName() + "'");
         }
 
         this.appendLine(" ;");
@@ -264,22 +228,49 @@ public class NexusWriter extends AbstractSpectreWriter implements Appendable {
         return this;
     }
 
+    public NexusWriter append(QuadrupleSystem qs) {
+        this.appendLine("BEGIN Quadruples;");
+        this.appendLine(" DIMENSIONS ntax=" + qs.getNbActiveTaxa() + " nquadruples=" + qs.getnQuadruples() + ";");
+        this.appendLine(" FORMAT labels=LEFT;");
+        this.appendLine(" MATRIX");
+
+        Quadruple[] quadruples = qs.getQuadruples();
+
+        for (int i = 0; i < quadruples.length; i++) {
+            String line = ("  quadruple" + i + " :");
+            int[] taxa = quadruples[i].getTaxa().toIntArray();
+            double[] weights = quadruples[i].getWeights();
+            for (int j = 0; j < 4; j++) {
+                line = line.concat(" " + taxa[j]);
+            }
+            line = line.concat(" :");
+            for (int j = 0; j < 7; j++) {
+                line = line.concat(" " + weights[j]);
+            }
+            line = line.concat(",");
+            this.appendLine(line);
+        }
+
+        this.appendLine(" ;");
+        this.appendLine("END; [Quadruples]");
+        return this;
+    }
 
     public NexusWriter append(SplitSystem ss) {
 
         this.appendLine("BEGIN Splits;");
-        this.appendLine(" DIMENSIONS ntax=" + ss.getNbTaxa() + " nsplits=" + ss.size() + ";");
+        this.appendLine(" DIMENSIONS ntax=" + ss.getNbTaxa() + " nsplits=" + ss.getNbActiveWeightedSplits() + ";");
         this.appendLine(" FORMAT labels=no weights=" + (ss.isWeighted() ? "yes" : "no") + " confidences=no intervals=no;");
-        this.appendLine(" PROPERTIES fit=-1.0" + (ss.isCompatible() ? " weakly_compatible" : "") + (ss.isCircular() ? " cyclic" : "") + ";");
-        if (ss.isCircular()) {
-            this.appendLine(" CYCLE " + ss.getOrderedTaxa().toString(IdentifierList.IdentifierFormat.NEXUS_CIRCULAR_ORDERING) + ";");
-        }
+        this.appendLine(" PROPERTIES fit=-1.0 weakly_compatible=" + (ss.isCompatible() ? "yes" : "no") + " cyclic=" + (ss.isCircular() ? "yes" : "no") + ";");
+
+        // Always output cycle, even if this split system is not circular.
+        this.appendLine(" CYCLE " + ss.getOrderedTaxa().toString(IdentifierList.IdentifierFormat.NEXUS_CIRCULAR_ORDERING) + ";");
 
         this.appendLine(" MATRIX");
         int currentSplitIndex = 1;
 
         for (Split s : ss) {
-            if (!ss.isWeighted() || s.getWeight() != 0.0) {
+            if ((!ss.isWeighted() || s.getWeight() != 0.0) && s.isActive()) {
                 this.appendLine("  [" + currentSplitIndex++ + ", size=" + s.getASideSize() + "]\t" + s.getWeight() + "\t" + s.getASide().toString() + ",");
             }
         }
@@ -288,6 +279,128 @@ public class NexusWriter extends AbstractSpectreWriter implements Appendable {
         return this;
     }
 
+    public NexusWriter append(Vertex net, int nTaxa, IdentifierList taxa) {
+        Iterator<Vertex> vIter;
+        Iterator<Edge> eIter;
+        Iterator<Identifier> taxiter;
+        Vertex v;
+        Edge e;
+
+        List<Vertex> vertices = net.collectVertices();
+        List<Edge> edges = net.getFirstEdge().collectEdges();
+
+        appendLine();
+        appendLine("BEGIN Network;");
+        appendLine("DIMENSIONS ntax=" + nTaxa + " nvertices=" + vertices.size() + " nedges=" + edges.size() + ";");
+        appendLine("DRAW to_scale;");
+        appendLine("TRANSLATE");
+        //write translate section
+        vIter = vertices.listIterator();
+        while (vIter.hasNext()) {
+            v = vIter.next();
+            if (v.getTaxa().size() > 0) {
+                taxiter = v.getTaxa().listIterator();
+                String line = String.valueOf(v.getNxnum());
+
+                while (taxiter.hasNext()) {
+                    int index = taxiter.next().getId();
+                    line = line.concat(" '" + taxa.getNames()[index] + "'");
+                }
+                line = line.concat(",");
+                appendLine(line);
+            }
+        }
+        appendLine(";");
+        //write vertices section
+        appendLine("VERTICES");
+        vIter = vertices.listIterator();
+        while (vIter.hasNext()) {
+            v = vIter.next();
+            int[] color = Utilities.colorToInt(v.getBackgroundColor());
+            String line = v.getNxnum() + " " + v.getX() + " " + v.getY() + " w=" + v.getWidth() + " h=" + v.getHeight() + (v.getShape() != null ? " s=" + v.getShape() : "");
+            if (color[0] + color[1] + color[2] > 0) {
+                line = line.concat(" fg=" + color[0] + " " + color[1] + " " + color[2] + " bg=" + color[0] + " " + color[1] + " " + color[2]);
+            }
+            appendLine(line + ",");
+        }
+        appendLine(";");
+        //write vertex labels section
+        appendLine("VLABELS");
+        vIter = vertices.listIterator();
+        while (vIter.hasNext()) {
+            v = vIter.next();
+            if (v.getTaxa().size() > 0) {
+                String label = new String();
+                taxiter = v.getTaxa().listIterator();
+                while (taxiter.hasNext()) {
+                    label = (taxa.getNames()[taxiter.next().getId()] + ", ").concat(label);
+                    //--------------------- just for testing, so that labels are nor visible --------
+                    //label = "";
+                }
+                label = label.substring(0, label.length() - 2);
+                appendLine(v.getNxnum() + " '" + label + "' x=2 y=2 f='Dialog-PLAIN-10',");
+            } /*else if (v.getLabel() != null) {
+                NetworkLabel l = v.getLabel();
+                String label = v.getNxnum() + " '" + l.getName() + "' x=" + ((int) l.getOffsetX()) + " y=" + ((int) l.getOffsetY()) + " f='" + l.getFontFamily() + "-" + l.getFontStyle() + "-" + l.getFontSize() + "'";
+                if (l.getFontColor() != null) {
+                    int[] c = Utilities.colorToInt(l.getFontColor());
+                    label = label.concat(" lc=" + c[0] + " " + c[1] + " " + c[2]);
+                }
+                if (l.getBackgroundColor() != null) {
+                    int[] c = Utilities.colorToInt(l.getBackgroundColor());
+                    label = label.concat(" lk=" + c[0] + " " + c[1] + " " + c[2]);
+                }
+                label = label.concat(",");
+                appendLine(label);
+            }*/
+        }
+        appendLine(";");
+        //Write the edges.
+        appendLine("EDGES");
+        eIter = edges.iterator();
+
+        /*int maxCompressed = 0;
+        for (int i = 0; i < compressed.length; i++) {
+            if (compressed[i] > maxCompressed) {
+                maxCompressed = compressed[i];
+            }
+        }
+        maxCompressed++;*/
+
+        while (eIter.hasNext()) {
+            e = (Edge) eIter.next();
+            int[] color = Utilities.colorToInt(e.getColor());
+
+            int comp = e.getSplitIndex() + 1;
+
+//            if(compressed != null && e.getIdxsplit() < compressed.length)
+//            {
+//                comp = compressed[e.getIdxsplit()] + 1;
+//                System.out.println("1: " + comp);
+//            }
+//            else if(compressed == null)
+//            {
+//                comp = e.getIdxsplit() + 1;
+//                System.out.println("2: " + comp);
+//            }
+//            else
+//            {
+//                comp = ++maxCompressed;
+//                System.out.println("3: " + comp);
+//            }
+
+            appendLine(e.getNxnum() + " " +
+                    (e.getTop()).getNxnum() + " " +
+                    (e.getBottom()).getNxnum() +
+                    " s=" + comp +
+                    " l=" + e.getWidth() +
+                    " fg=" + color[0] + " " + color[1] + " " + color[2] + ",");
+        }
+        appendLine(";");
+        appendLine("END;");
+
+        return this;
+    }
 
     public NexusWriter append(Network network) {
 
@@ -343,14 +456,14 @@ public class NexusWriter extends AbstractSpectreWriter implements Appendable {
         //write vertex labels section
         this.appendLine("VLABELS");
         for(Vertex v : vertices) {
-            if (v.getTaxa().size() > 0) {
+            /*if (v.getTaxa().size() > 0) {
                 String label = new String();
                 for(Identifier i : v.getTaxa()) {
                     label = (i.getName() + ", ").concat(label);
                 }
                 label = label.substring(0, label.length() - 2);
                 this.appendLine(v.getNxnum() + " '" + label + "' x=2 y=2 f='Dialog-PLAIN-10',");
-            } else if (v.getLabel() != null) {
+            } else */ if (v.getLabel() != null) {
                 NetworkLabel l = v.getLabel();
                 String label = v.getNxnum() + " '" + l.getName() + "' x=" + ((int) l.getOffsetX()) + " y=" + ((int) l.getOffsetY()) + " f='" + l.getFontFamily() + "-" + l.getFontStyle() + "-" + l.getFontSize() + "'";
                 if (l.getFontColor() != null) {
@@ -370,10 +483,37 @@ public class NexusWriter extends AbstractSpectreWriter implements Appendable {
         this.appendLine("EDGES");
         for(Edge e : edges) {
             Color c = e.getColor();
-            this.appendLine(e.getNxnum() + " " + e.getTop().getNxnum() + " " + e.getBottom().getNxnum() + " s=" + (e.getIdxsplit() + 1) + " l=" + e.getWidth() + " fg=" + c.getRed() + " " + c.getGreen() + " " + c.getBlue() + ",");
+            this.appendLine(e.getNxnum() + " " + e.getTop().getNxnum() + " " + e.getBottom().getNxnum() + " s=" + (e.getSplitIndex() + 1) + " l=" + e.getWidth() + " fg=" + c.getRed() + " " + c.getGreen() + " " + c.getBlue() + ",");
         }
         this.appendLine(";");
         this.appendLine("END;");
+
+        return this;
+    }
+
+    public NexusWriter append(ViewerConfig config) {
+        Dimension dm = config.getDimensions();
+
+        this.appendLine("BEGIN Viewer;");
+        this.appendLine("DIMENSIONS width=" + dm.width + " height=" + dm.height + ";");
+        this.appendLine(" MATRIX");
+        this.appendLine("  ratio=" + config.getRatio());
+        this.appendLine("  showtrivial=" + config.showTrivial());
+        this.appendLine("  showrange=" + config.showRange());
+        this.appendLine("  showlabels=" + config.showLabels());
+        this.appendLine("  colorlabels=" + config.colorLabels());
+        this.appendLine("  leaders=" + config.getLeaderType());
+        this.appendLine("  leaderstroke=" + config.getLeaderStroke());
+        Color leaderColor = config.getLeaderColor();
+        this.appendLine("  leadercolor=" + leaderColor.getRed() + " " +
+                leaderColor.getGreen() + " " + leaderColor.getBlue());
+        for (Vertex v : config.getLabeledVertices()) {
+            NetworkLabel label = v.getLabel();
+            if (!label.movable) {
+                this.appendLine("  fix " + (v.getNxnum() + 1));
+            }
+        }
+        this.appendLine(" ;\nEND [Viewer];");
 
         return this;
     }

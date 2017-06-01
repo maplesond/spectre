@@ -32,8 +32,8 @@ import java.util.*;
  */
 public class AngleCalculatorSimple implements AngleCalculator {
 
-    private double angleThreshold = 1 * Math.PI;
-    private double smallAngle = 0.2;
+    private static final double ANGLE_THRESHOLD = 1.0 * Math.PI;
+    private static final double SMALL_ANGLE = 0.2;
 
     @Override
     public double computeOptimalAngle(List<NetworkBox> boxesSorted, EdgeList edges, boolean bottom) {
@@ -132,7 +132,7 @@ public class AngleCalculatorSimple implements AngleCalculator {
     protected double computeOptimalCompatible(double bAngleLeft, double bAngleRight) {
         double middle = (bAngleLeft + bAngleRight) / 2;
         double direction = middle - bAngleRight;
-        return Math.signum(direction) * smallAngle * -1;
+        return Math.signum(direction) * SMALL_ANGLE * -1;
     }
 
     protected Set<Vertex> getAllVertices(Edge split, boolean top) {
@@ -188,7 +188,7 @@ public class AngleCalculatorSimple implements AngleCalculator {
     }
 
     protected double computeOptimal(List<NetworkBox> boxesSorted) {
-        double deltaAlpha = smallAngle * Math.signum(Math.random() - 0.5);
+        double deltaAlpha = SMALL_ANGLE * Math.signum(Math.random() - 0.5);
         return deltaAlpha;
     }
 
@@ -229,7 +229,7 @@ public class AngleCalculatorSimple implements AngleCalculator {
         while (vertices.hasNext()) {
             Vertex v = vertices.next();
             double angle = Vertex.getClockwiseAngle(top, bot, v);
-            if (angle <= angleThreshold && (defender == null || minAngle > angle)) {
+            if (angle <= ANGLE_THRESHOLD && (defender == null || minAngle > angle)) {
                 defender = v;
                 minAngle = angle;
             }
@@ -245,7 +245,7 @@ public class AngleCalculatorSimple implements AngleCalculator {
         while (vertices.hasNext()) {
             Vertex v = vertices.next();
             double angle = Vertex.getClockwiseAngle(v, bot, top);
-            if (angle <= angleThreshold && (defender == null || minAngle > angle)) {
+            if (angle <= ANGLE_THRESHOLD && (defender == null || minAngle > angle)) {
                 defender = v;
                 minAngle = angle;
             }
@@ -263,7 +263,7 @@ public class AngleCalculatorSimple implements AngleCalculator {
             Vertex w = vertices.next();
             if (w != top) {
                 double angle = Vertex.getClockwiseAngle(w, w, top);
-                if (angle <= angleThreshold && (defender == null || minAngle > angle)) {
+                if (angle <= ANGLE_THRESHOLD && (defender == null || minAngle > angle)) {
                     defender = w;
                     minAngle = angle;
                 }
@@ -280,7 +280,7 @@ public class AngleCalculatorSimple implements AngleCalculator {
         while (vertices.hasNext()) {
             Vertex v = vertices.next();
             double angle = Vertex.getClockwiseAngle(top, bot, v);
-            if (angle <= angleThreshold && (striker == null || maxAngle < angle)) {
+            if (angle <= ANGLE_THRESHOLD && (striker == null || maxAngle < angle)) {
                 striker = v;
                 maxAngle = angle;
             }
@@ -296,7 +296,7 @@ public class AngleCalculatorSimple implements AngleCalculator {
         while (vertices.hasNext()) {
             Vertex v = vertices.next();
             double angle = Vertex.getClockwiseAngle(v, bot, top);
-            if (angle <= angleThreshold && (striker == null || maxAngle < angle)) {
+            if (angle <= ANGLE_THRESHOLD && (striker == null || maxAngle < angle)) {
                 striker = v;
                 maxAngle = angle;
             }

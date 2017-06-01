@@ -17,7 +17,6 @@ package uk.ac.uea.cmp.spectre.core.ds.network.draw;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import uk.ac.uea.cmp.spectre.core.ds.network.Edge;
 import uk.ac.uea.cmp.spectre.core.ds.network.EdgeList;
 import uk.ac.uea.cmp.spectre.core.ds.network.Network;
@@ -80,9 +79,9 @@ public class BoxOpener {
             count++;
         }
 
-        if (count >= 10000) {
+        /*if (count >= 10000) {
             log.warn("Cancelling network layout optimisation.  Couldn't find a split in dataset for over 10000 iterations.  Probably your input is too small to process.");
-        }
+        }*/
     }
 
 
@@ -125,7 +124,7 @@ public class BoxOpener {
                     Edge rightmost = boxesSorted.getLast().getE2();
                     //Collect all external egdes that are below current split
                     Set<Edge> bottomExternalEdges = network.getExternalEdges(rightmost, rightmost.getTop(), leftmost);
-                    //Collect all the external edges that are above 
+                    //Collect all the external edges that are above
                     Set<Edge> topExternalEdges = network.getExternalEdges(leftmost, leftmost.getBottom(), rightmost);
 
 

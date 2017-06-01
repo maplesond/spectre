@@ -47,23 +47,23 @@ public class Vertex {
     private double y;
 
     //number of vertex in nexus file
-    private int nxnum = 0;
+    private int nxnum;
 
     //flags used in various methods when traversing the
     //splitsgraph and so on
     private boolean visited;
 
-    private int width = 0;
-    private int height = 0;
+    private int width;
+    private int height;
 
-    private Color bgColor = Color.BLACK;
-    private Color fgColor = Color.BLACK;
+    private Color bgColor;
+    private Color fgColor;
 
-    private String shape = null;
+    private String shape;
 
     private NetworkLabel label;
 
-    private EdgeList externalEdges = null;
+    private EdgeList externalEdges;
 
 
     public Vertex() {
@@ -71,25 +71,33 @@ public class Vertex {
     }
 
     public Vertex(double xcoord, double ycoord) {
-        x = xcoord;
-        y = ycoord;
-        edgeList = new EdgeList();
-        taxa = new IdentifierList();
-        visited = false;
+        this.x = xcoord;
+        this.y = ycoord;
+        this.edgeList = new EdgeList();
+        this.taxa = new IdentifierList();
+        this.visited = false;
+        this.nxnum = 0;
+        this.width = 0;
+        this.height = 0;
+        this.bgColor = Color.BLACK;
+        this.fgColor = Color.BLACK;
+        this.shape = null;
+        this.label = null;
+        this.externalEdges = null;
     }
 
     //Methods to add an edge to the list of incident edges.
-    public void add_edge_before_first(Edge e) {
+    public void prependEdge(Edge e) {
         edgeList.addFirst(e);
     }
 
-    public void add_edge_after_last(Edge e) {
+    public void appendEdge(Edge e) {
         edgeList.addLast(e);
     }
 
     @Override
     public String toString() {
-        return nxnum + " [" + x + ", " + y + "] : " + edgeList.size();
+        return "Index: " + nxnum + " [" + x + ", " + y + "]; Edges: " + edgeList.size();
     }
 
     public String toSimpleString() {
@@ -283,7 +291,7 @@ public class Vertex {
         EdgeList elist = new EdgeList();
 
         for (Edge e : this.edgeList.getFirst().collectEdges()) {
-            if (e.getIdxsplit() == splitIndex) {
+            if (e.getSplitIndex() == splitIndex) {
                 elist.add(e);
             }
         }
@@ -425,12 +433,12 @@ public class Vertex {
      */
     public static double getClockwiseAngle(Vertex v1, Vertex a, Vertex v2) {
 
-        double v1X = v1.getX();
-        double v1Y = v1.getY();
-        double v2X = v2.getX();
-        double v2Y = v2.getY();
-        double aX = a.getX();
-        double aY = a.getY();
+        final double v1X = v1.getX();
+        final double v1Y = v1.getY();
+        final double v2X = v2.getX();
+        final double v2Y = v2.getY();
+        final double aX = a.getX();
+        final double aY = a.getY();
 
         double angle;
         if (v1X == v2X && v1Y == v2Y) {
@@ -448,6 +456,7 @@ public class Vertex {
         return angle;
     }
 
+    //public Vertex optimiseLayout(DrawSplitSystem ps, Network network) {
     public Vertex optimiseLayout(PermutationSequenceDraw ps, Network network) {
 
         // Compute split system
@@ -461,17 +470,17 @@ public class Vertex {
         //Initialize array to keep edges involved in each split
         TreeSet[] splitedges = ps.collectEdgesForTheSplits(this);
 
-        AngleCalculator angleCalculatorSimple = new AngleCalculatorSimple();
+        //AngleCalculator angleCalculatorSimple = new AngleCalculatorSimple();
         AngleCalculator angleCalculatorPrecise = new AngleCalculatorMaximalArea();
 
         //Two types of box openers are used. Simple one tries to open boxes by
         //no more than certain constant angle, whereas precise one uses angle
         //which maximises certain function.
-        BoxOpener boxOpenerSimple = new BoxOpener(angleCalculatorSimple, ss);
+        //BoxOpener boxOpenerSimple = new BoxOpener(angleCalculatorSimple, ss);
         BoxOpener boxOpenerPrecise = new BoxOpener(angleCalculatorPrecise, ss);
 
         //CompatibleCorrectors are used to change angles for compatible splits.
-        CompatibleCorrector compatibleCorrectorSimple = new CompatibleCorrector(angleCalculatorSimple);
+        //CompatibleCorrector compatibleCorrectorSimple = new CompatibleCorrector(angleCalculatorSimple);
         CompatibleCorrector compatibleCorrectorPrecise = new CompatibleCorrector(angleCalculatorPrecise);
 
         //First step of the layout optimisation consists of a few iterations of
@@ -481,8 +490,8 @@ public class Vertex {
         //alone.
 
         int trivial = 2 + network.getTrivialEdges().size() / 10;
-        int precise = 2 + ps.getNtaxa() / 20;
-        int iterations = 2 + ps.getNtaxa() / 50;
+        int precise = 2 + ps.getNbTaxa() / 20;
+        int iterations = 2 + ps.getNbTaxa() / 50;
         int finish = precise + 5;
         int compatible = 1;// + ps.ntaxa / 40;
 

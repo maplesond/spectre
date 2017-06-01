@@ -21,42 +21,50 @@ import java.io.File;
 
 public class NetMEOptions {
 
-    public static final String DESC_DISTANCES = "The file containing the distance data.";
-
-    public static final String DESC_CIRCULAR_ORDERING = "The nexus file containing the circular ordering.";
-
+    public static final String DESC_INPUT = "The nexus file containing the distance matrix and circular ordering from a split system.";
+    public static final String DESC_OUTPUT_OLS = "Whether or not NetME should output the minimum evolution tree derived from Ordinary Least Squares method of tree construction";
     public static final String DESC_OUTPUT_PREFIX = "The location and file prefix for output files.  Default: ./netme.";
 
-    private File distancesFile;
-    private File circularOrderingFile;
+    private File inputFile;
     private File outputDir;
+    private boolean ols;
+    private boolean draw;
     private String prefix;
 
     public NetMEOptions() {
-        this(null, null, new File(""), "netme-" + Time.createTimestamp());
+        this(null, false, false, new File(""), "netme-" + Time.createTimestamp());
     }
 
-    public NetMEOptions(File distancesFile, File circularOrderingFile, File outputDir, String prefix) {
-        this.distancesFile = distancesFile;
-        this.circularOrderingFile = circularOrderingFile;
+    public NetMEOptions(File inputFile, boolean ols, boolean draw, File outputDir, String prefix) {
+        this.inputFile = inputFile;
+        this.ols = ols;
+        this.draw = draw;
         this.outputDir = outputDir;
         this.prefix = prefix;
     }
 
-    public File getDistancesFile() {
-        return distancesFile;
+    public File getInputFile() {
+        return inputFile;
     }
 
-    public void setDistancesFile(File distancesFile) {
-        this.distancesFile = distancesFile;
+    public void setInputFile(File inputFile) {
+        this.inputFile = inputFile;
     }
 
-    public File getCircularOrderingFile() {
-        return circularOrderingFile;
+    public boolean isOls() {
+        return ols;
     }
 
-    public void setCircularOrderingFile(File circularOrderingFile) {
-        this.circularOrderingFile = circularOrderingFile;
+    public void setOls(boolean ols) {
+        this.ols = ols;
+    }
+
+    public boolean isDraw() {
+        return draw;
+    }
+
+    public void setDraw(boolean draw) {
+        this.draw = draw;
     }
 
     public File getOutputDir() {
@@ -73,5 +81,17 @@ public class NetMEOptions {
 
     public void setPrefix(String prefix) {
         this.prefix = prefix;
+    }
+
+    public File getMETreeOutput() {
+        return new File(this.outputDir, this.prefix + ".min-evo.nex");
+    }
+
+    public File getOLSMETreeOutput() {
+        return new File(this.outputDir, this.prefix + ".original-min-evo.nex");
+    }
+
+    public File getTreeLengthOutput() {
+        return new File(this.outputDir, this.prefix + ".treelength");
     }
 }

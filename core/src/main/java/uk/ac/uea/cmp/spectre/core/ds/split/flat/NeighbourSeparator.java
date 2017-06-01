@@ -23,7 +23,7 @@ import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleSystem;
  *
  * @author balvociute
  */
-public interface NeighbourSeparator {
+interface NeighbourSeparator {
     /**
      * Separates all pairs of taxa that were identified as neighbors in the
      * agglomeration phase.
@@ -35,7 +35,7 @@ public interface NeighbourSeparator {
      * @param n          number of taxa
      * @return full flat split system as a permutation sequence
      */
-    public PermutationSequence popOutNeighbours(Neighbours[] neighbours,
+    PermutationSequence popOutNeighbours(Neighbours[] neighbours,
                                                 PermutationSequence ps,
                                                 QuadrupleSystem qs,
                                                 int j,

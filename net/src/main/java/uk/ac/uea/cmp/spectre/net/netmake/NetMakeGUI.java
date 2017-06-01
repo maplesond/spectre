@@ -15,21 +15,21 @@
 
 package uk.ac.uea.cmp.spectre.net.netmake;
 
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.PatternLayout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceCalculatorFactory;
 import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.CircularOrderingAlgorithms;
 import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.nm.weighting.Weightings;
 import uk.ac.uea.cmp.spectre.core.ui.gui.JobController;
-import uk.ac.uea.cmp.spectre.core.ui.gui.StatusTracker;
+import uk.ac.uea.cmp.spectre.core.ui.gui.StatusTrackerWithView;
 import uk.ac.uea.cmp.spectre.core.ui.gui.ToolHost;
+import uk.ac.uea.cmp.spectre.core.util.LogConfig;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.net.URISyntaxException;
 
 import static uk.ac.uea.cmp.spectre.core.ui.gui.LookAndFeel.NIMBUS;
 import static uk.ac.uea.cmp.spectre.core.ui.gui.LookAndFeel.setLookAndFeel;
@@ -51,8 +51,11 @@ public class NetMakeGUI extends JFrame implements ToolHost {
     private JButton cmdInput;
 
     private JPanel pnlAlgorithm;
-    private JLabel lblAlgorithm;
-    private JComboBox<CircularOrderingAlgorithms> cboAlgorithm;
+    private JLabel lblCoAlgorithm;
+    private JComboBox<CircularOrderingAlgorithms> cboCoAlgorithm;
+    private JLabel lblDmAlgorithm;
+    private JComboBox<DistanceCalculatorFactory> cboDmAlgorithm;
+
     private JPanel pnlWeightings;
     private JLabel lblWeighting1;
     private JComboBox<Weightings> cboWeighting1;
@@ -75,6 +78,7 @@ public class NetMakeGUI extends JFrame implements ToolHost {
     private JPanel pnlControlButtons;
     private JButton cmdCancel;
     private JButton cmdRun;
+    private JButton cmdViewOutput;
     private JLabel lblStatus;
     private JProgressBar progStatus;
 
@@ -84,9 +88,21 @@ public class NetMakeGUI extends JFrame implements ToolHost {
     private JobController go_control;
     private NetMakeRunner netMakeRunner;
 
+    private File lastOutput;
+    private File cwd;
+
     public NetMakeGUI() {
         initComponents();
         setTitle(TITLE);
+
+        try {
+            setIconImage((new ImageIcon(uk.ac.uea.cmp.spectre.core.ui.gui.LookAndFeel.getLogoFilePath()).getImage()));
+        } catch (URISyntaxException e) {
+            showErrorDialog("Couldn't load logo.");
+        }
+
+        this.lastOutput = null;
+        this.cwd = null;
 
         cmdRun.setEnabled(true);
 
@@ -142,19 +158,28 @@ public class NetMakeGUI extends JFrame implements ToolHost {
 
     private void initAlgorithmComponents() {
 
-        cboAlgorithm = new JComboBox<>();
-        lblAlgorithm = new JLabel();
+        cboCoAlgorithm = new JComboBox<>();
+        cboDmAlgorithm = new JComboBox<>();
+        lblCoAlgorithm = new JLabel();
+        lblDmAlgorithm = new JLabel();
 
-        cboAlgorithm.setModel(new DefaultComboBoxModel<>(CircularOrderingAlgorithms.values()));
-        cboAlgorithm.setToolTipText(NetMakeOptions.DESC_CO_ALG);
-        cboAlgorithm.addActionListener(new java.awt.event.ActionListener() {
+        cboCoAlgorithm.setModel(new DefaultComboBoxModel<>(CircularOrderingAlgorithms.values()));
+        cboCoAlgorithm.setToolTipText(NetMakeOptions.DESC_CO_ALG);
+        cboCoAlgorithm.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cmdSelectAlgorithmActionPerformed(evt);
             }
         });
 
-        lblAlgorithm.setText("Select circular ordering algorithm:");
-        lblAlgorithm.setToolTipText(NetMakeOptions.DESC_CO_ALG);
+        lblCoAlgorithm.setText("Select circular ordering algorithm:");
+        lblCoAlgorithm.setToolTipText(NetMakeOptions.DESC_CO_ALG);
+
+        cboDmAlgorithm.setModel(new DefaultComboBoxModel<>(DistanceCalculatorFactory.values()));
+        cboDmAlgorithm.setToolTipText(NetMakeOptions.DESC_DIST_CALC);
+        cboDmAlgorithm.setSelectedItem(DistanceCalculatorFactory.JUKES_CANTOR);
+
+        lblDmAlgorithm.setText("Select distance matrix calculator:");
+        lblDmAlgorithm.setToolTipText(NetMakeOptions.DESC_DIST_CALC);
 
         pnlAlgorithm = new JPanel();
 
@@ -166,23 +191,29 @@ public class NetMakeGUI extends JFrame implements ToolHost {
         algLayout.setHorizontalGroup(
                 algLayout.createSequentialGroup()
                         .addGroup(algLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-                                        .addComponent(lblAlgorithm)
+                                        .addComponent(lblCoAlgorithm)
+                                        .addComponent(lblDmAlgorithm)
                         )
                         .addGroup(algLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                        .addComponent(cboAlgorithm)
+                                        .addComponent(cboCoAlgorithm)
+                                        .addComponent(cboDmAlgorithm)
                         )
 
         );
         algLayout.setVerticalGroup(
                 algLayout.createSequentialGroup()
                         .addGroup(algLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                        .addComponent(lblAlgorithm)
-                                        .addComponent(cboAlgorithm)
+                                        .addComponent(lblCoAlgorithm)
+                                        .addComponent(cboCoAlgorithm)
+                        )
+                        .addGroup(algLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                                .addComponent(lblDmAlgorithm)
+                                .addComponent(cboDmAlgorithm)
                         )
         );
 
         pnlAlgorithm.setLayout(algLayout);
-        pnlAlgorithm.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), "Circular Ordering Algorithm:"));
+        pnlAlgorithm.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), "Algorithms:"));
 
         pack();
     }
@@ -380,10 +411,22 @@ public class NetMakeGUI extends JFrame implements ToolHost {
         cmdCancel = new JButton();
         cmdCancel.setText("Cancel");
 
+        cmdViewOutput = new JButton();
+        cmdViewOutput.setText("View Network");
+        cmdViewOutput.setToolTipText("Visualise the produced network in Spectre");
+        cmdViewOutput.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmdViewActionPerformed(evt);
+            }
+        });
+        cmdViewOutput.setEnabled(false);
+
         pnlControlButtons = new JPanel();
         pnlControlButtons.setLayout(new BoxLayout(pnlControlButtons, BoxLayout.LINE_AXIS));
         pnlControlButtons.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
         pnlControlButtons.add(Box.createHorizontalGlue());
+        pnlControlButtons.add(cmdViewOutput);
+        pnlControlButtons.add(Box.createRigidArea(new Dimension(10, 0)));
         pnlControlButtons.add(cmdRun);
         pnlControlButtons.add(Box.createRigidArea(new Dimension(10, 0)));
         pnlControlButtons.add(cmdCancel);
@@ -412,6 +455,10 @@ public class NetMakeGUI extends JFrame implements ToolHost {
         pnlOptions.add(Box.createRigidArea(new Dimension(0, 10)));
         pnlOptions.add(pnlOutput);
 
+        // Set algorithm to neighbornet
+        cboCoAlgorithm.setSelectedItem(CircularOrderingAlgorithms.NEIGHBORNET);
+        this.enableWeightingsPanel(false);
+
 
         // ***** Layout *****
 
@@ -430,17 +477,29 @@ public class NetMakeGUI extends JFrame implements ToolHost {
 
     private void cmdSelectAlgorithmActionPerformed(ActionEvent evt) {
 
-        if (evt.getSource() == cboAlgorithm) {
+        if (evt.getSource() == cboCoAlgorithm) {
 
-            CircularOrderingAlgorithms alg = (CircularOrderingAlgorithms)cboAlgorithm.getSelectedItem();
+            CircularOrderingAlgorithms alg = (CircularOrderingAlgorithms) cboCoAlgorithm.getSelectedItem();
 
             if (alg == CircularOrderingAlgorithms.NEIGHBORNET) {
                 this.enableWeightingsPanel(false);
+                this.enableTreeOutput(false);
             }
             else if (alg == CircularOrderingAlgorithms.NETMAKE) {
                 this.enableWeightingsPanel(true);
+                this.enableTreeOutput(true);
             }
         }
+    }
+
+    private void enableTreeOutput(boolean b) {
+        this.lblOutputTree.setEnabled(b);
+        this.txtOutputTree.setEnabled(b);
+        this.cmdOutputTree.setEnabled(b);
+    }
+
+    private void cmdViewActionPerformed(ActionEvent evt) {
+        this.firePropertyChange("done", null, this.lastOutput);
     }
 
     /**
@@ -450,7 +509,7 @@ public class NetMakeGUI extends JFrame implements ToolHost {
      */
     private void cmdOutputNetworkActionPerformed(java.awt.event.ActionEvent evt) {
 
-        final JFileChooser fc = new JFileChooser();
+        final JFileChooser fc = cwd == null ? new JFileChooser() : new JFileChooser(cwd);
         if (evt.getSource() == cmdOutputNetwork) {
             int returnVal = fc.showSaveDialog(NetMakeGUI.this);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -458,6 +517,7 @@ public class NetMakeGUI extends JFrame implements ToolHost {
                 File file = fc.getSelectedFile();
                 String z = file.getAbsolutePath();
                 txtOutputNetwork.setText(z);
+                this.cwd = file.getParentFile();
             } else {
                 log.debug("Open command cancelled by user.");
             }
@@ -471,7 +531,7 @@ public class NetMakeGUI extends JFrame implements ToolHost {
      */
     private void cmdOutputTreeActionPerformed(java.awt.event.ActionEvent evt) {
 
-        final JFileChooser fc = new JFileChooser();
+        final JFileChooser fc = cwd == null ? new JFileChooser() : new JFileChooser(cwd);
         if (evt.getSource() == cmdOutputTree) {
             int returnVal = fc.showSaveDialog(NetMakeGUI.this);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -479,6 +539,7 @@ public class NetMakeGUI extends JFrame implements ToolHost {
                 File file = fc.getSelectedFile();
                 String z = file.getAbsolutePath();
                 txtOutputTree.setText(z);
+                this.cwd = file.getParentFile();
             } else {
                 log.debug("Open command cancelled by user.");
             }
@@ -492,7 +553,7 @@ public class NetMakeGUI extends JFrame implements ToolHost {
      */
     private void cmdInputActionPerformed(java.awt.event.ActionEvent evt) {
 
-        final JFileChooser fc = new JFileChooser();
+        final JFileChooser fc = cwd == null ? new JFileChooser() : new JFileChooser(cwd);
         if (evt.getSource() == cmdInput) {
             int returnVal = fc.showOpenDialog(NetMakeGUI.this);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -500,6 +561,7 @@ public class NetMakeGUI extends JFrame implements ToolHost {
                 String z = "";
                 z = file.getAbsolutePath();
                 txtInput.setText(z);
+                this.cwd = file.getParentFile();
             } else {
                 log.debug("Open command cancelled by user.");
             }
@@ -516,8 +578,13 @@ public class NetMakeGUI extends JFrame implements ToolHost {
         NetMakeOptions options = buildNetMakeOptions();
 
         if (options != null)
-            this.netMakeRunner.runNetMake(options, new StatusTracker(this.progStatus, this.lblStatus));
+            if (options.getOutputNetwork() == null || options.getOutputNetwork().getName().isEmpty()) {
+                showErrorDialog("Can't run without circular ordering file specified.");
+                return;
+            }
 
+            this.lastOutput = options.getOutputNetwork();
+            this.netMakeRunner.runNetMake(options, new StatusTrackerWithView(this.progStatus, this.lblStatus, this.cmdViewOutput));
     }
 
 
@@ -530,6 +597,13 @@ public class NetMakeGUI extends JFrame implements ToolHost {
         this.cboWeighting2.setEnabled(enabled);
         this.lblWeight.setEnabled(enabled);
         this.txtWeight.setEnabled(enabled);
+    }
+
+    private void enableAlgPanel(boolean enabled) {
+
+        this.pnlAlgorithm.setEnabled(enabled);
+        this.lblCoAlgorithm.setEnabled(enabled);
+        this.cboCoAlgorithm.setEnabled(enabled);
     }
 
     /**
@@ -552,11 +626,15 @@ public class NetMakeGUI extends JFrame implements ToolHost {
             return null;
         }
 
-        options.setCoAlg(this.cboAlgorithm.getSelectedItem().toString());
+        options.setCoAlg(this.cboCoAlgorithm.getSelectedItem().toString());
+        options.setDc(this.cboDmAlgorithm.getSelectedItem().toString());
 
         // May need some more validation here.
         options.setWeighting1(this.cboWeighting1.getSelectedItem().toString());
         options.setWeighting2(this.cboWeighting2.getSelectedItem().toString());
+
+        // Always draw
+        options.setDraw(true);
 
         return options;
     }
@@ -582,6 +660,20 @@ public class NetMakeGUI extends JFrame implements ToolHost {
                 JOptionPane.ERROR_MESSAGE);
     }
 
+    public void neighbornetConfig() {
+        this.enableWeightingsPanel(false);
+        this.enableTreeOutput(false);
+        this.cboCoAlgorithm.setSelectedItem(CircularOrderingAlgorithms.NEIGHBORNET);
+        this.enableAlgPanel(false);
+    }
+
+    public void netmakeConfig() {
+        this.enableWeightingsPanel(true);
+        this.enableTreeOutput(true);
+        this.cboCoAlgorithm.setSelectedItem(CircularOrderingAlgorithms.NETMAKE);
+        this.enableAlgPanel(false);
+    }
+
     /**
      * Main entry point when running in GUI mode.
      *
@@ -590,12 +682,12 @@ public class NetMakeGUI extends JFrame implements ToolHost {
     public static void main(String args[]) {
 
         // Configure logging
-        BasicConfigurator.configure(new ConsoleAppender(new PatternLayout("%d{HH:mm:ss} %p: %m%n")));
+        LogConfig.defaultConfig();
 
         setLookAndFeel(NIMBUS);
 
         try {
-            log.info("Running in GUI mode");
+            log.info("Started netmake GUI");
 
             EventQueue.invokeLater(new Runnable() {
 

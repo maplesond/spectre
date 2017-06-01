@@ -54,6 +54,7 @@ public class Edge implements Comparable<Edge> {
         width = 1;
         color = Color.black;
         compatible = false;
+        nxnum = 0;
     }
 
     public void setNxnum(int nxnum) {
@@ -67,7 +68,7 @@ public class Edge implements Comparable<Edge> {
 
     @Override
     public String toString() {
-        return "Nr. " + nxnum + "\nSplit: " + idxsplit + "\nBot: " + bottom.toSimpleString() + "\nTop: " + top.toSimpleString() + "\n";
+        return "Nr. " + nxnum + "; Split: " + idxsplit + "; Bot: " + bottom.toSimpleString() + "; Top: " + top.toSimpleString() + "; Timestp: " + timestp;
     }
 
 
@@ -91,7 +92,24 @@ public class Edge implements Comparable<Edge> {
         return color;
     }
 
-    public int getIdxsplit() {
+    public double getDeltaX() {
+        return this.bottom.getX() - this.top.getX();
+    }
+
+    public double getDeltaY() {
+        return this.bottom.getY() - this.top.getY();
+    }
+
+    public double getCentreX() {
+        return this.top.getX() + this.getDeltaX();
+    }
+
+    public double getCentreY() {
+        return this.top.getY() + this.getDeltaY();
+    }
+
+
+    public int getSplitIndex() {
         return idxsplit;
     }
 
@@ -216,4 +234,5 @@ public class Edge implements Comparable<Edge> {
     public boolean bottomEquals(Edge e) {
         return this.getBottom().equals(e.getBottom());
     }
+
 }

@@ -20,12 +20,12 @@
     <parent>
         <artifactId>spectre</artifactId>
         <groupId>uk.ac.uea.cmp.spectre</groupId>
-        <version>0.5.0</version>
+        <version>1.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>misc</artifactId>
-    <version>0.5.0</version>
+    <version>1.0.0</version>
 
     <name>Spectre: Miscellaneous Tools</name>
 
@@ -48,17 +48,21 @@
                     </platforms>
                     <extraJvmArguments>-Djava.awt.headless=true</extraJvmArguments>
                     <programs>
-                        <program>
+                        <!--<program>
                             <mainClass>uk.ac.uea.cmp.spectre.tools.convertor.DistanceMatrixConvertor</mainClass>
                             <id>distmxconv</id>
-                        </program>
-                        <program>
+                        </program>-->
+                        <!--<program>
                             <mainClass>uk.ac.uea.cmp.spectre.tools.phycor.PhylipCorrector</mainClass>
                             <id>phycor</id>
+                        </program>-->
+                        <program>
+                            <mainClass>uk.ac.uea.cmp.spectre.tools.dmg.DistanceMatrixGeneratorTool</mainClass>
+                            <id>distmatgen</id>
                         </program>
                         <program>
-                            <mainClass>uk.ac.uea.cmp.spectre.tools.rdg.RandomDistanceGeneratorTool</mainClass>
-                            <id>rdg</id>
+                            <mainClass>uk.ac.uea.cmp.spectre.tools.ssc.SplitSystemComparisonTool</mainClass>
+                            <id>splitcompare</id>
                         </program>
                     </programs>
                 </configuration>
@@ -78,9 +82,10 @@
                         </goals>
                         <configuration>
                             <target>
-                                <chmod file="${build-dir}/bin/distmxconv" perm="755"/>
-                                <chmod file="${build-dir}/bin/phycor" perm="755"/>
-                                <chmod file="${build-dir}/bin/rdg" perm="755"/>
+                                <!--<chmod file="${build-dir}/bin/distmxconv" perm="755"/>-->
+                                <!--<chmod file="${build-dir}/bin/phycor" perm="755"/>-->
+                                <chmod file="${build-dir}/bin/distmatgen" perm="755"/>
+                                <chmod file="${build-dir}/bin/splitcompare" perm="755"/>
                             </target>
                         </configuration>
                     </execution>

@@ -25,7 +25,7 @@ public interface Split extends Comparable<Split> {
     /**
      * A helpful enum for getting elements from a given side of the split
      */
-    public enum SplitSide {
+    enum SplitSide {
 
         A_SIDE {
             public int getSplitElement(Split split, int index) {
@@ -53,6 +53,24 @@ public interface Split extends Comparable<Split> {
      * @return The split weight
      */
     double getWeight();
+
+    /**
+     * Sets the weight of this split.
+     * @param weight Weight
+     */
+    void setWeight(double weight);
+
+    /**
+     * Returns True if this split is active, False otherwise.
+     * @return True if this split is active, False otherwise.
+     */
+    boolean isActive();
+
+    /**
+     * Used to toggle whether or not this split is active
+     * @param active
+     */
+    void setActive(boolean active);
 
 
     /**
@@ -98,6 +116,8 @@ public interface Split extends Comparable<Split> {
      */
     SplitBlock getBSide();
 
+    SplitSide getSide(int taxonId);
+
     /**
      * Gets an array of integers representing the taxa indicies on the split's A side.
      * @return A Side as int[].
@@ -118,23 +138,24 @@ public interface Split extends Comparable<Split> {
      */
     void mergeASides(Split split);
 
-
-
-
+    /**
+     * Returns a canonical version of this split.  This means that the a-side is always smaller than or equal to the size
+     * of the b-side, and taxa are sorted in both sides.
+     * @return
+     */
+    Split makeCanonical();
 
     /**
      * Returns true if one side of this split contains only a single taxon.
      * @return True if one side of this split contains only a single taxon, otherwise false.
      */
-    boolean onExternalEdge();
+    boolean isTrivial();
 
     /**
-     * Check to see if this split is compatible with another split.  This returns true (compatible) if one of the four
-     * intersections A1 n A2, A1 n B2, A2 n B1 or A2 n B2 is empty.  Otherwise this returns false (incompatible).
-     * @param other The other split to test
-     * @return True if compatible, false if incompatible
+     * Returns the index of the trivial split if this is a trivial split, otherwise returns null.
+     * @return Null if this is not a trivial split, otherwise the index of the taxon that's on the side with 1 element.
      */
-    boolean isCompatible(Split other);
+    Integer getTrivial();
 
     /**
      * Check to see if this split is consistent with the given ordering, hence is circular.
@@ -146,4 +167,186 @@ public interface Split extends Comparable<Split> {
      * @return True, if this split is circular, false if not.
      */
     boolean isCircular(IdentifierList ordering);
+
+    /**
+     * Check to see if this split is compatible with another split.  This returns true (compatible) if one of the four
+     * intersections A1 n A2, A1 n B2, A2 n B1 or A2 n B2 is empty.  Otherwise this returns false (incompatible).
+     * @param other The other split to test
+     * @return True if compatible, false if incompatible
+     */
+    boolean isCompatible(Split other);
+
+    Compatible getCompatible(Split other);
+
+    enum Direction {
+        LEFT,
+        RIGHT
+    }
+
+    /**
+     * Possible patterns of compatibility between splits
+     */
+    enum Compatible {
+        NO {
+            @Override
+            public boolean isCompatible() {
+                return false;
+            }
+
+            @Override
+            public Direction getDirA(boolean flip) {
+                return null;
+            }
+
+            @Override
+            public Direction getDirB(boolean flip) {
+                return null;
+            }
+
+            @Override
+            public boolean partAOn() {
+                return false;
+            }
+
+            @Override
+            public boolean partBOn() {
+                return false;
+            }
+        },
+        YES_11 {
+            @Override
+            public boolean isCompatible() {
+                return true;
+            }
+
+            @Override
+            public Direction getDirA(boolean flip) {
+                return !flip ? Direction.LEFT : Direction.RIGHT;
+            }
+
+            @Override
+            public Direction getDirB(boolean flip) {
+                return !flip ? Direction.RIGHT : Direction.LEFT;
+            }
+
+            @Override
+            public boolean partAOn() {
+                return true;
+            }
+
+            @Override
+            public boolean partBOn() {
+                return true;
+            }
+        },
+        YES_10 {
+            @Override
+            public boolean isCompatible() {
+                return true;
+            }
+
+            @Override
+            public Direction getDirA(boolean flip) {
+                return !flip ? Direction.RIGHT : Direction.LEFT;
+            }
+
+            @Override
+            public Direction getDirB(boolean flip) {
+                return !flip ? Direction.RIGHT : Direction.LEFT;
+            }
+
+            @Override
+            public boolean partAOn() {
+                return true;
+            }
+
+            @Override
+            public boolean partBOn() {
+                return false;
+            }
+        },
+        YES_01 {
+            @Override
+            public boolean isCompatible() {
+                return true;
+            }
+
+            @Override
+            public Direction getDirA(boolean flip) {
+                return !flip ? Direction.LEFT : Direction.RIGHT;
+            }
+
+            @Override
+            public Direction getDirB(boolean flip) {
+                return !flip ? Direction.LEFT : Direction.RIGHT;
+            }
+
+            @Override
+            public boolean partAOn() {
+                return false;
+            }
+
+            @Override
+            public boolean partBOn() {
+                return true;
+            }
+        },
+        YES_00 {
+            @Override
+            public boolean isCompatible() {
+                return true;
+            }
+
+            @Override
+            public Direction getDirA(boolean flip) {
+                return !flip ? Direction.RIGHT : Direction.LEFT;
+            }
+
+            @Override
+            public Direction getDirB(boolean flip) {
+                return !flip ? Direction.LEFT : Direction.RIGHT;
+            }
+
+            @Override
+            public boolean partAOn() {
+                return false;
+            }
+
+            @Override
+            public boolean partBOn() {
+                return false;
+            }
+        };
+
+        public abstract boolean isCompatible();
+
+        public abstract Direction getDirA(boolean flip);
+
+        public abstract Direction getDirB(boolean flip);
+
+        public abstract boolean partAOn();
+
+        public abstract boolean partBOn();
+    };
+
+    /**
+     * This method checks whether the quadruple split number nr is in the restriction of this split to {a,b,c,d}.
+     * It is assumed that a, b, c and d are pairwise distinct. The possible values for nr are:
+     * 0 --> a|bcd
+     * 1 --> b|acd
+     * 2 --> c|abd
+     * 3 --> d|abc
+     * 4 --> ab|cd
+     * 5 --> ac|bd
+     * 6 --> ad|bc
+     * @param a Taxon a
+     * @param b Taxon b
+     * @param c Taxon c
+     * @param d Taxon d
+     * @param nr
+     * @return True if restriction exists, false otherwise
+     */
+    boolean restrictionExists(int a, int b, int c, int d, int nr);
+
+    void incTaxId();
 }

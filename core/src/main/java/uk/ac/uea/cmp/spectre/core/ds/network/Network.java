@@ -29,6 +29,8 @@ public interface Network {
     void setTaxa(IdentifierList taxa);
     IdentifierList getTaxa();
 
+    Vertex getPrimaryVertex();
+
     VertexList getAllVertices();
 
     VertexList getLabeledVertices();

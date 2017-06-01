@@ -20,6 +20,9 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 
+import java.util.HashSet;
+import java.util.Set;
+
 
 /**
  * Created with IntelliJ IDEA.
@@ -32,23 +35,49 @@ public class SpectreSplit implements Split {
 
     private SplitBlock aSide;
     private SplitBlock bSide;
-    private int nbTaxa;
+    private Set<Integer> aSideSet;
+    private Set<Integer> bSideSet;
     private double weight;
+    private boolean active;
 
     public SpectreSplit(SplitBlock aSide, int nbTaxa) {
-        this(aSide, nbTaxa, 1.0);
+        this(aSide, nbTaxa, 1.0, false);
+    }
+
+    public SpectreSplit(SplitBlock aSide, int nbTaxa, boolean zerobased) {
+        this(aSide, nbTaxa, 1.0, zerobased);
     }
 
     public SpectreSplit(SplitBlock aSide, int nbTaxa, double weight) {
+        this(aSide, nbTaxa, weight, false);
+    }
+
+    public SpectreSplit(SplitBlock aSide, int nbTaxa, double weight, boolean zerobased) {
+        this(aSide, aSide.makeComplement(nbTaxa, zerobased), weight);
+    }
+
+    public SpectreSplit(SplitBlock aSide, int nbTaxa, double weight, boolean zerobased, boolean active) {
+        this(aSide, aSide.makeComplement(nbTaxa, zerobased), weight, active);
+    }
+
+    public SpectreSplit(SplitBlock aSide, SplitBlock bSide) {
+        this(aSide, bSide, 1.0);
+    }
+    public SpectreSplit(SplitBlock aSide, SplitBlock bSide, double weight) {
+        this(aSide, bSide, weight, true);
+    }
+    public SpectreSplit(SplitBlock aSide, SplitBlock bSide, double weight, boolean active) {
         this.aSide = aSide;
-        this.nbTaxa = nbTaxa;
-        this.bSide = aSide.makeComplement(nbTaxa);
+        this.bSide = bSide;
         this.weight = weight;
+        this.active = active;
+        this.aSideSet = new HashSet<>(this.aSide);
+        this.bSideSet = new HashSet<>(this.bSide);
     }
 
 
     public SpectreSplit(Split split) {
-        this(split.getASide().copy(), split.getNbTaxa());
+        this(split.getASide().copy(), split.getBSide().copy(), split.getWeight(), split.isActive());
     }
 
     /**
@@ -65,11 +94,13 @@ public class SpectreSplit implements Split {
     @Override
     public int hashCode() {
 
+        Split s = this.makeCanonical();
+
         return new HashCodeBuilder()
-                .append(aSide)
-                .append(bSide)
-                .append(nbTaxa)
-                .append(weight)
+                .append(s.getASide())
+                .append(s.getBSide())
+                //.append(s.getWeight())
+                //.append(active)
                 .toHashCode();
     }
 
@@ -83,13 +114,14 @@ public class SpectreSplit implements Split {
         if (this == o)
             return true;
 
-        SpectreSplit other = (SpectreSplit) o;
+        Split other = ((SpectreSplit) o).makeCanonical();
+        Split s = this.makeCanonical();
 
         return new EqualsBuilder()
-                .append(aSide, other.aSide)
-                .append(bSide, other.bSide)
-                .append(nbTaxa, other.nbTaxa)
-                .append(weight, other.weight)
+                .append(s.getASide(), other.getASide())
+                .append(s.getBSide(), other.getBSide())
+                //.append(s.getWeight(), other.getWeight())
+                //.append(s.isActive(), other.isActive())
                 .isEquals();
     }
 
@@ -102,12 +134,32 @@ public class SpectreSplit implements Split {
         return bSide;
     }
 
+    @Override
+    public SplitSide getSide(int taxonId) {
+        // Assumes side sets are uptodate!
+        if (this.aSideSet.contains(taxonId)) {
+            return SplitSide.A_SIDE;
+        }
+        else if (this.bSideSet.contains(taxonId)) {
+            return SplitSide.B_SIDE;
+        }
+        else {
+            throw new IllegalArgumentException("Couldn't find taxon (" + taxonId + ") on either side of split.");
+        }
+
+    }
+
     public int getNbTaxa() {
-        return nbTaxa;
+        return this.aSide.size() + this.bSide.size();
     }
 
     public double getWeight() {
         return weight;
+    }
+
+    @Override
+    public boolean isActive() {
+        return active;
     }
 
     @Override
@@ -144,10 +196,18 @@ public class SpectreSplit implements Split {
         this.weight = weight;
     }
 
-    public void sort() {
+    public void setActive(boolean active) {
+        this.active = active;
+    }
 
+    public void sort() {
         this.aSide.sort();
         this.bSide.sort();
+    }
+
+    public void regenSets() {
+        this.aSideSet = new HashSet<>(this.aSide);
+        this.bSideSet = new HashSet<>(this.bSide);
     }
 
     public int getSplitElement(SplitSide side, int index) {
@@ -157,12 +217,28 @@ public class SpectreSplit implements Split {
     @Override
     public void mergeASides(Split split) {
         this.aSide.merge(split.getASide());
-        this.bSide = aSide.makeComplement(this.nbTaxa);
+        this.bSide = aSide.makeComplement(this.getNbTaxa());
+        this.regenSets();
+    }
+
+    @Override
+    public Split makeCanonical() {
+
+        SpectreSplit copy = this.makeSortedCopy();
+        if (copy.aSide.size() > copy.bSide.size() ||
+                (copy.aSide.size() == copy.bSide.size() && copy.aSide.getFirst() > copy.bSide.getFirst())) {
+            SplitBlock temp = copy.aSide.copy();
+            copy.aSide = copy.bSide;
+            copy.bSide = temp;
+        }
+
+        copy.regenSets();
+        return copy;
     }
 
     @Override
     public Split copy() {
-        return new SpectreSplit(this.getASide().copy(), this.nbTaxa);
+        return new SpectreSplit(this.getASide().copy(), this.getBSide().copy(), this.weight);
     }
 
     public SpectreSplit makeSortedCopy() {
@@ -185,19 +261,18 @@ public class SpectreSplit implements Split {
 
         if (difNbTaxa == 0) {
 
-            double diffWeight = this.weight - o.getWeight();
+            int difASide = this.aSide.compareTo(o.getASide());
 
-            if (diffWeight == 0.0) {
+            if (difASide == 0) {
+                double diffWeight = this.weight - o.getWeight();
 
-                int difASide = this.aSide.compareTo(o.getASide());
-
-                if (difASide == 0) {
-                    return this.bSide.compareTo(o.getBSide());
+                if (diffWeight == 0.0) {
+                    return 0;
                 } else {
-                    return difASide;
+                    return diffWeight < 0.0 ? -1 : 1;
                 }
             } else {
-                return diffWeight < 0.0 ? -1 : 1;
+                return difASide;
             }
         } else {
             return difNbTaxa;
@@ -214,14 +289,14 @@ public class SpectreSplit implements Split {
      */
     public double calculateP(DistanceMatrix distanceMatrix) {
 
-        boolean splited[] = new boolean[this.nbTaxa];
+        boolean splited[] = new boolean[this.getNbTaxa()];
         for (int h = 0; h < splited.length; h++) {
             splited[h] = false;
         }
 
         // Array stores the info which elements are on one side each element of the split
         for (int j = 0; j < this.aSide.size(); j++) {
-            for (int k = 0; k < this.nbTaxa; k++) {
+            for (int k = 0; k < this.getNbTaxa(); k++) {
                 if (this.aSide.get(j) == k) {
                     splited[k] = true;
                 }
@@ -232,7 +307,7 @@ public class SpectreSplit implements Split {
         double p = 0.0;
 
         for (int j = 0; j < this.aSide.size(); j++) {
-            for (int k = 0; k < this.nbTaxa; k++) {
+            for (int k = 0; k < this.getNbTaxa(); k++) {
                 if (splited[k] == false) {
                     p += distanceMatrix.getDistance(this.aSide.get(j), k);
                 }
@@ -242,13 +317,26 @@ public class SpectreSplit implements Split {
         return p;
     }
 
-    public boolean onExternalEdge() {
+    public boolean isTrivial() {
         return this.aSide.size() == 1 || this.bSide.size() == 1;
     }
 
     @Override
+    public Integer getTrivial() {
+        if (this.aSide.size() == 1) {
+            return new Integer(this.aSide.getFirst());
+        }
+        else if (this.bSide.size() == 1) {
+            return new Integer(this.bSide.getFirst());
+        }
+        else {
+            return null;
+        }
+    }
+
+    @Override
     public String toString() {
-        return "{" + this.aSide.toString() + " | " + this.bSide.toString() + "} : " + this.weight;
+        return (this.active ? "ON " : "OFF") + " : {" + this.aSide.toString() + " | " + this.bSide.toString() + "} : " + this.weight;
     }
 
     /**
@@ -257,6 +345,7 @@ public class SpectreSplit implements Split {
      * @param other The other split to test
      * @return True if compatible, false if incompatible
      */
+    @Override
     public boolean isCompatible(Split other) {
 
         if (!(other instanceof SpectreSplit)) {
@@ -280,6 +369,118 @@ public class SpectreSplit implements Split {
                 !thisBSide.containsAny(otherASide) || !thisBSide.containsAny(otherBSide);
     }
 
+    public Compatible getCompatible(Split other) {
+
+        if (!(other instanceof SpectreSplit)) {
+            throw new IllegalArgumentException("Can't check compatibility of splits of different types.");
+        }
+
+        SpectreSplit o = (SpectreSplit)other;
+
+        if (this.getNbTaxa() != o.getNbTaxa()) {
+            throw new IllegalArgumentException("Comparing splits that have different numbers of taxa!");
+        }
+
+        if (!this.aSideContainsAny(o.getASide())) {
+            return Compatible.YES_11;
+        } else if (!this.aSideContainsAny(o.getBSide())) {
+            return Compatible.YES_10;
+        } else if (!this.bSideContainsAny(o.getASide())) {
+            return Compatible.YES_01;
+        } else if (!this.bSideContainsAny(o.getBSide())) {
+            return Compatible.YES_00;
+        } else {
+            return Compatible.NO;
+        }
+    }
+
+    public boolean aSideContainsAny(SplitBlock other) {
+        for(Integer a : other) {
+            if (this.aSideSet.contains(a)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean bSideContainsAny(SplitBlock other) {
+        for(Integer b : other) {
+            if (this.bSideSet.contains(b)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean restrictionExists(int a, int b, int c, int d, int nr) {
+        boolean aa = this.aSide.contains(a);
+        boolean ab = this.aSide.contains(b);
+        boolean ac = this.aSide.contains(c);
+        boolean ad = this.aSide.contains(d);
+
+        // Just check user provided taxa that exist in this split otherwise error
+        if (!aa && !this.bSide.contains(a)) {
+            throw new IllegalArgumentException("Index A (" + a + ") does not exist in split.");
+        }
+        if (!ab && !this.bSide.contains(b)) {
+            throw new IllegalArgumentException("Index B (" + b + ") does not exist in split.");
+        }
+        if (!ac && !this.bSide.contains(c)) {
+            throw new IllegalArgumentException("Index C (" + c + ") does not exist in split.");
+        }
+        if (!ad && !this.bSide.contains(d)) {
+            throw new IllegalArgumentException("Index D (" + d + ") does not exist in split.");
+        }
+
+        if (nr == 0) {
+            if (((ab == ac) && (ac == ad)) && (aa != ab)) {
+                return true;
+            }
+        }
+        else if (nr == 1) {
+            if (((aa == ac) && (ac == ad)) && (aa != ab)) {
+                return true;
+            }
+        }
+        else if (nr == 2) {
+            if (((aa == ab) && (ab == ad)) && (aa != ac)) {
+                return true;
+            }
+        }
+        else if (nr == 3) {
+            if (((aa == ab) && (ab == ac)) && (aa != ad)) {
+                return true;
+            }
+        }
+        else if (nr == 4) {
+            if (((aa == ab) && (ac == ad)) && (aa != ac)) {
+                return true;
+            }
+        }
+        else if (nr == 5) {
+            if (((aa == ac) && (ab == ad)) && (aa != ab)) {
+                return true;
+            }
+        }
+        else if (nr == 6) {
+            if (((aa == ad) && (ab == ac)) && (aa != ab)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    @Override
+    public void incTaxId() {
+        this.aSide.incTaxId();
+        this.bSide.incTaxId();
+
+        this.regenSets();
+    }
+
+
     /**
      * Check to see if this split is consistent with the given ordering, hence is circular.
      *
@@ -289,13 +490,14 @@ public class SpectreSplit implements Split {
      * @param ordering The ordering of taxa to test this split against
      * @return True, if this split is circular, false if not.
      */
+    @Override
     public boolean isCircular(IdentifierList ordering) {
 
         if (ordering.size() != this.getNbTaxa()) {
             throw new IllegalArgumentException("This split represents a different number of taxa (" + this.getNbTaxa() + ") to the circular ordering provided (" + ordering.size() + ")");
         }
 
-        // Just check the A side for now... get's confusing if we need to start looking at the B side too.
+        // Just check the A side.  Id A-side is contiguous then so is B side.
         return this.aSide.isContiguousWithOrdering(ordering);
     }
 }

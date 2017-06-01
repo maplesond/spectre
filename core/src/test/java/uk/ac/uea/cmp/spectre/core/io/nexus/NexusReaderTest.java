@@ -234,4 +234,14 @@ public class NexusReaderTest {
 
         assertTrue(nexus.getAlignments().size() == 80);
     }
+
+    @Test
+    public void testCharBlockAsh() throws IOException {
+
+        File testFile = FileUtils.toFile(NexusReaderTest.class.getResource("/ash.aln.nxs"));
+
+        Nexus nexus = new NexusReader().parse(testFile);
+
+        assertTrue(nexus.getAlignments().size() == 43);
+    }
 }

@@ -175,17 +175,17 @@ public class NexusNetworkBuilder {
                     "number of vertices we expected to see (" + this.nbExpectedVertices + ")");
         }
 
-        if (this.labels.size() != this.nbExpectedTaxa) {
-            throw new IllegalStateException("Number of detected vertex labels (" + this.labels.size() + ") is not the same as the " +
-                    "number of labels we expected to see (" + this.nbExpectedTaxa + ")");
-        }
+        /*if (this.labels.size() > this.nbExpectedTaxa) {
+            throw new IllegalStateException("Number of detected vertex labels (" + this.labels.size() + ") is unexpectedly large " +
+                    "number of labels we expected to see should be less than " + this.nbExpectedTaxa);
+        }*/
 
         if (this.edges.size() != this.nbExpectedEdges) {
             throw new IllegalStateException("Number of detected edges (" + this.edges.size() + ") is not the same as the " +
                     "number of edges we expected to see (" + this.nbExpectedEdges + ")");
         }
 
-        FlatNetwork network = new FlatNetwork();
+        SpectreNetwork network = new SpectreNetwork();
 
         network.setVertices(new VertexList(this.vertices.values()));
         network.setVertexLabels(new ArrayList<>(this.labels.values()));

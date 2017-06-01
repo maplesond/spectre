@@ -17,6 +17,8 @@ package uk.ac.uea.cmp.spectre.core.ds.split.flat;
 
 import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.Quadruple;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleSystem;
+import uk.ac.uea.cmp.spectre.core.ds.split.SpectreSplitSystem;
+import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.spectre.core.util.CollectionUtils;
 
 /**
@@ -25,7 +27,7 @@ import uk.ac.uea.cmp.spectre.core.util.CollectionUtils;
  *
  * @author balvociute
  */
-public class NeighbourSeparatorMax implements NeighbourSeparator {
+class NeighbourSeparatorMax implements NeighbourSeparator {
 
     private int crossedTaxa;
 
@@ -117,7 +119,6 @@ public class NeighbourSeparatorMax implements NeighbourSeparator {
                     taxonRepresentingAgglomeratedPair,
                     taxonA,
                     taxonB,
-                    neighbours,
                     i, agglomeratedPermutationSequence,
                     tmpScoredPermutationSequence);
 
@@ -159,7 +160,6 @@ public class NeighbourSeparatorMax implements NeighbourSeparator {
      *                                               initial sequence.
      * @param b                                      the taxon in the agglomerated pair that comes second in the
      *                                               initial sequence.
-     * @param neighbours                             a pair of neighbors.
      * @param swapAfterWhichNeighboursShouldBeSwaped index of the swap
      * @param agglomeratedPermutationSequence        permutation sequence before
      *                                               neighbor separation.
@@ -170,7 +170,6 @@ public class NeighbourSeparatorMax implements NeighbourSeparator {
     protected PermutationSequence generatePermutationSequence(
             int taxonRepresentingAgglomeratedPair,
             int a, int b,
-            Neighbours neighbours,
             int swapAfterWhichNeighboursShouldBeSwaped,
             PermutationSequence agglomeratedPermutationSequence,
             ScoredPermutationSequence tmpScoredPermutationSequence) {
@@ -302,7 +301,7 @@ public class NeighbourSeparatorMax implements NeighbourSeparator {
                 for (int i2 = i1 + 1; i2 < nTaxa; i2++) {
                     if (a != sequence[i1] && a != sequence[i2]
                             && b != sequence[i1] && b != sequence[i2]) {
-                        FlatSplitSystem ssSmall = new FlatSplitSystem(
+                        SplitSystem ssSmall = new SpectreSplitSystem(
                                 ps.getSplitSystemFor4Taxa(a, b,
                                         sequence[i1],
                                         sequence[i2],
@@ -319,10 +318,10 @@ public class NeighbourSeparatorMax implements NeighbourSeparator {
                 if (a != sequence[i]
                         && b != sequence[i]
                         && crossedTaxa != sequence[i]) {
-                    FlatSplitSystem ssSmallOld = new FlatSplitSystem(lastPS.getSplitSystemFor4Taxa(a, b, crossedTaxa, sequence[i], lastCrossings));
+                    SplitSystem ssSmallOld = new SpectreSplitSystem(lastPS.getSplitSystemFor4Taxa(a, b, crossedTaxa, sequence[i], lastCrossings));
                     score -= qs.getFitRestriction(a, b, crossedTaxa, sequence[i], ssSmallOld);
 
-                    FlatSplitSystem ssSmallNew = new FlatSplitSystem(ps.getSplitSystemFor4Taxa(a, b, crossedTaxa, sequence[i], crossings));
+                    SplitSystem ssSmallNew = new SpectreSplitSystem(ps.getSplitSystemFor4Taxa(a, b, crossedTaxa, sequence[i], crossings));
                     score += qs.getFitRestriction(a, b, crossedTaxa, sequence[i], ssSmallNew);
                 }
             }

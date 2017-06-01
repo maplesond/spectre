@@ -16,7 +16,6 @@
 package uk.ac.uea.cmp.spectre.qtools.superq;
 
 import org.apache.commons.lang3.time.StopWatch;
-import org.apache.log4j.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.earlham.metaopt.Optimiser;
@@ -24,8 +23,6 @@ import uk.ac.earlham.metaopt.OptimiserException;
 import uk.ac.earlham.metaopt.Problem;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.GroupedQuartetSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
-import uk.ac.uea.cmp.spectre.core.io.nexus.Nexus;
-import uk.ac.uea.cmp.spectre.core.io.nexus.NexusReader;
 import uk.ac.uea.cmp.spectre.core.io.nexus.NexusWriter;
 import uk.ac.uea.cmp.spectre.core.ui.gui.RunnableTool;
 import uk.ac.uea.cmp.spectre.core.ui.gui.StatusTrackerWithView;
@@ -51,25 +48,6 @@ public class SuperQ extends RunnableTool {
         this.options = options;
     }
 
-    protected void validateOptions() throws IOException {
-        if (this.options == null) {
-            throw new IOException("Must specify a valid set of parameters to control superQ.");
-        }
-
-        if (this.options.getInputFiles() == null || this.options.getInputFiles().length == 0) {
-            throw new IOException("Must specify at least one valid input file.");
-        }
-
-        if (this.options.getOutputFile() == null || this.options.getOutputFile().isDirectory()) {
-            throw new IOException("Must specify a valid path where to create the output file.");
-        }
-
-    }
-
-    protected void printOptions() {
-        log.info("Recognised these options:\n\n" +
-                this.options.toString());
-    }
 
     @Override
     public void run() {
@@ -77,10 +55,21 @@ public class SuperQ extends RunnableTool {
         try {
 
             // Check we have something sensible to work with
-            validateOptions();
+            if (this.options == null) {
+                throw new IOException("Must specify a valid set of parameters to control superQ.");
+            }
+
+            if (this.options.getInputFiles() == null || this.options.getInputFiles().length == 0) {
+                throw new IOException("Must specify at least one valid input file.");
+            }
+
+            if (this.options.getOutputFile() == null || this.options.getOutputFile().isDirectory()) {
+                throw new IOException("Must specify a valid path where to create the output file.");
+            }
 
             // Print the validated options
-            printOptions();
+            log.info("Recognised these options:\n\n" +
+                    this.options.toString());
 
             // Get a shortcut to runtime object for checking memory usage
             Runtime rt = Runtime.getRuntime();
@@ -148,7 +137,7 @@ public class SuperQ extends RunnableTool {
                 }
             }
 
-            SplitSystem ss = qnetResult.createSplitSystem(null, QNetResult.SplitLimiter.STANDARD);
+            SplitSystem ss = qnetResult.createSplitSystem(null, QNetResult.SplitLimiter.STANDARD).makeCanonical();
 
             rt.gc();
             log.debug("FREE MEM - after computing weights: " + rt.freeMemory());
@@ -157,7 +146,7 @@ public class SuperQ extends RunnableTool {
             if (this.options.getFilter() != null) {
 
                 notifyUser("Filtering out bottom " + this.options.getFilter() * 100.0 + " % of splits");
-                ss.filterByWeight(this.options.getFilter());
+                ss.filterByRelativeWeight(this.options.getFilter());
             }
 
             // Save split system
@@ -226,18 +215,6 @@ public class SuperQ extends RunnableTool {
         }
 
         return solution;
-    }
-
-    protected void filterNexus(File inFile, File outFile, double threshold) throws IOException {
-
-        // Load
-        Nexus raw = new NexusReader().readNexusData(inFile);
-
-        // Filter
-        raw.getSplitSystem().filterByWeight(threshold);
-
-        // Save
-        new NexusWriter().writeNexusData(outFile, raw);
     }
 
     private void notifyUser(String message) {

@@ -1,13 +1,14 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2017  UEA School of Computing Sciences
+ * Copyright (C) 2014  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
@@ -70,8 +71,6 @@ public class ViewerLabel extends Element {
     public void setCoordinates(double x, double y, Collection<ViewerLabel> labels) {
         setOffX(x - p.getX());
         setOffY(y - p.getY());
-
-
         checkForLeader(labels);
     }
 
@@ -86,7 +85,6 @@ public class ViewerLabel extends Element {
     public void setCoordinatesAutomatic(int x, int y, Collection<ViewerLabel> labels) {
         if (label.movable) {
             setOffX(x - p.getX());
-
             setOffY(y - p.getY());
             checkForLeader(labels);
         }
@@ -101,7 +99,6 @@ public class ViewerLabel extends Element {
      */
     public void setCoordinates(double x, double y) {
         setOffX(x - p.getX());
-
         setOffY(y - p.getY());
     }
 
@@ -169,11 +166,11 @@ public class ViewerLabel extends Element {
     void setAutomaticMovable(boolean b) {
         label.movable = b;
         if (!b) {
-            double cX = mainFrame.midX;
+            double cX = mainFrame.getCentrePoint().getX();
             double pX = p.getX();
             double lX = middleX();
 
-            double cY = mainFrame.midY;
+            double cY = mainFrame.getCentrePoint().getY();
             double pY = p.getY();
             double lY = middleY();
 
@@ -314,7 +311,7 @@ public class ViewerLabel extends Element {
         return getY() - label.getHeight() / 2;
     }
 
-    ViewerPoint computeBendingPoint(double cx, double cy, boolean bended) {
+    ViewerPoint computeBendingPoint(boolean bended) {
         int bx;
         int by;
 
@@ -346,7 +343,6 @@ public class ViewerLabel extends Element {
 
     void computeOffsets(double x1, double y1, Collection<ViewerLabel> labels) {
         setOffX(x1 - p.getX());
-
         setOffY(y1 - p.getY());
         checkForLeader(labels);
     }
@@ -453,8 +449,37 @@ public class ViewerLabel extends Element {
         this.leader = leader;
     }
 
-    void setRotated(double mx, double my) {
-        setCoordinates(mx - label.getWidth() / 2, my + label.getHeight() / 2);
-        computeMiddleDistance();
+    private static Color getTextColor(Color bg) {
+        if (bg.getRed() <= 50 && bg.getGreen() <= 50 && bg.getBlue() <= 50) {
+            return Color.white;
+        } else {
+            return Color.black;
+        }
+    }
+
+    public void draw(Graphics g, Color selectionColor, boolean colorLabels) {
+
+        if (label.getFontFamily() == null) {
+            label.setFontFamily("Helvetica");
+        }
+        g.setFont(new Font(label.getFontFamily(), label.getFontStyle(), label.getFontSize()));
+
+        int lx = getXint();
+        int ly = getYint();
+
+        if (p.v.getBackgroundColor() != null && colorLabels) {
+            g.setColor(p.v.getBackgroundColor());
+            g.fillRect(lx - 1, ly - label.getHeight() + 2, label.getWidth() + 3, label.getHeight());
+        }
+        if (p.isSelected()) {
+            g.setColor(selectionColor);
+            g.drawRect(lx, ly - label.getHeight() + 1, label.getWidth(), label.getHeight());
+        }
+        Color textColor = Color.BLACK; //label.getFontColor();
+        if (p.v.getBackgroundColor() != null && colorLabels) {
+            textColor = getTextColor(p.v.getBackgroundColor());
+        }
+        g.setColor(textColor);
+        g.drawString(name, lx, ly - 1);
     }
 }

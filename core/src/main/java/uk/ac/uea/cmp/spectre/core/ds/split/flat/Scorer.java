@@ -25,7 +25,7 @@ import uk.ac.uea.cmp.spectre.core.util.CollectionUtils;
  *
  * @author balvociute
  */
-public class Scorer {
+class Scorer {
     /**
      * Computes initial scores for full {@linkplain QuadrupleSystem}.
      *

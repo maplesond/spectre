@@ -1,13 +1,14 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2017  UEA School of Computing Sciences
+ * Copyright (C) 2014  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
@@ -15,54 +16,70 @@
 
 package uk.ac.uea.cmp.spectre.viewer;
 
-import uk.ac.uea.cmp.spectre.core.ds.network.NetworkLabel;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
 
 import java.awt.*;
-import java.util.Collection;
 import java.util.Set;
 
 /**
  * @author balvociute
  */
 public class ViewerPoint extends Element implements Selectable {
+
     int id;
     ViewerLabel l;
     boolean round;
+    private boolean suppressed;
 
-    boolean suppressed = false;
-
-    ViewerPoint supp;
+    private ViewerPoint supp;
 
     int quarterNo;
 
     Set<ViewerLabel> neighborhood;
-
-    Cluster cluster;
 
     Vertex v;
 
     int width;
     int height;
 
-    boolean selected = false;
+    private boolean selected;
+    private String shape;
+
+    public ViewerPoint(Vertex v) {
+        this.v = v;
+        this.height = v.getHeight();
+        this.width = v.getWidth();
+        this.id = v.getNxnum();
+        this.selected = false;
+        if (v.getShape() == null) {
+            this.round = true;
+        } else if (v.getShape().equals("r")) {
+            this.round = false;
+        } else if (v.getShape().contentEquals("n")) {
+            this.round = true;
+            this.height = 0;
+            this.width = 0;
+        }
+    }
+
+    public ViewerPoint(double ix, double iy) {
+        super(ix,iy);
+        this.height = 0;
+        this.width = 0;
+        this.selected = false;
+        this.round = false;
+        this.selected = false;
+        this.v = null;
+    }
 
     @Override
     public double getX() {
-        if (!suppressed) {
-            return super.getX();
-        } else {
-            return supp.getX();
-        }
+        return !suppressed ? super.getX() : supp.getX();
     }
 
     @Override
     public double getY() {
-        if (!suppressed) {
-            return super.getY();
-        } else {
-            return supp.getY();
-        }
+        return !suppressed ? super.getY() : supp.getY();
     }
 
     @Override
@@ -75,39 +92,17 @@ public class ViewerPoint extends Element implements Selectable {
         return (int) getY();
     }
 
+    public int getCentreX() {
+        return this.getXint() - (int) (((double) this.width) / 2.0);
+    }
+
+    public int getCentreY() {
+        return this.getYint() - (int) (((double) this.height) / 2.0);
+    }
+
     public void suppress(ViewerPoint supp) {
         suppressed = true;
         this.supp = supp;
-    }
-
-    public void unSuppress() {
-        suppressed = false;
-    }
-
-    public ViewerPoint(Vertex v) {
-        this.v = v;
-        height = v.getHeight();
-        width = v.getWidth();
-        id = v.getNxnum();
-        if (v.getShape() == null) {
-            round = true;
-        } else if (v.getShape().equals("r")) {
-            round = false;
-        } else if (v.getShape().contentEquals("n")) {
-            round = true;
-            height = 0;
-            width = 0;
-        }
-    }
-
-    public ViewerPoint(double ix, double iy) {
-        setX(ix);
-        setY(iy);
-    }
-
-    public void setCoordinates(int x, int y, Collection<NetworkLabel> labels) {
-        setX(x);
-        setY(y);
     }
 
     double distanceTo(ViewerPoint p2) {
@@ -116,9 +111,7 @@ public class ViewerPoint extends Element implements Selectable {
     }
 
     void setSize(int i) {
-        //l.label.setOffsetX((int) (l.label.getOffsetX() - Math.signum(l.label.getOffsetX())*(width - i)*0.5));
         width = i;
-        //l.setOffY((int) (l.label.getOffsetY() - Math.signum(l.label.getOffsetY())*(height - i)*0.5));
         height = i;
         v.setSize(i);
     }
@@ -160,11 +153,6 @@ public class ViewerPoint extends Element implements Selectable {
         return v.getLineColor();
     }
 
-    void setCoordinates(int x, int y) {
-        setX(x);
-        setY(y);
-    }
-
     boolean isSelected() {
         return selected;
     }
@@ -177,5 +165,78 @@ public class ViewerPoint extends Element implements Selectable {
     void setL(ViewerLabel l) {
         this.l = l;
         l.p = this;
+    }
+
+    public String getLabelName() {
+        return this.l.name;
+    }
+
+    public boolean isSuppressed() {
+        return suppressed;
+    }
+
+    public void setSuppressed(boolean suppressed) {
+        this.suppressed = suppressed;
+    }
+
+    public void draw(Graphics g, Color selectionColor) {
+
+        if (!this.isSuppressed()) {
+            g.setColor(v.getBackgroundColor());
+
+            int x = this.getCentreX();
+            int y = this.getCentreY();
+
+            if (round) {
+                g.fillOval(x, y, this.width, this.height);
+            } else {
+                g.fillRect(x, y, this.width, this.height);
+            }
+
+            g.setColor(v.getLineColor());
+            if (round && width > 0 && height > 0) {
+                g.drawOval(x, y, width, height);
+                if (selected) {
+                    g.setColor(selectionColor);
+                    g.drawOval(x - 1, y - 1, width + 2, height + 2);
+                }
+            } else {
+                g.drawRect(x, y, width, height);
+                if (selected) {
+                    g.setColor(selectionColor);
+                    g.drawRect(x - 1, y - 1, width + 2, height + 2);
+                }
+            }
+        }
+    }
+
+    public void setShape(String shape) {
+        String s = shape == null ? "circle" : shape;
+
+        switch (s) {
+            case "square":
+                round = false;
+                v.setShape("r");
+                break;
+            case "circle":
+                round = true;
+                v.setShape(null);
+                break;
+        }
+    }
+
+    public void setQuarters(int midX, int midY) {
+        quarterNo = 0;
+        if (getX() <= midX && getY() <= midY) {
+            quarterNo = 1;
+        } else if (getX() <= midX && getY() >= midY) {
+            quarterNo = 2;
+        } else if (getX() >= midX && getY() >= midY) {
+            quarterNo = 3;
+        }
+    }
+
+    public String getShape() {
+        return shape;
     }
 }

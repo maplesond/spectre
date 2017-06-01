@@ -27,7 +27,10 @@ import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.CVMatrices;
 import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.CircularOrderingCreator;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Stack;
 
 /**
  * Created by dan on 27/02/14.
@@ -183,9 +186,6 @@ public class NeighborNetImpl implements CircularOrderingCreator {
                     // Gets the sum of distances from the selected vertex to all other clusters except the cluster associated with itself.
                     final double sumV1 = this.mx.sumVertex2Clusters(v1);
                     final double sumV2 = this.mx.sumVertex2Clusters(v2);
-
-                    double sumVId1 = 0.0;
-                    double sumVId2 = 0.0;
 
                     final double dist = v2v.getDistance(v1, v2);
                     final double mult = mhat - 2;

@@ -1,13 +1,14 @@
 /*
  * Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
- * Copyright (C) 2017  UEA School of Computing Sciences
+ * Copyright (C) 2014  UEA School of Computing Sciences
  *
  * This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
  * later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, see
  * <http://www.gnu.org/licenses/>.
@@ -41,8 +42,8 @@ public class LabelPlacementOptimizer4Points implements LabelPlacementOptimizer {
                             Collection<Line> lineSet,
                             Window drawing,
                             boolean all) {
-        int midX = drawing.midX;
-        int midY = drawing.midY;
+        int midX = drawing.getCentrePoint().x;
+        int midY = drawing.getCentrePoint().y;
 
         int n = labelSet.size();
 
@@ -181,14 +182,7 @@ public class LabelPlacementOptimizer4Points implements LabelPlacementOptimizer {
         while (labelIt.hasNext()) {
             ViewerLabel l = labelIt.next();
             ViewerPoint p = l.p;
-            p.quarterNo = 0;
-            if (p.getX() <= midX && p.getY() <= midY) {
-                p.quarterNo = 1;
-            } else if (p.getX() <= midX && p.getY() >= midY) {
-                p.quarterNo = 2;
-            } else if (p.getX() >= midX && p.getY() >= midY) {
-                p.quarterNo = 3;
-            }
+            p.setQuarters(midX, midY);
         }
     }
 

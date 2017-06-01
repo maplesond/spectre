@@ -28,13 +28,13 @@ import uk.ac.uea.cmp.spectre.core.ui.gui.StatusTrackerWithView;
 import uk.ac.uea.cmp.spectre.core.ui.gui.ToolHost;
 import uk.ac.uea.cmp.spectre.core.util.LogConfig;
 import uk.ac.uea.cmp.spectre.qtools.superq.problems.SecondaryProblemFactory;
-import uk.ac.uea.cmp.spectre.viewer.NetView;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Vector;
 
@@ -88,17 +88,25 @@ public class SuperQGUI extends JFrame implements ToolHost {
     private JobController go_control;
     private SuperQRunner superqRunner;
     private File lastOutput;
+    private File cwd;
 
     public SuperQGUI() {
 
         this.dialog = new JDialog(this, "SUPERQ");
         this.gui = new JFrame("SUPERQ");
         this.lastOutput = null;
+        this.cwd = null;
 
         this.setPreferredSize(new Dimension(600, 500));
 
         initComponents();
         setTitle("SUPERQ");
+
+        try {
+            setIconImage((new ImageIcon(uk.ac.uea.cmp.spectre.core.ui.gui.LookAndFeel.getLogoFilePath()).getImage()));
+        } catch (URISyntaxException e) {
+            showErrorDialog("Couldn't load logo.");
+        }
 
         this.txtFilter.setEnabled(false);
 
@@ -379,7 +387,7 @@ public class SuperQGUI extends JFrame implements ToolHost {
 
         cmdViewOutput = new JButton();
         cmdViewOutput.setText("View Network");
-        cmdViewOutput.setToolTipText("Visualise the produced network in NetView");
+        cmdViewOutput.setToolTipText("Visualise the produced network in Spectre");
         cmdViewOutput.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cmdViewActionPerformed(evt);
@@ -441,7 +449,7 @@ public class SuperQGUI extends JFrame implements ToolHost {
      */
     private void cmdSaveActionPerformed(java.awt.event.ActionEvent evt) {
 
-        final JFileChooser fc = new JFileChooser();
+        final JFileChooser fc = cwd == null ? new JFileChooser() : new JFileChooser(cwd);
         if (evt.getSource() == cmdSave) {
             fc.addChoosableFileFilter(new NexusFileFilter());
             fc.setSelectedFile(new File("outfile.nex"));
@@ -451,6 +459,7 @@ public class SuperQGUI extends JFrame implements ToolHost {
                 File file = fc.getSelectedFile();
                 String z = file.getAbsolutePath();
                 txtSave.setText(z);
+                this.cwd = file.getParentFile();
             } else {
                 log.debug("Open command cancelled by user.");
             }
@@ -496,7 +505,7 @@ public class SuperQGUI extends JFrame implements ToolHost {
     private void cmdInputActionPerformed(java.awt.event.ActionEvent evt) {
 
         if (evt.getSource() == cmdInput) {
-            final JFileChooser fc = new JFileChooser();
+            final JFileChooser fc = cwd != null ? new JFileChooser(cwd) : new JFileChooser();
             fc.addChoosableFileFilter(new NexusFileFilter());
             fc.addChoosableFileFilter(new FileNameExtensionFilter("QWeight", "qw"));
             fc.addChoosableFileFilter(new FileNameExtensionFilter("Phylip/Newick", "phylip", "newick", "tree", "tre"));
@@ -512,6 +521,9 @@ public class SuperQGUI extends JFrame implements ToolHost {
                     sb.append("; ");
                 }
                 txtInput.setText(sb.toString());
+                if (files.length > 0) {
+                    cwd = files[0].getParentFile();
+                }
             } else {
                 log.debug("Open command cancelled by user.");
             }
@@ -546,8 +558,8 @@ public class SuperQGUI extends JFrame implements ToolHost {
      * @param evt
      */
     private void cmdViewActionPerformed(ActionEvent evt) {
-
-        NetView.startWithInput(this.lastOutput);
+        this.firePropertyChange("done", null, this.lastOutput);
+        //Spectre.main(new String[]{this.lastOutput.getAbsolutePath(), "--dispose_on_close"});
     }
 
     /**

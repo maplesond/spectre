@@ -15,6 +15,7 @@
 
 package uk.ac.uea.cmp.spectre.core.io;
 
+import uk.ac.uea.cmp.spectre.core.ds.Locations;
 import uk.ac.uea.cmp.spectre.core.ds.Sequences;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quartet.QuartetSystem;
@@ -74,6 +75,8 @@ public interface SpectreReader {
 
 
     Sequences readAlignment(File file) throws IOException;
+
+    Locations readLocations(File file) throws IOException;
 
     /**
      * Commonly used file extensions for this type of reader.

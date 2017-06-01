@@ -20,7 +20,11 @@ import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
+import uk.ac.uea.cmp.spectre.core.ds.Sequences;
+import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceCalculatorFactory;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrix;
+import uk.ac.uea.cmp.spectre.core.ds.network.Network;
+import uk.ac.uea.cmp.spectre.core.ds.network.draw.PermutationSequenceDraw;
 import uk.ac.uea.cmp.spectre.core.ds.split.SpectreSplitSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitBlock;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
@@ -32,8 +36,12 @@ import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.nm.weighting.Weight
 import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.nn.NeighborNetImpl;
 import uk.ac.uea.cmp.spectre.core.io.SpectreReader;
 import uk.ac.uea.cmp.spectre.core.io.SpectreReaderFactory;
+import uk.ac.uea.cmp.spectre.core.io.nexus.Nexus;
+import uk.ac.uea.cmp.spectre.core.io.nexus.NexusReader;
 import uk.ac.uea.cmp.spectre.core.ui.gui.RunnableTool;
 import uk.ac.uea.cmp.spectre.core.ui.gui.StatusTracker;
+
+import java.io.IOException;
 
 /**
  * Performs the NeighborNet algorithm to retrieve a split system and a circular
@@ -73,31 +81,44 @@ public class NetMake extends RunnableTool {
 
     public NetMakeResult execute(DistanceMatrix distanceMatrix, CircularOrderingCreator circularOrderingCreator) {
 
+        log.info("Calculating circular ordering:");
         IdentifierList permutation = circularOrderingCreator.createCircularOrdering(distanceMatrix);
 
-        log.info("Determined circular ordering:");
         log.info("... By ID  : " + permutation.toString(IdentifierList.IdentifierFormat.BY_ID));
         log.info("... By Name: " + permutation.toString(IdentifierList.IdentifierFormat.BY_NAME));
 
-        SplitSystem network = new SpectreSplitSystem(distanceMatrix, permutation, SpectreSplitSystem.LeastSquaresCalculator.CIRCULAR);
+        log.info("Creating splits network");
 
-        log.info("Splits network created");
+        SplitSystem networkSS = new SpectreSplitSystem(distanceMatrix, permutation, SpectreSplitSystem.LeastSquaresCalculator.CIRCULAR).makeCanonical();
 
-        SplitSystem tree = null;
+        Network network = null;
+        if (this.options.isDraw()) {
+
+            log.info("Drawing network");
+            network = new PermutationSequenceDraw(networkSS.makeInducedOrdering()).createOptimisedNetwork();
+        }
+
+        SplitSystem treeSS = null;
+        Network tree = null;
 
         if (circularOrderingCreator.createsTreeSplits() && this.getOptions().getOutputTree() != null) {
+
+            log.info("Creating splits tree");
 
             SplitSystem treeSplits = circularOrderingCreator.getTreeSplits();
 
             organiseSplits(treeSplits, permutation);
 
             // Create tree and network split systems
-            tree = new SpectreSplitSystem(distanceMatrix, permutation, SpectreSplitSystem.LeastSquaresCalculator.TREE_IN_CYCLE, treeSplits);
+            treeSS = new SpectreSplitSystem(distanceMatrix, permutation, SpectreSplitSystem.LeastSquaresCalculator.TREE_IN_CYCLE, treeSplits).makeCanonical();
 
-            log.info("Splits tree created");
+            log.info("Drawing tree");
+            if (this.options.isDraw()) {
+                tree = new PermutationSequenceDraw(treeSS.makeInducedOrdering()).createOptimisedNetwork();
+            }
         }
 
-        return new NetMakeResult(tree, network);
+        return new NetMakeResult(distanceMatrix, treeSS, tree, networkSS, network);
     }
 
 
@@ -142,9 +163,40 @@ public class NetMake extends RunnableTool {
             // Setup appropriate reader to input file based on file type
             SpectreReader spectreReader = factory.create(FilenameUtils.getExtension(this.options.getInput().getName()));
 
-            DistanceMatrix distanceMatrix = spectreReader.readDistanceMatrix(this.options.getInput());
+            // Work out if we have a distance matrix already or if we have to calculate it from MSA
+            DistanceMatrix distanceMatrix = null;
+            Sequences seqs = null;
+            if (spectreReader.getIdentifier() == "FASTA") {
+                seqs = spectreReader.readAlignment(this.options.getInput());
+            }
+            else if (spectreReader.getIdentifier() == "NEXUS") {
 
-            log.info("Loaded distance matrix.  Found " + distanceMatrix.size() + " taxa.");
+                Nexus nexus = new NexusReader().parse(this.options.getInput());
+
+                // If distance matrix is not present then look for alignments
+                if (nexus.getDistanceMatrix() == null) {
+                    seqs = nexus.getAlignments();
+                }
+                else {
+                    distanceMatrix = nexus.getDistanceMatrix();
+                }
+            }
+            else {
+                distanceMatrix = spectreReader.readDistanceMatrix(this.options.getInput());
+            }
+
+            if (distanceMatrix == null && seqs != null) {
+                log.info("Loaded MSA containing " + seqs.size() + " sequences of length " + seqs.getSeq(0).length());
+
+                DistanceCalculatorFactory dcf = DistanceCalculatorFactory.valueOf(this.options.getDc().toUpperCase().trim());
+                distanceMatrix = dcf.createDistanceMatrix(seqs);
+                log.info("Distance matrix calculated from MSA using " + dcf.name());
+            }
+            else if (distanceMatrix == null) {
+                throw new IOException("Could not find or generate distance matrix from input");
+            }
+
+            log.info("Distance matrix contains " + distanceMatrix.size() + " taxa.");
 
             // Set circular ordering algorithm
             CircularOrderingAlgorithms coa = CircularOrderingAlgorithms.valueOf(this.options.getCoAlg().toUpperCase());
@@ -163,6 +215,7 @@ public class NetMake extends RunnableTool {
                 log.info("Weightings configured.");
                 log.info("          - Weighting 1: " + weighting1.toString());
                 log.info("          - Weighting 2: " + (weighting2 == null ? "null" : weighting2.toString()));
+                log.info("Running netmake circular ordering algorithm in mode: " + NetMakeCircularOrderer.getRunMode(weighting1, weighting2).toString());
 
                 coc = new NetMakeCircularOrderer(weighting1, weighting2);
             }

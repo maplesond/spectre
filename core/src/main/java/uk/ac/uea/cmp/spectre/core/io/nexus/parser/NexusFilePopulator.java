@@ -18,6 +18,7 @@ package uk.ac.uea.cmp.spectre.core.io.nexus.parser;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.spectre.core.ds.Identifier;
@@ -26,9 +27,15 @@ import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceMatrixBuilder;
 import uk.ac.uea.cmp.spectre.core.ds.network.Edge;
 import uk.ac.uea.cmp.spectre.core.ds.network.NetworkLabel;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
+import uk.ac.uea.cmp.spectre.core.ds.network.draw.Leader;
 import uk.ac.uea.cmp.spectre.core.ds.network.draw.ViewerConfig;
+import uk.ac.uea.cmp.spectre.core.ds.quad.Quad;
+import uk.ac.uea.cmp.spectre.core.ds.quad.SpectreQuad;
+import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.Quadruple;
 import uk.ac.uea.cmp.spectre.core.ds.split.SpectreSplitBlock;
 import uk.ac.uea.cmp.spectre.core.io.nexus.Nexus;
+import uk.ac.uea.cmp.spectre.core.ui.gui.geom.IndexedPoint;
+import uk.ac.uea.cmp.spectre.core.util.StringUtils;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -53,6 +60,8 @@ public class NexusFilePopulator implements NexusFileListener {
     private NexusSplitSystemBuilder splitSystemBuilder;
     private NexusQuartetSystemBuilder quartetSystemBuilder;
     private NexusNetworkBuilder networkBuilder;
+    private NexusLocationBuilder locationBuilder;
+    private NexusQuadruplesBuilder quadBuilder;
     private ViewerConfig viewerConfig;
     private NexusCharacterBuilder charBuilder;
 
@@ -64,6 +73,8 @@ public class NexusFilePopulator implements NexusFileListener {
         this.splitSystemBuilder = new NexusSplitSystemBuilder();
         this.quartetSystemBuilder = new NexusQuartetSystemBuilder();
         this.networkBuilder = new NexusNetworkBuilder();
+        this.locationBuilder = new NexusLocationBuilder();
+        this.quadBuilder = new NexusQuadruplesBuilder();
         this.viewerConfig = new ViewerConfig();
         this.charBuilder = new NexusCharacterBuilder();
     }
@@ -108,8 +119,7 @@ public class NexusFilePopulator implements NexusFileListener {
         this.splitSystemBuilder.setHasConfidences(
                 ctx.boolean_option() == null ?
                         true :
-                        ctx.boolean_option().getText().equalsIgnoreCase("true") ||
-                                ctx.boolean_option().getText().equalsIgnoreCase("yes")
+                        BooleanUtils.toBoolean(ctx.boolean_option().getText())
         );
     }
 
@@ -131,9 +141,9 @@ public class NexusFilePopulator implements NexusFileListener {
     @Override
     public void exitDimensions_network(NexusFileParser.Dimensions_networkContext ctx) {
 
-        int nbExpectedTaxa = Integer.parseInt(ctx.ntax().INT().getText());
-        int nbExpectedEdges = Integer.parseInt(ctx.nedges().INT().getText());
-        int nbExpectedVertices = Integer.parseInt(ctx.nvertices().INT().getText());
+        int nbExpectedTaxa = Integer.parseInt(ctx.ntax().integer().getText());
+        int nbExpectedEdges = Integer.parseInt(ctx.nedges().integer().getText());
+        int nbExpectedVertices = Integer.parseInt(ctx.nvertices().integer().getText());
 
         this.networkBuilder.setExpectedDimensions(nbExpectedTaxa, nbExpectedVertices, nbExpectedEdges);
     }
@@ -206,7 +216,7 @@ public class NexusFilePopulator implements NexusFileListener {
     @Override
     public void exitNv_width(NexusFileParser.Nv_widthContext ctx) {
 
-        this.networkBuilder.getCurrentVertex().setWidth(Integer.parseInt(ctx.INT().getText()));
+        this.networkBuilder.getCurrentVertex().setWidth(Integer.parseInt(ctx.integer().getText()));
     }
 
     @Override
@@ -233,9 +243,9 @@ public class NexusFilePopulator implements NexusFileListener {
 
             NexusFileParser.NtaxContext ctxNtax = ctx.dimensions_taxa().ntax();
 
-            if (ctxNtax.INT() != null && !ctxNtax.INT().getText().isEmpty()) {
+            if (ctxNtax.integer() != null && !ctxNtax.integer().getText().isEmpty()) {
 
-                nTax = Integer.parseInt(ctxNtax.INT().getText());
+                nTax = Integer.parseInt(ctxNtax.integer().getText());
 
                 if (verbose && log.isDebugEnabled())
                     log.debug("Taxa Block: ntax:" + nTax);
@@ -246,17 +256,17 @@ public class NexusFilePopulator implements NexusFileListener {
 
         if (ctx.tax_labels() != null) {
 
-            if (ctx.tax_labels().IDENTIFIER() == null) {
-                throw new NullPointerException("No taxa name found.  Taxa must start with a letter.");
-            }
+            if (ctx.tax_labels().identifier_list() != null) {
 
-            taxa.add(new Identifier(ctx.tax_labels().IDENTIFIER().getText()));
+                NexusFileParser.Identifier_listContext idListCtx = ctx.tax_labels().identifier_list();
 
-            NexusFileParser.Identifier_listContext idListCtx = ctx.tax_labels().identifier_list();
-
-            while (idListCtx != null && idListCtx.IDENTIFIER() != null) {
-                taxa.add(new Identifier(idListCtx.IDENTIFIER().getText()));
-                idListCtx = idListCtx.identifier_list();
+                while (idListCtx != null) {
+                    if (idListCtx.identifier() != null) {
+                        String id = StringUtils.stripQuotes(idListCtx.identifier().getText());
+                        taxa.add(new Identifier(id));
+                    }
+                    idListCtx = idListCtx.identifier_list();
+                }
             }
         }
 
@@ -342,8 +352,7 @@ public class NexusFilePopulator implements NexusFileListener {
         this.splitSystemBuilder.setWeighted(
                 ctx.boolean_option() == null ?
                         true :
-                        ctx.boolean_option().getText().equalsIgnoreCase("true") ||
-                                ctx.boolean_option().getText().equalsIgnoreCase("yes")
+                        BooleanUtils.toBoolean(ctx.boolean_option().getText())
         );
     }
 
@@ -377,9 +386,9 @@ public class NexusFilePopulator implements NexusFileListener {
     @Override
     public void exitMatrix_splits_data(NexusFileParser.Matrix_splits_dataContext ctx) {
 
-        if (ctx.FLOAT() != null) {
+        if (ctx.floatingp() != null) {
 
-            double weight = Double.parseDouble(ctx.FLOAT().getText());
+            double weight = Double.parseDouble(ctx.floatingp().getText());
 
             NexusFileParser.Matrix_splits_listContext ctxList = ctx.matrix_splits_list();
 
@@ -387,9 +396,9 @@ public class NexusFilePopulator implements NexusFileListener {
 
             while (ctxList != null) {
 
-                if (ctxList.INT() != null) {
+                if (ctxList.integer() != null) {
 
-                    int val = Integer.parseInt(ctxList.INT().getText());
+                    int val = Integer.parseInt(ctxList.integer().getText());
 
                     setA.add(val);
                 }
@@ -411,11 +420,18 @@ public class NexusFilePopulator implements NexusFileListener {
 
         if (ctx.properties_splits_name() != null) {
 
-            String valStr = ctx.number() != null ? ctx.number().getText() : null;
 
             if (ctx.properties_splits_name().getText().equalsIgnoreCase("cyclic")) {
-                this.splitSystemBuilder.setCyclic(true);
-            } else if (ctx.properties_splits_name().getText().equalsIgnoreCase("fit")) {
+                String valStr = ctx.boolean_option() != null ? ctx.boolean_option().getText() : null;
+                boolean val = valStr != null ? BooleanUtils.toBoolean(valStr) : true;
+                this.splitSystemBuilder.setCyclic(val);
+            } /*else if (ctx.properties_splits_name().getText().equalsIgnoreCase("weakly_compatible") ||
+                    ctx.properties_splits_name().getText().equalsIgnoreCase("compatible")) {
+                String valStr = ctx.boolean_option() != null ? ctx.boolean_option().getText() : null;
+                boolean val = valStr != null ? BooleanUtils.toBoolean(valStr) : true;
+                this.splitSystemBuilder.setCompatible(val);
+            } */else if (ctx.properties_splits_name().getText().equalsIgnoreCase("fit")) {
+                String valStr = ctx.number() != null ? ctx.number().getText() : null;
                 this.splitSystemBuilder.setFit(Double.parseDouble(valStr));
             }
         }
@@ -449,7 +465,7 @@ public class NexusFilePopulator implements NexusFileListener {
     @Override
     public void exitNl_font(NexusFileParser.Nl_fontContext ctx) {
 
-        String fontString = ctx.IDENTIFIER().getText();
+        String fontString = StringUtils.stripQuotes(ctx.identifier().getText());
 
         String[] parts = fontString.split("-");
 
@@ -522,7 +538,7 @@ public class NexusFilePopulator implements NexusFileListener {
     @Override
     public void exitRotate_network(NexusFileParser.Rotate_networkContext ctx) {
 
-        this.networkBuilder.setRotateAbout(Float.parseFloat(ctx.FLOAT().getText()));
+        this.networkBuilder.setRotateAbout(Float.parseFloat(ctx.floatingp().getText()));
     }
 
     @Override
@@ -567,14 +583,14 @@ public class NexusFilePopulator implements NexusFileListener {
 
             NexusFileParser.NtaxContext ctxNtax = ctx.newtaxa().ntax();
 
-            if (ctxNtax.INT() != null && !ctxNtax.INT().getText().isEmpty()) {
-                this.distanceMatrixBuilder.setNbTaxa(Integer.parseInt(ctxNtax.INT().getText()));
+            if (ctxNtax.integer() != null && !ctxNtax.integer().getText().isEmpty()) {
+                this.distanceMatrixBuilder.setNbTaxa(Integer.parseInt(ctxNtax.integer().getText()));
             }
 
             NexusFileParser.NcharContext ctxNchar = ctx.nchar();
 
-            if (ctxNchar.INT() != null && !ctxNchar.INT().getText().isEmpty()) {
-                this.distanceMatrixBuilder.setNbChars(Integer.parseInt(ctxNchar.INT().getText()));
+            if (ctxNchar.integer() != null && !ctxNchar.integer().getText().isEmpty()) {
+                this.distanceMatrixBuilder.setNbChars(Integer.parseInt(ctxNchar.integer().getText()));
             }
         }
     }
@@ -624,6 +640,46 @@ public class NexusFilePopulator implements NexusFileListener {
     }
 
     @Override
+    public void enterName_list(NexusFileParser.Name_listContext ctx) {
+
+    }
+
+    @Override
+    public void exitName_list(NexusFileParser.Name_listContext ctx) {
+
+    }
+
+    @Override
+    public void enterIdentifier(NexusFileParser.IdentifierContext ctx) {
+
+    }
+
+    @Override
+    public void exitIdentifier(NexusFileParser.IdentifierContext ctx) {
+
+    }
+
+    @Override
+    public void enterId(NexusFileParser.IdContext ctx) {
+
+    }
+
+    @Override
+    public void exitId(NexusFileParser.IdContext ctx) {
+
+    }
+
+    @Override
+    public void enterName(NexusFileParser.NameContext ctx) {
+
+    }
+
+    @Override
+    public void exitName(NexusFileParser.NameContext ctx) {
+
+    }
+
+    @Override
     public void enterInterleave(NexusFileParser.InterleaveContext ctx) {
 
     }
@@ -666,14 +722,14 @@ public class NexusFilePopulator implements NexusFileListener {
         }
 
         if (ctx.ntax() != null) {
-            if (ctx.ntax().INT() != null) {
-                this.splitSystemBuilder.setExpectedNbTaxa(Integer.parseInt(ctx.ntax().INT().getText()));
+            if (ctx.ntax().integer() != null) {
+                this.splitSystemBuilder.setExpectedNbTaxa(Integer.parseInt(ctx.ntax().integer().getText()));
             }
         }
 
         if (ctx.nsplits() != null) {
-            if (ctx.nsplits().INT() != null) {
-                this.splitSystemBuilder.setExpectedNbSplits(Integer.parseInt(ctx.nsplits().INT().getText()));
+            if (ctx.nsplits().integer() != null) {
+                this.splitSystemBuilder.setExpectedNbSplits(Integer.parseInt(ctx.nsplits().integer().getText()));
             }
         }
     }
@@ -776,16 +832,6 @@ public class NexusFilePopulator implements NexusFileListener {
     }
 
     @Override
-    public void enterY_quartet(NexusFileParser.Y_quartetContext ctx) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void exitY_quartet(NexusFileParser.Y_quartetContext ctx) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
     public void enterConfidences_header(NexusFileParser.Confidences_headerContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -812,16 +858,6 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitProperties_splits(NexusFileParser.Properties_splitsContext ctx) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void enterX_quartet(NexusFileParser.X_quartetContext ctx) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void exitX_quartet(NexusFileParser.X_quartetContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
@@ -937,16 +973,6 @@ public class NexusFilePopulator implements NexusFileListener {
     }
 
     @Override
-    public void enterWeight_quartet(NexusFileParser.Weight_quartetContext ctx) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void exitWeight_quartet(NexusFileParser.Weight_quartetContext ctx) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
     public void enterDraw_network(NexusFileParser.Draw_networkContext ctx) {
 
     }
@@ -995,8 +1021,9 @@ public class NexusFilePopulator implements NexusFileListener {
     @Override
     public void exitVlabels_network_label(NexusFileParser.Vlabels_network_labelContext ctx) {
 
-        int id = Integer.parseInt(ctx.INT().getText());
-        String name = ctx.IDENTIFIER().getText();
+        int id = Integer.parseInt(ctx.integer().getText());
+
+        String name = StringUtils.stripQuotes(ctx.name().getText());
 
         this.networkBuilder.getCurrentLabel().setName(name);
         this.networkBuilder.getCurrentLabel().setVertexId(id);
@@ -1019,6 +1046,26 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitTax_labels_header(NexusFileParser.Tax_labels_headerContext ctx) {
+
+    }
+
+    @Override
+    public void enterInteger(NexusFileParser.IntegerContext ctx) {
+
+    }
+
+    @Override
+    public void exitInteger(NexusFileParser.IntegerContext ctx) {
+
+    }
+
+    @Override
+    public void enterFloatingp(NexusFileParser.FloatingpContext ctx) {
+
+    }
+
+    @Override
+    public void exitFloatingp(NexusFileParser.FloatingpContext ctx) {
 
     }
 
@@ -1083,8 +1130,7 @@ public class NexusFilePopulator implements NexusFileListener {
         this.splitSystemBuilder.setHasIntervals(
                 ctx.boolean_option() == null ?
                         true :
-                        ctx.boolean_option().getText().equalsIgnoreCase("true") ||
-                                ctx.boolean_option().getText().equalsIgnoreCase("yes")
+                        BooleanUtils.toBoolean(ctx.boolean_option().getText())
         );
     }
 
@@ -1169,16 +1215,6 @@ public class NexusFilePopulator implements NexusFileListener {
     }
 
     @Override
-    public void enterV_quartet(NexusFileParser.V_quartetContext ctx) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void exitV_quartet(NexusFileParser.V_quartetContext ctx) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
     public void enterTax_info_entries(NexusFileParser.Tax_info_entriesContext ctx) {
 
     }
@@ -1235,7 +1271,7 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitNl_y(NexusFileParser.Nl_yContext ctx) {
-        this.networkBuilder.getCurrentLabel().setOffsetY(Integer.parseInt(ctx.INT().getText()));
+        this.networkBuilder.getCurrentLabel().setOffsetY(Integer.parseInt(ctx.integer().getText()));
     }
 
     @Override
@@ -1259,16 +1295,6 @@ public class NexusFilePopulator implements NexusFileListener {
     }
 
     @Override
-    public void enterCs_quartet(NexusFileParser.Cs_quartetContext ctx) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void exitCs_quartet(NexusFileParser.Cs_quartetContext ctx) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
     public void enterScale_network(NexusFileParser.Scale_networkContext ctx) {
 
     }
@@ -1285,7 +1311,7 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitNv_height(NexusFileParser.Nv_heightContext ctx) {
-        this.networkBuilder.getCurrentVertex().setHeight(Integer.parseInt(ctx.INT().getText()));
+        this.networkBuilder.getCurrentVertex().setHeight(Integer.parseInt(ctx.integer().getText()));
     }
 
     @Override
@@ -1347,9 +1373,9 @@ public class NexusFilePopulator implements NexusFileListener {
     public void exitNv_color_fg(NexusFileParser.Nv_color_fgContext ctx) {
         this.networkBuilder.getCurrentVertex().setLineColor(
                 new Color(
-                        Integer.parseInt(ctx.INT(0).getText()),
-                        Integer.parseInt(ctx.INT(1).getText()),
-                        Integer.parseInt(ctx.INT(2).getText())));
+                        Integer.parseInt(ctx.integer(0).getText()),
+                        Integer.parseInt(ctx.integer(1).getText()),
+                        Integer.parseInt(ctx.integer(2).getText())));
     }
 
     @Override
@@ -1389,7 +1415,7 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitNl_x(NexusFileParser.Nl_xContext ctx) {
-        this.networkBuilder.getCurrentLabel().setOffsetX(Integer.parseInt(ctx.INT().getText()));
+        this.networkBuilder.getCurrentLabel().setOffsetX(Integer.parseInt(ctx.integer().getText()));
     }
 
     @Override
@@ -1460,7 +1486,7 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitBlock_characters(NexusFileParser.Block_charactersContext ctx) {
-        this.nexus.setAlignments(this.charBuilder.createAlignments(this.nexus.getTaxa()));
+        this.nexus.setAlignments(this.charBuilder.createAlignments());
     }
 
     @Override
@@ -1480,7 +1506,33 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitChar_dimensions(NexusFileParser.Char_dimensionsContext ctx) {
-        this.charBuilder.setExpectedNbChars(Integer.parseInt(ctx.cd_nchar().INT().getText()));
+
+
+    }
+
+    @Override
+    public void enterChar_dim_options(NexusFileParser.Char_dim_optionsContext ctx) {
+
+    }
+
+    @Override
+    public void exitChar_dim_options(NexusFileParser.Char_dim_optionsContext ctx) {
+
+    }
+
+    @Override
+    public void enterChar_dim_option(NexusFileParser.Char_dim_optionContext ctx) {
+
+    }
+
+    @Override
+    public void exitChar_dim_option(NexusFileParser.Char_dim_optionContext ctx) {
+        if (ctx.ntax() != null) {
+            this.charBuilder.setExpectedNbSeqs(Integer.parseInt(ctx.ntax().integer().getText()));
+        }
+        if (ctx.cd_nchar() != null) {
+            this.charBuilder.setExpectedNbChars(Integer.parseInt(ctx.cd_nchar().integer().getText()));
+        }
     }
 
     @Override
@@ -1550,7 +1602,8 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitCf_missing(NexusFileParser.Cf_missingContext ctx) {
-        //this.charBuilder.getFormat().
+        String missing = StringUtils.stripQuotes(ctx.missing_option().getText());
+        this.charBuilder.getFormat().missing = missing.length() >= 1 ? missing.charAt(0) : '?';
     }
 
     @Override
@@ -1560,7 +1613,8 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitCf_gap(NexusFileParser.Cf_gapContext ctx) {
-        //this.charBuilder.getFormat().
+        String gap = StringUtils.stripQuotes(ctx.gap_option().getText());
+        this.charBuilder.getFormat().gap = gap.length() >= 1 ? gap.charAt(0) : '-';
     }
 
     @Override
@@ -1570,7 +1624,8 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitCf_symbols(NexusFileParser.Cf_symbolsContext ctx) {
-        //this.charBuilder.getFormat().
+        String symbols = StringUtils.stripQuotes(ctx.identifier().getText());
+        this.charBuilder.getFormat().symbols = symbols;
     }
 
     @Override
@@ -1580,7 +1635,8 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitCf_labels(NexusFileParser.Cf_labelsContext ctx) {
-        this.charBuilder.getFormat().labels = Boolean.getBoolean(ctx.boolean_option().getText());
+        boolean labels = ctx.boolean_option() != null ? BooleanUtils.toBoolean(ctx.boolean_option().getText()) : true;
+        this.charBuilder.getFormat().labels = labels;
     }
 
     @Override
@@ -1590,7 +1646,8 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitCf_transpose(NexusFileParser.Cf_transposeContext ctx) {
-        //this.charBuilder.getFormat().
+        boolean transpose = ctx.boolean_option() != null ? BooleanUtils.toBoolean(ctx.boolean_option().getText()) : true;
+        this.charBuilder.getFormat().transposed = transpose;
     }
 
     @Override
@@ -1600,7 +1657,8 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitCf_interleave(NexusFileParser.Cf_interleaveContext ctx) {
-        this.charBuilder.getFormat().interleaved = Boolean.getBoolean(ctx.boolean_option().getText());
+        boolean interleave = ctx.boolean_option() != null ? Boolean.getBoolean(ctx.boolean_option().getText()) : true;
+        this.charBuilder.getFormat().interleaved = interleave;
     }
 
     @Override
@@ -1644,12 +1702,12 @@ public class NexusFilePopulator implements NexusFileListener {
     }
 
     @Override
-    public void enterChar_seq(NexusFileParser.Char_seqContext ctx) {
+    public void enterChar_seq_entry(NexusFileParser.Char_seq_entryContext ctx) {
 
     }
 
     @Override
-    public void exitChar_seq(NexusFileParser.Char_seqContext ctx) {
+    public void exitChar_seq_entry(NexusFileParser.Char_seq_entryContext ctx) {
         this.charBuilder.addSeq(ctx.getText());
     }
 
@@ -1712,9 +1770,9 @@ public class NexusFilePopulator implements NexusFileListener {
     public void exitNv_color_bg(NexusFileParser.Nv_color_bgContext ctx) {
         this.networkBuilder.getCurrentVertex().setBackgroundColor(
                 new Color(
-                        Integer.parseInt(ctx.INT(0).getText()),
-                        Integer.parseInt(ctx.INT(1).getText()),
-                        Integer.parseInt(ctx.INT(2).getText()))
+                        Integer.parseInt(ctx.integer(0).getText()),
+                        Integer.parseInt(ctx.integer(1).getText()),
+                        Integer.parseInt(ctx.integer(2).getText()))
         );
     }
 
@@ -1737,9 +1795,9 @@ public class NexusFilePopulator implements NexusFileListener {
     public void exitNe_color(NexusFileParser.Ne_colorContext ctx) {
         this.networkBuilder.getCurrentEdge().setColor(
                 new Color(
-                        Integer.parseInt(ctx.INT(0).getText()),
-                        Integer.parseInt(ctx.INT(1).getText()),
-                        Integer.parseInt(ctx.INT(2).getText()))
+                        Integer.parseInt(ctx.integer(0).getText()),
+                        Integer.parseInt(ctx.integer(1).getText()),
+                        Integer.parseInt(ctx.integer(2).getText()))
         );
     }
 
@@ -1753,9 +1811,9 @@ public class NexusFilePopulator implements NexusFileListener {
     @Override
     public void exitEdges_network_entry(NexusFileParser.Edges_network_entryContext ctx) {
 
-        int id = Integer.parseInt(ctx.INT().get(0).getText());
-        int top = Integer.parseInt(ctx.INT().get(1).getText());
-        int bot = Integer.parseInt(ctx.INT().get(2).getText());
+        int id = Integer.parseInt(ctx.integer().get(0).getText());
+        int top = Integer.parseInt(ctx.integer().get(1).getText());
+        int bot = Integer.parseInt(ctx.integer().get(2).getText());
 
         Edge edge = this.networkBuilder.getCurrentEdge();
 
@@ -1813,9 +1871,9 @@ public class NexusFilePopulator implements NexusFileListener {
     @Override
     public void exitVertices_network_entry(NexusFileParser.Vertices_network_entryContext ctx) {
 
-        int id = Integer.parseInt(ctx.INT().getText());
-        double x = Double.parseDouble(ctx.FLOAT(0).getText());
-        double y = Double.parseDouble(ctx.FLOAT(1).getText());
+        int id = Integer.parseInt(ctx.integer().getText());
+        double x = Double.parseDouble(ctx.floatingp(0).getText());
+        double y = Double.parseDouble(ctx.floatingp(1).getText());
 
         Vertex v = this.networkBuilder.getCurrentVertex();
 
@@ -1855,8 +1913,8 @@ public class NexusFilePopulator implements NexusFileListener {
     @Override
     public void exitCycle_item(NexusFileParser.Cycle_itemContext ctx) {
 
-        if (ctx.INT() != null) {
-            this.splitSystemBuilder.addCycleItem(Integer.parseInt(ctx.INT().getText()));
+        if (ctx.integer() != null) {
+            this.splitSystemBuilder.addCycleItem(Integer.parseInt(ctx.integer().getText()));
         }
     }
 
@@ -1867,16 +1925,6 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitReference(NexusFileParser.ReferenceContext ctx) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void enterU_quartet(NexusFileParser.U_quartetContext ctx) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void exitU_quartet(NexusFileParser.U_quartetContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
@@ -1961,16 +2009,6 @@ public class NexusFilePopulator implements NexusFileListener {
     }
 
     @Override
-    public void enterMatrix_split_identifier(NexusFileParser.Matrix_split_identifierContext ctx) {
-
-    }
-
-    @Override
-    public void exitMatrix_split_identifier(NexusFileParser.Matrix_split_identifierContext ctx) {
-
-    }
-
-    @Override
     public void enterMatrix_quartet(NexusFileParser.Matrix_quartetContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -1978,14 +2016,180 @@ public class NexusFilePopulator implements NexusFileListener {
     @Override
     public void exitMatrix_quartet(NexusFileParser.Matrix_quartetContext ctx) {
 
-        int x = Integer.parseInt(ctx.x_quartet().INT().getText());
-        int y = Integer.parseInt(ctx.y_quartet().INT().getText());
-        int u = Integer.parseInt(ctx.u_quartet().INT().getText());
-        int v = Integer.parseInt(ctx.v_quartet().INT().getText());
+        int x = Integer.parseInt(ctx.integer(0).getText());
+        int y = Integer.parseInt(ctx.integer(1).getText());
+        int u = Integer.parseInt(ctx.integer(2).getText());
+        int v = Integer.parseInt(ctx.integer(3).getText());
 
         //ctx.
         //Quartet quartet = new Quartet();
 
+    }
+
+    @Override
+    public void enterBlock_quadruples(NexusFileParser.Block_quadruplesContext ctx) {
+
+    }
+
+    @Override
+    public void exitBlock_quadruples(NexusFileParser.Block_quadruplesContext ctx) {
+        this.nexus.setQuadruples(this.quadBuilder.createQuadrupleSystem());
+    }
+
+    @Override
+    public void enterQuadruples_block_header(NexusFileParser.Quadruples_block_headerContext ctx) {
+
+    }
+
+    @Override
+    public void exitQuadruples_block_header(NexusFileParser.Quadruples_block_headerContext ctx) {
+
+    }
+
+    @Override
+    public void enterDimensions_quadruples(NexusFileParser.Dimensions_quadruplesContext ctx) {
+
+    }
+
+    @Override
+    public void exitDimensions_quadruples(NexusFileParser.Dimensions_quadruplesContext ctx) {
+        if (ctx.ntax() != null) {
+            if (ctx.ntax().integer() != null) {
+                this.quadBuilder.setExpectedNbTaxa(Integer.parseInt(ctx.ntax().integer().getText()));
+            }
+        }
+
+        if (ctx.nquadruples() != null) {
+            if (ctx.nquadruples().integer() != null) {
+                this.quadBuilder.setExpectedNbQuadruples(Integer.parseInt(ctx.nquadruples().integer().getText()));
+            }
+        }
+    }
+
+    @Override
+    public void enterNquadruples(NexusFileParser.NquadruplesContext ctx) {
+
+    }
+
+    @Override
+    public void exitNquadruples(NexusFileParser.NquadruplesContext ctx) {
+
+    }
+
+    @Override
+    public void enterNquadruples_header(NexusFileParser.Nquadruples_headerContext ctx) {
+
+    }
+
+    @Override
+    public void exitNquadruples_header(NexusFileParser.Nquadruples_headerContext ctx) {
+
+    }
+
+    @Override
+    public void enterFormat_quadruples(NexusFileParser.Format_quadruplesContext ctx) {
+
+    }
+
+    @Override
+    public void exitFormat_quadruples(NexusFileParser.Format_quadruplesContext ctx) {
+
+    }
+
+    @Override
+    public void enterMatrix_quadruples_data(NexusFileParser.Matrix_quadruples_dataContext ctx) {
+
+    }
+
+    @Override
+    public void exitMatrix_quadruples_data(NexusFileParser.Matrix_quadruples_dataContext ctx) {
+
+    }
+
+    @Override
+    public void enterMatrix_quadruple(NexusFileParser.Matrix_quadrupleContext ctx) {
+
+    }
+
+    @Override
+    public void exitMatrix_quadruple(NexusFileParser.Matrix_quadrupleContext ctx) {
+
+        Quad taxa = null;
+        if (ctx.integer() != null && ctx.integer().size() == 4) {
+            int a = Integer.parseInt(ctx.integer(0).getText());
+            int b = Integer.parseInt(ctx.integer(1).getText());
+            int c = Integer.parseInt(ctx.integer(2).getText());
+            int d = Integer.parseInt(ctx.integer(3).getText());
+            taxa = new SpectreQuad(a, b, c, d);
+        }
+
+        double[] weights = null;
+        if (ctx.floatingp() != null && ctx.floatingp().size() == 7) {
+            weights = new double[7];
+            for (int i = 0; i < 7; i++) {
+                weights[i] = Double.parseDouble(ctx.floatingp(i).getText());
+            }
+        }
+
+        if (taxa != null && weights != null) {
+            this.quadBuilder.addQuad(new Quadruple(taxa, weights));
+        }
+    }
+
+    @Override
+    public void enterBlock_locations(NexusFileParser.Block_locationsContext ctx) {
+
+    }
+
+    @Override
+    public void exitBlock_locations(NexusFileParser.Block_locationsContext ctx) {
+        this.nexus.setLocations(this.locationBuilder.getLocations());
+    }
+
+    @Override
+    public void enterLocations_block_header(NexusFileParser.Locations_block_headerContext ctx) {
+
+    }
+
+    @Override
+    public void exitLocations_block_header(NexusFileParser.Locations_block_headerContext ctx) {
+
+    }
+
+    @Override
+    public void enterDimensions_locations(NexusFileParser.Dimensions_locationsContext ctx) {
+
+    }
+
+    @Override
+    public void exitDimensions_locations(NexusFileParser.Dimensions_locationsContext ctx) {
+        this.locationBuilder.setNbExpectedTaxa(Integer.parseInt(ctx.ntax().integer().getText()));
+    }
+
+    @Override
+    public void enterMatrix_locations_data(NexusFileParser.Matrix_locations_dataContext ctx) {
+
+    }
+
+    @Override
+    public void exitMatrix_locations_data(NexusFileParser.Matrix_locations_dataContext ctx) {
+
+    }
+
+    @Override
+    public void enterLocation_entry(NexusFileParser.Location_entryContext ctx) {
+
+    }
+
+    @Override
+    public void exitLocation_entry(NexusFileParser.Location_entryContext ctx) {
+
+        double x = Double.parseDouble(ctx.floatingp().get(0).getText());
+        double y = Double.parseDouble(ctx.floatingp().get(1).getText());
+
+        IndexedPoint ip = new IndexedPoint(-1, x, y, ctx.identifier().getText());
+
+        this.locationBuilder.addLocation(ip);
     }
 
     @Override
@@ -2012,9 +2216,8 @@ public class NexusFilePopulator implements NexusFileListener {
 
             Identifier currentTaxon = null;
 
-            if (populateTaxa && mtxData.IDENTIFIER() != null) {
-                String taxon = mtxData.IDENTIFIER().getText();
-
+            if (populateTaxa && mtxData.identifier() != null) {
+                String taxon = StringUtils.stripQuotes(mtxData.identifier().getText());
                 currentTaxon = new Identifier(taxon, taxaId++);
             }
             else {
@@ -2072,7 +2275,7 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitNe_width(NexusFileParser.Ne_widthContext ctx) {
-        this.networkBuilder.getCurrentEdge().setWidth(Integer.parseInt(ctx.INT().getText()));
+        this.networkBuilder.getCurrentEdge().setWidth(Integer.parseInt(ctx.integer().getText()));
     }
 
     @Override
@@ -2111,8 +2314,8 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitDimensions_viewer(NexusFileParser.Dimensions_viewerContext ctx) {
-        int width = Integer.parseInt(ctx.vwidth().INT().getText());
-        int height = Integer.parseInt(ctx.vheight().INT().getText());
+        int width = Integer.parseInt(ctx.vwidth().integer().getText());
+        int height = Integer.parseInt(ctx.vheight().integer().getText());
         this.viewerConfig.setDimensions(new Dimension(width, height));
     }
 
@@ -2173,8 +2376,19 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitVm_ratio(NexusFileParser.Vm_ratioContext ctx) {
-        double ratio = Double.parseDouble(ctx.FLOAT().getText());
+        double ratio = Double.parseDouble(ctx.floatingp().getText());
         this.viewerConfig.setRatio(ratio);
+    }
+
+    @Override
+    public void enterVm_angle(NexusFileParser.Vm_angleContext ctx) {
+
+    }
+
+    @Override
+    public void exitVm_angle(NexusFileParser.Vm_angleContext ctx) {
+        double angle = Double.parseDouble(ctx.floatingp().getText());
+        this.viewerConfig.setRatio(angle);
     }
 
     @Override
@@ -2184,7 +2398,7 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitVm_showtrivial(NexusFileParser.Vm_showtrivialContext ctx) {
-        boolean st = Boolean.parseBoolean(ctx.boolean_option().getText());
+        boolean st = BooleanUtils.toBoolean(ctx.boolean_option().getText());
         this.viewerConfig.setShowTrivial(st);
     }
 
@@ -2195,7 +2409,7 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitVm_showrange(NexusFileParser.Vm_showrangeContext ctx) {
-        boolean st = Boolean.parseBoolean(ctx.boolean_option().getText());
+        boolean st = BooleanUtils.toBoolean(ctx.boolean_option().getText());
         this.viewerConfig.setShowRange(st);
     }
 
@@ -2206,7 +2420,7 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitVm_showlabels(NexusFileParser.Vm_showlabelsContext ctx) {
-        boolean sl = Boolean.parseBoolean(ctx.boolean_option().getText());
+        boolean sl = BooleanUtils.toBoolean(ctx.boolean_option().getText());
         this.viewerConfig.setShowLabels(sl);
     }
 
@@ -2217,7 +2431,7 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitVm_colorlabels(NexusFileParser.Vm_colorlabelsContext ctx) {
-        boolean cl = Boolean.parseBoolean(ctx.boolean_option().getText());
+        boolean cl = BooleanUtils.toBoolean(ctx.boolean_option().getText());
         this.viewerConfig.setColorLabels(cl);
     }
 
@@ -2228,7 +2442,8 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitVm_leaders(NexusFileParser.Vm_leadersContext ctx) {
-        this.viewerConfig.setLeaderType(ctx.IDENTIFIER().getText());
+        String leader = StringUtils.stripQuotes(ctx.identifier().getText()).toUpperCase();
+        this.viewerConfig.setLeaderType(Leader.LeaderType.valueOf(leader));
     }
 
     @Override
@@ -2238,7 +2453,8 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitVm_leaderstroke(NexusFileParser.Vm_leaderstrokeContext ctx) {
-        this.viewerConfig.setLeaderStroke(ctx.IDENTIFIER().getText());
+        String stroke = StringUtils.stripQuotes(ctx.identifier().getText()).toUpperCase();
+        this.viewerConfig.setLeaderStroke(Leader.LeaderStroke.valueOf(stroke));
     }
 
     @Override
@@ -2248,20 +2464,10 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitVm_leadercolor(NexusFileParser.Vm_leadercolorContext ctx) {
-        int r = Integer.parseInt(ctx.INT().get(0).getText());
-        int g = Integer.parseInt(ctx.INT().get(1).getText());
-        int b = Integer.parseInt(ctx.INT().get(2).getText());
+        int r = Integer.parseInt(ctx.integer(0).getText());
+        int g = Integer.parseInt(ctx.integer(1).getText());
+        int b = Integer.parseInt(ctx.integer(2).getText());
         this.viewerConfig.setLeaderColor(new Color(r, g, b));
-    }
-
-    @Override
-    public void enterSc_quartet(NexusFileParser.Sc_quartetContext ctx) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void exitSc_quartet(NexusFileParser.Sc_quartetContext ctx) {
-        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
@@ -2272,16 +2478,6 @@ public class NexusFilePopulator implements NexusFileListener {
     @Override
     public void exitKey_value_pair(NexusFileParser.Key_value_pairContext ctx) {
 
-    }
-
-    @Override
-    public void enterLabel_quartet(NexusFileParser.Label_quartetContext ctx) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void exitLabel_quartet(NexusFileParser.Label_quartetContext ctx) {
-        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
@@ -2311,7 +2507,12 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitTranslate_network_entry(NexusFileParser.Translate_network_entryContext ctx) {
-        this.networkBuilder.getTranslate().put(Integer.parseInt(ctx.INT().getText()), ctx.IDENTIFIER().getText());
+        List<String> names = new ArrayList<>();
+        for (NexusFileParser.NameContext n : ctx.name()) {
+            names.add(StringUtils.stripQuotes(n.getText()));
+        }
+        String name = org.apache.commons.lang3.StringUtils.join(names, ',');
+        this.networkBuilder.getTranslate().put(Integer.parseInt(ctx.integer().getText()), name);
     }
 
     @Override
@@ -2321,7 +2522,7 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitNe_split(NexusFileParser.Ne_splitContext ctx) {
-        this.networkBuilder.getCurrentEdge().setIdxsplit(Integer.parseInt(ctx.INT().getText()));
+        this.networkBuilder.getCurrentEdge().setIdxsplit(Integer.parseInt(ctx.integer().getText()));
     }
 
     @Override

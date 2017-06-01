@@ -29,17 +29,17 @@ public class NetworkLabel {
 
     private Vertex vertex;
 
-    private double offsetX = 1;
-    private double offsetY = 1;
+    private double offsetX;
+    private double offsetY;
 
     private int height;
     private int width;
     private Color bgColor;
-    private Color fontColor = Color.BLACK;
-    private String fontFamily = Font.DIALOG;
-    private String fontStyle = "plain";
-    private int intStyle = Font.PLAIN;
-    private int fontSize = 10;
+    private Color fontColor;
+    private String fontFamily;
+    private String fontStyle;
+    private int intStyle;
+    private int fontSize;
 
     private Font font;
     private FontMetrics fontMetrics;
@@ -52,7 +52,34 @@ public class NetworkLabel {
     }
 
     public NetworkLabel(String label) {
-        setName(label);
+        this.offsetX = 1;
+        this.offsetY = 1;
+
+        this.name = label;
+
+        this.bgColor = null;
+
+        this.fontColor = Color.BLACK;
+        this.fontFamily = Font.DIALOG;
+        this.fontStyle = "plain";
+        this.intStyle = Font.PLAIN;
+        this.fontSize = 10;
+
+        initFont();
+    }
+
+    public NetworkLabel(NetworkLabel copy) {
+        this.offsetX = copy.offsetX;
+        this.offsetY = copy.offsetY;
+        this.name = copy.name;
+        this.bgColor = new Color(copy.bgColor.getRGB());
+        this.fontColor = new Color(copy.fontColor.getRGB());
+        this.fontFamily = copy.fontFamily;
+        this.fontStyle = copy.fontStyle;
+        this.intStyle = copy.intStyle;
+        this.fontSize = copy.fontSize;
+        this.vertexId = copy.vertexId;
+        this.vertex = copy.vertex;      // Shallow copy???
         initFont();
     }
 

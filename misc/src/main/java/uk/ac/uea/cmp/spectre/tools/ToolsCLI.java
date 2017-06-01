@@ -31,13 +31,16 @@ import uk.ac.uea.cmp.spectre.core.util.SpiFactory;
 public class ToolsCLI {
 
     public static final String OPT_HELP = "help";
-    private static SpiFactory<SpectreTool> phygenToolFactory;
+    public static final String OPT_VERSION = "version";
+    private static SpiFactory<SpectreTool> spectreToolSpiFactory;
 
     @SuppressWarnings("static-access")
     private static Options createOptions() {
 
-        // add t option
-        return new Options().addOption(new Option("?", OPT_HELP, false, "Print this message."));
+        // Add basic options
+        return new Options()
+                .addOption(new Option("?", OPT_HELP, false, "Print this message."))
+                .addOption(new Option("V", OPT_VERSION, false, "Print the current version."));
     }
 
     private static void printHelp() {
@@ -45,7 +48,7 @@ public class ToolsCLI {
                 createOptions(),
                 "phygentools",
                 "Miscellaneous Phylogenetic Tools\n" +
-                        "A collection of tools: " + phygenToolFactory.listServicesAsString());
+                        "A collection of tools: " + spectreToolSpiFactory.listServicesAsString());
     }
 
 
@@ -53,16 +56,20 @@ public class ToolsCLI {
 
         try {
             // First try to create the phygen tool factory, this gives us access to all the available tools
-            phygenToolFactory = new SpiFactory<>(SpectreTool.class);
+            spectreToolSpiFactory = new SpiFactory<>(SpectreTool.class);
 
             // Process the command line
             CommandLine cmdLine = new PosixParser().parse(createOptions(), args, true);
 
             if (cmdLine.getArgList().isEmpty() || cmdLine.getArgs()[0].equalsIgnoreCase(OPT_HELP)) {
                 printHelp();
-            } else {
+            }
+            else if (cmdLine.hasOption(OPT_VERSION)) {
+                System.out.println("spectre " + CommandLineHelper.class.getPackage().getImplementationVersion());
+            }
+            else {
                 // Required arguments
-                SpectreTool spectreTool = phygenToolFactory.create(cmdLine.getArgs()[0]);
+                SpectreTool spectreTool = spectreToolSpiFactory.create(cmdLine.getArgs()[0]);
 
                 if (spectreTool == null) {
                     throw new ParseException("Requested tool not found: " + cmdLine.getOptionValue(cmdLine.getArgs()[0]));

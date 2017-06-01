@@ -92,6 +92,8 @@ public class Sequences {
         return sequences;
     }
 
+    public String getSeq(int index) { return sequences[index]; }
+
     //Transforms sequences from strings to the arrays of characters
     public char[][] getSequencesAsCharArray() {
         char[][] s = new char[sequences.length][sequences[0].length()];
@@ -120,20 +122,28 @@ public class Sequences {
 
         public boolean labels;
         public boolean interleaved;
+        public boolean transposed;
         public String triangle;
         public boolean diagonal;
         public boolean activeFlags;
         public boolean weights;
         public boolean confidences;
+        public String symbols;
+        public char missing;
+        public char gap;
 
         public Format() {
             labels = true;
             interleaved = true;
+            transposed = false;
             triangle = "both";
             diagonal = false;
             activeFlags = true;
             weights = true;
             confidences = false;
+            symbols = "atgcATGC01";
+            missing = '?';
+            gap = '-';
         }
     }
 

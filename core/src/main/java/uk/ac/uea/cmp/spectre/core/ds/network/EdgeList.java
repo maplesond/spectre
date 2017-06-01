@@ -15,12 +15,10 @@
 
 package uk.ac.uea.cmp.spectre.core.ds.network;
 
-import uk.ac.uea.cmp.spectre.core.ds.Identifier;
-
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.ListIterator;
-import java.util.TreeSet;
+import java.util.Set;
 
 /**
  * Created by dan on 20/03/14.
@@ -46,16 +44,34 @@ public class EdgeList extends LinkedList<Edge> {
     }
 
     /**
-     * This method collects the indices of the splits corresponding to the edges in crossboth
-     * @return Indicies of splits that cross edges
+     * This method collects the indices of the splits corresponding to the edges in this list
+     * @return A distinct set of split indices in this list
      */
-    public TreeSet<Integer> getCrossIndices() {
-        ListIterator<Edge> crossiter = this.listIterator();
-        TreeSet<Integer> crossindices = new TreeSet<>();
-        while (crossiter.hasNext()) {
-            Edge e = crossiter.next();
-            crossindices.add(new Integer(e.getIdxsplit()));
+    public Set<Integer> getSplitIndexSet() {
+        Set<Integer> crossindices = new HashSet<>();
+        for (Edge e : this) {
+            crossindices.add(e.getSplitIndex());
         }
         return crossindices;
+    }
+
+    /**
+     * Gets Edge found after the provided one in this edge list.
+     * Automatically wraps to beginning of list if index is pushed off the end.
+     * @param e The current edge.  We want to return the Edge following this one.
+     * @return The edge following the one provided
+     */
+    public Edge getNextEdge(Edge e) {
+        return this.get((this.indexOf(e) + 1) % this.size());
+    }
+
+    /**
+     * Gets Edge found before the provided one in this edge list.
+     * Automatically wraps to beginning of list if index is pushed off the end.
+     * @param e The current edge.  We want to return the Edge following this one.
+     * @return The edge following the one provided
+     */
+    public Edge getPreviousEdge(Edge e) {
+        return this.get((this.indexOf(e) + this.size() - 1) % this.size());
     }
 }

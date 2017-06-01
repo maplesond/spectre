@@ -118,7 +118,7 @@ public class CanonicalWeightedQuartetMap extends HashMap<Quad, Double> {
     public void addSplit(Split split) {
 
         // We don't bother with trivial splits as trivial splits match no quartets
-        if (!split.onExternalEdge()) {
+        if (!split.isTrivial()) {
 
             // so, for all quartets in here, add the length to their value
             final int aSize = split.getASideSize();
