@@ -155,7 +155,7 @@ on their system.  The tools can be found in the bin subfolder.
 Further Documentation
 =====================
 
-The full manual can be found in the ``doc`` directory, or online at: https://spectre.readthedocs.org/en/latest/
+The full manual can be found in the ``doc`` directory, or online at: http://spectre-suite-of-phylogenetic-tools-for-reticulate-evolution.readthedocs.io/en/latest/
 
 
 Issues
