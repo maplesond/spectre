@@ -20,10 +20,10 @@ for your environment.  You can check this by typing the following at the command
 the version number exceeds V1.8.
 
 The installation process from tarball is simple.  The first step is acquire the tarball from https://github.com/maplesond/spectre/releases.
-Then unpacking the compressed tarball to a directory of your choice.  The unpack command is: ``tar -xvf spectre-<version>.tar.gz``.
+Then unpacking the compressed tarball to a directory of your choice.  The unpack command is: ``tar -xvf spectre-<version>-<platform>.tar.gz``.
 This will create a sub-directory called ``spectre-<version>`` and in there should be the following further sub-directories:
 
-* bin - contains scripts allowing the user to easily run all the tools.  In general, the scripts are all command line tools except for those having a ``-gui`` suffix.  Scripts for all platforms are available, in general, those with no extension should work on linux and mac platforms, and those with a ``.bat`` extension should run on windows.
+* bin - contains scripts allowing the user to easily run all the tools.  In general, the scripts are all command line tools except for ``spectre`` suffix.  Scripts for all platforms are available, in general, those with no extension should work on linux and mac platforms, and those with a ``.bat`` extension should run on windows.
 * doc - a html, pdf and text copy of the complete manual
 * etc - contains examples and configuration files
 * examples - Example files to help you get started with the spectre tools
