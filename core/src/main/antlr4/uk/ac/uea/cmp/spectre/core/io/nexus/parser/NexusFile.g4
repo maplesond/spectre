@@ -122,7 +122,7 @@ block_characters :
     char_matrix
     ;
 
-characters_header : 'chracters' | 'Characters' | 'CHARACTERS' | 'data' | 'Data' | 'DATA';
+characters_header : 'characters' | 'Characters' | 'CHARACTERS' | 'data' | 'Data' | 'DATA';
 
 char_dimensions : dimensions char_dim_options ';';
 
@@ -165,7 +165,7 @@ char_sequences :
     | char_seq_entry char_sequences
     ;
 
-char_seq_entry : ID | INT;
+char_seq_entry : ID | INT | SQSTRING | DQSTRING;
 
 
 
