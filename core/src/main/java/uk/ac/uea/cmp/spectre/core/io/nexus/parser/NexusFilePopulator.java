@@ -784,7 +784,7 @@ public class NexusFilePopulator implements NexusFileListener {
                     this.distanceMatrixBuilder.setTriangle(DistanceMatrixBuilder.Triangle.valueOf(triangleString.toUpperCase()));
                 } else if (ctxFormatItem.diagonal() != null) {
                     String diagonal = ctxFormatItem.diagonal().getText();
-                    this.distanceMatrixBuilder.setDiagonal(diagonal.equals("diagonal"));
+                    this.distanceMatrixBuilder.setDiagonal(diagonal.equalsIgnoreCase("diagonal"));
                 } else if (ctxFormatItem.labels() != null) {
 
                     if (ctxFormatItem.labels().labels_option() != null) {
@@ -802,7 +802,7 @@ public class NexusFilePopulator implements NexusFileListener {
                     }
                 } else if (ctxFormatItem.missing() != null) {
                     // Not sure what to do with this.. leave it for now.
-                } else if (ctxFormatItem.getText().equals("interleave")) {
+                } else if (ctxFormatItem.getText().equalsIgnoreCase("interleave")) {
                     String interleaveString = ctxFormatItem.interleave().labels_option().getText();
                     this.distanceMatrixBuilder.setInterleave(interleaveString.equalsIgnoreCase("yes") || interleaveString.equalsIgnoreCase("true"));
                 }
