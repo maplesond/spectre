@@ -23,6 +23,7 @@ import uk.ac.uea.cmp.spectre.core.ds.network.Network;
 import uk.ac.uea.cmp.spectre.core.ds.network.draw.ViewerConfig;
 import uk.ac.uea.cmp.spectre.core.ds.quad.quadruple.QuadrupleSystem;
 import uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem;
+import uk.ac.uea.cmp.spectre.core.ds.tree.newick.NewickTree;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +46,7 @@ public class Nexus {
     private QuadrupleSystem quadruples;
     private ViewerConfig viewerConfig;
     private Sequences alignments;
+    private NewickTree tree;
 
     public Nexus() {
         this.taxa = new IdentifierList();
@@ -56,6 +58,7 @@ public class Nexus {
         this.quadruples = null;
         this.viewerConfig = null;
         this.alignments = null;
+        this.tree = null;
     }
 
     public void setTaxa(IdentifierList taxa) {
@@ -141,6 +144,14 @@ public class Nexus {
 
     public void setQuadruples(QuadrupleSystem quadruples) {
         this.quadruples = quadruples;
+    }
+
+    public NewickTree getTree() {
+        return tree;
+    }
+
+    public void setTree(NewickTree tree) {
+        this.tree = tree;
     }
 
     /*public Nexus filter(double threshold) {

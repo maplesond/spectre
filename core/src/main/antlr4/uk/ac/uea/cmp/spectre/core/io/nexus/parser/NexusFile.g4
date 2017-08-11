@@ -68,7 +68,7 @@ block_declaration :
     | block_quartets
     | block_quadruples
   //| block_data
-  //| block_codons
+    | block_codons
   //| block_sets
     | block_locations
     | block_assumptions
@@ -410,6 +410,17 @@ matrix_locations_data:
 
 location_entry : identifier floatingp floatingp;
 
+
+// ----------------------------------------------------------------------------
+// Codon definition rules
+// ----------------------------------------------------------------------------
+// Haven't really implemented this yet... this just stops it failing if a codons
+// block is encountered
+block_codons : codons_block_header ';' codons_data;
+
+codons_block_header : 'codons' | 'Codons' | 'CODONS';
+
+codons_data : .*? ;
 
 
 // ----------------------------------------------------------------------------

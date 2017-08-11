@@ -2217,6 +2217,36 @@ public class NexusFilePopulator implements NexusFileListener {
     }
 
     @Override
+    public void enterBlock_codons(NexusFileParser.Block_codonsContext ctx) {
+
+    }
+
+    @Override
+    public void exitBlock_codons(NexusFileParser.Block_codonsContext ctx) {
+
+    }
+
+    @Override
+    public void enterCodons_block_header(NexusFileParser.Codons_block_headerContext ctx) {
+
+    }
+
+    @Override
+    public void exitCodons_block_header(NexusFileParser.Codons_block_headerContext ctx) {
+
+    }
+
+    @Override
+    public void enterCodons_data(NexusFileParser.Codons_dataContext ctx) {
+
+    }
+
+    @Override
+    public void exitCodons_data(NexusFileParser.Codons_dataContext ctx) {
+
+    }
+
+    @Override
     public void enterBlock_distances(NexusFileParser.Block_distancesContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
