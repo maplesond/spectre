@@ -41,6 +41,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.DoubleConsumer;
 
 /**
  * Created with IntelliJ IDEA.
@@ -1765,6 +1766,16 @@ public class NexusFilePopulator implements NexusFileListener {
     }
 
     @Override
+    public void enterMdata(NexusFileParser.MdataContext ctx) {
+
+    }
+
+    @Override
+    public void exitMdata(NexusFileParser.MdataContext ctx) {
+
+    }
+
+    @Override
     public void enterNv_color_bg(NexusFileParser.Nv_color_bgContext ctx) {
 
     }
@@ -2203,48 +2214,79 @@ public class NexusFilePopulator implements NexusFileListener {
     @Override
     public void exitBlock_distances(NexusFileParser.Block_distancesContext ctx) {
 
-        NexusFileParser.Matrix_dataContext mtxData = ctx.matrix_data();
-
         IdentifierList taxa = this.nexus.getTaxa();
 
         boolean populateTaxa = taxa == null || taxa.isEmpty();
+        DistanceMatrixBuilder.Labels labeling = this.distanceMatrixBuilder.getLabels();
 
         if (populateTaxa) {
             taxa = new IdentifierList();
         }
-
-        int taxaId = 1;
-
-        while (mtxData != null) {
-
-            Identifier currentTaxon = null;
-
-            if (populateTaxa && mtxData.identifier() != null) {
-                String taxon = StringUtils.stripQuotes(mtxData.identifier().getText());
-                currentTaxon = new Identifier(taxon, taxaId++);
+        else {
+            if (this.distanceMatrixBuilder.getNbTaxa() != taxa.size()) {
+                throw new IllegalArgumentException("Distance matrix NTAX property and taxa block are inconsistent.");
             }
-            else {
-                currentTaxon = taxa.getById(taxaId++);
+        }
+
+        int max_row_size = this.distanceMatrixBuilder.getNbTaxa();
+        DistanceMatrixBuilder.Triangle tri = this.distanceMatrixBuilder.getTriangle();
+
+        int exp_size = 0;
+        if (tri != DistanceMatrixBuilder.Triangle.BOTH) {
+            for (int i = 1; i <= this.distanceMatrixBuilder.getNbTaxa(); i++) {
+                exp_size += i;
+            }
+        }
+        else {
+            exp_size = max_row_size * this.distanceMatrixBuilder.getNbTaxa();
+        }
+
+        if (labeling != DistanceMatrixBuilder.Labels.NONE) {
+            exp_size += this.distanceMatrixBuilder.getNbTaxa();
+        }
+
+        if (exp_size != ctx.mdata().children.size()) {
+            throw new IllegalArgumentException("Distance matrix is not the expected size.  Expected: " + exp_size + "; Actual size: " + ctx.mdata().children.size());
+        }
+
+        int row_size = max_row_size + (labeling == DistanceMatrixBuilder.Labels.NONE ? 0 : 1);
+        if (tri == DistanceMatrixBuilder.Triangle.LOWER) {
+            row_size = labeling == DistanceMatrixBuilder.Labels.NONE ? 1 : 2;
+        }
+
+        int id_idx = 0;
+        for(int i = 0; i < this.distanceMatrixBuilder.getNbTaxa(); i++) {
+            List<Double> data = new ArrayList<>();
+            String taxa_name = populateTaxa ? "" : taxa.get(i).getName();
+            for (int j = 0; j < row_size; j++) {
+                String entry = ctx.mdata().children.get(id_idx).getText();
+                if (j == 0 && labeling == DistanceMatrixBuilder.Labels.LEFT) {
+                    taxa_name = StringUtils.stripQuotes(entry);
+                }
+                else if (j == row_size - 1 && labeling == DistanceMatrixBuilder.Labels.RIGHT) {
+                    taxa_name = StringUtils.stripQuotes(entry);
+                }
+                else {
+                    data.add(Double.parseDouble(entry));
+                }
+                id_idx++;
+            }
+            // Check taxa name is valid
+            if (!populateTaxa && taxa.getByName(taxa_name) == null) {
+                throw new IllegalArgumentException("Could not find " + taxa_name + " described in distance matrix in the taxa block.");
+            }
+            else if (populateTaxa) {
+                taxa.add(new Identifier(taxa_name));
             }
 
-            NexusFileParser.Matrix_entry_listContext mtxCtx = mtxData.matrix_entry_list();
+            this.distanceMatrixBuilder.addRow(data, taxa.getByName(taxa_name));
 
-            List<Double> row = new ArrayList<>();
-
-            while (mtxCtx != null && mtxCtx.number() != null) {
-
-                String number = mtxCtx.number().getText();
-
-                row.add(Double.parseDouble(number));
-
-                mtxCtx = mtxCtx.matrix_entry_list();
+            if (tri == DistanceMatrixBuilder.Triangle.UPPER) {
+                row_size--;
             }
-
-            if (!row.isEmpty() && currentTaxon != null) {
-                this.distanceMatrixBuilder.addRow(row, currentTaxon);
+            else if (tri == DistanceMatrixBuilder.Triangle.LOWER) {
+                row_size++;
             }
-
-            mtxData = mtxData.matrix_data();
         }
 
         // We should have all the information to build a distance matrix at this point... so do it.

@@ -146,13 +146,13 @@ char_format_options :
 
 char_format_option : cf_datatype | cf_missing | cf_gap | cf_symbols | cf_labels | cf_transpose | cf_interleave;
 
-cf_datatype : ('datatype'|'DATATYPE') EQUALS identifier;
-cf_missing : ('missing'|'MISSING') EQUALS missing_option;
-cf_gap : ('gap'|'GAP') EQUALS gap_option;
-cf_symbols : ('symbols'|'SYMBOLS') EQUALS identifier;
-cf_labels : ('labels'|'LABELS') (EQUALS boolean_option)?;
-cf_transpose : ('transpose'|'TRANSPOSE') (EQUALS boolean_option)?;
-cf_interleave : ('interleave'|'INTERLEAVE') (EQUALS boolean_option)?;
+cf_datatype : ('datatype'|'DATATYPE'|'Datatype') EQUALS identifier;
+cf_missing : ('missing'|'MISSING'|'Missing') EQUALS missing_option;
+cf_gap : ('gap'|'GAP'|'Gap') EQUALS gap_option;
+cf_symbols : ('symbols'|'SYMBOLS'|'Symbols') EQUALS identifier;
+cf_labels : ('labels'|'LABELS'|'Labels') (EQUALS boolean_option)?;
+cf_transpose : ('transpose'|'TRANSPOSE'|'Transpose') (EQUALS boolean_option)?;
+cf_interleave : ('interleave'|'INTERLEAVE'|'Interleave') (EQUALS boolean_option)?;
 
 missing_option : '?';
 
@@ -178,7 +178,7 @@ block_distances :
     dimensions_distances
     format_distances
     tax_labels_optional
-    matrix_header matrix_data ';';
+    matrix_header mdata ';';
 
 distances_header : 'distances' | 'Distances' | 'DISTANCES';
 
@@ -211,35 +211,36 @@ format_distances_item :
     | interleave
     ;
 
-interleave : 'interleave' (EQUALS labels_option)?;
+interleave : ('interleave' | 'INTERLEAVE' | 'Interleave') (EQUALS labels_option)?;
 
-triangle : 'triangle' EQUALS triangle_option;
+triangle : ('triangle' | 'TRIANGLE' | 'Interleave') EQUALS triangle_option;
 
 triangle_option :
-      'lower' | 'LOWER'
-    | 'upper' | 'UPPER'
-    | 'both' | 'BOTH'
+      'lower' | 'LOWER' | 'Lower'
+    | 'upper' | 'UPPER' | 'Upper'
+    | 'both' | 'BOTH' | 'Both'
     ;
 
 diagonal :
-      'diagonal' | 'DIAGONAL'
-    | 'nodiagonal' | 'NODIAGONAL'
+      'diagonal' | 'DIAGONAL' | 'Diagonal'
+    | 'nodiagonal' | 'NODIAGONAL' | 'NoDiagonal'
     ;
 
 labels : labels_header (EQUALS labels_option)?;
 
 labels_header :
-      'labels'
-    | 'nolabels';
+      'labels' | 'LABELS' | 'Labels'
+    | 'nolabels' | 'NOLABELS' | 'NoLabels';
 
 labels_option :
-      'no' | 'NO'
-    | 'yes' | 'YES'
-    | 'false' | 'FALSE'
-    | 'true' | 'TRUE'
-    | 'left' | 'LEFT'
-    | 'right' | 'RIGHT';
+      'no' | 'NO' | 'No'
+    | 'yes' | 'YES' | 'Yes'
+    | 'false' | 'FALSE' | 'False'
+    | 'true' | 'TRUE' | 'True'
+    | 'left' | 'LEFT' | 'Left'
+    | 'right' | 'RIGHT' | 'Right';
 
+mdata : (identifier|number)* ;
 
 
 // ----------------------------------------------------------------------
@@ -315,7 +316,7 @@ cycle :
     | cycle_header cycle_item_list ';'
     ;
 
-cycle_header : 'cycle' | 'CYCLE';
+cycle_header : 'cycle' | 'CYCLE' | 'Cycle';
 
 cycle_item_list :
     // Empty
@@ -460,7 +461,7 @@ translate :
     | translate_header reference reference translate_list ';'
     ;
 
-translate_header : 'translate' | 'TRANSLATE';
+translate_header : 'translate' | 'TRANSLATE' | 'Translate';
 
 translate_list :
     // Empty
@@ -472,7 +473,7 @@ newick_tree :
     | tree_header tree_rest
     ;
 
-tree_header : 'tree' | 'utree' | 'TREE' | 'UTREE';
+tree_header : 'tree' | 'utree' | 'TREE' | 'UTREE' | 'Tree';
 
 tree_rest : star identifier EQUALS root tree_definition ';' newick_tree;
 
@@ -756,7 +757,9 @@ vm_leadercolor : 'leadercolor' EQUALS integer integer integer;
 // MISC RULES
 // ----------------------------------------------------------------------
 
-boolean_option : 'no' | 'yes' | 'false' | 'true' | 'NO' | 'YES' | 'FALSE' | 'TRUE';
+boolean_option :  'no' | 'yes' | 'false' | 'true'
+                | 'NO' | 'YES' | 'FALSE' | 'TRUE'
+                | 'No' | 'Yes' | 'False' | 'True';
 
 dimensions  : 'dimensions' | 'DIMENSIONS' | 'Dimensions';
 
@@ -820,7 +823,7 @@ tax_labels_optional :
     | tax_labels
     ;
 
-tax_labels_header : 'taxlabels' | 'TAXLABELS';
+tax_labels_header : 'taxlabels' | 'TAXLABELS' | 'TaxLabels';
 
 integer : INT | DIGIT;
 floatingp : FLOAT | DIGIT;
