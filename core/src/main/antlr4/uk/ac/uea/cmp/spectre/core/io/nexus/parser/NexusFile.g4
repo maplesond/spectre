@@ -283,15 +283,15 @@ labels_splits : labels_header (EQUALS labels_option)?;
 
 weights_splits : weights_header EQUALS boolean_option;
 
-weights_header : 'weights';
+weights_header : 'weights' | 'WEIGHTS' | 'Weights';
 
 confidences_splits : confidences_header EQUALS boolean_option;
 
-confidences_header : 'confidences';
+confidences_header : 'confidences' | 'CONFIDENCES' | 'Confidences';
 
 intervals_splits : intervals_header EQUALS boolean_option;
 
-intervals_header : 'intervals';
+intervals_header : 'intervals' | 'INTERVALS' | 'Intervals';
 
 
 properties_splits :
@@ -327,12 +327,7 @@ cycle_item : integer;
 
 matrix_splits_data :
       // Empty
-    | (identifier)? floatingp matrix_splits_list ',' matrix_splits_data
-    ;
-
-matrix_splits_list :
-    // Empty
-    | integer matrix_splits_list
+    | (identifier | floatingp | integer | DIGIT)* ',' matrix_splits_data
     ;
 
 

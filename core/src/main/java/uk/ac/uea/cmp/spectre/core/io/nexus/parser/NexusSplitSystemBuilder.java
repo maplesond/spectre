@@ -34,10 +34,16 @@ public class NexusSplitSystemBuilder {
 
     private static Logger log = LoggerFactory.getLogger(NexusSplitSystemBuilder.class);
 
+    public enum Labels {
+        NONE,
+        LEFT,
+        RIGHT
+    }
+
     private double fit;
     private boolean isCyclic;
     private boolean isWeighted;
-    private boolean hasLabels;
+    private Labels labels;
     private boolean hasConfidences;
     private boolean hasIntervals;
     private int expectedNbSplits;
@@ -51,7 +57,7 @@ public class NexusSplitSystemBuilder {
         this.fit = -1.0;
         this.isCyclic = false;
         this.isWeighted = false;
-        this.hasLabels = false;
+        this.labels = Labels.LEFT;
         this.hasConfidences = false;
         this.hasIntervals = false;
         this.expectedNbSplits = 0;
@@ -121,12 +127,12 @@ public class NexusSplitSystemBuilder {
         isWeighted = weighted;
     }
 
-    public boolean isHasLabels() {
-        return hasLabels;
+    public NexusSplitSystemBuilder.Labels getLabels() {
+        return labels;
     }
 
-    public void setHasLabels(boolean hasLabels) {
-        this.hasLabels = hasLabels;
+    public void setLabels(NexusSplitSystemBuilder.Labels labels) {
+        this.labels = labels;
     }
 
     public boolean isHasConfidences() {

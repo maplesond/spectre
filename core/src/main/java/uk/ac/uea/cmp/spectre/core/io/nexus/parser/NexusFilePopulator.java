@@ -387,26 +387,26 @@ public class NexusFilePopulator implements NexusFileListener {
     @Override
     public void exitMatrix_splits_data(NexusFileParser.Matrix_splits_dataContext ctx) {
 
-        if (ctx.floatingp() != null) {
+        int exp_taxa = this.splitSystemBuilder.getExpectedNbTaxa();
+        boolean has_weights = this.splitSystemBuilder.isWeighted();
+        NexusSplitSystemBuilder.Labels labels = this.splitSystemBuilder.getLabels();
 
-            double weight = Double.parseDouble(ctx.floatingp().getText());
+        int idx = 0;
 
-            NexusFileParser.Matrix_splits_listContext ctxList = ctx.matrix_splits_list();
+        String all_text = ctx.getText().trim();
+        if (all_text != "") {
+            String label = labels == NexusSplitSystemBuilder.Labels.LEFT ? ctx.children.get(idx++).getText() : "";
+            double weight = has_weights ? Double.parseDouble(ctx.children.get(idx++).getText()) : 0.0;
 
             List<Integer> setA = new LinkedList<>();
 
-            while (ctxList != null) {
-
-                if (ctxList.integer() != null) {
-
-                    int val = Integer.parseInt(ctxList.integer().getText());
-
+            for (int i = idx; i < ctx.children.size()-1; i++) {
+                String i_text = ctx.children.get(i).getText().trim();
+                if (i_text.length() > 0 && i_text.charAt(0) != ',') {
+                    int val = Integer.parseInt(i_text);
                     setA.add(val);
                 }
-
-                ctxList = ctxList.matrix_splits_list();
             }
-
             this.splitSystemBuilder.addSplit(new SpectreSplitBlock(setA), weight);
         }
     }
@@ -603,11 +603,31 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitLabels_splits(NexusFileParser.Labels_splitsContext ctx) {
-        this.splitSystemBuilder.setHasLabels(
-                ctx.labels_option() == null ?
-                        ctx.labels_header().getText().equalsIgnoreCase("labels") :
-                        ctx.labels_option().getText().equalsIgnoreCase("true") ||
-                                ctx.labels_option().getText().equalsIgnoreCase("yes"));
+
+        if (ctx.labels_header() == null) {
+            this.splitSystemBuilder.setLabels(NexusSplitSystemBuilder.Labels.NONE);
+        }
+        else if (ctx.labels_header().getText().equalsIgnoreCase("labels") && ctx.labels_option() == null) {
+            // Assume labels on left
+            this.splitSystemBuilder.setLabels(NexusSplitSystemBuilder.Labels.LEFT);
+        }
+        else if (ctx.labels_option() != null) {
+            String lab = ctx.labels_option().getText();
+            if (lab.equalsIgnoreCase("true") || lab.equalsIgnoreCase("yes")) {
+                // Assume labels on left
+                this.splitSystemBuilder.setLabels(NexusSplitSystemBuilder.Labels.LEFT);
+            }
+            else if (lab.equalsIgnoreCase("false") || lab.equalsIgnoreCase("no")) {
+                // Assume labels on left
+                this.splitSystemBuilder.setLabels(NexusSplitSystemBuilder.Labels.NONE);
+            }
+            else {
+                this.splitSystemBuilder.setLabels(NexusSplitSystemBuilder.Labels.valueOf(lab.toUpperCase()));
+            }
+        }
+        else {
+            this.splitSystemBuilder.setLabels(NexusSplitSystemBuilder.Labels.NONE);
+        }
     }
 
     @Override
@@ -1192,16 +1212,6 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitBlock(NexusFileParser.BlockContext ctx) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void enterMatrix_splits_list(NexusFileParser.Matrix_splits_listContext ctx) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void exitMatrix_splits_list(NexusFileParser.Matrix_splits_listContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
