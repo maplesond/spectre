@@ -125,17 +125,20 @@ Assuming the user has access to the compiled executable jars for spectre, then t
 on their system.  The tools can be found in the bin subfolder.
 
 
-Further Documentation
-=====================
+Further Documentation and Citing
+================================
 
 The full manual can be found in the ``doc`` directory, or online at: http://spectre-suite-of-phylogenetic-tools-for-reticulate-evolution.readthedocs.io/en/latest/
+
+We also have a preprint available on BioRxiv: http://www.biorxiv.org/content/early/2017/07/27/169177.  Should you use our software please cite this paper.
+
 
 
 Issues
 ======
 
 Should you discover any issues with spectre, or wish to request a new feature please raise a ticket at https://github.com/maplesond/spectre/issues.
-Alternatively, contact Daniel Mapleson at: daniel.mapleson@earlham.ac.uk
+Alternatively, contact Sarah Bastkowski at: sarah.bastkowski@earlham.ac.uk, or Daniel Mapleson at: daniel.mapleson@earlham.ac.uk.
 
 
 Availability:
@@ -149,8 +152,8 @@ License: GPL v3
 Contact
 =======
 
-* Daniel Mapleson - Earlham Institute (EI)
 * Sarah Bastkowski - Earlham Institute (EI)
+* Daniel Mapleson - Earlham Institute (EI)
 * Taoyang Wu - University of East Anglia (UEA)
 * Andreas Spillner - Universitat de Griefswald
 * Vincent Moulton - University of East Anglia (UEA)

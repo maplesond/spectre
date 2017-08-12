@@ -27,6 +27,7 @@ should user's which to easily leverage our code in their own projects.
     tools
     developing
     resources
+    citing
     credits
     issues
     availability

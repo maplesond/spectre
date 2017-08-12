@@ -1,7 +1,8 @@
-.. _issues:
+.. _citing:
 
-Issues
+Citing
 ======
 
-Should you discover any issues with spectre, or wish to request a new feature please raise a ticket at https://github.com/maplesond/spectre/issues.
-Alternatively, contact Daniel Mapleson at: daniel.mapleson@earlham.ac.uk
+Should you use our software for your research please cite our preprint manuscript available on BioRxiv: http://www.biorxiv.org/content/early/2017/07/27/169177.
+
+
