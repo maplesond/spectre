@@ -79,11 +79,11 @@ public class QMakerTest {
 
         Quad q2 = new SpectreQuad(1, 2, 3, 5);
         assertTrue(quads.get(1).equals(q2));
-        assertTrue(gqs.getQuartets().get(q2).equals(new QuartetWeights(1.5, 0.0, 0.0)));
+        assertTrue(gqs.getQuartets().get(q2).equals(new QuartetWeights(2.0, 0.0, 0.0)));
 
         Quad q4 = new SpectreQuad(1, 3, 4, 5);
         assertTrue(quads.get(3).equals(q4));
-        assertTrue(gqs.getQuartets().get(q4).equals(new QuartetWeights(1.0, 1.0, 0.0)));
+        assertTrue(gqs.getQuartets().get(q4).equals(new QuartetWeights(2.0, 2.0, 0.0)));
     }
 
 
