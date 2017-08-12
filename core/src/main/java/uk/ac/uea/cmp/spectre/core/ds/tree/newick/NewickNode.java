@@ -41,7 +41,7 @@ public abstract class NewickNode {
         this.taxon = null;
         this.parent = null;
         this.branches = new ArrayList<>();
-        this.length = 0.0;
+        this.length = 1.0;
     }
 
     public NewickNode getFirstBranch() {
