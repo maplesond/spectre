@@ -409,6 +409,9 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
             g.setColor(Color.BLACK);
 
             int delta = (int)(config.getRatio());
+            if (delta == 0) {
+                delta = 1;
+            }
             double size = 1.0;
 
             while (delta < 30) {

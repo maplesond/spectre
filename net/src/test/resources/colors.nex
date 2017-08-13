@@ -2,7 +2,7 @@
 
 BEGIN Distances;
 DIMENSIONS ntax=10;
-FORMAT labels=left diagonal triangle=lower;
+FORMAT labels=left diagonal triangle=both;
 MATRIX
 [1] 'red-purple'       0.0 61.0 105.0 121.0 131.0 124.0 106.0 85.0 52.0 31.0
 [2] 'red'              61.0 0.0 55.0 99.0 116.0 124.0 130.0 125.0 99.0 80.0

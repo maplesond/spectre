@@ -31,13 +31,13 @@ import java.util.List;
  */
 public class DistanceMatrixBuilder {
 
-    public static enum Labels {
+    public enum Labels {
         NONE,
         LEFT,
         RIGHT
     }
 
-    public static enum Triangle {
+    public enum Triangle {
         BOTH {
             @Override
             public void fillRow(int row, List<Double> elements, DistanceMatrix distanceMatrix) {

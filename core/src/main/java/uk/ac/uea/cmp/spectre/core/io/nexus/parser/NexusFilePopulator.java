@@ -41,6 +41,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.DoubleConsumer;
 
 /**
  * Created with IntelliJ IDEA.
@@ -386,26 +387,26 @@ public class NexusFilePopulator implements NexusFileListener {
     @Override
     public void exitMatrix_splits_data(NexusFileParser.Matrix_splits_dataContext ctx) {
 
-        if (ctx.floatingp() != null) {
+        int exp_taxa = this.splitSystemBuilder.getExpectedNbTaxa();
+        boolean has_weights = this.splitSystemBuilder.isWeighted();
+        NexusSplitSystemBuilder.Labels labels = this.splitSystemBuilder.getLabels();
 
-            double weight = Double.parseDouble(ctx.floatingp().getText());
+        int idx = 0;
 
-            NexusFileParser.Matrix_splits_listContext ctxList = ctx.matrix_splits_list();
+        String all_text = ctx.getText().trim();
+        if (all_text != "") {
+            String label = labels == NexusSplitSystemBuilder.Labels.LEFT ? ctx.children.get(idx++).getText() : "";
+            double weight = has_weights ? Double.parseDouble(ctx.children.get(idx++).getText()) : 0.0;
 
             List<Integer> setA = new LinkedList<>();
 
-            while (ctxList != null) {
-
-                if (ctxList.integer() != null) {
-
-                    int val = Integer.parseInt(ctxList.integer().getText());
-
+            for (int i = idx; i < ctx.children.size()-1; i++) {
+                String i_text = ctx.children.get(i).getText().trim();
+                if (i_text.length() > 0 && i_text.charAt(0) != ',') {
+                    int val = Integer.parseInt(i_text);
                     setA.add(val);
                 }
-
-                ctxList = ctxList.matrix_splits_list();
             }
-
             this.splitSystemBuilder.addSplit(new SpectreSplitBlock(setA), weight);
         }
     }
@@ -602,11 +603,31 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitLabels_splits(NexusFileParser.Labels_splitsContext ctx) {
-        this.splitSystemBuilder.setHasLabels(
-                ctx.labels_option() == null ?
-                        ctx.labels_header().getText().equalsIgnoreCase("labels") :
-                        ctx.labels_option().getText().equalsIgnoreCase("true") ||
-                                ctx.labels_option().getText().equalsIgnoreCase("yes"));
+
+        if (ctx.labels_header() == null) {
+            this.splitSystemBuilder.setLabels(NexusSplitSystemBuilder.Labels.NONE);
+        }
+        else if (ctx.labels_header().getText().equalsIgnoreCase("labels") && ctx.labels_option() == null) {
+            // Assume labels on left
+            this.splitSystemBuilder.setLabels(NexusSplitSystemBuilder.Labels.LEFT);
+        }
+        else if (ctx.labels_option() != null) {
+            String lab = ctx.labels_option().getText();
+            if (lab.equalsIgnoreCase("true") || lab.equalsIgnoreCase("yes")) {
+                // Assume labels on left
+                this.splitSystemBuilder.setLabels(NexusSplitSystemBuilder.Labels.LEFT);
+            }
+            else if (lab.equalsIgnoreCase("false") || lab.equalsIgnoreCase("no")) {
+                // Assume labels on left
+                this.splitSystemBuilder.setLabels(NexusSplitSystemBuilder.Labels.NONE);
+            }
+            else {
+                this.splitSystemBuilder.setLabels(NexusSplitSystemBuilder.Labels.valueOf(lab.toUpperCase()));
+            }
+        }
+        else {
+            this.splitSystemBuilder.setLabels(NexusSplitSystemBuilder.Labels.NONE);
+        }
     }
 
     @Override
@@ -783,7 +804,7 @@ public class NexusFilePopulator implements NexusFileListener {
                     this.distanceMatrixBuilder.setTriangle(DistanceMatrixBuilder.Triangle.valueOf(triangleString.toUpperCase()));
                 } else if (ctxFormatItem.diagonal() != null) {
                     String diagonal = ctxFormatItem.diagonal().getText();
-                    this.distanceMatrixBuilder.setDiagonal(diagonal.equals("diagonal"));
+                    this.distanceMatrixBuilder.setDiagonal(diagonal.equalsIgnoreCase("diagonal"));
                 } else if (ctxFormatItem.labels() != null) {
 
                     if (ctxFormatItem.labels().labels_option() != null) {
@@ -801,7 +822,7 @@ public class NexusFilePopulator implements NexusFileListener {
                     }
                 } else if (ctxFormatItem.missing() != null) {
                     // Not sure what to do with this.. leave it for now.
-                } else if (ctxFormatItem.getText().equals("interleave")) {
+                } else if (ctxFormatItem.getText().equalsIgnoreCase("interleave")) {
                     String interleaveString = ctxFormatItem.interleave().labels_option().getText();
                     this.distanceMatrixBuilder.setInterleave(interleaveString.equalsIgnoreCase("yes") || interleaveString.equalsIgnoreCase("true"));
                 }
@@ -1191,16 +1212,6 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitBlock(NexusFileParser.BlockContext ctx) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void enterMatrix_splits_list(NexusFileParser.Matrix_splits_listContext ctx) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void exitMatrix_splits_list(NexusFileParser.Matrix_splits_listContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
@@ -1708,7 +1719,10 @@ public class NexusFilePopulator implements NexusFileListener {
 
     @Override
     public void exitChar_seq_entry(NexusFileParser.Char_seq_entryContext ctx) {
-        this.charBuilder.addSeq(ctx.getText());
+
+        String seq = ctx.getText().replaceAll("\'","");
+        seq = seq.replaceAll("\"","");
+        this.charBuilder.addSeq(seq);
     }
 
     @Override
@@ -1759,6 +1773,16 @@ public class NexusFilePopulator implements NexusFileListener {
     @Override
     public void exitLabels_option(NexusFileParser.Labels_optionContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void enterMdata(NexusFileParser.MdataContext ctx) {
+
+    }
+
+    @Override
+    public void exitMdata(NexusFileParser.MdataContext ctx) {
+
     }
 
     @Override
@@ -2193,6 +2217,36 @@ public class NexusFilePopulator implements NexusFileListener {
     }
 
     @Override
+    public void enterBlock_codons(NexusFileParser.Block_codonsContext ctx) {
+
+    }
+
+    @Override
+    public void exitBlock_codons(NexusFileParser.Block_codonsContext ctx) {
+
+    }
+
+    @Override
+    public void enterCodons_block_header(NexusFileParser.Codons_block_headerContext ctx) {
+
+    }
+
+    @Override
+    public void exitCodons_block_header(NexusFileParser.Codons_block_headerContext ctx) {
+
+    }
+
+    @Override
+    public void enterCodons_data(NexusFileParser.Codons_dataContext ctx) {
+
+    }
+
+    @Override
+    public void exitCodons_data(NexusFileParser.Codons_dataContext ctx) {
+
+    }
+
+    @Override
     public void enterBlock_distances(NexusFileParser.Block_distancesContext ctx) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -2200,48 +2254,79 @@ public class NexusFilePopulator implements NexusFileListener {
     @Override
     public void exitBlock_distances(NexusFileParser.Block_distancesContext ctx) {
 
-        NexusFileParser.Matrix_dataContext mtxData = ctx.matrix_data();
-
         IdentifierList taxa = this.nexus.getTaxa();
 
         boolean populateTaxa = taxa == null || taxa.isEmpty();
+        DistanceMatrixBuilder.Labels labeling = this.distanceMatrixBuilder.getLabels();
 
         if (populateTaxa) {
             taxa = new IdentifierList();
         }
-
-        int taxaId = 1;
-
-        while (mtxData != null) {
-
-            Identifier currentTaxon = null;
-
-            if (populateTaxa && mtxData.identifier() != null) {
-                String taxon = StringUtils.stripQuotes(mtxData.identifier().getText());
-                currentTaxon = new Identifier(taxon, taxaId++);
+        else {
+            if (this.distanceMatrixBuilder.getNbTaxa() != taxa.size()) {
+                throw new IllegalArgumentException("Distance matrix NTAX property and taxa block are inconsistent.");
             }
-            else {
-                currentTaxon = taxa.getById(taxaId++);
+        }
+
+        int max_row_size = this.distanceMatrixBuilder.getNbTaxa();
+        DistanceMatrixBuilder.Triangle tri = this.distanceMatrixBuilder.getTriangle();
+
+        int exp_size = 0;
+        if (tri != DistanceMatrixBuilder.Triangle.BOTH) {
+            for (int i = 1; i <= this.distanceMatrixBuilder.getNbTaxa(); i++) {
+                exp_size += i;
+            }
+        }
+        else {
+            exp_size = max_row_size * this.distanceMatrixBuilder.getNbTaxa();
+        }
+
+        if (labeling != DistanceMatrixBuilder.Labels.NONE) {
+            exp_size += this.distanceMatrixBuilder.getNbTaxa();
+        }
+
+        if (exp_size != ctx.mdata().children.size()) {
+            throw new IllegalArgumentException("Distance matrix is not the expected size.  Expected: " + exp_size + "; Actual size: " + ctx.mdata().children.size());
+        }
+
+        int row_size = max_row_size + (labeling == DistanceMatrixBuilder.Labels.NONE ? 0 : 1);
+        if (tri == DistanceMatrixBuilder.Triangle.LOWER) {
+            row_size = labeling == DistanceMatrixBuilder.Labels.NONE ? 1 : 2;
+        }
+
+        int id_idx = 0;
+        for(int i = 0; i < this.distanceMatrixBuilder.getNbTaxa(); i++) {
+            List<Double> data = new ArrayList<>();
+            String taxa_name = populateTaxa ? "" : taxa.get(i).getName();
+            for (int j = 0; j < row_size; j++) {
+                String entry = ctx.mdata().children.get(id_idx).getText();
+                if (j == 0 && labeling == DistanceMatrixBuilder.Labels.LEFT) {
+                    taxa_name = StringUtils.stripQuotes(entry);
+                }
+                else if (j == row_size - 1 && labeling == DistanceMatrixBuilder.Labels.RIGHT) {
+                    taxa_name = StringUtils.stripQuotes(entry);
+                }
+                else {
+                    data.add(Double.parseDouble(entry));
+                }
+                id_idx++;
+            }
+            // Check taxa name is valid
+            if (!populateTaxa && taxa.getByName(taxa_name) == null) {
+                throw new IllegalArgumentException("Could not find " + taxa_name + " described in distance matrix in the taxa block.");
+            }
+            else if (populateTaxa) {
+                taxa.add(new Identifier(taxa_name));
             }
 
-            NexusFileParser.Matrix_entry_listContext mtxCtx = mtxData.matrix_entry_list();
+            this.distanceMatrixBuilder.addRow(data, taxa.getByName(taxa_name));
 
-            List<Double> row = new ArrayList<>();
-
-            while (mtxCtx != null && mtxCtx.number() != null) {
-
-                String number = mtxCtx.number().getText();
-
-                row.add(Double.parseDouble(number));
-
-                mtxCtx = mtxCtx.matrix_entry_list();
+            if (tri == DistanceMatrixBuilder.Triangle.UPPER) {
+                row_size--;
             }
-
-            if (!row.isEmpty() && currentTaxon != null) {
-                this.distanceMatrixBuilder.addRow(row, currentTaxon);
+            else if (tri == DistanceMatrixBuilder.Triangle.LOWER) {
+                row_size++;
             }
-
-            mtxData = mtxData.matrix_data();
         }
 
         // We should have all the information to build a distance matrix at this point... so do it.

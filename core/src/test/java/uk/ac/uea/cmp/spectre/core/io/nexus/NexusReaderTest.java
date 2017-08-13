@@ -244,4 +244,15 @@ public class NexusReaderTest {
 
         assertTrue(nexus.getAlignments().size() == 43);
     }
+
+    @Test
+    public void testFunghi1() throws IOException {
+
+        File testFile = FileUtils.toFile(NexusReaderTest.class.getResource("/funghi1.nex"));
+
+        Nexus nexus = new NexusReader().parse(testFile);
+
+        // Just check that we get here
+        assertTrue(nexus.getAlignments() != null);
+    }
 }

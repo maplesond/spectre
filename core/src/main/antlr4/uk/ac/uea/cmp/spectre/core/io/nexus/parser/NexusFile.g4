@@ -68,7 +68,7 @@ block_declaration :
     | block_quartets
     | block_quadruples
   //| block_data
-  //| block_codons
+    | block_codons
   //| block_sets
     | block_locations
     | block_assumptions
@@ -122,7 +122,7 @@ block_characters :
     char_matrix
     ;
 
-characters_header : 'chracters' | 'Characters' | 'CHARACTERS' | 'data' | 'Data' | 'DATA';
+characters_header : 'characters' | 'Characters' | 'CHARACTERS' | 'data' | 'Data' | 'DATA';
 
 char_dimensions : dimensions char_dim_options ';';
 
@@ -146,13 +146,13 @@ char_format_options :
 
 char_format_option : cf_datatype | cf_missing | cf_gap | cf_symbols | cf_labels | cf_transpose | cf_interleave;
 
-cf_datatype : ('datatype'|'DATATYPE') EQUALS identifier;
-cf_missing : ('missing'|'MISSING') EQUALS missing_option;
-cf_gap : ('gap'|'GAP') EQUALS gap_option;
-cf_symbols : ('symbols'|'SYMBOLS') EQUALS identifier;
-cf_labels : ('labels'|'LABELS') (EQUALS boolean_option)?;
-cf_transpose : ('transpose'|'TRANSPOSE') (EQUALS boolean_option)?;
-cf_interleave : ('interleave'|'INTERLEAVE') (EQUALS boolean_option)?;
+cf_datatype : ('datatype'|'DATATYPE'|'Datatype') EQUALS identifier;
+cf_missing : ('missing'|'MISSING'|'Missing') EQUALS missing_option;
+cf_gap : ('gap'|'GAP'|'Gap') EQUALS gap_option;
+cf_symbols : ('symbols'|'SYMBOLS'|'Symbols') EQUALS identifier;
+cf_labels : ('labels'|'LABELS'|'Labels') (EQUALS boolean_option)?;
+cf_transpose : ('transpose'|'TRANSPOSE'|'Transpose') (EQUALS boolean_option)?;
+cf_interleave : ('interleave'|'INTERLEAVE'|'Interleave') (EQUALS boolean_option)?;
 
 missing_option : '?';
 
@@ -165,7 +165,7 @@ char_sequences :
     | char_seq_entry char_sequences
     ;
 
-char_seq_entry : ID | INT;
+char_seq_entry : ID | INT | SQSTRING | DQSTRING;
 
 
 
@@ -178,7 +178,7 @@ block_distances :
     dimensions_distances
     format_distances
     tax_labels_optional
-    matrix_header matrix_data ';';
+    matrix_header mdata ';';
 
 distances_header : 'distances' | 'Distances' | 'DISTANCES';
 
@@ -211,35 +211,36 @@ format_distances_item :
     | interleave
     ;
 
-interleave : 'interleave' (EQUALS labels_option)?;
+interleave : ('interleave' | 'INTERLEAVE' | 'Interleave') (EQUALS labels_option)?;
 
-triangle : 'triangle' EQUALS triangle_option;
+triangle : ('triangle' | 'TRIANGLE' | 'Interleave') EQUALS triangle_option;
 
 triangle_option :
-      'lower' | 'LOWER'
-    | 'upper' | 'UPPER'
-    | 'both' | 'BOTH'
+      'lower' | 'LOWER' | 'Lower'
+    | 'upper' | 'UPPER' | 'Upper'
+    | 'both' | 'BOTH' | 'Both'
     ;
 
 diagonal :
-      'diagonal' | 'DIAGONAL'
-    | 'nodiagonal' | 'NODIAGONAL'
+      'diagonal' | 'DIAGONAL' | 'Diagonal'
+    | 'nodiagonal' | 'NODIAGONAL' | 'NoDiagonal'
     ;
 
 labels : labels_header (EQUALS labels_option)?;
 
 labels_header :
-      'labels'
-    | 'nolabels';
+      'labels' | 'LABELS' | 'Labels'
+    | 'nolabels' | 'NOLABELS' | 'NoLabels';
 
 labels_option :
-      'no' | 'NO'
-    | 'yes' | 'YES'
-    | 'false' | 'FALSE'
-    | 'true' | 'TRUE'
-    | 'left' | 'LEFT'
-    | 'right' | 'RIGHT';
+      'no' | 'NO' | 'No'
+    | 'yes' | 'YES' | 'Yes'
+    | 'false' | 'FALSE' | 'False'
+    | 'true' | 'TRUE' | 'True'
+    | 'left' | 'LEFT' | 'Left'
+    | 'right' | 'RIGHT' | 'Right';
 
+mdata : (identifier|number)* ;
 
 
 // ----------------------------------------------------------------------
@@ -282,15 +283,15 @@ labels_splits : labels_header (EQUALS labels_option)?;
 
 weights_splits : weights_header EQUALS boolean_option;
 
-weights_header : 'weights';
+weights_header : 'weights' | 'WEIGHTS' | 'Weights';
 
 confidences_splits : confidences_header EQUALS boolean_option;
 
-confidences_header : 'confidences';
+confidences_header : 'confidences' | 'CONFIDENCES' | 'Confidences';
 
 intervals_splits : intervals_header EQUALS boolean_option;
 
-intervals_header : 'intervals';
+intervals_header : 'intervals' | 'INTERVALS' | 'Intervals';
 
 
 properties_splits :
@@ -315,7 +316,7 @@ cycle :
     | cycle_header cycle_item_list ';'
     ;
 
-cycle_header : 'cycle' | 'CYCLE';
+cycle_header : 'cycle' | 'CYCLE' | 'Cycle';
 
 cycle_item_list :
     // Empty
@@ -326,12 +327,7 @@ cycle_item : integer;
 
 matrix_splits_data :
       // Empty
-    | (identifier)? floatingp matrix_splits_list ',' matrix_splits_data
-    ;
-
-matrix_splits_list :
-    // Empty
-    | integer matrix_splits_list
+    | (identifier | floatingp | integer | DIGIT)* ',' matrix_splits_data
     ;
 
 
@@ -415,6 +411,17 @@ matrix_locations_data:
 location_entry : identifier floatingp floatingp;
 
 
+// ----------------------------------------------------------------------------
+// Codon definition rules
+// ----------------------------------------------------------------------------
+// Haven't really implemented this yet... this just stops it failing if a codons
+// block is encountered
+block_codons : codons_block_header ';' codons_data;
+
+codons_block_header : 'codons' | 'Codons' | 'CODONS';
+
+codons_data : .*? ;
+
 
 // ----------------------------------------------------------------------------
 // Assumption definition rules
@@ -460,7 +467,7 @@ translate :
     | translate_header reference reference translate_list ';'
     ;
 
-translate_header : 'translate' | 'TRANSLATE';
+translate_header : 'translate' | 'TRANSLATE' | 'Translate';
 
 translate_list :
     // Empty
@@ -472,7 +479,7 @@ newick_tree :
     | tree_header tree_rest
     ;
 
-tree_header : 'tree' | 'utree' | 'TREE' | 'UTREE';
+tree_header : 'tree' | 'utree' | 'TREE' | 'UTREE' | 'Tree';
 
 tree_rest : star identifier EQUALS root tree_definition ';' newick_tree;
 
@@ -756,7 +763,9 @@ vm_leadercolor : 'leadercolor' EQUALS integer integer integer;
 // MISC RULES
 // ----------------------------------------------------------------------
 
-boolean_option : 'no' | 'yes' | 'false' | 'true' | 'NO' | 'YES' | 'FALSE' | 'TRUE';
+boolean_option :  'no' | 'yes' | 'false' | 'true'
+                | 'NO' | 'YES' | 'FALSE' | 'TRUE'
+                | 'No' | 'Yes' | 'False' | 'True';
 
 dimensions  : 'dimensions' | 'DIMENSIONS' | 'Dimensions';
 
@@ -820,7 +829,7 @@ tax_labels_optional :
     | tax_labels
     ;
 
-tax_labels_header : 'taxlabels' | 'TAXLABELS';
+tax_labels_header : 'taxlabels' | 'TAXLABELS' | 'TaxLabels';
 
 integer : INT | DIGIT;
 floatingp : FLOAT | DIGIT;

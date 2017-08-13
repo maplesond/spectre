@@ -129,10 +129,11 @@ public class TreeFileLoader extends AbstractQLoader {
                 break;
             }
 
-            if (line.indexOf('(') != -1 && line.endsWith(");")) {
+            int start = line.indexOf('(');
+            if (start != -1 && line.endsWith(");")) {
 
                 // We have a tree line here, so parse it and create the tree
-                NewickTree aTree = new NewickTree(line);
+                NewickTree aTree = new NewickTree(line.substring(start));
 
                 // Create quartets from the tree and add to the list (taxa should be the same for each tree)
                 sourceDataList.add(new QuartetSystem(taxa, weight, aTree.createQuartets()));
