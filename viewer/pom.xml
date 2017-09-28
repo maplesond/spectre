@@ -69,6 +69,11 @@
                         <program>
                             <mainClass>uk.ac.uea.cmp.spectre.viewer.Spectre</mainClass>
                             <id>spectre</id>
+                            <jvmSettings>
+                                <extraArguments>
+                                    <extraArgument>-Dapple.laf.useScreenMenuBar=true</extraArgument>
+                                </extraArguments>
+                            </jvmSettings>
                         </program>
                     </programs>
                 </configuration>
