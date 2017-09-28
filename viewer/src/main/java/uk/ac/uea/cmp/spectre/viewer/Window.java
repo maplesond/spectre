@@ -75,9 +75,14 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
     // Stores history of changes so that we can implement undo / redo functionality
     History history = new History();
 
+    private JMenuItem copyMnuItem;
 
 
-    public Window() {
+
+    public Window(JMenuItem copyMnuItem) {
+
+        // Easy handle to menu item
+        this.copyMnuItem = copyMnuItem;
 
         // Setup default configuration
         this.config = new ViewerConfig();
@@ -111,6 +116,7 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
                 copySelectedTaxa();
             }
         });
+        copySelectedTaxa.setEnabled(false);
         popupMenu.add(copySelectedTaxa);
 
         JMenuItem selectGroup = new JMenuItem("Select group");
@@ -606,6 +612,7 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
 
             if (!append) {
                 pointsToHighlight.clear();
+                this.copyMnuItem.setEnabled(false);
             }
 
             for (ViewerLabel l : labels.values()) {
@@ -618,6 +625,7 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
                             || x - p.width / 2 >= x1 && x + p.width / 2 <= x2
                             && y - p.height / 2 >= y1 && y + p.height / 2 <= y2) {
                         pointsToHighlight.add(p);
+                        this.copyMnuItem.setEnabled(true);
                     }
                 } else {
                     if ((l.getX() <= x1 && l.getX() + l.label.getWidth() >= x2
@@ -625,6 +633,7 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
                             || (x - p.width / 2 <= x1 && x + p.width / 2 >= x2
                             && y - p.height / 2 <= y1 && y + p.height / 2 >= y2)) {
                         pointsToHighlight.add(p);
+                        this.copyMnuItem.setEnabled(true);
                     }
                 }
 
@@ -764,6 +773,7 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
         if (selectedLabel != null && !selectedLabel.p.isSelected()) {
             pointsToHighlight.clear();
             pointsToHighlight.add(selectedLabel.p);
+            this.copyMnuItem.setEnabled(true);
             selectedNew = true;
         }
         return selectedNew;
@@ -788,6 +798,7 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
         if (selectedPoint != null) {
             pointsToHighlight.clear();
             pointsToHighlight.add(selectedPoint);
+            this.copyMnuItem.setEnabled(true);
         }
     }
 
@@ -1030,10 +1041,12 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
         }
         if (group != null) {
             pointsToHighlight.clear();
+            this.copyMnuItem.setEnabled(false);
             Iterator<ViewerPoint> pointIt = group.points.iterator();
             while (pointIt.hasNext()) {
                 ViewerPoint point = pointIt.next();
                 pointsToHighlight.add(point);
+                this.copyMnuItem.setEnabled(true);
             }
             repaint();
         }
@@ -1061,10 +1074,12 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
                 Matcher matcher = pattern.matcher(lab.name);
                 if (matcher.find()) {
                     pointsToHighlight.add(lab.p);
+                    this.copyMnuItem.setEnabled(true);
                 }
             }
             if (lab.name.contains(text)) {
                 pointsToHighlight.add(lab.p);
+                this.copyMnuItem.setEnabled(true);
             }
         }
         repaint();
@@ -1072,6 +1087,7 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
 
     private void removeSelection() {
         pointsToHighlight.clear();
+        this.copyMnuItem.setEnabled(false);
     }
 
     void makeGroup() {
@@ -1151,6 +1167,8 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
         for (ViewerLabel l : labels.values()) {
             pointsToHighlight.add(l.p);
         }
+        this.copyMnuItem.setEnabled(true);
+
         repaint();
     }
 

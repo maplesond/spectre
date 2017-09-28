@@ -284,7 +284,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
     }
 
     private void prepareDrawing() {
-        drawing = new Window();
+        drawing = new Window(this.mnuEditCopy);
 
         dt = new DropTarget(drawing, this);
         format = new Formating(drawing);
@@ -437,6 +437,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
                 drawing.copySelectedTaxa();
             }
         });
+        mnuEditCopy.setEnabled(false);
         mnuEdit.add(mnuEditCopy);
 
         mnuEdit.addSeparator();
