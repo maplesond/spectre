@@ -426,7 +426,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         mnuEdit.setMnemonic('E');
 
         mnuEditCopy = new javax.swing.JMenuItem();
-        mnuEditCopy.setText("Copy");
+        mnuEditCopy.setText("Copy selected labels");
         mnuEditCopy.setMnemonic('C');
         mnuEditCopy.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C,
                 java.awt.Event.CTRL_MASK));
