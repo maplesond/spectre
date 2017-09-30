@@ -27,6 +27,7 @@ import org.apache.batik.svggen.SVGGraphics2D;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.xmlgraphics.java2d.ps.EPSDocumentGraphics2D;
@@ -236,13 +237,13 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
 
     private void find() {
         int hits = drawing.find(txtFindText.getText(), chkFindRegex.isSelected(), !chkFindMatchCase.isSelected());
-        lblFindResults.setText(Integer.toString(hits) + " match" + (hits != 1 ? "es" : ""));
+        lblFindResults.setText(" " + Integer.toString(hits) + " match" + (hits != 1 ? "es " : " "));
     }
 
     private void prepareFind() {
 
         this.tbFind = new JToolBar();
-        this.tbFind.setLayout(new FlowLayout(FlowLayout.LEFT));
+        this.tbFind.setLayout ( new BoxLayout ( this.tbFind, BoxLayout.LINE_AXIS ) );
 
         this.txtFindText = new JTextField(20);
         this.txtFindText.addActionListener(new java.awt.event.ActionListener() {
@@ -261,6 +262,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         this.tbFind.addSeparator();
 
         this.cmdFind = new JButton("Find");
+        this.cmdFind.setIcon(new ImageIcon(Spectre.getIconPath("find")));
         this.cmdFind.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 find();
@@ -270,12 +272,14 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         this.tbFind.addSeparator();
 
         this.lblFindResults = new JLabel("                  ");
+        Font f = this.lblFindResults.getFont();
+        this.lblFindResults.setFont(f.deriveFont(f.getStyle() | Font.BOLD));
         this.tbFind.add(this.lblFindResults);
-        this.tbFind.addSeparator();
 
         this.tbFind.add(Box.createHorizontalGlue());
+        this.tbFind.addSeparator();
 
-        this.cmdFindClose = new JButton("Hide");
+        this.cmdFindClose = new JButton(new ImageIcon(Spectre.getIconPath("close")));
         this.cmdFindClose.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 tbFind.setVisible(false);
@@ -283,9 +287,10 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         });
         this.tbFind.add(this.cmdFindClose);
 
+
         this.tbFind.setVisible(false);
 
-        this.getContentPane().add(this.tbFind, BorderLayout.PAGE_START);
+        this.getContentPane().add(this.tbFind, BorderLayout.NORTH);
     }
 
     private void prepareStatus() {
@@ -1599,6 +1604,19 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         options.addOption(OptionBuilder.withLongOpt(OPT_VERBOSE).isRequired(false).hasArg(false)
                 .withDescription("Whether to output extra information").create("v"));
         return options;
+    }
+
+    private static String getIconPath(String iconName) {
+
+        File logo = null;
+        try {
+            logo = new File(new File(Spectre.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).getParentFile(), "etc/" + iconName + ".png");
+        } catch (URISyntaxException e) {
+        }
+        if (logo == null || !logo.exists()) {
+            logo = FileUtils.toFile(Spectre.class.getResource("/" + iconName + ".png"));
+        }
+        return logo.getAbsolutePath();
     }
 
     /**
