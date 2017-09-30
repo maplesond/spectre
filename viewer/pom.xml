@@ -72,7 +72,6 @@
                             <jvmSettings>
                                 <extraArguments>
                                     <extraArgument>-Dapple.laf.useScreenMenuBar=true</extraArgument>
-                                    <extraArgument>-Xdock:icon=../spectre.png</extraArgument>
                                 </extraArguments>
                             </jvmSettings>
                         </program>
