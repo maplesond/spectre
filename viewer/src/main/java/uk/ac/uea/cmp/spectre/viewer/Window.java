@@ -1066,25 +1066,35 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
         }
     }
 
-    void find(String text, boolean regEx) {
+    int find(String text, boolean regEx, boolean ignoreCase) {
         removeSelection();
         Iterator<Integer> idIt = labels.keySet().iterator();
         while (idIt.hasNext()) {
             Integer id = idIt.next();
             ViewerLabel lab = labels.get(id);
             if (regEx) {
-                Pattern pattern = Pattern.compile(text);
-                Matcher matcher = pattern.matcher(lab.name);
+                Pattern pattern = Pattern.compile(ignoreCase ? text.toLowerCase() : text);
+                Matcher matcher = pattern.matcher(ignoreCase ? lab.name.toLowerCase() : lab.name);
                 if (matcher.find()) {
+                    pointsToHighlight.add(lab.p);
+                    continue;
+                }
+            }
+            if (ignoreCase) {
+                if (lab.name.toLowerCase().contains(text.toLowerCase())) {
                     pointsToHighlight.add(lab.p);
                 }
             }
-            if (lab.name.contains(text)) {
-                pointsToHighlight.add(lab.p);
+            else {
+                if (lab.name.contains(text)) {
+                    pointsToHighlight.add(lab.p);
+                }
             }
         }
         this.enableCopy(!this.pointsToHighlight.isEmpty());
         repaint();
+
+        return this.pointsToHighlight.size();
     }
 
     private void removeSelection() {

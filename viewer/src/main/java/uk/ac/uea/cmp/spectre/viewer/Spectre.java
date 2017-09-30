@@ -104,9 +104,6 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
     private static String directory = ".";
     private File networkFile = null;
 
-    // Dialog for finding labels
-    private FindDialog find = new FindDialog(this, true);
-
     // Viewer configuration
     //private ViewerConfig config = new ViewerConfig();
 
@@ -121,7 +118,8 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
     private javax.swing.JPanel pnlOpen;     // Initial panel containing help message
     private javax.swing.JLabel lblOpenMsg;  // Initial help message
 
-    private javax.swing.JPanel pnlStatus;   // Status bar
+    // Status bar
+    private javax.swing.JPanel pnlStatus;
     private javax.swing.JPanel pnlNetCoords;
     private javax.swing.JLabel lblNetCoords;
     private javax.swing.JPanel pnlScreenCoords;
@@ -132,6 +130,16 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
     private javax.swing.JLabel lblZoomRatio;
     private javax.swing.JPanel pnlAngle;
     private javax.swing.JLabel lblAngle;
+
+    // Find bar
+    private javax.swing.JToolBar tbFind;
+    private javax.swing.JTextField txtFindText;
+    private javax.swing.JCheckBox chkFindRegex;
+    private javax.swing.JCheckBox chkFindMatchCase;
+    private javax.swing.JButton cmdFind;
+    private javax.swing.JLabel lblFindResults;
+    private javax.swing.JButton cmdFindClose;
+
 
     // Main menu
     private javax.swing.JMenuBar menuBar;
@@ -222,10 +230,63 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
 
 
         prepareStatus();
+        prepareFind();
 
     }
 
+    private void find() {
+        int hits = drawing.find(txtFindText.getText(), chkFindRegex.isSelected(), !chkFindMatchCase.isSelected());
+        lblFindResults.setText(Integer.toString(hits) + " match" + (hits != 1 ? "es" : ""));
+    }
 
+    private void prepareFind() {
+
+        this.tbFind = new JToolBar();
+        this.tbFind.setLayout(new FlowLayout(FlowLayout.LEFT));
+
+        this.txtFindText = new JTextField(20);
+        this.txtFindText.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                find();
+            }
+        });
+        this.tbFind.add(this.txtFindText);
+        this.tbFind.addSeparator();
+
+        this.chkFindRegex = new JCheckBox("Regex  ");
+        this.tbFind.add(this.chkFindRegex);
+
+        this.chkFindMatchCase = new JCheckBox("Match Case ");
+        this.tbFind.add(this.chkFindMatchCase);
+        this.tbFind.addSeparator();
+
+        this.cmdFind = new JButton("Find");
+        this.cmdFind.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                find();
+            }
+        });
+        this.tbFind.add(this.cmdFind);
+        this.tbFind.addSeparator();
+
+        this.lblFindResults = new JLabel("                  ");
+        this.tbFind.add(this.lblFindResults);
+        this.tbFind.addSeparator();
+
+        this.tbFind.add(Box.createHorizontalGlue());
+
+        this.cmdFindClose = new JButton("Hide");
+        this.cmdFindClose.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tbFind.setVisible(false);
+            }
+        });
+        this.tbFind.add(this.cmdFindClose);
+
+        this.tbFind.setVisible(false);
+
+        this.getContentPane().add(this.tbFind, BorderLayout.PAGE_START);
+    }
 
     private void prepareStatus() {
         this.pnlStatus = new JPanel();
@@ -450,6 +511,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
 
         mnuEditSelectall = new javax.swing.JMenuItem();
         mnuEditSelectall.setText("Select all");
+        mnuEditSelectall.setEnabled(false);
         mnuEditSelectall.setMnemonic('S');
         mnuEditSelectall.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A,
                 isMacOs ? Event.META_MASK : java.awt.Event.CTRL_MASK));
@@ -463,14 +525,16 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         mnuEdit.addSeparator();
 
         mnuEditFind = new javax.swing.JMenuItem();
+        mnuEditFind.setEnabled(false);
         mnuEditFind.setText("Find...");
         mnuEditFind.setMnemonic('F');
         mnuEditFind.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F,
                 isMacOs ? Event.META_MASK : java.awt.Event.CTRL_MASK));
         mnuEditFind.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                find.clearText();
-                find.setVisible(true);
+                txtFindText.setText("");
+                lblFindResults.setText("              ");
+                tbFind.setVisible(true);
             }
         });
         mnuEdit.add(mnuEditFind);
@@ -1348,6 +1412,8 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         // If we've got this far then the file loaded correctly.
         networkFile = inFile;           // Record the file for future saving etc
         mnuFileSave.setEnabled(true);   // Ensure we can save menu is enabled
+        mnuEditFind.setEnabled(true);
+        mnuEditSelectall.setEnabled(true);
         setTitle(TITLE + ": " + inFile.getAbsolutePath());  // Update title with the filename
 
         // If the open panel was used, make sure the opening panel is invisible... not required any more.
