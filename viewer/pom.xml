@@ -72,6 +72,7 @@
                             <jvmSettings>
                                 <extraArguments>
                                     <extraArgument>-Dapple.laf.useScreenMenuBar=true</extraArgument>
+                                    <extraArgument>-Xdock:icon=../spectre.png</extraArgument>
                                 </extraArguments>
                             </jvmSettings>
                         </program>
@@ -182,6 +183,13 @@
         <dependency>
             <groupId>org.apache.xmlgraphics</groupId>
             <artifactId>xmlgraphics-commons</artifactId>
+            <version>1.4</version>
+        </dependency>
+
+        <!-- For apple extensions -->
+        <dependency>
+            <groupId>com.apple</groupId>
+            <artifactId>AppleJavaExtensions</artifactId>
             <version>1.4</version>
         </dependency>
 

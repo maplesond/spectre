@@ -33,6 +33,7 @@ import org.apache.xmlgraphics.java2d.ps.EPSDocumentGraphics2D;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.DOMImplementation;
+import com.apple.eawt.Application;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.network.Network;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
@@ -1543,6 +1544,8 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
             boolean isMacOs = osName.startsWith("mac");
             if (isMacOs) {
                 System.setProperty("apple.laf.useScreenMenuBar", "true");
+                Application.getApplication().setDockIconImage(
+                        new ImageIcon(LookAndFeel.getLogoFilePath()).getImage());
             }
             else {
                 LookAndFeel.setLookAndFeel(LookAndFeel.NIMBUS);
