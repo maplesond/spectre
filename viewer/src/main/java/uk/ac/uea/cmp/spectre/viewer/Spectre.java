@@ -190,7 +190,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
 
 
     /**
-     * Creates new netview instance without any input data.
+     * Creates new spectre instance without any input data.
      * Normal initialisation.
      */
     public Spectre() throws IOException {
@@ -199,7 +199,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
     }
 
     /**
-     * Creates a netview instance with the given file loaded at startup
+     * Creates a spectre instance with the given file loaded at startup
      * Intended to be used from CLI
      *
      * @param inFile
@@ -221,18 +221,12 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         getContentPane().setBackground(Color.white); // TODO Allow user to control background color
         setForeground(java.awt.Color.white);
 
-        try {
-            setIconImage((new ImageIcon(LookAndFeel.getLogoFilePath()).getImage()));
-        } catch (URISyntaxException e) {
-            errorMessage("Couldn't load logo.", e);
-        }
+        setIconImage((new ImageIcon(ProjectProperties.getResourceFile("logo.png")).getImage()));
 
         setLayout(new BorderLayout());
 
-
         prepareStatus();
         prepareFind();
-
     }
 
     private void find() {
@@ -262,7 +256,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         this.tbFind.addSeparator();
 
         this.cmdFind = new JButton("Find");
-        this.cmdFind.setIcon(new ImageIcon(Spectre.getIconPath("find")));
+        this.cmdFind.setIcon(new ImageIcon(ProjectProperties.getResourceFile("find.png")));
         this.cmdFind.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 find();
@@ -279,7 +273,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         this.tbFind.add(Box.createHorizontalGlue());
         this.tbFind.addSeparator();
 
-        this.cmdFindClose = new JButton(new ImageIcon(Spectre.getIconPath("close")));
+        this.cmdFindClose = new JButton(new ImageIcon(ProjectProperties.getResourceFile("close.png")));
         this.cmdFindClose.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 tbFind.setVisible(false);
@@ -485,7 +479,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         mnuFileExit.setMnemonic('X');
         mnuFileExit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                log.info("Shutting down netview");
+                log.info("Shutting down spectre");
                 System.exit(0);
             }
         });
@@ -1599,24 +1593,11 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         Options options = new Options();
         options.addOption(CommandLineHelper.HELP_OPTION);
         options.addOption(OptionBuilder.withLongOpt(OPT_DISPOSE).hasArg(false)
-                .withDescription("Whether to just close this window when closing netview.  By default we close all linked applications and windows when closing netview.")
+                .withDescription("Whether to just close this window when closing spectre.  By default we close all linked applications and windows when closing spectre.")
                 .isRequired(false).create("d"));
         options.addOption(OptionBuilder.withLongOpt(OPT_VERBOSE).isRequired(false).hasArg(false)
                 .withDescription("Whether to output extra information").create("v"));
         return options;
-    }
-
-    private static String getIconPath(String iconName) {
-
-        File logo = null;
-        try {
-            logo = new File(new File(Spectre.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).getParentFile(), "etc/" + iconName + ".png");
-        } catch (URISyntaxException e) {
-        }
-        if (logo == null || !logo.exists()) {
-            logo = FileUtils.toFile(Spectre.class.getResource("/" + iconName + ".png"));
-        }
-        return logo.getAbsolutePath();
     }
 
     /**
@@ -1634,7 +1615,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
             if (isMacOs) {
                 System.setProperty("apple.laf.useScreenMenuBar", "true");
                 Application.getApplication().setDockIconImage(
-                        new ImageIcon(LookAndFeel.getLogoFilePath()).getImage());
+                        new ImageIcon(ProjectProperties.getResourceFile("logo.png")).getImage());
             }
             else {
                 LookAndFeel.setLookAndFeel(LookAndFeel.NIMBUS);
@@ -1659,9 +1640,9 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
             if (commandLine.getArgs().length > 1) {
                 throw new IOException("Expected only a single input file.");
             } else if (commandLine.getArgs().length == 1) {
-                log.info("Opening netview with input file: " + inputfile.getAbsolutePath());
+                log.info("Opening spectre with input file: " + inputfile.getAbsolutePath());
             } else {
-                log.info("Opening netview with no input");
+                log.info("Opening spectre with no input");
             }
 
 

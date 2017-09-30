@@ -25,7 +25,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>net</artifactId>
-    <version>1.0.1</version>
+    <version>${project.parent.version}</version>
 
     <name>Spectre: Network Tools</name>
 

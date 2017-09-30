@@ -27,6 +27,7 @@ import uk.ac.uea.cmp.spectre.core.ui.gui.JobControllerWithView;
 import uk.ac.uea.cmp.spectre.core.ui.gui.StatusTrackerWithView;
 import uk.ac.uea.cmp.spectre.core.ui.gui.ToolHost;
 import uk.ac.uea.cmp.spectre.core.util.LogConfig;
+import uk.ac.uea.cmp.spectre.core.util.ProjectProperties;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -97,11 +98,7 @@ public class FlatNJGUI extends JFrame implements ToolHost {
         initComponents();
         setTitle(TITLE);
 
-        try {
-            setIconImage((new ImageIcon(uk.ac.uea.cmp.spectre.core.ui.gui.LookAndFeel.getLogoFilePath()).getImage()));
-        } catch (URISyntaxException e) {
-            showErrorDialog("Couldn't load logo.");
-        }
+        setIconImage((new ImageIcon(ProjectProperties.getResourceFile("logo.png")).getImage()));
 
         this.runner = new FlatNJRunner(this);
 

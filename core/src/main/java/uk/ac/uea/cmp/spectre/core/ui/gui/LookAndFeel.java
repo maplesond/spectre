@@ -18,6 +18,7 @@ package uk.ac.uea.cmp.spectre.core.ui.gui;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.ac.uea.cmp.spectre.core.util.ProjectProperties;
 
 import javax.swing.*;
 import java.io.File;
@@ -46,11 +47,6 @@ public class LookAndFeel {
     }
 
     public static String getLogoFilePath() throws URISyntaxException {
-
-        File logo = new File(new File(LookAndFeel.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).getParentFile(), "etc/logo.png");
-        if (!logo.exists()) {
-            logo = FileUtils.toFile(LookAndFeel.class.getResource("/logo.png"));
-        }
-        return logo.getAbsolutePath();
+        return ProjectProperties.getResourceFile("logo.png");
     }
 }

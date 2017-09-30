@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
+  ~ Copyright (C) 2014  UEA School of Computing Sciences
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under the term of the GNU General Public
+  ~ License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+  ~ later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  ~ warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+  ~ details.
+  ~
+  ~ You should have received a copy of the GNU General Public License along with this program.  If not, see
+  ~ <http://www.gnu.org/licenses/>.
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>spectre</artifactId>
+        <groupId>uk.ac.uea.cmp.spectre</groupId>
+        <version>1.0.1</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>doc</artifactId>
+    <version>${project.parent.version}</version>
+
+    <name>Spectre: Create Documentation</name>
+
+
+    <build>
+        <plugins>
+
+            <!-- Various phases -->
+
+            <!-- Adds execute permission to scripts and copies resources to install folder during the package phase.
+                 Also creates and installs manual if possible in the install phase. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.7</version>
+                <executions>
+                    <execution>
+                        <id>create-manual</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+
+                                <!-- Create the documentation -->
+                                <exec
+                                        dir="${doc-dir}"
+                                        executable="make"
+                                        failonerror="false">
+                                    <arg line="html man text"/>
+                                    <!--<arg line="html latexpdf text" />-->
+                                </exec>
+
+                            </target>
+                        </configuration>
+                    </execution>
+
+
+                </executions>
+            </plugin>
+
+        </plugins>
+    </build>
+
+
+</project>
+
+
+
+
+
+
+
+
+
+
+
+
+

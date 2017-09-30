@@ -302,7 +302,6 @@
 
     <modules>
 
-        <!-- Execute this first to clean any mess in the main folder -->
         <module>clean</module>
 
         <!-- Run through the child projects -->
@@ -313,6 +312,7 @@
         <module>qtools</module>
         <module>flatnj</module>
         <!--<module>padre</module>-->
+        <module>doc</module>
 
         <!-- This gets executed last because it creates the distribution and the manual -->
         <module>dist</module>
