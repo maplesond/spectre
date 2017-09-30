@@ -1535,10 +1535,19 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
     public static void main(String args[]) {
 
         try {
+
             // Configure logging
             LogConfig.defaultConfig();
 
-            LookAndFeel.setLookAndFeel(LookAndFeel.NIMBUS);
+            String osName = System.getProperty("os.name").toLowerCase();
+            boolean isMacOs = osName.startsWith("mac");
+            if (isMacOs) {
+                System.setProperty("apple.laf.useScreenMenuBar", "true");
+            }
+            else {
+                LookAndFeel.setLookAndFeel(LookAndFeel.NIMBUS);
+            }
+
 
             // Parse command line args
             final CommandLine commandLine = new CommandLineHelper().startApp(createOptions(), "spectre [options] <input>",
