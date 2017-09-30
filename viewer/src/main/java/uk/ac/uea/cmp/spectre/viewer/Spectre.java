@@ -325,6 +325,11 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
     @SuppressWarnings("unchecked")
     private void prepareMenu() {
 
+        // Shortcuts on mac will use CMD button rather than CTRL
+        String osName = System.getProperty("os.name").toLowerCase();
+        boolean isMacOs = osName.startsWith("mac");
+
+
         menuBar = new javax.swing.JMenuBar();
 
         mnuView = new javax.swing.JMenu();
@@ -361,7 +366,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         mnuFileOpen.setText("Open...");
         mnuFileOpen.setMnemonic('O');
         mnuFileOpen.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O,
-                java.awt.Event.CTRL_MASK));
+                isMacOs ? Event.META_MASK : java.awt.Event.CTRL_MASK));
         mnuFileOpen.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 openFileActionPerformed(evt);
@@ -374,7 +379,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         mnuFileSave.setText("Save network");
         mnuFileSave.setMnemonic('S');
         mnuFileSave.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S,
-                java.awt.Event.CTRL_MASK));
+                isMacOs ? Event.META_MASK : java.awt.Event.CTRL_MASK));
         mnuFileSave.setEnabled(false);
         mnuFileSave.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -430,7 +435,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         mnuEditCopy.setText("Copy selected labels");
         mnuEditCopy.setMnemonic('C');
         mnuEditCopy.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C,
-                java.awt.Event.CTRL_MASK));
+                isMacOs ? Event.META_MASK : java.awt.Event.CTRL_MASK));
         mnuEditCopy.addActionListener(new ActionListener() {
 
             @Override
@@ -447,7 +452,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         mnuEditSelectall.setText("Select all");
         mnuEditSelectall.setMnemonic('S');
         mnuEditSelectall.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A,
-                java.awt.Event.CTRL_MASK));
+                isMacOs ? Event.META_MASK : java.awt.Event.CTRL_MASK));
         mnuEditSelectall.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 drawing.selectAll();
@@ -461,7 +466,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         mnuEditFind.setText("Find...");
         mnuEditFind.setMnemonic('F');
         mnuEditFind.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F,
-                java.awt.Event.CTRL_MASK));
+                isMacOs ? Event.META_MASK : java.awt.Event.CTRL_MASK));
         mnuEditFind.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 find.clearText();
@@ -479,7 +484,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         mnuViewRotateleft.setText("Rotate Left");
         mnuViewRotateleft.setMnemonic('L');
         mnuViewRotateleft.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT,
-                java.awt.Event.CTRL_MASK));
+                isMacOs ? Event.META_MASK : java.awt.Event.CTRL_MASK));
         mnuViewRotateleft.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 drawing.rotate(-0.1);
@@ -490,7 +495,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         mnuViewRotateright.setText("Rotate Right");
         mnuViewRotateright.setMnemonic('R');
         mnuViewRotateright.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_RIGHT,
-                java.awt.Event.CTRL_MASK));
+                isMacOs ? Event.META_MASK : java.awt.Event.CTRL_MASK));
         mnuViewRotateright.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 drawing.rotate(0.1);
@@ -501,7 +506,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         mnuViewZoomin.setText("Zoom in");
         mnuViewZoomin.setMnemonic('I');
         mnuViewZoomin.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_UP,
-                java.awt.Event.CTRL_MASK));
+                isMacOs ? Event.META_MASK : java.awt.Event.CTRL_MASK));
         mnuViewZoomin.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 drawing.zoom(-drawing.config.getRatio() / 10.0);
@@ -512,7 +517,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         mnuViewZoomout.setText("Zoom out");
         mnuViewZoomout.setMnemonic('O');
         mnuViewZoomout.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN,
-                java.awt.Event.CTRL_MASK));
+                isMacOs ? Event.META_MASK : java.awt.Event.CTRL_MASK));
         mnuViewZoomout.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 drawing.zoom(drawing.config.getRatio() / 10.0);
@@ -523,7 +528,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         mnuViewFliphorizontal.setText("Flip Horizontal");
         mnuViewFliphorizontal.setMnemonic('H');
         mnuViewFliphorizontal.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_H,
-                java.awt.Event.CTRL_MASK + Event.SHIFT_MASK));
+                (isMacOs ? Event.META_MASK : java.awt.Event.CTRL_MASK) + Event.SHIFT_MASK));
         mnuViewFliphorizontal.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 drawing.flipNetwork(true);
@@ -534,7 +539,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         mnuViewFlipvertical.setText("Flip Vertical");
         mnuViewFlipvertical.setMnemonic('V');
         mnuViewFlipvertical.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_V,
-                java.awt.Event.CTRL_MASK + Event.SHIFT_MASK));
+                (isMacOs ? Event.META_MASK : java.awt.Event.CTRL_MASK) + Event.SHIFT_MASK));
         mnuViewFlipvertical.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 drawing.flipNetwork(false);
@@ -547,7 +552,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         mnuViewOptimiseLayout.setText("Optimize layout");
         mnuViewOptimiseLayout.setMnemonic('P');
         mnuViewOptimiseLayout.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_P,
-                java.awt.Event.CTRL_MASK));
+                isMacOs ? Event.META_MASK : java.awt.Event.CTRL_MASK));
         mnuViewOptimiseLayout.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 if (network != null) {
@@ -562,7 +567,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         mnuViewShowTrivial.setSelected(true);
         mnuViewShowTrivial.setMnemonic('T');
         mnuViewShowTrivial.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_T,
-                java.awt.Event.CTRL_MASK));
+                isMacOs ? Event.META_MASK : java.awt.Event.CTRL_MASK));
         mnuViewShowTrivial.setText("Show trivial splits");
         mnuViewShowTrivial.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -574,7 +579,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         mnuViewShowRange.setSelected(true);
         mnuViewShowRange.setMnemonic('R');
         mnuViewShowRange.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R,
-                java.awt.Event.CTRL_MASK));
+                isMacOs ? Event.META_MASK : java.awt.Event.CTRL_MASK));
         mnuViewShowRange.setText("Show range");
         mnuViewShowRange.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -592,7 +597,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         mnuLabelingShow.setText("Show labels");
         mnuLabelingShow.setMnemonic('S');
         mnuLabelingShow.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_L,
-                java.awt.Event.CTRL_MASK));
+                isMacOs ? Event.META_MASK : java.awt.Event.CTRL_MASK));
         mnuLabelingShow.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 drawing.config.setShowLabels(mnuLabelingShow.isSelected());
