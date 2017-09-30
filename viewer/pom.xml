@@ -118,6 +118,8 @@
                                     <directory>src/main/resources</directory>
                                     <includes>
                                         <include>logo.png</include>
+                                        <include>find.png</include>
+                                        <include>close.png</include>
                                     </includes>
                                 </resource>
                             </resources>
