@@ -4,3 +4,4 @@
 /bin/
 /*.swp
 /gen/
+*.xml.releaseBackup

@@ -1,3 +1,4 @@
 /target/
 /bin/
 /*dependency-reduced-pom.xml
+*.xml.releaseBackup
