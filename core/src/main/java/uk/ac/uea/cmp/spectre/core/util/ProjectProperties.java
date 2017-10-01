@@ -48,7 +48,6 @@ public class ProjectProperties {
             if (back8 != null) flist.add(back8);
 
             for (File f : flist) {
-                log.info(f.getPath());
                 if (f.exists()) {
                     log.debug("Found resource at: " + f.getAbsolutePath());
                     return f.getAbsolutePath();
