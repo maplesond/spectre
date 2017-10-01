@@ -18,7 +18,7 @@
 
     <groupId>uk.ac.uea.cmp.spectre</groupId>
     <artifactId>spectre</artifactId>
-    <version>1.1.2</version>
+    <version>1.1.3</version>
     <packaging>pom</packaging>
 
     <name>Suite of PhylogEnetiC Tools for Reticulate Evolution</name>
@@ -295,6 +295,7 @@
                     <defaultOriginUrl>https://github.com/maplesond/spectre.git</defaultOriginUrl>
                     <noDeploy>true</noDeploy>
                     <squash>true</squash>
+                    <pushReleases>true</pushReleases>
                     <flowInitContext>
                         <masterBranchName>master</masterBranchName>
                         <developBranchName>develop</developBranchName>

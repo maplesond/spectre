@@ -19,7 +19,7 @@
 
     <groupId>uk.ac.uea.cmp.spectre</groupId>
     <artifactId>core</artifactId>
-    <version>1.1.2</version>
+    <version>1.1.3</version>
     <packaging>jar</packaging>
 
     <name>Spectre: Core functionality</name>
