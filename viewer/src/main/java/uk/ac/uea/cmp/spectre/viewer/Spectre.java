@@ -15,6 +15,7 @@
 
 package uk.ac.uea.cmp.spectre.viewer;
 
+import com.apple.eawt.Application;
 import com.itextpdf.awt.DefaultFontMapper;
 import com.itextpdf.awt.PdfGraphics2D;
 import com.itextpdf.text.Document;

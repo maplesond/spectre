@@ -294,6 +294,8 @@
                 <configuration>
                     <autoVersionSubmodules>true</autoVersionSubmodules>
                     <defaultOriginUrl>https://github.com/maplesond/spectre.git</defaultOriginUrl>
+                    <noDeploy>true</noDeploy>
+                    <squash>true</squash>
                     <flowInitContext>
                         <masterBranchName>master</masterBranchName>
                         <developBranchName>develop</developBranchName>

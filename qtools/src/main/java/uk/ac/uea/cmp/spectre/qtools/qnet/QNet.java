@@ -33,8 +33,8 @@ import java.io.IOException;
 
 /**
  * The QNet main class
- * <p/>
- * Presently runnable holder for Stefan Gr�newalds circular ordering-generating
+ *
+ * Presently runnable holder for Stefan Grunewalds circular ordering-generating
  * algorithm
  */
 public class QNet extends RunnableTool {
@@ -52,8 +52,8 @@ public class QNet extends RunnableTool {
     /**
      * Constructor for use from the GUI
      *
-     * @param options
-     * @param statusTracker
+     * @param options QNet configuration
+     * @param statusTracker Status tracker component for updating GUI with progress
      */
     public QNet(QNetOptions options, StatusTracker statusTracker) {
         super(statusTracker);

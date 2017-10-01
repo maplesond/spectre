@@ -35,7 +35,6 @@ import uk.ac.uea.cmp.spectre.core.util.DefaultParsingErrorListener;
 import uk.ac.uea.cmp.spectre.core.util.DefaultParsingErrorStrategy;
 
 import java.io.*;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -90,8 +89,6 @@ public class NexusReader extends AbstractSpectreReader {
      *
      * @return The distance matrix, with associated taxa set.
      * @throws IOException    Thrown if there were any problems accessing the file.
-     * @throws ParseException Thrown if there were any syntax issues when
-     *                        parsing the file.
      */
     @Override
     public DistanceMatrix readDistanceMatrix(File file) throws IOException {
@@ -157,9 +154,9 @@ public class NexusReader extends AbstractSpectreReader {
      * Pulls out the circular ordering that should be present in the split block of the nexus file (assuming this represents
      * a circular split system)
      *
-     * @param file
+     * @param file Nexus file containing split block with circular ordering
      * @return A circular ordering
-     * @throws IOException
+     * @throws IOException Thrown if any disk related issues occur (e.g. file does not exist or inaccessible)
      */
     public IdentifierList extractCircOrdering(File file) throws IOException {
 
@@ -205,9 +202,9 @@ public class NexusReader extends AbstractSpectreReader {
     /**
      * Just returns everything that was found in the nexus file
      *
-     * @param inFile
+     * @param inFile Nexus file
      * @return An object representing the contents of a nexus file.
-     * @throws IOException
+     * @throws IOException Thrown if any disk related issues occur (e.g. file does not exist or inaccessible)
      */
     public Nexus readNexusData(File inFile) throws IOException {
 

@@ -34,6 +34,11 @@ public class InternalNNLSSolver {
      * We wish to solve the NNLS problem Ex -f for x
      *
      * @param N Number of Taxa
+     * @param Etf Array of doubles
+     * @param EtE Symettric matrix
+     * @param tolerance Tolerance to within which we require a result
+     * @return Solution - optimised variables
+     * @throws QNetException Thrown if there were issues solving this problem
      */
     public double[] optimise(final int N, double[] Etf, SymmetricMatrix EtE, final double tolerance) throws QNetException {
 

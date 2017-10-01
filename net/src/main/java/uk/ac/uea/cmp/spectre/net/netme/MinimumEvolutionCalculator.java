@@ -283,9 +283,12 @@ public class MinimumEvolutionCalculator {
     /**
      * Calculates the optimal values for treelengths under the
      * minimum evolution criterion and extracts a minimum evolution tree.
-     * <p/>
+     *
      * See D Bryant, 1997: <I>Building Trees, Hunting for Trees and
      * Comparing Trees - Theories and Methods in Phylogenetic Analysis</I>
+     *
+     * @param dist Distance matrix
+     * @param circularOrdering circular ordering
      */
     protected TreeAndWeights calculateME(DistanceMatrix dist, IdentifierList circularOrdering) {
 

@@ -66,8 +66,8 @@ public class Scaling extends SpectreTool {
     /**
      * Executes scaler using command line input
      *
-     * @param commandLine
-     * @throws IOException
+     * @param commandLine The command line containing arguments to parse
+     * @throws IOException Thrown if there were any issues executing the given command
      */
     @Override
     protected void execute(CommandLine commandLine) throws IOException {
@@ -109,8 +109,8 @@ public class Scaling extends SpectreTool {
      * @param inputFiles   The file to load
      * @param optimiser    The optimiser to use for scaling
      * @param outputPrefix The location for output files to be created
-     * @throws OptimiserException
-     * @throws IOException
+     * @throws OptimiserException Thrown if any issues occured when running the optimiser
+     * @throws IOException Thrown if there were any issues accessing files
      */
     public void execute(File[] inputFiles, File outputPrefix, Optimiser optimiser) throws OptimiserException, IOException {
 
@@ -124,8 +124,8 @@ public class Scaling extends SpectreTool {
      * @param inputFiles The files to load
      * @param optimiser  The optimiser to use for scaling
      * @return A scaled list of quartet networks.
-     * @throws OptimiserException
-     * @throws IOException
+     * @throws OptimiserException Thrown if any issues occured when running the optimiser
+     * @throws IOException Thrown if there were any issues accessing files
      */
     public QuartetSystemList execute(File[] inputFiles, Optimiser optimiser) throws OptimiserException, IOException {
 
@@ -138,7 +138,7 @@ public class Scaling extends SpectreTool {
      * @param qList The list of quartet systems to scale
      * @param optimiser  The optimiser to use for scaling
      * @return A scaled list of quartet networks.
-     * @throws OptimiserException
+     * @throws OptimiserException Thrown if any issues occured when running the optimiser
      */
     public QuartetSystemList execute(QuartetSystemList qList, Optimiser optimiser) throws OptimiserException {
 
@@ -172,7 +172,7 @@ public class Scaling extends SpectreTool {
     /**
      * Main entry point for the scaling program
      *
-     * @param args
+     * @param args Command line arguments
      */
     public static void main(String[] args) {
 

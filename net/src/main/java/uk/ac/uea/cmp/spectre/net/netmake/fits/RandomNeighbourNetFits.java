@@ -158,7 +158,9 @@ public class RandomNeighbourNetFits {
     } */
 
     /**
-     * @param fitsList
+     * Generate summary and save to file
+     * @param summaryFile Contains output summary
+     * @param fitsList list of fits
      */
     protected void writeSummary(File summaryFile, List<Fits> fitsList) throws IOException {
 

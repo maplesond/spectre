@@ -49,7 +49,7 @@ public class ScalingMatrix {
     /**
      * Creates the matrix of coefficients form a list of quartet networks
      *
-     * @param quartetSystemList
+     * @param quartetSystemList Quartet system list
      */
     public ScalingMatrix(QuartetSystemList quartetSystemList) {
 
@@ -152,7 +152,6 @@ public class ScalingMatrix {
      * @param qni the quartet network of the tree for which we compute the diagonal element (i)
      * @param qnj the quartet network of the other tree (j)
      * @return Sum of the diagonals
-     * @throws java.io.IOException
      */
     protected double sumUpDiagonal(GroupedQuartetSystem qni, GroupedQuartetSystem qnj) {
 
@@ -212,7 +211,6 @@ public class ScalingMatrix {
      * @param quartetSystemList the list of quartet networks
      * @param i                 index for the quartet network of the tree for which we compute the diagonal element
      * @return Value of the diagonal element
-     * @throws IOException
      */
     protected double computeDiagonalElement(QuartetSystemList quartetSystemList, int i) {
 
@@ -235,12 +233,11 @@ public class ScalingMatrix {
     }
 
     /**
-     * Computes entry at position (i,j), i<j
+     * Computes entry at position (i,j), i&lt;j
      *
      * @param qni quartet network of first tree (i)
      * @param qnj quartet network of second tree (j)
      * @return Value of the off diagonal element
-     * @throws IOException
      */
     protected double computeOffDiagonalElement(GroupedQuartetSystem qni, GroupedQuartetSystem qnj) {
 
@@ -291,12 +288,11 @@ public class ScalingMatrix {
     }
 
     /**
-     * Computes entry at position (i,j), i<j
+     * Computes entry at position (i,j), i&lt;j
      *
      * @param qni quartet network of first tree (i)
      * @param qnj quartet network of second tree (j)
      * @return Value of the off diagonal element
-     * @throws IOException
      */
     protected double computeLocalOffDiagonalElement(GroupedQuartetSystem qni, GroupedQuartetSystem qnj) {
 

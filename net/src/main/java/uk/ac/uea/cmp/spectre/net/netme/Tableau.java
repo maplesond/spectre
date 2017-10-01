@@ -40,7 +40,7 @@ public class Tableau<E> {
     /**
      * Creates a new copy of a Tableau using the instance provided.
      *
-     * @param copy
+     * @param copy Tableau to copy
      */
     public Tableau(Tableau<E> copy) {
         this();
@@ -203,8 +203,8 @@ public class Tableau<E> {
      * specified row is not existent it will be created. Any necessary new
      * preceding rows will be added as empty rows.
      *
-     * @param row     index of the row
-     * @param element
+     * @param row index of the row
+     * @param element Element to append
      * @throws IndexOutOfBoundsException if the row index is out of range
      */
     public void appendToRow(int row, E element) {

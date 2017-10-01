@@ -90,6 +90,7 @@ public abstract class AbstractBasicHolder {
      * @param A The first path
      * @param B The second path
      * @return The count and weight for the 2 paths.
+     * @throws QNetException Thrown if there were issues calculating the values
      */
     protected abstract Pair<Integer, Double> calcCountWeight(IdentifierList A, IdentifierList B) throws QNetException;
 
@@ -112,6 +113,7 @@ public abstract class AbstractBasicHolder {
      * index and quartet over1 on the smallest index.
      * First 1-based index
      *
+     * @param i First 1-based index
      * @param j Second 1-based index
      * @return The count at i, j
      */

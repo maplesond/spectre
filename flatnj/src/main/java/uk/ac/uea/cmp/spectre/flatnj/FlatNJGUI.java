@@ -34,7 +34,6 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
-import java.net.URISyntaxException;
 import java.util.Vector;
 
 import static uk.ac.uea.cmp.spectre.core.ui.gui.LookAndFeel.NIMBUS;

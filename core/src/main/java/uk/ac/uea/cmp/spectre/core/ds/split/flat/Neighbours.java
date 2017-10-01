@@ -16,7 +16,7 @@
 package uk.ac.uea.cmp.spectre.core.ds.split.flat;
 
 /**
- * Class for storing pair of taxa ('a' and 'b') that has been chosen as neighbors by {@linkplain NeighbourFinder}.
+ * Class for storing pair of taxa ('a' and 'b') that has been chosen as neighbors.
  * 'a' is the smaller taxon.
  */
 public class Neighbours {

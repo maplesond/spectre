@@ -199,7 +199,7 @@ public class CVMatrices {
 
     /**
      * Creates a new vertex with appropriate ID and adds it to the v2v matrix
-     * @return
+     * @return New vertex
      */
     public Identifier createNextVertex() {
 

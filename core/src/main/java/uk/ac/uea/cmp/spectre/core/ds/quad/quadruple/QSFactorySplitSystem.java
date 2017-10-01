@@ -30,7 +30,7 @@ public class QSFactorySplitSystem implements QSFactory {
     private static Logger log = LoggerFactory.getLogger(QSFactorySplitSystem.class);
 
     /**
-     * {@linkplain uk.ac.uea.cmp.spectre.core.ds.split.flat.FlatSplitSystem} to be used for the estimation of
+     * {@linkplain uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem} to be used for the estimation of
      * {@link QuadrupleSystem}.
      */
     private SplitSystem ss;
@@ -48,7 +48,7 @@ public class QSFactorySplitSystem implements QSFactory {
 
     /**
      * Constructs {@linkplain QSFactoryLocation} object that will use
-     * {@linkplain  uk.ac.uea.cmp.spectre.core.ds.split.flat.FlatSplitSystem} to compute new {@link QuadrupleSystem}.
+     * {@linkplain  uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem} to compute new {@link QuadrupleSystem}.
      *
      * @param ss a {@linkplain uk.ac.uea.cmp.spectre.core.ds.split.SplitSystem} object to be used for the estimation of
      *           {@link QuadrupleSystem}.

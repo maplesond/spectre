@@ -30,9 +30,9 @@ public interface SecondaryProblem {
     /**
      * Creates the problem to solve from SuperQ input for this objective
      *
-     * @param nbTaxa
-     * @param X
-     * @param EtE
+     * @param nbTaxa Number of taxa
+     * @param X The variables
+     * @param EtE The matrix of coefficients
      * @return The problem to solve
      */
     Problem compileProblem(int nbTaxa, double[] X, double[][] EtE);
@@ -54,7 +54,7 @@ public interface SecondaryProblem {
     /**
      * Whether or not this objective recognises the input identifier
      *
-     * @param id
+     * @param id The identifier to check
      * @return True if accept identifier, false otherwise.
      */
     boolean acceptsIdentifier(String id);

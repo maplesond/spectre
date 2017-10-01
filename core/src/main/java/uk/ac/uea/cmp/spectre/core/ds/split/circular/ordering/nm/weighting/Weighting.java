@@ -24,7 +24,7 @@ import java.util.Map;
 
 /**
  * Fills and updates weighting list
- * <p/>
+ *
  * Sarah Bastkowski, 2010: <I>Algorithmen zum Finden von Bäumen in Neighbor Net Netzwerken</I>
  *
  * @author Sarah Bastkowski

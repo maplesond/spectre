@@ -68,7 +68,7 @@ public interface Split extends Comparable<Split> {
 
     /**
      * Used to toggle whether or not this split is active
-     * @param active
+     * @param active Whether or not this split is active
      */
     void setActive(boolean active);
 
@@ -141,7 +141,7 @@ public interface Split extends Comparable<Split> {
     /**
      * Returns a canonical version of this split.  This means that the a-side is always smaller than or equal to the size
      * of the b-side, and taxa are sorted in both sides.
-     * @return
+     * @return A canonical split
      */
     Split makeCanonical();
 
@@ -332,18 +332,18 @@ public interface Split extends Comparable<Split> {
     /**
      * This method checks whether the quadruple split number nr is in the restriction of this split to {a,b,c,d}.
      * It is assumed that a, b, c and d are pairwise distinct. The possible values for nr are:
-     * 0 --> a|bcd
-     * 1 --> b|acd
-     * 2 --> c|abd
-     * 3 --> d|abc
-     * 4 --> ab|cd
-     * 5 --> ac|bd
-     * 6 --> ad|bc
+     * 0 = a|bcd
+     * 1 = b|acd
+     * 2 = c|abd
+     * 3 = d|abc
+     * 4 = ab|cd
+     * 5 = ac|bd
+     * 6 = ad|bc
      * @param a Taxon a
      * @param b Taxon b
      * @param c Taxon c
      * @param d Taxon d
-     * @param nr
+     * @param nr split number
      * @return True if restriction exists, false otherwise
      */
     boolean restrictionExists(int a, int b, int c, int d, int nr);

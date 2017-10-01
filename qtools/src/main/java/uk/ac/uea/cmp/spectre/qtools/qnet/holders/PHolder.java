@@ -298,7 +298,8 @@ public class PHolder {
 
 
     /**
-     * Ensure capacity...
+     * Ensure capacity.
+     * @param N The number of taxa
      */
     public void ensureCapacity(int N) {
 

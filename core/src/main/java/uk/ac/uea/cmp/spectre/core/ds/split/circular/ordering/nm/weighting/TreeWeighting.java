@@ -21,7 +21,7 @@ import uk.ac.uea.cmp.spectre.core.ds.Identifier;
  * Weighting of vertices in merged component depends on number of vertices in
  * original component before mergin
  * (equal to number of times the components has been choosen in selection step)
- * <p/>
+ *
  * Sarah Bastkowski, 2010: <I>Algorithmen zum Finden von Bäumen in Neighbor Net Netzwerken</I>
  *
  * @author Sarah Bastkowski

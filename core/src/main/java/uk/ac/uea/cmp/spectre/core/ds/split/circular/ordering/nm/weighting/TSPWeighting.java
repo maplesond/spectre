@@ -19,7 +19,7 @@ import uk.ac.uea.cmp.spectre.core.ds.Identifier;
 
 /**
  * Resulting circular order is solution for TSPWeighting.
- * <p/>
+ *
  * Sarah Bastkowski, 2010: <I>Algorithmen zum Finden von Bäumen in Neighbor Net Netzwerken</I>
  *
  * @author Sarah Bastkowski
