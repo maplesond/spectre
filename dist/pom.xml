@@ -240,7 +240,7 @@
                                         <argument>-outdir</argument>
                                         <argument>${dist-dir}</argument>
                                         <argument>-outfile</argument>
-                                        <argument>${project.parent.artifactId}-${project.parent.version}</argument>
+                                        <argument>${project.parent.artifactId}</argument>
                                         <argument>-appclass</argument>
                                         <argument>uk.ac.uea.cmp.spectre.viewer.Spectre</argument>
                                         <argument>-BlicenseFile=LICENSE</argument>
@@ -250,7 +250,7 @@
                                         <argument>-BclassPath="etc/*:jar/*"</argument>
                                         <argument>-Bmac.category=Education</argument>
                                         <argument>-Bmac.CFBundleIdentifier=uk.ac.uea.cmp.spectre.viewer.Spectre</argument>
-                                        <argument>-Bmac.CFBundleVersion-${project.parent.version}</argument>
+                                        <argument>-Bmac.CFBundleVersion=${project.parent.version}</argument>
                                         <argument>-v</argument>
                                     </arguments>
                                 </configuration>
