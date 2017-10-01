@@ -19,16 +19,14 @@
 
     <groupId>uk.ac.uea.cmp.spectre</groupId>
     <artifactId>core</artifactId>
-    <version>1.1.1</version>
+    <version>1.1.2</version>
     <packaging>jar</packaging>
 
     <name>Spectre: Core functionality</name>
     <description>Core library for the SPECTRE project.  Contains commonly used data structures, algorithms and file handling functionality commonly used in phylogenetics.</description>
     <url>https://github.com/maplesond/spectre</url>
-    <scm>
-        <url>https://github.com/maplesond/spectre.git</url>
-      <tag>HEAD</tag>
-  </scm>
+
+    <scm><url>https://github.com/maplesond/spectre.git</url></scm>
 
 
     <properties>

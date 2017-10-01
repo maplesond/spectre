@@ -18,12 +18,12 @@
     <parent>
         <artifactId>spectre</artifactId>
         <groupId>uk.ac.uea.cmp.spectre</groupId>
-        <version>1.1.1</version>
+        <version>1.1.2</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>qtools</artifactId>
-    <version>1.1.1</version>
+    <version>1.1.2</version>
 
     <name>Spectre: Quartet Tools</name>
 
@@ -142,9 +142,9 @@
                         <configuration>
                             <target>
                                 <chmod file="${build-dir}/bin/superq" perm="755" />
-                                <chmod file="${build-dir}/bin/qnet" perm="755" />
+                                <!--<chmod file="${build-dir}/bin/qnet" perm="755" />
                                 <chmod file="${build-dir}/bin/qmaker" perm="755" />
-                                <chmod file="${build-dir}/bin/scaling" perm="755" />
+                                <chmod file="${build-dir}/bin/scaling" perm="755" />-->
                                 <chmod file="${build-dir}/bin/sfilter" perm="755" />
                             </target>
                         </configuration>
@@ -162,7 +162,7 @@
         <dependency>
             <groupId>uk.ac.uea.cmp.spectre</groupId>
             <artifactId>core</artifactId>
-            <version>${spectre-version}</version>
+            <version>1.1.2</version>
         </dependency>
 
         <!-- Meta optimizer -->
@@ -177,7 +177,7 @@
         <dependency>
             <groupId>uk.ac.uea.cmp.spectre</groupId>
             <artifactId>misc</artifactId>
-            <version>${spectre-version}</version>
+            <version>1.1.2</version>
             <exclusions>
                 <exclusion>
                     <groupId>uk.ac.uea.cmp.spectre</groupId>

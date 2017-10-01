@@ -19,12 +19,12 @@
     <parent>
         <artifactId>spectre</artifactId>
         <groupId>uk.ac.uea.cmp.spectre</groupId>
-        <version>1.1.1</version>
+        <version>1.1.2</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>clean</artifactId>
-    <version>1.1.1</version>
+    <version>1.1.2</version>
 
     <name>Spectre: Clean</name>
 
