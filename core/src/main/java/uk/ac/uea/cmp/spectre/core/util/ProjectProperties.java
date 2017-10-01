@@ -37,6 +37,7 @@ public class ProjectProperties {
             File local2 = FileUtils.toFile(ProjectProperties.class.getResource(filename));
             File back1 = new File(extDir.getParentFile(), "etc" + File.separator + filename);
             File back2 = new File(extDir.getParentFile().getParentFile(), "etc" + File.separator + filename);
+            File back8 = new File(extDir.getParentFile().getParentFile().getParentFile().getParentFile().getParentFile().getParentFile().getParentFile().getParentFile(), "etc" + File.separator + filename);
 
             List<File> flist = new ArrayList<>();
             if (etc != null) flist.add(etc);
@@ -44,8 +45,10 @@ public class ProjectProperties {
             if (local2 != null) flist.add(local2);
             if (back1 != null) flist.add(back1);
             if (back2 != null) flist.add(back2);
+            if (back8 != null) flist.add(back8);
 
             for (File f : flist) {
+                log.info(f.getPath());
                 if (f.exists()) {
                     log.debug("Found resource at: " + f.getAbsolutePath());
                     return f.getAbsolutePath();
