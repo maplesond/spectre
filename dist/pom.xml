@@ -86,15 +86,9 @@
         <profile>
             <id>release-windows</id>
             <activation>
-                <os>
-                    <family>windows</family>
-                    <!--<arch>x64</arch>-->
-                </os>
+                <os><family>windows</family></os>
                 <property><name>release</name></property>
             </activation>
-            <properties>
-                <spectre-platform>windows</spectre-platform>
-            </properties>
             <build>
                 <plugins>
                     <plugin>
@@ -122,11 +116,11 @@
                                         <argument>-description</argument>
                                         <argument>"Suite of PhylogEnetiC Tools for Reticulate Evolution"</argument>
                                         <argument>-BappVersion=${project.parent.version}</argument>
-                                        <argument>-Bicon=${project.basedir}/../etc/logo.png</argument>
+                                        <argument>-Bicon=${project.basedir}/../etc/logo.ico</argument>
                                         <argument>-BmainJar=jar/viewer-${project.parent.version}.jar</argument>
                                         <argument>-BclassPath="etc/*:jar/*"</argument>
                                         <argument>-native</argument>
-                                        <argument>msi</argument>
+                                        <argument>exe</argument>
                                         <argument>-appclass</argument>
                                         <argument>uk.ac.uea.cmp.spectre.viewer.Spectre</argument>
                                         <argument>-srcdir</argument>
@@ -147,14 +141,9 @@
         <profile>
             <id>release-linux</id>
             <activation>
-                <os>
-                    <family>unix</family>
-                </os>
+                <os><family>unix</family></os>
                 <property><name>release</name></property>
             </activation>
-            <properties>
-                <spectre-platform>unix</spectre-platform>
-            </properties>
             <build>
                 <plugins>
                     <plugin>
@@ -210,10 +199,7 @@
         <profile>
             <id>release-mac</id>
             <activation>
-                <os>
-                    <family>Mac</family>
-                    <!--<arch>x64</arch>-->
-                </os>
+                <os><family>Mac</family></os>
                 <property><name>release</name></property>
             </activation>
             <properties>
