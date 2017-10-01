@@ -36,12 +36,14 @@ public class ProjectProperties {
             File local1 = new File(extDir, filename);
             File local2 = FileUtils.toFile(ProjectProperties.class.getResource(filename));
             File back1 = new File(extDir.getParentFile(), "etc" + File.separator + filename);
+            File back2 = new File(extDir.getParentFile().getParentFile(), "etc" + File.separator + filename);
 
             List<File> flist = new ArrayList<>();
             if (etc != null) flist.add(etc);
             if (local1 != null) flist.add(local1);
             if (local2 != null) flist.add(local2);
             if (back1 != null) flist.add(back1);
+            if (back2 != null) flist.add(back2);
 
             for (File f : flist) {
                 if (f.exists()) {
