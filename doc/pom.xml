@@ -13,21 +13,19 @@
   ~ details.
   ~
   ~ You should have received a copy of the GNU General Public License along with this program.  If not, see
-  ~ <http://www.gnu.org/licenses/>.
+  ~ <http://www.gnu.org/licenses />.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>spectre</artifactId>
         <groupId>uk.ac.uea.cmp.spectre</groupId>
-        <version>1.1.0-SNAPSHOT</version>
+        <version>1.1.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>doc</artifactId>
-    <version>1.1.0-SNAPSHOT</version>
+    <version>1.1.0</version>
 
     <name>Spectre: Create Documentation</name>
 
@@ -54,11 +52,8 @@
                             <target>
 
                                 <!-- Create the documentation -->
-                                <exec
-                                        dir="${doc-dir}"
-                                        executable="make"
-                                        failonerror="false">
-                                    <arg line="html man text"/>
+                                <exec dir="${doc-dir}" executable="make" failonerror="false">
+                                    <arg line="html man text" />
                                     <!--<arg line="html latexpdf text" />-->
                                 </exec>
 

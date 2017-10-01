@@ -12,21 +12,19 @@
   ~ warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
   ~
   ~ You should have received a copy of the GNU General Public License along with this program.  If not, see
-  ~ <http://www.gnu.org/licenses/>.
+  ~ <http://www.gnu.org/licenses />.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>spectre</artifactId>
         <groupId>uk.ac.uea.cmp.spectre</groupId>
-        <version>1.1.0-SNAPSHOT</version>
+        <version>1.1.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>dist</artifactId>
-    <version>1.1.0-SNAPSHOT</version>
+    <version>1.1.0</version>
 
     <name>Spectre: Create Distribution</name>
 
@@ -48,28 +46,28 @@
                         <configuration>
                             <target>
                                 <!-- copy the config and resource files into to the build dir -->
-                                <mkdir dir="${build-dir}/etc"/>
+                                <mkdir dir="${build-dir}/etc" />
                                 <copy todir="${build-dir}/etc">
-                                    <fileset dir="${etc-dir}"/>
+                                    <fileset dir="${etc-dir}" />
                                 </copy>
                                 <!-- copy the example files into the build dir -->
-                                <mkdir dir="${build-dir}/examples"/>
+                                <mkdir dir="${build-dir}/examples" />
                                 <copy todir="${build-dir}/examples">
-                                    <fileset dir="${examples-dir}"/>
+                                    <fileset dir="${examples-dir}" />
                                 </copy>
                                 <!-- copy the documentation in to the build dir -->
-                                <mkdir dir="${build-dir}/doc"/>
+                                <mkdir dir="${build-dir}/doc" />
                                 <copy todir="${build-dir}/doc">
-                                    <fileset dir="${doc-dir}/build"/>
+                                    <fileset dir="${doc-dir}/build" />
                                 </copy>
                                 <copy todir="${build-dir}">
-                                    <fileset file="${project.basedir}/../LICENSE"/>
-                                    <fileset file="${project.basedir}/../README.md"/>
+                                    <fileset file="${project.basedir}/../LICENSE" />
+                                    <fileset file="${project.basedir}/../README.md" />
                                 </copy>
                                 <copy todir="${build-dir}/jar" flatten="true">
                                     <fileset dir="${build-dir}/repo">
-                                        <include name="**/*.jar"/>
-                                        <type type="file"/>
+                                        <include name="**/*.jar" />
+                                        <type type="file" />
                                     </fileset>
                                 </copy>
                             </target>
