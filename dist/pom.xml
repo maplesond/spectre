@@ -257,7 +257,7 @@
                                         <argument>${project.parent.artifactId}-${project.parent.version}</argument>
                                         <argument>-appclass</argument>
                                         <argument>uk.ac.uea.cmp.spectre.viewer.Spectre</argument>
-                                        <!--<argument>-BlicenseFile=LICENSE</argument>-->
+                                        <argument>-BlicenseFile=LICENSE</argument>
                                         <argument>-BappVersion=${project.parent.version}</argument>
                                         <argument>-Bicon=${project.basedir}/../etc/logo.icns</argument>
                                         <argument>-BmainJar=jar/viewer-${project.parent.version}.jar</argument>

@@ -11,3 +11,4 @@
 /classes/
 *.class
 *.nex
+/release.properties
