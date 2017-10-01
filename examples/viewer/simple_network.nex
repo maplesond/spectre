@@ -1,0 +1,62 @@
+#NEXUS
+
+BEGIN Taxa;
+ DIMENSIONS ntax=5;
+ TAXLABELS
+  [1]	'A'
+  [2]	'B'
+  [3]	'C'
+  [4]	'D'
+  [5]	'E'
+ ;
+END; [Taxa]
+
+BEGIN Network;
+DIMENSIONS ntax=5 nvertices=7 nedges=6;
+DRAW to_scale;
+TRANSLATE
+1 'E',
+3 'D',
+5 'B',
+6 'C',
+7 'A',
+;
+VERTICES
+1 -0.4647698095487202 -3.0902230377017434 w=5 h=5,
+2 -0.06927664465097227 -2.171754117966751 w=0 h=0,
+3 0.9271647636995388 -2.0874658048714503 w=5 h=5,
+4 -0.9005963804626165 -1.1293121413427112 w=0 h=0,
+5 -2.1971792049065595 -0.49268608749053944 w=5 h=5,
+6 -1.9731679211231976 -0.839211828692835 w=5 h=5,
+7 -2.051633439459886 -0.25665330657316565 w=5 h=5,
+;
+VLABELS
+1 'E' x=-3 y=-4 f='Dialog-0-10' lc=0 0 0,
+3 'D' x=4 y=-4 f='Dialog-0-10' lc=0 0 0,
+5 'B' x=-11 y=17 f='Dialog-0-10' lc=0 0 0,
+6 'C' x=-12 y=17 f='Dialog-0-10' lc=0 0 0,
+7 'A' x=-11 y=17 f='Dialog-0-10' lc=0 0 0,
+;
+EDGES
+1 2 1 s=10 l=1 fg=0 0 0,
+2 2 3 s=8 l=1 fg=0 0 0,
+3 4 2 s=9 l=1 fg=0 0 0,
+4 4 5 s=5 l=1 fg=0 0 0,
+5 4 6 s=1 l=1 fg=0 0 0,
+6 7 4 s=4 l=1 fg=0 0 0,
+;
+END;
+
+BEGIN Viewer;
+DIMENSIONS width=1512 height=841;
+ MATRIX
+  ratio=273.5065918745986
+  showtrivial=true
+  showrange=true
+  showlabels=true
+  colorlabels=false
+  leaders=SLANTED
+  leaderstroke=DASHED
+  leadercolor=0 0 0
+ ;
+END [Viewer];
