@@ -41,7 +41,7 @@
                 <executions>
                     <execution>
                         <id>copy-resources</id>
-                        <phase>install</phase>
+                        <phase>package</phase>
                         <goals>
                             <goal>run</goal>
                         </goals>
@@ -84,12 +84,13 @@
 
     <profiles>
         <profile>
-            <id>windows</id>
+            <id>release-windows</id>
             <activation>
                 <os>
                     <family>windows</family>
                     <!--<arch>x64</arch>-->
                 </os>
+                <property><name>release</name></property>
             </activation>
             <properties>
                 <spectre-platform>windows</spectre-platform>
@@ -121,7 +122,7 @@
                                         <argument>-description</argument>
                                         <argument>"Suite of PhylogEnetiC Tools for Reticulate Evolution"</argument>
                                         <argument>-BappVersion=${project.parent.version}</argument>
-                                        <argument>-Bicon=etc/logo.png</argument>
+                                        <argument>-Bicon=${project.basedir}/../etc/logo.png</argument>
                                         <argument>-BmainJar=jar/viewer-${project.parent.version}.jar</argument>
                                         <argument>-BclassPath="etc/*:jar/*"</argument>
                                         <argument>-native</argument>
@@ -144,12 +145,12 @@
             </build>
         </profile>
         <profile>
-            <id>linux</id>
+            <id>release-linux</id>
             <activation>
                 <os>
                     <family>unix</family>
-                    <!--<arch>x64</arch>-->
                 </os>
+                <property><name>release</name></property>
             </activation>
             <properties>
                 <spectre-platform>unix</spectre-platform>
@@ -185,14 +186,14 @@
                                         <argument>-BclassPath="etc/*:jar/*"</argument>
                                         <argument>-BappVersion=${project.parent.version}</argument>
                                         <argument>-Bicon=${project.basedir}/../etc/logo.png</argument>
-                                        <argument>-Bcategory=science</argument>
+                                        <argument>-Bcategory=Education</argument>
                                         <argument>-Bvendor="Earlham Institute"</argument>
                                         <argument>-native</argument>
                                         <argument>deb</argument>
                                         <argument>-appclass</argument>
                                         <argument>uk.ac.uea.cmp.spectre.viewer.Spectre</argument>
                                         <argument>-srcdir</argument>
-                                        <argument>${project.basedir}/../build/${project.parent.artifactId}-${project.parent.version}</argument>
+                                        <argument>"${project.basedir}/../build/${project.parent.artifactId}-${project.parent.version}"</argument>
                                         <argument>-outdir</argument>
                                         <argument>${dist-dir}</argument>
                                         <argument>-outfile</argument>
@@ -207,12 +208,13 @@
             </build>
         </profile>
         <profile>
-            <id>mac</id>
+            <id>release-mac</id>
             <activation>
                 <os>
                     <family>Mac</family>
                     <!--<arch>x64</arch>-->
                 </os>
+                <property><name>release</name></property>
             </activation>
             <properties>
                 <spectre-platform>mac</spectre-platform>
@@ -237,27 +239,32 @@
 
                                     <arguments>
                                         <argument>-deploy</argument>
+                                        <argument>-native</argument>
+                                        <argument>dmg</argument>
                                         <argument>-name</argument>
                                         <argument>${project.parent.artifactId}</argument>
                                         <argument>-title</argument>
-                                        <argument>SPECTRE</argument>
+                                        <argument>${project.parent.artifactId}</argument>
                                         <argument>-description</argument>
                                         <argument>"Suite of PhylogEnetiC Tools for Reticulate Evolution"</argument>
-                                        <argument>-BlicenseFile=LICENSE</argument>
-                                        <argument>-BappVersion=${project.parent.version}</argument>
-                                        <argument>-Bicon=etc/logo.png</argument>
-                                        <argument>-BmainJar=jar/viewer-${project.parent.version}.jar</argument>
-                                        <argument>-BclassPath="etc/*:jar/*"</argument>
-                                        <argument>-native</argument>
-                                        <argument>dmg</argument>
-                                        <argument>-appclass</argument>
-                                        <argument>uk.ac.uea.cmp.spectre.viewer.Spectre</argument>
+                                        <argument>-vendor</argument>
+                                        <argument>"Earlham Institute"</argument>
                                         <argument>-srcdir</argument>
                                         <argument>${project.basedir}/../build/${project.parent.artifactId}-${project.parent.version}</argument>
                                         <argument>-outdir</argument>
                                         <argument>${dist-dir}</argument>
                                         <argument>-outfile</argument>
                                         <argument>${project.parent.artifactId}-${project.parent.version}</argument>
+                                        <argument>-appclass</argument>
+                                        <argument>uk.ac.uea.cmp.spectre.viewer.Spectre</argument>
+                                        <!--<argument>-BlicenseFile=LICENSE</argument>-->
+                                        <argument>-BappVersion=${project.parent.version}</argument>
+                                        <argument>-Bicon=${project.basedir}/../etc/logo.icns</argument>
+                                        <argument>-BmainJar=jar/viewer-${project.parent.version}.jar</argument>
+                                        <argument>-BclassPath="etc/*:jar/*"</argument>
+                                        <argument>-Bmac.category=Education</argument>
+                                        <argument>-Bmac.CFBundleIdentifier=uk.ac.uea.cmp.spectre.viewer.Spectre</argument>
+                                        <argument>-Bmac.CFBundleVersion-${project.parent.version}</argument>
                                         <argument>-v</argument>
                                     </arguments>
                                 </configuration>
