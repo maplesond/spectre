@@ -295,6 +295,7 @@
                     <defaultOriginUrl>https://github.com/maplesond/spectre.git</defaultOriginUrl>
                     <noDeploy>true</noDeploy>
                     <squash>true</squash>
+                    <pushReleases>true</pushReleases>
                     <flowInitContext>
                         <masterBranchName>master</masterBranchName>
                         <developBranchName>develop</developBranchName>
