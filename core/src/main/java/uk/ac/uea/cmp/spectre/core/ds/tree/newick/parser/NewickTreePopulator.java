@@ -47,7 +47,8 @@ public class NewickTreePopulator implements NewickTreeListener {
     /**
      * Provide the object to populate with findings from the parse context
      *
-     * @param tree
+     * @param tree The newick tree
+     * @param verbose Print / log additional output
      */
     public NewickTreePopulator(NewickTree tree, boolean verbose) {
         this.tree = tree;

@@ -28,18 +28,14 @@ import java.util.*;
 /**
  * Given a circular ordering and a distance matrix, computes the unconstrained or constrained least square weighted
  * splits.
- * <p/>
  * Contains routines for performing OLS and WLS for circular splits. The splits are specified by their circular
  * ordering.
- * <p/>
  * For the unconstrained case (and a maximal collection of circular splits), both OLS and WLS give the same answer - the
  * least squares branch estimates can be computed directly from the distances as proven by Chepoi et al.
- * <p/>
  * The constrained case (constrained to non-negative values) is handled using an active set method, with an iterative
  * technique (conjugate gradients) for the equality constrained optimizations at each step. The use of conjugate
  * gradients means that we only need O(n^2) memory (n = number of taxa) compared to O(n^4) memory if we compute A^tWA
  * and apply Cholesky decomposition.
- * <p/>
  * There is still room for improvement - it may be that a more sophisticated iterative method (e.g. Memoryless
  * Quasi-Newton) converges faster than the conjugate gradient method. Furthermore, I can imagine that an iterative
  * method combined with a positivity constraint would speed up the constrained optimization considerably - as yet I

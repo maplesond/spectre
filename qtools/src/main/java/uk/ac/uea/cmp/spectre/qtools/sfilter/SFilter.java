@@ -116,7 +116,7 @@ public class SFilter extends SpectreTool {
     /**
      * Main entry point for split filter tool
      *
-     * @param args
+     * @param args The command line arguments
      */
     public static void main(String[] args) {
 

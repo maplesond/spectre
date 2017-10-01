@@ -187,12 +187,14 @@ public class SuperQ extends RunnableTool {
 
     /**
      * To be used only in conjunction with the MINIMA objective
-     * <p/>
+     *
      * NOTE: This might be broken... probably need to modify the coefficients of the problem internally for each run
      *
-     * @param problem
-     * @return The solution
-     * @throws OptimiserException
+     * @param optimiser The optimiser to use
+     * @param problem The problem to solve
+     * @param data The variables
+     * @return The solution The result
+     * @throws OptimiserException Occurs if there was a problem while optimising the problem
      */
     protected double[] minimaOptimise(Optimiser optimiser, Problem problem, double[] data) throws OptimiserException {
 

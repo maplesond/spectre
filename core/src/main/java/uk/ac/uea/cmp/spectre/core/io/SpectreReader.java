@@ -40,7 +40,7 @@ public interface SpectreReader {
      *
      * @param input The file to read
      * @return A distance matrix
-     * @throws IOException
+     * @throws IOException Thrown if any disk related issues occur (e.g. file does not exist or inaccessible)
      */
     DistanceMatrix readDistanceMatrix(File input) throws IOException;
 
@@ -49,7 +49,7 @@ public interface SpectreReader {
      *
      * @param file The file to read
      * @return A list of NewickTrees
-     * @throws IOException
+     * @throws IOException Thrown if any disk related issues occur (e.g. file does not exist or inaccessible)
      */
     List<NewickTree> readTrees(File file) throws IOException;
 
@@ -60,7 +60,7 @@ public interface SpectreReader {
      *
      * @param file The file to read
      * @return A split system
-     * @throws IOException
+     * @throws IOException Thrown if any disk related issues occur (e.g. file does not exist or inaccessible)
      */
     SplitSystem readSplitSystem(File file) throws IOException;
 
@@ -69,7 +69,7 @@ public interface SpectreReader {
      *
      * @param file The file to read
      * @return A quartet system
-     * @throws IOException
+     * @throws IOException Thrown if any disk related issues occur (e.g. file does not exist or inaccessible)
      */
     QuartetSystem readQuartets(File file) throws IOException;
 

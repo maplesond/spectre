@@ -20,7 +20,6 @@ import uk.ac.uea.cmp.spectre.core.ds.Identifier;
 /**
  * Every vertex of one component (after merging) gets the same weighting
  * parameter, so they are all equally weighted.
- * <p/>
  * Sarah Bastkowski, 2010: <I>Algorithmen zum Finden von Bäumen in Neighbor Net Netzwerken</I>
  *
  * @author Sarah Bastkowski

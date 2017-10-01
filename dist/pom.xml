@@ -12,66 +12,31 @@
   ~ warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
   ~
   ~ You should have received a copy of the GNU General Public License along with this program.  If not, see
-  ~ <http://www.gnu.org/licenses/>.
+  ~ <http://www.gnu.org/licenses />.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>spectre</artifactId>
         <groupId>uk.ac.uea.cmp.spectre</groupId>
-        <version>1.0.1</version>
+        <version>1.1.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>dist</artifactId>
-    <version>1.0.1</version>
+    <version>1.1.1</version>
 
     <name>Spectre: Create Distribution</name>
 
 
     <build>
-
         <plugins>
 
-
-            <!-- Various phases -->
-
-            <!-- Adds execute permission to scripts and copies resources to install folder during the package phase.
-                 Also creates and installs manual if possible in the install phase. -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <version>1.7</version>
                 <executions>
-                    <execution>
-                        <id>create-manual</id>
-                        <phase>install</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <target>
-
-                                <!-- Create the documentation -->
-                                <exec
-                                        dir="${doc-dir}"
-                                        executable="make"
-                                        failonerror="false">
-                                    <arg line="html man text"/>
-                                    <!--<arg line="html latexpdf text" />-->
-                                </exec>
-
-                                <!-- copy the documentation in to the build dir -->
-                                <mkdir dir="${build-dir}/doc"/>
-                                <copy todir="${build-dir}/doc">
-                                    <fileset dir="${doc-dir}/build"/>
-                                </copy>
-                                <!--<copy file="${doc-dir}/build/latex/phygen.pdf" todir="${build-dir}/doc"/>-->
-                            </target>
-                        </configuration>
-                    </execution>
                     <execution>
                         <id>copy-resources</id>
                         <phase>install</phase>
@@ -80,49 +45,225 @@
                         </goals>
                         <configuration>
                             <target>
-                                <!-- copy the documentation in to the build dir -->
-                                <mkdir dir="${build-dir}/etc"/>
+                                <!-- copy the config and resource files into to the build dir -->
+                                <mkdir dir="${build-dir}/etc" />
                                 <copy todir="${build-dir}/etc">
-                                    <fileset dir="${etc-dir}"/>
+                                    <fileset dir="${etc-dir}" />
                                 </copy>
-                                <mkdir dir="${build-dir}/examples"/>
+                                <!-- copy the example files into the build dir -->
+                                <mkdir dir="${build-dir}/examples" />
                                 <copy todir="${build-dir}/examples">
-                                    <fileset dir="${examples-dir}"/>
+                                    <fileset dir="${examples-dir}" />
                                 </copy>
-                                <!--<copy file="${doc-dir}/build/latex/phygen.pdf" todir="${build-dir}/doc"/>-->
+                                <!-- copy the documentation in to the build dir -->
+                                <mkdir dir="${build-dir}/doc" />
+                                <copy todir="${build-dir}/doc">
+                                    <fileset dir="${doc-dir}/build" />
+                                </copy>
+                                <copy todir="${build-dir}">
+                                    <fileset file="${project.basedir}/../LICENSE" />
+                                    <fileset file="${project.basedir}/../README.md" />
+                                </copy>
+                                <copy todir="${build-dir}/jar" flatten="true">
+                                    <fileset dir="${build-dir}/repo">
+                                        <include name="**/*.jar" />
+                                        <type type="file" />
+                                    </fileset>
+                                </copy>
                             </target>
                         </configuration>
                     </execution>
-                    <execution>
-                        <id>create-distributable</id>
-                        <phase>install</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <target>
-                                <mkdir dir="${dist-dir}"/>
-                                <tar longfile="gnu"
-                                     destfile="${dist-dir}/${dist-name}.tar.gz"
-                                     compression="gzip">
 
-                                    <tarfileset dir="${project.basedir}/../build" filemode="755">
-                                        <include name="${dist-name}/bin/*"/>
-                                    </tarfileset>
-
-                                    <tarfileset dir="${project.basedir}/../build">
-                                        <include name="${dist-name}/**"/>
-                                        <exclude name="${dist-name}/bin/*"/>
-                                    </tarfileset>
-                                </tar>
-                            </target>
-                        </configuration>
-                    </execution>
                 </executions>
             </plugin>
 
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>release-windows</id>
+            <activation>
+                <os><family>windows</family></os>
+                <property><name>release</name></property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>1.6.0</version>
+                        <executions>
+                            <execution>
+                                <id>create-distributable</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>
+                                        ${env.JAVA_HOME}/bin/javapackager
+                                    </executable>
+
+                                    <arguments>
+                                        <argument>-deploy</argument>
+                                        <argument>-native</argument>
+                                        <argument>exe</argument>
+                                        <argument>-name</argument>
+                                        <argument>${project.parent.artifactId}</argument>
+                                        <argument>-title</argument>
+                                        <argument>"Suite of PhylogEnetiC Tools for Reticulate Evolution"</argument>
+                                        <argument>-description</argument>
+                                        <argument>"Spectre a suite of tools for inferring evolutionary patterns associated with Reticulate Evolution that primarily either create or use split systems (a collection of bipartitions of the taxa) representable in two dimensions, such as SuperQ, FlatNJ, NetME and several NeighborNet variants."</argument>
+                                        <argument>-vendor</argument>
+                                        <argument>"Earlham Institute"</argument>
+                                        <argument>-appclass</argument>
+                                        <argument>uk.ac.uea.cmp.spectre.viewer.Spectre</argument>
+                                        <argument>-srcdir</argument>
+                                        <argument>"${project.basedir}/../build/${project.parent.artifactId}-${project.parent.version}"</argument>
+                                        <argument>-outdir</argument>
+                                        <argument>${dist-dir}</argument>
+                                        <argument>-outfile</argument>
+                                        <argument>${project.parent.artifactId}-${project.parent.version}</argument>
+                                        <argument>-v</argument>
+                                        <argument>-BappVersion=${project.parent.version}</argument>
+                                        <argument>-Bicon=${project.basedir}/../etc/logo.ico</argument>
+                                        <argument>-BmainJar=jar/viewer-${project.parent.version}.jar</argument>
+                                        <argument>-BclassPath="etc/*:jar/*"</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>release-linux</id>
+            <activation>
+                <os><family>unix</family></os>
+                <property><name>release</name></property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>1.6.0</version>
+                        <executions>
+                            <execution>
+                                <id>create-distributable</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>
+                                        ${env.JAVA_HOME}/bin/javapackager
+                                    </executable>
+
+                                    <arguments>
+                                        <argument>-deploy</argument>
+                                        <argument>-native</argument>
+                                        <argument>deb</argument>
+                                        <argument>-name</argument>
+                                        <argument>${project.parent.artifactId}</argument>
+                                        <argument>-title</argument>
+                                        <argument>"Suite of PhylogEnetiC Tools for Reticulate Evolution"</argument>
+                                        <argument>-description</argument>
+                                        <argument>"Spectre a suite of tools for inferring evolutionary patterns associated with Reticulate Evolution that primarily either create or use split systems (a collection of bipartitions of the taxa) representable in two dimensions, such as SuperQ, FlatNJ, NetME and several NeighborNet variants."</argument>
+                                        <argument>-vendor</argument>
+                                        <argument>"Earlham Institute"</argument>
+                                        <argument>-appclass</argument>
+                                        <argument>uk.ac.uea.cmp.spectre.viewer.Spectre</argument>
+                                        <argument>-srcdir</argument>
+                                        <argument>"${project.basedir}/../build/${project.parent.artifactId}-${project.parent.version}"</argument>
+                                        <argument>-outdir</argument>
+                                        <argument>${dist-dir}</argument>
+                                        <argument>-outfile</argument>
+                                        <argument>${project.parent.artifactId}-${project.parent.version}</argument>
+                                        <argument>-v</argument>
+                                        <argument>-BlicenseFile=LICENSE</argument>
+                                        <argument>-BmainJar=jar/viewer-${project.parent.version}.jar</argument>
+                                        <argument>-BclassPath="etc/*:jar/*"</argument>
+                                        <argument>-BappVersion=${project.parent.version}</argument>
+                                        <argument>-Bicon=${project.basedir}/../etc/logo.png</argument>
+                                        <argument>-Bcategory=Education</argument>
+
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>release-mac</id>
+            <activation>
+                <os><family>Mac</family></os>
+                <property><name>release</name></property>
+            </activation>
+            <properties>
+                <spectre-platform>mac</spectre-platform>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>1.6.0</version>
+                        <executions>
+                            <execution>
+                                <id>create-distributable</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>
+                                        ${env.JAVA_HOME}/bin/javapackager
+                                    </executable>
+
+                                    <arguments>
+                                        <argument>-deploy</argument>
+                                        <argument>-native</argument>
+                                        <argument>dmg</argument>
+                                        <argument>-name</argument>
+                                        <argument>${project.parent.artifactId}</argument>
+                                        <argument>-title</argument>
+                                        <argument>"Suite of PhylogEnetiC Tools for Reticulate Evolution"</argument>
+                                        <argument>-description</argument>
+                                        <argument>"Spectre a suite of tools for inferring evolutionary patterns associated with Reticulate Evolution that primarily either create or use split systems (a collection of bipartitions of the taxa) representable in two dimensions, such as SuperQ, FlatNJ, NetME and several NeighborNet variants."</argument>
+                                        <argument>-vendor</argument>
+                                        <argument>"Earlham Institute"</argument>
+                                        <argument>-appclass</argument>
+                                        <argument>uk.ac.uea.cmp.spectre.viewer.Spectre</argument>
+                                        <argument>-srcdir</argument>
+                                        <argument>"${project.basedir}/../build/${project.parent.artifactId}-${project.parent.version}"</argument>
+                                        <argument>-outdir</argument>
+                                        <argument>${dist-dir}</argument>
+                                        <argument>-outfile</argument>
+                                        <argument>${project.parent.artifactId}-${project.parent.version}</argument>
+                                        <argument>-v</argument>
+                                        <argument>-BlicenseFile=LICENSE</argument>
+                                        <argument>-BappVersion=${project.parent.version}</argument>
+                                        <argument>-Bicon=${project.basedir}/../etc/logo.icns</argument>
+                                        <argument>-BmainJar=jar/viewer-${project.parent.version}.jar</argument>
+                                        <argument>-BclassPath="etc/*:jar/*"</argument>
+                                        <argument>-Bmac.category=Education</argument>
+                                        <argument>-Bmac.CFBundleIdentifier=uk.ac.uea.cmp.spectre.viewer.Spectre</argument>
+                                        <argument>-Bmac.CFBundleVersion=${project.parent.version}</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
 
 
 </project>

@@ -20,12 +20,14 @@ import org.slf4j.LoggerFactory;
 import uk.ac.uea.cmp.spectre.core.ds.distance.DistanceCalculatorFactory;
 import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.CircularOrderingAlgorithms;
 import uk.ac.uea.cmp.spectre.core.ds.split.circular.ordering.nm.weighting.Weightings;
+import uk.ac.uea.cmp.spectre.core.io.nexus.NexusFileFilter;
 import uk.ac.uea.cmp.spectre.core.ui.gui.JobController;
 import uk.ac.uea.cmp.spectre.core.ui.gui.StatusTrackerWithView;
 import uk.ac.uea.cmp.spectre.core.ui.gui.ToolHost;
 import uk.ac.uea.cmp.spectre.core.util.LogConfig;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
@@ -554,6 +556,11 @@ public class NetMakeGUI extends JFrame implements ToolHost {
     private void cmdInputActionPerformed(java.awt.event.ActionEvent evt) {
 
         final JFileChooser fc = cwd == null ? new JFileChooser() : new JFileChooser(cwd);
+        fc.addChoosableFileFilter(new NexusFileFilter());
+        fc.addChoosableFileFilter(new FileNameExtensionFilter("Phylip", "phylip", "phy"));
+        fc.addChoosableFileFilter(new FileNameExtensionFilter("Emboss", "emb", "emboss", "ems"));
+        fc.addChoosableFileFilter(new FileNameExtensionFilter("FastA", "fa", "faa", "fasta"));
+
         if (evt.getSource() == cmdInput) {
             int returnVal = fc.showOpenDialog(NetMakeGUI.this);
             if (returnVal == JFileChooser.APPROVE_OPTION) {

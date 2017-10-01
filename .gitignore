@@ -11,3 +11,6 @@
 /classes/
 *.class
 *.nex
+/release.properties
+/mac_release.sh
+*.xml.releaseBackup

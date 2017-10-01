@@ -11,16 +11,14 @@
   ~ warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
   ~
   ~ You should have received a copy of the GNU General Public License along with this program.  If not, see
-  ~ <http://www.gnu.org/licenses/>.
+  ~ <http://www.gnu.org/licenses />.
   -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>uk.ac.uea.cmp.spectre</groupId>
     <artifactId>spectre</artifactId>
-    <version>1.0.1</version>
+    <version>1.1.1</version>
     <packaging>pom</packaging>
 
     <name>Suite of PhylogEnetiC Tools for Reticulate Evolution</name>
@@ -210,6 +208,11 @@
         </profile>
     </profiles>
 
+    <scm>
+        <developerConnection>scm:git:https://github.com/maplesond/spectre.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+
     <build>
 
         <pluginManagement>
@@ -283,6 +286,27 @@
                 <version>2.19.1</version>
             </plugin>
 
+
+            <plugin>
+                <groupId>external.atlassian.jgitflow</groupId>
+                <artifactId>jgitflow-maven-plugin</artifactId>
+                <version>1.0-m5.1</version>
+                <configuration>
+                    <autoVersionSubmodules>true</autoVersionSubmodules>
+                    <defaultOriginUrl>https://github.com/maplesond/spectre.git</defaultOriginUrl>
+                    <noDeploy>true</noDeploy>
+                    <squash>true</squash>
+                    <flowInitContext>
+                        <masterBranchName>master</masterBranchName>
+                        <developBranchName>develop</developBranchName>
+                        <featureBranchPrefix>feature-</featureBranchPrefix>
+                        <releaseBranchPrefix>release-</releaseBranchPrefix>
+                        <hotfixBranchPrefix>hotfix-</hotfixBranchPrefix>
+                        <versionTagPrefix>spectre-v</versionTagPrefix>
+                    </flowInitContext>
+                </configuration>
+            </plugin>
+
         </plugins>
 
     </build>
@@ -302,7 +326,6 @@
 
     <modules>
 
-        <!-- Execute this first to clean any mess in the main folder -->
         <module>clean</module>
 
         <!-- Run through the child projects -->
@@ -313,6 +336,7 @@
         <module>qtools</module>
         <module>flatnj</module>
         <!--<module>padre</module>-->
+        <module>doc</module>
 
         <!-- This gets executed last because it creates the distribution and the manual -->
         <module>dist</module>

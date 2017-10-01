@@ -15,6 +15,7 @@
 
 package uk.ac.uea.cmp.spectre.viewer;
 
+import com.apple.eawt.Application;
 import com.itextpdf.awt.DefaultFontMapper;
 import com.itextpdf.awt.PdfGraphics2D;
 import com.itextpdf.text.Document;
@@ -103,9 +104,6 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
     private static String directory = ".";
     private File networkFile = null;
 
-    // Dialog for finding labels
-    private FindDialog find = new FindDialog(this, true);
-
     // Viewer configuration
     //private ViewerConfig config = new ViewerConfig();
 
@@ -120,7 +118,8 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
     private javax.swing.JPanel pnlOpen;     // Initial panel containing help message
     private javax.swing.JLabel lblOpenMsg;  // Initial help message
 
-    private javax.swing.JPanel pnlStatus;   // Status bar
+    // Status bar
+    private javax.swing.JPanel pnlStatus;
     private javax.swing.JPanel pnlNetCoords;
     private javax.swing.JLabel lblNetCoords;
     private javax.swing.JPanel pnlScreenCoords;
@@ -131,6 +130,16 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
     private javax.swing.JLabel lblZoomRatio;
     private javax.swing.JPanel pnlAngle;
     private javax.swing.JLabel lblAngle;
+
+    // Find bar
+    private javax.swing.JToolBar tbFind;
+    private javax.swing.JTextField txtFindText;
+    private javax.swing.JCheckBox chkFindRegex;
+    private javax.swing.JCheckBox chkFindMatchCase;
+    private javax.swing.JButton cmdFind;
+    private javax.swing.JLabel lblFindResults;
+    private javax.swing.JButton cmdFindClose;
+
 
     // Main menu
     private javax.swing.JMenuBar menuBar;
@@ -180,7 +189,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
 
 
     /**
-     * Creates new netview instance without any input data.
+     * Creates new spectre instance without any input data.
      * Normal initialisation.
      */
     public Spectre() throws IOException {
@@ -189,7 +198,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
     }
 
     /**
-     * Creates a netview instance with the given file loaded at startup
+     * Creates a spectre instance with the given file loaded at startup
      * Intended to be used from CLI
      *
      * @param inFile
@@ -211,20 +220,71 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         getContentPane().setBackground(Color.white); // TODO Allow user to control background color
         setForeground(java.awt.Color.white);
 
-        try {
-            setIconImage((new ImageIcon(LookAndFeel.getLogoFilePath()).getImage()));
-        } catch (URISyntaxException e) {
-            errorMessage("Couldn't load logo.", e);
-        }
+        setIconImage((new ImageIcon(ProjectProperties.getResourceFile("logo.png")).getImage()));
 
         setLayout(new BorderLayout());
 
-
         prepareStatus();
-
+        prepareFind();
     }
 
+    private void find() {
+        int hits = drawing.find(txtFindText.getText(), chkFindRegex.isSelected(), !chkFindMatchCase.isSelected());
+        lblFindResults.setText(" " + Integer.toString(hits) + " match" + (hits != 1 ? "es " : " "));
+    }
 
+    private void prepareFind() {
+
+        this.tbFind = new JToolBar();
+        this.tbFind.setLayout ( new BoxLayout ( this.tbFind, BoxLayout.LINE_AXIS ) );
+
+        this.txtFindText = new JTextField(20);
+        this.txtFindText.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                find();
+            }
+        });
+        this.tbFind.add(this.txtFindText);
+        this.tbFind.addSeparator();
+
+        this.chkFindRegex = new JCheckBox("Regex  ");
+        this.tbFind.add(this.chkFindRegex);
+
+        this.chkFindMatchCase = new JCheckBox("Match Case ");
+        this.tbFind.add(this.chkFindMatchCase);
+        this.tbFind.addSeparator();
+
+        this.cmdFind = new JButton("Find");
+        this.cmdFind.setIcon(new ImageIcon(ProjectProperties.getResourceFile("find.png")));
+        this.cmdFind.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                find();
+            }
+        });
+        this.tbFind.add(this.cmdFind);
+        this.tbFind.addSeparator();
+
+        this.lblFindResults = new JLabel("                  ");
+        Font f = this.lblFindResults.getFont();
+        this.lblFindResults.setFont(f.deriveFont(f.getStyle() | Font.BOLD));
+        this.tbFind.add(this.lblFindResults);
+
+        this.tbFind.add(Box.createHorizontalGlue());
+        this.tbFind.addSeparator();
+
+        this.cmdFindClose = new JButton(new ImageIcon(ProjectProperties.getResourceFile("close.png")));
+        this.cmdFindClose.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tbFind.setVisible(false);
+            }
+        });
+        this.tbFind.add(this.cmdFindClose);
+
+
+        this.tbFind.setVisible(false);
+
+        this.getContentPane().add(this.tbFind, BorderLayout.NORTH);
+    }
 
     private void prepareStatus() {
         this.pnlStatus = new JPanel();
@@ -284,7 +344,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
     }
 
     private void prepareDrawing() {
-        drawing = new Window();
+        drawing = new Window(this.mnuEditCopy);
 
         dt = new DropTarget(drawing, this);
         format = new Formating(drawing);
@@ -324,6 +384,11 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
     @SuppressWarnings("unchecked")
     private void prepareMenu() {
 
+        // Shortcuts on mac will use CMD button rather than CTRL
+        String osName = System.getProperty("os.name").toLowerCase();
+        boolean isMacOs = osName.startsWith("mac");
+
+
         menuBar = new javax.swing.JMenuBar();
 
         mnuView = new javax.swing.JMenu();
@@ -360,7 +425,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         mnuFileOpen.setText("Open...");
         mnuFileOpen.setMnemonic('O');
         mnuFileOpen.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O,
-                java.awt.Event.CTRL_MASK));
+                isMacOs ? Event.META_MASK : java.awt.Event.CTRL_MASK));
         mnuFileOpen.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 openFileActionPerformed(evt);
@@ -373,7 +438,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         mnuFileSave.setText("Save network");
         mnuFileSave.setMnemonic('S');
         mnuFileSave.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S,
-                java.awt.Event.CTRL_MASK));
+                isMacOs ? Event.META_MASK : java.awt.Event.CTRL_MASK));
         mnuFileSave.setEnabled(false);
         mnuFileSave.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -413,7 +478,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         mnuFileExit.setMnemonic('X');
         mnuFileExit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                log.info("Shutting down netview");
+                log.info("Shutting down spectre");
                 System.exit(0);
             }
         });
@@ -426,10 +491,10 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         mnuEdit.setMnemonic('E');
 
         mnuEditCopy = new javax.swing.JMenuItem();
-        mnuEditCopy.setText("Copy");
+        mnuEditCopy.setText("Copy selected labels");
         mnuEditCopy.setMnemonic('C');
         mnuEditCopy.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C,
-                java.awt.Event.CTRL_MASK));
+                isMacOs ? Event.META_MASK : java.awt.Event.CTRL_MASK));
         mnuEditCopy.addActionListener(new ActionListener() {
 
             @Override
@@ -437,15 +502,17 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
                 drawing.copySelectedTaxa();
             }
         });
+        mnuEditCopy.setEnabled(false);
         mnuEdit.add(mnuEditCopy);
 
         mnuEdit.addSeparator();
 
         mnuEditSelectall = new javax.swing.JMenuItem();
         mnuEditSelectall.setText("Select all");
+        mnuEditSelectall.setEnabled(false);
         mnuEditSelectall.setMnemonic('S');
         mnuEditSelectall.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A,
-                java.awt.Event.CTRL_MASK));
+                isMacOs ? Event.META_MASK : java.awt.Event.CTRL_MASK));
         mnuEditSelectall.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 drawing.selectAll();
@@ -456,14 +523,16 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         mnuEdit.addSeparator();
 
         mnuEditFind = new javax.swing.JMenuItem();
+        mnuEditFind.setEnabled(false);
         mnuEditFind.setText("Find...");
         mnuEditFind.setMnemonic('F');
         mnuEditFind.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F,
-                java.awt.Event.CTRL_MASK));
+                isMacOs ? Event.META_MASK : java.awt.Event.CTRL_MASK));
         mnuEditFind.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                find.clearText();
-                find.setVisible(true);
+                txtFindText.setText("");
+                lblFindResults.setText("              ");
+                tbFind.setVisible(true);
             }
         });
         mnuEdit.add(mnuEditFind);
@@ -477,7 +546,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         mnuViewRotateleft.setText("Rotate Left");
         mnuViewRotateleft.setMnemonic('L');
         mnuViewRotateleft.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT,
-                java.awt.Event.CTRL_MASK));
+                isMacOs ? Event.META_MASK : java.awt.Event.CTRL_MASK));
         mnuViewRotateleft.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 drawing.rotate(-0.1);
@@ -488,7 +557,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         mnuViewRotateright.setText("Rotate Right");
         mnuViewRotateright.setMnemonic('R');
         mnuViewRotateright.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_RIGHT,
-                java.awt.Event.CTRL_MASK));
+                isMacOs ? Event.META_MASK : java.awt.Event.CTRL_MASK));
         mnuViewRotateright.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 drawing.rotate(0.1);
@@ -499,7 +568,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         mnuViewZoomin.setText("Zoom in");
         mnuViewZoomin.setMnemonic('I');
         mnuViewZoomin.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_UP,
-                java.awt.Event.CTRL_MASK));
+                isMacOs ? Event.META_MASK : java.awt.Event.CTRL_MASK));
         mnuViewZoomin.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 drawing.zoom(-drawing.config.getRatio() / 10.0);
@@ -510,7 +579,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         mnuViewZoomout.setText("Zoom out");
         mnuViewZoomout.setMnemonic('O');
         mnuViewZoomout.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN,
-                java.awt.Event.CTRL_MASK));
+                isMacOs ? Event.META_MASK : java.awt.Event.CTRL_MASK));
         mnuViewZoomout.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 drawing.zoom(drawing.config.getRatio() / 10.0);
@@ -521,7 +590,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         mnuViewFliphorizontal.setText("Flip Horizontal");
         mnuViewFliphorizontal.setMnemonic('H');
         mnuViewFliphorizontal.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_H,
-                java.awt.Event.CTRL_MASK + Event.SHIFT_MASK));
+                (isMacOs ? Event.META_MASK : java.awt.Event.CTRL_MASK) + Event.SHIFT_MASK));
         mnuViewFliphorizontal.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 drawing.flipNetwork(true);
@@ -532,7 +601,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         mnuViewFlipvertical.setText("Flip Vertical");
         mnuViewFlipvertical.setMnemonic('V');
         mnuViewFlipvertical.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_V,
-                java.awt.Event.CTRL_MASK + Event.SHIFT_MASK));
+                (isMacOs ? Event.META_MASK : java.awt.Event.CTRL_MASK) + Event.SHIFT_MASK));
         mnuViewFlipvertical.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 drawing.flipNetwork(false);
@@ -545,7 +614,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         mnuViewOptimiseLayout.setText("Optimize layout");
         mnuViewOptimiseLayout.setMnemonic('P');
         mnuViewOptimiseLayout.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_P,
-                java.awt.Event.CTRL_MASK));
+                isMacOs ? Event.META_MASK : java.awt.Event.CTRL_MASK));
         mnuViewOptimiseLayout.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 if (network != null) {
@@ -560,7 +629,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         mnuViewShowTrivial.setSelected(true);
         mnuViewShowTrivial.setMnemonic('T');
         mnuViewShowTrivial.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_T,
-                java.awt.Event.CTRL_MASK));
+                isMacOs ? Event.META_MASK : java.awt.Event.CTRL_MASK));
         mnuViewShowTrivial.setText("Show trivial splits");
         mnuViewShowTrivial.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -572,7 +641,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         mnuViewShowRange.setSelected(true);
         mnuViewShowRange.setMnemonic('R');
         mnuViewShowRange.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R,
-                java.awt.Event.CTRL_MASK));
+                isMacOs ? Event.META_MASK : java.awt.Event.CTRL_MASK));
         mnuViewShowRange.setText("Show range");
         mnuViewShowRange.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -590,7 +659,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         mnuLabelingShow.setText("Show labels");
         mnuLabelingShow.setMnemonic('S');
         mnuLabelingShow.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_L,
-                java.awt.Event.CTRL_MASK));
+                isMacOs ? Event.META_MASK : java.awt.Event.CTRL_MASK));
         mnuLabelingShow.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 drawing.config.setShowLabels(mnuLabelingShow.isSelected());
@@ -1341,6 +1410,8 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         // If we've got this far then the file loaded correctly.
         networkFile = inFile;           // Record the file for future saving etc
         mnuFileSave.setEnabled(true);   // Ensure we can save menu is enabled
+        mnuEditFind.setEnabled(true);
+        mnuEditSelectall.setEnabled(true);
         setTitle(TITLE + ": " + inFile.getAbsolutePath());  // Update title with the filename
 
         // If the open panel was used, make sure the opening panel is invisible... not required any more.
@@ -1521,7 +1592,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         Options options = new Options();
         options.addOption(CommandLineHelper.HELP_OPTION);
         options.addOption(OptionBuilder.withLongOpt(OPT_DISPOSE).hasArg(false)
-                .withDescription("Whether to just close this window when closing netview.  By default we close all linked applications and windows when closing netview.")
+                .withDescription("Whether to just close this window when closing spectre.  By default we close all linked applications and windows when closing spectre.")
                 .isRequired(false).create("d"));
         options.addOption(OptionBuilder.withLongOpt(OPT_VERBOSE).isRequired(false).hasArg(false)
                 .withDescription("Whether to output extra information").create("v"));
@@ -1534,10 +1605,21 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
     public static void main(String args[]) {
 
         try {
+
             // Configure logging
             LogConfig.defaultConfig();
 
-            LookAndFeel.setLookAndFeel(LookAndFeel.NIMBUS);
+            String osName = System.getProperty("os.name").toLowerCase();
+            boolean isMacOs = osName.startsWith("mac");
+            if (isMacOs) {
+                System.setProperty("apple.laf.useScreenMenuBar", "true");
+                Application.getApplication().setDockIconImage(
+                        new ImageIcon(ProjectProperties.getResourceFile("logo.png")).getImage());
+            }
+            else {
+                LookAndFeel.setLookAndFeel(LookAndFeel.NIMBUS);
+            }
+
 
             // Parse command line args
             final CommandLine commandLine = new CommandLineHelper().startApp(createOptions(), "spectre [options] <input>",
@@ -1557,9 +1639,9 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
             if (commandLine.getArgs().length > 1) {
                 throw new IOException("Expected only a single input file.");
             } else if (commandLine.getArgs().length == 1) {
-                log.info("Opening netview with input file: " + inputfile.getAbsolutePath());
+                log.info("Opening spectre with input file: " + inputfile.getAbsolutePath());
             } else {
-                log.info("Opening netview with no input");
+                log.info("Opening spectre with no input");
             }
 
 

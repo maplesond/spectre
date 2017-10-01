@@ -53,8 +53,8 @@ public class SpectreNetwork implements Network {
 
     /**
      * Used when loading a network from file
-     * @param vertices
-     * @param edges
+     * @param vertices Vertices in network
+     * @param edges Edges in network
      */
     public SpectreNetwork(VertexList vertices, EdgeList edges) {
 
@@ -82,7 +82,7 @@ public class SpectreNetwork implements Network {
 
     /**
      * Used when creating network from split system draw
-     * @param v
+     * @param v Initial vertex
      */
     public SpectreNetwork(Vertex v) {
         this(v.collectVertices(), v.getFirstEdge().collectEdges());

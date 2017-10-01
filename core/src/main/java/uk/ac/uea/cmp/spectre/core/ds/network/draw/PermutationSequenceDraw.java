@@ -109,6 +109,7 @@ public class PermutationSequenceDraw {
      * @param in_weights Weights
      * @param in_active Active flags
      * @param trivialWeights Trivial weights
+     * @param taxanames Taxa names
      */
     public PermutationSequenceDraw(int[] in_init_sequ, int[] in_swaps, double[] in_weights, boolean[] in_active, double[] trivialWeights, String[] taxanames) {
         int i = 0;

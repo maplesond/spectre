@@ -41,7 +41,7 @@ public class PermutationSequenceFactory {
      * Computes {@linkplain PermutationSequence}.
      *
      * @param qs {@linkplain QuadrupleSystem}
-     * @return
+     * @return Computed permutation sequence
      */
     public PermutationSequence computePermutationSequence(QuadrupleSystem qs) {
 

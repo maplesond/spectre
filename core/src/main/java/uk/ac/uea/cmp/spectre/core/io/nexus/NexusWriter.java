@@ -149,8 +149,8 @@ public class NexusWriter extends AbstractSpectreWriter implements Appendable {
     /**
      * Uses a buffer to stream file content into the specified file.
      *
-     * @param file
-     * @throws IOException
+     * @param file Nexus file to write to
+     * @throws IOException Thrown if any disk related issues occur (e.g. file does not exist or inaccessible)
      */
     public void write(File file) throws IOException {
 

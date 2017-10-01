@@ -43,13 +43,13 @@ public class WeightsComputer {
      * Calculate the split weights for such splits as are relevant.  That is, we first go through all relevant splits
      * and create a list of split indices.  There are n choose 2 - n splits i.e. n(n-1)/2 - n.
      *
-     * @param quartetSystem
-     * @param circularOrdering
-     * @param tolerance
-     * @param optimiser
+     * @param quartetSystem Quartet system to compute
+     * @param circularOrdering Circular ordering of taxa
+     * @param tolerance Tolerance to accept
+     * @param optimiser Optimiser to use
      * @return The computed weights from this quartet system and circular ordering
-     * @throws QNetException
-     * @throws OptimiserException
+     * @throws QNetException Thrown if there were issues with internal optimiser
+     * @throws OptimiserException Thrown is there were issues with external optimiser
      */
     public ComputedWeights computeWeights(GroupedQuartetSystem quartetSystem, IdentifierList circularOrdering,
                                           double tolerance, Optimiser optimiser)

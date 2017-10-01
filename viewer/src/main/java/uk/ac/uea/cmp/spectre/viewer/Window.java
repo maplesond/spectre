@@ -75,9 +75,14 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
     // Stores history of changes so that we can implement undo / redo functionality
     History history = new History();
 
+    private JMenuItem copyMnuItem;
 
 
-    public Window() {
+
+    public Window(JMenuItem copyMnuItem) {
+
+        // Easy handle to menu item
+        this.copyMnuItem = copyMnuItem;
 
         // Setup default configuration
         this.config = new ViewerConfig();
@@ -111,6 +116,7 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
                 copySelectedTaxa();
             }
         });
+        copySelectedTaxa.setEnabled(false);
         popupMenu.add(copySelectedTaxa);
 
         JMenuItem selectGroup = new JMenuItem("Select group");
@@ -275,6 +281,7 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
                     viewMode = ViewMode.NORMAL;
                     setCursor(Cursor.getDefaultCursor());
                     startPoint = null;
+                    enableCopy(!pointsToHighlight.isEmpty());
                     repaint();
                 }
             }
@@ -597,6 +604,11 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
         }
     }
 
+    private void enableCopy(boolean status) {
+        this.copyMnuItem.setEnabled(status);
+        this.popupMenu.getComponent(0).setEnabled(status);
+    }
+
     public void highlightSelectedObjects(boolean append) {
         if (labels != null && !labels.isEmpty()) {
             int x1 = selectionRectangle[0];
@@ -629,6 +641,8 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
                 }
 
             }
+
+            this.enableCopy(!this.pointsToHighlight.isEmpty());
             repaint();
         }
     }
@@ -764,6 +778,7 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
         if (selectedLabel != null && !selectedLabel.p.isSelected()) {
             pointsToHighlight.clear();
             pointsToHighlight.add(selectedLabel.p);
+            this.enableCopy(true);
             selectedNew = true;
         }
         return selectedNew;
@@ -787,7 +802,7 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
         }
         if (selectedPoint != null) {
             pointsToHighlight.clear();
-            pointsToHighlight.add(selectedPoint);
+            this.enableCopy(false);
         }
     }
 
@@ -1035,6 +1050,7 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
                 ViewerPoint point = pointIt.next();
                 pointsToHighlight.add(point);
             }
+            this.enableCopy(!this.pointsToHighlight.isEmpty());
             repaint();
         }
     }
@@ -1050,28 +1066,40 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
         }
     }
 
-    void find(String text, boolean regEx) {
+    int find(String text, boolean regEx, boolean ignoreCase) {
         removeSelection();
         Iterator<Integer> idIt = labels.keySet().iterator();
         while (idIt.hasNext()) {
             Integer id = idIt.next();
             ViewerLabel lab = labels.get(id);
             if (regEx) {
-                Pattern pattern = Pattern.compile(text);
-                Matcher matcher = pattern.matcher(lab.name);
+                Pattern pattern = Pattern.compile(ignoreCase ? text.toLowerCase() : text);
+                Matcher matcher = pattern.matcher(ignoreCase ? lab.name.toLowerCase() : lab.name);
                 if (matcher.find()) {
+                    pointsToHighlight.add(lab.p);
+                    continue;
+                }
+            }
+            if (ignoreCase) {
+                if (lab.name.toLowerCase().contains(text.toLowerCase())) {
                     pointsToHighlight.add(lab.p);
                 }
             }
-            if (lab.name.contains(text)) {
-                pointsToHighlight.add(lab.p);
+            else {
+                if (lab.name.contains(text)) {
+                    pointsToHighlight.add(lab.p);
+                }
             }
         }
+        this.enableCopy(!this.pointsToHighlight.isEmpty());
         repaint();
+
+        return this.pointsToHighlight.size();
     }
 
     private void removeSelection() {
         pointsToHighlight.clear();
+        this.enableCopy(false);
     }
 
     void makeGroup() {
@@ -1151,6 +1179,8 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
         for (ViewerLabel l : labels.values()) {
             pointsToHighlight.add(l.p);
         }
+        this.enableCopy(!this.pointsToHighlight.isEmpty());
+
         repaint();
     }
 

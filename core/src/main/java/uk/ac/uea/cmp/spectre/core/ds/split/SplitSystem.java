@@ -61,6 +61,7 @@ public interface SplitSystem extends List<Split> {
 
     /**
      * Removes the last split in the split system and returns it
+     * @return Last split
      */
     Split removeLastSplit();
 
@@ -118,7 +119,7 @@ public interface SplitSystem extends List<Split> {
      * This filters the split system based on the weight threshold.  Splits with weights lower than this are discarded.
      * Note that unlike filterByRelativeWeight, this method creates and returns a filtered copy of the split system rather than modifying
      * this split system.
-     * @param minWeight
+     * @param minWeight minimum weight allowed in returned split system
      * @return A new filtered copy of this split system
      */
     SplitSystem filterByAbsoluteWeight(final double minWeight);
@@ -197,13 +198,13 @@ public interface SplitSystem extends List<Split> {
     /**
      * This method checks whether the quadruple split number nr is in the restriction of the split system to {a,b,c,d}.
      * It is assumed that a, b, c and d are pairwise distinct. The possible values for nr are:
-     * 0 --> a|bcd
-     * 1 --> b|acd
-     * 2 --> c|abd
-     * 3 --> d|abc
-     * 4 --> ab|cd
-     * 5 --> ac|bd
-     * 6 --> ad|bc
+     * 0 = a|bcd
+     * 1 = b|acd
+     * 2 = c|abd
+     * 3 = d|abc
+     * 4 = ab|cd
+     * 5 = ac|bd
+     * 6 = ad|bc
      * @param a Taxon a
      * @param b Taxon b
      * @param c Taxon c

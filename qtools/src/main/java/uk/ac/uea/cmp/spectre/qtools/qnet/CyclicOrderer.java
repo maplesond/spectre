@@ -298,10 +298,10 @@ public class CyclicOrderer {
     }
 
     /**
-     * Find a, b, a < b, in X so s (a, b) / n (a, b) maximal
+     * Find a, b, a &lt; b, in X so s (a, b) / n (a, b) maximal
      *
-     * @param X
-     * @return "a" max amd "b" max
+     * @param X List of integers
+     * @return "a" max and "b" max
      */
     protected Pair<Integer, Integer> findMaxAB(List<Integer> X) {
 

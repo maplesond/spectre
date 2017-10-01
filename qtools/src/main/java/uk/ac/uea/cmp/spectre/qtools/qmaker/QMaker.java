@@ -229,7 +229,7 @@ public class QMaker extends SpectreTool {
     /**
      * Main entry point for Chopper
      *
-     * @param args
+     * @param args Command line args
      */
     public static void main(String[] args) {
 

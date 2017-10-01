@@ -11,21 +11,19 @@
   ~ warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
   ~
   ~ You should have received a copy of the GNU General Public License along with this program.  If not, see
-  ~ <http://www.gnu.org/licenses/>.
+  ~ <http://www.gnu.org/licenses />.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>spectre</artifactId>
         <groupId>uk.ac.uea.cmp.spectre</groupId>
-        <version>1.0.1</version>
+        <version>1.1.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>viewer</artifactId>
-    <version>1.0.1</version>
+    <version>1.1.1</version>
 
     <name>Spectre: Viewer</name>
 
@@ -55,6 +53,19 @@
 
         <plugins>
 
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <mainClass>uk.ac.uea.cmp.spectre.viewer.Spectre</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+
             <!-- Creates scripts for all platforms that allow the user to easily execute this tool -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -69,6 +80,11 @@
                         <program>
                             <mainClass>uk.ac.uea.cmp.spectre.viewer.Spectre</mainClass>
                             <id>spectre</id>
+                            <jvmSettings>
+                                <extraArguments>
+                                    <extraArgument>-Dapple.laf.useScreenMenuBar=true</extraArgument>
+                                </extraArguments>
+                            </jvmSettings>
                         </program>
                     </programs>
                 </configuration>
@@ -88,7 +104,7 @@
                         </goals>
                         <configuration>
                             <target>
-                                <chmod file="${build-dir}/bin/spectre" perm="755"/>
+                                <chmod file="${build-dir}/bin/spectre" perm="755" />
                             </target>
                         </configuration>
                     </execution>
@@ -113,6 +129,8 @@
                                     <directory>src/main/resources</directory>
                                     <includes>
                                         <include>logo.png</include>
+                                        <include>find.png</include>
+                                        <include>close.png</include>
                                     </includes>
                                 </resource>
                             </resources>
@@ -177,6 +195,13 @@
         <dependency>
             <groupId>org.apache.xmlgraphics</groupId>
             <artifactId>xmlgraphics-commons</artifactId>
+            <version>1.4</version>
+        </dependency>
+
+        <!-- For apple extensions -->
+        <dependency>
+            <groupId>com.apple</groupId>
+            <artifactId>AppleJavaExtensions</artifactId>
             <version>1.4</version>
         </dependency>
 

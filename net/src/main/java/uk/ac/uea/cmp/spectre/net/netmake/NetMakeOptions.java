@@ -28,7 +28,7 @@ public class NetMakeOptions {
 
 
     // Options descriptions
-    public static final String DESC_INPUT = "The file containing the distance matrix to input.";
+    public static final String DESC_INPUT = "The file containing the distance matrix to input (supported formats are Nexus, EMBOSS and Phylip).  Alternatively, input can be a multiple sequence alignment file in Nexus or FastA format.  MSAs will be converted to distance matricies by the specified distance calculator method.";
 
     public static final String DESC_OUTPUT_PREFIX = "The location and file prefix for output files.  Default: ./netmake";
 

@@ -31,7 +31,7 @@ import uk.ac.uea.cmp.spectre.core.ui.gui.StatusTracker;
 /**
  * Constructs a minimum evolution tree from the specified network with its
  * implied circular order.
- * <p/>
+ *
  * See D Bryant, 1997: <I>Building Trees, Hunting for Trees and
  * Comparing Trees - Theories and Methods in Phylogenetic Analysis</I>
  */

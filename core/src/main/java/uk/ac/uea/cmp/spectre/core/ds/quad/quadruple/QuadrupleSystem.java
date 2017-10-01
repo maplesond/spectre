@@ -87,7 +87,7 @@ public class QuadrupleSystem implements Cloneable {
     }
 
     /**
-     * This method checks whether or not for given active are distinct. The assumption is that a <= b <= c <= d holds.
+     * This method checks whether or not for given active are distinct. The assumption is that a &lt; b &lt; c &lt; d holds.
      * @param a taxon id a
      * @param b taxon id b
      * @param c taxon id c

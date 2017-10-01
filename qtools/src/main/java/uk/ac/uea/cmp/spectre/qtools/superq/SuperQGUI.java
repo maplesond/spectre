@@ -508,7 +508,8 @@ public class SuperQGUI extends JFrame implements ToolHost {
             final JFileChooser fc = cwd != null ? new JFileChooser(cwd) : new JFileChooser();
             fc.addChoosableFileFilter(new NexusFileFilter());
             fc.addChoosableFileFilter(new FileNameExtensionFilter("QWeight", "qw"));
-            fc.addChoosableFileFilter(new FileNameExtensionFilter("Phylip/Newick", "phylip", "newick", "tree", "tre"));
+            fc.addChoosableFileFilter(new FileNameExtensionFilter("Phylip", "phylip", "phy", "tree", "tre"));
+            fc.addChoosableFileFilter(new FileNameExtensionFilter("Newick", "newick", "tree", "tre"));
             fc.addChoosableFileFilter(new FileNameExtensionFilter("Script", "script", "scr"));
             fc.setMultiSelectionEnabled(true);
             int returnVal = fc.showOpenDialog(SuperQGUI.this);

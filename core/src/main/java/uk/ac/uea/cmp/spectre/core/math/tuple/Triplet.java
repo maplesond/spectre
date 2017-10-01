@@ -17,8 +17,6 @@ package uk.ac.uea.cmp.spectre.core.math.tuple;
 
 /**
  * Triplet of values class
- * <p/>
- * Derives from the VisRD Triplet class
  */
 public class Triplet<T extends Number> {
 
