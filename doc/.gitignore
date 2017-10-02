@@ -1,3 +1,4 @@
 /build/
 /target/
 *.xml.releaseBackup
+*.xml.versionsBackup

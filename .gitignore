@@ -14,3 +14,4 @@
 /release.properties
 /mac_release.sh
 *.xml.releaseBackup
+*.xml.versionsBackup

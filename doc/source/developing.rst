@@ -30,7 +30,7 @@ alternatively, build SPECTRE and copy the core jar file from `build/spectre-<ver
 The rest of this section assumes you want to modify or extend the spectre codebase.
 
 
-Version Control
+Source Control
 ---------------
 
 The source code for spectre is version controlled using GIT.  The public repository is hosted on github at
@@ -102,4 +102,17 @@ as follows:
 
 
 
+Updating Maven Project Versions
+-------------------------------
 
+We have included the version-maven-plugin to control versions.  To update the version number for all sub modules and
+dependencies, from the parent project directory type: `mvn versions:set -DnewVersion=<VERSION_HERE>`.
+
+
+Creating platform specific installers
+-------------------------------------
+
+We use the javapackager program that comes with the JDK for this.  Currently we support .deb (debian/ubuntu), .dmg (mac)
+and .exe (windows) installers.  To create the installer first ensure no maven module version numbers contain the "-SNAPSHOT" suffix
+(see above section for modifiying version numbers), then build spectre on the required platform using the following command:
+`mvn clean install -Drelease`.  You will find the installer in `./build/dist/bundles`.

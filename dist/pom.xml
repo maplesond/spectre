@@ -19,12 +19,12 @@
     <parent>
         <artifactId>spectre</artifactId>
         <groupId>uk.ac.uea.cmp.spectre</groupId>
-        <version>1.1.4-SNAPSHOT</version>
+        <version>1.1.4</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>dist</artifactId>
-    <version>1.1.4-SNAPSHOT</version>
+    <version>1.1.4</version>
 
     <name>Spectre: Create Distribution</name>
 
@@ -39,7 +39,7 @@
                 <executions>
                     <execution>
                         <id>copy-resources</id>
-                        <phase>install</phase>
+                        <phase>validate</phase>
                         <goals>
                             <goal>run</goal>
                         </goals>
@@ -95,7 +95,7 @@
                         <version>1.6.0</version>
                         <executions>
                             <execution>
-                                <id>create-distributable</id>
+                                <id>create-windows-installer</id>
                                 <phase>install</phase>
                                 <goals>
                                     <goal>exec</goal>
@@ -120,7 +120,7 @@
                                         <argument>-appclass</argument>
                                         <argument>uk.ac.uea.cmp.spectre.viewer.Spectre</argument>
                                         <argument>-srcdir</argument>
-                                        <argument>"${project.basedir}/../build/${project.parent.artifactId}-${project.parent.version}"</argument>
+                                        <argument>${project.basedir}/../build/${project.parent.artifactId}-${project.parent.version}</argument>
                                         <argument>-outdir</argument>
                                         <argument>${dist-dir}</argument>
                                         <argument>-outfile</argument>
@@ -131,6 +131,39 @@
                                         <argument>-BmainJar=jar/viewer-${project.parent.version}.jar</argument>
                                         <argument>-BclassPath="etc/*:jar/*"</argument>
                                     </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>1.7</version>
+                        <executions>
+                            <execution>
+                                <id>create-windows-distributable</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <mkdir dir="${dist-dir}/bundles"/>
+                                        <tar longfile="gnu"
+                                             destfile="${dist-dir}/${dist-name}-win.tar.gz"
+                                             compression="gzip">
+
+                                            <tarfileset dir="${project.basedir}/../build" filemode="755">
+                                                <include name="${dist-name}/bin/*"/>
+                                            </tarfileset>
+
+                                            <tarfileset dir="${project.basedir}/../build">
+                                                <include name="${dist-name}/**"/>
+                                                <exclude name="${dist-name}/bin/*"/>
+                                                <exclude name="${dist-name}/jar"/>
+                                            </tarfileset>
+                                        </tar>
+                                    </target>
                                 </configuration>
                             </execution>
                         </executions>
@@ -152,7 +185,7 @@
                         <version>1.6.0</version>
                         <executions>
                             <execution>
-                                <id>create-distributable</id>
+                                <id>create-debian-installer</id>
                                 <phase>install</phase>
                                 <goals>
                                     <goal>exec</goal>
@@ -177,7 +210,7 @@
                                         <argument>-appclass</argument>
                                         <argument>uk.ac.uea.cmp.spectre.viewer.Spectre</argument>
                                         <argument>-srcdir</argument>
-                                        <argument>"${project.basedir}/../build/${project.parent.artifactId}-${project.parent.version}"</argument>
+                                        <argument>${project.basedir}/../build/${project.parent.artifactId}-${project.parent.version}</argument>
                                         <argument>-outdir</argument>
                                         <argument>${dist-dir}</argument>
                                         <argument>-outfile</argument>
@@ -191,6 +224,39 @@
                                         <argument>-Bcategory=Education</argument>
 
                                     </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>1.7</version>
+                        <executions>
+                            <execution>
+                                <id>create-linux-distributable</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <mkdir dir="${dist-dir}/bundles"/>
+                                        <tar longfile="gnu"
+                                             destfile="${dist-dir}/${dist-name}-linux.tar.gz"
+                                             compression="gzip">
+
+                                            <tarfileset dir="${project.basedir}/../build" filemode="755">
+                                                <include name="${dist-name}/bin/*"/>
+                                            </tarfileset>
+
+                                            <tarfileset dir="${project.basedir}/../build">
+                                                <include name="${dist-name}/**"/>
+                                                <exclude name="${dist-name}/bin/*"/>
+                                                <exclude name="${dist-name}/jar"/>
+                                            </tarfileset>
+                                        </tar>
+                                    </target>
                                 </configuration>
                             </execution>
                         </executions>
@@ -215,7 +281,7 @@
                         <version>1.6.0</version>
                         <executions>
                             <execution>
-                                <id>create-distributable</id>
+                                <id>create-dmg-installer</id>
                                 <phase>install</phase>
                                 <goals>
                                     <goal>exec</goal>
@@ -255,6 +321,39 @@
                                         <argument>-Bmac.CFBundleIdentifier=uk.ac.uea.cmp.spectre.viewer.Spectre</argument>
                                         <argument>-Bmac.CFBundleVersion=${project.parent.version}</argument>
                                     </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>1.7</version>
+                        <executions>
+                            <execution>
+                                <id>create-mac-distributable</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <mkdir dir="${dist-dir}/bundles"/>
+                                        <tar longfile="gnu"
+                                             destfile="${dist-dir}/${dist-name}-mac.tar.gz"
+                                             compression="gzip">
+
+                                            <tarfileset dir="${project.basedir}/../build" filemode="755">
+                                                <include name="${dist-name}/bin/*"/>
+                                            </tarfileset>
+
+                                            <tarfileset dir="${project.basedir}/../build">
+                                                <include name="${dist-name}/**"/>
+                                                <exclude name="${dist-name}/bin/*"/>
+                                                <exclude name="${dist-name}/jar"/>
+                                            </tarfileset>
+                                        </tar>
+                                    </target>
                                 </configuration>
                             </execution>
                         </executions>
