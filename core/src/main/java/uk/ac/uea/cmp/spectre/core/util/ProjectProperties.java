@@ -34,21 +34,26 @@ public class ProjectProperties {
             File etc = new File(extDir, "etc" + File.separator + filename);
             File local1 = new File(extDir, filename);
             File local2 = FileUtils.toFile(ProjectProperties.class.getResource(filename));
-            File back1 = new File(extDir.getParentFile(), "etc" + File.separator + filename);
+            File back1 = new File(extDir.getParentFile(), filename);
+            File back1etc = new File(extDir.getParentFile(), "etc" + File.separator + filename);
             File back2 = new File(extDir.getParentFile().getParentFile(), "etc" + File.separator + filename);
             File back8 = new File(extDir.getParentFile().getParentFile().getParentFile().getParentFile().getParentFile().getParentFile().getParentFile().getParentFile(), "etc" + File.separator + filename);
+            File back8etc = new File(extDir.getParentFile().getParentFile().getParentFile().getParentFile().getParentFile().getParentFile().getParentFile().getParentFile(), "etc" + File.separator + filename);
 
             List<File> flist = new ArrayList<>();
             if (etc != null) flist.add(etc);
             if (local1 != null) flist.add(local1);
             if (local2 != null) flist.add(local2);
             if (back1 != null) flist.add(back1);
+            if (back1etc != null) flist.add(back1etc);
             if (back2 != null) flist.add(back2);
             if (back8 != null) flist.add(back8);
+            if (back8etc != null) flist.add(back8etc);
 
             for (File f : flist) {
+                log.info(f.getAbsolutePath());
                 if (f.exists()) {
-                    log.debug("Found resource at: " + f.getAbsolutePath());
+                    log.info("Found resource at: " + f.getAbsolutePath());
                     return f.getAbsolutePath();
                 }
             }

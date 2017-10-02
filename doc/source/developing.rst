@@ -115,7 +115,7 @@ Creating platform specific installers
 We use the javapackager program that comes with the JDK for this.  Currently we support .deb (debian/ubuntu), .dmg (mac)
 and .exe (windows) installers.  To create the installer first ensure no maven module version numbers contain the "-SNAPSHOT" suffix
 (see above section for modifiying version numbers), then build spectre on the required platform using the following command:
-`mvn clean install -Drelease`.  You will find the installer in `./build/dist`.
+`mvn clean install -Drelease`.  You will find the installer within `./build/dist` (possibly `./build/dist/installer/bundles` depending on platform).
 
 IMPORTANT NOTE: We strongly recommend you use JDK9 for this task.  Results with JDK8 may vary.  Please ensure the JAVA_HOME
 variable is set to ensure this correctly setup.
