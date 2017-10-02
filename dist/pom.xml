@@ -45,18 +45,16 @@
                         </goals>
                         <configuration>
                             <target>
-                                <!-- copy the config and resource files into to the build dir -->
+
+                                <mkdir dir="${build-dir}/doc" />
                                 <mkdir dir="${build-dir}/etc" />
+                                <mkdir dir="${build-dir}/examples" />
                                 <copy todir="${build-dir}/etc">
                                     <fileset dir="${etc-dir}" />
                                 </copy>
-                                <!-- copy the example files into the build dir -->
-                                <mkdir dir="${build-dir}/examples" />
                                 <copy todir="${build-dir}/examples">
                                     <fileset dir="${examples-dir}" />
                                 </copy>
-                                <!-- copy the documentation in to the build dir -->
-                                <mkdir dir="${build-dir}/doc" />
                                 <copy todir="${build-dir}/doc">
                                     <fileset dir="${doc-dir}/build" />
                                 </copy>
@@ -64,12 +62,32 @@
                                     <fileset file="${project.basedir}/../LICENSE" />
                                     <fileset file="${project.basedir}/../README.md" />
                                 </copy>
-                                <copy todir="${build-dir}/jar" flatten="true">
+
+                                <mkdir dir="${dist-dir}/flat/bin"/>
+                                <mkdir dir="${dist-dir}/flat/etc" />
+                                <mkdir dir="${dist-dir}/flat/examples" />
+                                <mkdir dir="${dist-dir}/flat/doc" />
+                                <copy todir="${dist-dir}/flat/bin" flatten="true">
                                     <fileset dir="${build-dir}/repo">
-                                        <include name="**/*.jar" />
+                                        <include name="**/*" />
                                         <type type="file" />
                                     </fileset>
+                                    <fileset dir="${build-dir}/bin"/>
                                 </copy>
+                                <copy todir="${dist-dir}/flat/etc">
+                                    <fileset dir="${build-dir}/etc" />
+                                </copy>
+                                <copy todir="${dist-dir}/flat/examples">
+                                    <fileset dir="${build-dir}/examples" />
+                                </copy>
+                                <copy todir="${dist-dir}/flat/doc">
+                                    <fileset dir="${build-dir}/doc" />
+                                </copy>
+                                <copy todir="${dist-dir}/flat">
+                                    <fileset file="${build-dir}/README.md" />
+                                    <fileset file="${build-dir}/LICENSE" />
+                                </copy>
+
                             </target>
                         </configuration>
                     </execution>
@@ -120,15 +138,15 @@
                                         <argument>-appclass</argument>
                                         <argument>uk.ac.uea.cmp.spectre.viewer.Spectre</argument>
                                         <argument>-srcdir</argument>
-                                        <argument>${project.basedir}/../build/${project.parent.artifactId}-${project.parent.version}</argument>
+                                        <argument>${dist-dir}/flat</argument>
                                         <argument>-outdir</argument>
-                                        <argument>${dist-dir}</argument>
+                                        <argument>${dist-dir}/bundles</argument>
                                         <argument>-outfile</argument>
-                                        <argument>${project.parent.artifactId}-${project.parent.version}</argument>
+                                        <argument>${dist-name}</argument>
                                         <argument>-v</argument>
                                         <argument>-BappVersion=${project.parent.version}</argument>
-                                        <argument>-Bicon=${project.basedir}/../etc/logo.ico</argument>
-                                        <argument>-BmainJar=jar/viewer-${project.parent.version}.jar</argument>
+                                        <argument>-Bicon=${dist-dir/flat/logo.ico</argument>
+                                        <argument>-BmainJar=bin/viewer-${project.parent.version}.jar</argument>
                                         <argument>-BclassPath="etc/*:jar/*"</argument>
                                     </arguments>
                                 </configuration>
@@ -148,16 +166,16 @@
                                 </goals>
                                 <configuration>
                                     <target>
-                                        <mkdir dir="${dist-dir}"/>
+                                        <mkdir dir="${dist-dir}/bundles"/>
                                         <tar longfile="gnu"
-                                             destfile="${dist-dir}/${dist-name}-win.tar.gz"
+                                             destfile="${dist-dir}/bundles/${dist-name}-win.tar.gz"
                                              compression="gzip">
 
-                                            <tarfileset dir="${project.basedir}/../build" filemode="755">
+                                            <tarfileset dir="${build-dir}" filemode="755">
                                                 <include name="${dist-name}/bin/*"/>
                                             </tarfileset>
 
-                                            <tarfileset dir="${project.basedir}/../build">
+                                            <tarfileset dir="${build-dir}">
                                                 <include name="${dist-name}/**"/>
                                                 <exclude name="${dist-name}/bin/*"/>
                                                 <exclude name="${dist-name}/jar"/>
@@ -174,7 +192,7 @@
         <profile>
             <id>release-linux</id>
             <activation>
-                <os><family>unix</family></os>
+                <os><family>unix</family><name>Linux</name></os>
                 <property><name>release</name></property>
             </activation>
             <build>
@@ -210,11 +228,11 @@
                                         <argument>-appclass</argument>
                                         <argument>uk.ac.uea.cmp.spectre.viewer.Spectre</argument>
                                         <argument>-srcdir</argument>
-                                        <argument>${project.basedir}/../build/${project.parent.artifactId}-${project.parent.version}</argument>
+                                        <argument>${dist-dir}/flat</argument>
                                         <argument>-outdir</argument>
-                                        <argument>${dist-dir}</argument>
+                                        <argument>${dist-dir}/bundles</argument>
                                         <argument>-outfile</argument>
-                                        <argument>${project.parent.artifactId}-${project.parent.version}</argument>
+                                        <argument>${dist-name}</argument>
                                         <argument>-v</argument>
                                         <argument>-BlicenseFile=LICENSE</argument>
                                         <argument>-BmainJar=jar/viewer-${project.parent.version}.jar</argument>
@@ -240,16 +258,16 @@
                                 </goals>
                                 <configuration>
                                     <target>
-                                        <mkdir dir="${dist-dir}"/>
+                                        <mkdir dir="${dist-dir}/bundles"/>
                                         <tar longfile="gnu"
-                                             destfile="${dist-dir}/${dist-name}-linux.tar.gz"
+                                             destfile="${dist-dir}/bundles/${project.parent.artifactId}-${project.parent.version}-linux.tar.gz"
                                              compression="gzip">
 
-                                            <tarfileset dir="${project.basedir}/../build" filemode="755">
+                                            <tarfileset dir="${build-dir}" filemode="755">
                                                 <include name="${dist-name}/bin/*"/>
                                             </tarfileset>
 
-                                            <tarfileset dir="${project.basedir}/../build">
+                                            <tarfileset dir="${build-dir}">
                                                 <include name="${dist-name}/**"/>
                                                 <exclude name="${dist-name}/bin/*"/>
                                                 <exclude name="${dist-name}/jar"/>
@@ -266,7 +284,7 @@
         <profile>
             <id>release-mac</id>
             <activation>
-                <os><family>Mac</family></os>
+                <os><family>mac</family></os>
                 <property><name>release</name></property>
             </activation>
             <properties>
@@ -305,17 +323,17 @@
                                         <argument>-appclass</argument>
                                         <argument>uk.ac.uea.cmp.spectre.viewer.Spectre</argument>
                                         <argument>-srcdir</argument>
-                                        <argument>${project.basedir}/../build/${project.parent.artifactId}-${project.parent.version}</argument>
+                                        <argument>${dist-dir}/flat</argument>
                                         <argument>-outdir</argument>
-                                        <argument>${dist-dir}</argument>
+                                        <argument>${dist-dir}/bundles</argument>
                                         <argument>-outfile</argument>
-                                        <argument>${project.parent.artifactId}-${project.parent.version}</argument>
+                                        <argument>${dist-name}</argument>
                                         <argument>-v</argument>
                                         <argument>-BlicenseFile=LICENSE</argument>
                                         <argument>-BappVersion=${project.parent.version}</argument>
-                                        <argument>-Bicon=${project.basedir}/../etc/logo.icns</argument>
-                                        <argument>-BmainJar=jar/viewer-${project.parent.version}.jar</argument>
-                                        <argument>-BclassPath="etc/*:jar/*"</argument>
+                                        <argument>-Bicon=${dist-dir}/flat/logo.icns</argument>
+                                        <argument>-BmainJar=viewer-${project.parent.version}.jar</argument>
+                                        <argument>-BclassPath=etc/*:jar/*</argument>
                                         <argument>-Bmac.category=Education</argument>
                                         <argument>-Bmac.CFBundleIdentifier=uk.ac.uea.cmp.spectre.viewer.Spectre</argument>
                                         <argument>-Bmac.CFBundleVersion=${project.parent.version}</argument>
@@ -337,16 +355,16 @@
                                 </goals>
                                 <configuration>
                                     <target>
-                                        <mkdir dir="${dist-dir}"/>
+                                        <mkdir dir="${dist-dir}/bundles"/>
                                         <tar longfile="gnu"
-                                             destfile="${dist-dir}/${dist-name}-mac.tar.gz"
+                                             destfile="${dist-dir}/bundles/${project.parent.artifactId}-${project.parent.version}-mac.tar.gz"
                                              compression="gzip">
 
-                                            <tarfileset dir="${project.basedir}/../build" filemode="755">
+                                            <tarfileset dir="${build-dir}" filemode="755">
                                                 <include name="${dist-name}/bin/*"/>
                                             </tarfileset>
 
-                                            <tarfileset dir="${project.basedir}/../build">
+                                            <tarfileset dir="${build-dir}">
                                                 <include name="${dist-name}/**"/>
                                                 <exclude name="${dist-name}/bin/*"/>
                                                 <exclude name="${dist-name}/jar"/>
