@@ -36,9 +36,17 @@ public class ProjectProperties {
             File local2 = FileUtils.toFile(ProjectProperties.class.getResource(filename));
             File back1 = new File(extDir.getParentFile(), filename);
             File back1etc = new File(extDir.getParentFile(), "etc" + File.separator + filename);
-            File back2 = new File(extDir.getParentFile().getParentFile(), "etc" + File.separator + filename);
-            File back8 = new File(extDir.getParentFile().getParentFile().getParentFile().getParentFile().getParentFile().getParentFile().getParentFile().getParentFile(), "etc" + File.separator + filename);
-            File back8etc = new File(extDir.getParentFile().getParentFile().getParentFile().getParentFile().getParentFile().getParentFile().getParentFile().getParentFile(), "etc" + File.separator + filename);
+            File back2 = new File(extDir.getParentFile().getParentFile(), filename);
+            File back2etc = new File(extDir.getParentFile().getParentFile(), "etc" + File.separator + filename);
+            File back8 = null;
+            File back8etc = null;
+            try {
+                back8 = new File(extDir.getParentFile().getParentFile().getParentFile().getParentFile().getParentFile().getParentFile().getParentFile().getParentFile(), "etc" + File.separator + filename);
+                back8etc = new File(extDir.getParentFile().getParentFile().getParentFile().getParentFile().getParentFile().getParentFile().getParentFile().getParentFile(), "etc" + File.separator + filename);
+            }
+            catch (Exception e) {
+                // skip
+            }
 
             List<File> flist = new ArrayList<>();
             if (etc != null) flist.add(etc);
@@ -47,13 +55,13 @@ public class ProjectProperties {
             if (back1 != null) flist.add(back1);
             if (back1etc != null) flist.add(back1etc);
             if (back2 != null) flist.add(back2);
+            if (back2etc != null) flist.add(back2etc);
             if (back8 != null) flist.add(back8);
             if (back8etc != null) flist.add(back8etc);
 
             for (File f : flist) {
-                log.info(f.getAbsolutePath());
                 if (f.exists()) {
-                    log.info("Found resource at: " + f.getAbsolutePath());
+                    log.debug("Found resource at: " + f.getAbsolutePath());
                     return f.getAbsolutePath();
                 }
             }
