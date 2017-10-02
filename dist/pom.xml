@@ -67,12 +67,14 @@
                                 <mkdir dir="${dist-dir}/flat/etc" />
                                 <mkdir dir="${dist-dir}/flat/examples" />
                                 <mkdir dir="${dist-dir}/flat/doc" />
-                                <copy todir="${dist-dir}/flat/bin" flatten="true">
+                                <copy todir="${dist-dir}/flat/repo" flatten="true">
                                     <fileset dir="${build-dir}/repo">
                                         <include name="**/*" />
                                         <type type="file" />
                                     </fileset>
-                                    <fileset dir="${build-dir}/bin"/>
+                                </copy>
+                                <copy todir="${dist-dir}/flat/bin">
+                                    <fileset dir="${build-dir}/bin" />
                                 </copy>
                                 <copy todir="${dist-dir}/flat/etc">
                                     <fileset dir="${build-dir}/etc" />
@@ -140,13 +142,13 @@
                                         <argument>-srcdir</argument>
                                         <argument>${dist-dir}/flat</argument>
                                         <argument>-outdir</argument>
-                                        <argument>${dist-dir}/bundles</argument>
+                                        <argument>${dist-dir}/installer</argument>
                                         <argument>-outfile</argument>
                                         <argument>${dist-name}</argument>
                                         <argument>-v</argument>
                                         <argument>-BappVersion=${project.parent.version}</argument>
                                         <argument>-Bicon=${dist-dir/flat/logo.ico</argument>
-                                        <argument>-BmainJar=bin/viewer-${project.parent.version}.jar</argument>
+                                        <argument>-BmainJar=repo/viewer-${project.parent.version}.jar</argument>
                                         <argument>-BclassPath="etc/*:jar/*"</argument>
                                     </arguments>
                                 </configuration>
@@ -166,19 +168,19 @@
                                 </goals>
                                 <configuration>
                                     <target>
-                                        <mkdir dir="${dist-dir}/bundles"/>
+                                        <mkdir dir="${dist-dir}"/>
                                         <tar longfile="gnu"
-                                             destfile="${dist-dir}/bundles/${dist-name}-win.tar.gz"
+                                             destfile="${dist-dir}/${dist-name}-win.tar.gz"
                                              compression="gzip">
 
                                             <tarfileset dir="${build-dir}" filemode="755">
-                                                <include name="${dist-name}/bin/*"/>
+                                                <include name="bin/*"/>
                                             </tarfileset>
 
                                             <tarfileset dir="${build-dir}">
-                                                <include name="${dist-name}/**"/>
-                                                <exclude name="${dist-name}/bin/*"/>
-                                                <exclude name="${dist-name}/jar"/>
+                                                <include name="**"/>
+                                                <exclude name="bin/*"/>
+                                                <exclude name="jar"/>
                                             </tarfileset>
                                         </tar>
                                     </target>
@@ -230,13 +232,13 @@
                                         <argument>-srcdir</argument>
                                         <argument>${dist-dir}/flat</argument>
                                         <argument>-outdir</argument>
-                                        <argument>${dist-dir}/bundles</argument>
+                                        <argument>${dist-dir}/installer</argument>
                                         <argument>-outfile</argument>
                                         <argument>${dist-name}</argument>
                                         <argument>-v</argument>
                                         <argument>-BlicenseFile=LICENSE</argument>
-                                        <argument>-BmainJar=jar/viewer-${project.parent.version}.jar</argument>
-                                        <argument>-BclassPath="etc/*:jar/*"</argument>
+                                        <argument>-BmainJar=repo/viewer-${project.parent.version}.jar</argument>
+                                        <argument>-BclassPath="etc/*:repo/*"</argument>
                                         <argument>-BappVersion=${project.parent.version}</argument>
                                         <argument>-Bicon=${project.basedir}/../etc/logo.png</argument>
                                         <argument>-Bcategory=Science</argument>
@@ -258,19 +260,19 @@
                                 </goals>
                                 <configuration>
                                     <target>
-                                        <mkdir dir="${dist-dir}/bundles"/>
+                                        <mkdir dir="${dist-dir}"/>
                                         <tar longfile="gnu"
-                                             destfile="${dist-dir}/bundles/${project.parent.artifactId}-${project.parent.version}-linux.tar.gz"
+                                             destfile="${dist-dir}/${dist-name}-linux.tar.gz"
                                              compression="gzip">
 
                                             <tarfileset dir="${build-dir}" filemode="755">
-                                                <include name="${dist-name}/bin/*"/>
+                                                <include name="bin/*"/>
                                             </tarfileset>
 
                                             <tarfileset dir="${build-dir}">
-                                                <include name="${dist-name}/**"/>
-                                                <exclude name="${dist-name}/bin/*"/>
-                                                <exclude name="${dist-name}/jar"/>
+                                                <include name="**"/>
+                                                <exclude name="bin/*"/>
+                                                <exclude name="jar"/>
                                             </tarfileset>
                                         </tar>
                                     </target>
@@ -325,7 +327,7 @@
                                         <argument>-srcdir</argument>
                                         <argument>${dist-dir}/flat</argument>
                                         <argument>-outdir</argument>
-                                        <argument>${dist-dir}/bundles</argument>
+                                        <argument>${dist-dir}/installer</argument>
                                         <argument>-outfile</argument>
                                         <argument>${dist-name}</argument>
                                         <argument>-v</argument>
@@ -355,19 +357,19 @@
                                 </goals>
                                 <configuration>
                                     <target>
-                                        <mkdir dir="${dist-dir}/bundles"/>
+                                        <mkdir dir="${dist-dir}"/>
                                         <tar longfile="gnu"
-                                             destfile="${dist-dir}/bundles/${project.parent.artifactId}-${project.parent.version}-mac.tar.gz"
+                                             destfile="${dist-dir}/${dist-name}-mac.tar.gz"
                                              compression="gzip">
 
                                             <tarfileset dir="${build-dir}" filemode="755">
-                                                <include name="${dist-name}/bin/*"/>
+                                                <include name="bin/*"/>
                                             </tarfileset>
 
                                             <tarfileset dir="${build-dir}">
-                                                <include name="${dist-name}/**"/>
-                                                <exclude name="${dist-name}/bin/*"/>
-                                                <exclude name="${dist-name}/jar"/>
+                                                <include name="**"/>
+                                                <exclude name="bin/*"/>
+                                                <exclude name="jar"/>
                                             </tarfileset>
                                         </tar>
                                     </target>
