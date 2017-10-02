@@ -31,12 +31,9 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java-version>1.8</java-version>
+        <java-version>1.7</java-version>
         <antlr-version>4.6</antlr-version>
         <slf4j-version>1.6.1</slf4j-version>
-        <dist-name>${project.parent.artifactId}-${project.parent.version}</dist-name>
-        <dist-dir>${project.basedir}/../build/dist</dist-dir>
-        <build-dir>${project.basedir}/../build/${dist-name}</build-dir>
     </properties>
 
     <!-- Licensing -->

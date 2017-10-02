@@ -112,11 +112,11 @@
                                         <argument>-name</argument>
                                         <argument>${project.parent.artifactId}</argument>
                                         <argument>-title</argument>
-                                        <argument>"Suite of PhylogEnetiC Tools for Reticulate Evolution"</argument>
+                                        <argument>Suite of PhylogEnetiC Tools for Reticulate Evolution</argument>
                                         <argument>-description</argument>
-                                        <argument>"Spectre a suite of tools for inferring evolutionary patterns associated with Reticulate Evolution that primarily either create or use split systems (a collection of bipartitions of the taxa) representable in two dimensions, such as SuperQ, FlatNJ, NetME and several NeighborNet variants."</argument>
+                                        <argument>Spectre a suite of tools for inferring evolutionary patterns associated with Reticulate Evolution that primarily either create or use split systems (a collection of bipartitions of the taxa) representable in two dimensions, such as SuperQ, FlatNJ, NetME and several NeighborNet variants.</argument>
                                         <argument>-vendor</argument>
-                                        <argument>"Earlham Institute"</argument>
+                                        <argument>Earlham Institute</argument>
                                         <argument>-appclass</argument>
                                         <argument>uk.ac.uea.cmp.spectre.viewer.Spectre</argument>
                                         <argument>-srcdir</argument>
@@ -148,7 +148,7 @@
                                 </goals>
                                 <configuration>
                                     <target>
-                                        <mkdir dir="${dist-dir}/bundles"/>
+                                        <mkdir dir="${dist-dir}"/>
                                         <tar longfile="gnu"
                                              destfile="${dist-dir}/${dist-name}-win.tar.gz"
                                              compression="gzip">
@@ -202,11 +202,11 @@
                                         <argument>-name</argument>
                                         <argument>${project.parent.artifactId}</argument>
                                         <argument>-title</argument>
-                                        <argument>"Suite of PhylogEnetiC Tools for Reticulate Evolution"</argument>
+                                        <argument>Suite of PhylogEnetiC Tools for Reticulate Evolution</argument>
                                         <argument>-description</argument>
-                                        <argument>"Spectre a suite of tools for inferring evolutionary patterns associated with Reticulate Evolution that primarily either create or use split systems (a collection of bipartitions of the taxa) representable in two dimensions, such as SuperQ, FlatNJ, NetME and several NeighborNet variants."</argument>
+                                        <argument>Spectre a suite of tools for inferring evolutionary patterns associated with Reticulate Evolution that primarily either create or use split systems (a collection of bipartitions of the taxa) representable in two dimensions, such as SuperQ, FlatNJ, NetME and several NeighborNet variants.</argument>
                                         <argument>-vendor</argument>
-                                        <argument>"Earlham Institute"</argument>
+                                        <argument>Earlham Institute</argument>
                                         <argument>-appclass</argument>
                                         <argument>uk.ac.uea.cmp.spectre.viewer.Spectre</argument>
                                         <argument>-srcdir</argument>
@@ -221,8 +221,7 @@
                                         <argument>-BclassPath="etc/*:jar/*"</argument>
                                         <argument>-BappVersion=${project.parent.version}</argument>
                                         <argument>-Bicon=${project.basedir}/../etc/logo.png</argument>
-                                        <argument>-Bcategory=Education</argument>
-
+                                        <argument>-Bcategory=Science</argument>
                                     </arguments>
                                 </configuration>
                             </execution>
@@ -241,7 +240,7 @@
                                 </goals>
                                 <configuration>
                                     <target>
-                                        <mkdir dir="${dist-dir}/bundles"/>
+                                        <mkdir dir="${dist-dir}"/>
                                         <tar longfile="gnu"
                                              destfile="${dist-dir}/${dist-name}-linux.tar.gz"
                                              compression="gzip">
@@ -298,15 +297,15 @@
                                         <argument>-name</argument>
                                         <argument>${project.parent.artifactId}</argument>
                                         <argument>-title</argument>
-                                        <argument>"Suite of PhylogEnetiC Tools for Reticulate Evolution"</argument>
+                                        <argument>Suite of PhylogEnetiC Tools for Reticulate Evolution</argument>
                                         <argument>-description</argument>
-                                        <argument>"Spectre a suite of tools for inferring evolutionary patterns associated with Reticulate Evolution that primarily either create or use split systems (a collection of bipartitions of the taxa) representable in two dimensions, such as SuperQ, FlatNJ, NetME and several NeighborNet variants."</argument>
+                                        <argument>Spectre a suite of tools for inferring evolutionary patterns associated with Reticulate Evolution that primarily either create or use split systems (a collection of bipartitions of the taxa) representable in two dimensions, such as SuperQ, FlatNJ, NetME and several NeighborNet variants.</argument>
                                         <argument>-vendor</argument>
-                                        <argument>"Earlham Institute"</argument>
+                                        <argument>Earlham Institute</argument>
                                         <argument>-appclass</argument>
                                         <argument>uk.ac.uea.cmp.spectre.viewer.Spectre</argument>
                                         <argument>-srcdir</argument>
-                                        <argument>"${project.basedir}/../build/${project.parent.artifactId}-${project.parent.version}"</argument>
+                                        <argument>${project.basedir}/../build/${project.parent.artifactId}-${project.parent.version}</argument>
                                         <argument>-outdir</argument>
                                         <argument>${dist-dir}</argument>
                                         <argument>-outfile</argument>
@@ -338,7 +337,7 @@
                                 </goals>
                                 <configuration>
                                     <target>
-                                        <mkdir dir="${dist-dir}/bundles"/>
+                                        <mkdir dir="${dist-dir}"/>
                                         <tar longfile="gnu"
                                              destfile="${dist-dir}/${dist-name}-mac.tar.gz"
                                              compression="gzip">
