@@ -295,6 +295,35 @@
             <build>
                 <plugins>
                     <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>1.7</version>
+                        <executions>
+                            <execution>
+                                <id>copy-resources</id>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+
+                                        <mkdir dir="${dist-dir}/flatter"/>
+                                        <copy todir="${dist-dir}/flatter">
+                                            <fileset dir="${dist-dir}/flat/repo" />
+                                            <fileset dir="${dist-dir}/flat/etc" />
+                                            <fileset file="${dist-dir}/flat/README.md" />
+                                            <fileset file="${dist-dir}/flat/LICENSE" />
+                                        </copy>
+
+
+                                    </target>
+                                </configuration>
+                            </execution>
+
+                        </executions>
+                    </plugin>
+                    <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>exec-maven-plugin</artifactId>
                         <version>1.6.0</version>
@@ -325,7 +354,7 @@
                                         <argument>-appclass</argument>
                                         <argument>uk.ac.uea.cmp.spectre.viewer.Spectre</argument>
                                         <argument>-srcdir</argument>
-                                        <argument>${dist-dir}/flat</argument>
+                                        <argument>${dist-dir}/flatter</argument>
                                         <argument>-outdir</argument>
                                         <argument>${dist-dir}/installer</argument>
                                         <argument>-outfile</argument>
@@ -333,9 +362,9 @@
                                         <argument>-v</argument>
                                         <argument>-BlicenseFile=LICENSE</argument>
                                         <argument>-BappVersion=${project.parent.version}</argument>
-                                        <argument>-Bicon=${dist-dir}/flat/logo.icns</argument>
+                                        <argument>-Bicon=${dist-dir}/flatter/logo.icns</argument>
                                         <argument>-BmainJar=viewer-${project.parent.version}.jar</argument>
-                                        <argument>-BclassPath=etc/*:jar/*</argument>
+                                        <!--<argument>-BclassPath=etc/*:jar/*</argument>-->
                                         <argument>-Bmac.category=Education</argument>
                                         <argument>-Bmac.CFBundleIdentifier=uk.ac.uea.cmp.spectre.viewer.Spectre</argument>
                                         <argument>-Bmac.CFBundleVersion=${project.parent.version}</argument>
