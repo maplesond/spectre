@@ -44,6 +44,7 @@
                     <platforms>
                         <platform>${spectre-platform}</platform>
                     </platforms>
+                    <repositoryLayout>flat</repositoryLayout>
                     <extraJvmArguments>-Djava.awt.headless=true</extraJvmArguments>
                     <programs>
                         <!--<program>

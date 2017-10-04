@@ -77,6 +77,7 @@
                     <platforms>
                         <platform>${spectre-platform}</platform>
                     </platforms>
+                    <repositoryLayout>flat</repositoryLayout>
                     <programs>
                         <program>
                             <mainClass>uk.ac.uea.cmp.spectre.viewer.Spectre</mainClass>

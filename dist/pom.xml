@@ -38,13 +38,13 @@
                 <version>1.7</version>
                 <executions>
                     <execution>
-                        <id>copy-resources</id>
-                        <phase>validate</phase>
+                        <id>package-general</id>
+                        <phase>package</phase>
                         <goals>
                             <goal>run</goal>
                         </goals>
                         <configuration>
-                            <target>
+                            <target name="package-general" description="Copy platform independent resources into build directory">
 
                                 <mkdir dir="${build-dir}/doc" />
                                 <mkdir dir="${build-dir}/etc" />
@@ -61,33 +61,6 @@
                                 <copy todir="${build-dir}">
                                     <fileset file="${project.basedir}/../LICENSE" />
                                     <fileset file="${project.basedir}/../README.md" />
-                                </copy>
-
-                                <mkdir dir="${dist-dir}/flat/bin"/>
-                                <mkdir dir="${dist-dir}/flat/etc" />
-                                <mkdir dir="${dist-dir}/flat/examples" />
-                                <mkdir dir="${dist-dir}/flat/doc" />
-                                <copy todir="${dist-dir}/flat/repo" flatten="true">
-                                    <fileset dir="${build-dir}/repo">
-                                        <include name="**/*" />
-                                        <type type="file" />
-                                    </fileset>
-                                </copy>
-                                <copy todir="${dist-dir}/flat/bin">
-                                    <fileset dir="${build-dir}/bin" />
-                                </copy>
-                                <copy todir="${dist-dir}/flat/etc">
-                                    <fileset dir="${build-dir}/etc" />
-                                </copy>
-                                <copy todir="${dist-dir}/flat/examples">
-                                    <fileset dir="${build-dir}/examples" />
-                                </copy>
-                                <copy todir="${dist-dir}/flat/doc">
-                                    <fileset dir="${build-dir}/doc" />
-                                </copy>
-                                <copy todir="${dist-dir}/flat">
-                                    <fileset file="${build-dir}/README.md" />
-                                    <fileset file="${build-dir}/LICENSE" />
                                 </copy>
 
                             </target>
@@ -140,16 +113,20 @@
                                         <argument>-appclass</argument>
                                         <argument>uk.ac.uea.cmp.spectre.viewer.Spectre</argument>
                                         <argument>-srcdir</argument>
-                                        <argument>${dist-dir}/flat</argument>
+                                        <argument>${build-dir}</argument>
                                         <argument>-outdir</argument>
                                         <argument>${dist-dir}/installer</argument>
                                         <argument>-outfile</argument>
                                         <argument>${dist-name}</argument>
                                         <argument>-v</argument>
+                                        <argument>-Bidentifier=uk.ac.uea.cmp.spectre.viewer.Spectre</argument>
                                         <argument>-BappVersion=${project.parent.version}</argument>
-                                        <argument>-Bicon=${dist-dir/flat/logo.ico</argument>
+                                        <argument>-Bicon=${build-dir}/logo.ico</argument>
                                         <argument>-BmainJar=repo/viewer-${project.parent.version}.jar</argument>
                                         <argument>-BclassPath="etc/*:jar/*"</argument>
+                                        <argument>-Bcopyright="Copyright (C) 2017  UEA School of Computing Sciences"</argument>
+                                        <argument>-BsystemWide=true</argument>
+                                        <argument>-BinstalldirChooser=true</argument>
                                     </arguments>
                                 </configuration>
                             </execution>
@@ -167,7 +144,7 @@
                                     <goal>run</goal>
                                 </goals>
                                 <configuration>
-                                    <target>
+                                    <target name="bundle-tar-win" description="Create a windows distributable tarball">
                                         <mkdir dir="${dist-dir}"/>
                                         <tar longfile="gnu"
                                              destfile="${dist-dir}/${dist-name}-win.tar.gz"
@@ -200,6 +177,85 @@
             <build>
                 <plugins>
                     <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>1.7</version>
+                        <executions>
+                            <execution>
+                            <id>package-debian</id>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>run</goal>
+                            </goals>
+                            <configuration>
+                                <target name="package-debian" description="Prepare project for Debian packaging">
+
+                                    <!-- Copy debian dir into build dir -->
+                                    <mkdir dir="${build-dir}/debian" />
+                                    <copy todir="${build-dir}/debian">
+                                        <fileset dir="${project.basedir}/debian" />
+                                    </copy>
+
+                                    <!-- Update changelog with current version -->
+                                    <exec executable="sed" output="${build-dir}/debian/changelog" append="false">
+                                        <arg value="s/VERSION/${project.parent.version}/g" />
+                                        <arg value="${project.basedir}/debian/changelog" />
+                                    </exec>
+
+                                    <!-- specify debian docs man page file... this seems broken -->
+                                    <!--<copy file="${build-dir}/doc/man/${project.parent.artifactId}.1" tofile="${build-dir}/debian/${project.parent.artifactId}.manpages" />-->
+
+                                    <!-- specify debian readme -->
+                                    <copy file="${build-dir}/README.md" tofile="${build-dir}/debian/${project.parent.artifactId}.README.Debian" />
+
+                                    <!-- add jre -->
+                                    <mkdir dir="${build-dir}/jre" />
+                                    <copy todir="${build-dir}/jre">
+                                        <fileset dir="${env.JAVA_HOME}/jre" />
+                                    </copy>
+
+                                    <!-- files to copy into bundle-->
+                                    <path id="files_in">
+                                        <fileset dir="${build-dir}/repo"/>
+                                        <fileset dir="${build-dir}/bin"/>
+                                        <fileset dir="${build-dir}/etc"/>
+                                        <fileset dir="${build-dir}/doc"/>
+                                        <fileset dir="${build-dir}/examples"/>
+                                    </path>
+
+                                    <!--<path id="cbd"><fileset dir="${build-dir}"/></path>
+                                    <pathconvert property="clean-build-dir" pathsep="${line.separator}">
+                                        <path refid="cbd"/>
+                                    </pathconvert>
+                                    <echo file="${build-dir}/debian/cbd" append="false">${clean-build-dir}</echo>
+                                    <echo file="${build-dir}/debian/bd" append="false">${build-dir}</echo>-->
+
+                                    <pathconvert property="files_out" pathsep="${line.separator}">
+                                        <path refid="files_in"/>
+                                    </pathconvert>
+
+                                    <echo file="${build-dir}/debian/files" append="false">${files_out}</echo>
+                                    <replace file="${build-dir}/debian/files" token="/home/dan/dev/spectre/build/spectre-1.1.4/" value=""/>
+                                    <exec executable="sed" output="${build-dir}/debian/${project.parent.artifactId}.install" append="false">
+                                        <arg value="s#$$# usr/share/${project.parent.artifactId}#" />
+                                        <arg value="${build-dir}/debian/files" />
+                                    </exec>
+                                    <!--<delete file="${build-dir}/debian/files_in_abs" />
+                                    <delete file="${build-dir}/debian/files_in_rel" />-->
+
+                                    <exec executable="dpkg-buildpackage">
+                                        <arg value="-A"/>
+                                        <arg value="-us"/>
+                                        <arg value="-uc"/>
+                                    </exec>
+
+                                </target>
+                            </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>exec-maven-plugin</artifactId>
                         <version>1.6.0</version>
@@ -230,18 +286,21 @@
                                         <argument>-appclass</argument>
                                         <argument>uk.ac.uea.cmp.spectre.viewer.Spectre</argument>
                                         <argument>-srcdir</argument>
-                                        <argument>${dist-dir}/flat</argument>
+                                        <argument>${build-dir}</argument>
                                         <argument>-outdir</argument>
                                         <argument>${dist-dir}/installer</argument>
                                         <argument>-outfile</argument>
                                         <argument>${dist-name}</argument>
                                         <argument>-v</argument>
+                                        <argument>-Bidentifier=uk.ac.uea.cmp.spectre.viewer.Spectre</argument>
                                         <argument>-BlicenseFile=LICENSE</argument>
                                         <argument>-BmainJar=repo/viewer-${project.parent.version}.jar</argument>
                                         <argument>-BclassPath="etc/*:repo/*"</argument>
+                                        <argument>-Bcopyright="Copyright (C) 2017  UEA School of Computing Sciences"</argument>
                                         <argument>-BappVersion=${project.parent.version}</argument>
                                         <argument>-Bicon=${project.basedir}/../etc/logo.png</argument>
                                         <argument>-Bcategory=Science</argument>
+                                        <argument>-BlicenseType="GPL v3"</argument>
                                     </arguments>
                                 </configuration>
                             </execution>
@@ -259,7 +318,7 @@
                                     <goal>run</goal>
                                 </goals>
                                 <configuration>
-                                    <target>
+                                    <target name="bundle-tar-linux" description="Create a linux distributable tarball">
                                         <mkdir dir="${dist-dir}"/>
                                         <tar longfile="gnu"
                                              destfile="${dist-dir}/${dist-name}-linux.tar.gz"
@@ -273,6 +332,7 @@
                                                 <include name="**"/>
                                                 <exclude name="bin/*"/>
                                                 <exclude name="jar"/>
+                                                <exclude name="debian"/>
                                             </tarfileset>
                                         </tar>
                                     </target>
@@ -308,12 +368,12 @@
                                 <configuration>
                                     <target>
 
-                                        <mkdir dir="${dist-dir}/flatter"/>
-                                        <copy todir="${dist-dir}/flatter">
-                                            <fileset dir="${dist-dir}/flat/repo" />
-                                            <fileset dir="${dist-dir}/flat/etc" />
-                                            <fileset file="${dist-dir}/flat/README.md" />
-                                            <fileset file="${dist-dir}/flat/LICENSE" />
+                                        <mkdir dir="${dist-dir}/flat"/>
+                                        <copy todir="${dist-dir}/flat">
+                                            <fileset dir="${build-dir}/repo" />
+                                            <fileset dir="${build-dir}/etc" />
+                                            <fileset file="${build-dir}/README.md" />
+                                            <fileset file="${build-dir}/LICENSE" />
                                         </copy>
 
 
@@ -354,20 +414,21 @@
                                         <argument>-appclass</argument>
                                         <argument>uk.ac.uea.cmp.spectre.viewer.Spectre</argument>
                                         <argument>-srcdir</argument>
-                                        <argument>${dist-dir}/flatter</argument>
+                                        <argument>${dist-dir}/flat</argument>
                                         <argument>-outdir</argument>
                                         <argument>${dist-dir}/installer</argument>
                                         <argument>-outfile</argument>
                                         <argument>${dist-name}</argument>
                                         <argument>-v</argument>
+                                        <argument>-Bidentifier=uk.ac.uea.cmp.spectre.viewer.Spectre</argument>
                                         <argument>-BlicenseFile=LICENSE</argument>
                                         <argument>-BappVersion=${project.parent.version}</argument>
-                                        <argument>-Bicon=${dist-dir}/flatter/logo.icns</argument>
+                                        <argument>-Bicon=${dist-dir}/flat/logo.icns</argument>
                                         <argument>-BmainJar=viewer-${project.parent.version}.jar</argument>
                                         <!--<argument>-BclassPath=etc/*:jar/*</argument>-->
                                         <argument>-Bmac.category=Education</argument>
-                                        <argument>-Bmac.CFBundleIdentifier=uk.ac.uea.cmp.spectre.viewer.Spectre</argument>
-                                        <argument>-Bmac.CFBundleVersion=${project.parent.version}</argument>
+                                        <!--<argument>-Bmac.CFBundleIdentifier=uk.ac.uea.cmp.spectre.viewer.Spectre</argument>-->
+                                        <!--<argument>-Bmac.CFBundleVersion=${project.parent.version}</argument>-->
                                     </arguments>
                                 </configuration>
                             </execution>
@@ -385,7 +446,7 @@
                                     <goal>run</goal>
                                 </goals>
                                 <configuration>
-                                    <target>
+                                    <target name="bundle-tar-mac" description="Create a mac distributable tarball">
                                         <mkdir dir="${dist-dir}"/>
                                         <tar longfile="gnu"
                                              destfile="${dist-dir}/${dist-name}-mac.tar.gz"
