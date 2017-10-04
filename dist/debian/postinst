@@ -20,11 +20,11 @@ set -e
 case "$1" in
     configure)
         echo Adding shortcut to the menu
-        cp /opt/spectre/spectre.desktop /usr/share/applications/
+        cp /usr/share/spectre/debian/spectre.desktop /usr/share/applications/
 
         if [ "false" = "true" ]; then
             echo Installing daemon
-            cp /opt/spectre/spectre.init /etc/init.d/spectre
+            cp /usr/share/spectre/spectre.init /etc/init.d/spectre
 
             if [ -x "/etc/init.d/spectre" ]; then
                 update-rc.d spectre defaults

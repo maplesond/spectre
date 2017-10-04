@@ -197,10 +197,7 @@
                                     </copy>
 
                                     <!-- Update changelog with current version -->
-                                    <exec executable="sed" output="${build-dir}/debian/changelog" append="false">
-                                        <arg value="s/VERSION/${project.parent.version}/g" />
-                                        <arg value="${project.basedir}/debian/changelog" />
-                                    </exec>
+                                    <replace file="${build-dir}/debian/changelog" token="VERSION" value="${project.parent.version}"/>
 
                                     <!-- specify debian docs man page file... this seems broken -->
                                     <!--<copy file="${build-dir}/doc/man/${project.parent.artifactId}.1" tofile="${build-dir}/debian/${project.parent.artifactId}.manpages" />-->
@@ -221,29 +218,24 @@
                                         <fileset dir="${build-dir}/etc"/>
                                         <fileset dir="${build-dir}/doc"/>
                                         <fileset dir="${build-dir}/examples"/>
+                                        <fileset file="${build-dir}/debian/spectre.desktop"/>
+                                        <fileset file="${build-dir}/debian/spectre.png"/>
+                                        <fileset file="${build-dir}/LICENSE"/>
                                     </path>
-
-                                    <!--<path id="cbd"><fileset dir="${build-dir}"/></path>
-                                    <pathconvert property="clean-build-dir" pathsep="${line.separator}">
-                                        <path refid="cbd"/>
-                                    </pathconvert>
-                                    <echo file="${build-dir}/debian/cbd" append="false">${clean-build-dir}</echo>
-                                    <echo file="${build-dir}/debian/bd" append="false">${build-dir}</echo>-->
 
                                     <pathconvert property="files_out" pathsep="${line.separator}">
                                         <path refid="files_in"/>
                                     </pathconvert>
 
                                     <echo file="${build-dir}/debian/files" append="false">${files_out}</echo>
-                                    <replace file="${build-dir}/debian/files" token="/home/dan/dev/spectre/build/spectre-1.1.4/" value=""/>
-                                    <exec executable="sed" output="${build-dir}/debian/${project.parent.artifactId}.install" append="false">
-                                        <arg value="s#$$# usr/share/${project.parent.artifactId}#" />
-                                        <arg value="${build-dir}/debian/files" />
+                                    <replace file="${build-dir}/debian/files" token="/home/dan/dev/spectre/build/${dist-name}/" value=""/>
+                                    <exec executable="${project.basedir}/make_install.py">
+                                        <arg value="${build-dir}/debian/files"/>
+                                        <arg value="${build-dir}/debian/${project.parent.artifactId}.install"/>
+                                        <arg value="usr/share/${project.parent.artifactId}"/>
                                     </exec>
-                                    <!--<delete file="${build-dir}/debian/files_in_abs" />
-                                    <delete file="${build-dir}/debian/files_in_rel" />-->
 
-                                    <exec executable="dpkg-buildpackage">
+                                    <exec executable="dpkg-buildpackage" dir="${build-dir}">
                                         <arg value="-A"/>
                                         <arg value="-us"/>
                                         <arg value="-uc"/>
@@ -255,7 +247,7 @@
                         </executions>
                     </plugin>
 
-                    <plugin>
+                    <!--<plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>exec-maven-plugin</artifactId>
                         <version>1.6.0</version>
@@ -305,7 +297,7 @@
                                 </configuration>
                             </execution>
                         </executions>
-                    </plugin>
+                    </plugin>-->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-antrun-plugin</artifactId>

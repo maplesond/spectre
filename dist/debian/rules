@@ -1,6 +1,6 @@
 #!/usr/bin/make -f
 
-JAVA_HOME=/opt/spectre/app/jre
+JAVA_HOME=/usr/share/spectre/jre
 
 %:
 	dh $@ --with javahelper

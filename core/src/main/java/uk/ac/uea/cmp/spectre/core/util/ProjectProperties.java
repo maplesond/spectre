@@ -28,49 +28,41 @@ public class ProjectProperties {
     }
 
     public static String getResourceFile(String filename) {
+        return getResourceFile(filename, false);
+    }
+
+    public static String getResourceFile(String filename, boolean verbose) {
 
         try {
-            File extDir = new File(ProjectProperties.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).getParentFile();
-            File etc = new File(extDir, "etc" + File.separator + filename);
-            File local1 = new File(extDir, filename);
-            File local2 = FileUtils.toFile(ProjectProperties.class.getResource(filename));
-            File back1 = new File(extDir.getParentFile(), filename);
-            File back1etc = new File(extDir.getParentFile(), "etc" + File.separator + filename);
-            File back2 = new File(extDir.getParentFile().getParentFile(), filename);
-            File back2etc = new File(extDir.getParentFile().getParentFile(), "etc" + File.separator + filename);
-            File back8 = null;
-            File back8etc = null;
-            try {
-                back8 = new File(extDir.getParentFile().getParentFile().getParentFile().getParentFile().getParentFile().getParentFile().getParentFile().getParentFile(), "etc" + File.separator + filename);
-                back8etc = new File(extDir.getParentFile().getParentFile().getParentFile().getParentFile().getParentFile().getParentFile().getParentFile().getParentFile(), "etc" + File.separator + filename);
-            }
-            catch (Exception e) {
-                // skip
-            }
+            File extDir = new File(ProjectProperties.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
 
-            List<File> flist = new ArrayList<>();
-            if (etc != null) flist.add(etc);
-            if (local1 != null) flist.add(local1);
-            if (local2 != null) flist.add(local2);
-            if (back1 != null) flist.add(back1);
-            if (back1etc != null) flist.add(back1etc);
-            if (back2 != null) flist.add(back2);
-            if (back2etc != null) flist.add(back2etc);
-            if (back8 != null) flist.add(back8);
-            if (back8etc != null) flist.add(back8etc);
+            // Ok, this can get messy.  There's probably a better way to deal with there is a lot of different ways the
+            // project can be configured across different environment, bundles and installers, so let's just wind back a max
+            // of 10 levels... if we haven't found it by then, then it's not there.
+            for (int i = 0; i < 12; i++) {
+                extDir = extDir.getParentFile();
+                String dirname = extDir.getName();
+                String pardirname = extDir.getParentFile().getName();
 
-            for (File f : flist) {
-                if (f.exists()) {
-                    log.debug("Found resource at: " + f.getAbsolutePath());
-                    return f.getAbsolutePath();
+                File backfile = new File(extDir, filename);
+                if (backfile.exists()) {
+                    if (verbose) log.debug("Found resource at: " + backfile.getAbsolutePath());
+                    return backfile.getAbsolutePath();
+                }
+
+                // Just a quick sanity check to make sure we are not going too far and delving into parts of the file
+                // system that we shouldn't
+                if (dirname.equalsIgnoreCase("spectre") && !pardirname.equalsIgnoreCase("cmp")) {
+                    if (verbose) log.warn("Could not find resource: " + filename);
+                    return null;
                 }
             }
         }
         catch (Exception e) {
-            log.warn("Caught exception when trying to access resource: " + filename + "; " + e.getMessage());
+            if (verbose) log.warn("Caught exception when trying to access resource: " + filename + "; " + e.getMessage());
             return null;
         }
-        log.warn("Could not find resource: " + filename);
+        if (verbose) log.warn("Could not find resource: " + filename);
         return null;
     }
 }

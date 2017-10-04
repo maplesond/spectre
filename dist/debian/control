@@ -10,5 +10,5 @@ Package: spectre
 Homepage: http://www.earlham.ac.uk/spectre
 Architecture: all
 Provides: spectre
-Depends: ${misc:Depends}, coreutils
+Depends: coreutils
 Description: Suite of PhylogEnetiC Tools for Reticulate Evolution

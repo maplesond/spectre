@@ -1,8 +1,8 @@
 [Desktop Entry]
 Name=spectre
 Comment=Suite of PhylogEnetiC Tools for Reticulate Evolution
-Exec=/opt/spectre/spectre
-Icon=/opt/spectre/spectre.png
+Exec=/usr/share/spectre/bin/spectre
+Icon=/usr/share/spectre/debian/spectre.png
 Terminal=false
 Type=Application
-Categories=Unknown
+Categories=Science
