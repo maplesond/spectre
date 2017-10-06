@@ -247,57 +247,6 @@
                         </executions>
                     </plugin>
 
-                    <!--<plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>exec-maven-plugin</artifactId>
-                        <version>1.6.0</version>
-                        <executions>
-                            <execution>
-                                <id>create-debian-installer</id>
-                                <phase>install</phase>
-                                <goals>
-                                    <goal>exec</goal>
-                                </goals>
-                                <configuration>
-                                    <executable>
-                                        ${env.JAVA_HOME}/bin/javapackager
-                                    </executable>
-
-                                    <arguments>
-                                        <argument>-deploy</argument>
-                                        <argument>-native</argument>
-                                        <argument>deb</argument>
-                                        <argument>-name</argument>
-                                        <argument>${project.parent.artifactId}</argument>
-                                        <argument>-title</argument>
-                                        <argument>Suite of PhylogEnetiC Tools for Reticulate Evolution</argument>
-                                        <argument>-description</argument>
-                                        <argument>Spectre a suite of tools for inferring evolutionary patterns associated with Reticulate Evolution that primarily either create or use split systems (a collection of bipartitions of the taxa) representable in two dimensions, such as SuperQ, FlatNJ, NetME and several NeighborNet variants.</argument>
-                                        <argument>-vendor</argument>
-                                        <argument>Earlham Institute</argument>
-                                        <argument>-appclass</argument>
-                                        <argument>uk.ac.uea.cmp.spectre.viewer.Spectre</argument>
-                                        <argument>-srcdir</argument>
-                                        <argument>${build-dir}</argument>
-                                        <argument>-outdir</argument>
-                                        <argument>${dist-dir}/installer</argument>
-                                        <argument>-outfile</argument>
-                                        <argument>${dist-name}</argument>
-                                        <argument>-v</argument>
-                                        <argument>-Bidentifier=uk.ac.uea.cmp.spectre.viewer.Spectre</argument>
-                                        <argument>-BlicenseFile=LICENSE</argument>
-                                        <argument>-BmainJar=repo/viewer-${project.parent.version}.jar</argument>
-                                        <argument>-BclassPath="etc/*:repo/*"</argument>
-                                        <argument>-Bcopyright="Copyright (C) 2017  UEA School of Computing Sciences"</argument>
-                                        <argument>-BappVersion=${project.parent.version}</argument>
-                                        <argument>-Bicon=${project.basedir}/../etc/logo.png</argument>
-                                        <argument>-Bcategory=Science</argument>
-                                        <argument>-BlicenseType="GPL v3"</argument>
-                                    </arguments>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>-->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-antrun-plugin</artifactId>
@@ -338,7 +287,7 @@
         <profile>
             <id>release-mac</id>
             <activation>
-                <os><family>mac</family></os>
+                <os><family>Mac</family></os>
                 <property><name>release</name></property>
             </activation>
             <properties>
@@ -359,16 +308,11 @@
                                 </goals>
                                 <configuration>
                                     <target>
-
-                                        <mkdir dir="${dist-dir}/flat"/>
-                                        <copy todir="${dist-dir}/flat">
+<!--
+                                        <copy todir="${build-dir}/jar" flatten="true">
                                             <fileset dir="${build-dir}/repo" />
-                                            <fileset dir="${build-dir}/etc" />
-                                            <fileset file="${build-dir}/README.md" />
-                                            <fileset file="${build-dir}/LICENSE" />
                                         </copy>
-
-
+-->
                                     </target>
                                 </configuration>
                             </execution>
@@ -451,7 +395,7 @@
                                             <tarfileset dir="${build-dir}">
                                                 <include name="**"/>
                                                 <exclude name="bin/*"/>
-                                                <exclude name="jar"/>
+                                                <exclude name="repo"/>
                                             </tarfileset>
                                         </tar>
                                     </target>
