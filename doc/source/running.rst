@@ -3,21 +3,14 @@
 Running SPECTRE Tools
 =====================
 
-Before discussing the tools available in spectre in detail, will run through some spectre specific considerations
+If you have installed SPECTRE from a platform-specific installer and wish to launch SPECTRE's graphical interface then
+you should just need to click the shortcut in your platforms launch menu.  Details for specific tools are discussed in
+subsequent sections.  However, first we will run through some command-line specific considerations
 that you should be aware of such as where to find the tools, how to change the memory limits.
 
 
-Platform specific installers
-----------------------------
-
-Debian / Ubuntu
-~~~~~~~~~~~~~
-
-Either open the ``spectre-<version-.deb`` by double clicking
-
-
-Wrapping scripts and platform support
--------------------------------------
+Command-line scripts
+--------------------
 
 We have tried to make all tools in spectre as platform independent and as simple to use as possible.  For example, instead
 of typing ``java -jar <path to executable jar``, which is a typical line used to start a java program, we created
@@ -27,10 +20,21 @@ have a ``.bat`` extension.  Please keep this in mind when reading the tool speci
 documentation are assumed to be running on a unix or mac system, so if you are running on windows please add a ``.bat`` suffix
 to the script name.
 
-All these executable scripts can be found in the `bin` subdirectory of the spectre installation.  If compiling spectre
-from source code the scripts can be found in `<project_dir>/build/spectre-<version>/bin`.
+If you installed from pre-packaged tarball all these executable scripts can be found in the `bin` subdirectory of the
+spectre installation.  If built from source then spectre from source code the scripts can be found in
+`<project_dir>/build/spectre-<version>/bin`.
 
 To run spectre tools without specifying the full path add the bin directory onto your PATH environment variable.
+
+If installed from a platform-specific installer then the location of these
+scripts is as follows:
+
+*debian* - Installed to ``/usr/share/spectre/bin`` with links to ``/usr/bin``, so the scripts will be directly available
+from a terminal without modifying the PATH.
+
+*mac* - Installed to ``/Applications/Spectre.app/Contents/MacOS``
+
+*windows* - Will be installed to ``<install_folder>/bin``
 
 
 Changing the JVM memory limits

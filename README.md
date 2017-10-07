@@ -12,7 +12,7 @@ containing data structures and algorithms that can be leveraged by third party a
 Installing
 ==========
 
-Spectre can be installed via three main methods either from a platform-specific install, cross-platform tarball, or directly
+Spectre can be installed via three main methods either from a platform-specific install, pre-packaged tarball, or directly
 from github source repository via a `git clone`. These steps for all methods are described in the following sections.
 
 Some of the tools in spectre use external mathematical optimizers for solving linear and quadratic problems.  Should you
@@ -53,8 +53,8 @@ from the start menu.
 Please note the command-line versions of the tools are not available on windows via this method.
 
 
-Cross-platform tarball
-----------------------
+Pre-packaged Tarball
+--------------------
 
 Before starting the installation please ensure that the Java Runtime Environment (JRE) V1.8+ is installed and configured
 for your environment.  You can check this by typing the following at the command line: ``java -version``.  Double check
