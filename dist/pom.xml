@@ -124,7 +124,8 @@
                                         <argument>-Bicon=${build-dir}/logo.ico</argument>
                                         <argument>-BmainJar=repo/viewer-${project.parent.version}.jar</argument>
                                         <argument>-BclassPath="etc/*:jar/*"</argument>
-                                        <argument>-Bcopyright="Copyright (C) 2017  UEA School of Computing Sciences"</argument>
+                                        <!-- This line doesn't seem to work.. something about the (C) being a problem?? -->
+                                        <!--<argument>-Bcopyright="Copyright (C) 2017  UEA School of Computing Sciences"</argument>-->
                                         <argument>-BsystemWide=true</argument>
                                         <argument>-BinstalldirChooser=true</argument>
                                     </arguments>
