@@ -205,12 +205,6 @@
                                     <!-- specify debian readme -->
                                     <copy file="${build-dir}/README.md" tofile="${build-dir}/debian/${project.parent.artifactId}.README.Debian" />
 
-                                    <!-- add jre -->
-                                    <mkdir dir="${build-dir}/jre" />
-                                    <copy todir="${build-dir}/jre">
-                                        <fileset dir="${env.JAVA_HOME}/jre" />
-                                    </copy>
-
                                     <!-- files to copy into bundle-->
                                     <path id="files_in">
                                         <fileset dir="${build-dir}/repo"/>

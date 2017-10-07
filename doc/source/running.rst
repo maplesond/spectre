@@ -7,6 +7,15 @@ Before discussing the tools available in spectre in detail, will run through som
 that you should be aware of such as where to find the tools, how to change the memory limits.
 
 
+Platform specific installers
+----------------------------
+
+Debian / Ubuntu
+~~~~~~~~~~~~~
+
+Either open the ``spectre-<version-.deb`` by double clicking
+
+
 Wrapping scripts and platform support
 -------------------------------------
 
