@@ -222,7 +222,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         getContentPane().setBackground(Color.white); // TODO Allow user to control background color
         setForeground(java.awt.Color.white);
 
-        setIconImage((new ImageIcon(ProjectProperties.getResourceFile("logo.png")).getImage()));
+        setIconImage((new ImageIcon(ProjectProperties.getResourceFile("etc" + File.separatorChar + "logo.png")).getImage()));
 
         setLayout(new BorderLayout());
 
@@ -257,7 +257,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         this.tbFind.addSeparator();
 
         this.cmdFind = new JButton("Find");
-        this.cmdFind.setIcon(new ImageIcon(ProjectProperties.getResourceFile("find.png")));
+        this.cmdFind.setIcon(new ImageIcon(ProjectProperties.getResourceFile("etc" + File.separatorChar + "find.png")));
         this.cmdFind.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 find();
@@ -274,7 +274,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         this.tbFind.add(Box.createHorizontalGlue());
         this.tbFind.addSeparator();
 
-        this.cmdFindClose = new JButton(new ImageIcon(ProjectProperties.getResourceFile("close.png")));
+        this.cmdFindClose = new JButton(new ImageIcon(ProjectProperties.getResourceFile("etc" + File.separatorChar + "close.png")));
         this.cmdFindClose.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 tbFind.setVisible(false);
@@ -381,6 +381,26 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         lblOffset.setText("Offset: " + df2.format(drawing.getOffset().getX()) + "," + df2.format(drawing.getOffset().getY()));
         lblZoomRatio.setText("Zoom: " + df2.format(drawing.config.getRatio()));
         lblAngle.setText("Angle: " + df2.format(drawing.config.getAngle() * 180.0 / Math.PI));
+    }
+
+    private static final String LABEL_TEXT = "For further information visit:";
+    private static final String A_VALID_LINK = "http://stackoverflow.com";
+    private static final String A_HREF = "<a href=\"";
+    private static final String HREF_CLOSED = "\">";
+    private static final String HREF_END = "</a>";
+    private static final String HTML = "<html>";
+    private static final String HTML_END = "</html>";
+
+
+    private static String linkIfy(String s) {
+        return A_HREF.concat(s).concat(HREF_CLOSED).concat(s).concat(HREF_END);
+    }
+
+    //WARNING
+//This method requires that s is a plain string that requires
+//no further escaping
+    private static String htmlIfy(String s) {
+        return HTML.concat(s).concat(HTML_END);
     }
 
     @SuppressWarnings("unchecked")
@@ -1025,23 +1045,49 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         mnuHelpHelp.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+                String reason = "";
                 if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
                     try {
-                        File here = new File(Spectre.class.getProtectionDomain().getCodeSource().getLocation().getPath());
-                        File docdir = new File(here, "../../../../../../../../../doc/html");
-                        if (here.getName().equalsIgnoreCase("classes")) {
-                            docdir = new File(here, "../../../doc/build/html");
+                        String indexFilePath = ProjectProperties.getResourceFile("doc" + File.separatorChar + "html" + File.separatorChar + "index.html");
+                        if (indexFilePath == null) {
+                            indexFilePath = ProjectProperties.getResourceFile("doc" + File.separatorChar + "build" + File.separatorChar + "html" + File.separatorChar + "index.html");
                         }
 
-                        
-			File indexFile = new File(docdir, "index.html");
-			String indexPath = indexFile.getCanonicalPath().replace("\\", "/");
-			indexPath = indexPath.charAt(0) == '/' ? indexPath.substring(1) : indexPath;
-			desktop.browse(new URI("file:///" + indexPath));
+                        if (indexFilePath != null) {
+                            String indexPath = new File(indexFilePath).getCanonicalPath().replace("\\", "/");
+                            indexPath = "file:///" + (indexPath.charAt(0) == '/' ? indexPath.substring(1) : indexPath);
+                            log.info("Trying to open help using browser: " + indexPath);
+                            desktop.browse(new URI(indexPath));
+                        }
+                        else {
+                            reason = "Resources not found.";
+                        }
                     }
                     catch(IOException | URISyntaxException e) {
-                        errorMessage("Couldn't open help page", e);
+                        reason = e.getMessage() == null ? "Unexpected error" : e.getMessage();
                     }
+                }
+                else {
+                    reason = "You are running spectre from a location that doesn't support instantiation of a browser (probably a terminal).";
+                }
+
+                if (!reason.equalsIgnoreCase("")) {
+                    String msg = "Couldn't open help page.  Reason: " + reason;
+                    String helpmsg = "Help is available at: ";
+                    String helpurl = "http://spectre-suite-of-phylogenetic-tools-for-reticulate-evolution.readthedocs.io/en/latest/";
+                    String htmlhelpurl = htmlIfy(linkIfy(helpurl));
+
+                    log.warn(msg);
+                    log.warn(helpmsg + helpurl);
+
+                    JTextPane f = new JTextPane();
+                    f.setContentType("text/html"); // let the text pane know this is what you want
+                    f.setEditable(false); // as before
+                    f.setBackground(null); // this is the same as a JLabel
+                    f.setBorder(null);
+                    f.setText("<p>" + msg + "</p><p>" + helpmsg + htmlhelpurl + "</p>");
+
+                    JOptionPane.showMessageDialog(null, f, "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
@@ -1616,7 +1662,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
             if (isMacOs) {
                 System.setProperty("apple.laf.useScreenMenuBar", "true");
                 Application.getApplication().setDockIconImage(
-                        new ImageIcon(ProjectProperties.getResourceFile("logo.png")).getImage());
+                        new ImageIcon(ProjectProperties.getResourceFile("etc" + File.separatorChar + "logo.png")).getImage());
             }
             else {
                 LookAndFeel.setLookAndFeel(LookAndFeel.NIMBUS);

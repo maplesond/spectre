@@ -1,0 +1,14 @@
+Source: spectre
+Priority: extra
+Maintainer: Daniel Mapleson <daniel.mapleson@earlham.ac.uk>
+Build-Depends: debhelper (>= 7.0.50~)
+Build-Depends-Indep: maven, javahelper (>=0.25)
+Standards-Version: 3.9.0
+Section: utils
+
+Package: spectre
+Homepage: http://www.earlham.ac.uk/spectre
+Architecture: all
+Provides: spectre
+Depends: coreutils
+Description: Suite of PhylogEnetiC Tools for Reticulate Evolution

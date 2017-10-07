@@ -1,0 +1,20 @@
+#!/usr/bin/make -f
+
+JAVA_HOME=/usr/share/spectre/jre
+
+%:
+	dh $@ --with javahelper
+
+override_dh_link:
+	dh_link usr/share/spectre/bin/spectre usr/bin/spectre
+	dh_link usr/share/spectre/bin/distmatgen usr/bin/distmatgen
+	dh_link usr/share/spectre/bin/flatnj usr/bin/flatnj
+	dh_link usr/share/spectre/bin/netmake usr/bin/netmake
+	dh_link usr/share/spectre/bin/netme usr/bin/netme
+	dh_link usr/share/spectre/bin/sfilter usr/bin/sfilter
+	dh_link usr/share/spectre/bin/splitcompare usr/bin/splitcompare
+	dh_link usr/share/spectre/bin/superq usr/bin/superq
+
+
+#override_jh_exec:
+#    exit 0

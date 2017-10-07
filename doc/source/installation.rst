@@ -3,17 +3,52 @@
 Installation
 ============
 
-Spectre can be installed either from a distributable tarball, or from source via a `git clone`. These steps for both
-methods are described in the following sections.
+Spectre can be installed via three main methods either from a platform-specific install, pre-packaged tarball, or directly
+from github source repository via a `git clone`. These steps for all methods are described in the following sections.
 
 Some of the tools in spectre use external mathematical optimizers for solving linear and quadratic problems.  Should you
-install from tarball working version of Apache Maths and JOptimizer is included.  However, some users may want to use
-optimizers from other vendors or sources such as GLPK or Gurobi you will need to manually install another tool called
+install from s platform-specific installer or cross-platform tarball then a working version of Apache Maths and JOptimizer
+is included.  However, some users may want to use optimizers from other vendors or sources such as Gurobi you will need to install another tool called
 *metaopt* first, and then install from source.  Metaopt can be obtained from https://github.com/maplesond/metaopt.  Please
-follow the instructions in the metaopt README for how to add other optimizers.
+follow the instructions in the ``metaopt`` README for how to add other optimizers.  Then follow the instructions for installing
+from source below.
 
-From tarball
-------------
+Platform-specific installer
+---------------------------
+
+Spectre currently supports Debian/Ubuntu, MacOS and windows installers.  Users of these platforms should find the installation
+experience self-explanatory.  They should only need to download the appropriate file from the github repository releases
+page: https://github.com/maplesond/spectre/releases and then double click the downloaded file.  There are however, some
+platform-specific considerations for running spectre which are detailed below.
+
+Debian/Ubuntu
+~~~~~~~~~~~~~
+
+Installing the debian file will put a shortcut for the GUI into either your ``Science`` or ``Other`` menu section depending
+on how you have your system configured.  Links to the command-line versions of your apps will be added to ``/usr/bin`` and
+the program itself is installed to ``/usr/share/spectre``.
+
+MacOS
+~~~~~
+
+After double-clicking the DMG image file, drag the SPECTRE app into the Applications folder.  You should then be able to
+access the GUI from the launchpad.
+
+We have not at present installed the command-line tools onto the PATH, but they are present on your system and can be found
+in ``/Applications/Spectre.app/Contents/MacOS``.  You can either run them from here or manually link them into ``/usr/local/bin``
+in order to have them directly available from the terminal.
+
+Windows
+~~~~~~~
+
+The windows installer will allow you to install Spectre to a directory of your choosing.  After which it should be available
+from the start menu.
+
+Please note the command-line versions of the tools are not available on windows via this method.
+
+
+Pre-packaged Tarball
+--------------------
 
 Before starting the installation please ensure that the Java Runtime Environment (JRE) V1.8+ is installed and configured
 for your environment.  You can check this by typing the following at the command line: ``java -version``.  Double check
@@ -25,16 +60,13 @@ This will create a sub-directory called ``spectre-<version>`` and in there shoul
 
 * bin - contains scripts allowing the user to easily run all the tools.  In general, the scripts are all command line tools except for ``spectre`` suffix.  Scripts for all platforms are available, in general, those with no extension should work on linux and mac platforms, and those with a ``.bat`` extension should run on windows.
 * doc - a html, pdf and text copy of the complete manual
-* etc - contains examples and configuration files
+* etc - contains configuration files and other resources for the application
 * examples - Example files to help you get started with the spectre tools
 * repo - contains the java classes used by spectre
-* support_jars - contains source and javadocs for the spectre codebase
 
 Should you want to run the tools without referring to their paths, you should ensure the `bin` directory is on your
 PATH environment variable.
 
-Unfortunately, as we cannot bundle Gurobi resources with SPECTRE, if you wish to enable Gurobi support you must install SPECTRE
-from source (see below).
 
 From source
 -----------

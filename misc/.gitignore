@@ -3,3 +3,4 @@
 /bin/
 /*dependency-reduced-pom.xml
 *.xml.releaseBackup
+*.xml.versionsBackup

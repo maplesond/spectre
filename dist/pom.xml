@@ -19,12 +19,12 @@
     <parent>
         <artifactId>spectre</artifactId>
         <groupId>uk.ac.uea.cmp.spectre</groupId>
-        <version>1.1.3</version>
+        <version>1.1.4</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>dist</artifactId>
-    <version>1.1.3</version>
+    <version>1.1.4</version>
 
     <name>Spectre: Create Distribution</name>
 
@@ -38,25 +38,23 @@
                 <version>1.7</version>
                 <executions>
                     <execution>
-                        <id>copy-resources</id>
-                        <phase>install</phase>
+                        <id>package-general</id>
+                        <phase>package</phase>
                         <goals>
                             <goal>run</goal>
                         </goals>
                         <configuration>
-                            <target>
-                                <!-- copy the config and resource files into to the build dir -->
+                            <target name="package-general" description="Copy platform independent resources into build directory">
+
+                                <mkdir dir="${build-dir}/doc" />
                                 <mkdir dir="${build-dir}/etc" />
+                                <mkdir dir="${build-dir}/examples" />
                                 <copy todir="${build-dir}/etc">
                                     <fileset dir="${etc-dir}" />
                                 </copy>
-                                <!-- copy the example files into the build dir -->
-                                <mkdir dir="${build-dir}/examples" />
                                 <copy todir="${build-dir}/examples">
                                     <fileset dir="${examples-dir}" />
                                 </copy>
-                                <!-- copy the documentation in to the build dir -->
-                                <mkdir dir="${build-dir}/doc" />
                                 <copy todir="${build-dir}/doc">
                                     <fileset dir="${doc-dir}/build" />
                                 </copy>
@@ -64,12 +62,7 @@
                                     <fileset file="${project.basedir}/../LICENSE" />
                                     <fileset file="${project.basedir}/../README.md" />
                                 </copy>
-                                <copy todir="${build-dir}/jar" flatten="true">
-                                    <fileset dir="${build-dir}/repo">
-                                        <include name="**/*.jar" />
-                                        <type type="file" />
-                                    </fileset>
-                                </copy>
+
                             </target>
                         </configuration>
                     </execution>
@@ -95,7 +88,7 @@
                         <version>1.6.0</version>
                         <executions>
                             <execution>
-                                <id>create-distributable</id>
+                                <id>create-windows-installer</id>
                                 <phase>install</phase>
                                 <goals>
                                     <goal>exec</goal>
@@ -112,25 +105,63 @@
                                         <argument>-name</argument>
                                         <argument>${project.parent.artifactId}</argument>
                                         <argument>-title</argument>
-                                        <argument>"Suite of PhylogEnetiC Tools for Reticulate Evolution"</argument>
+                                        <argument>Suite of PhylogEnetiC Tools for Reticulate Evolution</argument>
                                         <argument>-description</argument>
-                                        <argument>"Spectre a suite of tools for inferring evolutionary patterns associated with Reticulate Evolution that primarily either create or use split systems (a collection of bipartitions of the taxa) representable in two dimensions, such as SuperQ, FlatNJ, NetME and several NeighborNet variants."</argument>
+                                        <argument>Spectre a suite of tools for inferring evolutionary patterns associated with Reticulate Evolution that primarily either create or use split systems (a collection of bipartitions of the taxa) representable in two dimensions, such as SuperQ, FlatNJ, NetME and several NeighborNet variants.</argument>
                                         <argument>-vendor</argument>
-                                        <argument>"Earlham Institute"</argument>
+                                        <argument>Earlham Institute</argument>
                                         <argument>-appclass</argument>
                                         <argument>uk.ac.uea.cmp.spectre.viewer.Spectre</argument>
                                         <argument>-srcdir</argument>
-                                        <argument>"${project.basedir}/../build/${project.parent.artifactId}-${project.parent.version}"</argument>
+                                        <argument>${build-dir}</argument>
                                         <argument>-outdir</argument>
-                                        <argument>${dist-dir}</argument>
+                                        <argument>${dist-dir}/installer</argument>
                                         <argument>-outfile</argument>
-                                        <argument>${project.parent.artifactId}-${project.parent.version}</argument>
+                                        <argument>${dist-name}</argument>
                                         <argument>-v</argument>
+                                        <argument>-Bidentifier=uk.ac.uea.cmp.spectre.viewer.Spectre</argument>
                                         <argument>-BappVersion=${project.parent.version}</argument>
-                                        <argument>-Bicon=${project.basedir}/../etc/logo.ico</argument>
-                                        <argument>-BmainJar=jar/viewer-${project.parent.version}.jar</argument>
+                                        <argument>-Bicon=${build-dir}/logo.ico</argument>
+                                        <argument>-BmainJar=repo/viewer-${project.parent.version}.jar</argument>
                                         <argument>-BclassPath="etc/*:jar/*"</argument>
+                                        <!-- This line doesn't seem to work.. something about the (C) being a problem?? -->
+                                        <!--<argument>-Bcopyright="Copyright (C) 2017  UEA School of Computing Sciences"</argument>-->
+                                        <argument>-BsystemWide=true</argument>
+                                        <argument>-BinstalldirChooser=true</argument>
                                     </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>1.7</version>
+                        <executions>
+                            <execution>
+                                <id>create-windows-distributable</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target name="bundle-tar-win" description="Create a windows distributable tarball">
+                                        <mkdir dir="${dist-dir}"/>
+                                        <tar longfile="gnu"
+                                             destfile="${dist-dir}/${dist-name}-win.tar.gz"
+                                             compression="gzip">
+
+                                            <tarfileset dir="${build-dir}" filemode="755">
+                                                <include name="bin/*"/>
+                                            </tarfileset>
+
+                                            <tarfileset dir="${build-dir}">
+                                                <include name="**"/>
+                                                <exclude name="bin/*"/>
+                                                <exclude name="jar"/>
+                                            </tarfileset>
+                                        </tar>
+                                    </target>
                                 </configuration>
                             </execution>
                         </executions>
@@ -141,56 +172,109 @@
         <profile>
             <id>release-linux</id>
             <activation>
-                <os><family>unix</family></os>
+                <os><family>unix</family><name>Linux</name></os>
                 <property><name>release</name></property>
             </activation>
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>exec-maven-plugin</artifactId>
-                        <version>1.6.0</version>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>1.7</version>
                         <executions>
                             <execution>
-                                <id>create-distributable</id>
+                            <id>package-debian</id>
+                            <phase>install</phase>
+                            <goals>
+                                <goal>run</goal>
+                            </goals>
+                            <configuration>
+                                <target name="package-debian" description="Prepare project for Debian packaging">
+
+                                    <!-- Copy debian dir into build dir -->
+                                    <mkdir dir="${build-dir}/debian" />
+                                    <copy todir="${build-dir}/debian">
+                                        <fileset dir="${project.basedir}/debian" />
+                                    </copy>
+
+                                    <!-- Update changelog with current version -->
+                                    <replace file="${build-dir}/debian/changelog" token="VERSION" value="${project.parent.version}"/>
+
+                                    <!-- specify debian docs man page file... this seems broken -->
+                                    <!--<copy file="${build-dir}/doc/man/${project.parent.artifactId}.1" tofile="${build-dir}/debian/${project.parent.artifactId}.manpages" />-->
+
+                                    <!-- specify debian readme -->
+                                    <copy file="${build-dir}/README.md" tofile="${build-dir}/debian/${project.parent.artifactId}.README.Debian" />
+
+                                    <!-- files to copy into bundle-->
+                                    <path id="files_in">
+                                        <fileset dir="${build-dir}/repo"/>
+                                        <fileset dir="${build-dir}/bin"/>
+                                        <fileset dir="${build-dir}/etc"/>
+                                        <fileset dir="${build-dir}/doc"/>
+                                        <fileset dir="${build-dir}/examples"/>
+                                        <fileset file="${build-dir}/debian/spectre.desktop"/>
+                                        <fileset file="${build-dir}/debian/spectre.png"/>
+                                        <fileset file="${build-dir}/LICENSE"/>
+                                    </path>
+
+                                    <pathconvert property="files_out" pathsep="${line.separator}">
+                                        <path refid="files_in"/>
+                                    </pathconvert>
+
+                                    <echo file="${build-dir}/debian/files" append="false">${files_out}</echo>
+                                    <replace file="${build-dir}/debian/files" token="/home/dan/dev/spectre/build/${dist-name}/" value=""/>
+                                    <exec executable="${project.basedir}/make_install.py">
+                                        <arg value="${build-dir}/debian/files"/>
+                                        <arg value="${build-dir}/debian/${project.parent.artifactId}.install"/>
+                                        <arg value="usr/share/${project.parent.artifactId}"/>
+                                    </exec>
+
+                                    <exec executable="dpkg-buildpackage" dir="${build-dir}">
+                                        <arg value="-A"/>
+                                        <arg value="-us"/>
+                                        <arg value="-uc"/>
+                                    </exec>
+
+                                    <move file="${build-dir}/../${project.parent.artifactId}_${project.parent.version}_all.deb" tofile="${dist-dir}/${project.parent.artifactId}-${project.parent.version}-linux.deb"/>
+
+                                </target>
+                            </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>1.7</version>
+                        <executions>
+                            <execution>
+                                <id>create-linux-distributable</id>
                                 <phase>install</phase>
                                 <goals>
-                                    <goal>exec</goal>
+                                    <goal>run</goal>
                                 </goals>
                                 <configuration>
-                                    <executable>
-                                        ${env.JAVA_HOME}/bin/javapackager
-                                    </executable>
+                                    <target name="bundle-tar-linux" description="Create a linux distributable tarball">
+                                        <mkdir dir="${dist-dir}"/>
+                                        <tar longfile="gnu"
+                                             destfile="${dist-dir}/${dist-name}-linux.tar.gz"
+                                             compression="gzip">
 
-                                    <arguments>
-                                        <argument>-deploy</argument>
-                                        <argument>-native</argument>
-                                        <argument>deb</argument>
-                                        <argument>-name</argument>
-                                        <argument>${project.parent.artifactId}</argument>
-                                        <argument>-title</argument>
-                                        <argument>"Suite of PhylogEnetiC Tools for Reticulate Evolution"</argument>
-                                        <argument>-description</argument>
-                                        <argument>"Spectre a suite of tools for inferring evolutionary patterns associated with Reticulate Evolution that primarily either create or use split systems (a collection of bipartitions of the taxa) representable in two dimensions, such as SuperQ, FlatNJ, NetME and several NeighborNet variants."</argument>
-                                        <argument>-vendor</argument>
-                                        <argument>"Earlham Institute"</argument>
-                                        <argument>-appclass</argument>
-                                        <argument>uk.ac.uea.cmp.spectre.viewer.Spectre</argument>
-                                        <argument>-srcdir</argument>
-                                        <argument>"${project.basedir}/../build/${project.parent.artifactId}-${project.parent.version}"</argument>
-                                        <argument>-outdir</argument>
-                                        <argument>${dist-dir}</argument>
-                                        <argument>-outfile</argument>
-                                        <argument>${project.parent.artifactId}-${project.parent.version}</argument>
-                                        <argument>-v</argument>
-                                        <argument>-BlicenseFile=LICENSE</argument>
-                                        <argument>-BmainJar=jar/viewer-${project.parent.version}.jar</argument>
-                                        <argument>-BclassPath="etc/*:jar/*"</argument>
-                                        <argument>-BappVersion=${project.parent.version}</argument>
-                                        <argument>-Bicon=${project.basedir}/../etc/logo.png</argument>
-                                        <argument>-Bcategory=Education</argument>
+                                            <tarfileset dir="${build-dir}" filemode="755">
+                                                <include name="bin/*"/>
+                                            </tarfileset>
 
-                                    </arguments>
+                                            <tarfileset dir="${build-dir}">
+                                                <include name="**"/>
+                                                <exclude name="bin/*"/>
+                                                <exclude name="jar"/>
+                                                <exclude name="debian"/>
+                                                <exclude name="jre"/>
+                                            </tarfileset>
+                                        </tar>
+                                    </target>
                                 </configuration>
                             </execution>
                         </executions>
@@ -209,52 +293,112 @@
             </properties>
             <build>
                 <plugins>
+
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>1.7</version>
+                        <executions>
+                            <execution>
+                                <id>copy-resources</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+
+                                        <!-- Add build contents -->
+                                        <mkdir dir="${dist-dir}/Spectre.app/Contents/Resources" />
+                                        <copy todir="${dist-dir}/Spectre.app/Contents/Resources">
+                                            <fileset dir="${build-dir}"/>
+                                            <fileset file="${build-dir}/etc/logo.icns"/>
+                                        </copy>
+
+                                        <!-- add jre -->
+                                        <mkdir dir="${dist-dir}/Spectre.app/Contents/Resources/jre" />
+                                        <copy todir="${dist-dir}/Spectre.app/Contents/Resources/jre">
+                                            <!-- This should always be where the JRE lives -->
+                                            <fileset dir="/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home/" />
+                                        </copy>
+                                        <chmod dir="${dist-dir}/Spectre.app/Contents/Resources/jre/bin" perm="ugo+rx" includes="*"/>
+
+                                        <!-- add pkginfo and plist files -->
+                                        <copy todir="${dist-dir}/Spectre.app/Contents">
+                                            <fileset file="${project.basedir}/mac/Info.plist"/>
+                                            <fileset file="${project.basedir}/mac/PkgInfo"/>
+                                        </copy>
+                                        <replace file="${dist-dir}/Spectre.app/Contents/Info.plist" token="VERSION" value="${project.parent.version}"/>
+
+s                                        <!-- Copy in the application stub -->
+                                        <mkdir dir="${dist-dir}/Spectre.app/Contents/MacOS" />
+                                        <copy todir="${dist-dir}/Spectre.app/Contents/MacOS">
+                                            <fileset dir="${project.basedir}/mac/stubs"/>
+                                        </copy>
+                                        <chmod dir="${dist-dir}/Spectre.app/Contents/MacOS" perm="ugo+rx" includes="*"/>
+                                    </target>
+                                </configuration>
+                            </execution>
+
+                        </executions>
+                    </plugin>
+
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>exec-maven-plugin</artifactId>
                         <version>1.6.0</version>
                         <executions>
                             <execution>
-                                <id>create-distributable</id>
+                                <id>create-dmg-installer</id>
                                 <phase>install</phase>
                                 <goals>
                                     <goal>exec</goal>
                                 </goals>
                                 <configuration>
-                                    <executable>
-                                        ${env.JAVA_HOME}/bin/javapackager
-                                    </executable>
 
+                                    <executable>${project.basedir}/mac/build.sh</executable>
                                     <arguments>
-                                        <argument>-deploy</argument>
-                                        <argument>-native</argument>
-                                        <argument>dmg</argument>
-                                        <argument>-name</argument>
+                                        <argument>Spectre</argument>
                                         <argument>${project.parent.artifactId}</argument>
-                                        <argument>-title</argument>
-                                        <argument>"Suite of PhylogEnetiC Tools for Reticulate Evolution"</argument>
-                                        <argument>-description</argument>
-                                        <argument>"Spectre a suite of tools for inferring evolutionary patterns associated with Reticulate Evolution that primarily either create or use split systems (a collection of bipartitions of the taxa) representable in two dimensions, such as SuperQ, FlatNJ, NetME and several NeighborNet variants."</argument>
-                                        <argument>-vendor</argument>
-                                        <argument>"Earlham Institute"</argument>
-                                        <argument>-appclass</argument>
-                                        <argument>uk.ac.uea.cmp.spectre.viewer.Spectre</argument>
-                                        <argument>-srcdir</argument>
-                                        <argument>"${project.basedir}/../build/${project.parent.artifactId}-${project.parent.version}"</argument>
-                                        <argument>-outdir</argument>
-                                        <argument>${dist-dir}</argument>
-                                        <argument>-outfile</argument>
-                                        <argument>${project.parent.artifactId}-${project.parent.version}</argument>
-                                        <argument>-v</argument>
-                                        <argument>-BlicenseFile=LICENSE</argument>
-                                        <argument>-BappVersion=${project.parent.version}</argument>
-                                        <argument>-Bicon=${project.basedir}/../etc/logo.icns</argument>
-                                        <argument>-BmainJar=jar/viewer-${project.parent.version}.jar</argument>
-                                        <argument>-BclassPath="etc/*:jar/*"</argument>
-                                        <argument>-Bmac.category=Education</argument>
-                                        <argument>-Bmac.CFBundleIdentifier=uk.ac.uea.cmp.spectre.viewer.Spectre</argument>
-                                        <argument>-Bmac.CFBundleVersion=${project.parent.version}</argument>
+                                        <argument>${dist-name}-mac.dmg</argument>
+                                        <argument>${dist-dir}/mac</argument>
+                                        <argument>${dist-dir}/Spectre.app</argument>
                                     </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>1.7</version>
+                        <executions>
+                            <execution>
+                                <id>create-mac-distributable</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target name="bundle-tar-mac" description="Create a mac distributable tarball">
+                                        <mkdir dir="${dist-dir}"/>
+                                        <tar longfile="gnu"
+                                             destfile="${dist-dir}/${dist-name}-mac.tar.gz"
+                                             compression="gzip">
+
+                                            <tarfileset dir="${build-dir}" filemode="755">
+                                                <include name="bin/*"/>
+                                            </tarfileset>
+
+                                            <tarfileset dir="${build-dir}">
+                                                <include name="**"/>
+                                                <exclude name="bin/*"/>
+                                                <exclude name="repo"/>
+                                                <exclude name="jre"/>
+                                            </tarfileset>
+                                        </tar>
+                                    </target>
                                 </configuration>
                             </execution>
                         </executions>
