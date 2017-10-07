@@ -60,10 +60,9 @@ This will create a sub-directory called ``spectre-<version>`` and in there shoul
 
 * bin - contains scripts allowing the user to easily run all the tools.  In general, the scripts are all command line tools except for ``spectre`` suffix.  Scripts for all platforms are available, in general, those with no extension should work on linux and mac platforms, and those with a ``.bat`` extension should run on windows.
 * doc - a html, pdf and text copy of the complete manual
-* etc - contains examples and configuration files
+* etc - contains configuration files and other resources for the application
 * examples - Example files to help you get started with the spectre tools
 * repo - contains the java classes used by spectre
-* support_jars - contains source and javadocs for the spectre codebase
 
 Should you want to run the tools without referring to their paths, you should ensure the `bin` directory is on your
 PATH environment variable.
