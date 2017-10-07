@@ -183,7 +183,7 @@
                         <executions>
                             <execution>
                             <id>package-debian</id>
-                            <phase>package</phase>
+                            <phase>install</phase>
                             <goals>
                                 <goal>run</goal>
                             </goals>
@@ -305,7 +305,7 @@
                         <executions>
                             <execution>
                                 <id>copy-resources</id>
-                                <phase>validate</phase>
+                                <phase>install</phase>
                                 <goals>
                                     <goal>run</goal>
                                 </goals>
