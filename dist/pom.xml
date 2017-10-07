@@ -325,6 +325,7 @@
                                             <!-- This should always be where the JRE lives -->
                                             <fileset dir="/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home/" />
                                         </copy>
+                                        <chmod dir="${dist-dir}/Spectre.app/Contents/Resources/jre/bin" perm="ugo+rx" includes="*"/>
 
                                         <!-- add pkginfo and plist files -->
                                         <copy todir="${dist-dir}/Spectre.app/Contents">
