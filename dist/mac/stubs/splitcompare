@@ -1,0 +1,8 @@
+#!/bin/bash
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+JAVA_HOME=${DIR}/../Resources/jre
+
+bash ${DIR}/../Resources/bin/splitcompare $@
+

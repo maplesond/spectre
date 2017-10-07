@@ -274,6 +274,7 @@
                                                 <exclude name="bin/*"/>
                                                 <exclude name="jar"/>
                                                 <exclude name="debian"/>
+                                                <exclude name="jre"/>
                                             </tarfileset>
                                         </tar>
                                     </target>
@@ -295,6 +296,8 @@
             </properties>
             <build>
                 <plugins>
+
+
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-antrun-plugin</artifactId>
@@ -308,17 +311,41 @@
                                 </goals>
                                 <configuration>
                                     <target>
-<!--
-                                        <copy todir="${build-dir}/jar" flatten="true">
-                                            <fileset dir="${build-dir}/repo" />
+
+                                        <!-- Add build contents -->
+                                        <mkdir dir="${dist-dir}/Spectre.app/Contents/Resources" />
+                                        <copy todir="${dist-dir}/Spectre.app/Contents/Resources">
+                                            <fileset dir="${build-dir}"/>
+                                            <fileset file="${build-dir}/etc/logo.icns"/>
                                         </copy>
--->
+
+                                        <!-- add jre -->
+                                        <mkdir dir="${dist-dir}/Spectre.app/Contents/Resources/jre" />
+                                        <copy todir="${dist-dir}/Spectre.app/Contents/Resources/jre">
+                                            <!-- This should always be where the JRE lives -->
+                                            <fileset dir="/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home/" />
+                                        </copy>
+
+                                        <!-- add pkginfo and plist files -->
+                                        <copy todir="${dist-dir}/Spectre.app/Contents">
+                                            <fileset file="${project.basedir}/mac/Info.plist"/>
+                                            <fileset file="${project.basedir}/mac/PkgInfo"/>
+                                        </copy>
+                                        <replace file="${dist-dir}/Spectre.app/Contents/Info.plist" token="VERSION" value="${project.parent.version}"/>
+
+s                                        <!-- Copy in the application stub -->
+                                        <mkdir dir="${dist-dir}/Spectre.app/Contents/MacOS" />
+                                        <copy todir="${dist-dir}/Spectre.app/Contents/MacOS">
+                                            <fileset dir="${project.basedir}/mac/stubs"/>
+                                        </copy>
+                                        <chmod dir="${dist-dir}/Spectre.app/Contents/MacOS" perm="ugo+rx" includes="*"/>
                                     </target>
                                 </configuration>
                             </execution>
 
                         </executions>
                     </plugin>
+
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>exec-maven-plugin</artifactId>
@@ -331,40 +358,14 @@
                                     <goal>exec</goal>
                                 </goals>
                                 <configuration>
-                                    <executable>
-                                        ${env.JAVA_HOME}/bin/javapackager
-                                    </executable>
 
+                                    <executable>${project.basedir}/mac/build.sh</executable>
                                     <arguments>
-                                        <argument>-deploy</argument>
-                                        <argument>-native</argument>
-                                        <argument>dmg</argument>
-                                        <argument>-name</argument>
+                                        <argument>Spectre</argument>
                                         <argument>${project.parent.artifactId}</argument>
-                                        <argument>-title</argument>
-                                        <argument>Suite of PhylogEnetiC Tools for Reticulate Evolution</argument>
-                                        <argument>-description</argument>
-                                        <argument>Spectre a suite of tools for inferring evolutionary patterns associated with Reticulate Evolution that primarily either create or use split systems (a collection of bipartitions of the taxa) representable in two dimensions, such as SuperQ, FlatNJ, NetME and several NeighborNet variants.</argument>
-                                        <argument>-vendor</argument>
-                                        <argument>Earlham Institute</argument>
-                                        <argument>-appclass</argument>
-                                        <argument>uk.ac.uea.cmp.spectre.viewer.Spectre</argument>
-                                        <argument>-srcdir</argument>
-                                        <argument>${dist-dir}/flat</argument>
-                                        <argument>-outdir</argument>
-                                        <argument>${dist-dir}/installer</argument>
-                                        <argument>-outfile</argument>
-                                        <argument>${dist-name}</argument>
-                                        <argument>-v</argument>
-                                        <argument>-Bidentifier=uk.ac.uea.cmp.spectre.viewer.Spectre</argument>
-                                        <argument>-BlicenseFile=LICENSE</argument>
-                                        <argument>-BappVersion=${project.parent.version}</argument>
-                                        <argument>-Bicon=${dist-dir}/flat/logo.icns</argument>
-                                        <argument>-BmainJar=viewer-${project.parent.version}.jar</argument>
-                                        <!--<argument>-BclassPath=etc/*:jar/*</argument>-->
-                                        <argument>-Bmac.category=Education</argument>
-                                        <!--<argument>-Bmac.CFBundleIdentifier=uk.ac.uea.cmp.spectre.viewer.Spectre</argument>-->
-                                        <!--<argument>-Bmac.CFBundleVersion=${project.parent.version}</argument>-->
+                                        <argument>${dist-name}-mac.dmg</argument>
+                                        <argument>${dist-dir}/mac</argument>
+                                        <argument>${dist-dir}/Spectre.app</argument>
                                     </arguments>
                                 </configuration>
                             </execution>
@@ -396,6 +397,7 @@
                                                 <include name="**"/>
                                                 <exclude name="bin/*"/>
                                                 <exclude name="repo"/>
+                                                <exclude name="jre"/>
                                             </tarfileset>
                                         </tar>
                                     </target>
