@@ -181,7 +181,7 @@ public class CyclicOrderer {
 
 
         // remove b from X
-        X.remove(new Integer(b));
+        X.remove(Integer.valueOf(b));
 
         // Update counts and weights in the holders
         this.holders.update(a, b, y, X);

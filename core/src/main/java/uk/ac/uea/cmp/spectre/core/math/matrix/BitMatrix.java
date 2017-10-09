@@ -58,7 +58,7 @@ public class BitMatrix {
 
         for (int c = 0; c < columns; c++) {
 
-            if (P.contains(new Integer(c))) {
+            if (P.contains(Integer.valueOf(c))) {
 
                 for (int r = 0; r < rows; r++) {
                     newData[r][q] = data[r][c];

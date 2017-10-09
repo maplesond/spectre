@@ -1,4 +1,5 @@
 .. _spectre:
+.. _viewer:
 
 SPECTRE Viewer
 ==============

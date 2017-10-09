@@ -145,7 +145,7 @@ public class FlexibleDistanceMatrix extends AbstractDistanceMatrix {
         // Don't do anything if both taxa are the same, except return 0.0, otherwise update the matrix and return the old
         // result
         Double oldVal = taxon1.equals(taxon2) ?
-                new Double(0.0) :
+                Double.valueOf(0.0) :
                 this.matrix.put(this.getSortedPair(taxon1, taxon2), value);
 
         return oldVal == null ? 0.0 : oldVal;

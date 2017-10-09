@@ -314,19 +314,15 @@
 
     <modules>
 
-        <module>clean</module>
-
-        <!-- Run through the child projects -->
+        <!-- order is important -->
+        <module>prepare</module>
         <module>core</module>
         <module>misc</module>
         <module>viewer</module>
         <module>net</module>
         <module>qtools</module>
         <module>flatnj</module>
-        <!--<module>padre</module>-->
         <module>doc</module>
-
-        <!-- This gets executed last because it creates the distribution and the manual -->
         <module>dist</module>
 
     </modules>

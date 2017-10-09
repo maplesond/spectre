@@ -26,7 +26,7 @@ public class Leaf implements BinaryTree {
 
     @Override
     public void fillList(List<Integer> aList) {
-        aList.add(new Integer(identity));
+        aList.add(Integer.valueOf(identity));
     }
 
     public int getIdentity() {

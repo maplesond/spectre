@@ -108,7 +108,7 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
 
         JMenuItem copySelectedTaxa = new JMenuItem("Copy selected labels");
         copySelectedTaxa.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C,
-                java.awt.Event.CTRL_MASK));
+                java.awt.event.InputEvent.CTRL_DOWN_MASK));
         copySelectedTaxa.addActionListener(new ActionListener() {
 
             @Override
@@ -121,7 +121,7 @@ public class Window extends JPanel implements KeyListener, ComponentListener {
 
         JMenuItem selectGroup = new JMenuItem("Select group");
         selectGroup.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_G,
-                java.awt.Event.CTRL_MASK));
+                java.awt.event.InputEvent.CTRL_DOWN_MASK));
         selectGroup.addActionListener(new ActionListener() {
 
             @Override

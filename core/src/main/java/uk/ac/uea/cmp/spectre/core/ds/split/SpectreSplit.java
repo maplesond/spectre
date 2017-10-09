@@ -324,10 +324,10 @@ public class SpectreSplit implements Split {
     @Override
     public Integer getTrivial() {
         if (this.aSide.size() == 1) {
-            return new Integer(this.aSide.getFirst());
+            return Integer.valueOf(this.aSide.getFirst());
         }
         else if (this.bSide.size() == 1) {
-            return new Integer(this.bSide.getFirst());
+            return Integer.valueOf(this.bSide.getFirst());
         }
         else {
             return null;
