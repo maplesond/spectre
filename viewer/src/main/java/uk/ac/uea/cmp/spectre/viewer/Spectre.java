@@ -28,14 +28,12 @@ import org.apache.batik.svggen.SVGGraphics2D;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.xmlgraphics.java2d.ps.EPSDocumentGraphics2D;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.DOMImplementation;
-import com.apple.eawt.Application;
 import uk.ac.uea.cmp.spectre.core.ds.IdentifierList;
 import uk.ac.uea.cmp.spectre.core.ds.network.Network;
 import uk.ac.uea.cmp.spectre.core.ds.network.Vertex;
@@ -197,6 +195,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
     public Spectre() throws IOException {
         prepareViewer();
         prepareOpenPane();
+        this.pack();
     }
 
     /**
@@ -217,8 +216,8 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle(TITLE);
-        setPreferredSize(new Dimension(800, 600));
-        setMinimumSize(new Dimension(700, 500));
+        setPreferredSize(new Dimension(1024, 768));
+        setMinimumSize(new Dimension(640, 480));
         getContentPane().setBackground(Color.white); // TODO Allow user to control background color
         setForeground(java.awt.Color.white);
 
@@ -372,6 +371,7 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
         });
 
         this.add(drawing, BorderLayout.CENTER);
+        this.pack();
     }
 
     private void updateStatus(int x, int y) {
@@ -1467,8 +1467,12 @@ public class Spectre extends javax.swing.JFrame implements DropTargetListener {
             pnlOpen.setVisible(false);
         }
 
+
         // Now draw the network into the drawing canvas
         drawing.drawNetwork(config, this.network, optimiseLayout);
+
+        // Make sure the drawing is visible.
+        drawing.setVisible(true);
 
         log.info("File successfully opened: " + inFile.getAbsolutePath());
     }
