@@ -38,6 +38,39 @@
             <build>
                 <plugins>
                     <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>1.7</version>
+                        <executions>
+                            <execution>
+                                <id>create-windows-distributable</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target name="bundle-tar-win" description="Create a windows distributable tarball">
+                                        <mkdir dir="${dist-dir}"/>
+                                        <tar longfile="gnu"
+                                             destfile="${dist-dir}/${dist-name}-win.tar.gz"
+                                             compression="gzip">
+
+                                            <tarfileset dir="${build-dir}/.." filemode="755">
+                                                <include name="${dist-name}/bin/*"/>
+                                            </tarfileset>
+
+                                            <tarfileset dir="${build-dir}/..">
+                                                <include name="${dist-name}/**"/>
+                                                <exclude name="${dist-name}/bin/*"/>
+                                            </tarfileset>
+                                        </tar>
+                                    </target>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>exec-maven-plugin</artifactId>
                         <version>1.6.0</version>
@@ -88,39 +121,7 @@
                             </execution>
                         </executions>
                     </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-antrun-plugin</artifactId>
-                        <version>1.7</version>
-                        <executions>
-                            <execution>
-                                <id>create-windows-distributable</id>
-                                <phase>install</phase>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                                <configuration>
-                                    <target name="bundle-tar-win" description="Create a windows distributable tarball">
-                                        <mkdir dir="${dist-dir}"/>
-                                        <tar longfile="gnu"
-                                             destfile="${dist-dir}/${dist-name}-win.tar.gz"
-                                             compression="gzip">
 
-                                            <tarfileset dir="${build-dir}" filemode="755">
-                                                <include name="bin/*"/>
-                                            </tarfileset>
-
-                                            <tarfileset dir="${build-dir}">
-                                                <include name="**"/>
-                                                <exclude name="bin/*"/>
-                                                <exclude name="jar"/>
-                                            </tarfileset>
-                                        </tar>
-                                    </target>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
                 </plugins>
             </build>
         </profile>
@@ -137,6 +138,34 @@
                         <artifactId>maven-antrun-plugin</artifactId>
                         <version>1.7</version>
                         <executions>
+
+                            <execution>
+                                <id>create-linux-distributable</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target name="bundle-tar-linux" description="Create a linux distributable tarball">
+                                        <mkdir dir="${dist-dir}"/>
+                                        <tar longfile="gnu"
+                                             destfile="${dist-dir}/${dist-name}-linux.tar.gz"
+                                             compression="gzip">
+
+                                            <tarfileset dir="${build-dir}/.." filemode="755">
+                                                <include name="${dist-name}/bin/*"/>
+                                            </tarfileset>
+
+                                            <tarfileset dir="${build-dir}/..">
+                                                <include name="${dist-name}/**"/>
+                                                <exclude name="${dist-name}/bin/*"/>
+                                                <exclude name="${dist-name}/debian/**"/>
+                                            </tarfileset>
+                                        </tar>
+                                    </target>
+                                </configuration>
+                            </execution>
+
                             <execution>
                             <id>package-debian</id>
                             <phase>install</phase>
@@ -196,42 +225,8 @@
                                 </target>
                             </configuration>
                             </execution>
-                        </executions>
-                    </plugin>
 
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-antrun-plugin</artifactId>
-                        <version>1.7</version>
-                        <executions>
-                            <execution>
-                                <id>create-linux-distributable</id>
-                                <phase>install</phase>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                                <configuration>
-                                    <target name="bundle-tar-linux" description="Create a linux distributable tarball">
-                                        <mkdir dir="${dist-dir}"/>
-                                        <tar longfile="gnu"
-                                             destfile="${dist-dir}/${dist-name}-linux.tar.gz"
-                                             compression="gzip">
 
-                                            <tarfileset dir="${build-dir}" filemode="755">
-                                                <include name="bin/*"/>
-                                            </tarfileset>
-
-                                            <tarfileset dir="${build-dir}">
-                                                <include name="**"/>
-                                                <exclude name="bin/*"/>
-                                                <exclude name="jar"/>
-                                                <exclude name="debian"/>
-                                                <exclude name="jre"/>
-                                            </tarfileset>
-                                        </tar>
-                                    </target>
-                                </configuration>
-                            </execution>
                         </executions>
                     </plugin>
                 </plugins>
@@ -255,6 +250,32 @@
                         <artifactId>maven-antrun-plugin</artifactId>
                         <version>1.7</version>
                         <executions>
+                            <execution>
+                                <id>create-mac-distributable</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target name="bundle-tar-mac" description="Create a mac distributable tarball">
+                                        <mkdir dir="${dist-dir}"/>
+                                        <tar longfile="gnu"
+                                             destfile="${dist-dir}/${dist-name}-mac.tar.gz"
+                                             compression="gzip">
+
+                                            <tarfileset dir="${build-dir}/.." filemode="755">
+                                                <include name="${dist-name}/bin/*"/>
+                                            </tarfileset>
+
+                                            <tarfileset dir="${build-dir}/..">
+                                                <include name="${dist-name}/**"/>
+                                                <exclude name="${dist-name}/bin/*"/>
+                                            </tarfileset>
+                                        </tar>
+                                    </target>
+                                </configuration>
+                            </execution>
+
                             <execution>
                                 <id>copy-resources</id>
                                 <phase>install</phase>
@@ -324,40 +345,7 @@ s                                        <!-- Copy in the application stub -->
                             </execution>
                         </executions>
                     </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-antrun-plugin</artifactId>
-                        <version>1.7</version>
-                        <executions>
-                            <execution>
-                                <id>create-mac-distributable</id>
-                                <phase>install</phase>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                                <configuration>
-                                    <target name="bundle-tar-mac" description="Create a mac distributable tarball">
-                                        <mkdir dir="${dist-dir}"/>
-                                        <tar longfile="gnu"
-                                             destfile="${dist-dir}/${dist-name}-mac.tar.gz"
-                                             compression="gzip">
 
-                                            <tarfileset dir="${build-dir}" filemode="755">
-                                                <include name="bin/*"/>
-                                            </tarfileset>
-
-                                            <tarfileset dir="${build-dir}">
-                                                <include name="**"/>
-                                                <exclude name="bin/*"/>
-                                                <exclude name="repo"/>
-                                                <exclude name="jre"/>
-                                            </tarfileset>
-                                        </tar>
-                                    </target>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
                 </plugins>
             </build>
         </profile>
