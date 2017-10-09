@@ -150,7 +150,7 @@ planar split networks output from the tools.
 Quick Start:
 ============
 
-Assuming the user has access to the compiled executable jars for SPECTRE, then they should only need JRE 1.7+ installed
+Assuming the user has access to the compiled executable jars for SPECTRE, then they should only need JRE 1.8+ installed
 on their system.  The tools can be found in the bin subfolder.
 
 
