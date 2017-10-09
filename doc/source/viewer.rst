@@ -1,9 +1,9 @@
 .. _spectre:
 
-Spectre Viewer
+SPECTRE Viewer
 ==============
 
-The Spectre Viewing tool allows users to visualise trees and networks stored in a nexus file.  An example screenshot of
+The SPECTRE Viewing tool allows users to visualise trees and networks stored in a nexus file.  An example screenshot of
 a loaded networking is shown below.  The window is broken up from top to bottom into the menu bar, viewing canvas and status bar.
 
 .. image:: images/viewer.png
@@ -97,6 +97,6 @@ node via a "leader" line in order to aid readability.  This sub-menu allows the 
 Tools
 -----
 
-The Spectre graphical interface can also launch other tools in the package.  These are launched via the Tools menu and will
+The SPECTRE graphical interface can also launch other tools in the package.  These are launched via the Tools menu and will
 create a separate window where the user can specify input and output files as well as parameters to be passed to the algorithms.
 Details regarding the graphical interface for each tool are described along with the associated documentation.

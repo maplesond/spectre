@@ -36,7 +36,7 @@ QNet
                 Molecular Biology and Evolution Volume 24, Issue 2
 
 
-Spectre is an international collaboration.  Active contributors to spectre are listed in the following table
+SPECTRE is an international collaboration.  Active contributors to spectre are listed in the following table
 (in publication order):
 
 +--------------------------+--------------------------------+-----------------------------------+-----------------------------------------------------------------------------+
@@ -48,7 +48,7 @@ Spectre is an international collaboration.  Active contributors to spectre are l
 +--------------------------+--------------------------------+-----------------------------------+-----------------------------------------------------------------------------+
 | Monica Balvociute        | ???                            | University of Otago               | FlatNJ, NetView                                                             |
 +--------------------------+--------------------------------+-----------------------------------+-----------------------------------------------------------------------------+
-| Andreas Spilner          | anspillner@gmail.com           | NA                                | Mathematics, Algorithms, Optimisers, Spectre development                    |
+| Andreas Spilner          | anspillner@gmail.com           | NA                                | Mathematics, Algorithms, Optimisers, SPECTRE development                    |
 +--------------------------+--------------------------------+-----------------------------------+-----------------------------------------------------------------------------+
 | Taoyang Wu               | taoyang.wu@gmail.com           | University of East Anglia (UEA)   | Mathematics, Testing                                                        |
 +--------------------------+--------------------------------+-----------------------------------+-----------------------------------------------------------------------------+

@@ -3,7 +3,7 @@
 Developing the codebase
 =======================
 
-Spectre is designed to be open source and easy to extend, maintain and develop by the community.  This section of the
+SPECTRE is designed to be open source and easy to extend, maintain and develop by the community.  This section of the
 manual will help you work with the codebase, whether you just plan to use our core library in your own java application
 or want to modify or extend our codebase.
 
@@ -53,12 +53,12 @@ mechanism.
 Integrated Development Environments
 -----------------------------------
 
-Spectre was developed in the Java programming language and has become a relatively large project.  Because Java is a relatively
+SPECTRE was developed in the Java programming language and has become a relatively large project.  Because Java is a relatively
 verbose language (as compared to a language like python), we strongly recommend using an Integrated Development Environment
 (IDE).  This will enable you to easily visualise the project structure, navigate around the code, refactor code and generally be
 productive.
 
-Spectre was developed using the `IntelliJ <http://www.jetbrains.com/idea/>`_ IDE, but, while this is our preferred IDE, we do not store the
+SPECTRE was developed using the `IntelliJ <http://www.jetbrains.com/idea/>`_ IDE, but, while this is our preferred IDE, we do not store the
 IntelliJ project files in the repository.  Instead we use maven to manage the project structure, making the spectre
 codebase IDE agnostic, so you should be able to use whichever Java IDE you are most familiar with.  Most modern Java IDEs,
 and all those that have a wide user base, will also support maven project object models (POMs).  The exact details of how to

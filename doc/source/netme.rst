@@ -23,7 +23,7 @@ NetME can be run from the command line like this::
 
   netme [-o <output_prefix> -l] <nexus_file>
 
-Alternatively, NetME can be invoked through the Tools menu in the Spectre graphical interface.
+Alternatively, NetME can be invoked through the Tools menu in the SPECTRE graphical interface.
 
 
 References

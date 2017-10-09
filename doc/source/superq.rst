@@ -17,7 +17,7 @@ Example usage::
   superq -o <outfile> [-s <scaling_optimiser> -x <primary_optimiser>
          -y <secondary_optimiser> -b <objective> -f <filter_threshold>] <input_file> [<input_file>]...
 
-Alternatively, SuperQ has a graphical interface that can be accessed via the Tools menu in the Spectre viewer:
+Alternatively, SuperQ has a graphical interface that can be accessed via the Tools menu in the SPECTRE viewer:
 
 .. image:: images/superq-gui.png
     :scale: 100 %
