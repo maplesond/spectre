@@ -219,7 +219,7 @@ public class NetMEGUI extends JFrame implements ToolHost {
         });
 
         cmdCancel = new JButton();
-        cmdCancel.setText("Cancel");
+        cmdCancel.setText("Cancel run");
 
         cmdViewOutput = new JButton();
         cmdViewOutput.setText("View Tree");

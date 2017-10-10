@@ -411,7 +411,7 @@ public class NetMakeGUI extends JFrame implements ToolHost {
         });
 
         cmdCancel = new JButton();
-        cmdCancel.setText("Cancel");
+        cmdCancel.setText("Cancel run");
 
         cmdViewOutput = new JButton();
         cmdViewOutput.setText("View Network");

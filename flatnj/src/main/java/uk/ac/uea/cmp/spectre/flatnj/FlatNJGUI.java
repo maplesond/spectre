@@ -315,7 +315,7 @@ public class FlatNJGUI extends JFrame implements ToolHost {
         cmdRun.setEnabled(true);
 
         cmdCancel = new JButton();
-        cmdCancel.setText("Cancel");
+        cmdCancel.setText("Cancel run");
         cmdCancel.setToolTipText("Stop FlatNJ at next opportunity");
 
         cmdViewOutput = new JButton();
