@@ -36,7 +36,7 @@ And the command line run netmake in hybrid greedy minimum evolution would look l
   netmake -alt -o bees.t -w GREEDY_ME -x TREE bees.nex
 
 
-Alternatively, Neighbor-Net and the netmake alternative can be invoked through the Tools menu in Spectre Viewer.
+Alternatively, Neighbor-Net and the netmake alternative can be invoked through the Tools menu in SPECTRE Viewer.
 
 
 References

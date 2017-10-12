@@ -1061,7 +1061,7 @@ public class PermutationSequenceDraw {
             while (tailiter.hasNext()) {
                 f = (Edge) tailiter.next();
                 sidx = (f.getTop().getEdgeList().get((f.getTop().getEdgeList().indexOf(f) + 1) % f.getTop().getEdgeList().size())).getSplitIndex();
-                if (crossindices.contains(new Integer(sidx))) {
+                if (crossindices.contains(Integer.valueOf(sidx))) {
                     return sidx;
                 } else {
                     liste.addLast(f);
@@ -1083,7 +1083,7 @@ public class PermutationSequenceDraw {
             while (reviter.hasNext()) {
                 f = (Edge) reviter.next();
                 sidx = ((Edge) f.getBottom().getEdgeList().get((f.getBottom().getEdgeList().indexOf(f) + 1) % f.getBottom().getEdgeList().size())).getSplitIndex();
-                if (crossindices.contains(new Integer(sidx))) {
+                if (crossindices.contains(Integer.valueOf(sidx))) {
                     return sidx;
                 } else {
                     liste.addLast(f);

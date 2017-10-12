@@ -126,7 +126,7 @@ public class WeightsComputer {
 
         for (int i = 0; i < solution.length; i++) {
 
-            Double d = new Double(solution[i]);
+            Double d = Double.valueOf(solution[i]);
 
             if (d.isNaN() || d.isInfinite()) {
                 log.warn("Solution for variable " + i + " is not sensible (NaN or Infinity).");

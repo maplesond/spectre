@@ -3,7 +3,7 @@
 Miscellaneous Tools
 ===================
 
-These tools were developed for particular tasks during the development of the Spectre tools and are included here in case
+These tools were developed for particular tasks during the development of the SPECTRE tools and are included here in case
 they are of use to others.
 
 

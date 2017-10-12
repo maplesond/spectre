@@ -20,12 +20,12 @@
     <parent>
         <artifactId>spectre</artifactId>
         <groupId>uk.ac.uea.cmp.spectre</groupId>
-        <version>1.1.4</version>
+        <version>1.1.5</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>doc</artifactId>
-    <version>1.1.4</version>
+    <version>1.1.5</version>
 
     <name>Spectre: Create Documentation</name>
 
@@ -44,7 +44,7 @@
                 <executions>
                     <execution>
                         <id>create-manual</id>
-                        <phase>package</phase>
+                        <phase>compile</phase>
                         <goals>
                             <goal>run</goal>
                         </goals>
@@ -56,6 +56,23 @@
                                     <arg line="html man text" />
                                     <!--<arg line="html latexpdf text" />-->
                                 </exec>
+
+                            </target>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>package-manual</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+
+                                <mkdir dir="${build-dir}/doc" />
+                                <copy todir="${build-dir}/doc">
+                                    <fileset dir="${doc-dir}/build" />
+                                </copy>
 
                             </target>
                         </configuration>

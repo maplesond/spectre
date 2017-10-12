@@ -31,7 +31,7 @@ public class SummedDistanceList extends ArrayList<Double> {
 
     public SummedDistanceList(double[] sdl) {
         for (double sd : sdl) {
-            this.add(new Double(sd));
+            this.add(Double.valueOf(sd));
         }
     }
 

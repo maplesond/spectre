@@ -5,9 +5,9 @@ Suite of PhylogEnetiC Tools for Reticulate Evolution (SPECTRE)
 .. image:: images/spectre.png
     :scale: 50%
 
-Spectre a suite of tools for inferring evolutionary patterns associated with Reticulate Evolution that primarily either
+SPECTRE a suite of tools for inferring evolutionary patterns associated with Reticulate Evolution that primarily either
 create or use split systems (a collection of bipartitions of the taxa) representable in two dimensions, such as SuperQ,
-FlatNJ, NetME and several NeighborNet variants.  Spectre provides a graphical interface to both drive and visualise the output.
+FlatNJ, NetME and several NeighborNet variants.  SPECTRE provides a graphical interface to both drive and visualise the output.
 The viewer allows the user to pan, zoom, rotate and modify the network, making the split networks easier to assess and interpret.
 All tools in SPECTRE also have command line interfaces enabling their use within pipelines, and on servers and other high
 performance computing environments.

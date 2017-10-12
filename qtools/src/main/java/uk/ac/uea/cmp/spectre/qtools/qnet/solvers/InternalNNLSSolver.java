@@ -153,7 +153,7 @@ public class InternalNNLSSolver {
                 break;
             }
 
-            Z.remove(new Integer(t));
+            Z.remove(Integer.valueOf(t));
             P.add(t);
 
             // start of inner loop
@@ -178,13 +178,13 @@ public class InternalNNLSSolver {
 
                 for (int i = 0; i < maxSplits; i++) {
 
-                    if (P.contains(new Integer(i))) {
+                    if (P.contains(Integer.valueOf(i))) {
 
                         column = 0;
 
                         for (int j = 0; j < maxSplits; j++) {
 
-                            if (P.contains(new Integer(j))) {
+                            if (P.contains(Integer.valueOf(j))) {
 
                                 EtEp[row][column] = EtE.getElementAt(i, j);
 
@@ -259,8 +259,8 @@ public class InternalNNLSSolver {
                     if (z[t] <= tolerance) {
                         w[t] = 0;
                         calculateW = false;
-                        P.remove(new Integer(t));
-                        Z.add(new Integer(t));
+                        P.remove(Integer.valueOf(t));
+                        Z.add(Integer.valueOf(t));
                         break;
                     }
                 }
@@ -465,7 +465,7 @@ public class InternalNNLSSolver {
 
             for (int i = 0; i < maxSplits; i++) {
 
-                if (this.contains(new Integer(i))) {
+                if (this.contains(Integer.valueOf(i))) {
 
                     aMap[mapIndex++] = i;
                 }
