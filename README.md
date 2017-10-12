@@ -41,6 +41,18 @@ the program itself is installed to ``/usr/share/spectre``.
 After double-clicking the DMG image file, drag the SPECTRE app into the Applications folder.  You should then be able to
 access the GUI from the launchpad.
 
+On Mac platforms, the application may be regarded as a software from unidentified developers and hence they may need to open it as following:
+
+
+1.	Open a new Finder Window
+2.	Navigate to the Download or Application you just installed to your Mac
+3.	Instead of Double-Clicking on the Icon to open, Right Click on it and choose "Open"
+4.	A Pop-Up Window will appear telling you that the Software is from an Unidentified Developer, but it will give you the option to Open it anyway. Click on "Open", and the software will run as expected.
+
+
+https://support.novationmusic.com/hc/en-gb/articles/207561205-My-Software-is-from-an-Unidentified-Developer-and-won-t-Install-on-my-Mac
+
+
 We have not at present installed the command-line tools onto the PATH, but they are present on your system and can be found
 in ``/Applications/Spectre.app/Contents/MacOS``.  You can either run them from here or manually link them into ``/usr/local/bin``
 in order to have them directly available from the terminal.
