@@ -16,3 +16,4 @@
 *.xml.releaseBackup
 *.xml.versionsBackup
 *.build
+/clean/
